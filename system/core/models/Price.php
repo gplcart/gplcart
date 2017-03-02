@@ -58,10 +58,11 @@ class Price extends Model
      * Formats a price value as a currency string
      * @param integer $amount
      * @param string $currency
-     * @param boolean $convert
+     * @param bool $convert
+     * @param bool $full
      * @return string
      */
-    public function format($amount, $currency, $convert = true)
+    public function format($amount, $currency, $convert = true, $full = true)
     {
         $data = (array) $this->currency->get($currency);
 
@@ -71,6 +72,10 @@ class Price extends Model
 
         $rounded = $this->round(abs($amount), $data);
         $data['price'] = number_format($rounded, $data['decimals'], $data['decimal_separator'], $data['thousands_separator']);
+
+        if (!$full) {
+            return $amount < 0 ? "-{$data['price']}" : $data['price'];
+        }
 
         $placeholders = array();
         foreach (array_keys($data) as $key) {

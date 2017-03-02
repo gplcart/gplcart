@@ -7,35 +7,21 @@
  */
 ?>
 <?php if (!empty($transactions) || $filtering) { ?>
-<form method="post" id="transactions">
-  <input type="hidden" name="token" value="<?php echo $token; ?>">
+<form method="post" class="form-horizontal">
+  <input type="hidden" name="token" value="<?php echo $this->prop('token'); ?>">
   <div class="panel panel-default">
     <div class="panel-heading clearfix">
-      <?php if ($this->access('transaction_edit') || $this->access('transaction_delete')) { ?>
+      <?php if ($this->access('transaction_delete')) { ?>
       <div class="btn-group pull-left">
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-           <span class="caret"></span>
+          <span class="caret"></span>
         </button>
         <ul class="dropdown-menu">
-          <?php if ($this->access('transaction_edit')) { ?>
-          <li>
-            <a data-action="status" data-action-value="1" data-action-confirm="<?php echo $this->text('Are you sure?'); ?>" href="#">
-              <?php echo $this->text('Status'); ?>: <?php echo $this->text('Enabled'); ?>
-            </a>
-          </li>
-          <li>
-            <a data-action="status" data-action-value="0" data-action-confirm="<?php echo $this->text('Are you sure?'); ?>" href="#">
-              <?php echo $this->text('Status'); ?>: <?php echo $this->text('Disabled'); ?>
-            </a>
-          </li>
-          <?php } ?>
-          <?php if ($this->access('transaction_delete')) { ?>
           <li>
             <a data-action="delete" data-action-confirm="<?php echo $this->text('Are you sure? It cannot be undone!'); ?>" href="#">
               <?php echo $this->text('Delete'); ?>
             </a>
           </li>
-          <?php } ?>
         </ul>
       </div>
       <?php } ?>
@@ -53,13 +39,13 @@
               </a>
             </th>
             <th>
-              <a href="<?php echo $sort_payment_service; ?>">
-                <?php echo $this->text('Service'); ?> <i class="fa fa-sort"></i>
+              <a href="<?php echo $sort_payment_method; ?>">
+                <?php echo $this->text('Payment method'); ?> <i class="fa fa-sort"></i>
               </a>
             </th>
             <th>
-              <a href="<?php echo $sort_service_transaction_id; ?>">
-                <?php echo $this->text('Service transaction ID'); ?> <i class="fa fa-sort"></i>
+              <a href="<?php echo $sort_gateway_transaction_id; ?>">
+                <?php echo $this->text('Gateway transaction ID'); ?> <i class="fa fa-sort"></i>
               </a>
             </th>
             <th>
@@ -75,17 +61,17 @@
               <input class="form-control" name="order_id" value="<?php echo $filter_order_id; ?>" placeholder="<?php echo $this->text('Any'); ?>">
             </th>
             <th>
-              <select name="payment_service" class="form-control">
+              <select name="payment_method" class="form-control">
                 <option value="any"><?php echo $this->text('Any'); ?></option>
-                <?php foreach ($payment_services as $service_id => $service) { ?>
-                <option value="<?php echo $this->escape($service_id); ?>"<?php echo ($filter_payment_service == $service_id) ? ' selected' : '' ?>>
-                <?php echo $this->escape($service['name']); ?>
+                <?php foreach ($payment_methods as $method_id => $method) { ?>
+                <option value="<?php echo $this->escape($method_id); ?>"<?php echo ($filter_payment_method == $method_id) ? ' selected' : '' ?>>
+                  <?php echo $this->escape($method['title']); ?>
                 </option>
                 <?php } ?>
               </select>
             </th>
             <th>
-              <input class="form-control" name="service_transaction_id" value="<?php echo $filter_service_transaction_id; ?>" placeholder="<?php echo $this->text('Any'); ?>">
+              <input class="form-control" name="gateway_transaction_id" value="<?php echo $filter_gateway_transaction_id; ?>" placeholder="<?php echo $this->text('Any'); ?>">
             </th>
             <th></th>
             <th>
@@ -113,13 +99,13 @@
               <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $transaction_id; ?>">
             </td>
             <td class="middle">
-              <?php echo $this->escape($transaction['order_id']); ?>
+              <a href="<?php echo $this->url("admin/sale/order/{$transaction['order_id']}"); ?>"><?php echo $this->escape($transaction['order_id']); ?></a>
             </td>
             <td class="middle">
-              <?php echo $this->escape($transaction['payment_service']); ?>
+              <?php echo isset($payment_methods[$transaction['payment_method']]['title']) ? $this->escape($payment_methods[$transaction['payment_method']]['title']) : $this->text('Unknown'); ?>
             </td>
             <td class="middle">
-              <?php echo $this->escape($transaction['service_transaction_id']); ?>
+              <?php echo $this->escape($transaction['gateway_transaction_id']); ?>
             </td>
             <td class="middle">
               <?php echo $this->date($transaction['created']); ?>

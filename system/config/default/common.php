@@ -54,6 +54,7 @@ $config = array();
 # $config['order_status_initial']                 = 'pending'; // Default status for new orders
 # $config['order_status_canceled']                = 'canceled'; // Default status for canceled orders
 # $config['order_status_awaiting_payment']        = 'pending_payment'; // Default status for awaiting payment orders
+# $config['order_status_processing']              = 'processing';
 # $config['order_update_notify_customer']         = 1; // Whether to send notification to customer on order status change
 # $config['order_log_limit']                      = 10; // Max order log records to display for admin
 # $config['page_alias_pattern']                   = '%t.html'; // Pattern to generate page alias

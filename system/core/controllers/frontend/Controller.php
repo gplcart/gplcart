@@ -630,12 +630,21 @@ class Controller extends BaseController
     }
 
     /**
-     * Add formatted total amount
+     * Add full formatted total amount
      * @param array $item
      */
     protected function attachItemTotalFormatted(array &$item)
     {
         $item['total_formatted'] = $this->price->format($item['total'], $item['currency']);
+    }
+
+    /**
+     * Add formatted total amount without currency sign
+     * @param array $item
+     */
+    protected function attachItemTotalFormattedNumber(array &$item)
+    {
+        $item['total_formatted_number'] = $this->price->format($item['total'], $item['currency'], true, false);
     }
 
     /**

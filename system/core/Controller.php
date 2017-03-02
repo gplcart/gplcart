@@ -794,6 +794,18 @@ class Controller
     }
 
     /**
+     * Returns a data from POST query
+     * @param string $name
+     * @param mixed $default
+     * @param bool|string $filter
+     * @return mixed
+     */
+    public function getPosted($name, $default = null, $filter = true)
+    {
+        return $this->request->post($name, $default, $filter);
+    }
+
+    /**
      * Whether a key is presented in the GET query
      * @param string|null $key
      * @return boolean

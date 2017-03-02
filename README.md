@@ -42,7 +42,7 @@ For owners:
 - Really simple UI
 - Faster than any other popular shopping cart
 - Multistore `anotherstore.com, anotherstore.domain.com`
-- International
+- International, [easy translatable](https://github.com/gplcart/extractor)
 - Product comparison
 - Wishlists even for anonymous
 - Address books

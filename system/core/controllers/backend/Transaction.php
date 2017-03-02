@@ -9,8 +9,8 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Payment as PaymentModel;
-use gplcart\core\models\Transaction as TransactionModel;
+use gplcart\core\models\Payment as PaymentModel,
+    gplcart\core\models\Transaction as TransactionModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -57,9 +57,9 @@ class Transaction extends BackendController
 
         $query = $this->getFilterQuery();
 
-        $filters = array('created', 'order_id', 'payment_service',
-            'service_transaction_id');
-        
+        $filters = array('created', 'order_id', 'payment_method',
+            'gateway_transaction_id');
+
         $this->setFilter($filters, $query);
 
         $total = $this->getTotalTransaction($query);
@@ -83,28 +83,18 @@ class Transaction extends BackendController
             return null;
         }
 
-        $value = (int) $this->request->post('value');
         $selected = (array) $this->request->post('selected', array());
 
-        $deleted = $updated = 0;
+        $deleted = 0;
         foreach ($selected as $id) {
 
             if ($action === 'delete' && $this->access('transaction_delete')) {
                 $deleted += (int) $this->transaction->delete($id);
             }
-
-            if ($action === 'status' && $this->access('transaction_edit')) {
-                $updated += (int) $this->transaction->update($id, array('status' => $value));
-            }
         }
 
         if ($deleted > 0) {
             $message = $this->text('Deleted %num transactions', array('%num' => $deleted));
-            $this->setMessage($message, 'success', true);
-        }
-
-        if ($updated > 0) {
-            $message = $this->text('Updated %num transactions', array('%num' => $updated));
             $this->setMessage($message, 'success', true);
         }
     }

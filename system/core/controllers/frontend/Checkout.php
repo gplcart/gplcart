@@ -264,6 +264,7 @@ class Checkout extends FrontendController
         }
 
         $this->attachItemTotalFormatted($order);
+        $this->attachItemTotalFormattedNumber($order);
 
         $this->order_id = $order_id;
         $this->order_user_id = $order['user_id'];
@@ -1071,7 +1072,7 @@ class Checkout extends FrontendController
     protected function setTitleCompleteCheckout()
     {
         $vars = array('@num' => $this->data_order['order_id']);
-        $title = $this->text('Checkout completed', $vars);
+        $title = $this->text('Created order #@num', $vars);
         $this->setTitle($title);
     }
 

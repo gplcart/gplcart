@@ -76,15 +76,16 @@ class Transaction extends Model
             $where[] = "%{$data['payment_method']}%";
         }
 
-        if (isset($data['remote_transaction_id'])) {
-            $sql .= ' AND t.remote_transaction_id LIKE ?';
-            $where[] = "%{$data['remote_transaction_id']}%";
+        if (isset($data['gateway_transaction_id'])) {
+            $sql .= ' AND t.gateway_transaction_id LIKE ?';
+            $where[] = "%{$data['gateway_transaction_id']}%";
         }
 
         $allowed_order = array('asc', 'desc');
-        $allowed_sort = array('order_id', 'created', 'payment_method', 'remote_transaction_id');
+        $allowed_sort = array('order_id', 'created', 'payment_method', 'gateway_transaction_id');
 
-        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort)) && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
+        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort))//
+                && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
             $sql .= " ORDER BY t.{$data['sort']} {$data['order']}";
         } else {
             $sql .= ' ORDER BY t.created DESC';
@@ -164,27 +165,6 @@ class Transaction extends Model
     }
 
     /**
-     * Updates a transaction
-     * @param integer $transaction_id
-     * @param array $data
-     * @return boolean
-     */
-    public function update($transaction_id, array $data)
-    {
-        $this->hook->fire('transaction.update.before', $transaction_id, $data);
-
-        if (empty($transaction_id)) {
-            return false;
-        }
-
-        $conditions = array('transaction_id' => $transaction_id);
-        $result = $this->db->update('transaction', $data, $conditions);
-
-        $this->hook->fire('transaction.update.after', $transaction_id, $data, $result);
-        return (bool) $result;
-    }
-
-    /**
      * Processes a remote transaction for the given order ID
      * @param integer $order_id
      * @param array $request
@@ -207,7 +187,7 @@ class Transaction extends Model
 
         $this->hook->fire('transaction.remote', $order, $request, $result);
 
-        if (empty($result['remote_transaction_id'])) {
+        if (empty($result['gateway_transaction_id'])) {
             return $error;
         }
 
@@ -217,7 +197,7 @@ class Transaction extends Model
             'total' => $order['total'],
             'currency' => $order['currency'],
             'payment_method' => $order['payment'],
-            'remote_transaction_id' => $result['remote_transaction_id']
+            'gateway_transaction_id' => $result['gateway_transaction_id']
         );
 
         $transaction_id = $this->add($transaction);

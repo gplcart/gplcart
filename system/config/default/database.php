@@ -510,7 +510,7 @@ $tables['transaction'] = array(
         'currency' => array('type' => 'varchar', 'length' => 4, 'not_null' => true),
         'created' => array('type' => 'int', 'length' => 10, 'not_null' => true),
         'payment_method' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
-        'remote_transaction_id' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
+        'gateway_transaction_id' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
         'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
     )
 );

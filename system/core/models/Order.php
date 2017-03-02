@@ -551,6 +551,15 @@ class Order extends Model
     }
 
     /**
+     * Returns "processing" status ID
+     * @return string
+     */
+    public function getStatusProcessing()
+    {
+        return $this->config->get('order_status_processing', 'processing');
+    }
+
+    /**
      * Returns initial order status
      * @return string
      */
