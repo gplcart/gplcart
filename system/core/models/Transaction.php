@@ -10,8 +10,6 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Model;
-use gplcart\core\models\Order as OrderModel;
-use gplcart\core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to payment transactions
@@ -20,28 +18,11 @@ class Transaction extends Model
 {
 
     /**
-     * Order model instance
-     * @var \gplcart\core\models\Order $order
-     */
-    protected $order;
-
-    /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
-     */
-    protected $language;
-
-    /**
      * Constructor
-     * @param OrderModel $order
-     * @param LanguageModel $language
      */
-    public function __construct(OrderModel $order, LanguageModel $language)
+    public function __construct()
     {
         parent::__construct();
-
-        $this->order = $order;
-        $this->language = $language;
     }
 
     /**
@@ -162,57 +143,6 @@ class Transaction extends Model
 
         $this->hook->fire('transaction.delete.after', $transaction_id, $result);
         return (bool) $result;
-    }
-
-    /**
-     * Processes a remote transaction for the given order ID
-     * @param integer $order_id
-     * @param array $request
-     */
-    public function remote($order_id, array $request = array())
-    {
-        $order = $this->order->get($order_id);
-
-        $error = array(
-            'redirect' => '/',
-            'severity' => 'danger',
-            'message' => $this->language->text('An error occurred')
-        );
-
-        if (empty($order['status'])) {
-            return $error;
-        }
-
-        $result = array('redirect' => '/', 'message' => '', 'severity' => '');
-
-        $this->hook->fire('transaction.remote', $order, $request, $result);
-
-        if (empty($result['gateway_transaction_id'])) {
-            return $error;
-        }
-
-        $transaction = array(
-            'data' => $request,
-            'order_id' => $order_id,
-            'total' => $order['total'],
-            'currency' => $order['currency'],
-            'payment_method' => $order['payment'],
-            'gateway_transaction_id' => $result['gateway_transaction_id']
-        );
-
-        $transaction_id = $this->add($transaction);
-
-        if (empty($transaction_id)) {
-            return $error;
-        }
-
-        $options = array(
-            'status' => 'processing',
-            'transaction_id' => $transaction_id
-        );
-
-        $this->order->update($order_id, $options);
-        return $result;
     }
 
 }

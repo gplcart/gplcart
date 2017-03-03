@@ -26,12 +26,6 @@ $routes['/'] = array(
     )
 );
 
-$routes['transaction/success/(\d+)'] = array(
-    'handlers' => array(
-        'controller' => array('gplcart\\core\\controllers\\frontend\\Transaction', 'successTransaction')
-    )
-);
-
 $routes['cron'] = array(
     'handlers' => array(
         'controller' => array('gplcart\\core\\controllers\\backend\\Cron', 'executeCron')
