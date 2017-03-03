@@ -112,7 +112,6 @@ return array(
     'state_delete' => 'Country state: delete',
     'transaction' => 'Transaction: access',
     'transaction_delete' => 'Transaction: delete',
-    'translation_add' => 'Translation: add',
     'trigger' => 'Trigger: access',
     'trigger_add' => 'Trigger: add',
     'trigger_edit' => 'Trigger: edit',
