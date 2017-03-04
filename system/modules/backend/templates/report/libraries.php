@@ -81,12 +81,14 @@
               </p>
             </div>
             <?php } ?>
+            <?php if(!empty($library['vendor'])) { ?>
             <div class="vendor">
               <b><?php echo $this->text('Vendor'); ?>:</b>
               <p>
                 <?php echo $this->text($library['vendor']); ?>
               </p>
             </div>
+            <?php } ?>
             <b><?php echo $this->text('Directory'); ?>:</b>
             <p><?php echo $this->escape($library['basepath']); ?></p>
             <?php if (!empty($library['requires'])) { ?>
