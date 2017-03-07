@@ -273,31 +273,43 @@ class Config
 
     /**
      * Returns an array containing module info and instance
-     * @param string $name
+     * @param string $module_id
      * @return array
      */
-    public function getModuleData($name)
+    public function getModuleData($module_id)
     {
-        $class = $this->getModuleClassNamespace($name);
+        $instance = $this->getModuleInstance($module_id);
 
-        try {
-            $instance = Container::get($class);
-        } catch (\ReflectionException $exc) {
-            return array();
-        }
-
-        if (!is_callable(array($instance, 'info'))) {
+        if (empty($instance) || !is_callable(array($instance, 'info'))) {
             return array();
         }
 
         $info = $instance->info();
 
         return array(
-            'class' => $class,
             'info' => $info,
             'instance' => $instance,
-            'id' => isset($info['id']) ? $info['id'] : $name
+            'class' => get_class($instance),
+            'id' => isset($info['id']) ? $info['id'] : $module_id
         );
+    }
+
+    /**
+     * Returns module class instance
+     * @param string $module_id
+     * @return null|object
+     */
+    public function getModuleInstance($module_id)
+    {
+        $class = $this->getModuleClassNamespace($module_id);
+
+        try {
+            $instance = Container::get($class);
+        } catch (\ReflectionException $exc) {
+            return null;
+        }
+
+        return $instance;
     }
 
     /**
@@ -331,11 +343,17 @@ class Config
             return array();
         }
 
+        $modules = &Cache::memory('installed.modules');
+
+        if (isset($modules)) {
+            return $modules;
+        }
+
         $sql = 'SELECT * FROM module ORDER BY weight ASC';
         $options = array('unserialize' => 'settings', 'index' => 'module_id');
 
-        $list = $this->db->fetchAll($sql, array(), $options);
-        return $list;
+        $modules = $this->db->fetchAll($sql, array(), $options);
+        return $modules;
     }
 
     /**
@@ -418,6 +436,28 @@ class Config
         return array_filter(get_class_methods($class), function ($method) {
             return (0 === strpos($method, 'hook'));
         });
+    }
+
+    /**
+     * Whether the module exists and enabled
+     * @param string $module_id
+     * @return boolean
+     */
+    public function isEnabledModule($module_id)
+    {
+        $modules = $this->getInstalledModules();
+        return !empty($modules[$module_id]['status']);
+    }
+
+    /**
+     * Whether the module installed, e.g exists in database
+     * @param string $module_id
+     * @return boolean
+     */
+    public function isInstalledModule($module_id)
+    {
+        $modules = $this->getInstalledModules();
+        return isset($modules[$module_id]);
     }
 
     /**

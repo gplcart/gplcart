@@ -73,8 +73,7 @@ class Module extends Model
      */
     public function isEnabled($module_id)
     {
-        $modules = $this->getList();
-        return !empty($modules[$module_id]['status']);
+        return $this->config->isEnabledModule($module_id);
     }
 
     /**
@@ -84,8 +83,7 @@ class Module extends Model
      */
     public function isInstalled($module_id)
     {
-        $modules = $this->getList();
-        return !empty($modules[$module_id]['installed']);
+        return $this->config->isInstalledModule($module_id);
     }
 
     /**
