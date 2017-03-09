@@ -734,7 +734,7 @@ class Order extends Model
      * @param array $data
      * @return array
      */
-    public function calculate(array $data)
+    public function calculate(array &$data)
     {
         static $total = 0;
 
@@ -751,13 +751,19 @@ class Order extends Model
         }
 
         $this->pricerule->calculate($total, $data, $components);
-        $this->hook->fire('order.calculate', $total, $data, $components);
 
-        return array(
+        $result = array(
             'total' => $total,
             'components' => $components,
-            'currency' => $data['cart']['currency']
+            'currency' => $data['cart']['currency'],
+            // Other modules can use these formatted totals
+            'total_decimal' => $this->price->decimal($total, $data['cart']['currency']),
+            'total_formatted' => $this->price->format($total, $data['cart']['currency']),
+            'total_formatted_number' => $this->price->format($total, $data['cart']['currency'], true, false),
         );
+
+        $this->hook->fire('order.calculate', $result, $data);
+        return $result;
     }
 
     /**

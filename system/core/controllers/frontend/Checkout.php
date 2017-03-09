@@ -340,15 +340,7 @@ class Checkout extends FrontendController
      */
     protected function setFormDataBeforeCheckout()
     {
-        $default_order = array(
-            'comment' => '',
-            'user_id' => $this->order_user_id,
-            'creator' => $this->admin_user_id,
-            'store_id' => $this->order_store_id,
-            'currency' => $this->data_cart['currency'],
-            'status' => $this->order->getStatusInitial()
-        );
-
+        $default_order = $this->getDefaultOrder();
         $order = gplcart_array_merge($default_order, $this->data_order);
 
         $this->data_form['order'] = $order;
@@ -363,6 +355,24 @@ class Checkout extends FrontendController
         // Price rule calculator requires this data
         $this->data_form['store_id'] = $this->order_store_id;
         $this->data_form['currency'] = $this->data_cart['currency'];
+    }
+
+    /**
+     * Returns an array of default initial order data
+     * @return array
+     */
+    protected function getDefaultOrder()
+    {
+        return array(
+            'comment' => '',
+            'payment' => '',
+            'shipping' => '',
+            'user_id' => $this->order_user_id,
+            'creator' => $this->admin_user_id,
+            'store_id' => $this->order_store_id,
+            'currency' => $this->data_cart['currency'],
+            'status' => $this->order->getStatusInitial(),
+        );
     }
 
     /**
@@ -932,10 +942,9 @@ class Checkout extends FrontendController
         $result = $this->order->calculate($this->data_form);
 
         $this->data_form['total'] = $result['total'];
+        $this->data_form['total_decimal'] = $result['total_decimal'];
+        $this->data_form['total_formatted'] = $result['total_formatted'];
         $this->data_form['price_components'] = $this->prepareOrderComponentsCheckout($result);
-
-        $this->attachItemTotalDecimal($this->data_form);
-        $this->attachItemTotalFormatted($this->data_form);
     }
 
     /**

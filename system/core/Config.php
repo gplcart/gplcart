@@ -306,6 +306,7 @@ class Config
         try {
             $instance = Container::get($class);
         } catch (\ReflectionException $exc) {
+            trigger_error($exc->getMessage());
             return null;
         }
 
@@ -461,7 +462,7 @@ class Config
     }
 
     /**
-     * Validates / filters module id(s)
+     * Validates a module id
      * @param string $id
      * @return boolean
      */

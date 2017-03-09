@@ -52,20 +52,28 @@ class Shipping extends Model
         $methods = $this->getDefault();
         $this->hook->fire('shipping.methods', $methods);
 
+        $weights = array();
         foreach ($methods as $id => $method) {
             if (!empty($data['status']) && empty($method['status'])) {
                 unset($methods[$id]);
+                continue;
             }
             if (!empty($data['module']) && !in_array($method['module'], (array) $data['module'])) {
                 unset($methods[$id]);
+                continue;
             }
+            if (!isset($data['weight'])) {
+                $data['weight'] = 0;
+            }
+            $weights[] = $data['weight'];
         }
 
         if (empty($methods)) {
             return array();
         }
 
-        gplcart_array_sort($methods);
+        // Sort by weight then by key
+        array_multisort($weights, SORT_ASC, array_keys($methods), SORT_ASC, $methods);
         return $methods;
     }
 

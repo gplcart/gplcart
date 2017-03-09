@@ -14,6 +14,13 @@ namespace gplcart\core\helpers;
  */
 class Curl
 {
+
+    /**
+     * A string containing the last error for the current CURL session
+     * @var string
+     */
+    protected $error = '';
+
     /**
      * Array of curl response info
      * @var mixed
@@ -34,7 +41,11 @@ class Curl
         curl_setopt_array($ch, $options);
         $response = curl_exec($ch);
 
-        $this->info = curl_getinfo($ch);
+        $this->error = curl_error($ch);
+
+        if (empty($this->error)) {
+            $this->info = curl_getinfo($ch);
+        }
 
         curl_close($ch);
         return $response;
@@ -47,23 +58,13 @@ class Curl
      */
     protected function defaultOptions($url)
     {
-        $options = array(
+        return array(
             CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_RETURNTRANSFER => true,
             CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_USERAGENT => 'GPL Cart Agent');
-
-        return $options;
-    }
-
-    /**
-     * Returns an array of response info
-     * @return array
-     */
-    public function getInfo()
-    {
-        return $this->info;
+            CURLOPT_USERAGENT => 'GPL Cart Agent'
+        );
     }
 
     /**
@@ -77,8 +78,8 @@ class Curl
         $options += $this->defaultOptions($url);
 
         $fields = '';
-        if (!empty($options['fields'])) {
-            $fields = http_build_query($options['fields']);
+        if (isset($options['fields'])) {
+            $fields = is_array($options['fields']) ? http_build_query($options['fields']) : (string) $options['fields'];
             unset($options['fields']);
         }
 
@@ -88,7 +89,11 @@ class Curl
         curl_setopt_array($ch, $options);
         $response = curl_exec($ch);
 
-        $this->info = curl_getinfo($ch);
+        $this->error = curl_error($ch);
+
+        if (empty($this->error)) {
+            $this->info = curl_getinfo($ch);
+        }
 
         curl_close($ch);
         return $response;
@@ -110,10 +115,32 @@ class Curl
         curl_exec($ch);
         $info = curl_getinfo($ch);
 
-        $this->info = $info;
+        $this->error = curl_error($ch);
+
+        if (empty($this->error)) {
+            $this->info = $info;
+        }
 
         curl_close($ch);
         return $info;
+    }
+
+    /**
+     * Returns an array of response info
+     * @return array
+     */
+    public function getInfo()
+    {
+        return $this->info;
+    }
+
+    /**
+     * Returns a string containing the last error for the current CURL session
+     * @return string
+     */
+    public function getError()
+    {
+        return $this->error;
     }
 
 }
