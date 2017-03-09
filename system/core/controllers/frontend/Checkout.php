@@ -439,7 +439,8 @@ class Checkout extends FrontendController
         $this->data_form['has_payment_address'] = $this->has_payment_address;
         $this->data_form['payment_address_form'] = $this->payment_address_form;
         $this->data_form['shipping_address_form'] = $this->shipping_address_form;
-
+        
+        $this->data_form['context_template'] = $this->getTemplatesCheckout('context', $this->getSubmitted());
         $this->data_form['cart'] = $this->prepareCart($this->data_cart);
         $this->data_form['addresses'] = $this->address->getTranslatedList($this->order_user_id);
 
@@ -480,9 +481,7 @@ class Checkout extends FrontendController
     protected function submitCheckout()
     {
         $this->setSubmitted('order');
-
         $this->setAddressFormCheckout();
-
         $this->submitAddAddressCheckout();
 
         if ($this->isPosted('checkout_login') && empty($this->uid)) {
@@ -1002,38 +1001,44 @@ class Checkout extends FrontendController
         $this->setTitleCompleteCheckout();
         $this->setBreadcrumbCompleteCheckout();
 
-        $this->setData('complete_templates', $this->getCompleteTemplatesCheckout());
+        $this->setData('complete_templates', $this->getTemplatesCheckout('complete', $this->data_order));
         $this->setData('complete_message', $this->getCompleteMessageCheckout());
 
         $this->hook->fire('order.complete.page', $order, $this);
 
         $this->outputCompleteCheckout();
     }
-
+    
     /**
      * Returns an array of rendered templates provided by payment/shipping methods
+     * @param string $name
+     * @param array $order
      * @return array
      */
-    protected function getCompleteTemplatesCheckout()
+    protected function getTemplatesCheckout($name, array $order)
     {
         $templates = array();
         foreach (array('payment', 'shipping') as $type) {
+            
+            if(empty($order[$type])){
+                continue;
+            }
 
             switch ($type) {
                 case 'shipping':
-                    $method = $this->shipping->get($this->data_order[$type]);
+                    $method = $this->shipping->get($order[$type]);
                     break;
                 case 'payment':
-                    $method = $this->payment->get($this->data_order[$type]);
+                    $method = $this->payment->get($order[$type]);
                     break;
             }
 
-            if (empty($method['status']) || empty($method['template']['complete'])) {
+            if (empty($method['status']) || empty($method['template'][$name])) {
                 continue;
             }
 
             $settings = array();
-            $template = $method['template']['complete'];
+            $template = $method['template'][$name];
 
             if (!empty($method['module'])) {
                 $template = "{$method['module']}|$template";
@@ -1041,9 +1046,9 @@ class Checkout extends FrontendController
             }
 
             $options = array(
+                'order' => $order,
                 'method' => $method,
-                'settings' => $settings,
-                'order' => $this->data_order
+                'settings' => $settings
             );
 
             $templates[$type] = $this->render($template, $options);

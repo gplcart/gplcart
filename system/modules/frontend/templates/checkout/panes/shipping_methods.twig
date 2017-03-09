@@ -42,6 +42,9 @@
                 {% endif %}
               </label>
             </div>
+              {% if context_template['shipping'] is defined and order['shipping'] is defined and order['shipping'] == method_id %}
+                {{ context_template['shipping']|raw }}
+              {% endif %}
         {% endfor %}
       </div>
     </div>

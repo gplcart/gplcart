@@ -59,7 +59,7 @@ class Payment extends Model
                 unset($methods[$id]);
                 continue;
             }
-            if (!empty($data['module']) && !in_array($method['module'], (array) $data['module'])) {
+            if (!empty($data['module']) && (empty($method['module']) || !in_array($method['module'], (array) $data['module']))) {
                 unset($methods[$id]);
                 continue;
             }
