@@ -6,9 +6,6 @@
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
-/**
- * Array of permissions
- */
 return array(
     'admin' => 'Admin: access',
     'cli' => 'Console emulator: access',

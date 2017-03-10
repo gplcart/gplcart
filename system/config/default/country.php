@@ -6,9 +6,6 @@
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
-/**
- * Array of ISO 3166-1 alpha-2 countries
- */
 return array(
     'AF' => 'Afghanistan',
     'AX' => 'Aland Islands',

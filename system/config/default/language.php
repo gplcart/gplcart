@@ -6,9 +6,6 @@
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
-/**
- * Array of ISO 639 language codes
- */
 return array(
     'aa' => array('Afar'),
     'ab' => array('Abkhazian', 'аҧсуа бызшәа'),
