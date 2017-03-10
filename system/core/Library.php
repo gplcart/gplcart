@@ -47,6 +47,12 @@ class Library
     protected $loaded = array();
 
     /**
+     * Path to default library config file
+     * @var string
+     */
+    protected $default_config;
+
+    /**
      * Constructor
      * @param Cache $cache
      * @param Hook $hook
@@ -57,6 +63,17 @@ class Library
         $this->hook = $hook;
         $this->cache = $cache;
         $this->graph = $graph;
+
+        $required_vendor = GC_VENDOR_NAME;
+        $this->default_config = GC_VENDOR_DIR . "/$required_vendor/" . GC_VENDOR_CONFIG;
+
+        if (!is_readable($this->default_config)) {
+            $this->clearCache();
+            $message = "Required library $required_vendor not found."
+                    . " Did you install it from https://github.com/$required_vendor?"
+                    . " See INSTALL.txt for details.";
+            throw new RuntimeException($message);
+        }
     }
 
     /**
@@ -94,33 +111,12 @@ class Library
             return $libraries;
         }
 
-        $libraries = $this->getDefaultList();
+        $libraries = $this->getJsonData($this->default_config);
         $this->hook->fire('library.list', $libraries);
 
         $libraries = $this->prepareList($libraries);
         $this->cache->set('libraries', $libraries);
         return $libraries;
-    }
-
-    /**
-     * Returns default system libraries
-     * @return array
-     * @throws RuntimeException
-     */
-    protected function getDefaultList()
-    {
-        $required_vendor = GC_VENDOR_NAME;
-        $file = GC_VENDOR_DIR . "/$required_vendor/" . GC_VENDOR_CONFIG;
-
-        if (is_readable($file)) {
-            return $this->getJsonData($file);
-        }
-
-        $message = "Required library $required_vendor not found."
-                . " Did you install it from https://github.com/$required_vendor?"
-                . " See INSTALL.txt for details.";
-
-        throw new RuntimeException($message);
     }
 
     /**

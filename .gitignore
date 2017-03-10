@@ -1,15 +1,13 @@
-# Ignore IDE configs
 .idea
 nbproject
 *sublime*
 *.lock
+.git
 
-# Module folder. Ignore all but core modules
 system/modules/*
 !system/modules/frontend
 !system/modules/backend
 
-# Private file folder. Ignore all but system files
 files/private/*
 !files/private/.htaccess
 !files/private/stopwords
