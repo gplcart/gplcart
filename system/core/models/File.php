@@ -9,12 +9,12 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
-use gplcart\core\Cache;
-use gplcart\core\helpers\Url as UrlHelper;
-use gplcart\core\helpers\Curl as CurlHelper;
-use gplcart\core\models\Language as LanguageModel;
-use gplcart\core\models\Validator as ValidatorModel;
+use gplcart\core\Model,
+    gplcart\core\Cache;
+use gplcart\core\helpers\Url as UrlHelper,
+    gplcart\core\helpers\Curl as CurlHelper;
+use gplcart\core\models\Language as LanguageModel,
+    gplcart\core\models\Validator as ValidatorModel;
 
 /**
  * Manages basic behaviors and data related to files
@@ -479,7 +479,6 @@ class File extends Model
         }
 
         $language = 'und';
-        //$this->language->current();
         $params = array($language);
 
         $sql .= 'COALESCE(NULLIF(ft.title, ""), f.title) AS title'

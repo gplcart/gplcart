@@ -329,10 +329,12 @@ class Twig
      */
     protected function addFunctionCart()
     {
-        $function = new \Twig_SimpleFunction('cart', function ($key = null) {
-            return $this->controller->cart($key);
-        });
-        $this->twig->addFunction($function);
+        if ($this->controller instanceof \gplcart\core\controllers\frontend\Controller) {
+            $function = new \Twig_SimpleFunction('cart', function ($key = null) {
+                return $this->controller->cart($key);
+            });
+            $this->twig->addFunction($function);
+        }
     }
 
     /**
@@ -341,11 +343,12 @@ class Twig
      */
     protected function addFunctionCompare()
     {
-        $function = new \Twig_SimpleFunction('compare', function ($key = null) {
-            return $this->controller->compare($key);
-        });
-
-        $this->twig->addFunction($function);
+        if ($this->controller instanceof \gplcart\core\controllers\frontend\Controller) {
+            $function = new \Twig_SimpleFunction('compare', function ($key = null) {
+                return $this->controller->compare($key);
+            });
+            $this->twig->addFunction($function);
+        }
     }
 
     /**
@@ -354,10 +357,12 @@ class Twig
      */
     protected function addFunctionWishlist()
     {
-        $function = new \Twig_SimpleFunction('wishlist', function ($key = null) {
-            return $this->controller->wishlist($key);
-        });
-        $this->twig->addFunction($function);
+        if ($this->controller instanceof \gplcart\core\controllers\frontend\Controller) {
+            $function = new \Twig_SimpleFunction('wishlist', function ($key = null) {
+                return $this->controller->wishlist($key);
+            });
+            $this->twig->addFunction($function);
+        }
     }
 
     /**
@@ -367,11 +372,12 @@ class Twig
      */
     protected function addFunctionMenu()
     {
-        $function = new \Twig_SimpleFunction('menu', function (array $options = array()) {
-            return $this->controller->menu($options);
-        }, array('is_safe' => array('all')));
-
-        $this->twig->addFunction($function);
+        if ($this->controller instanceof \gplcart\core\controllers\frontend\Controller) {
+            $function = new \Twig_SimpleFunction('menu', function (array $options = array()) {
+                return $this->controller->menu($options);
+            }, array('is_safe' => array('all')));
+            $this->twig->addFunction($function);
+        }
     }
 
     /**

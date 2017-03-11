@@ -54,10 +54,10 @@ trait ControllerOrder
             }
         }
 
-        $order['status_name'] = empty($status) ? $this->text('Unknown') : $status;
-        $order['store_name'] = empty($store['name']) ? $this->text('Unknown') : $store['name'];
-        $order['payment_name'] = empty($payment['title']) ? $this->text('Unknown') : $payment['title'];
-        $order['shipping_name'] = empty($shipping['title']) ? $this->text('Unknown') : $shipping['title'];
+        $order['status_name'] = empty($status) ? $controller->text('Unknown') : $status;
+        $order['store_name'] = empty($store['name']) ? $controller->text('Unknown') : $store['name'];
+        $order['payment_name'] = empty($payment['title']) ? $controller->text('Unknown') : $payment['title'];
+        $order['shipping_name'] = empty($shipping['title']) ? $controller->text('Unknown') : $shipping['title'];
 
         $order['total_formatted'] = $price_model->format($order['total'], $order['currency']);
         return $order;
@@ -101,6 +101,11 @@ trait ControllerOrder
     protected function prepareOrderComponentsCartTrait($controller, &$order,
             $type, $dir)
     {
+
+        if (!$controller instanceof \gplcart\core\Controller) {
+            throw new \RuntimeException("Object is not instance of \gplcart\core\Controller");
+        }
+
         if ($type !== 'cart') {
             return null;
         }
@@ -131,6 +136,11 @@ trait ControllerOrder
     protected function prepareOrderComponentsMethodTrait($controller, &$order,
             $type, $dir)
     {
+
+        if (!$controller instanceof \gplcart\core\Controller) {
+            throw new \RuntimeException("Object is not instance of \gplcart\core\Controller");
+        }
+
         /* @var $shipping_model \gplcart\core\models\Shipping */
         $shipping_model = $controller->prop('shipping');
         /* @var $payment_model \gplcart\core\models\Payment */
@@ -173,6 +183,11 @@ trait ControllerOrder
     protected function prepareOrderComponentsPriceRuleTrait($controller,
             &$order, $type, $dir)
     {
+
+        if (!$controller instanceof \gplcart\core\Controller) {
+            throw new \RuntimeException("Object is not instance of \gplcart\core\Controller");
+        }
+
         if (!is_numeric($type)) {
             return null; // Numeric type = price rule ID
         }
