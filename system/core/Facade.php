@@ -9,10 +9,10 @@
 
 namespace gplcart\core;
 
-use gplcart\core\Hook;
-use gplcart\core\Route;
-use gplcart\core\Config;
-use gplcart\core\Logger;
+use gplcart\core\Hook,
+    gplcart\core\Route,
+    gplcart\core\Config,
+    gplcart\core\Logger;
 use gplcart\core\helpers\Url as UrlHelper,
     gplcart\core\helpers\Session as SessionHelper;
 
@@ -81,7 +81,7 @@ class Facade
 
         $this->setErrorReportingLevel();
         $this->setErrorHandlers();
-        
+
         $this->hook->fire('construct', $this);
         $this->hook->registerAll();
     }

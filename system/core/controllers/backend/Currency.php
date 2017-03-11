@@ -137,7 +137,7 @@ class Currency extends BackendController
         $this->setSubmittedBool('status');
         $this->setSubmittedBool('default');
         $this->setSubmitted('update', $this->data_currency);
-        
+
         $this->validate('currency');
 
         return !$this->hasErrors('currency');
@@ -202,7 +202,7 @@ class Currency extends BackendController
     {
         $this->controlAccess('currency_edit');
         $this->currency->update($this->data_currency['code'], $this->getSubmitted());
-        
+
         $message = $this->text('Currency has been updated');
         $this->redirect('admin/settings/currency', $message, 'success');
     }

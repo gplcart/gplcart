@@ -9,8 +9,8 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Editor as EditorModel;
-use gplcart\core\models\Module as ModuleModel;
+use gplcart\core\models\Editor as EditorModel,
+    gplcart\core\models\Module as ModuleModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**

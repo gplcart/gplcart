@@ -9,8 +9,8 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Collection as CollectionModel;
-use gplcart\core\models\CollectionItem as CollectionItemModel;
+use gplcart\core\models\Collection as CollectionModel,
+    gplcart\core\models\CollectionItem as CollectionItemModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -259,7 +259,7 @@ class CollectionItem extends BackendController
 
         $this->setSubmittedBool('status');
         $this->setSubmitted('collection_id', $this->data_collection['collection_id']);
-        
+
         $this->validate('collection_item');
 
         return !$this->hasErrors('collection_item');

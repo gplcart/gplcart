@@ -9,11 +9,11 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Order as OrderModel;
-use gplcart\core\models\Price as PriceModel;
-use gplcart\core\models\Product as ProductModel;
-use gplcart\core\models\Report as ReportModel;
-use gplcart\core\models\Review as ReviewModel;
+use gplcart\core\models\Order as OrderModel,
+    gplcart\core\models\Price as PriceModel,
+    gplcart\core\models\Report as ReportModel,
+    gplcart\core\models\Review as ReviewModel,
+    gplcart\core\models\Product as ProductModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**

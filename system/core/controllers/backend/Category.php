@@ -9,9 +9,9 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Alias as AliasModel;
-use gplcart\core\models\Category as CategoryModel;
-use gplcart\core\models\CategoryGroup as CategoryGroupModel;
+use gplcart\core\models\Alias as AliasModel,
+    gplcart\core\models\Category as CategoryModel,
+    gplcart\core\models\CategoryGroup as CategoryGroupModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**

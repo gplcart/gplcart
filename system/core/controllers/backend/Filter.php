@@ -9,8 +9,8 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Filter as FilterModel;
-use gplcart\core\models\UserRole as UserRoleModel;
+use gplcart\core\models\Filter as FilterModel,
+    gplcart\core\models\UserRole as UserRoleModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**

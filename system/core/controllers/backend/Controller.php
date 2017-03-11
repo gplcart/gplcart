@@ -9,8 +9,8 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\Container;
-use gplcart\core\Controller as BaseController;
+use gplcart\core\Container,
+    gplcart\core\Controller as BaseController;
 
 /**
  * Contents methods related to admin backend
@@ -97,7 +97,7 @@ class Controller extends BaseController
         $job += array('widget' => 'common/job/widget');
         return $this->render($job['widget'], array('job' => $job));
     }
-    
+
     /**
      * Set the current job
      */

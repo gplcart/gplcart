@@ -9,9 +9,9 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\File as FileModel;
-use gplcart\core\models\Field as FieldModel;
-use gplcart\core\models\FieldValue as FieldValueModel;
+use gplcart\core\models\File as FileModel,
+    gplcart\core\models\Field as FieldModel,
+    gplcart\core\models\FieldValue as FieldValueModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -303,7 +303,7 @@ class FieldValue extends BackendController
 
         $this->setSubmitted('update', $this->data_field_value);
         $this->setSubmitted('field_id', $this->data_field['field_id']);
-        
+
         $this->validate('field_value');
 
         return !$this->hasErrors('field_value');

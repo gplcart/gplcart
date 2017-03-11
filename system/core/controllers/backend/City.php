@@ -9,10 +9,10 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Zone as ZoneModel;
-use gplcart\core\models\City as CityModel;
-use gplcart\core\models\State as StateModel;
-use gplcart\core\models\Country as CountryModel;
+use gplcart\core\models\Zone as ZoneModel,
+    gplcart\core\models\City as CityModel,
+    gplcart\core\models\State as StateModel,
+    gplcart\core\models\Country as CountryModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**

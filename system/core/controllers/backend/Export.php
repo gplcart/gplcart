@@ -105,7 +105,7 @@ class Export extends BackendController
         $this->setBreadcrumbEditExport();
 
         $this->submitExport();
-        
+
         $this->setJob();
         $this->setData('stores', $this->store->getNames());
         $this->outputEditExport();

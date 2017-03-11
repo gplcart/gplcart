@@ -212,7 +212,7 @@ class Collection extends BackendController
 
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $this->data_collection);
-        
+
         $this->validate('collection');
 
         return !$this->hasErrors('collection');
