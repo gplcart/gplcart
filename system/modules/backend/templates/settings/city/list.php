@@ -48,7 +48,7 @@
     </div>
   </div>
   <div class="panel-body table-responsive">
-    <table class="table cities">
+    <table class="table table-condensed cities">
       <thead>
         <tr>
           <th><input type="checkbox" id="select-all" value="1"<?php echo $access_actions ? '' : ' disabled'; ?>></th>

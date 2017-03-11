@@ -9,13 +9,13 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Alias as AliasModel;
-use gplcart\core\models\Price as PriceModel;
-use gplcart\core\models\Product as ProductModel;
-use gplcart\core\models\Category as CategoryModel;
-use gplcart\core\models\Currency as CurrencyModel;
-use gplcart\core\models\ProductClass as ProductClassModel;
-use gplcart\core\models\CategoryGroup as CategoryGroupModel;
+use gplcart\core\models\Alias as AliasModel,
+    gplcart\core\models\Price as PriceModel,
+    gplcart\core\models\Product as ProductModel,
+    gplcart\core\models\Category as CategoryModel,
+    gplcart\core\models\Currency as CurrencyModel,
+    gplcart\core\models\ProductClass as ProductClassModel,
+    gplcart\core\models\CategoryGroup as CategoryGroupModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -476,7 +476,7 @@ class Product extends BackendController
     {
         $user_id = $this->getData('product.user_id');
 
-        if (isset($user_id)) {
+        if (!empty($user_id)) {
             $user = $this->user->get($user_id);
             $this->setData('product.author', $user['email']);
         }

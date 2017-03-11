@@ -17,7 +17,7 @@
   </div>
   <?php } ?>
   <div class="panel-body table-responsive">
-    <table class="table languages">
+    <table class="table table-condensed languages">
       <thead>
         <tr>
           <th><?php echo $this->text('Name'); ?></th>

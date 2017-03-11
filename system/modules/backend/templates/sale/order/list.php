@@ -44,7 +44,7 @@
       <?php } ?>
     </div>
     <div class="panel-body table-condensed">
-      <table class="table order-list">
+      <table class="table table-condensed order-list">
         <thead>
           <tr>
             <th>

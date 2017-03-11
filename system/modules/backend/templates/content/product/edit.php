@@ -464,7 +464,7 @@
       <div class="row">
         <div class="col-md-12">
           <ul class="list-unstyled">
-            <li><?php echo $this->text('User'); ?>: <?php echo $product['author']; ?></li>
+            <li><?php echo $this->text('User'); ?>: <?php echo empty($product['author']) ? $this->text('Unknown') : $product['author']; ?></li>
             <li><?php echo $this->text('Created'); ?>: <?php echo $this->date($product['created']); ?></li>
             <?php if ($product['modified'] > $product['created']) { ?>
             <li><?php echo $this->text('Modified'); ?>: <?php echo $this->date($product['modified']); ?></li>

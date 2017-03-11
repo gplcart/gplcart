@@ -8,7 +8,7 @@
 ?>
 <div class="panel panel-default">
   <div class="panel-body table-responsive">
-    <table class="table payment-methods">
+    <table class="table table-condensed payment-methods">
       <thead>
         <tr>
           <th><?php echo $this->text('ID'); ?></th>

@@ -13,7 +13,7 @@
     </a>
   </div>
   <div class="panel-body table-responsive">
-    <table class="table">
+    <table class="table table-condensed">
       <thead>
         <tr>
           <th><?php echo $this->text('ID'); ?></th>

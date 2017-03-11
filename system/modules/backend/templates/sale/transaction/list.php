@@ -27,7 +27,7 @@
       <?php } ?>
     </div>
     <div class="panel-body table-responsive">
-      <table class="table transactions">
+      <table class="table table-condensed transactions">
         <thead>
           <tr>
             <th>

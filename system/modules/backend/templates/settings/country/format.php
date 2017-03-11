@@ -21,7 +21,7 @@
     </div>
     <?php } ?>
     <div class="panel-body table-responsive">
-      <table class="table country-format" data-sortable-input-weight="true">
+      <table class="table table-condensed country-format" data-sortable-input-weight="true">
         <thead>
           <tr>
             <th><?php echo $this->text('Name'); ?></th>

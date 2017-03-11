@@ -8,7 +8,7 @@
 ?>
 <div class="panel panel-default">
   <div class="panel-body table-responsive">
-    <table class="table routes">
+    <table class="table table-condensed routes">
       <thead>
         <tr>
           <th><?php echo $this->text('Pattern'); ?></th>

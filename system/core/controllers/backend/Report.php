@@ -9,10 +9,10 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Report as ReportModel;
-use gplcart\core\models\Payment as PaymentModel;
-use gplcart\core\models\Shipping as ShippingModel;
-use gplcart\core\models\UserRole as UserRoleModel;
+use gplcart\core\models\Report as ReportModel,
+    gplcart\core\models\Payment as PaymentModel,
+    gplcart\core\models\Shipping as ShippingModel,
+    gplcart\core\models\UserRole as UserRoleModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -122,7 +122,7 @@ class Report extends BackendController
      */
     protected function setTitleListShippingMethodsReport()
     {
-        $this->setTitle($this->text('Routes'));
+        $this->setTitle($this->text('Shipping methods'));
     }
 
     /**

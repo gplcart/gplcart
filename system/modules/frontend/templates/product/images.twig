@@ -31,8 +31,9 @@
         "autoplayControls":false
         }'>
       {% for image in product['images'] %}
-          <li class="thumb" data-thumb="{{ image['thumb'] }}" data-src="{{ image['url'] ?? '' }}">
-            <img data-file-id="{{ image['file_id'] }}" src="{{ image['thumb'] }}">
+          {# dirty hack: disable click with pointer-events to prevent popup when using image placeholder #}
+          <li{{ image['url'] is not defined or image['url'] is empty ? ' style="pointer-events: none; cursor: default;"' }} class="thumb" data-thumb="{{ image['thumb'] }}" data-src="{{ image['url'] ?? '' }}">
+            <img data-file-id="{{ image['file_id'] ?? '' }}" src="{{ image['thumb'] }}">
           </li>
       {% endfor %}
     </ul>

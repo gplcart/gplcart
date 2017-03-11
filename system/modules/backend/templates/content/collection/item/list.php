@@ -48,7 +48,7 @@
     </div>
   </div>
   <div class="panel-body table-responsive">
-    <table class="table collection-items" data-sortable-weight="true">
+    <table class="table table-condensed collection-items" data-sortable-weight="true">
       <thead>
         <tr>
           <th><input type="checkbox" id="select-all" value="1"<?php echo $access_actions ? '' : ' disabled'; ?>></th>

@@ -27,7 +27,7 @@
                 <input type="hidden" name="cart[cart_id]" value="{{ item['cart_id'] }}">
                 <div class="media cart-item">
                   <div class="media-left image col-md-2">
-                    <img class="media-object thumbnail img-responsive" alt="{{ item['product']['title'] }}" src="{{ item['thumb'] }}">
+                    <img class="media-object thumbnail img-responsive" src="{{ item['thumb'] }}">
                     <button title="{{ text('Remove') }}" class="btn btn-default" data-ajax="true" name="remove_from_cart" value="1">
                       <i class="fa fa-trash"></i>
                     </button>

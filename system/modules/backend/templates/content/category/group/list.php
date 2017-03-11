@@ -18,7 +18,7 @@
     <?php } ?>
   </div>
   <div class="panel-body table-responsive">
-    <table class="table category-group">
+    <table class="table table-condensed category-group">
       <thead>
         <tr>
           <th><a href="<?php echo $sort_category_group_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a></th>

@@ -16,7 +16,7 @@
     </div>
   </div>
   <div class="panel-body table-responsive">
-    <table class="table report-events">
+    <table class="table table-condensed report-events">
       <thead>
         <tr>
           <th><a href="<?php echo $sort_text; ?>"><?php echo $this->text('Message'); ?> <i class="fa fa-sort"></i></a></th>

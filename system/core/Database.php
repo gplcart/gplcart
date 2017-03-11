@@ -9,8 +9,8 @@
 
 namespace gplcart\core;
 
-use PDO,
-    PDOException;
+use PDO;
+use PDOException;
 use gplcart\core\exceptions\DatabaseException;
 
 /**

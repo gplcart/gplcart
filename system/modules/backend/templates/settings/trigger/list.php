@@ -50,7 +50,7 @@
       <?php } ?>
     </div>
     <div class="panel-body table-responsive">
-      <table class="table triggers">
+      <table class="table table-condensed triggers">
         <thead>
           <tr>
             <th><input type="checkbox" id="select-all" value="1"<?php echo $access_actions ? '' : ' disabled'; ?>></th>

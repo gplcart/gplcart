@@ -29,7 +29,7 @@
     <?php echo $this->text('No results'); ?>
     <?php } ?>
     <?php if (!empty($modules)) { ?>
-    <table class="table modules">
+    <table class="table table-condensed modules">
       <thead>
         <tr>
           <th><a href="<?php echo $sort_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a></th>

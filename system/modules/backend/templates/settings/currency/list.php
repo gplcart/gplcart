@@ -17,7 +17,7 @@
     <?php } ?>
   </div>
   <div class="panel-body table-responsive">
-    <table class="table currencies">
+    <table class="table table-condensed currencies">
       <thead>
         <tr>
           <th><?php echo $this->text('Name'); ?></th>

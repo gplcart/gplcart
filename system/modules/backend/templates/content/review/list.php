@@ -49,7 +49,7 @@
       <?php } ?>   
     </div>
     <div class="panel-body table-responsive"> 
-      <table class="table reviews">
+      <table class="table table-condensed reviews">
         <thead>
           <tr>
             <th class="middle"><input type="checkbox" id="select-all" value="1"<?php echo $access_actions ? '' : ' disabled'; ?>></th>

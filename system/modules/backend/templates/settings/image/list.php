@@ -17,7 +17,7 @@
       </div>
   <?php } ?>
   <div class="panel-body table-responsive">
-    <table class="table image-styles">
+    <table class="table table-condensed image-styles">
       <thead>
         <tr>
           <th><?php echo $this->text('ID'); ?></th>

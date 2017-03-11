@@ -27,7 +27,7 @@
     </div>
     <?php } ?>
     <div class="panel-body">
-      <table class="table aliases">
+      <table class="table table-condensed aliases">
         <thead>
           <tr>
             <th>
