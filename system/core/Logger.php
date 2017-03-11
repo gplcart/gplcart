@@ -56,13 +56,7 @@ class Logger
      */
     public function csv($file, $type, $message, $severity = 'info', $limit = 0)
     {
-        $fields = array(
-            date('M d, Y G:iA'),
-            $severity,
-            $type,
-            strip_tags($message)
-        );
-
+        $fields = array(date('M d, Y G:iA'), $severity, $type, strip_tags($message));
         return gplcart_file_csv($file, $fields, ',', '"', $limit);
     }
 
@@ -81,6 +75,7 @@ class Logger
         }
 
         $message = '';
+
         if (is_string($data)) {
             $message = $data;
         } elseif (isset($data['message'])) {
@@ -89,16 +84,29 @@ class Logger
         }
 
         $values = array(
-            'time' => GC_TIME,
             'text' => $message,
-            'data' => serialize((array) $data),
-            'log_id' => gplcart_string_random(6),
-            'translatable' => (int) $translatable,
+            'data' => (array) $data,
+            'translatable' => $translatable,
             'type' => mb_substr($type, 0, 255, 'UTF-8'),
             'severity' => mb_substr($severity, 0, 255, 'UTF-8')
         );
 
-        return (bool) $this->db->insert('log', $values);
+        return $this->add($values);
+    }
+
+    /**
+     * Adds a log record
+     * @param array $data
+     * @return bool
+     */
+    public function add(array $data)
+    {
+        $data += array(
+            'time' => GC_TIME,
+            'log_id' => gplcart_string_random(6)
+        );
+
+        return (bool) $this->db->insert('log', $data);
     }
 
     /**
@@ -148,8 +156,21 @@ class Logger
     public function shutdownHandler()
     {
         $error = error_get_last();
+        $types = $this->getFatalErrorTypes();
 
-        $types = array(
+        if (in_array($error['type'], $types)) {
+            $error['code'] = $error['type'];
+            $this->log('php_shutdown', $error, 'danger', false);
+        }
+    }
+
+    /**
+     * Returns an array of PHP error types which to be considered fatal
+     * @return array
+     */
+    protected function getFatalErrorTypes()
+    {
+        return array(
             E_ERROR,
             E_PARSE,
             E_CORE_ERROR,
@@ -159,11 +180,6 @@ class Logger
             E_COMPILE_WARNING,
             E_RECOVERABLE_ERROR,
         );
-
-        if (in_array($error['type'], $types)) {
-            $error['code'] = $error['type'];
-            $this->log('php_shutdown', $error, 'danger', false);
-        }
     }
 
     /**
