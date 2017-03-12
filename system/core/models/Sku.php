@@ -175,17 +175,25 @@ class Sku extends Model
      * @param array $data
      * @return string
      */
-    public function generate($pattern, array $placeholders = array(),
-            array $data = array())
+    public function generate($pattern, $placeholders = array(), $data = array())
     {
         $sku = $pattern;
-
         if (!empty($placeholders)) {
             $sku = gplcart_string_replace($pattern, $placeholders, $data);
         }
 
-        $sku = mb_strimwidth($sku, 0, 200, 'UTF-8');
         $store_id = isset($data['store_id']) ? $data['store_id'] : null;
+        return $this->getUnique(mb_strimwidth($sku, 0, 200, 'UTF-8'), $store_id);
+    }
+
+    /**
+     * Returns a unique SKU for the given store ID
+     * @param string $sku
+     * @param integer|null $store_id
+     * @return string
+     */
+    public function getUnique($sku, $store_id)
+    {
         $existing = $this->get($sku, $store_id);
 
         if (empty($existing)) {

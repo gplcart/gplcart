@@ -454,24 +454,6 @@ class File extends Model
             return $files;
         }
 
-        list($sql, $params) = $this->getListSql($data);
-
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $params);
-        }
-
-        $files = $this->db->fetchAll($sql, $params, array('index' => 'file_id'));
-        $this->hook->fire('file.list', $files);
-        return $files;
-    }
-
-    /**
-     * Returns an array containing SQL query and parameters for getList() method
-     * @param array $data
-     * @return array
-     */
-    protected function getListSql(array $data)
-    {
         $sql = 'SELECT f.*,';
 
         if (!empty($data['count'])) {
@@ -555,17 +537,26 @@ class File extends Model
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        return array($sql, $params);
+        if (!empty($data['count'])) {
+            return (int) $this->db->fetchColumn($sql, $params);
+        }
+
+        $files = $this->db->fetchAll($sql, $params, array('index' => 'file_id'));
+        $this->hook->fire('file.list', $files);
+        return $files;
     }
 
     /**
      * Creates relative path from full server path
-     * @param string $server_path
+     * @param string $absolute
      * @return string
      */
-    public function path($server_path)
+    public function path($absolute)
     {
-        return trim(str_replace(GC_FILE_DIR, '', $server_path), "/");
+        if (substr($absolute, 0, strlen(GC_FILE_DIR)) == GC_FILE_DIR) {
+            return trim(substr($absolute, strlen(GC_FILE_DIR)), '/');
+        }
+        return $absolute;
     }
 
     /**

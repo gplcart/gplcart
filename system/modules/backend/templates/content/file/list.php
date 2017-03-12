@@ -99,7 +99,7 @@
             <td class="middle"><?php echo $this->escape($this->truncate($file['mime_type'])); ?></td>
             <td class="middle">
               <?php if (!empty($file['url'])) { ?>
-              <?php echo $this->escape($this->truncate($file['path'])); ?>
+              <?php echo $this->escape($this->truncate($file['path'], 50)); ?>
               <?php } else { ?>
               <span class="text-danger"><?php echo $this->text('Unknown'); ?></span>
               <?php } ?>

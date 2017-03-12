@@ -210,12 +210,21 @@ class Alias extends Model
         }
 
         if ($translit) {
-            $alias = $this->language->translit($alias, $language);
-            $alias = preg_replace('/[^a-z0-9.\-_ ]/', '', strtolower($alias));
+            $transliterated = $this->language->translit($alias, $language);
+            $alias = preg_replace('/[^a-z0-9.\-_ ]/', '', strtolower($transliterated));
         }
 
-        $alias = mb_strimwidth(str_replace(' ', '-', trim($alias)), 0, 100, '', 'UTF-8');
+        $trimmed = mb_strimwidth(str_replace(' ', '-', trim($alias)), 0, 100, '', 'UTF-8');
+        return $this->getUnique($trimmed);
+    }
 
+    /**
+     * Returns a unique alias using a base string
+     * @param string $alias
+     * @return string
+     */
+    public function getUnique($alias)
+    {
         if (!$this->exists($alias)) {
             return $alias;
         }
@@ -260,7 +269,7 @@ class Alias extends Model
             }
         }
 
-        return $this->info($path);
+        return $this->getByPath($path);
     }
 
     /**
@@ -268,7 +277,7 @@ class Alias extends Model
      * @param string $alias
      * @return array
      */
-    public function info($alias)
+    public function getByPath($alias)
     {
         return $this->db->fetch('SELECT * FROM alias WHERE alias=?', array($alias));
     }
