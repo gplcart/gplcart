@@ -8,7 +8,6 @@
 ?>
 <div class="panel panel-default">
   <div class="panel-body table-responsive">
-    <?php if(empty($phpinfo)) { ?>
     <table class="table table-condensed report-status">
       <?php foreach ($statuses as $status_id => $status) { ?>
       <tr class="<?php echo ((empty($status['status']) || is_array($status['status'])) && $status['severity'] !== 'info') ? $this->escape($status['severity']) : ''; ?>">
@@ -26,9 +25,6 @@
             <?php echo $this->truncate($status['status']); ?>
           </a>
           <?php } ?>
-          <?php if($status_id == 'php_version') { ?>
-          <a href="<?php echo $this->url('', array('phpinfo' => 1)); ?>"><?php echo $this->text('Show info'); ?></a>
-          <?php } ?>
           <?php if (!empty($status['details'])) { ?>
           <div class="collapse" id="status-details-<?php echo $status_id; ?>">
             <ul class="list-unstyled">
@@ -42,8 +38,5 @@
       </tr>
       <?php } ?>
     </table>
-    <?php } else { ?>
-    <div class="phpinfo"><?php echo $phpinfo; ?></div>
-    <?php } ?>
   </div>
 </div>

@@ -359,18 +359,7 @@ class Report extends BackendController
 
         $this->setData('statuses', $this->report->getStatus());
 
-        $this->setDataStatusReport();
         $this->outputListStatusReport();
-    }
-
-    /**
-     * Sets an additional data on the status report page
-     */
-    protected function setDataStatusReport()
-    {
-        if ($this->isQuery('phpinfo')) {
-            $this->setData('phpinfo', gplcart_phpinfo());
-        }
     }
 
     /**

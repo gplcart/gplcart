@@ -161,31 +161,6 @@ function gplcart_relative_path($absolute)
 }
 
 /**
- * Returns PHP info as a string
- * @return string
- */
-function gplcart_phpinfo()
-{
-    ob_start();
-    phpinfo(INFO_MODULES);
-    $result = ob_get_clean();
-
-    // remove auth data
-    if (isset($_SERVER['AUTH_USER'])) {
-        $result = str_replace($_SERVER['AUTH_USER'], '***', $$result);
-    }
-
-    if (isset($_SERVER['AUTH_PASSWORD'])) {
-        $result = str_replace($_SERVER['AUTH_PASSWORD'], '***', $result);
-    }
-
-    $result = preg_replace('%^.*<body>(.*)</body>.*$%ms', '$1', $result);
-    $result = str_replace('<table', '<table class="table"', $result);
-
-    return $result;
-}
-
-/**
  * Measures script execution time in seconds
  * @return string
  */
