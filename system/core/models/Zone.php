@@ -142,7 +142,8 @@ class Zone extends Model
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('title', 'status');
 
-        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)//
+                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
             $sql .= " ORDER BY title ASC";
@@ -156,7 +157,7 @@ class Zone extends Model
             return (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $list = $this->db->fetchAll($sql, $conditions);
+        $list = $this->db->fetchAll($sql, $conditions, array('index' => 'zone_id'));
         $this->hook->fire('zone.list', $list);
         return $list;
     }

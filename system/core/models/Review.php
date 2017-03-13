@@ -38,7 +38,7 @@ class Review extends Model
             return false;
         }
 
-        $data['created'] = GC_TIME;
+        $data += array('created' => GC_TIME);
         $data['review_id'] = $this->db->insert('review', $data);
 
         $this->hook->fire('review.add.after', $data);

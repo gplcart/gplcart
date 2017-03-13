@@ -9,11 +9,11 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Cache;
-use gplcart\core\Model;
-use gplcart\core\models\Field as FieldModel;
-use gplcart\core\models\Language as LanguageModel;
-use gplcart\core\models\FieldValue as FieldValueModel;
+use gplcart\core\Cache,
+    gplcart\core\Model;
+use gplcart\core\models\Field as FieldModel,
+    gplcart\core\models\Language as LanguageModel,
+    gplcart\core\models\FieldValue as FieldValueModel;
 
 /**
  * Manages basic behaviors and data related to product classes

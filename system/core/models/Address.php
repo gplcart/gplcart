@@ -197,7 +197,7 @@ class Address extends Model
      */
     public function getTranslated(array $address, $both = false)
     {
-        $default = $this->country->defaultFormat();
+        $default = $this->country->getDefaultFormat();
         $format = gplcart_array_merge($default, $address['country_format']);
 
         gplcart_array_sort($format);

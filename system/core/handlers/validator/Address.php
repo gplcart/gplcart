@@ -158,7 +158,7 @@ class Address extends BaseValidator
         if (empty($code)) {
             $countries = $this->country->getList();
             if (empty($countries)) {
-                $format = $this->country->defaultFormat();
+                $format = $this->country->getDefaultFormat();
                 $this->setSubmitted('format', $format);
                 return null;
             }

@@ -47,7 +47,7 @@ class Country extends Model
         $data = is_string($country) ? $this->get($country) : (array) $country;
 
         if (empty($data['format'])) {
-            $format = $this->defaultFormat();
+            $format = $this->getDefaultFormat();
             gplcart_array_sort($format);
         } else {
             $format = $data['format'];
@@ -76,7 +76,7 @@ class Country extends Model
         $country = $this->db->fetch($sql, array($code), $options);
 
         if (!empty($country)) {
-            $default_format = $this->defaultFormat();
+            $default_format = $this->getDefaultFormat();
             $country['format'] = gplcart_array_merge($default_format, $country['format']);
             gplcart_array_sort($country['format']);
         }
@@ -89,7 +89,7 @@ class Country extends Model
      * Returns the default country format
      * @return array
      */
-    public function defaultFormat()
+    public function getDefaultFormat()
     {
         $items = array();
 
@@ -347,7 +347,7 @@ class Country extends Model
         foreach ($results as $country) {
             $country['format'] = unserialize($country['format']);
             $list[$country['code']] = $country;
-            $list[$country['code']]['format'] += $this->defaultFormat();
+            $list[$country['code']]['format'] += $this->getDefaultFormat();
         }
 
         $this->hook->fire('country.list', $list);
