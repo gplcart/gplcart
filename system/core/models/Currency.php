@@ -49,7 +49,7 @@ class Currency extends Model
             return false;
         }
 
-        $default = $this->defaultCurrencyValues();
+        $default = $this->getDefaultData();
 
         $data += $default;
 
@@ -59,8 +59,6 @@ class Currency extends Model
         }
 
         $currencies = $this->getList();
-
-        // Use array_intersect_key to filter out garbage keys
         $currencies[$data['code']] = array_intersect_key($data, $default);
         $this->config->set('currencies', $currencies);
 
@@ -120,9 +118,7 @@ class Currency extends Model
         }
 
         $data += $currencies[$code];
-        $default = $this->defaultCurrencyValues();
-
-        // Use array_intersect_key to filter out garbage keys
+        $default = $this->getDefaultData();
         $currencies[$code] = array_intersect_key($data, $default);
         $this->config->set('currencies', $currencies);
 
@@ -185,7 +181,6 @@ class Currency extends Model
 
         $currency = $this->get($code);
         $target_currency = $this->get($target_code);
-
         $exponent = $target_currency['decimals'] - $currency['decimals'];
         $amount *= pow(10, $exponent);
 
@@ -319,7 +314,7 @@ class Currency extends Model
      * Returns an array of default currency values
      * @return array
      */
-    protected function defaultCurrencyValues()
+    protected function getDefaultData()
     {
         return array(
             'code' => '',
@@ -337,6 +332,22 @@ class Currency extends Model
             'thousands_separator' => ',',
             'template' => '%symbol%price'
         );
+    }
+
+    /**
+     * Returns an array of currencies or a single currency data if $code is set
+     * @param null|string $code
+     * @return array|string
+     */
+    public function getIso($code = null)
+    {
+        $data = include GC_CONFIG_CURRENCY;
+
+        if (isset($code)) {
+            return isset($data[$code]) ? $data[$code] + array('code' => $code) : array();
+        }
+
+        return $data;
     }
 
 }
