@@ -107,20 +107,28 @@ class Address extends Model
     }
 
     /**
-     * Returns a list of addresses for a given user
+     * Returns a list of addresses or counts them
      * @param array $data
-     * @return array
+     * @return array|integer
      */
     public function getList(array $data = array())
     {
-        $sql = 'SELECT a.*, ci.city_id, COALESCE(ci.name, a.city_id) AS city_name,'
+        $sql = 'SELECT a.*, CONCAT_WS(" ", a.first_name, a.middle_name, a.last_name) AS full_name,'
+                . ' u.email AS user_email, u.name AS user_name,'
+                . ' ci.city_id, COALESCE(ci.name, a.city_id) AS city_name,'
                 . ' c.name AS country_name, ci.status AS city_status,'
                 . ' c.native_name AS country_native_name, c.format AS country_format, c.status AS country_status,'
-                . ' s.name AS state_name, s.status AS state_status'
-                . ' FROM address a'
+                . ' s.name AS state_name, s.status AS state_status';
+
+        if (!empty($data['count'])) {
+            $sql = 'SELECT COUNT(a.address_id)';
+        }
+
+        $sql .= ' FROM address a'
                 . ' LEFT JOIN country c ON(a.country=c.code)'
                 . ' LEFT JOIN state s ON(a.state_id=s.state_id)'
                 . ' LEFT JOIN city ci ON(a.city_id=ci.city_id)'
+                . ' LEFT JOIN user u ON(a.user_id=u.user_id)'
                 . ' WHERE a.address_id > 0';
 
         $where = array();
@@ -130,7 +138,62 @@ class Address extends Model
             $where[] = $data['user_id'];
         }
 
-        $sql .= ' ORDER BY a.created ASC';
+        if (isset($data['user_email'])) {
+            $sql .= ' AND u.email = ?';
+            $where[] = $data['user_email'];
+        }
+
+        if (isset($data['full_name'])) {
+            $sql .= ' AND CONCAT_WS(" ", a.first_name, a.middle_name, a.last_name) LIKE ?';
+            $where[] = "%{$data['full_name']}%";
+        }
+
+        if (isset($data['address_1'])) {
+            $sql .= ' AND a.address_1 LIKE ?';
+            $where[] = "%{$data['address_1']}%";
+        }
+
+        if (isset($data['city_id'])) {
+            $sql .= ' AND a.city_id = ?';
+            $where[] = $data['city_id'];
+        }
+
+        if (isset($data['city_name'])) {
+            $sql .= ' AND ci.name LIKE ?';
+            $where[] = "%{$data['city_name']}%";
+        }
+
+        if (isset($data['phone'])) {
+            $sql .= ' AND a.phone LIKE ?';
+            $where[] = "%{$data['phone']}%";
+        }
+
+        $allowed_order = array('asc', 'desc');
+
+        $allowed_sort = array(
+            'phone' => 'a.phone',
+            'country' => 'a.country',
+            'city_id' => 'a.city_id',
+            'user_id' => 'a.user_id',
+            'address_1' => 'a.address_1',
+            'address_id' => 'a.address_id',
+            'full_name' => 'CONCAT_WS(" ", a.first_name, a.middle_name, a.last_name)'
+        );
+
+        if (isset($data['sort']) && isset($allowed_sort[$data['sort']])//
+                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+            $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
+        } else {
+            $sql .= ' ORDER BY a.created ASC';
+        }
+
+        if (!empty($data['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        }
+
+        if (!empty($data['count'])) {
+            return (int) $this->db->fetchColumn($sql, $where);
+        }
 
         $options = array(
             'index' => 'address_id',
@@ -140,7 +203,6 @@ class Address extends Model
         $results = $this->db->fetchAll($sql, $where, $options);
 
         $list = $this->prepareList($results, $data);
-
         $this->hook->fire('address.list', $data, $list);
         return $list;
     }

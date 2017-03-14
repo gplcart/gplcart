@@ -212,7 +212,8 @@
                     value: $(this).data('action-value')
                 },
                 success: function () {
-                    window.location.reload(true);
+                    // Skip page numbers
+                    window.location = window.location.href.split("?")[0];
                 },
                 beforeSend: function () {
                     setLoading(true);
@@ -425,7 +426,7 @@
      * Makes uploaded images sortable
      * @returns {undefined}
      */
-    GplCart.onload.makeImagesSortable = function () {
+    GplCart.onload.handleSortableImages = function () {
 
         var settings = {
             items: '> div > div',
@@ -444,7 +445,7 @@
      * Makes sortable table rows containing weigth value
      * @returns {undefined}
      */
-    GplCart.onload.makeTableWeigthSortable = function () {
+    GplCart.onload.handleSortableTableWeigth = function () {
 
         var weight = {}, selector = $('table[data-sortable-weight="true"] tbody');
 
@@ -492,7 +493,7 @@
      * Makes sortable table rows containing weigth input
      * @returns {undefined}
      */
-    GplCart.onload.makeTableWeigthInputSortable = function () {
+    GplCart.onload.handleSortableTableWeigthInput = function () {
 
         var message, selector = $('table[data-sortable-input-weight="true"] tbody');
 
@@ -972,7 +973,7 @@
      * Adds autocomplete functionality to the related products input
      * @returns {undefined}
      */
-    GplCart.onload.makeAutocompleteRelatedProducts = function () {
+    GplCart.onload.handleAutocompleteRelatedProducts = function () {
 
         var params, input = $('.related-product');
         if (input.length === 0) {
@@ -1012,7 +1013,7 @@
      * Adds autocomplete functionality to collection item fields
      * @returns {undefined}
      */
-    GplCart.onload.handleCollectionItemAutocomplete = function () {
+    GplCart.onload.handleAutocompleteCollectionItem = function () {
 
         var params = {},
                 input = $('form#edit-collection-item input[name$="[input]"]'),
@@ -1054,14 +1055,12 @@
     };
 
     /**
-     * Adds autocomplete functionality to the user input
+     * Adds autocomplete functionality to a user input
      * @returns {undefined}
      */
-    GplCart.onload.handleReviewAutocompleteUser = function () {
+    GplCart.onload.handleAutocompleteUser = function () {
 
-        var params,
-                input = $('#edit-review input[name$="[email]"], #reviews input[name="email"]'),
-                inputId = $('#edit-review input[name$="[user_id]"], #reviews input[name="user_id"]');
+        var params, input = $('[data-autocomplete-source="user"]');
 
         if (input.length === 0) {
             return;
@@ -1086,7 +1085,6 @@
             },
             select: function (event, ui) {
                 input.val(ui.item.label);
-                inputId.val(ui.item.value);
                 return false;
             }
         }).autocomplete("instance")._renderItem = function (ul, item) {
@@ -1095,14 +1093,14 @@
     };
 
     /**
-     * Adds autocomplete functionality to the product input
+     * Adds autocomplete functionality to a product input
      * @returns {undefined}
      */
-    GplCart.onload.handleReviewAutocompleteProduct = function () {
+    GplCart.onload.handleAutocompleteProduct = function () {
 
         var params,
-                input = $('#edit-review [name$="[product]"], #reviews input.product'),
-                inputId = $('#edit-review [name$="[product_id]"], #reviews [name="product_id"]');
+                input = $('[data-autocomplete-source="product"]'),
+                inputId = $('[data-autocomplete-target="product"]');
 
         if (input.length === 0) {
             return;
@@ -1139,6 +1137,21 @@
         }).autocomplete("instance")._renderItem = function (ul, item) {
             return $("<li>").append("<a>" + item.label + "</a>").appendTo(ul);
         };
+    };
+
+    /**
+     * Init Google Map on address details click
+     * @returns {undefined}
+     */
+    GplCart.onload.handleAddressDetails = function () {
+        var address_id, id;
+        $('[data-address-details]').click(function () {
+            address_id = $(this).data('address-details');
+            if (GplCart.settings.map && GplCart.settings.map.key && GplCart.settings.map.addresses[address_id]) {
+                id = 'map-container-address-' + address_id;
+                GplCart.gmap(GplCart.settings.map.addresses[id], '', GplCart.settings.map.key, id);
+            }
+        });
     };
 
 })(window, document, GplCart, jQuery);

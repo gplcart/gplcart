@@ -68,11 +68,11 @@
               <input class="form-control" name="text" value="<?php echo $filter_text; ?>" placeholder="<?php echo $this->text('Any'); ?>">
             </th>
             <th class="middle">
-              <input class="form-control product" value="<?php echo $product; ?>" placeholder="<?php echo $this->text('Any'); ?>">
-              <input type="hidden" name="product_id" value="<?php echo $filter_product_id; ?>">
+              <input class="form-control product" data-autocomplete-source="product" value="<?php echo $product; ?>" placeholder="<?php echo $this->text('Any'); ?>">
+              <input type="hidden" name="product_id" data-autocomplete-target="product" value="<?php echo $filter_product_id; ?>">
             </th>
             <th class="middle">
-              <input class="form-control" name="email" value="<?php echo $filter_email; ?>" placeholder="<?php echo $this->text('Any'); ?>">
+              <input class="form-control" data-autocomplete-source="user" name="email" value="<?php echo $filter_email; ?>" placeholder="<?php echo $this->text('Any'); ?>">
             </th>
             <th class="middle">
               <select class="form-control" name="status">
@@ -131,7 +131,11 @@
             <?php } ?>
             </td>
             <td class="middle">
-              <?php echo!empty($review['status']) ? '<i class="fa fa-check-square-o"></i>' : '<i class="fa fa-square-o"></i>'; ?>
+              <?php if(empty($review['status'])) { ?>
+              <i class="fa fa-square-o"></i>
+              <?php } else { ?>
+              <i class="fa fa-check-square-o"></i>
+              <?php } ?>
             </td>
             <td class="middle">
                 <?php echo $this->date($review['created']); ?>
@@ -145,7 +149,7 @@
             </td>
           </tr>
           <tr id="review-id-<?php echo $id; ?>" class="collapse active">
-            <td colspan="7"><?php echo $this->escape($review['text']); ?></td>
+            <td colspan="8"><?php echo $this->escape($review['text']); ?></td>
           </tr>
           <?php } ?>
         </tbody>

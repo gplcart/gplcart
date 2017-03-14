@@ -462,6 +462,13 @@ return array(
             'controller' => array('gplcart\\core\\controllers\\backend\\UserRole', 'editUserRole')
         )
     ),
+    'admin/user/address' => array(
+        'access' => 'address',
+        'menu' => array('admin' => 'Addresses'),
+        'handlers' => array(
+            'controller' => array('gplcart\\core\\controllers\\backend\\Address', 'listAddress')
+        )
+    ),
     'admin/content/field' => array(
         'access' => 'field',
         'menu' => array('admin' => 'Fields'),
