@@ -403,24 +403,35 @@ class Config
     }
 
     /**
-     * Returns an array of settings from the database
-     * @return array
+     * Select all or a single setting from the database
+     * @param null|string $name
+     * @param mixed $default
+     * @return mixed
      */
-    protected function select()
+    public function select($name = null, $default = null)
     {
         if (!$this->exists) {
-            return array();
+            return isset($name) ? $default : array();
+        }
+
+        if (isset($name)) {
+            $result = $this->db->fetchAll('SELECT * FROM settings WHERE id=?', array($name));
+            if (empty($result)) {
+                return $default;
+            }
+            if ($result['serialized']) {
+                return unserialize($result['value']);
+            }
+            return $result['value'];
         }
 
         $results = $this->db->fetchAll('SELECT * FROM settings', array());
 
         $settings = array();
         foreach ($results as $result) {
-
             if ($result['serialized']) {
                 $result['value'] = unserialize($result['value']);
             }
-
             $settings[$result['id']] = $result['value'];
         }
 
