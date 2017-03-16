@@ -166,10 +166,50 @@
     <div class="panel-body">
       <div class="row">
         <div class="col-md-6">
+          <div class="form-group<?php echo $this->error('data.city', ' has-error'); ?>">
+            <label class="col-md-4 control-label"><?php echo $this->text('City'); ?></label>
+            <div class="col-md-8">
+              <input name="store[data][city]" class="form-control" value="<?php echo isset($store['data']['city']) ? $this->escape($store['data']['city']) : ''; ?>">
+              <div class="help-block">
+                <?php echo $this->error('data.city'); ?>
+                <div class="text-muted">
+                  <?php echo $this->text('City of the store'); ?>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group<?php echo $this->error('data.state', ' has-error'); ?>">
+            <label class="col-md-4 control-label"><?php echo $this->text('State'); ?></label>
+            <div class="col-md-8">
+              <input name="store[data][state]" class="form-control" value="<?php echo isset($store['data']['state']) ? $this->escape($store['data']['state']) : ''; ?>">
+              <div class="help-block">
+                <?php echo $this->error('data.state'); ?>
+                <div class="text-muted">
+                  <?php echo $this->text('Country state of the store'); ?>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group<?php echo $this->error('data.country', ' has-error'); ?>">
+            <label class="col-md-4 control-label"><?php echo $this->text('Country'); ?></label>
+            <div class="col-md-8">
+              <select name="store[data][country]" class="form-control">
+              <?php foreach($countries as $code => $name) { ?>
+                <option value="<?php echo $this->escape($code); ?>"<?php echo isset($store['data']['country']) && $store['data']['country'] == $code ? ' selected' : ''; ?>><?php echo $this->escape($name); ?></option>
+              <?php } ?>
+              </select>
+              <div class="help-block">
+                <?php echo $this->error('data.country'); ?>
+                <div class="text-muted">
+                  <?php echo $this->text('Country of the store'); ?>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="form-group<?php echo $this->error('data.address', ' has-error'); ?>">
             <label class="col-md-4 control-label"><?php echo $this->text('Address'); ?></label>
             <div class="col-md-8">
-              <textarea name="store[data][address]" class="form-control"><?php echo isset($store['data']['address']) ? $this->escape($store['data']['address']) : ''; ?></textarea>
+              <input name="store[data][address]" class="form-control" value="<?php echo isset($store['data']['address']) ? $this->escape($store['data']['address']) : ''; ?>">
               <div class="help-block">
                 <?php echo $this->error('data.address'); ?>
                 <div class="text-muted">
@@ -222,6 +262,18 @@
                 <?php echo $this->error('data.fax'); ?>
                 <div class="text-muted">
                   <?php echo $this->text('A list of fax numbers, one per line'); ?>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group<?php echo $this->error('data.postcode', ' has-error'); ?>">
+            <label class="col-md-4 control-label"><?php echo $this->text('Post code'); ?></label>
+            <div class="col-md-8">
+              <input name="store[data][postcode]" class="form-control" value="<?php echo isset($store['data']['postcode']) ? $this->escape($store['data']['postcode']) : ''; ?>">
+              <div class="help-block">
+                <?php echo $this->error('data.postcode'); ?>
+                <div class="text-muted">
+                  <?php echo $this->text('Post code of the store'); ?>
                 </div>
               </div>
             </div>
@@ -458,7 +510,7 @@
               <i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?>
             </a>
             <?php if ($this->access('store_add') || $this->access('store_edit')) { ?>
-            <button class="btn btn-default save" name="save" value="1" onclick="return confirm(GplCart.text('Are you sure?'));"><i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?></button>
+            <button class="btn btn-default save" name="save" value="1"><i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?></button>
             <?php } ?>
           </div>
         </div>

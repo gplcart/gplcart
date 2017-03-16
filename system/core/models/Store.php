@@ -225,6 +225,10 @@ class Store extends Model
     {
         return array(
             'address' => '',
+            'country' => '',
+            'state' => '',
+            'city' => '',
+            'postcode' => '',
             'anonymous_checkout' => 1,
             'email' => array(),
             'favicon' => '',

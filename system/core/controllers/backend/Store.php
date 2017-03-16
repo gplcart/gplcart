@@ -9,8 +9,9 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Module as ModuleModel;
-use gplcart\core\models\Collection as CollectionModel;
+use gplcart\core\models\Module as ModuleModel,
+    gplcart\core\models\Country as CountryModel,
+    gplcart\core\models\Collection as CollectionModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -26,6 +27,12 @@ class Store extends BackendController
     protected $module;
 
     /**
+     * Country model instance
+     * @var \gplcart\core\models\Country $country
+     */
+    protected $country;
+
+    /**
      * Collection model instance
      * @var \gplcart\core\models\Collection $collection
      */
@@ -38,15 +45,23 @@ class Store extends BackendController
     protected $data_store = array();
 
     /**
-     * Constructor
+     * The current filter query
+     * @var array
+     */
+    protected $data_filter = array();
+
+    /**
      * @param ModuleModel $module
      * @param CollectionModel $collection
+     * @param CountryModel $country
      */
-    public function __construct(ModuleModel $module, CollectionModel $collection)
+    public function __construct(ModuleModel $module,
+            CollectionModel $collection, CountryModel $country)
     {
         parent::__construct();
 
         $this->module = $module;
+        $this->country = $country;
         $this->collection = $collection;
     }
 
@@ -60,17 +75,24 @@ class Store extends BackendController
         $this->setTitleListStore();
         $this->setBreadcrumbListStore();
 
-        $query = $this->getFilterQuery();
-
-        $filters = array('name', 'domain', 'basepath', 'status');
-        $this->setFilter($filters, $query);
-
-        $total = $this->getTotalStore($query);
-        $limit = $this->setPager($total, $query);
-
+        $limit = $this->setFilterStore();
         $this->setData('default_store', $this->store->getDefault());
-        $this->setData('stores', $this->getListStore($limit, $query));
+        $this->setData('stores', $this->getListStore($limit));
         $this->outputListStore();
+    }
+
+    /**
+     * Set the current filter and return max number of items
+     * @return integer
+     */
+    protected function setFilterStore()
+    {
+        $this->data_filter = $this->getFilterQuery();
+
+        $allowed = array('name', 'domain', 'basepath', 'status');
+        $this->setFilter($allowed, $this->data_filter);
+
+        return $this->setPager($this->getTotalStore(), $this->data_filter);
     }
 
     /**
@@ -113,11 +135,11 @@ class Store extends BackendController
 
     /**
      * Returns total number of stores
-     * @param array $query
      * @return integer
      */
-    protected function getTotalStore(array $query)
+    protected function getTotalStore()
     {
+        $query = $this->data_filter;
         $query['count'] = true;
         return (int) $this->store->getList($query);
     }
@@ -125,11 +147,11 @@ class Store extends BackendController
     /**
      * Returns an array of stores
      * @param array $limit
-     * @param array $query
      * @return array
      */
-    protected function getListStore(array $limit, array $query)
+    protected function getListStore(array $limit)
     {
+        $query = $this->data_filter;
         $query['limit'] = $limit;
         return $this->store->getList($query);
     }
@@ -178,6 +200,7 @@ class Store extends BackendController
         $this->setData('themes', $this->getListThemeStore());
         $this->setData('is_default', $this->isDefaultStore());
         $this->setData('can_delete', $this->canDeleteStore());
+        $this->setData('countries', $this->getCountriesStore());
         $this->setData('collections', $this->getListCollectionStore());
 
         $this->submitStore();
@@ -185,6 +208,15 @@ class Store extends BackendController
 
         $this->setJsEditStore();
         $this->outputEditStore();
+    }
+
+    /**
+     * Returns an array of country names
+     * @return array
+     */
+    protected function getCountriesStore()
+    {
+        return $this->country->getIso();
     }
 
     /**
