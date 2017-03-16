@@ -75,7 +75,7 @@ $config = array();
 # $config['product_sku_pattern']                  = 'PRODUCT-%i'; // Pattern to generate product SKU
 # $config['product_sku_placeholder']              = array('%i' => 'product_id'); // Replacement rule to generate product SKU
 # $config['product_subtract']                     = 0; // Default state of "Subtract" option
-# $config['product_volume_unit']                  = 'mm'; // Default volume unit for products
+# $config['product_size_unit']                    = 'mm'; // Default size unit for products
 # $config['product_weight_unit']                  = 'g'; // Default weight unit for products
 # $config['rating_editable']                      = 1; //Whether to allow to edit product ratings
 # $config['rating_enabled']                       = 1; // Whether to allow product ratings

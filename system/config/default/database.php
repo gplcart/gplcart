@@ -329,7 +329,7 @@ return array(
             'meta_title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
             'meta_description' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
             'currency' => array('type' => 'varchar', 'length' => 4, 'not_null' => true),
-            'volume_unit' => array('type' => 'varchar', 'length' => 2, 'not_null' => true, 'default' => 'mm'),
+            'size_unit' => array('type' => 'varchar', 'length' => 2, 'not_null' => true, 'default' => 'mm'),
             'weight_unit' => array('type' => 'varchar', 'length' => 2, 'not_null' => true, 'default' => 'g'),
             'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
             'description' => array('type' => 'text', 'not_null' => true, 'default' => '')

@@ -100,7 +100,7 @@ class Import extends Model
                     'status' => 'Enabled', 'description' => 'Description',
                     'meta_title' => 'Meta title', 'meta_description' => 'Meta description',
                     'related' => 'Related product ID', 'width' => 'Width', 'height' => 'Height',
-                    'length' => 'Length', 'volume_unit' => 'Dimension unit',
+                    'length' => 'Length', 'size_unit' => 'Size unit',
                     'weight' => 'Weight', 'weight_unit' => 'Weight unit',
                 ),
                 'template' => GC_PRIVATE_EXAMPLES_DIR . '/import_product.csv'

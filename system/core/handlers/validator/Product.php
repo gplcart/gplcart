@@ -9,11 +9,11 @@
 
 namespace gplcart\core\handlers\validator;
 
-use gplcart\core\models\Sku as SkuModel;
-use gplcart\core\models\Product as ProductModel;
-use gplcart\core\models\Currency as CurrencyModel;
-use gplcart\core\models\Category as CategoryModel;
-use gplcart\core\models\ProductClass as ProductClassModel;
+use gplcart\core\models\Sku as SkuModel,
+    gplcart\core\models\Product as ProductModel,
+    gplcart\core\models\Currency as CurrencyModel,
+    gplcart\core\models\Category as CategoryModel,
+    gplcart\core\models\ProductClass as ProductClassModel;
 use gplcart\core\handlers\validator\Base as BaseValidator;
 
 /**
@@ -250,12 +250,12 @@ class Product extends BaseValidator
     protected function validateUnitProduct()
     {
         $allowed = array(
-            'volume_unit' => array('mm', 'in', 'cm'),
-            'weight_unit' => array('g', 'kg', 'lb', 'oz')
+            'size_unit' => $this->product->getSizeUnits(),
+            'weight_unit' => $this->product->getWeightUnits()
         );
 
         $fields = array(
-            'volume_unit' => $this->language->text('Volume unit'),
+            'size_unit' => $this->language->text('Size unit'),
             'weight_unit' => $this->language->text('Weight unit')
         );
 
@@ -267,7 +267,7 @@ class Product extends BaseValidator
                 continue;
             }
 
-            if (!in_array($value, $allowed[$field])) {
+            if (!isset($allowed[$field][$value])) {
                 $vars = array('@name' => $name);
                 $error = $this->language->text('@name is unavailable', $vars);
                 $this->setError($field, $error);
@@ -579,8 +579,7 @@ class Product extends BaseValidator
      * @param array $combination
      * @return boolean|null
      */
-    protected function validateCombinationOptionsProduct($index,
-            array &$combination)
+    protected function validateCombinationOptionsProduct($index, &$combination)
     {
         $options = $this->getSubmitted('product_fields.option');
 
@@ -605,7 +604,7 @@ class Product extends BaseValidator
      * @param array $combination
      * @return boolean|null
      */
-    protected function validateCombinationSkuProduct($index, array &$combination)
+    protected function validateCombinationSkuProduct($index, &$combination)
     {
         if (!isset($combination['sku'])) {
             return null;
@@ -653,8 +652,7 @@ class Product extends BaseValidator
      * @param array $combination
      * @return boolean
      */
-    protected function validateCombinationPriceProduct($index,
-            array &$combination)
+    protected function validateCombinationPriceProduct($index, &$combination)
     {
         $price = $this->getSubmitted('price');
 
@@ -676,8 +674,7 @@ class Product extends BaseValidator
      * @param array $combination
      * @return null|boolean
      */
-    protected function validateCombinationStockProduct($index,
-            array &$combination)
+    protected function validateCombinationStockProduct($index, &$combination)
     {
         if (empty($combination['stock'])) {
             return null;

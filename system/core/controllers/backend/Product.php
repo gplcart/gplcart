@@ -243,6 +243,8 @@ class Product extends BackendController
         $this->setData('stores', $this->store->getNames());
         $this->setData('related', $this->getRelatedProduct());
         $this->setData('classes', $this->getClassesProduct());
+        $this->setData('size_units', $this->product->getSizeUnits());
+        $this->setData('weight_units', $this->product->getWeightUnits());
         $this->setData('default_currency', $this->currency->getDefault());
         $this->setData('subtract_default', $this->config->get('product_subtract', 0));
 

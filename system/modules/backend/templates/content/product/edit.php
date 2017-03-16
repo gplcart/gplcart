@@ -392,25 +392,19 @@
           </div>
         </div>
       </div>
-      <div class="form-group<?php echo $this->error('volume_unit', ' has-error'); ?>">
+      <div class="form-group<?php echo $this->error('size_unit', ' has-error'); ?>">
         <label class="col-md-2 control-label">
-        <?php echo $this->text('Volume unit'); ?>
+        <?php echo $this->text('Size unit'); ?>
         </label>
         <div class="col-md-4">
-          <?php $volume_unit = isset($product['volume_unit']) ? $product['volume_unit'] : $this->config->get('product_volume_unit', 'mm'); ?>
-          <select name="product[volume_unit]" class="form-control">
-            <option value="mm"<?php echo ($volume_unit == 'mm') ? ' selected' : ''; ?>>
-            <?php echo $this->text('millimeter'); ?>
-            </option>
-            <option value="cm"<?php echo ($volume_unit == 'cm') ? ' selected' : ''; ?>>
-            <?php echo $this->text('centimetre'); ?>
-            </option>
-            <option value="in"<?php echo ($volume_unit == 'in') ? ' selected' : ''; ?>>
-            <?php echo $this->text('inch'); ?>
-            </option>
+          <?php $selected_size_unit = isset($product['size_unit']) ? $product['size_unit'] : $this->config('product_size_unit', 'mm'); ?>
+          <select name="product[size_unit]" class="form-control">
+            <?php foreach($size_units as $unit => $name) { ?>
+            <option value="<?php echo $this->escape($unit); ?>"<?php echo ($selected_size_unit == $unit) ? ' selected' : ''; ?>><?php echo $this->escape($name); ?></option>
+            <?php } ?>
           </select>
           <div class="help-block">
-            <?php echo $this->error('volume_unit'); ?>
+            <?php echo $this->error('size_unit'); ?>
             <div class="text-muted">
             <?php echo $this->text('Select a unit of measurement to use with the specified width, height and length'); ?>
             </div>
@@ -432,20 +426,11 @@
       <div class="form-group<?php echo $this->error('weight_unit', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Weight unit'); ?></label>
         <div class="col-md-4">
-          <?php $weight_unit = isset($product['weight_unit']) ? $product['weight_unit'] : $this->config->get('product_weight_unit', 'g'); ?>
+          <?php $selected_weight_unit = isset($product['weight_unit']) ? $product['weight_unit'] : $this->config('product_weight_unit', 'g'); ?>
           <select name="product[weight_unit]" class="form-control">
-            <option value="g"<?php echo ($weight_unit == 'g') ? ' selected' : ''; ?>>
-            <?php echo $this->text('gram'); ?>
-            </option>
-            <option value="kg"<?php echo ($weight_unit == 'kg') ? ' selected' : ''; ?>>
-            <?php echo $this->text('kilogram'); ?>
-            </option>
-            <option value="lb"<?php echo ($weight_unit == 'lb') ? ' selected' : ''; ?>>
-            <?php echo $this->text('pound'); ?>
-            </option>
-            <option value="oz"<?php echo ($weight_unit == 'oz') ? ' selected' : ''; ?>>
-            <?php echo $this->text('ounce'); ?>
-            </option>
+            <?php foreach($weight_units as $unit => $name) { ?>
+            <option value="<?php echo $this->escape($unit); ?>"<?php echo ($selected_weight_unit == $unit) ? ' selected' : ''; ?>><?php echo $this->escape($name); ?></option>
+            <?php } ?>
           </select>
           <div class="help-block">
             <?php echo $this->error('weight_unit'); ?>

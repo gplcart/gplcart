@@ -9,17 +9,18 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
-use gplcart\core\Cache;
-use gplcart\core\helpers\Request as RequestHelper;
-use gplcart\core\models\Sku as SkuModel;
-use gplcart\core\models\File as FileModel;
-use gplcart\core\models\Alias as AliasModel;
-use gplcart\core\models\Price as PriceModel;
-use gplcart\core\models\Search as SearchModel;
-use gplcart\core\models\Language as LanguageModel;
-use gplcart\core\models\PriceRule as PriceRuleModel;
-use gplcart\core\models\ProductField as ProductFieldModel;
+use gplcart\core\Model,
+    gplcart\core\Cache;
+use gplcart\core\helpers\Request as RequestHelper,
+    gplcart\core\helpers\Convertor as ConvertorHelper;
+use gplcart\core\models\Sku as SkuModel,
+    gplcart\core\models\File as FileModel,
+    gplcart\core\models\Alias as AliasModel,
+    gplcart\core\models\Price as PriceModel,
+    gplcart\core\models\Search as SearchModel,
+    gplcart\core\models\Language as LanguageModel,
+    gplcart\core\models\PriceRule as PriceRuleModel,
+    gplcart\core\models\ProductField as ProductFieldModel;
 
 /**
  * Manages basic behaviors and data related to products
@@ -91,7 +92,12 @@ class Product extends Model
     protected $request;
 
     /**
-     * Constructor
+     * Convertor class instance
+     * @var \gplcart\core\helpers\Convertor $convertor
+     */
+    protected $convertor;
+
+    /**
      * @param AliasModel $alias
      * @param FileModel $file
      * @param PriceModel $price
@@ -102,24 +108,26 @@ class Product extends Model
      * @param ProductFieldModel $product_field
      * @param Cache $cache
      * @param RequestHelper $request
+     * @param ConvertorHelper $convertor
      */
     public function __construct(AliasModel $alias, FileModel $file,
             PriceModel $price, PriceRuleModel $pricerule,
             LanguageModel $language, SkuModel $sku, SearchModel $search,
             ProductFieldModel $product_field, Cache $cache,
-            RequestHelper $request)
+            RequestHelper $request, ConvertorHelper $convertor)
     {
         parent::__construct();
 
         $this->sku = $sku;
-        $this->cache = $cache;
         $this->file = $file;
         $this->alias = $alias;
         $this->price = $price;
+        $this->cache = $cache;
         $this->search = $search;
         $this->request = $request;
         $this->language = $language;
         $this->pricerule = $pricerule;
+        $this->convertor = $convertor;
         $this->product_field = $product_field;
     }
 
@@ -451,19 +459,60 @@ class Product extends Model
     /**
      * Calculates and returns product physical volume
      * @param array $product
-     * @param integer $round
+     * @param integer $decimals
      * @param string $convert_to
-     * @return mixed
+     * @return number|false
      */
-    public function getVolume(array $product, $round = 2, $convert_to = '')
+    public function getVolume(array $product, $decimals = 2, $convert_to = '')
     {
-        $volume_value = (int) $product['width'] * (int) $product['height'] * (int) $product['length'];
+        $volume = $product['width'] * $product['height'] * $product['length'];
 
-        if (empty($convert_to)) {
-            return round($volume_value, $round);
+        if (empty($volume)) {
+            return 0;
         }
 
-        // TODO: complete
+        if (empty($convert_to)) {
+            return round($volume, $decimals);
+        }
+
+        if (strpos($convert_to, '2') === false) {
+            $convert_to .= '2';
+        }
+
+        try {
+            $this->convertor->from($volume, $product['size_unit']);
+            return $this->convertor->to($convert_to, $decimals, !empty($decimals));
+        } catch (\UnexpectedValueException $ex) {
+            trigger_error($ex->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Returns an array of weight measurement units
+     * @return array
+     */
+    public function getWeightUnits()
+    {
+        return array(
+            'g' => $this->language->text('Gram'),
+            'kg' => $this->language->text('Kilogram'),
+            'lb' => $this->language->text('Pound'),
+            'oz' => $this->language->text('Ounce'),
+        );
+    }
+
+    /**
+     * Returns an array of size measurement units
+     * @return array
+     */
+    public function getSizeUnits()
+    {
+        return array(
+            'in' => $this->language->text('Inch'),
+            'mm' => $this->language->text('Millimeter'),
+            'cm' => $this->language->text('Centimetre')
+        );
     }
 
     /**
@@ -847,7 +896,6 @@ class Product extends Model
                     'product_id' => $data['product_id'],
                     'field_value_id' => $field_value_id
                 );
-
                 $this->product_field->add($options);
             }
         }
