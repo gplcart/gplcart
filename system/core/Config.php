@@ -280,7 +280,7 @@ class Config
     {
         $instance = $this->getModuleInstance($module_id);
 
-        if (empty($instance) || !is_callable(array($instance, 'info'))) {
+        if (!$instance instanceof \gplcart\core\Module) {
             return array();
         }
 

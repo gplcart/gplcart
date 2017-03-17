@@ -9,10 +9,12 @@
 
 namespace gplcart\modules\backend;
 
+use gplcart\core\Module;
+
 /**
  * Main backend theme class
  */
-class Backend
+class Backend extends Module
 {
 
     /**

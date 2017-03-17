@@ -9,10 +9,12 @@
 
 namespace gplcart\modules\frontend;
 
+use gplcart\core\Module;
+
 /**
  * Main class for Frontend theme
  */
-class Frontend
+class Frontend extends Module
 {
 
     /**

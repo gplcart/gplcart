@@ -372,6 +372,7 @@ class Checkout extends FrontendController
             'store_id' => $this->order_store_id,
             'currency' => $this->data_cart['currency'],
             'status' => $this->order->getStatusInitial(),
+            'size_unit' => $this->config('order_size_unit', 'mm')
         );
     }
 
@@ -457,6 +458,8 @@ class Checkout extends FrontendController
                 unset($this->data_form['format'][$type]['state_id']);
             }
         }
+
+        $this->data_form['order']['volume'] = $this->order->getVolume($this->data_form['order'], $this->data_form['cart']);
 
         $this->calculateCheckout();
         $this->setFormDataPanesOrder();

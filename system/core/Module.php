@@ -12,9 +12,9 @@ namespace gplcart\core;
 use gplcart\core\Container;
 
 /**
- * Parent class for models
+ * Parent class for modules
  */
-abstract class Model
+abstract class Module
 {
 
     /**
@@ -30,37 +30,26 @@ abstract class Model
     protected $config;
 
     /**
-     * Database helper instance
-     * @var \gplcart\core\Database $db
-     */
-    protected $db;
-
-    /**
      * Constructor
      */
     public function __construct()
     {
         $this->hook = Container::get('gplcart\\core\\Hook');
         $this->config = Container::get('gplcart\\core\\Config');
-        $this->db = $this->config->getDb();
     }
 
     /**
-     * Returns config instance
-     * @return \gplcart\core\Config
+     * Returns an array of module info
      */
-    public function getConfig()
-    {
-        return $this->config;
-    }
+    abstract public function info();
 
     /**
-     * Returns PDO database instance
-     * @return \gplcart\core\Database
+     * Returns a class instance
+     * @return object
      */
-    public function getDb()
+    protected function getInstance($class)
     {
-        return $this->db;
+        return Container::get($class);
     }
 
 }

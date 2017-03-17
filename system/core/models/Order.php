@@ -18,7 +18,8 @@ use gplcart\core\models\Mail as MailModel,
     gplcart\core\models\Product as ProductModel,
     gplcart\core\models\Language as LanguageModel,
     gplcart\core\models\PriceRule as PriceRuleModel;
-use gplcart\core\helpers\Request as RequestHelper;
+use gplcart\core\helpers\Request as RequestHelper,
+    gplcart\core\helpers\Convertor as ConvertorHelper;
 
 /**
  * Manages basic behaviors and data related to store orders
@@ -75,7 +76,12 @@ class Order extends Model
     protected $request;
 
     /**
-     * Constructor
+     * Convertor class instance
+     * @var \gplcart\core\helpers\Convertor $convertor
+     */
+    protected $convertor;
+
+    /**
      * @param UserModel $user
      * @param PriceModel $price
      * @param PriceRuleModel $pricerule
@@ -84,10 +90,12 @@ class Order extends Model
      * @param LanguageModel $language
      * @param MailModel $mail
      * @param RequestHelper $request
+     * @param ConvertorHelper $convertor
      */
     public function __construct(UserModel $user, PriceModel $price,
             PriceRuleModel $pricerule, ProductModel $product, CartModel $cart,
-            LanguageModel $language, MailModel $mail, RequestHelper $request)
+            LanguageModel $language, MailModel $mail, RequestHelper $request,
+            ConvertorHelper $convertor)
     {
         parent::__construct();
 
@@ -98,6 +106,7 @@ class Order extends Model
         $this->product = $product;
         $this->request = $request;
         $this->language = $language;
+        $this->convertor = $convertor;
         $this->pricerule = $pricerule;
     }
 
@@ -785,12 +794,12 @@ class Order extends Model
     {
         $statuses = array(
             'pending' => $this->language->text('Pending'),
-            'pending_payment' => $this->language->text('Awaiting payment'),
             'canceled' => $this->language->text('Canceled'),
             'delivered' => $this->language->text('Delivered'),
             'completed' => $this->language->text('Completed'),
             'processing' => $this->language->text('Processing'),
-            'dispatched' => $this->language->text('Dispatched')
+            'dispatched' => $this->language->text('Dispatched'),
+            'pending_payment' => $this->language->text('Awaiting payment')
         );
 
         return $statuses;
@@ -825,6 +834,57 @@ class Order extends Model
         foreach ($cart['items'] as $sku => $item) {
             $order['data']['components']['cart'][$sku] = $item['total'];
         }
+    }
+    
+    /**
+     * Returns product total volume
+     * @param array $order
+     * @param array $cart
+     * @param integer $decimals
+     * @return null|float
+     */
+    public function getVolume(array $order, array $cart, $decimals = 2)
+    {
+        $total = 0;
+        foreach ($cart['items'] as $item) {
+
+            $product = $item['product'];
+            if (empty($product['width']) || empty($product['height']) || empty($product['length'])) {
+                return null;
+            }
+
+            $volume = $product['width'] * $product['height'] * $product['length'];
+            if (empty($product['size_unit']) || $product['size_unit'] == $order['size_unit']) {
+                $total += (float) $volume;
+                continue;
+            }
+            $converted = $this->convertUnit($volume, $product['size_unit'], $order['size_unit'], $decimals);
+            if (!isset($converted)) {
+                return null;
+            }
+            $total += $converted;
+        }
+
+        return round($total, $decimals);
+    }
+    
+    /**
+     * Converts measurement units
+     * @param number $value
+     * @param string $from
+     * @param string $to
+     * @param integer $decimals
+     * @return null|float
+     */
+    protected function convertUnit($value, $from, $to, $decimals = 2)
+    {
+        try {
+            $this->convertor->from($value, $from . '2');
+            $result = (float) $this->convertor->to($to . '2', $decimals, !empty($decimals));
+        } catch (\UnexpectedValueException $ex) {
+            $result = null;
+        }
+        return $result;
     }
 
 }

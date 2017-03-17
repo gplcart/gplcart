@@ -69,6 +69,10 @@ class Convertor
             'l' => array('base' => 'l', 'conversion' => 1), //litre - base unit for volume
             'ml' => array('base' => 'l', 'conversion' => 0.001), //mililitre
             'm3' => array('base' => 'l', 'conversion' => 1), //meters cubed
+            'cm3' => array('base' => 'm3', 'conversion' => 0.000001),
+            'mm3' => array('base' => 'm3', 'conversion' => 0.000000001),
+            'ft3' => array('base' => 'm3', 'conversion' => 0.0283168),
+            'in3' => array('base' => 'm3', 'conversion' => 0.000016387),
             'pt' => array('base' => 'l', 'conversion' => 0.56826125), //pint
             'gal' => array('base' => 'l', 'conversion' => 4.405), //gallon
             'kg' => array('base' => 'kg', 'conversion' => 1), //kilogram - base unit for weight

@@ -9,12 +9,12 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Order as OrderModel;
-use gplcart\core\models\Price as PriceModel;
-use gplcart\core\models\Address as AddressModel;
-use gplcart\core\models\Payment as PaymentModel;
-use gplcart\core\models\Shipping as ShippingModel;
-use gplcart\core\models\PriceRule as PriceRuleModel;
+use gplcart\core\models\Order as OrderModel,
+    gplcart\core\models\Price as PriceModel,
+    gplcart\core\models\Address as AddressModel,
+    gplcart\core\models\Payment as PaymentModel,
+    gplcart\core\models\Shipping as ShippingModel,
+    gplcart\core\models\PriceRule as PriceRuleModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
