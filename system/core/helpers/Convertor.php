@@ -326,4 +326,24 @@ class Convertor
         return $value * $unit['conversion'];
     }
 
+    /**
+     * Shortcut method to convert units without throwing exceptions
+     * @param number $value
+     * @param string $from
+     * @param string $to
+     * @param integer $decimals
+     * @return null|float
+     */
+    public function convert($value, $from, $to, $decimals = 2)
+    {
+        try {
+            $this->from($value, $from);
+            $result = (float) $this->to($to, $decimals, !empty($decimals));
+        } catch (UnexpectedValueException $ex) {
+            trigger_error($ex->getMessage());
+            $result = null;
+        }
+        return $result;
+    }
+
 }

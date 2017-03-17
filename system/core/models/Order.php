@@ -845,6 +845,7 @@ class Order extends Model
      */
     public function getVolume(array $order, array $cart, $decimals = 2)
     {
+
         $total = 0;
         foreach ($cart['items'] as $item) {
             $product = $item['product'];
@@ -853,16 +854,16 @@ class Order extends Model
             }
             $volume = $product['width'] * $product['height'] * $product['length'];
             if (empty($product['size_unit']) || $product['size_unit'] == $order['size_unit']) {
-                $total += (float) $volume;
+                $total += (float) ($volume * $item['quantity']);
                 continue;
             }
             $order_cubic = $order['size_unit'] . '2';
             $product_cubic = $product['size_unit'] . '2';
-            $converted = $this->convertUnit($volume, $product_cubic, $order_cubic, $decimals);
+            $converted = $this->convertor->convert($volume, $product_cubic, $order_cubic, $decimals);
             if (empty($converted)) {
                 return null;
             }
-            $total += $converted;
+            $total += (float) ($converted * $item['quantity']);
         }
 
         return round($total, $decimals);
@@ -884,37 +885,17 @@ class Order extends Model
             }
             $product = $item['product'];
             if (empty($product['weight_unit']) || $product['weight_unit'] == $order['weight_unit']) {
-                $total += (float) $product['weight'];
+                $total += (float) ($product['weight'] * $item['quantity']);
                 continue;
             }
-            $converted = $this->convertUnit($product['weight'], $product['weight_unit'], $order['weight_unit'], $decimals);
+            $converted = $this->convertor->convert($product['weight'], $product['weight_unit'], $order['weight_unit'], $decimals);
             if (empty($converted)) {
                 return null;
             }
-            $total += $converted;
+            $total += (float) ($converted * $item['quantity']);
         }
 
         return round($total, $decimals);
-    }
-
-    /**
-     * Converts measurement units
-     * @param number $value
-     * @param string $from
-     * @param string $to
-     * @param integer $decimals
-     * @return null|float
-     */
-    protected function convertUnit($value, $from, $to, $decimals = 2)
-    {
-        try {
-            $this->convertor->from($value, $from);
-            $result = (float) $this->convertor->to($to, $decimals, !empty($decimals));
-        } catch (\UnexpectedValueException $ex) {
-            trigger_error($ex->getMessage());
-            $result = null;
-        }
-        return $result;
     }
 
 }
