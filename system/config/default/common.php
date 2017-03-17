@@ -58,6 +58,7 @@ $config = array();
 # $config['order_update_notify_customer']         = 1; // Whether to send notification to customer on order status change
 # $config['order_log_limit']                      = 10; // Max order log records to display for admin
 # $config['order_size_unit']                      = 'mm'; // Default order size unit
+# $config['order_weight_unit']                    = 'g'; // Default order weight unit
 # $config['page_alias_pattern']                   = '%t.html'; // Pattern to generate page alias
 # $config['page_alias_placeholder']               = array('%t' => 'title'); // Replacement rule to generate page alias
 # $config['page_image_dirname']                   = 'page'; // Default folder for uploaded page images

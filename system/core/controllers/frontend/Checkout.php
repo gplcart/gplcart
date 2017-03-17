@@ -372,7 +372,8 @@ class Checkout extends FrontendController
             'store_id' => $this->order_store_id,
             'currency' => $this->data_cart['currency'],
             'status' => $this->order->getStatusInitial(),
-            'size_unit' => $this->config('order_size_unit', 'mm')
+            'size_unit' => $this->config('order_size_unit', 'mm'),
+            'weight_unit' => $this->config('order_weight_unit', 'g')
         );
     }
 
@@ -440,7 +441,7 @@ class Checkout extends FrontendController
         $this->data_form['has_payment_address'] = $this->has_payment_address;
         $this->data_form['payment_address_form'] = $this->payment_address_form;
         $this->data_form['shipping_address_form'] = $this->shipping_address_form;
-        
+
         $this->data_form['context_template'] = $this->getTemplatesCheckout('context', $this->getSubmitted());
         $this->data_form['cart'] = $this->prepareCart($this->data_cart);
         $this->data_form['addresses'] = $this->address->getTranslatedList($this->order_user_id);
@@ -460,6 +461,7 @@ class Checkout extends FrontendController
         }
 
         $this->data_form['order']['volume'] = $this->order->getVolume($this->data_form['order'], $this->data_form['cart']);
+        $this->data_form['order']['weight'] = $this->order->getWeight($this->data_form['order'], $this->data_form['cart']);
 
         $this->calculateCheckout();
         $this->setFormDataPanesOrder();
@@ -1011,7 +1013,7 @@ class Checkout extends FrontendController
 
         $this->outputCompleteCheckout();
     }
-    
+
     /**
      * Returns an array of rendered templates provided by payment/shipping methods
      * @param string $name
@@ -1022,8 +1024,8 @@ class Checkout extends FrontendController
     {
         $templates = array();
         foreach (array('payment', 'shipping') as $type) {
-            
-            if(empty($order[$type])){
+
+            if (empty($order[$type])) {
                 continue;
             }
 

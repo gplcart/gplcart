@@ -835,7 +835,7 @@ class Order extends Model
             $order['data']['components']['cart'][$sku] = $item['total'];
         }
     }
-    
+
     /**
      * Returns product total volume
      * @param array $order
@@ -847,19 +847,19 @@ class Order extends Model
     {
         $total = 0;
         foreach ($cart['items'] as $item) {
-
             $product = $item['product'];
             if (empty($product['width']) || empty($product['height']) || empty($product['length'])) {
                 return null;
             }
-
             $volume = $product['width'] * $product['height'] * $product['length'];
             if (empty($product['size_unit']) || $product['size_unit'] == $order['size_unit']) {
                 $total += (float) $volume;
                 continue;
             }
-            $converted = $this->convertUnit($volume, $product['size_unit'], $order['size_unit'], $decimals);
-            if (!isset($converted)) {
+            $order_cubic = $order['size_unit'] . '2';
+            $product_cubic = $product['size_unit'] . '2';
+            $converted = $this->convertUnit($volume, $product_cubic, $order_cubic, $decimals);
+            if (empty($converted)) {
                 return null;
             }
             $total += $converted;
@@ -867,7 +867,36 @@ class Order extends Model
 
         return round($total, $decimals);
     }
-    
+
+    /**
+     * Returns order products total weight
+     * @param array $order
+     * @param array $cart
+     * @param integer $decimals
+     * @return null|float
+     */
+    public function getWeight(array $order, array $cart, $decimals = 2)
+    {
+        $total = 0;
+        foreach ($cart['items'] as $item) {
+            if (empty($item['product']['weight'])) {
+                return null;
+            }
+            $product = $item['product'];
+            if (empty($product['weight_unit']) || $product['weight_unit'] == $order['weight_unit']) {
+                $total += (float) $product['weight'];
+                continue;
+            }
+            $converted = $this->convertUnit($product['weight'], $product['weight_unit'], $order['weight_unit'], $decimals);
+            if (empty($converted)) {
+                return null;
+            }
+            $total += $converted;
+        }
+
+        return round($total, $decimals);
+    }
+
     /**
      * Converts measurement units
      * @param number $value
@@ -879,9 +908,10 @@ class Order extends Model
     protected function convertUnit($value, $from, $to, $decimals = 2)
     {
         try {
-            $this->convertor->from($value, $from . '2');
-            $result = (float) $this->convertor->to($to . '2', $decimals, !empty($decimals));
+            $this->convertor->from($value, $from);
+            $result = (float) $this->convertor->to($to, $decimals, !empty($decimals));
         } catch (\UnexpectedValueException $ex) {
+            trigger_error($ex->getMessage());
             $result = null;
         }
         return $result;

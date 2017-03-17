@@ -268,7 +268,9 @@ return array(
             'status' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
             'comment' => array('type' => 'text', 'not_null' => true, 'default' => ''),
             'volume' => array('type' => 'float', 'default' => 0),
+            'weight' => array('type' => 'float', 'default' => 0),
             'size_unit' => array('type' => 'varchar', 'length' => 2, 'not_null' => true, 'default' => 'mm'),
+            'weight_unit' => array('type' => 'varchar', 'length' => 2, 'not_null' => true, 'default' => 'g'),
             'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
         )
     ),
