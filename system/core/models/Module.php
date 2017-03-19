@@ -339,21 +339,13 @@ class Module extends Model
      */
     public function setSettings($module_id, array $settings)
     {
-        $existing = $this->get($module_id);
-
-        if (!empty($existing['installed'])) {
+        if ($this->isInstalled($module_id)) {
             $this->update($module_id, array('settings' => $settings));
             return true;
         }
 
         if ($this->isActiveTheme($module_id)) {
-
-            $data = array(
-                'status' => true,
-                'settings' => $settings,
-                'module_id' => $module_id
-            );
-
+            $data = array('status' => true, 'settings' => $settings, 'module_id' => $module_id);
             $this->add($data);
             return true;
         }
