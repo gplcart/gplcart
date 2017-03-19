@@ -142,6 +142,8 @@ class Convertor
      */
     public function from($value, $unit)
     {
+        $unit = strtolower($unit);
+
         if (empty($this->units[$unit]['base'])) {
             throw new UnexpectedValueException('Unit does not exist');
         }
@@ -164,6 +166,8 @@ class Convertor
      */
     public function to($unit, $decimals = null, $round = true)
     {
+        $unit = strtolower($unit);
+
         if (!isset($this->value)) {
             throw new UnexpectedValueException('From value not set');
         }

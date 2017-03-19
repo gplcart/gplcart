@@ -406,7 +406,7 @@ class Store extends Model
             return $store['data'];
         }
 
-        return array_key_exists($item, $store['data']) ? $store['data'][$item] : null;
+        return gplcart_array_get_value($store['data'], $item);
     }
 
     /**

@@ -62,8 +62,7 @@ class Curl
             CURLOPT_URL => $url,
             CURLOPT_CONNECTTIMEOUT => 10,
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_USERAGENT => 'GPL Cart Agent'
+            CURLOPT_SSL_VERIFYPEER => false
         );
     }
 

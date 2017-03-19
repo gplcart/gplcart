@@ -841,16 +841,15 @@ class Order extends Model
      * @param array $order
      * @param array $cart
      * @param integer $decimals
-     * @return null|float
+     * @return float
      */
     public function getVolume(array $order, array $cart, $decimals = 2)
     {
-
         $total = 0;
         foreach ($cart['items'] as $item) {
             $product = $item['product'];
             if (empty($product['width']) || empty($product['height']) || empty($product['length'])) {
-                return null;
+                return (float) 0;
             }
             $volume = $product['width'] * $product['height'] * $product['length'];
             if (empty($product['size_unit']) || $product['size_unit'] == $order['size_unit']) {
@@ -861,7 +860,7 @@ class Order extends Model
             $product_cubic = $product['size_unit'] . '2';
             $converted = $this->convertor->convert($volume, $product_cubic, $order_cubic, $decimals);
             if (empty($converted)) {
-                return null;
+                return (float) 0;
             }
             $total += (float) ($converted * $item['quantity']);
         }
@@ -874,14 +873,14 @@ class Order extends Model
      * @param array $order
      * @param array $cart
      * @param integer $decimals
-     * @return null|float
+     * @return float
      */
     public function getWeight(array $order, array $cart, $decimals = 2)
     {
         $total = 0;
         foreach ($cart['items'] as $item) {
             if (empty($item['product']['weight'])) {
-                return null;
+                return (float) 0;
             }
             $product = $item['product'];
             if (empty($product['weight_unit']) || $product['weight_unit'] == $order['weight_unit']) {
@@ -890,7 +889,7 @@ class Order extends Model
             }
             $converted = $this->convertor->convert($product['weight'], $product['weight_unit'], $order['weight_unit'], $decimals);
             if (empty($converted)) {
-                return null;
+                return (float) 0;
             }
             $total += (float) ($converted * $item['quantity']);
         }
