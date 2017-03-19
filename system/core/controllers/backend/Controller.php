@@ -174,7 +174,7 @@ class Controller extends BaseController
      * @param string $entity
      * @return array
      */
-    protected function setEntityUrl(array &$items, $entity)
+    protected function attachEntityUrl(array &$items, $entity)
     {
         $stores = $this->store->getList();
         foreach ($items as &$item) {

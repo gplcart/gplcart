@@ -9,14 +9,14 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
-use gplcart\core\Cache;
-use gplcart\core\models\Sku as SkuModel;
-use gplcart\core\models\User as UserModel;
-use gplcart\core\models\Product as ProductModel;
-use gplcart\core\models\Currency as CurrencyModel;
-use gplcart\core\models\Language as LanguageModel;
-use gplcart\core\models\Wishlist as WishlistModel;
+use gplcart\core\Model,
+    gplcart\core\Cache;
+use gplcart\core\models\Sku as SkuModel,
+    gplcart\core\models\User as UserModel,
+    gplcart\core\models\Product as ProductModel,
+    gplcart\core\models\Currency as CurrencyModel,
+    gplcart\core\models\Language as LanguageModel,
+    gplcart\core\models\Wishlist as WishlistModel;
 use gplcart\core\helpers\Request as RequestHelper;
 
 /**
@@ -107,6 +107,8 @@ class Cart extends Model
 
         $this->hook->fire('cart.get.content.before', $data);
 
+        $data += array('order_id' => 0);
+
         $items = $this->getList($data);
 
         if (empty($items)) {
@@ -141,7 +143,7 @@ class Cart extends Model
     }
 
     /**
-     * 
+     * Prepare cart item
      * @param array $item
      * @param array $data
      * @return boolean
@@ -155,7 +157,6 @@ class Cart extends Model
         }
 
         $product['price'] = $this->currency->convert($product['price'], $product['currency'], $data['currency']);
-
         $calculated = $this->product->calculate($product);
 
         if ($calculated['total'] != $product['price']) {
@@ -172,20 +173,26 @@ class Cart extends Model
     /**
      * Returns an array of cart items
      * @param array $data
+     * @param string $index
      * @return array
      */
-    public function getList(array $data = array())
+    public function getList(array $data = array(), $index = 'sku')
     {
         $sql = 'SELECT c.*, COALESCE(NULLIF(pt.title, ""), p.title) AS title,'
-                . ' p.status AS product_status, p.store_id AS product_store_id'
-                . ' FROM cart c'
+                . ' p.status AS product_status, p.store_id AS product_store_id,'
+                . ' u.email AS user_email';
+
+        if (!empty($data['count'])) {
+            $sql = 'SELECT COUNT(c.cart_id)';
+        }
+
+        $sql .= ' FROM cart c'
                 . ' LEFT JOIN product p ON(c.product_id=p.product_id)'
                 . ' LEFT JOIN product_translation pt ON(c.product_id = pt.product_id AND pt.language=?)'
+                . ' LEFT JOIN user u ON(c.user_id = u.user_id)'
                 . ' WHERE cart_id > 0';
 
         $where = array($this->language->current());
-
-        $data += array('order_id' => 0);
 
         if (isset($data['user_id'])) {
             $sql .= ' AND c.user_id=?';
@@ -202,9 +209,45 @@ class Cart extends Model
             $where[] = (int) $data['store_id'];
         }
 
-        $sql .= ' ORDER BY c.created DESC';
+        if (isset($data['user_email'])) {
+            $sql .= ' AND u.email LIKE ?';
+            $where[] = "%{$data['user_email']}%";
+        }
 
-        $options = array('unserialize' => 'data', 'index' => 'sku');
+        if (isset($data['sku'])) {
+            $sql .= ' AND c.sku LIKE ?';
+            $where[] = "%{$data['sku']}%";
+        }
+
+        $allowed_order = array('asc', 'desc');
+
+        $allowed_sort = array(
+            'sku' => 'c.sku',
+            'created' => 'c.created',
+            'user_id' => 'c.user_id',
+            'user_email' => 'u.email',
+            'store_id' => 'c.store_id',
+            'order_id' => 'c.order_id',
+            'quantity' => 'c.quantity',
+            'product_id' => 'c.product_id'
+        );
+
+        if (isset($data['sort']) && isset($allowed_sort[$data['sort']])//
+                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+            $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
+        } else {
+            $sql .= ' ORDER BY c.created DESC';
+        }
+
+        if (!empty($data['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        }
+
+        if (!empty($data['count'])) {
+            return (int) $this->db->fetchColumn($sql, $where);
+        }
+
+        $options = array('unserialize' => 'data', 'index' => $index);
         $list = $this->db->fetchAll($sql, $where, $options);
 
         $this->hook->fire('cart.list', $list);
@@ -222,7 +265,6 @@ class Cart extends Model
             'sku' => (int) $this->config->get('cart_sku_limit', 10),
             'item' => (int) $this->config->get('cart_item_limit', 20)
         );
-
         return isset($item) ? $limits[$item] : $limits;
     }
 
@@ -311,10 +353,7 @@ class Cart extends Model
     {
         $sql = 'SELECT cart_id, quantity'
                 . ' FROM cart'
-                . ' WHERE sku=?'
-                . ' AND user_id=?'
-                . ' AND store_id=?'
-                . ' AND order_id=?';
+                . ' WHERE sku=? AND user_id=? AND store_id=? AND order_id=?';
 
         $conditions = array($data['sku'], $data['user_id'], $data['store_id'], 0);
         $existing = $this->db->fetch($sql, $conditions);
@@ -385,6 +424,7 @@ class Cart extends Model
      */
     public function getQuantity(array $conditions, $key = null)
     {
+        $conditions += array('order_id' => 0);
         $items = $this->getList($conditions);
         $result = array('total' => 0, 'sku' => array());
 
@@ -470,20 +510,22 @@ class Cart extends Model
     public function login(array $user, array $cart)
     {
         $this->hook->fire('cart.login.before', $user, $cart);
+
         $result = array('redirect' => null, 'severity' => '', 'message' => '');
 
         if (empty($user) || empty($cart)) {
             return $result;
         }
 
-        $conditions = array('user_id' => $user['user_id']);
-
         if (!$this->config->get('cart_login_merge', 0)) {
-            $this->delete($conditions);
+            $items = $this->getList(array('user_id' => $user['user_id'], 'order_id' => 0));
+            foreach ($items as $item) {
+                $this->delete($item['cart_id']);
+            }
         }
 
         foreach ($cart['items'] as $item) {
-            $this->update($item['cart_id'], $conditions);
+            $this->update($item['cart_id'], array('user_id' => $user['user_id']));
         }
 
         $this->deleteCookie();
@@ -503,37 +545,37 @@ class Cart extends Model
 
     /**
      * Deletes a cart record from the database
-     * @param array $arguments
+     * @param integer $cart_id
      * @return boolean
      */
-    public function delete(array $arguments)
+    public function delete($cart_id)
     {
-        $this->hook->fire('cart.delete.before', $arguments);
+        $this->hook->fire('cart.delete.before', $cart_id);
 
-        if (empty($arguments)) {
+        if (empty($cart_id)) {
             return false;
         }
 
-        // Items with order_id = 0 are not linked to orders,
-        // i.e before checkout
-        $arguments += array('order_id' => 0);
-
-        if (empty($arguments['user_id'])) {
-            $conditions = array('cart_id' => $arguments['cart_id']);
-        } else {
-
-            $conditions = array(
-                'user_id' => $arguments['user_id'],
-                'order_id' => $arguments['order_id']
-            );
+        $result = false;
+        if ($this->canDelete($cart_id)) {
+            $result = (bool) $this->db->delete('cart', array('cart_id' => $cart_id));
+            Cache::clearMemory();
+            $this->hook->fire('cart.delete.after', $cart_id, $result);
         }
 
-        $result = (bool) $this->db->delete('cart', $conditions);
-
-        Cache::clearMemory();
-
-        $this->hook->fire('cart.delete.after', $arguments, $result);
         return (bool) $result;
+    }
+
+    /**
+     * Returns true if the cart item is not associated with an order
+     * @param integer $cart_id
+     * @return bool
+     */
+    public function canDelete($cart_id)
+    {
+        $sql = 'SELECT order_id FROM cart WHERE cart_id=?';
+        $result = $this->db->fetchColumn($sql, array($cart_id));
+        return isset($result) && empty($result);
     }
 
     /**

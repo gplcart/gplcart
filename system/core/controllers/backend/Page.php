@@ -159,7 +159,7 @@ class Page extends BackendController
         $query['limit'] = $limit;
         $pages = (array) $this->page->getList($query);
 
-        $this->setEntityUrl($pages, 'page');
+        $this->attachEntityUrl($pages, 'page');
         return $pages;
     }
 

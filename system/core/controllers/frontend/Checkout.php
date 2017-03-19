@@ -730,7 +730,7 @@ class Checkout extends FrontendController
 
         if (!empty($cart_id)) {
             $this->setSubmitted('cart.action.update', true);
-            $this->cart->delete(array('cart_id' => $cart_id));
+            $this->cart->delete($cart_id);
         }
     }
 

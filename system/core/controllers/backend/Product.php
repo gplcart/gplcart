@@ -188,7 +188,7 @@ class Product extends BackendController
             return array();
         }
 
-        $this->setEntityUrl($products, 'product');
+        $this->attachEntityUrl($products, 'product');
 
         foreach ($products as &$product) {
             $product['price'] = $this->price->decimal($product['price'], $product['currency']);
@@ -370,7 +370,7 @@ class Product extends BackendController
         $options = array('store_id' => $this->data_product['store_id']);
         $products = $this->product->getRelated($this->data_product['product_id'], true, $options);
 
-        $this->setEntityUrl($products, 'product');
+        $this->attachEntityUrl($products, 'product');
         return $products;
     }
 
@@ -533,7 +533,7 @@ class Product extends BackendController
 
         if (!empty($related)) {
             $products = (array) $this->product->getList(array('product_id' => $related));
-            $this->setEntityUrl($products, 'product');
+            $this->attachEntityUrl($products, 'product');
             $this->setData('related', $products);
         }
     }

@@ -324,6 +324,13 @@ return array(
             'controller' => array('gplcart\\core\\controllers\\backend\\Transaction', 'listTransaction')
         )
     ),
+    'admin/sale/cart' => array(
+        'access' => 'cart',
+        'menu' => array('admin' => 'Cart'),
+        'handlers' => array(
+            'controller' => array('gplcart\\core\\controllers\\backend\\Cart', 'listCart')
+        )
+    ),
     'admin/content/page' => array(
         'access' => 'page',
         'menu' => array('admin' => 'Pages'),

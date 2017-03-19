@@ -10,6 +10,8 @@ return array(
     'admin' => 'Admin: access',
     'address' => 'Address: access',
     'address_delete' => 'Address: delete',
+    'cart' => 'Cart items: access',
+    'cart_delete' => 'Cart items: delete',
     'cli' => 'Console emulator: access',
     'editor' => 'Theme editor: access',
     'editor_content' => 'Theme editor: access file content',

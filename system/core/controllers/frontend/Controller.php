@@ -269,9 +269,7 @@ class Controller extends BaseController
      */
     protected function deleteFromCart()
     {
-        $conditions = array('cart_id' => $this->getSubmitted('cart_id'));
-
-        if (!$this->cart->delete($conditions)) {
+        if (!$this->cart->delete($this->getSubmitted('cart_id'))) {
             return array('redirect' => '', 'severity' => 'success');
         }
 

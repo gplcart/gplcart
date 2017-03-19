@@ -179,7 +179,7 @@ class Category extends BackendController
      */
     protected function prepareListCategory(array $categories)
     {
-        $this->setEntityUrl($categories, 'category');
+        $this->attachEntityUrl($categories, 'category');
 
         foreach ($categories as &$category) {
             $category['indentation'] = str_repeat('— ', $category['depth']);
