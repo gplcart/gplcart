@@ -26,6 +26,7 @@
           <th><?php echo $this->text('Conversion rate'); ?></th>
           <th><?php echo $this->text('Default'); ?></th>
           <th><?php echo $this->text('Enabled'); ?></th>
+          <th><?php echo $this->text('Updated'); ?></th>
           <th></th>
         </tr>
       </thead>
@@ -38,6 +39,7 @@
           <td class="middle"><?php echo $this->escape($currency['conversion_rate']); ?></td>
           <td class="middle"><?php echo($default_currency == $code) ? '<i class="fa fa-check-square-o"></i>' : '<i class="fa fa-square-o"></i>'; ?></td>
           <td class="middle"><?php echo (!empty($currency['status']) || $default_currency == $code) ? '<i class="fa fa-check-square-o"></i>' : '<i class="fa fa-square-o"></i>'; ?></td>
+          <td class="middle"><?php echo empty($currency['modified']) ? '--' : $this->date($currency['modified']); ?></td>
           <td class="middle">
             <?php if ($this->access('currency_edit')) { ?>
             <a href="<?php echo $this->url("admin/settings/currency/edit/$code"); ?>" title="" class="edit">

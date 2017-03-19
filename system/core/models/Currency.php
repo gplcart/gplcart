@@ -112,6 +112,8 @@ class Currency extends Model
             return false;
         }
 
+        $data += array('modified' => GC_TIME);
+
         if (!empty($data['default'])) {
             $data['status'] = 1;
             $this->config->set('currency', $code);
@@ -322,6 +324,7 @@ class Currency extends Model
             'symbol' => '',
             'status' => 0,
             'default' => 0,
+            'modified' => 0,
             'decimals' => 2,
             'major_unit' => '',
             'minor_unit' => '',
