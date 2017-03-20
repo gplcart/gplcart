@@ -415,7 +415,7 @@ class Config
         }
 
         if (isset($name)) {
-            $result = $this->db->fetchAll('SELECT * FROM settings WHERE id=?', array($name));
+            $result = $this->db->fetch('SELECT * FROM settings WHERE id=?', array($name));
             if (empty($result)) {
                 return $default;
             }

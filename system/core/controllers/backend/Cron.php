@@ -47,7 +47,7 @@ class Cron extends BackendController
 
         $this->processTasksCron();
 
-        $this->hook->fire('cron');
+        $this->hook->fire('cron', $this);
         $this->config->set('cron_last_run', GC_TIME);
         $this->response->html($this->text('Cron has started'));
     }

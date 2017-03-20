@@ -35,6 +35,13 @@ class Curl
      */
     public function get($url, array $options = array())
     {
+        if (isset($options['query'])) {
+            $query = is_array($options['query'])//
+                    ? http_build_query($options['query']) : (string) $options['query'];
+            $url .= "?$query";
+        }
+
+        unset($options['query']);
         $options += $this->defaultOptions($url);
 
         $ch = curl_init();
@@ -75,14 +82,14 @@ class Curl
     public function post($url, array $options = array())
     {
         $options += $this->defaultOptions($url);
+        $options[CURLOPT_POST] = true;
 
-        $fields = '';
         if (isset($options['fields'])) {
-            $fields = is_array($options['fields']) ? http_build_query($options['fields']) : (string) $options['fields'];
-            unset($options['fields']);
+            $options[CURLOPT_POSTFIELDS] = is_array($options['fields'])//
+                    ? http_build_query($options['fields']) : (string) $options['fields'];
         }
 
-        $options += array(CURLOPT_POSTFIELDS => $fields, CURLOPT_POST => true);
+        unset($options['fields']);
 
         $ch = curl_init();
         curl_setopt_array($ch, $options);

@@ -9,8 +9,8 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
-use gplcart\core\Cache;
+use gplcart\core\Model,
+    gplcart\core\Cache;
 use gplcart\core\helpers\Request as RequestHelper;
 
 /**
@@ -49,8 +49,9 @@ class Currency extends Model
             return false;
         }
 
-        $default = $this->getDefaultData();
+        $data += array('modified' => GC_TIME);
 
+        $default = $this->getDefaultData();
         $data += $default;
 
         if (!empty($data['default'])) {
@@ -58,7 +59,7 @@ class Currency extends Model
             $this->config->set('currency', $data['code']);
         }
 
-        $currencies = $this->getList();
+        $currencies = $this->getList(false, false);
         $currencies[$data['code']] = array_intersect_key($data, $default);
         $this->config->set('currencies', $currencies);
 
@@ -68,31 +69,35 @@ class Currency extends Model
 
     /**
      * Returns an array of currensies
-     * @param boolean $enabled
+     * @param bool $enabled
+     * @param bool $cache
      * @return array
      */
-    public function getList($enabled = false)
+    public function getList($enabled = false, $cache = true)
     {
         $currencies = &Cache::memory("currencies.$enabled");
 
-        if (isset($currencies)) {
+        if ($cache && isset($currencies)) {
             return $currencies;
         }
 
         $default = $this->getDefaultList();
-        $saved = $this->config->get('currencies', array());
-        $currencies = gplcart_array_merge($default, $saved);
 
+        if ($cache) {
+            $saved = $this->config->get('currencies', array());
+        } else {
+            $saved = $this->config->select('currencies', array());
+        }
+
+        $currencies = gplcart_array_merge($default, $saved);
         $this->hook->fire('currency.list', $currencies);
 
         if (!$enabled) {
             return $currencies;
         }
-
         $currencies = array_filter($currencies, function ($currency) {
             return !empty($currency['status']);
         });
-
         return $currencies;
     }
 
@@ -106,7 +111,7 @@ class Currency extends Model
     {
         $this->hook->fire('currency.update.before', $code, $data);
 
-        $currencies = $this->getList();
+        $currencies = $this->getList(false, false);
 
         if (empty($currencies[$code])) {
             return false;
@@ -136,8 +141,7 @@ class Currency extends Model
     public function delete($code)
     {
         $this->hook->fire('currency.delete.before', $code);
-
-        $currencies = $this->getList();
+        $currencies = $this->getList(false, false);
 
         if (empty($currencies[$code]) || !$this->canDelete($code)) {
             return false;
@@ -145,7 +149,6 @@ class Currency extends Model
 
         unset($currencies[$code]);
         $this->config->set('currencies', $currencies);
-
         $this->hook->fire('currency.delete.after', $code);
         return true;
     }
@@ -183,6 +186,7 @@ class Currency extends Model
 
         $currency = $this->get($code);
         $target_currency = $this->get($target_code);
+
         $exponent = $target_currency['decimals'] - $currency['decimals'];
         $amount *= pow(10, $exponent);
 

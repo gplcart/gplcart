@@ -107,7 +107,7 @@ class Cart extends Model
 
         $this->hook->fire('cart.get.content.before', $data);
 
-        $data += array('order_id' => 0);
+        $data['order_id'] = 0;
 
         $items = $this->getList($data);
 
