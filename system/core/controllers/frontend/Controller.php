@@ -25,6 +25,18 @@ class Controller extends BaseController
     protected $trigger;
 
     /**
+     * Currency model instance
+     * @var \gplcart\core\models\Currency $currency
+     */
+    protected $currency;
+
+    /**
+     * The current currency code
+     * @var string
+     */
+    protected $current_currency;
+
+    /**
      * Price model instance
      * @var \gplcart\core\models\Price $price
      */
@@ -109,6 +121,7 @@ class Controller extends BaseController
         $this->compare = Container::get('gplcart\\core\\models\\Compare');
         $this->wishlist = Container::get('gplcart\\core\\models\\Wishlist');
         $this->category = Container::get('gplcart\\core\\models\\Category');
+        $this->currency = Container::get('gplcart\\core\\models\\Currency');
         $this->collection_item = Container::get('gplcart\\core\\models\\CollectionItem');
     }
 
@@ -121,6 +134,7 @@ class Controller extends BaseController
             $this->triggered = $this->getFiredTriggers();
             $this->data_categories = $this->getCategories();
             $this->cart_uid = $this->cart->uid();
+            $this->current_currency = $this->currency->get();
         }
     }
 
@@ -760,10 +774,12 @@ class Controller extends BaseController
      */
     protected function attachItemPriceFormatted(array &$item)
     {
-        $item['price_formatted'] = $this->price->format($item['price'], $item['currency']);
+        $price = $this->currency->convert($item['price'], $item['currency'], $this->current_currency);
+        $item['price_formatted'] = $this->price->format($price, $this->current_currency);
 
         if (isset($item['original_price'])) {
-            $item['original_price_formatted'] = $this->price->format($item['original_price'], $item['currency']);
+            $price = $this->currency->convert($item['original_price'], $item['currency'], $this->current_currency);
+            $item['original_price_formatted'] = $this->price->format($price, $this->current_currency);
         }
     }
 

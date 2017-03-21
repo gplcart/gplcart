@@ -36,37 +36,18 @@ class Price extends Model
     }
 
     /**
-     * Returns a formatted price
-     * @param integer $amount
-     * @param string $code
-     * @param boolean $convert If true, convert amount to decimal
-     * @return string
-     */
-    public function get($amount, $code, $convert = true)
-    {
-        $current = (string) $this->currency->get();
-
-        if ($convert && ($code != $current)) {
-            $amount = $this->currency->convert($amount, $code, $current);
-            return $this->format($amount, $current);
-        }
-
-        return $this->format($amount, $code);
-    }
-
-    /**
      * Formats a price value as a currency string
      * @param integer $amount
      * @param string $currency
-     * @param bool $convert
+     * @param bool $decimal
      * @param bool $full
      * @return string
      */
-    public function format($amount, $currency, $convert = true, $full = true)
+    public function format($amount, $currency, $decimal = true, $full = true)
     {
         $data = (array) $this->currency->get($currency);
 
-        if ($convert) {
+        if ($decimal) {
             $amount = $this->decimal($amount, $currency);
         }
 
@@ -149,18 +130,6 @@ class Price extends Model
         }
 
         return $decimal * $factors[$currency_code];
-    }
-
-    /**
-     * Converts currencies. Alias of \gplcart\core\models\Currency::convert()
-     * @param integer $amount
-     * @param string $currency_code
-     * @param string $target_currency_code
-     * @return integer
-     */
-    public function convert($amount, $currency_code, $target_currency_code)
-    {
-        return $this->currency->convert($amount, $currency_code, $target_currency_code);
     }
 
 }
