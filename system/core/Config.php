@@ -232,7 +232,7 @@ class Config
                 continue;
             }
 
-            $module_info['hooks'] = $this->getHooks($module_instance);
+            $module_info['hooks'] = $this->getModuleHooks($module_instance);
 
             $module_info += array(
                 'class' => $module_data['class'],
@@ -443,7 +443,7 @@ class Config
      * @param object|string $class
      * @return array
      */
-    protected function getHooks($class)
+    public function getModuleHooks($class)
     {
         return array_filter(get_class_methods($class), function ($method) {
             return (0 === strpos($method, 'hook'));

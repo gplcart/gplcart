@@ -9,9 +9,9 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
-use gplcart\core\Cache;
-use gplcart\core\Container;
+use gplcart\core\Model,
+    gplcart\core\Cache,
+    gplcart\core\Container;
 use gplcart\core\helpers\Url;
 use gplcart\core\models\Language as LanguageModel;
 
@@ -55,6 +55,14 @@ class Condition extends Model
      */
     public function compare($a, $b, $operator)
     {
+        settype($a, 'array');
+        settype($b, 'array');
+
+        if (in_array($operator, array('>=', '<=', '>', '<'))) {
+            $a = reset($a);
+            $b = reset($b);
+        }
+
         switch ($operator) {
             case '>=':
                 return ($a >= $b);
@@ -64,12 +72,6 @@ class Condition extends Model
                 return ($a > $b);
             case '<':
                 return ($a < $b);
-        }
-
-        settype($a, 'array');
-        settype($b, 'array');
-
-        switch ($operator) {
             case '=':
                 return count(array_intersect($a, $b)) > 0;
             case '!=':

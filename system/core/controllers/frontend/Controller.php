@@ -149,6 +149,16 @@ class Controller extends BaseController
     }
 
     /**
+     * Whether a given trigger ID has been triggered
+     * @param integer $trigger_id
+     * @return bool
+     */
+    public function isTriggered($trigger_id)
+    {
+        return in_array($trigger_id, $this->triggered);
+    }
+
+    /**
      * Returns the current cart data
      * @param null|string $key
      * @return mixed

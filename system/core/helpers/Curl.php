@@ -36,8 +36,8 @@ class Curl
     public function get($url, array $options = array())
     {
         if (isset($options['query'])) {
-            $query = is_array($options['query'])//
-                    ? http_build_query($options['query']) : (string) $options['query'];
+            $query = is_string($options['query'])//
+                    ? urlencode($options['query']) : http_build_query($options['query']);
             $url .= "?$query";
         }
 
@@ -85,8 +85,8 @@ class Curl
         $options[CURLOPT_POST] = true;
 
         if (isset($options['fields'])) {
-            $options[CURLOPT_POSTFIELDS] = is_array($options['fields'])//
-                    ? http_build_query($options['fields']) : (string) $options['fields'];
+            $options[CURLOPT_POSTFIELDS] = is_string($options['fields'])//
+                    ? urlencode($options['fields']) : http_build_query($options['fields']);
         }
 
         unset($options['fields']);

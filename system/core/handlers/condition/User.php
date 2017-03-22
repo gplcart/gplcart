@@ -48,7 +48,12 @@ class User
      */
     public function id(array $condition)
     {
-        $user_id = (int) $this->user->getSession('user_id');
+        static $user_id = null;
+
+        if ($user_id === null) {
+            $user_id = (int) $this->user->getSession('user_id');
+        }
+
         return $this->condition->compare($user_id, $condition['value'], $condition['operator']);
     }
 
@@ -59,7 +64,12 @@ class User
      */
     public function roleId(array $condition)
     {
-        $role_id = (string) $this->user->getSession('role_id');
+        static $role_id = null;
+
+        if ($role_id === null) {
+            $role_id = (string) $this->user->getSession('role_id');
+        }
+
         return $this->condition->compare($role_id, $condition['value'], $condition['operator']);
     }
 

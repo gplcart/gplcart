@@ -9,12 +9,12 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
-use gplcart\core\Cache;
-use gplcart\core\models\Mail as MailModel;
-use gplcart\core\models\Address as AddressModel;
-use gplcart\core\models\UserRole as UserRoleModel;
-use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\Model,
+    gplcart\core\Cache;
+use gplcart\core\models\Mail as MailModel,
+    gplcart\core\models\Address as AddressModel,
+    gplcart\core\models\UserRole as UserRoleModel,
+    gplcart\core\models\Language as LanguageModel;
 use gplcart\core\helpers\Session as SessionHelper;
 
 /**

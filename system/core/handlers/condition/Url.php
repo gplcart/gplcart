@@ -53,9 +53,9 @@ class Url
         }
 
         $route = $this->route->getCurrent();
-
-        if (empty($route['pattern'])) {
-            return false;
+        
+        if($route['pattern'] === ''){
+            $route['pattern'] = '/'; // Fix front page
         }
 
         return $this->condition->compare($route['pattern'], $condition['value'], $condition['operator']);

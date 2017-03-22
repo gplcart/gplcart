@@ -82,6 +82,10 @@ class Facade
         $this->setErrorReportingLevel();
         $this->setErrorHandlers();
 
+        if (!GC_CLI) {
+            $this->session->init();
+        }
+
         $this->hook->fire('construct', $this);
         $this->hook->registerAll();
     }
@@ -91,10 +95,6 @@ class Facade
      */
     public function route()
     {
-        if (!GC_CLI) {
-            $this->session->init();
-        }
-
         if (GC_CLI || GC_CLI_EMULATE) {
             $this->routeCli();
         } else {

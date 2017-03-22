@@ -12,7 +12,25 @@
     @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
 #}
 {% if js_bottom is not empty %}
-    {% for src,data in js_bottom %}
-        <script src="{{ src }}"></script>
+    {% for data in js_bottom %}
+        {% if data.text is not empty %}
+            {% if data.asset is not empty %}
+                {% if data.condition is not empty %}
+                    <!--[{{ data.condition }}]>
+                    <script>{{ data.asset|raw }}</script>
+                    <![endif]-->
+                {% else %}
+                    <script>{{ data.asset|raw }}</script>
+                {% endif %}
+            {% endif %}
+        {% else %}
+            {% if data.condition is not empty %}
+                <!--[{{ data.condition }}]>
+                <script src="{{ data.key }}"></script>
+                <![endif]-->
+            {% else %}
+                <script src="{{ data.key }}"></script>
+            {% endif %}
+        {% endif %}
     {% endfor %}
 {% endif %}
