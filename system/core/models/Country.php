@@ -9,8 +9,8 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
-use gplcart\core\Cache;
+use gplcart\core\Model,
+    gplcart\core\Cache;
 use gplcart\core\models\Language as LanguageModel;
 
 /**
@@ -69,6 +69,12 @@ class Country extends Model
      */
     public function get($code)
     {
+        $country = &Cache::memory("country.get.$code");
+
+        if (isset($country)) {
+            return $country;
+        }
+
         $this->hook->fire('country.get.before', $code);
 
         $sql = 'SELECT * FROM country WHERE code=?';

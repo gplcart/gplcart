@@ -9,7 +9,8 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
+use gplcart\core\Cache,
+    gplcart\core\Model;
 use gplcart\core\models\Country as CountryModel;
 
 /**
@@ -42,11 +43,16 @@ class Address extends Model
      */
     public function get($address_id)
     {
+        $address = &Cache::memory("address.get.$address_id");
+
+        if (isset($address)) {
+            return $address;
+        }
+
         $this->hook->fire('address.get.before', $address_id);
 
         if (empty($address_id)) {
-            $address = array();
-            return $address;
+            return $address = array();
         }
 
         $sql = 'SELECT a.*, c.name AS country_name,'

@@ -9,13 +9,15 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
+use gplcart\core\Model,
+    gplcart\core\Cache;
 
 /**
  * Manages basic behaviors and data related to cities
  */
 class City extends Model
 {
+
     /**
      * Constructor
      */
@@ -131,8 +133,16 @@ class City extends Model
      */
     public function get($city_id)
     {
+        $city = &Cache::memory("city.get.$city_id");
+
+        if (isset($city)) {
+            return $city;
+        }
+
         $this->hook->fire('city.get.before', $city_id);
+
         $city = $this->db->fetch('SELECT * FROM city WHERE city_id=?', array($city_id));
+
         $this->hook->fire('city.get.after', $city_id, $city);
         return $city;
     }

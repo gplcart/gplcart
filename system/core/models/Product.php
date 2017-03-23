@@ -264,17 +264,23 @@ class Product extends Model
      */
     public function get($product_id, array $options = array())
     {
+        $product = &Cache::memory(array("product.get.$product_id" => $options));
+
+        if (isset($product)) {
+            return $product;
+        }
+
         $this->hook->fire('product.get.before', $product_id, $options);
 
         if (empty($product_id)) {
-            return array();
+            return $product = array();
         }
 
         $options += array('language' => null);
         $list = $this->getList(array('product_id' => $product_id));
 
         if (empty($list)) {
-            return array();
+            return $product = array();
         }
 
         $product = reset($list);
@@ -299,9 +305,16 @@ class Product extends Model
      */
     public function getBySku($sku, $store_id, $language = null)
     {
+        $product = &Cache::memory("product.get.sku.$sku.$store_id.$language");
+
+        if (isset($product)) {
+            return $product;
+        }
+
         if (!isset($language)) {
             $language = $this->language->current();
         }
+
         $sql = 'SELECT p.*, COALESCE(NULLIF(pt.title, ""), p.title) AS title,'
                 . ' ps.sku, ps.price, ps.stock, ps.file_id'
                 . ' FROM product p'

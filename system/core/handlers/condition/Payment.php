@@ -9,12 +9,12 @@
 
 namespace gplcart\core\handlers\condition;
 
-use gplcart\core\models\Zone as ZoneModel;
-use gplcart\core\models\City as CityModel;
-use gplcart\core\models\State as StateModel;
-use gplcart\core\models\Country as CountryModel;
-use gplcart\core\models\Address as AddressModel;
-use gplcart\core\models\Condition as ConditionModel;
+use gplcart\core\models\Zone as ZoneModel,
+    gplcart\core\models\City as CityModel,
+    gplcart\core\models\State as StateModel,
+    gplcart\core\models\Country as CountryModel,
+    gplcart\core\models\Address as AddressModel,
+    gplcart\core\models\Condition as ConditionModel;
 
 /**
  * Provides methods to check payment address conditions

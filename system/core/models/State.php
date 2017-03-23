@@ -9,7 +9,8 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
+use gplcart\core\Model,
+    gplcart\core\Cache;
 
 /**
  * Manages basic behaviors and data related to country states
@@ -51,6 +52,12 @@ class State extends Model
      */
     public function get($state_id)
     {
+        $state = &Cache::memory("state.get.$state_id");
+
+        if (isset($state)) {
+            return $state;
+        }
+
         $this->hook->fire('state.get.before', $state_id);
 
         $sql = 'SELECT * FROM state WHERE state_id=?';

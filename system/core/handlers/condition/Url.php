@@ -53,8 +53,8 @@ class Url
         }
 
         $route = $this->route->getCurrent();
-        
-        if($route['pattern'] === ''){
+
+        if ($route['pattern'] === '') {
             $route['pattern'] = '/'; // Fix front page
         }
 

@@ -9,8 +9,8 @@
 
 namespace gplcart\core\handlers\condition;
 
-use gplcart\core\models\Product as ProductModel;
-use gplcart\core\models\Condition as ConditionModel;
+use gplcart\core\models\Product as ProductModel,
+    gplcart\core\models\Condition as ConditionModel;
 
 /**
  * Provides methods to check product conditions

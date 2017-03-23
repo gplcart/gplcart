@@ -9,8 +9,8 @@
 
 namespace gplcart\core\handlers\condition;
 
-use gplcart\core\models\User as UserModel;
-use gplcart\core\models\Condition as ConditionModel;
+use gplcart\core\models\User as UserModel,
+    gplcart\core\models\Condition as ConditionModel;
 
 /**
  * Provides methods to check user conditions
@@ -67,7 +67,7 @@ class User
         static $role_id = null;
 
         if ($role_id === null) {
-            $role_id = (string) $this->user->getSession('role_id');
+            $role_id = (int) $this->user->getSession('role_id');
         }
 
         return $this->condition->compare($role_id, $condition['value'], $condition['operator']);
