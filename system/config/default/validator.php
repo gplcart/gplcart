@@ -17,6 +17,11 @@ return array(
             'validate' => array('gplcart\\core\\handlers\\validator\\FileType', 'csv')
         )
     ),
+    'json' => array(
+        'handlers' => array(
+            'validate' => array('gplcart\\core\\handlers\\validator\\FileType', 'json')
+        )
+    ),
     'zip' => array(
         'handlers' => array(
             'validate' => array('gplcart\\core\\handlers\\validator\\FileType', 'zip')

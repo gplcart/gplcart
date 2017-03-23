@@ -641,6 +641,12 @@ class File extends Model
             'validator' => 'p12'
         );
 
+        $handlers['json'] = array(
+            'extensions' => array('json'),
+            'path' => 'upload',
+            'validator' => 'json'
+        );
+
         $handlers['csv'] = array(
             'extensions' => array('csv'),
             'path' => 'image/upload/common',

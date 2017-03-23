@@ -47,4 +47,15 @@ class FileType
         return is_resource($zip);
     }
 
+    /**
+     * Whether the file is a .json file
+     * @param string $file
+     * @return boolean
+     */
+    public function json($file)
+    {
+        $contents = file_get_contents($file);
+        return json_decode($contents) !== null;
+    }
+
 }
