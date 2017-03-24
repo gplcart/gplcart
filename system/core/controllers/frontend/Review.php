@@ -73,8 +73,6 @@ class Review extends FrontendController
 
         $this->setData('review', $this->data_review);
         $this->setData('product', $this->data_product);
-
-        $this->setData('honeypot', $this->renderHoneyPot());
         $this->setData('can_delete', $this->canDeleteReview());
 
         $this->submitReview();

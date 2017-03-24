@@ -836,15 +836,6 @@ class Controller extends BaseController
     }
 
     /**
-     * Returns rendered honeypot input
-     * @return string
-     */
-    public function renderHoneyPot()
-    {
-        return $this->render('common/honeypot');
-    }
-
-    /**
      * Returns rendered "Share this" widget
      * @param array $options
      * @return string

@@ -681,6 +681,15 @@ class Controller
     }
 
     /**
+     * Returns request remote IP
+     * @return string
+     */
+    public function ip()
+    {
+        return $this->request->ip();
+    }
+
+    /**
      * Renders a template
      * @param string $file
      * @param array $data
@@ -1773,6 +1782,7 @@ class Controller
         }
 
         $this->data['languages'] = $this->languages;
+        $this->data['captcha'] = $this->renderCaptcha();
         $this->data['messages'] = $this->session->getMessage();
 
         $controller = strtolower(str_replace('\\', '-', $this->current_route['handlers']['controller'][0]));
@@ -1858,6 +1868,15 @@ class Controller
         }
         $options += array('depth' => 0, 'template' => 'common/menu');
         return $this->render($options['template'], $options);
+    }
+
+    /**
+     * Returns rendered honeypot input
+     * @return string
+     */
+    public function renderCaptcha()
+    {
+        return $this->render('common/honeypot');
     }
 
     /**

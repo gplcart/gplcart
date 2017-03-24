@@ -9,9 +9,9 @@
 
 namespace gplcart\core\handlers\validator;
 
-use gplcart\core\models\File as FileModel;
-use gplcart\core\models\Field as FieldModel;
-use gplcart\core\models\FieldValue as FieldValueModel;
+use gplcart\core\models\File as FileModel,
+    gplcart\core\models\Field as FieldModel,
+    gplcart\core\models\FieldValue as FieldValueModel;
 use gplcart\core\helpers\Request as RequestHelper;
 use gplcart\core\handlers\validator\Base as BaseValidator;
 

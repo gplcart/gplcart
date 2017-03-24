@@ -14,7 +14,6 @@
 <div class="panel panel-body">
   <div class="panel-body">
     <form method="post" class="register form-horizontal">
-      {{ honeypot|raw }}
       <input type="hidden" name="token" value="{{ prop('token') }}">
       <div class="form-group{{ error('name', ' has-error') }}">
         <label class="control-label col-md-2">{{ text('Name') }}</label>
@@ -39,6 +38,7 @@
           </div>
         </div>
       </div>
+      {{ captcha|raw }}
       <div class="form-group">
         <div class="col-md-1 col-md-offset-2">
           <button class="btn btn-default" name="register" value="1">{{ text('Register') }}</button>

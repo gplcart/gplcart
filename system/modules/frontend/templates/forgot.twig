@@ -14,7 +14,6 @@
 <div class="panel panel-default">
   <div class="panel-body">
     <form method="post" class="forgot form-horizontal">
-      {{ honeypot|raw }}
       <input type="hidden" name="token" value="{{ prop('token') }}">
       {% if forgetful_user is empty %}
           <div class="form-group{{ error('email', ' has-error') }}">
@@ -33,6 +32,7 @@
             </div>
           </div>
           {% endif %}
+          {{ captcha|raw }}
           <div class="form-group">
             <div class="col-md-2 col-md-offset-2">
               <button class="btn btn-default" name="reset" value="1">
