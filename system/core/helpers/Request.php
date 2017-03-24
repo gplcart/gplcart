@@ -212,7 +212,7 @@ class Request
             $post = array();
         }
 
-        if ($filter != 'raw') {
+        if ($filter !== 'raw') {
             gplcart_array_trim($post, (bool) $filter);
         }
 
@@ -234,7 +234,7 @@ class Request
     {
         $request = empty($_REQUEST) ? array() : $_REQUEST;
 
-        if ($filter != 'raw') {
+        if ($filter !== 'raw') {
             gplcart_array_trim($request, $filter);
         }
 
