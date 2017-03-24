@@ -58,9 +58,6 @@ class Zip extends ZipArchive
             return false;
         }
 
-        // Remove last slash and pattern characters after
-        $source_patternless = substr($source, 0, strrpos($source, '/'));
-
         $this->set($destination);
 
         $added = 0;
@@ -71,8 +68,8 @@ class Zip extends ZipArchive
                 continue;
             }
 
-            $prefix = $wrapper === "" ? "" : "$wrapper/";
-            $relative = $prefix . substr($file, strlen($source_patternless) + 1);
+            $prefix = $wrapper === '' ? '' : $wrapper . DIRECTORY_SEPARATOR;
+            $relative = $prefix . substr($file, strlen($source) + 1);
             $added += (int) $this->addFile($file, $relative);
         }
 

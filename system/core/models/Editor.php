@@ -53,8 +53,7 @@ class Editor extends Model
     {
         $list = array();
         foreach (array('templates', 'css', 'js') as $folder) {
-            $pattern = "{$module['directory']}/$folder/*";
-            $files = gplcart_file_scan_recursive($pattern);
+            $files = gplcart_file_scan_recursive("{$module['directory']}/$folder");
             sort($files);
             $list[$folder] = $files;
         }

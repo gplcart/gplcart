@@ -53,9 +53,8 @@ class Module extends BaseHandler
      */
     protected function zip(array $data)
     {
-        $source = "{$data['module']['directory']}/*";
         $destination = $this->getZipPath($data['module']['id']);
-        $result = $this->zip->folder($source, $destination, $data['module']['id']);
+        $result = $this->zip->folder($data['module']['directory'], $destination, $data['module']['id']);
 
         if ($result === true) {
             return $destination;
