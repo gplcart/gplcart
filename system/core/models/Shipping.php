@@ -43,13 +43,13 @@ class Shipping extends Model
      */
     public function getList(array $data = array())
     {
-        $methods = &Cache::memory(array('shipping.methods' => $data));
+        $methods = &Cache::memory(array(__METHOD__ => $data));
 
         if (isset($methods)) {
             return $methods;
         }
 
-        $methods = $this->getDefault();
+        $methods = $this->getDefaultList();
         $this->hook->fire('shipping.methods', $methods);
 
         $weights = array();
@@ -92,7 +92,7 @@ class Shipping extends Model
      * Returns an array of default shipping methods
      * @return array
      */
-    protected function getDefault()
+    protected function getDefaultList()
     {
         $methods = array();
 

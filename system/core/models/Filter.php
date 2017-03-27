@@ -9,9 +9,9 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
-use gplcart\core\Cache;
-use gplcart\core\Library;
+use gplcart\core\Model,
+    gplcart\core\Cache,
+    gplcart\core\Library;
 use gplcart\core\models\Language as LanguageModel;
 
 /**
@@ -158,7 +158,7 @@ class Filter extends Model
      */
     public function getList($enabled = false)
     {
-        $filters = &Cache::memory("filters.$enabled");
+        $filters = &Cache::memory(__METHOD__ . $enabled);
 
         if (isset($filters)) {
             return $filters;

@@ -93,7 +93,7 @@ class Route
      */
     public function getList()
     {
-        $routes = &Cache::memory('route.list');
+        $routes = &Cache::memory(__METHOD__);
 
         if (isset($routes)) {
             return $routes;

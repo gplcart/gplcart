@@ -9,8 +9,8 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
-use gplcart\core\Cache;
+use gplcart\core\Model,
+    gplcart\core\Cache;
 use gplcart\core\models\Condition as ConditionModel;
 
 /**
@@ -42,7 +42,7 @@ class Trigger extends Model
      */
     public function getList(array $data = array())
     {
-        $triggers = &Cache::memory(array('trigger.list' => $data));
+        $triggers = &Cache::memory(array(__METHOD__ => $data));
 
         if (isset($triggers)) {
             return $triggers;

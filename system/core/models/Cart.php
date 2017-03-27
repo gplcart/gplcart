@@ -99,7 +99,7 @@ class Cart extends Model
      */
     public function getContent(array $data)
     {
-        $cart = &Cache::memory(array('cart' => $data));
+        $cart = &Cache::memory(array(__METHOD__ => $data));
 
         if (isset($cart)) {
             return $cart;

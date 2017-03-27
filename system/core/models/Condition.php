@@ -143,7 +143,7 @@ class Condition extends Model
      */
     public function getHandlers()
     {
-        $handlers = &Cache::memory('condition.handlers');
+        $handlers = &Cache::memory(__METHOD__);
 
         if (isset($handlers)) {
             return $handlers;

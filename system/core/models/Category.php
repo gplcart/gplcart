@@ -162,7 +162,7 @@ class Category extends Model
      */
     public function getTree(array $data)
     {
-        $tree = &Cache::memory(array('category.tree' => $data));
+        $tree = &Cache::memory(array(__METHOD__ => $data));
 
         if (isset($tree)) {
             return $tree;

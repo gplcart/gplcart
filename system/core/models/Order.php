@@ -116,14 +116,13 @@ class Order extends Model
      */
     public function getStatuses()
     {
-        $statuses = &Cache::memory('statuses');
+        $statuses = &Cache::memory(__METHOD__);
 
         if (isset($statuses)) {
             return $statuses;
         }
 
         $statuses = $this->getDefaultStatuses();
-
         $this->hook->fire('order.statuses', $statuses);
         return $statuses;
     }

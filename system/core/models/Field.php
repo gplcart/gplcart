@@ -9,8 +9,8 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
-use gplcart\core\Cache;
+use gplcart\core\Model,
+    gplcart\core\Cache;
 use gplcart\core\models\Language as LanguageModel;
 
 /**
@@ -44,7 +44,7 @@ class Field extends Model
      */
     public function getWidgetTypes()
     {
-        $types = &Cache::memory('field.widget.types');
+        $types = &Cache::memory(__METHOD__);
 
         if (isset($types)) {
             return $types;
@@ -66,7 +66,7 @@ class Field extends Model
      */
     public function getTypes()
     {
-        $types = &Cache::memory('field.types');
+        $types = &Cache::memory(__METHOD__);
 
         if (isset($types)) {
             return $types;

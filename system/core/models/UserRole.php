@@ -42,15 +42,13 @@ class UserRole extends Model
      */
     public function getPermissions()
     {
-        $permissions = &Cache::memory('permissions');
+        $permissions = &Cache::memory(__METHOD__);
 
         if (isset($permissions)) {
             return $permissions;
         }
 
-        $permissions = $this->defaultPermissions();
-        asort($permissions);
-
+        $permissions = $this->getDefaultPermissions();
         $this->hook->fire('user.role.permissions', $permissions);
         return $permissions;
     }
@@ -189,7 +187,7 @@ class UserRole extends Model
      */
     public function get($role_id)
     {
-        $role = &Cache::memory("role.$role_id");
+        $role = &Cache::memory(__METHOD__ . $role_id);
 
         if (isset($role)) {
             return $role;
@@ -210,9 +208,10 @@ class UserRole extends Model
      * Returns an array of default permissions
      * @return array
      */
-    protected function defaultPermissions()
+    protected function getDefaultPermissions()
     {
         $permissions = include GC_CONFIG_PERMISSION;
+        asort($permissions);
         return $permissions;
     }
 

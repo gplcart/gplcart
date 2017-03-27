@@ -69,7 +69,7 @@ class Country extends Model
      */
     public function get($code)
     {
-        $country = &Cache::memory("country.get.$code");
+        $country = &Cache::memory(__METHOD__ . $code);
 
         if (isset($country)) {
             return $country;
@@ -292,7 +292,7 @@ class Country extends Model
      */
     public function getList(array $data = array())
     {
-        $list = &Cache::memory(array('countries' => $data));
+        $list = &Cache::memory(array(__METHOD__ => $data));
 
         if (isset($list)) {
             return $list;

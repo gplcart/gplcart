@@ -133,7 +133,7 @@ class City extends Model
      */
     public function get($city_id)
     {
-        $city = &Cache::memory("city.get.$city_id");
+        $city = &Cache::memory(__METHOD__ . $city_id);
 
         if (isset($city)) {
             return $city;

@@ -43,7 +43,7 @@ class CollectionItem extends Model
      */
     public function getList(array $data = array())
     {
-        $items = &Cache::memory(array('collection.item.list' => $data));
+        $items = &Cache::memory(array(__METHOD__ => $data));
 
         if (isset($items)) {
             return $items;

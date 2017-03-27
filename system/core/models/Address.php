@@ -43,7 +43,7 @@ class Address extends Model
      */
     public function get($address_id)
     {
-        $address = &Cache::memory("address.get.$address_id");
+        $address = &Cache::memory(__METHOD__ . $address_id);
 
         if (isset($address)) {
             return $address;

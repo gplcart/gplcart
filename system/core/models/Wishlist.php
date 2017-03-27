@@ -9,11 +9,11 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
-use gplcart\core\Cache;
+use gplcart\core\Model,
+    gplcart\core\Cache;
+use gplcart\core\models\User as UserModel,
+    gplcart\core\models\Language as LanguageModel;
 use gplcart\core\helpers\Url as UrlHelper;
-use gplcart\core\models\User as UserModel;
-use gplcart\core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to user wishlists
@@ -265,7 +265,7 @@ class Wishlist extends Model
      */
     public function getList(array $data = array())
     {
-        $items = &Cache::memory(array('wishlist' => $data));
+        $items = &Cache::memory(array(__METHOD__ => $data));
 
         if (isset($items)) {
             return $items;

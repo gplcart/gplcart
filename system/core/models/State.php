@@ -52,7 +52,7 @@ class State extends Model
      */
     public function get($state_id)
     {
-        $state = &Cache::memory("state.get.$state_id");
+        $state = &Cache::memory(__METHOD__ . $state_id);
 
         if (isset($state)) {
             return $state;

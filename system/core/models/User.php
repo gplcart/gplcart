@@ -281,7 +281,7 @@ class User extends Model
      */
     public function get($user_id, $store_id = null)
     {
-        $user = &Cache::memory("user.$user_id");
+        $user = &Cache::memory(__METHOD__ . $user_id);
 
         if (isset($user)) {
             return $user;

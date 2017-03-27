@@ -359,7 +359,7 @@ class Job extends Model
      */
     protected function getHandlers()
     {
-        $handlers = &Cache::memory('job.handlers');
+        $handlers = &Cache::memory(__METHOD__);
 
         if (isset($handlers)) {
             return $handlers;

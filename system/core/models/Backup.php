@@ -194,7 +194,7 @@ class Backup extends Model
      */
     public function getHandlers()
     {
-        $handlers = &Cache::memory('backup.handles');
+        $handlers = &Cache::memory(__METHOD__);
 
         if (isset($handlers)) {
             return $handlers;

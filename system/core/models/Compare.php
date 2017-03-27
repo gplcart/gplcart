@@ -170,7 +170,7 @@ class Compare extends Model
      */
     public function getList()
     {
-        $items = &Cache::memory('comparison');
+        $items = &Cache::memory(__METHOD__);
 
         if (isset($items)) {
             return (array) $items;

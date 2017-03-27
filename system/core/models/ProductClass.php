@@ -248,7 +248,7 @@ class ProductClass extends Model
      */
     public function getFieldData($product_class_id)
     {
-        $result = &Cache::memory("product.class.field.data.$product_class_id");
+        $result = &Cache::memory(__METHOD__ . $product_class_id);
 
         if (isset($result)) {
             return $result;

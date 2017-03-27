@@ -9,8 +9,8 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
-use gplcart\core\Cache;
+use gplcart\core\Model,
+    gplcart\core\Cache;
 use gplcart\core\helpers\Request as RequestHelper;
 
 /**
@@ -59,7 +59,7 @@ class Store extends Model
      */
     public function getList(array $data = array())
     {
-        $stores = &Cache::memory(array('stores' => $data));
+        $stores = &Cache::memory(array(__METHOD__ => $data));
 
         if (isset($stores)) {
             return $stores;
@@ -163,7 +163,7 @@ class Store extends Model
             return array();
         }
 
-        $store = &Cache::memory("store.$store_id");
+        $store = &Cache::memory(__METHOD__ . $store_id);
 
         if (isset($store)) {
             return $store;

@@ -75,7 +75,7 @@ class Currency extends Model
      */
     public function getList($enabled = false, $cache = true)
     {
-        $currencies = &Cache::memory("currencies.$enabled");
+        $currencies = &Cache::memory(__METHOD__ . $enabled);
 
         if ($cache && isset($currencies)) {
             return $currencies;
@@ -200,7 +200,7 @@ class Currency extends Model
      */
     public function get($code = null)
     {
-        $currency = &Cache::memory("currency.$code");
+        $currency = &Cache::memory(__METHOD__ . $code);
 
         if (isset($currency)) {
             return $currency;

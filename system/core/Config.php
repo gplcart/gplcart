@@ -202,7 +202,7 @@ class Config
      */
     public function getModules()
     {
-        $modules = &Cache::memory('modules');
+        $modules = &Cache::memory(__METHOD__);
 
         if (isset($modules)) {
             return $modules;
@@ -344,7 +344,7 @@ class Config
             return array();
         }
 
-        $modules = &Cache::memory('installed.modules');
+        $modules = &Cache::memory(__METHOD__);
 
         if (isset($modules)) {
             return $modules;

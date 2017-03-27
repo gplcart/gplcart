@@ -57,7 +57,7 @@ class Import extends Model
      */
     public function getOperations()
     {
-        $operations = &Cache::memory('import.operations');
+        $operations = &Cache::memory(__METHOD__);
 
         if (isset($operations)) {
             return $operations;

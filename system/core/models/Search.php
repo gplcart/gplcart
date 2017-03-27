@@ -9,9 +9,9 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
-use gplcart\core\Cache;
-use gplcart\core\Handler;
+use gplcart\core\Model,
+    gplcart\core\Cache,
+    gplcart\core\Handler;
 use gplcart\core\models\Language as LanguageModel;
 
 /**
@@ -135,12 +135,23 @@ class Search extends Model
      */
     public function getHandlers()
     {
-        $handlers = &Cache::memory('search.handles');
+        $handlers = &Cache::memory(__METHOD__);
 
         if (isset($handlers)) {
             return $handlers;
         }
 
+        $handlers = $this->getDefaultHandlers();
+        $this->hook->fire('search.handlers', $handlers);
+        return $handlers;
+    }
+
+    /**
+     * Returns an array of default handlers
+     * @return array
+     */
+    protected function getDefaultHandlers()
+    {
         $handlers = array();
 
         $handlers['product'] = array(
@@ -150,7 +161,6 @@ class Search extends Model
                 'index' => array('gplcart\\core\\handlers\\search\\Product', 'index')
         ));
 
-        $this->hook->fire('search.handlers', $handlers);
         return $handlers;
     }
 

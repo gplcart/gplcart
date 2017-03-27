@@ -211,7 +211,7 @@ class Collection extends Model
      */
     public function getHandlers()
     {
-        $handlers = &Cache::memory('collection.handlers');
+        $handlers = &Cache::memory(__METHOD__);
 
         if (isset($handlers)) {
             return $handlers;

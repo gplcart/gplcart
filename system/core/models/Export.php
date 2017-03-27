@@ -9,10 +9,10 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
-use gplcart\core\Cache;
-use gplcart\core\models\Import as ImportModel;
-use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\Model,
+    gplcart\core\Cache;
+use gplcart\core\models\Import as ImportModel,
+    gplcart\core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to export functionality
@@ -67,7 +67,7 @@ class Export extends Model
      */
     public function getOperations()
     {
-        $operations = &Cache::memory('export.operations');
+        $operations = &Cache::memory(__METHOD__);
 
         if (isset($operations)) {
             return $operations;

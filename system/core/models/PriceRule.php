@@ -9,11 +9,11 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
-use gplcart\core\Cache;
-use gplcart\core\models\Trigger as TriggerModel;
-use gplcart\core\models\Currency as CurrencyModel;
-use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\Model,
+    gplcart\core\Cache;
+use gplcart\core\models\Trigger as TriggerModel,
+    gplcart\core\models\Currency as CurrencyModel,
+    gplcart\core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to price rules
@@ -62,7 +62,7 @@ class PriceRule extends Model
      */
     public function getList(array $data = array())
     {
-        $price_rules = &Cache::memory(array('price.rules' => $data));
+        $price_rules = &Cache::memory(array(__METHOD__ => $data));
 
         if (isset($price_rules)) {
             return $price_rules;

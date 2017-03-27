@@ -264,7 +264,7 @@ class Product extends Model
      */
     public function get($product_id, array $options = array())
     {
-        $product = &Cache::memory(array("product.get.$product_id" => $options));
+        $product = &Cache::memory(array(__METHOD__ . $product_id => $options));
 
         if (isset($product)) {
             return $product;
@@ -305,7 +305,7 @@ class Product extends Model
      */
     public function getBySku($sku, $store_id, $language = null)
     {
-        $product = &Cache::memory("product.get.sku.$sku.$store_id.$language");
+        $product = &Cache::memory(__METHOD__ . "$sku$store_id$language");
 
         if (isset($product)) {
             return $product;

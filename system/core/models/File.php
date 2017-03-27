@@ -448,7 +448,7 @@ class File extends Model
      */
     public function getList(array $data = array())
     {
-        $files = &Cache::memory(array('files' => $data));
+        $files = &Cache::memory(array(__METHOD__ => $data));
 
         if (isset($files)) {
             return $files;
@@ -620,7 +620,7 @@ class File extends Model
      */
     protected function getHandlers()
     {
-        $handlers = &Cache::memory('file.handlers');
+        $handlers = &Cache::memory(__METHOD__);
 
         if (isset($handlers)) {
             return $handlers;

@@ -422,7 +422,7 @@ class Module extends Model
      */
     public function getActiveThemes()
     {
-        $themes = &Cache::memory('active.themes');
+        $themes = &Cache::memory(__METHOD__);
 
         if (isset($themes)) {
             return $themes;

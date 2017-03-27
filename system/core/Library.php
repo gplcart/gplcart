@@ -98,7 +98,7 @@ class Library
      */
     public function getList()
     {
-        $libraries = &Cache::memory('libraries');
+        $libraries = &Cache::memory(__METHOD__);
 
         if (isset($libraries)) {
             return $libraries;

@@ -9,11 +9,11 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
-use gplcart\core\Cache;
-use gplcart\core\Logger;
-use gplcart\core\Library;
-use gplcart\core\Handler;
+use gplcart\core\Model,
+    gplcart\core\Cache,
+    gplcart\core\Logger,
+    gplcart\core\Library,
+    gplcart\core\Handler;
 
 /**
  * Manages basic behaviors and data related to sending e-mails
@@ -68,12 +68,23 @@ class Mail extends Model
      */
     protected function getHandlers()
     {
-        $handlers = &Cache::memory('mail.handlers');
+        $handlers = &Cache::memory(__METHOD__);
 
         if (isset($handlers)) {
             return $handlers;
         }
 
+        $handlers = $this->getDefaultHandlers();
+        $this->hook->fire('mail.handlers', $handlers);
+        return $handlers;
+    }
+
+    /**
+     * Returns an array of default handlers
+     * @return array
+     */
+    protected function getDefaultHandlers()
+    {
         $handlers = array();
 
         $handlers['order_created_admin'] = array(
@@ -119,8 +130,6 @@ class Mail extends Model
                 'process' => array('gplcart\\core\\handlers\\mail\\Account', 'changedPassword'),
             ),
         );
-
-        $this->hook->fire('mail.handlers', $handlers);
 
         return $handlers;
     }
