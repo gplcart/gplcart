@@ -9,12 +9,12 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
-use gplcart\core\Cache;
-use gplcart\core\Handler;
-use gplcart\core\Container;
-use gplcart\core\helpers\Url as UrlHelper;
-use gplcart\core\helpers\Session as SessionHelper;
+use gplcart\core\Model,
+    gplcart\core\Cache,
+    gplcart\core\Handler,
+    gplcart\core\Container;
+use gplcart\core\helpers\Url as UrlHelper,
+    gplcart\core\helpers\Session as SessionHelper;
 use gplcart\core\models\Language as LanguageModel;
 
 /**
