@@ -87,11 +87,8 @@ class Config
             return (array) $modules[$module_id]['settings'];
         }
 
-        if (array_key_exists($key, $modules[$module_id]['settings'])) {
-            return $modules[$module_id]['settings'][$key];
-        }
-
-        return $default;
+        $value = gplcart_array_get_value($modules[$module_id]['settings'], $key);
+        return isset($value) ? $value : $default;
     }
 
     /**

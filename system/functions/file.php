@@ -72,10 +72,8 @@ function gplcart_file_delete_recursive($directory)
  */
 function gplcart_file_scan_recursive($directory, &$results = array())
 {
-    $files = scandir($directory);
-
-    foreach ($files as $file) {
-        $path = realpath($directory . DIRECTORY_SEPARATOR . $file);
+    foreach (scandir($directory) as $file) {
+        $path = $directory . DIRECTORY_SEPARATOR . $file;
         if (!is_dir($path)) {
             $results[] = $path;
         } else if ($file != "." && $file != "..") {
