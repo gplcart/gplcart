@@ -9,14 +9,14 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\Order as OrderModel;
-use gplcart\core\models\State as StateModel;
-use gplcart\core\models\Payment as PaymentModel;
-use gplcart\core\models\Address as AddressModel;
-use gplcart\core\models\Country as CountryModel;
-use gplcart\core\models\UserRole as UserRoleModel;
-use gplcart\core\models\Shipping as ShippingModel;
-use gplcart\core\models\PriceRule as PriceRuleModel;
+use gplcart\core\models\Order as OrderModel,
+    gplcart\core\models\State as StateModel,
+    gplcart\core\models\Payment as PaymentModel,
+    gplcart\core\models\Address as AddressModel,
+    gplcart\core\models\Country as CountryModel,
+    gplcart\core\models\UserRole as UserRoleModel,
+    gplcart\core\models\Shipping as ShippingModel,
+    gplcart\core\models\PriceRule as PriceRuleModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
