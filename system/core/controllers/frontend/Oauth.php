@@ -55,6 +55,12 @@ class Oauth extends FrontendController
     protected $data_result;
 
     /**
+     * URL to redirect to after authorization
+     * @var string
+     */
+    protected $data_url;
+
+    /**
      * @param OauthModuleModel $oauth
      */
     public function __construct(OauthModel $oauth)
@@ -68,20 +74,18 @@ class Oauth extends FrontendController
      * Callback for Oauth returning URL
      * @param string $provider_id
      */
-    public function callbackOauth($provider_id)
+    public function callbackOauth()
     {
-        $this->setCodesOauth();
-        $this->setProviderOauth($provider_id);
+        $this->setReceivedDataOauth();
         $this->setTokenOauth();
-
         $this->setResultOauth();
         $this->redirectOauth();
     }
 
     /**
-     * Set and validates received codes from Oauth provider
+     * Set and validates received data from Oauth provider
      */
-    protected function setCodesOauth()
+    protected function setReceivedDataOauth()
     {
         $this->data_code = $this->request->get('code');
         $this->data_state = $this->request->get('state');
@@ -93,6 +97,20 @@ class Oauth extends FrontendController
         if (!$this->oauth->isValidState($this->data_state)) {
             $this->outputHttpStatus(403);
         }
+
+        $parsed = $this->oauth->parseState($this->data_state);
+
+        if (empty($parsed['id'])) {
+            $this->outputHttpStatus(403);
+        }
+
+        $this->data_provider = $this->oauth->getProvider($parsed['id']);
+
+        if (empty($this->data_provider)) {
+            $this->outputHttpStatus(403);
+        }
+
+        $this->data_url = $parsed['url'];
     }
 
     /**
@@ -100,8 +118,6 @@ class Oauth extends FrontendController
      */
     protected function redirectOauth()
     {
-        $this->oauth->reset();
-
         if (isset($this->data_result['message'])) {
             $this->setMessage($this->data_result['message'], $this->data_result['severity'], true);
         }
@@ -110,23 +126,7 @@ class Oauth extends FrontendController
             $this->redirect($this->data_result['redirect']);
         }
 
-        $this->redirect(gplcart_string_decode($this->data_state));
-    }
-
-    /**
-     * Load provider using its ID
-     * @param string $provider_id
-     * @return array
-     */
-    protected function setProviderOauth($provider_id)
-    {
-        $this->data_provider = $this->oauth->getProvider($provider_id);
-
-        if (empty($this->data_provider)) {
-            $this->outputHttpStatus(403);
-        }
-
-        return $this->data_provider;
+        $this->redirect($this->data_url);
     }
 
     /**
@@ -140,6 +140,9 @@ class Oauth extends FrontendController
         if (empty($this->data_token['access_token'])) {
             $this->outputHttpStatus(403);
         }
+
+        $this->oauth->reset();
+
         return $this->data_token;
     }
 

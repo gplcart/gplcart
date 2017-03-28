@@ -122,7 +122,7 @@ class Oauth extends Model
     {
         $params += array(
             'client_id' => $provider['settings']['client_id'],
-            'redirect_uri' => $this->url->get("oauth/{$provider['id']}", array(), true)
+            'redirect_uri' => $this->url->get('oauth', array(), true)
         );
 
         $query = array_merge($provider['query'], $params);
@@ -160,11 +160,37 @@ class Oauth extends Model
     {
         $params += array(
             'response_type' => 'code',
-            'state' => gplcart_string_encode($this->url->path())
+            'state' => $this->buildState($provider)
         );
 
         $query = $this->getQuery($provider, $params);
         return $this->url->get($provider['url']['auth'], $query, true);
+    }
+
+    /**
+     * Build state code
+     * @param array $provider
+     * @return string
+     */
+    protected function buildState(array $provider)
+    {
+        $data = array(
+            'key' => uniqid(), // More security
+            'id' => $provider['id'],
+            'url' => $this->url->path()
+        );
+
+        return gplcart_string_encode(json_encode($data));
+    }
+
+    /**
+     * Returns an array of data from encoded state code
+     * @param string $string
+     * @return array
+     */
+    public function parseState($string)
+    {
+        return json_decode(gplcart_string_decode($string), true);
     }
 
     /**
@@ -173,7 +199,10 @@ class Oauth extends Model
      */
     public function setState($state)
     {
-        if (!isset($this->state)) {
+        static $set = false;
+
+        if (!$set) {
+            $set = true;
             $this->state = $state;
             $this->session->set('oauth.state', $state);
         }

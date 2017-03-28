@@ -12,7 +12,7 @@ return array(
             'controller' => array('gplcart\\core\\controllers\\frontend\\Front', 'indexFront')
         )
     ),
-    'oauth/(\w+)' => array(
+    'oauth' => array(
         'handlers' => array(
             'controller' => array('gplcart\\core\\controllers\\frontend\\Oauth', 'callbackOauth')
         )
