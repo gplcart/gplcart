@@ -137,7 +137,7 @@ class Cache
         if (is_array($data)) {
             list($key, $hash) = each($data);
             ksort($hash);
-            $data = $key . md5(json_encode($hash));
+            $data = md5($key . json_encode($hash));
         }
 
         return $data;
