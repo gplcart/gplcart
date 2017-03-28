@@ -282,7 +282,11 @@ class Oauth extends Model
      */
     public function process(array $provider, $token)
     {
-        return $this->call('process', $provider, array('token' => $token));
+        $this->hook->fire('oauth.process.before', $provider, $token);
+        $result = $this->call('process', $provider, array('token' => $token));
+        $this->hook->fire('oauth.process.after', $provider, $token, $result);
+
+        return $result;
     }
 
     /**
