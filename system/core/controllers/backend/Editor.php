@@ -129,7 +129,7 @@ class Editor extends BackendController
                     'depth' => $depth,
                     'directory' => $directory,
                     'name' => $pathinfo['basename'],
-                    'id' => urlencode(base64_encode($path)),
+                    'id' => gplcart_string_encode($path),
                     'indentation' => str_repeat('<span class="indentation"></span>', $depth)
                 );
             }
@@ -347,7 +347,7 @@ class Editor extends BackendController
      */
     protected function setFilePathEditor($encoded_filename)
     {
-        $filepath = base64_decode(urldecode($encoded_filename));
+        $filepath = gplcart_string_decode($encoded_filename);
         $file = "{$this->data_module['directory']}/$filepath";
 
         if (!is_file($file) || !is_readable($file)) {

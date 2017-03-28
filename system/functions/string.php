@@ -148,3 +148,23 @@ function gplcart_string_bool($value)
 
     return isset($map[$v]) ? $map[$v] : false;
 }
+
+/**
+ * Returns a URL-safe string encoded with MIME base64
+ * @param string $string
+ * @return string
+ */
+function gplcart_string_encode($string)
+{
+    return strtr(base64_encode($string), '+/=', '-_,');
+}
+
+/**
+ * Returns a decoded string encoded with URL-safe MIME base64
+ * @param string $string
+ * @return string
+ */
+function gplcart_string_decode($string)
+{
+    return base64_decode(strtr($string, '-_,', '+/='));
+}
