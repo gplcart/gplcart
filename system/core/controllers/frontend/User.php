@@ -17,6 +17,8 @@ use gplcart\core\controllers\frontend\Controller as FrontendController;
 class User extends FrontendController
 {
 
+    use \gplcart\core\traits\ControllerOauth;
+
     /**
      * The current user
      * @var array
@@ -40,6 +42,8 @@ class User extends FrontendController
 
         $this->setTitleEditLoginUser();
         $this->setBreadcrumbEditLoginUser();
+
+        $this->setData('oauth_buttons', $this->getOauthButtonsTrait($this));
 
         $this->submitLoginUser();
         $this->outputEditLoginUser();

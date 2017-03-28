@@ -86,6 +86,10 @@ class User extends Model
             return false;
         }
 
+        if (empty($data['name'])) {
+            $data['name'] = strtok($data['email'], '@');
+        }
+
         $data['created'] = GC_TIME;
         $data += array('hash' => gplcart_string_hash($data['password']));
         $data['user_id'] = $this->db->insert('user', $data);
@@ -322,7 +326,11 @@ class User extends Model
 
         $this->hook->fire('user.login.before', $data, $result);
 
-        if (empty($data['email']) || empty($data['password'])) {
+        if (empty($data['email'])) {
+            return $result;
+        }
+
+        if (!isset($data['password']) && !isset($data['hash'])) {
             return $result;
         }
 
@@ -332,7 +340,11 @@ class User extends Model
             return $result;
         }
 
-        $expected = gplcart_string_hash($data['password'], $user['hash'], 0);
+        if (isset($data['password'])) {
+            $expected = gplcart_string_hash($data['password'], $user['hash'], 0);
+        } else {
+            $expected = $data['hash'];
+        }
 
         if (!gplcart_string_equals($user['hash'], $expected)) {
             return $result;

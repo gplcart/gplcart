@@ -12,6 +12,11 @@ return array(
             'controller' => array('gplcart\\core\\controllers\\frontend\\Front', 'indexFront')
         )
     ),
+    'oauth/(\w+)' => array(
+        'handlers' => array(
+            'controller' => array('gplcart\\core\\controllers\\frontend\\Oauth', 'callbackOauth')
+        )
+    ),
     'install' => array(
         'handlers' => array(
             'controller' => array('gplcart\\core\\controllers\\frontend\\Install', 'install')
