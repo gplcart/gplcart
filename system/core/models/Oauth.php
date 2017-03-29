@@ -41,18 +41,6 @@ class Oauth extends Model
     protected $session;
 
     /**
-     * An array token data
-     * @var array
-     */
-    protected $token;
-
-    /**
-     * A state code
-     * @var string
-     */
-    protected $state;
-
-    /**
      * @param CurlHelper $curl
      * @param SessionHelper $session
      * @param UrlHelper $url
@@ -65,9 +53,6 @@ class Oauth extends Model
         $this->url = $url;
         $this->curl = $curl;
         $this->session = $session;
-
-        $this->state = $this->session->get('oauth.state');
-        $this->token = $this->session->get('oauth.token');
     }
 
     /**
@@ -103,8 +88,13 @@ class Oauth extends Model
         $this->hook->fire('oauth.providers', $providers);
 
         foreach ($providers as $provider_id => &$provider) {
-            $provider += array('type' => '', 'id' => $provider_id);
+            $provider += array('type' => '', 'id' => $provider_id, 'status' => true);
             if (isset($data['type']) && $data['type'] !== $provider['type']) {
+                unset($providers[$provider_id]);
+                continue;
+            }
+
+            if (isset($data['status']) && $data['status'] != $provider['status']) {
                 unset($providers[$provider_id]);
             }
         }
@@ -125,13 +115,7 @@ class Oauth extends Model
             'redirect_uri' => $this->url->get('oauth', array(), true)
         );
 
-        $query = array_merge($provider['query'], $params);
-
-        if (isset($query['state'])) {
-            $this->setState($query['state']);
-        }
-
-        return $query;
+        return array_merge($provider['query'], $params);
     }
 
     /**
@@ -147,6 +131,7 @@ class Oauth extends Model
             'grant_type' => 'authorization_code',
             'client_secret' => $provider['settings']['client_secret']
         );
+
         return array_merge($query, $params);
     }
 
@@ -175,12 +160,14 @@ class Oauth extends Model
     protected function buildState(array $provider)
     {
         $data = array(
-            'key' => uniqid(), // More security
             'id' => $provider['id'],
-            'url' => $this->url->path()
+            'url' => $this->url->path(),
+            'key' => gplcart_string_random(4), // More security
         );
 
-        return gplcart_string_encode(json_encode($data));
+        $state = gplcart_string_encode(json_encode($data));
+        $this->setState($state, $provider['id']);
+        return $state;
     }
 
     /**
@@ -196,45 +183,32 @@ class Oauth extends Model
     /**
      * Set the current state
      * @param string $state
+     * @param string $provider_id
      */
-    public function setState($state)
+    public function setState($state, $provider_id)
     {
-        static $set = false;
-
-        if (!$set) {
-            $set = true;
-            $this->state = $state;
-            $this->session->set('oauth.state', $state);
-        }
+        $this->session->set("oauth_state.$provider_id", $state);
     }
 
     /**
-     * Reset saved token and state data
+     * Returns a saved state data from the session
+     * @param string $provider_id
+     * @return string
      */
-    public function reset()
+    public function getState($provider_id)
     {
-        $this->token = $this->state = null;
-        $this->session->delete('oauth');
-    }
-
-    /**
-     * Set the token data
-     * @param array $token
-     */
-    public function setToken(array $token)
-    {
-        $this->token = $token;
-        $this->session->set('oauth.token', $token);
+        return $this->session->get("oauth_state.$provider_id");
     }
 
     /**
      * Whether the state is actual
      * @param string $state
-     * @return boolean
+     * @param string $provider_id
+     * @return bool
      */
-    public function isValidState($state)
+    public function isValidState($state, $provider_id)
     {
-        return gplcart_string_equals($state, $this->state);
+        return gplcart_string_equals($state, $this->getState($provider_id));
     }
 
     /**
@@ -248,11 +222,6 @@ class Oauth extends Model
         $this->hook->fire('oauth.get.token.before', $provider, $params);
         $token = $this->requestToken($provider, $params);
         $this->hook->fire('oauth.get.token.after', $provider, $params, $token);
-
-        if (isset($token['access_token'])) {
-            $this->setToken($token);
-        }
-
         return $token;
     }
 

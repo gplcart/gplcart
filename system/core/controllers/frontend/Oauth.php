@@ -94,13 +94,13 @@ class Oauth extends FrontendController
             $this->outputHttpStatus(403);
         }
 
-        if (!$this->oauth->isValidState($this->data_state)) {
-            $this->outputHttpStatus(403);
-        }
-
         $parsed = $this->oauth->parseState($this->data_state);
 
         if (empty($parsed['id'])) {
+            $this->outputHttpStatus(403);
+        }
+
+        if (!$this->oauth->isValidState($this->data_state, $parsed['id'])) {
             $this->outputHttpStatus(403);
         }
 
@@ -140,8 +140,6 @@ class Oauth extends FrontendController
         if (empty($this->data_token['access_token'])) {
             $this->outputHttpStatus(403);
         }
-
-        $this->oauth->reset();
 
         return $this->data_token;
     }

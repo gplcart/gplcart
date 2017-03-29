@@ -315,8 +315,10 @@ class User extends Model
     /**
      * Logs in a user
      * @param array $data
+     * @param bool $check_password
+     * @return string
      */
-    public function login(array $data)
+    public function login(array $data, $check_password = true)
     {
         $result = array(
             'redirect' => null,
@@ -324,13 +326,9 @@ class User extends Model
             'message' => $this->language->text('Failed to log in')
         );
 
-        $this->hook->fire('user.login.before', $data, $result);
+        $this->hook->fire('user.login.before', $data, $check_password, $result);
 
         if (empty($data['email'])) {
-            return $result;
-        }
-
-        if (!isset($data['password']) && !isset($data['hash'])) {
             return $result;
         }
 
@@ -340,14 +338,11 @@ class User extends Model
             return $result;
         }
 
-        if (isset($data['password'])) {
+        if ($check_password) {
             $expected = gplcart_string_hash($data['password'], $user['hash'], 0);
-        } else {
-            $expected = $data['hash'];
-        }
-
-        if (!gplcart_string_equals($user['hash'], $expected)) {
-            return $result;
+            if (!gplcart_string_equals($user['hash'], $expected)) {
+                return $result;
+            }
         }
 
         $this->session->regenerate(true);
@@ -370,7 +365,7 @@ class User extends Model
             'redirect' => $redirect,
         );
 
-        $this->hook->fire('user.login.after', $data, $result);
+        $this->hook->fire('user.login.after', $data, $check_password, $result);
         return $result;
     }
 
@@ -393,10 +388,10 @@ class User extends Model
             return $result;
         }
 
-        $login = $this->config->get('user_registration_login', true);
-        $status = $this->config->get('user_registration_status', true);
-
-        $data += array('status' => $status, 'login' => $login);
+        $data += array(
+            'login' => $this->config->get('user_registration_login', true),
+            'status' => $this->config->get('user_registration_status', true)
+        );
 
         $data['user_id'] = $this->add($data);
 

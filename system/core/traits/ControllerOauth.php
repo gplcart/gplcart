@@ -28,7 +28,8 @@ trait ControllerOauth
         /* @var $model \gplcart\core\models\Oauth */
         $model = \gplcart\core\Container::get('gplcart\\core\\models\\Oauth');
 
-        $providers = $model->getProviders(array('type' => 'login'));
+        $options = array('type' => 'login', 'status' => true);
+        $providers = $model->getProviders($options);
 
         $buttons = array();
         foreach ($providers as $provider_id => $provider) {
