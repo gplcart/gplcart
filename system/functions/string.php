@@ -150,21 +150,27 @@ function gplcart_string_bool($value)
 }
 
 /**
- * Returns a URL-safe string encoded with MIME base64
+ * Encode a string with URL-safe Base64
  * @param string $string
  * @return string
  */
 function gplcart_string_encode($string)
 {
-    return strtr(base64_encode($string), '+/=', '-_,');
+    return str_replace('=', '', strtr(base64_encode($string), '+/', '-_'));
 }
 
 /**
- * Returns a decoded string encoded with URL-safe MIME base64
+ * Decode a string with URL-safe Base64
  * @param string $string
  * @return string
  */
 function gplcart_string_decode($string)
 {
-    return base64_decode(strtr($string, '-_,', '+/='));
+    $remainder = strlen($string) % 4;
+    if ($remainder) {
+        $padlen = 4 - $remainder;
+        $string .= str_repeat('=', $padlen);
+    }
+
+    return base64_decode(strtr($string, '-_', '+/'));
 }
