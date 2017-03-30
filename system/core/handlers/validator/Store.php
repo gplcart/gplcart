@@ -361,8 +361,7 @@ class Store extends BaseValidator
                 continue;
             }
 
-            $result = $this->file->setUploadPath(self::UPLOAD_PATH)
-                    ->upload($file);
+            $result = $this->file->upload($file, null, self::UPLOAD_PATH);
 
             if ($result !== true) {
                 $error = true;

@@ -214,11 +214,21 @@ class File extends Model
     /**
      * Uploads a file
      * @param array $postfile
-     * @return boolean|string
+     * @param null|string $handler
+     * @param null|string $path
+     * @return mixed
      */
-    public function upload($postfile)
+    public function upload($postfile, $handler = null, $path = null)
     {
-        $this->hook->fire('file.upload.before', $postfile);
+        $this->hook->fire('file.upload.before', $postfile, $handler, $path);
+
+        if (!empty($handler)) {
+            $this->setHandler($handler);
+        }
+
+        if (isset($path)) {
+            $this->setUploadPath($path);
+        }
 
         if (empty($postfile)) {
             return $this->language->text('Nothing to upload');
@@ -247,7 +257,7 @@ class File extends Model
             return $result;
         }
 
-        $this->hook->fire('file.upload.after', $postfile, $this->uploaded);
+        $this->hook->fire('file.upload.after', $postfile, $handler, $path, $this->uploaded);
         return true;
     }
 

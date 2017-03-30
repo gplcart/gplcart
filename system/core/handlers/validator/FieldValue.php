@@ -211,9 +211,7 @@ class FieldValue extends BaseValidator
             return true;
         }
 
-        $result = $this->file->setUploadPath(self::UPLOAD_PATH)
-                ->setHandler('image')
-                ->upload($file);
+        $result = $this->file->upload($file, 'image', self::UPLOAD_PATH);
 
         if ($result !== true) {
             $this->setError('file', (string) $result);

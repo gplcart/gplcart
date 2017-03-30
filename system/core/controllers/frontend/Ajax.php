@@ -314,8 +314,7 @@ class Ajax extends FrontendController
             $path .= '/' . $this->config("{$type}_image_dirname", $type);
         }
 
-        $result = $this->file->setUploadPath($path)
-                ->upload($this->request->file('file'));
+        $result = $this->file->upload($this->request->file('file'), null, $path);
 
         if ($result !== true) {
             return array('error' => (string) $result);

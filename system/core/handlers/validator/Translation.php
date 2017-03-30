@@ -106,9 +106,7 @@ class Translation extends BaseValidator
 
         $code = $this->getSubmitted('language');
 
-        $result = $this->file->setUploadPath(GC_LOCALE_DIR . "/$code")
-                ->setHandler('csv')
-                ->upload($file);
+        $result = $this->file->upload($file, 'csv', GC_LOCALE_DIR . "/$code");
 
         if ($result !== true) {
             $this->setError('file', (string) $result);
