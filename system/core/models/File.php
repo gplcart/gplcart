@@ -279,24 +279,12 @@ class File extends Model
             return $this->language->text('Unknown file extension');
         }
 
-        $extension = $pathinfo['extension'];
-
-        if (isset($this->handler['extensions']) && !in_array($extension, $this->handler['extensions'])) {
-            return $this->language->text('Unsupported file extension');
-        }
-
         if (!isset($this->handler)) {
-            $supported_extensions = $this->supportedExtensions();
-
-            if (!in_array($extension, $supported_extensions)) {
-                return $this->language->text('Unsupported file extension');
-            }
-
-            $this->handler = $this->getHandler(".$extension");
+            return true;
         }
 
-        if (empty($this->handler)) {
-            return $this->language->text('Missing handler');
+        if (isset($this->handler['extensions']) && !in_array($pathinfo['extension'], $this->handler['extensions'])) {
+            return $this->language->text('Unsupported file extension');
         }
 
         if (empty($this->handler['validator'])) {
@@ -643,12 +631,6 @@ class File extends Model
             'path' => 'image/upload/common',
             'filesize' => null,
             'validator' => 'image'
-        );
-
-        $handlers['p12'] = array(
-            'extensions' => array('p12'),
-            'path' => 'private/certificates',
-            'validator' => 'p12'
         );
 
         $handlers['json'] = array(
