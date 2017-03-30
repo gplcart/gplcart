@@ -18,6 +18,7 @@ $config = array();
 # $config['admin_list_limit']                     = 20; // Max number of items for admin UI
 # $config['autocomplete_limit']                   = 10; // Max number of autocomplete suggestions for customers
 # $config['dashboard_limit']                      = 10; // Max number of items in dashboard blocks
+# $config['dashboard_columns']                    = 2; // Number of dashboard columns. Must be multiple of 12
 # $config['theme_mobile']                         = 'mobile'; // Default module ID of mobile theme
 # $config['theme_backend']                        = 'backend'; // Default module ID of backend theme
 # $config['wishlist_limit']                       = 20; // Max number of wishlist items for anonymous

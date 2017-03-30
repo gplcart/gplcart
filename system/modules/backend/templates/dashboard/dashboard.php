@@ -7,12 +7,11 @@
  */
 ?>
 <div class="row">
-  <div class="col-md-6">
-    <?php echo $dashboard_panel_orders; ?>
-    <?php echo $dashboard_panel_users; ?>
-    <?php echo $dashboard_panel_events; ?>
+  <?php foreach ($dashboard as $panels) { ?>
+  <div class="col-md-<?php echo 12 / $columns; ?>">
+    <?php foreach ($panels as $panel) { ?>
+    <?php echo $panel['rendered']; ?>
+    <?php } ?>
   </div>
-  <div class="col-md-6">
-    <?php echo $dashboard_panel_summary; ?>
-  </div>
+  <?php } ?>
 </div>

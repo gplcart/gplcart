@@ -77,8 +77,6 @@ class Dashboard extends BackendController
         $this->report = $report;
         $this->review = $review;
         $this->product = $product;
-
-        $this->dashboard_limit = (int) $this->config('dashboard_limit', 10);
     }
 
     /**
@@ -87,15 +85,30 @@ class Dashboard extends BackendController
     public function dashboard()
     {
         $this->toggleIntroDashboard();
-
         $this->setTitleDashboard();
-
-        $this->setDataUsersDashboard();
-        $this->setDataOrdersDashboard();
-        $this->setDataEventsDashboard();
-        $this->setDataSummaryDashboard();
-
+        $this->setDataContentDashboard();
         $this->outputDashboard();
+    }
+
+    /**
+     * Sets dashboard content data
+     */
+    protected function setDataContentDashboard()
+    {
+        $panels = array();
+
+        $panels[] = array('rendered' => $this->renderPanelUsersDashboard());
+        $panels[] = array('rendered' => $this->renderPanelOrdersDashboard());
+        $panels[] = array('rendered' => $this->renderPanelEventsDashboard());
+        $panels[] = array('rendered' => $this->renderPanelSummaryDashboard());
+
+        gplcart_array_sort($panels);
+
+        $columns = $this->config('dashboard_columns', 2);
+        $splitted = gplcart_array_split($panels, $columns);
+
+        $this->setData('columns', $columns);
+        $this->setData('dashboard', $splitted);
     }
 
     /**
@@ -110,26 +123,24 @@ class Dashboard extends BackendController
     }
 
     /**
-     * Sets recent users panel
+     * Returns rendered recent users panel
      */
-    protected function setDataUsersDashboard()
+    protected function renderPanelUsersDashboard()
     {
         $options = array(
-            'limit' => array(0, $this->dashboard_limit)
+            'limit' => array(0, $this->config('dashboard_limit', 10))
         );
 
         $users = $this->user->getList($options);
-
-        $html = $this->render('dashboard/panels/users', array('users' => $users));
-        $this->setData('dashboard_panel_users', $html);
+        return $this->render('dashboard/panels/users', array('users' => $users));
     }
 
     /**
-     * Sets recent orders panel
+     * Returns rendered recent orders panel
      */
-    protected function setDataOrdersDashboard()
+    protected function renderPanelOrdersDashboard()
     {
-        $options = array('limit' => array(0, $this->dashboard_limit));
+        $options = array('limit' => array(0, $this->config('dashboard_limit', 10)));
         $orders = $this->order->getList($options);
 
         array_walk($orders, function (&$order) {
@@ -137,14 +148,13 @@ class Dashboard extends BackendController
             $order['total_formatted'] = $this->price->format($order['total'], $order['currency']);
         });
 
-        $html = $this->render('dashboard/panels/orders', array('orders' => $orders));
-        $this->setData('dashboard_panel_orders', $html);
+        return $this->render('dashboard/panels/orders', array('orders' => $orders));
     }
 
     /**
-     * Sets recent events panel
+     * Returns rendered recent events panel
      */
-    protected function setDataEventsDashboard()
+    protected function renderPanelEventsDashboard()
     {
         $events = array();
         $severities = $this->report->getSeverities();
@@ -153,7 +163,7 @@ class Dashboard extends BackendController
 
             $options = array(
                 'severity' => $severity,
-                'limit' => array(0, $this->dashboard_limit)
+                'limit' => array(0, $this->config('dashboard_limit', 10))
             );
 
             $items = (array) $this->report->getList($options);
@@ -172,9 +182,7 @@ class Dashboard extends BackendController
         }
 
         $this->setJsChartEventsDashboard();
-
-        $html = $this->render('dashboard/panels/events', array('events' => $events));
-        $this->setData('dashboard_panel_events', $html);
+        return $this->render('dashboard/panels/events', array('events' => $events));
     }
 
     /**
@@ -210,9 +218,9 @@ class Dashboard extends BackendController
     }
 
     /**
-     * Sets summary panel
+     * Returns rendered summary panel
      */
-    protected function setDataSummaryDashboard()
+    protected function renderPanelSummaryDashboard()
     {
         $options = array('count' => true);
 
@@ -223,8 +231,7 @@ class Dashboard extends BackendController
             'product_total' => $this->product->getList($options)
         );
 
-        $html = $this->render('dashboard/panels/summary', $data);
-        $this->setData('dashboard_panel_summary', $html);
+        return $this->render('dashboard/panels/summary', $data);
     }
 
     /**
