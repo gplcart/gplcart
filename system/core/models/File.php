@@ -56,7 +56,7 @@ class File extends Model
 
     /**
      * Current handler
-     * @var array
+     * @var mixed
      */
     protected $handler;
 
@@ -222,14 +222,6 @@ class File extends Model
     {
         $this->hook->fire('file.upload.before', $postfile, $handler, $path);
 
-        if (!empty($handler)) {
-            $this->setHandler($handler);
-        }
-
-        if (isset($path)) {
-            $this->setUploadPath($path);
-        }
-
         if (empty($postfile)) {
             return $this->language->text('Nothing to upload');
         }
@@ -243,6 +235,14 @@ class File extends Model
 
         if (!is_uploaded_file($tempname)) {
             return $this->language->text('Unable to upload the file');
+        }
+
+        if (isset($handler)) {
+            $this->setHandler($handler);
+        }
+
+        if (isset($path)) {
+            $this->setUploadPath($path);
         }
 
         $valid = $this->validate($tempname, $file);
@@ -279,12 +279,22 @@ class File extends Model
             return $this->language->text('Unknown file extension');
         }
 
-        if (!isset($this->handler)) {
+        if ($this->handler === false) {
             return true;
         }
 
-        if (isset($this->handler['extensions']) && !in_array($pathinfo['extension'], $this->handler['extensions'])) {
+        $extension = $pathinfo['extension'];
+
+        if (isset($this->handler['extensions']) && !in_array($extension, $this->handler['extensions'])) {
             return $this->language->text('Unsupported file extension');
+        }
+
+        if (!isset($this->handler)) {
+            $supported_extensions = $this->supportedExtensions();
+            if (!in_array($extension, $supported_extensions)) {
+                return $this->language->text('Unsupported file extension');
+            }
+            $this->handler = $this->getHandler(".$extension");
         }
 
         if (empty($this->handler['validator'])) {
@@ -349,7 +359,6 @@ class File extends Model
             if (empty($handler['extensions'])) {
                 continue;
             }
-
             foreach ((array) $handler['extensions'] as $allowed_extension) {
                 if ($extension === $allowed_extension) {
                     return $handler;
@@ -362,12 +371,20 @@ class File extends Model
 
     /**
      * Sets the current handler
-     * @param string $id
+     * @param mixed $id
+     *  - string: load by validator ID
+     *  - false: disable validator at all,
+     *  - null: detect validator by file extension
      * @return \gplcart\core\models\File
      */
     public function setHandler($id)
     {
-        $this->handler = $this->getHandler($id);
+        if (is_string($id)) {
+            $this->handler = $this->getHandler($id);
+        } else {
+            $this->handler = $id;
+        }
+
         return $this;
     }
 
