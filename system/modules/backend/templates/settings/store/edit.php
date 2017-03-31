@@ -70,7 +70,7 @@
       <div class="form-group<?php echo $this->error('data.owner', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Owner'); ?></label>
         <div class="col-md-4">
-          <input maxlength="32" name="store[data][owner]" class="form-control" value="<?php echo isset($store['data']['owner']) ? $this->escape($store['data']['owner']) : ''; ?>">
+          <input maxlength="32" name="store[data][owner]" class="form-control" value="<?php echo $this->escape($store['data']['owner']); ?>">
           <div class="help-block">
             <?php echo $this->error('data.owner'); ?>
             <div class="text-muted">
@@ -87,7 +87,7 @@
       <div class="required form-group<?php echo $this->error('data.title', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Title'); ?></label>
         <div class="col-md-4">
-          <input type="text" maxlength="70" name="store[data][title]" class="form-control" value="<?php echo (isset($store['data']['title'])) ? $this->escape($store['data']['title']) : ''; ?>">
+          <input type="text" maxlength="70" name="store[data][title]" class="form-control" value="<?php echo $this->escape($store['data']['title']); ?>">
           <div class="help-block">
             <?php echo $this->error('data.title'); ?>
             <div class="text-muted"><?php echo $this->text('Required. This name is displayed to frontend users as default site name'); ?></div>
@@ -97,7 +97,7 @@
       <div class="form-group<?php echo $this->error('data.meta_title', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Meta title'); ?></label>
         <div class="col-md-4">
-          <input type="text" maxlength="60" name="store[data][meta_title]" class="form-control" value="<?php echo (isset($store['data']['meta_title'])) ? $this->escape($store['data']['meta_title']) : ''; ?>">
+          <input type="text" maxlength="60" name="store[data][meta_title]" class="form-control" value="<?php echo $this->escape($store['data']['meta_title']); ?>">
           <div class="help-block">
             <?php echo $this->error('data.meta_title'); ?>
             <div class="text-muted">
@@ -109,7 +109,7 @@
       <div class="form-group<?php echo $this->error('data.meta_description', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Meta description'); ?></label>
         <div class="col-md-4">
-          <textarea maxlength="160" class="form-control" name="store[data][meta_description]"><?php echo (isset($store['data']['meta_description'])) ? $this->escape($store['data']['meta_description']) : ''; ?></textarea>
+          <textarea maxlength="160" class="form-control" name="store[data][meta_description]"><?php echo $this->escape($store['data']['meta_description']); ?></textarea>
           <div class="help-block">
             <?php echo $this->error('data.meta_description'); ?>
             <?php echo $this->text('An optional text to be used in meta description tag. The tag is commonly used on search engine result pages (SERPs) to display preview snippets for a given page. Important for SEO'); ?>
@@ -169,7 +169,7 @@
           <div class="form-group<?php echo $this->error('data.city', ' has-error'); ?>">
             <label class="col-md-4 control-label"><?php echo $this->text('City'); ?></label>
             <div class="col-md-8">
-              <input name="store[data][city]" class="form-control" value="<?php echo isset($store['data']['city']) ? $this->escape($store['data']['city']) : ''; ?>">
+              <input name="store[data][city]" class="form-control" value="<?php echo $this->escape($store['data']['city']); ?>">
               <div class="help-block">
                 <?php echo $this->error('data.city'); ?>
                 <div class="text-muted">
@@ -181,7 +181,7 @@
           <div class="form-group<?php echo $this->error('data.state', ' has-error'); ?>">
             <label class="col-md-4 control-label"><?php echo $this->text('State'); ?></label>
             <div class="col-md-8">
-              <input name="store[data][state]" class="form-control" value="<?php echo isset($store['data']['state']) ? $this->escape($store['data']['state']) : ''; ?>">
+              <input name="store[data][state]" class="form-control" value="<?php echo $this->escape($store['data']['state']); ?>">
               <div class="help-block">
                 <?php echo $this->error('data.state'); ?>
                 <div class="text-muted">
@@ -195,7 +195,7 @@
             <div class="col-md-8">
               <select name="store[data][country]" class="form-control">
               <?php foreach($countries as $code => $name) { ?>
-                <option value="<?php echo $this->escape($code); ?>"<?php echo isset($store['data']['country']) && $store['data']['country'] == $code ? ' selected' : ''; ?>><?php echo $this->escape($name); ?></option>
+                <option value="<?php echo $this->escape($code); ?>"<?php echo $store['data']['country'] == $code ? ' selected' : ''; ?>><?php echo $this->escape($name); ?></option>
               <?php } ?>
               </select>
               <div class="help-block">
@@ -209,7 +209,7 @@
           <div class="form-group<?php echo $this->error('data.address', ' has-error'); ?>">
             <label class="col-md-4 control-label"><?php echo $this->text('Address'); ?></label>
             <div class="col-md-8">
-              <input name="store[data][address]" class="form-control" value="<?php echo isset($store['data']['address']) ? $this->escape($store['data']['address']) : ''; ?>">
+              <input name="store[data][address]" class="form-control" value="<?php echo $this->escape($store['data']['address']); ?>">
               <div class="help-block">
                 <?php echo $this->error('data.address'); ?>
                 <div class="text-muted">
@@ -221,7 +221,7 @@
           <div class="form-group<?php echo $this->error('data.map', ' has-error'); ?>">
             <label class="col-md-4 control-label"><?php echo $this->text('Map'); ?></label>
             <div class="col-md-8">
-              <textarea name="store[data][map]" class="form-control"><?php echo empty($store['data']['map']) ? '' : $this->escape($store['data']['map']); ?></textarea>
+              <textarea name="store[data][map]" class="form-control"><?php echo $this->escape($store['data']['map']); ?></textarea>
               <div class="help-block">
                 <?php echo $this->error('data.map'); ?>
                 <div class="text-muted">
@@ -233,7 +233,7 @@
           <div class="form-group required<?php echo $this->error('data.email', ' has-error'); ?>">
             <label class="col-md-4 control-label"><?php echo $this->text('E-mail'); ?></label>
             <div class="col-md-8">
-              <textarea name="store[data][email]" class="form-control"><?php echo empty($store['data']['email']) ? '' : $this->escape($store['data']['email']); ?></textarea>
+              <textarea name="store[data][email]" class="form-control"><?php echo $this->escape($store['data']['email']); ?></textarea>
               <div class="help-block">
                 <?php echo $this->error('data.email'); ?>
                 <div class="text-muted">
@@ -245,7 +245,7 @@
           <div class="form-group<?php echo $this->error('data.phone', ' has-error'); ?>">
             <label class="col-md-4 control-label"><?php echo $this->text('Phone'); ?></label>
             <div class="col-md-8">
-              <textarea name="store[data][phone]" class="form-control"><?php echo!empty($store['data']['phone']) ? $this->escape($store['data']['phone']) : ''; ?></textarea>
+              <textarea name="store[data][phone]" class="form-control"><?php echo $this->escape($store['data']['phone']); ?></textarea>
               <div class="help-block">
                 <?php echo $this->error('data.phone'); ?>
                 <div class="text-muted">
@@ -257,7 +257,7 @@
           <div class="form-group<?php echo $this->error('data.fax', ' has-error'); ?>">
             <label class="col-md-4 control-label"><?php echo $this->text('Fax'); ?></label>
             <div class="col-md-8">
-              <textarea name="store[data][fax]" class="form-control"><?php echo !empty($store['data']['fax']) ? $this->escape($store['data']['fax']) : ''; ?></textarea>
+              <textarea name="store[data][fax]" class="form-control"><?php echo $this->escape($store['data']['fax']); ?></textarea>
               <div class="help-block">
                 <?php echo $this->error('data.fax'); ?>
                 <div class="text-muted">
@@ -269,7 +269,7 @@
           <div class="form-group<?php echo $this->error('data.postcode', ' has-error'); ?>">
             <label class="col-md-4 control-label"><?php echo $this->text('Post code'); ?></label>
             <div class="col-md-8">
-              <input name="store[data][postcode]" class="form-control" value="<?php echo isset($store['data']['postcode']) ? $this->escape($store['data']['postcode']) : ''; ?>">
+              <input name="store[data][postcode]" class="form-control" value="<?php echo $this->escape($store['data']['postcode']); ?>">
               <div class="help-block">
                 <?php echo $this->error('data.postcode'); ?>
                 <div class="text-muted">
@@ -295,7 +295,7 @@
         <div class="col-md-4">
           <select name="store[data][theme]" class="form-control">
             <?php foreach ($themes as $theme_id => $theme) { ?>
-            <option value="<?php echo $theme_id; ?>"<?php echo (isset($store['data']['theme']) && ($store['data']['theme'] == $theme_id)) ? ' selected' : ''; ?>><?php echo $this->escape($theme['name']); ?></option>
+            <option value="<?php echo $theme_id; ?>"<?php echo $store['data']['theme'] == $theme_id ? ' selected' : ''; ?>><?php echo $this->escape($theme['name']); ?></option>
             <?php } ?>
           </select>
           <div class="help-block">
@@ -311,7 +311,7 @@
         <div class="col-md-4">
           <select name="store[data][theme_mobile]" class="form-control">
             <?php foreach ($themes as $theme_id => $theme) { ?>
-            <option value="<?php echo $theme_id; ?>"<?php echo (isset($store['data']['theme_mobile']) && ($store['data']['theme_mobile'] == $theme_id)) ? ' selected' : ''; ?>><?php echo $this->escape($theme['name']); ?></option>
+            <option value="<?php echo $theme_id; ?>"<?php echo $store['data']['theme_mobile'] == $theme_id ? ' selected' : ''; ?>><?php echo $this->escape($theme['name']); ?></option>
             <?php } ?>
           </select>
           <div class="help-block">
@@ -327,7 +327,7 @@
         <div class="col-md-4">
           <select name="store[data][theme_tablet]" class="form-control">
             <?php foreach ($themes as $theme_id => $theme) { ?>
-            <option value="<?php echo $theme_id; ?>"<?php echo (isset($store['data']['theme_tablet']) && ($store['data']['theme_tablet'] == $theme_id)) ? ' selected' : ''; ?>><?php echo $this->escape($theme['name']); ?></option>
+            <option value="<?php echo $theme_id; ?>"<?php echo $store['data']['theme_tablet'] == $theme_id ? ' selected' : ''; ?>><?php echo $this->escape($theme['name']); ?></option>
             <?php } ?>
           </select>
           <div class="help-block">
@@ -362,9 +362,23 @@
       <div class="form-group">
         <label class="col-md-2 control-label"><?php echo $this->text('Invoice prefix'); ?></label>
         <div class="col-md-4">
-          <input name="store[data][invoice_prefix]" class="form-control" value="<?php echo isset($store['data']['invoice_prefix']) ? $store['data']['invoice_prefix'] : ''; ?>">
+          <input name="store[data][invoice_prefix]" class="form-control" value="<?php echo $this->escape($store['data']['invoice_prefix']); ?>">
           <div class="help-block">
             <?php echo $this->text('Prepend this string to all invoice numbers associated with this store'); ?>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading"><?php echo $this->text('Google Analytics'); ?></div>
+    <div class="panel-body">
+      <div class="form-group">
+        <label class="col-md-2 control-label"><?php echo $this->text('Tracking code'); ?></label>
+        <div class="col-md-6">
+          <textarea name="store[data][ga_code]" rows="10" class="form-control"><?php echo $this->escape($store['data']['ga_code']); ?></textarea>
+          <div class="help-block">
+            <?php echo $this->text('Google Analytics .js code without script tags'); ?>
           </div>
         </div>
       </div>

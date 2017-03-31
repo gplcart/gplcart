@@ -326,7 +326,7 @@ class Store extends BackendController
      */
     protected function validateStore()
     {
-        $this->setSubmitted('store');
+        $this->setSubmitted('store', null, 'raw');
 
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $this->data_store);
@@ -400,7 +400,7 @@ class Store extends BackendController
         // Convert arrays to multiline strings
         foreach (array('email', 'phone', 'fax', 'map') as $field) {
             $value = $this->getData("store.data.$field");
-            if (!empty($value)) {
+            if (isset($value)) {
                 $this->setData("store.data.$field", implode("\n", (array) $value));
             }
         }

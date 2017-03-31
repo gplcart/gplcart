@@ -1679,6 +1679,17 @@ class Controller
         $this->setDefaultJsSettings();
         $this->setDefaultJsCron();
         $this->setDefaultJsTranslation();
+        $this->setDefaultJsGa();
+    }
+
+    /**
+     * Set Google Analytics tarcking Js code
+     */
+    protected function setDefaultJsGa()
+    {
+        if (!empty($this->current_store['data']['ga_code']) && !$this->is_backend) {
+            $this->setJs($this->current_store['data']['ga_code'], array('position' => 'bottom'));
+        }
     }
 
     /**

@@ -237,13 +237,17 @@ class Store extends Model
             'logo' => '',
             'map' => array(),
             'meta_title' => 'GPL Cart',
+            'meta_description' => '',
             'owner' => '',
             'phone' => array(),
             'theme' => 'frontend',
+            'theme_tablet' => 'frontend',
+            'theme_mobile' => 'frontend',
             'title' => 'GPL Cart',
             'collection_file' => 1,
             'collection_product' => 2,
-            'collection_page' => 3
+            'collection_page' => 3,
+            'ga_code' => ''
         );
     }
 
