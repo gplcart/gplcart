@@ -663,7 +663,7 @@ class User extends Model
     public function generatePassword()
     {
         $hash = crypt(gplcart_string_random(), gplcart_string_random());
-        return str_replace(array('+', '/', '='), '', base64_encode($hash));
+        return gplcart_string_encode($hash);
     }
 
 }
