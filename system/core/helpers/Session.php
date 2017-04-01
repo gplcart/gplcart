@@ -19,20 +19,13 @@ class Session
 
     /**
      * Starts a session
-     * @return boolean
      * @throws UserAccessException
      */
     public function init()
     {
-        if ($this->started()) {
-            return true;
-        }
-
-        if (!session_start()) {
+        if (!$this->started() && !session_start()) {
             throw new UserAccessException('Failed to start the session');
         }
-
-        return true;
     }
 
     /**
@@ -41,7 +34,7 @@ class Session
      */
     protected function started()
     {
-        return (session_status() === PHP_SESSION_ACTIVE);
+        return session_status() === PHP_SESSION_ACTIVE;
     }
 
     /**

@@ -181,7 +181,7 @@ class Config
      */
     public function token()
     {
-        return str_replace(array('+', '/', '='), '', base64_encode(crypt(session_id(), $this->key())));
+        return gplcart_string_encode(crypt(session_id(), $this->key()));
     }
 
     /**
