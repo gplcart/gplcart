@@ -17,7 +17,7 @@ use gplcart\core\helpers\Url as UrlHelper,
     gplcart\core\helpers\Session as SessionHelper;
 
 /**
- * Manages basic behaviors and data related to Oauth functionality
+ * Manages basic behaviors and data related to Oauth 2.0 functionality
  */
 class Oauth extends Model
 {
@@ -56,7 +56,7 @@ class Oauth extends Model
     }
 
     /**
-     * Returns an array of an Oauth provider
+     * Returns an Oauth provider
      * @param string $id
      * @return array
      */
@@ -93,7 +93,6 @@ class Oauth extends Model
                 unset($providers[$provider_id]);
                 continue;
             }
-
             if (isset($data['status']) && $data['status'] != $provider['status']) {
                 unset($providers[$provider_id]);
             }
@@ -103,52 +102,68 @@ class Oauth extends Model
     }
 
     /**
-     * Returns an array of provider query data
+     * Returns an array of authorization URL query
      * @param array $provider
      * @param array $params
      * @return array
      */
-    public function getQuery(array $provider, array $params = array())
+    public function getQueryAuth(array $provider, array $params = array())
     {
         $params += array(
-            'client_id' => $provider['settings']['client_id'],
-            'redirect_uri' => $this->url->get('oauth', array(), true)
+            'response_type' => 'code',
+            'scope' => $provider['scope'],
+            'state' => $this->buildState($provider)
         );
 
-        return array_merge($provider['query'], $params);
+        $params += $this->getDefaultQuery($provider);
+
+        if (isset($provider['handlers']['auth'])) {
+            // Call per-provider query handler
+            $params = $this->call('auth', $provider, $params);
+        }
+
+        return $params;
     }
 
     /**
-     * Returns an array of query used to exchange token
+     * Returns default query data for the user authorization process
+     * @param array $provider
+     * @return array
+     */
+    protected function getDefaultQuery(array $provider)
+    {
+        return array(
+            'client_id' => $provider['settings']['client_id'],
+            'redirect_uri' => $this->url->get('oauth', array(), true)
+        );
+    }
+
+    /**
+     * Returns a query for the authorization request
      * @param array $provider
      * @param array $params
+     * @return array
      */
-    public function getQueryToken(array $provider, array $params)
+    public function getQueryToken(array $provider, array $params = array())
     {
-        $query = $this->getQuery($provider);
-
-        $params += array(
+        $default = array(
             'grant_type' => 'authorization_code',
             'client_secret' => $provider['settings']['client_secret']
         );
 
-        return array_merge($query, $params);
+        $default += $this->getDefaultQuery($provider);
+        return array_merge($default, $params);
     }
 
     /**
-     * Returns an authorization URL for a given provider
+     * Returns an authorization URL for the given provider
      * @param array $provider
      * @param array $params
      * @return string
      */
     public function url(array $provider, array $params = array())
     {
-        $params += array(
-            'response_type' => 'code',
-            'state' => $this->buildState($provider)
-        );
-
-        $query = $this->getQuery($provider, $params);
+        $query = $this->getQueryAuth($provider, $params);
         return $this->url->get($provider['url']['auth'], $query, true);
     }
 
@@ -161,11 +176,14 @@ class Oauth extends Model
     {
         $data = array(
             'id' => $provider['id'],
-            'url' => $this->url->path(),
-            'key' => gplcart_string_random(4), // More security
+            'url' => $this->url->get('', array(), true), // Current absolute URL
+            'key' => gplcart_string_random(4), // Make resulting hash unique
         );
 
+        // Base 64 Url safe encoding
         $state = gplcart_string_encode(json_encode($data));
+
+        // Memorize in session
         $this->setState($state, $provider['id']);
         return $state;
     }
@@ -181,13 +199,13 @@ class Oauth extends Model
     }
 
     /**
-     * Set the current state
+     * Save a state code in the session
      * @param string $state
      * @param string $provider_id
      */
     public function setState($state, $provider_id)
     {
-        $this->session->set("oauth_state.$provider_id", $state);
+        $this->session->set("oauth.state.$provider_id", $state);
     }
 
     /**
@@ -197,7 +215,27 @@ class Oauth extends Model
      */
     public function getState($provider_id)
     {
-        return $this->session->get("oauth_state.$provider_id");
+        return $this->session->get("oauth.state.$provider_id");
+    }
+
+    /**
+     * Save a token data in the session
+     * @param string $token
+     * @param string $provider_id
+     */
+    public function setToken($token, $provider_id)
+    {
+        $this->session->set("oauth.token.$provider_id", $token);
+    }
+
+    /**
+     * Returns a saved token data from the session
+     * @param string $provider_id
+     * @return string
+     */
+    public function getToken($provider_id)
+    {
+        return $this->session->get("oauth.token.$provider_id");
     }
 
     /**
@@ -212,49 +250,98 @@ class Oauth extends Model
     }
 
     /**
-     * Returns an array of token data
+     * Performs request to get access token
      * @param array $provider
-     * @param array $params
+     * @param array $query
      * @return array
      */
-    public function getToken(array $provider, array $params = array())
+    public function requestToken(array $provider, array $query)
     {
-        $this->hook->fire('oauth.get.token.before', $provider, $params);
-        $token = $this->requestToken($provider, $params);
-        $this->hook->fire('oauth.get.token.after', $provider, $params, $token);
+        $this->hook->fire('oauth.request.token.before', $provider, $query);
+
+        $response = $this->curl->post($provider['url']['token'], array('fields' => $query));
+        $token = json_decode($response, true);
+
+        $this->hook->fire('oauth.request.token.after', $provider, $query, $token);
         return $token;
     }
 
     /**
-     * Request a new token
+     * Returns an array of requested token data
      * @param array $provider
      * @param array $params
-     * @return mixed
+     * @return array
      */
-    protected function requestToken(array $provider, array $params)
+    public function exchangeToken(array $provider, array $params = array())
     {
         if (isset($provider['handlers']['token'])) {
             return $this->call('token', $provider, $params);
         }
 
-        $post = array('fields' => $this->getQueryToken($provider, $params));
-        $response = $this->curl->post($provider['url']['token'], $post);
+        return $this->requestToken($provider, $params);
+    }
 
-        return json_decode($response, true);
+    /**
+     * Generate and sign a JWT token
+     * @param array $data
+     * @return string
+     * @throws \InvalidArgumentException
+     * @link https://developers.google.com/accounts/docs/OAuth2ServiceAccount
+     */
+    public function generateJwt(array $data)
+    {
+        $data += array('lifetime' => 3600);
+
+        if (!is_readable($data['certificate_file'])) {
+            throw new \InvalidArgumentException('Private key does not exist');
+        }
+
+        $key = file_get_contents($data['certificate_file']);
+        $header = array('alg' => 'RS256', 'typ' => 'JWT');
+
+        $params = array(
+            'iat' => GC_TIME,
+            'scope' => $data['scope'],
+            'aud' => $data['token_url'],
+            'iss' => $data['service_account_id'],
+            'exp' => GC_TIME + $data['lifetime']
+        );
+
+        $encodings = array(
+            base64_encode(json_encode($header)),
+            base64_encode(json_encode($params)),
+        );
+
+        $certs = array();
+        if (!openssl_pkcs12_read($key, $certs, $data['certificate_secret'])) {
+            throw new \InvalidArgumentException('Could not parse .p12 file');
+        }
+
+        if (!isset($certs['pkey'])) {
+            throw new \InvalidArgumentException('Could not find private key in .p12 file');
+        }
+
+        $sig = '';
+        $input = implode('.', $encodings);
+        if (!openssl_sign($input, $sig, openssl_pkey_get_private($certs['pkey']), OPENSSL_ALGO_SHA256)) {
+            throw new \InvalidArgumentException('Could not sign data');
+        }
+
+        $encodings[] = base64_encode($sig);
+        return implode('.', $encodings);
     }
 
     /**
      * Does main authorization process
      * @param array $provider
-     * @param string $token
+     * @param array $params
      * @return bool
      */
-    public function process(array $provider, $token)
+    public function process(array $provider, $params)
     {
-        $this->hook->fire('oauth.process.before', $provider, $token);
-        $result = $this->call('process', $provider, array('token' => $token));
-        $this->hook->fire('oauth.process.after', $provider, $token, $result);
-
+        $this->hook->fire('oauth.process.before', $provider, $params);
+        $result = $this->call('process', $provider, $params);
+        $this->hook->fire('oauth.process.after', $provider, $params, $result);
         return $result;
     }
 
@@ -269,6 +356,28 @@ class Oauth extends Model
     {
         $providers = $this->getProviders();
         return Handler::call($providers, $provider['id'], $handler, array($params, $provider, $this));
+    }
+
+    /**
+     * Returns an array of requested token for "server-to-server" authorization
+     * @param array $provider
+     * @param array $jwt
+     * @return boolean
+     * @link https://developers.google.com/accounts/docs/OAuth2ServiceAccount
+     */
+    public function exchangeTokenServer($provider, array $jwt)
+    {
+        $jwt += array(
+            'scope' => $provider['scope'],
+            'token_url' => $provider['url']['token']
+        );
+
+        $request = array(
+            'assertion' => $this->generateJwt($jwt),
+            'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer'
+        );
+
+        return $this->requestToken($provider, $request);
     }
 
 }

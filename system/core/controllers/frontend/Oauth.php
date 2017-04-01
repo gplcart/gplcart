@@ -72,7 +72,6 @@ class Oauth extends FrontendController
 
     /**
      * Callback for Oauth returning URL
-     * @param string $provider_id
      */
     public function callbackOauth()
     {
@@ -96,18 +95,25 @@ class Oauth extends FrontendController
 
         $parsed = $this->oauth->parseState($this->data_state);
 
-        if (empty($parsed['id'])) {
-            $this->outputHttpStatus(403);
+        if (empty($parsed['id']) || !isset($parsed['url'])) {
+            throw new \InvalidArgumentException('Invalid provider Id and/or returning URL');
         }
 
         if (!$this->oauth->isValidState($this->data_state, $parsed['id'])) {
-            $this->outputHttpStatus(403);
+            throw new \InvalidArgumentException('Invalid state code');
         }
 
         $this->data_provider = $this->oauth->getProvider($parsed['id']);
 
         if (empty($this->data_provider)) {
-            $this->outputHttpStatus(403);
+            throw new \InvalidArgumentException('Unknown Oauth provider');
+        }
+
+        // Be sure that URL domain belongs to our enabled store
+        $store = $this->store->get(parse_url($parsed['url'], PHP_URL_HOST));
+
+        if (empty($store['status'])) {
+            throw new \InvalidArgumentException('Invalid domain in redirect URL');
         }
 
         $this->data_url = $parsed['url'];
@@ -135,12 +141,14 @@ class Oauth extends FrontendController
      */
     protected function setTokenOauth()
     {
-        $this->data_token = $this->oauth->getToken($this->data_provider, array('code' => $this->data_code));
+        $query = $this->oauth->getQueryToken($this->data_provider, array('code' => $this->data_code));
+        $this->data_token = $this->oauth->exchangeToken($this->data_provider, $query);
 
         if (empty($this->data_token['access_token'])) {
-            $this->outputHttpStatus(403);
+            throw new \InvalidArgumentException('Failed to get access token');
         }
 
+        $this->oauth->setToken($this->data_token, $this->data_provider['id']);
         return $this->data_token;
     }
 
@@ -150,7 +158,8 @@ class Oauth extends FrontendController
      */
     protected function setResultOauth()
     {
-        $this->data_result = $this->oauth->process($this->data_provider, $this->data_token['access_token']);
+        $this->data_result = $this->oauth->process($this->data_provider, array(
+            'token' => $this->data_token['access_token']));
 
         if (empty($this->data_result)) {
             $this->data_result['severity'] = 'warning';
