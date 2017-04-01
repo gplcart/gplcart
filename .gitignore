@@ -1,7 +1,6 @@
 .idea
 nbproject
 *sublime*
-*.lock
 .git
 
 system/modules/*
