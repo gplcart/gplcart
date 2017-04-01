@@ -106,7 +106,7 @@ class Oauth extends FrontendController
         $this->data_provider = $this->oauth->getProvider($parsed['id']);
 
         if (empty($this->data_provider)) {
-            throw new \InvalidArgumentException('Unknown Oauth provider');
+            throw new \InvalidArgumentException('Invalid Oauth provider');
         }
 
         // Be sure that URL domain belongs to our enabled store

@@ -292,6 +292,10 @@ class Oauth extends Model
     {
         $data += array('lifetime' => 3600);
 
+        if (strpos($data['certificate_file'], GC_FILE_DIR) !== 0) {
+            $data['certificate_file'] = GC_FILE_DIR . '/' . $data['certificate_file'];
+        }
+
         if (!is_readable($data['certificate_file'])) {
             throw new \InvalidArgumentException('Private key does not exist');
         }
