@@ -143,6 +143,10 @@ function d($data)
  */
 function gplcart_absolute_path($file)
 {
+    if (strpos($file, GC_ROOT_DIR) === 0) {
+        return $file;
+    }
+
     return GC_ROOT_DIR . "/$file";
 }
 
