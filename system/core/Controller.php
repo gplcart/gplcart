@@ -516,16 +516,17 @@ class Controller
      * Formats a local time/date
      * @param null|integer $timestamp
      * @param bool $full
+     * @param string $unix_format
      * @return string
      */
-    public function date($timestamp = null, $full = true)
+    public function date($timestamp = null, $full = true, $unix_format = '')
     {
-        if (!isset($timestamp)) {
+        if (empty($timestamp)) {
             $timestamp = GC_TIME;
         }
 
-        if (empty($timestamp)) {
-            return '';
+        if (!empty($unix_format)) {
+            $timestamp = \DateTime::createFromFormat($unix_format, $timestamp)->getTimestamp();
         }
 
         $format = $this->config('date_prefix', 'd.m.y');

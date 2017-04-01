@@ -156,8 +156,8 @@ class Twig
             return $this->controller->isSuperadmin($user_id);
         });
 
-        $functions[] = new \Twig_SimpleFunction('date', function ($timestamp = null, $full = true) {
-            return $this->controller->date($timestamp, $full);
+        $functions[] = new \Twig_SimpleFunction('date', function ($timestamp = null, $full = true, $unix_format = '') {
+            return $this->controller->date($timestamp, $full, $unix_format);
         });
 
         $functions[] = new \Twig_SimpleFunction('attributes', function ($attributes) {
