@@ -137,7 +137,6 @@ class Oauth extends FrontendController
 
     /**
      * Set received token data
-     * @return array
      */
     protected function setTokenOauth()
     {
@@ -147,14 +146,10 @@ class Oauth extends FrontendController
         if (empty($this->data_token['access_token'])) {
             throw new \InvalidArgumentException('Failed to get access token');
         }
-
-        $this->oauth->setToken($this->data_token, $this->data_provider['id']);
-        return $this->data_token;
     }
 
     /**
      * Set authorization result
-     * @return array
      */
     protected function setResultOauth()
     {
@@ -165,8 +160,6 @@ class Oauth extends FrontendController
             $this->data_result['severity'] = 'warning';
             $this->data_result['message'] = $this->text('An error occurred');
         }
-
-        return $this->data_result;
     }
 
 }

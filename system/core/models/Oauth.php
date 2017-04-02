@@ -225,7 +225,25 @@ class Oauth extends Model
      */
     public function setToken($token, $provider_id)
     {
+        if (isset($token['expires_in'])) {
+            $token['expires'] = GC_TIME + $token['expires_in'];
+        }
+
         $this->session->set("oauth.token.$provider_id", $token);
+    }
+
+    /**
+     * Whether a token for the given provider is valid
+     * @param string $provider_id
+     * @return bool
+     */
+    public function isValidToken($provider_id)
+    {
+        $token = $this->getToken($provider_id);
+
+        return isset($token['access_token'])//
+                && isset($token['expires'])//
+                && $token['expires'] < GC_TIME;
     }
 
     /**
@@ -274,6 +292,12 @@ class Oauth extends Model
      */
     public function exchangeToken(array $provider, array $params = array())
     {
+        if ($this->isValidToken($provider['id'])) {
+            return $this->getToken($provider['id']);
+        }
+
+        $this->setToken(null, $provider['id']);
+
         if (isset($provider['handlers']['token'])) {
             return $this->call('token', $provider, $params);
         }
@@ -371,6 +395,12 @@ class Oauth extends Model
      */
     public function exchangeTokenServer($provider, array $jwt)
     {
+        if ($this->isValidToken($provider['id'])) {
+            return $this->getToken($provider['id']);
+        }
+
+        $this->setToken(null, $provider['id']);
+
         $jwt += array(
             'scope' => $provider['scope'],
             'token_url' => $provider['url']['token']
