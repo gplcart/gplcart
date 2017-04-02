@@ -129,7 +129,7 @@ class Library
     }
 
     /**
-     * Validates/ filter an array of libraries
+     * Validate/filter an array of libraries
      * @param array $libraries
      * @return array
      */
@@ -307,8 +307,10 @@ class Library
      */
     public function getFiles($ids)
     {
+        settype($ids, 'array');
+
         $libraries = $this->getList();
-        $sorted = $this->graph->sort((array) $ids, $libraries);
+        $sorted = $this->graph->sort($ids, $libraries);
 
         if (empty($sorted)) {
             return array();
@@ -324,9 +326,9 @@ class Library
      */
     public function load($ids)
     {
-        $libraries = $this->getList();
-
         settype($ids, 'array');
+
+        $libraries = $this->getList();
 
         foreach ($ids as $key => $id) {
 
