@@ -571,6 +571,16 @@ class Controller
     }
 
     /**
+     * Lower a string
+     * @param string $string
+     * @return string
+     */
+    public function lower($string)
+    {
+        return mb_strtolower($string, 'UTF-8');
+    }
+
+    /**
      * Returns a config item
      * @param string|null $key
      * @param mixed $default
