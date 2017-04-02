@@ -16,6 +16,36 @@ class Cache
 {
 
     /**
+     * Cache file modification time
+     * @var string
+     */
+    protected $filemtime;
+
+    /**
+     * Cache file path
+     * @var string
+     */
+    protected $file;
+
+    /**
+     * Return cache file modification time
+     * @return integer
+     */
+    public function getFileMtime()
+    {
+        return $this->filemtime;
+    }
+
+    /**
+     * Returns path to a cache file
+     * @return string
+     */
+    public function getFile()
+    {
+        return $this->file;
+    }
+
+    /**
      * Sets a cache data
      * @param string|array $cid
      * @param mixed $data
@@ -24,13 +54,12 @@ class Cache
     public function set($cid, $data)
     {
         $key = static::buildKey($cid);
-        $file = GC_CACHE_DIR . "/$key.cache";
+        $this->file = GC_CACHE_DIR . "/$key.cache";
 
-        if (file_put_contents($file, serialize((array) $data)) !== false) {
-            chmod($file, 0600);
+        if (file_put_contents($this->file, serialize((array) $data)) !== false) {
+            chmod($this->file, 0600);
             return true;
         }
-
         return false;
     }
 
@@ -44,22 +73,24 @@ class Cache
     {
         $key = static::buildKey($cid);
         $options += array('default' => null, 'lifespan' => 0);
-        $file = GC_CACHE_DIR . "/$key.cache";
+        $this->file = GC_CACHE_DIR . "/$key.cache";
 
-        if (!file_exists($file)) {
+        if (!file_exists($this->file)) {
             return $options['default'];
         }
 
+        $this->filemtime = filemtime($this->file);
+
         $fresh = true;
         if (!empty($options['lifespan'])) {
-            $fresh = (filemtime($file) > (GC_TIME - $options['lifespan']));
+            $fresh = ($this->filemtime > (GC_TIME - $options['lifespan']));
         }
 
         if (!$fresh) {
             return $options['default'];
         }
 
-        return unserialize(file_get_contents($file));
+        return unserialize(file_get_contents($this->file));
     }
 
     /**
