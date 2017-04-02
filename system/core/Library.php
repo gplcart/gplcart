@@ -121,11 +121,10 @@ class Library
 
     /**
      * Removes cached libraries
-     * @return bool
      */
     public function clearCache()
     {
-        return $this->cache->clear('libraries');
+        $this->cache->clear('libraries');
     }
 
     /**
