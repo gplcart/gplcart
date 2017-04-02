@@ -66,7 +66,6 @@ class Cache
      * Clears a cached data
      * @param string|null|array $cid
      * @param array $options
-     * @return boolean
      */
     public function clear($cid, $options = array())
     {
@@ -77,12 +76,10 @@ class Cache
 
         if ($cid === null) {
             array_map('unlink', glob(GC_CACHE_DIR . '/*.cache'));
-            return true;
         }
 
         $key = static::buildKey($cid);
         array_map('unlink', glob(GC_CACHE_DIR . "/$key{$options['pattern']}"));
-        return true;
     }
 
     /**
@@ -130,17 +127,20 @@ class Cache
      */
     protected static function buildKey($data)
     {
-        if ($data === null) {
+        if (!isset($data)) {
             return null;
         }
 
-        if (is_array($data)) {
-            list($key, $hash) = each($data);
-            ksort($hash);
-            $data = md5($key . json_encode($hash));
+        if (!is_array($data)) {
+            return (string) $data;
         }
 
-        return $data;
+        list($key, $hash) = each($data);
+
+        settype($hash, 'array');
+        ksort($hash);
+
+        return $key . '.' . md5(json_encode($hash));
     }
 
     /**
