@@ -2,6 +2,7 @@
 nbproject
 *sublime*
 .git
+composer.lock
 
 system/modules/*
 !system/modules/frontend
