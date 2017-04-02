@@ -13,21 +13,25 @@ return array(
         )
     ),
     'oauth' => array(
+        'internal' => true, // Exclude from statistic etc
         'handlers' => array(
             'controller' => array('gplcart\\core\\controllers\\frontend\\Oauth', 'callbackOauth')
         )
     ),
     'install' => array(
+        'internal' => true,
         'handlers' => array(
             'controller' => array('gplcart\\core\\controllers\\frontend\\Install', 'install')
         )
     ),
     'ajax' => array(
+        'internal' => true,
         'handlers' => array(
             'controller' => array('gplcart\\core\\controllers\\frontend\\Ajax', 'responseAjax')
         )
     ),
     'cron' => array(
+        'internal' => true,
         'handlers' => array(
             'controller' => array('gplcart\\core\\controllers\\backend\\Cron', 'executeCron')
         )
@@ -49,6 +53,7 @@ return array(
         )
     ),
     'files/image/cache/.*' => array(
+        'internal' => true,
         'handlers' => array(
             'controller' => array('gplcart\\core\\controllers\\frontend\\Image', 'cache')
         )
@@ -96,33 +101,39 @@ return array(
         )
     ),
     'checkout/clone/(\d+)' => array(
+        'internal' => true,
         'access' => 'order_add',
         'handlers' => array(
             'controller' => array('gplcart\\core\\controllers\\frontend\\Checkout', 'cloneOrderCheckout')
         )
     ),
     'checkout/add/(\d+)' => array(
+        'internal' => true,
         'access' => 'order_add',
         'handlers' => array(
             'controller' => array('gplcart\\core\\controllers\\frontend\\Checkout', 'createOrderCheckout')
         )
     ),
     'account/(\d+)' => array(
+        'internal' => true,
         'handlers' => array(
             'controller' => array('gplcart\\core\\controllers\\frontend\\Account', 'indexAccount')
         )
     ),
     'account/(\d+)/order/(\d+)' => array(
+        'internal' => true,
         'handlers' => array(
             'controller' => array('gplcart\\core\\controllers\\frontend\\Account', 'orderAccount')
         )
     ),
     'account/(\d+)/edit' => array(
+        'internal' => true,
         'handlers' => array(
             'controller' => array('gplcart\\core\\controllers\\frontend\\Account', 'editAccount')
         )
     ),
     'account/(\d+)/address' => array(
+        'internal' => true,
         'handlers' => array(
             'controller' => array('gplcart\\core\\controllers\\frontend\\Account', 'listAddressAccount')
         )

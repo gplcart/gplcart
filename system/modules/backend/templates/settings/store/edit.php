@@ -368,17 +368,12 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
-  <div class="panel panel-default">
-    <div class="panel-heading"><?php echo $this->text('Google Analytics'); ?></div>
-    <div class="panel-body">
       <div class="form-group">
-        <label class="col-md-2 control-label"><?php echo $this->text('Tracking code'); ?></label>
+        <label class="col-md-2 control-label"><?php echo $this->text('Code'); ?></label>
         <div class="col-md-6">
-          <textarea name="store[data][ga_code]" rows="10" class="form-control"><?php echo $this->escape($store['data']['ga_code']); ?></textarea>
+          <textarea name="store[data][js]" rows="10" class="form-control"><?php echo $this->escape($store['data']['js']); ?></textarea>
           <div class="help-block">
-            <?php echo $this->text('Google Analytics .js code without script tags'); ?>
+            <?php echo $this->text('A .js code without script tags to add on each public, non-admin and non-internal page, e.g Google Analytics tracking code'); ?>
           </div>
         </div>
       </div>

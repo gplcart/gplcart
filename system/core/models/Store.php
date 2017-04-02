@@ -247,7 +247,7 @@ class Store extends Model
             'collection_file' => 1,
             'collection_product' => 2,
             'collection_page' => 3,
-            'ga_code' => ''
+            'js' => ''
         );
     }
 

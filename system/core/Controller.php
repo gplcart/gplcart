@@ -392,7 +392,6 @@ class Controller
         if (property_exists($this, $name)) {
             return $this->$name;
         }
-
         throw new \InvalidArgumentException("Property $name does not exist in class " . __CLASS__);
     }
 
@@ -1690,16 +1689,18 @@ class Controller
         $this->setDefaultJsSettings();
         $this->setDefaultJsCron();
         $this->setDefaultJsTranslation();
-        $this->setDefaultJsGa();
+        $this->setDefaultJsStore();
     }
 
     /**
-     * Set Google Analytics tarcking Js code
+     * Set per-store JS (Google Analytics etc)
      */
-    protected function setDefaultJsGa()
+    protected function setDefaultJsStore()
     {
-        if (!empty($this->current_store['data']['ga_code']) && !$this->is_backend) {
-            $this->setJs($this->current_store['data']['ga_code'], array('position' => 'bottom'));
+        if (!empty($this->current_store['data']['js'])//
+                && !$this->is_backend //
+                && empty($this->current_route['internal'])) {
+            $this->setJs($this->current_store['data']['js'], array('position' => 'bottom', 'aggregate' => false));
         }
     }
 
