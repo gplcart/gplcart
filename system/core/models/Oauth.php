@@ -243,7 +243,7 @@ class Oauth extends Model
 
         return isset($token['access_token'])//
                 && isset($token['expires'])//
-                && $token['expires'] < GC_TIME;
+                && GC_TIME < $token['expires'];
     }
 
     /**
@@ -296,13 +296,14 @@ class Oauth extends Model
             return $this->getToken($provider['id']);
         }
 
-        $this->setToken(null, $provider['id']);
-
         if (isset($provider['handlers']['token'])) {
-            return $this->call('token', $provider, $params);
+            $token = $this->call('token', $provider, $params);
+        } else {
+            $token = $this->requestToken($provider, $params);
         }
 
-        return $this->requestToken($provider, $params);
+        $this->setToken($token, $provider['id']);
+        return $token;
     }
 
     /**
@@ -399,8 +400,6 @@ class Oauth extends Model
             return $this->getToken($provider['id']);
         }
 
-        $this->setToken(null, $provider['id']);
-
         $jwt += array(
             'scope' => $provider['scope'],
             'token_url' => $provider['url']['token']
@@ -411,7 +410,9 @@ class Oauth extends Model
             'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer'
         );
 
-        return $this->requestToken($provider, $request);
+        $token = $this->requestToken($provider, $request);
+        $this->setToken($token, $provider['id']);
+        return $token;
     }
 
 }
