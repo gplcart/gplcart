@@ -11,12 +11,12 @@ namespace gplcart\core\handlers\validator;
 
 use gplcart\core\models\File as FileModel;
 use gplcart\core\helpers\Request as RequestHelper;
-use gplcart\core\handlers\validator\Base as BaseValidator;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate files to be stored in the database
  */
-class File extends BaseValidator
+class File extends ComponentValidator
 {
 
     /**

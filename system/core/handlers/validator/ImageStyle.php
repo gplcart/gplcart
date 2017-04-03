@@ -10,12 +10,12 @@
 namespace gplcart\core\handlers\validator;
 
 use gplcart\core\models\Image as ImageModel;
-use gplcart\core\handlers\validator\Base as BaseValidator;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate image style data
  */
-class ImageStyle extends BaseValidator
+class ImageStyle extends ComponentValidator
 {
 
     /**
@@ -176,7 +176,7 @@ class ImageStyle extends BaseValidator
      */
     protected function validateActionFlipImageStyle(array $value)
     {
-        return (count($value) == 1) && in_array($value[0], array('x', 'y'), true);
+        return count($value) == 1 && in_array($value[0], array('x', 'y'), true);
     }
 
     /**
@@ -212,7 +212,7 @@ class ImageStyle extends BaseValidator
      */
     protected function validateActionContrastImageStyle(array $value)
     {
-        return (count($value) == 1)//
+        return count($value) == 1//
                 && preg_match('/^-?[0-9]+$/', $value[0])//
                 && (-100 <= (int) $value[0])//
                 && ((int) $value[0] <= 100);
@@ -225,7 +225,7 @@ class ImageStyle extends BaseValidator
      */
     protected function validateActionSmoothImageStyle(array $value)
     {
-        return (count($value) == 1)//
+        return count($value) == 1//
                 && preg_match('/^-?[0-9]+$/', $value[0])//
                 && (-10 <= (int) $value[0])//
                 && ((int) $value[0] <= 10);
@@ -238,8 +238,8 @@ class ImageStyle extends BaseValidator
      */
     protected function validateActionFillImageStyle(array $value)
     {
-        return ((count($value) == 1)//
-                && preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $value[0]) === 1);
+        return count($value) == 1//
+                && preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $value[0]) === 1;
     }
 
     /**
@@ -249,9 +249,9 @@ class ImageStyle extends BaseValidator
      */
     protected function validateActionColorizeImageStyle(array $value)
     {
-        return ((count($value) == 2)//
-                && (preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $value[0]) === 1)//
-                && is_numeric($value[1]));
+        return count($value) == 2//
+                && preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $value[0]) === 1//
+                && is_numeric($value[1]);
     }
 
     /**
@@ -261,7 +261,7 @@ class ImageStyle extends BaseValidator
      */
     protected function validateActionCropImageStyle(array $value)
     {
-        return (count(array_filter(array_slice($value, 0, 4), 'ctype_digit')) == 4);
+        return count(array_filter(array_slice($value, 0, 4), 'ctype_digit')) == 4;
     }
 
     /**
@@ -271,7 +271,8 @@ class ImageStyle extends BaseValidator
      */
     protected function validateActionOverlayImageStyle(array $value)
     {
-        return (count($value) == 5) && preg_match('/^-?[0-9]+$/', $value[2])//
+        return count($value) == 5//
+                && preg_match('/^-?[0-9]+$/', $value[2])//
                 && preg_match('/^-?[0-9]+$/', $value[3])//
                 && preg_match('/^-?[0-9]+$/', $value[4]);
     }
@@ -283,11 +284,11 @@ class ImageStyle extends BaseValidator
      */
     protected function validateActionTextImageStyle(array $value)
     {
-        return ((count($value) == 7)//
+        return count($value) == 7//
                 && is_numeric($value[2])//
                 && preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $value[3])//
                 && is_numeric($value[5])//
-                && is_numeric($value[6]));
+                && is_numeric($value[6]);
     }
 
     /**
@@ -297,7 +298,7 @@ class ImageStyle extends BaseValidator
      */
     protected function validateActionOpacityImageStyle(array $value)
     {
-        return ((count($value) == 1) && is_numeric($value[0]));
+        return count($value) == 1 && is_numeric($value[0]);
     }
 
     /**
@@ -307,7 +308,7 @@ class ImageStyle extends BaseValidator
      */
     protected function validateActionThumbnailImageStyle(array $value)
     {
-        return (count(array_filter(array_slice($value, 0, 2), 'ctype_digit')) == 2);
+        return count(array_filter(array_slice($value, 0, 2), 'ctype_digit')) == 2;
     }
 
 }

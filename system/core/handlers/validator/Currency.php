@@ -10,12 +10,12 @@
 namespace gplcart\core\handlers\validator;
 
 use gplcart\core\models\Currency as CurrencyModel;
-use gplcart\core\handlers\validator\Base as BaseValidator;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate various currency related data
  */
-class Currency extends BaseValidator
+class Currency extends ComponentValidator
 {
 
     /**

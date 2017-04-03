@@ -9,18 +9,18 @@
 
 namespace gplcart\core\handlers\validator;
 
-use gplcart\core\models\Order as OrderModel;
-use gplcart\core\models\Payment as PaymentModel;
-use gplcart\core\models\Address as AddressModel;
-use gplcart\core\models\Currency as CurrencyModel;
-use gplcart\core\models\Shipping as ShippingModel;
-use gplcart\core\models\Transaction as TransactionModel;
-use gplcart\core\handlers\validator\Base as BaseValidator;
+use gplcart\core\models\Order as OrderModel,
+    gplcart\core\models\Payment as PaymentModel,
+    gplcart\core\models\Address as AddressModel,
+    gplcart\core\models\Currency as CurrencyModel,
+    gplcart\core\models\Shipping as ShippingModel,
+    gplcart\core\models\Transaction as TransactionModel;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate orders to be stored in the database
  */
-class Order extends BaseValidator
+class Order extends ComponentValidator
 {
 
     /**

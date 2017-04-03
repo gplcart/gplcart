@@ -9,15 +9,16 @@
 
 namespace gplcart\core\handlers\validator;
 
-use gplcart\core\models\Job as JobModel;
-use gplcart\core\models\Export as ExportModel;
-use gplcart\core\handlers\validator\Base as BaseValidator;
+use gplcart\core\models\Job as JobModel,
+    gplcart\core\models\Export as ExportModel;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate export operations
  */
-class Export extends BaseValidator
+class Export extends ComponentValidator
 {
+
     /**
      * Export model instance
      * @var \gplcart\core\models\Export $export

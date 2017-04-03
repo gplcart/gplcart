@@ -9,14 +9,14 @@
 
 namespace gplcart\core\handlers\validator;
 
-use gplcart\core\models\Product as ProductModel;
-use gplcart\core\models\Wishlist as WishlistModel;
-use gplcart\core\handlers\validator\Base as BaseValidator;
+use gplcart\core\models\Product as ProductModel,
+    gplcart\core\models\Wishlist as WishlistModel;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate wishlist data
  */
-class Wishlist extends BaseValidator
+class Wishlist extends ComponentValidator
 {
 
     /**

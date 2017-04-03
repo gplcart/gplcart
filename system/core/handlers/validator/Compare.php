@@ -10,12 +10,12 @@
 namespace gplcart\core\handlers\validator;
 
 use gplcart\core\models\Product as ProductModel;
-use gplcart\core\handlers\validator\Base as BaseValidator;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate product comparison data
  */
-class Compare extends BaseValidator
+class Compare extends ComponentValidator
 {
 
     /**

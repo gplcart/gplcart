@@ -9,16 +9,16 @@
 
 namespace gplcart\core\handlers\validator;
 
-use gplcart\core\helpers\Csv as CsvHelper;
-use gplcart\core\helpers\Request as RequestHelper;
-use gplcart\core\models\File as FileModel;
-use gplcart\core\models\Import as ImportModel;
-use gplcart\core\handlers\validator\Base as BaseValidator;
+use gplcart\core\helpers\Csv as CsvHelper,
+    gplcart\core\helpers\Request as RequestHelper;
+use gplcart\core\models\File as FileModel,
+    gplcart\core\models\Import as ImportModel;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate import data
  */
-class Import extends BaseValidator
+class Import extends ComponentValidator
 {
 
     /**

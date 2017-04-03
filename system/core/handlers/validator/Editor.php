@@ -9,15 +9,15 @@
 
 namespace gplcart\core\handlers\validator;
 
-use gplcart\core\helpers\Twig as TwigHelper;
-use gplcart\core\models\Module as ModuleModel;
-use gplcart\core\Controller as BaseController;
-use gplcart\core\handlers\validator\Base as BaseValidator;
+use gplcart\core\helpers\Twig as TwigHelper,
+    gplcart\core\models\Module as ModuleModel,
+    gplcart\core\Controller as BaseController;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate editing theme templates
  */
-class Editor extends BaseValidator
+class Editor extends ComponentValidator
 {
 
     /**

@@ -10,12 +10,12 @@
 namespace gplcart\core\handlers\validator;
 
 use gplcart\core\models\Zone as ZoneModel;
-use gplcart\core\handlers\validator\Base as BaseValidator;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate geo zones
  */
-class Zone extends BaseValidator
+class Zone extends ComponentValidator
 {
 
     /**

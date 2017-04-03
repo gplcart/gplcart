@@ -9,16 +9,16 @@
 
 namespace gplcart\core\handlers\validator;
 
-use gplcart\core\models\Sku as SkuModel;
-use gplcart\core\models\Cart as CartModel;
-use gplcart\core\models\Order as OrderModel;
-use gplcart\core\models\Product as ProductModel;
-use gplcart\core\handlers\validator\Base as BaseValidator;
+use gplcart\core\models\Sku as SkuModel,
+    gplcart\core\models\Cart as CartModel,
+    gplcart\core\models\Order as OrderModel,
+    gplcart\core\models\Product as ProductModel;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate cart data
  */
-class Cart extends BaseValidator
+class Cart extends ComponentValidator
 {
 
     /**

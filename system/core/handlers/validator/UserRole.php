@@ -10,12 +10,12 @@
 namespace gplcart\core\handlers\validator;
 
 use gplcart\core\models\UserRole as UserRoleModel;
-use gplcart\core\handlers\validator\Base as BaseValidator;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate user roles
  */
-class UserRole extends BaseValidator
+class UserRole extends ComponentValidator
 {
 
     /**

@@ -9,16 +9,16 @@
 
 namespace gplcart\core\handlers\validator;
 
-use gplcart\core\models\City as CityModel;
-use gplcart\core\models\State as StateModel;
-use gplcart\core\models\Country as CountryModel;
-use gplcart\core\models\Address as AddressModel;
-use gplcart\core\handlers\validator\Base as BaseValidator;
+use gplcart\core\models\City as CityModel,
+    gplcart\core\models\State as StateModel,
+    gplcart\core\models\Country as CountryModel,
+    gplcart\core\models\Address as AddressModel;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate address data
  */
-class Address extends BaseValidator
+class Address extends ComponentValidator
 {
 
     /**

@@ -9,15 +9,15 @@
 
 namespace gplcart\core\handlers\validator;
 
-use gplcart\core\models\File as FileModel;
-use gplcart\core\models\Module as ModuleModel;
+use gplcart\core\models\File as FileModel,
+    gplcart\core\models\Module as ModuleModel;
 use gplcart\core\helpers\Request as RequestHelper;
-use gplcart\core\handlers\validator\Base as BaseValidator;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate store data
  */
-class Store extends BaseValidator
+class Store extends ComponentValidator
 {
 
     const UPLOAD_PATH = 'image/upload/store';

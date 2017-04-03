@@ -9,12 +9,12 @@
 
 namespace gplcart\core\handlers\validator;
 
-use gplcart\core\handlers\validator\Base as BaseValidator;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate languages
  */
-class Language extends BaseValidator
+class Language extends ComponentValidator
 {
 
     /**
@@ -43,7 +43,7 @@ class Language extends BaseValidator
         $this->validateNameLanguage();
         $this->validateNativeNameLanguage();
         $this->validateCodeLanguage();
-        
+
         // Remove data of updating language
         // to prevent from saving in serialized string
         $this->unsetSubmitted('update');

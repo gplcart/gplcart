@@ -14,12 +14,12 @@ use gplcart\core\models\Sku as SkuModel,
     gplcart\core\models\Currency as CurrencyModel,
     gplcart\core\models\Category as CategoryModel,
     gplcart\core\models\ProductClass as ProductClassModel;
-use gplcart\core\handlers\validator\Base as BaseValidator;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate a product data
  */
-class Product extends BaseValidator
+class Product extends ComponentValidator
 {
 
     /**

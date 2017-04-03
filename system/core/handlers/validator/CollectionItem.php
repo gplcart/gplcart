@@ -10,17 +10,17 @@
 namespace gplcart\core\handlers\validator;
 
 use gplcart\core\Handler;
-use gplcart\core\models\File as FileModel;
-use gplcart\core\models\Page as PageModel;
-use gplcart\core\models\Product as ProductModel;
-use gplcart\core\models\Collection as CollectionModel;
-use gplcart\core\models\CollectionItem as CollectionItemModel;
-use gplcart\core\handlers\validator\Base as BaseValidator;
+use gplcart\core\models\File as FileModel,
+    gplcart\core\models\Page as PageModel,
+    gplcart\core\models\Product as ProductModel,
+    gplcart\core\models\Collection as CollectionModel,
+    gplcart\core\models\CollectionItem as CollectionItemModel;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate collection item data
  */
-class CollectionItem extends BaseValidator
+class CollectionItem extends ComponentValidator
 {
 
     /**

@@ -9,14 +9,14 @@
 
 namespace gplcart\core\handlers\validator;
 
-use gplcart\core\models\Filter as FilterModel;
-use gplcart\core\models\UserRole as UserRoleModel;
-use gplcart\core\handlers\validator\Base as BaseValidator;
+use gplcart\core\models\Filter as FilterModel,
+    gplcart\core\models\UserRole as UserRoleModel;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate HTML filter data
  */
-class Filter extends BaseValidator
+class Filter extends ComponentValidator
 {
 
     /**

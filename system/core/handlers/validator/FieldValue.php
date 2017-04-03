@@ -13,12 +13,12 @@ use gplcart\core\models\File as FileModel,
     gplcart\core\models\Field as FieldModel,
     gplcart\core\models\FieldValue as FieldValueModel;
 use gplcart\core\helpers\Request as RequestHelper;
-use gplcart\core\handlers\validator\Base as BaseValidator;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate field data
  */
-class FieldValue extends BaseValidator
+class FieldValue extends ComponentValidator
 {
 
     /**
@@ -195,15 +195,15 @@ class FieldValue extends BaseValidator
         }
 
         if (isset($path)) {
-            
+
             if (is_readable(GC_FILE_DIR . "/$path")) {
                 return true;
             }
-            
+
             $vars = array('@name' => $this->language->text('File'));
             $error = $this->language->text('@name is unavailable', $vars);
             $this->setError('file', $error);
-            
+
             return false;
         }
 

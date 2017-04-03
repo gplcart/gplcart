@@ -9,14 +9,14 @@
 
 namespace gplcart\core\handlers\validator;
 
-use gplcart\core\models\Page as PageModel;
-use gplcart\core\models\Category as CategoryModel;
-use gplcart\core\handlers\validator\Base as BaseValidator;
+use gplcart\core\models\Page as PageModel,
+    gplcart\core\models\Category as CategoryModel;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate page data
  */
-class Page extends BaseValidator
+class Page extends ComponentValidator
 {
 
     /**

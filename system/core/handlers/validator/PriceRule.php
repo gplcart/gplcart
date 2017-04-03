@@ -9,16 +9,16 @@
 
 namespace gplcart\core\handlers\validator;
 
-use gplcart\core\models\Price as PriceModel;
-use gplcart\core\models\Trigger as TriggerModel;
-use gplcart\core\models\Currency as CurrencyModel;
-use gplcart\core\models\PriceRule as PriceRuleModel;
-use gplcart\core\handlers\validator\Base as BaseValidator;
+use gplcart\core\models\Price as PriceModel,
+    gplcart\core\models\Trigger as TriggerModel,
+    gplcart\core\models\Currency as CurrencyModel,
+    gplcart\core\models\PriceRule as PriceRuleModel;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate price rule data
  */
-class PriceRule extends BaseValidator
+class PriceRule extends ComponentValidator
 {
 
     /**
