@@ -29,207 +29,207 @@ return array(
     ),
     'cart' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\Cart', 'cart')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Cart', 'cart')
         )
     ),
     'category' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\Category', 'category')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Category', 'category')
         )
     ),
     'category_group' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\CategoryGroup', 'categoryGroup')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\CategoryGroup', 'categoryGroup')
         )
     ),
     'city' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\City', 'city')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\City', 'city')
         )
     ),
     'collection' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\Collection', 'collection')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Collection', 'collection')
         )
     ),
     'collection_item' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\CollectionItem', 'collectionItem')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\CollectionItem', 'collectionItem')
         )
     ),
     'country' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\Country', 'country')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Country', 'country')
         )
     ),
     'compare' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\Compare', 'compare')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Compare', 'compare')
         )
     ),
     'editor' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\Editor', 'editor')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Editor', 'editor')
         )
     ),
     'export' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\Export', 'export')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Export', 'export')
         )
     ),
     'address' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\Address', 'address')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Address', 'address')
         )
     ),
     'backup' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\Backup', 'backup')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Backup', 'backup')
         )
     ),
     'backup_restore' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\Backup', 'restore')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Backup', 'restore')
         )
     ),
     'currency' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\Currency', 'currency')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Currency', 'currency')
         )
     ),
     'field' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\Field', 'field')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Field', 'field')
         )
     ),
     'field_value' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\FieldValue', 'fieldValue')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\FieldValue', 'fieldValue')
         )
     ),
     'file' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\File', 'file')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\File', 'file')
         )
     ),
     'filter' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\Filter', 'filter')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Filter', 'filter')
         )
     ),
     'image_style' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\ImageStyle', 'imageStyle')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\ImageStyle', 'imageStyle')
         )
     ),
     'import' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\Import', 'import')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Import', 'import')
         )
     ),
     'install' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\Install', 'install')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Install', 'install')
         )
     ),
     'language' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\Language', 'language')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Language', 'language')
         )
     ),
     'module_upload' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\Module', 'upload')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Module', 'upload')
         )
     ),
     'page' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\Page', 'page')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Page', 'page')
         )
     ),
     'price_rule' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\PriceRule', 'priceRule')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\PriceRule', 'priceRule')
         )
     ),
     'product' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\Product', 'product')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Product', 'product')
         )
     ),
     'product_class' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\ProductClass', 'productClass')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\ProductClass', 'productClass')
         )
     ),
     'rating' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\Rating', 'rating')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Rating', 'rating')
         )
     ),
     'review' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\Review', 'review')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Review', 'review')
         )
     ),
     'settings' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\Settings', 'settings')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Settings', 'settings')
         )
     ),
     'state' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\State', 'state')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\State', 'state')
         )
     ),
     'store' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\Store', 'store')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Store', 'store')
         )
     ),
     'translation_upload' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\Translation', 'upload')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Translation', 'upload')
         )
     ),
     'trigger' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\Trigger', 'trigger')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Trigger', 'trigger')
         )
     ),
     'user' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\User', 'user')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\User', 'user')
         )
     ),
     'user_login' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\User', 'login')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\User', 'login')
         )
     ),
     'user_reset_password' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\User', 'resetPassword')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\User', 'resetPassword')
         )
     ),
     'user_role' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\UserRole', 'userRole')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\UserRole', 'userRole')
         )
     ),
     'zone' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\Zone', 'zone')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Zone', 'zone')
         )
     ),
     'wishlist' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\Wishlist', 'wishlist')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Wishlist', 'wishlist')
         )
     ),
     'order' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\Order', 'order')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Order', 'order')
         )
     )
 );

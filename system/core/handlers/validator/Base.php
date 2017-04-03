@@ -9,8 +9,6 @@
 
 namespace gplcart\core\handlers\validator;
 
-use gplcart\core\Container as Container;
-
 /**
  * Base validator class
  */
@@ -36,17 +34,11 @@ class Base
     protected $options = array();
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
-     */
-    protected $language;
-
-    /**
      * Constructor
      */
     public function __construct()
     {
-        $this->language = Container::get('gplcart\\core\\models\\Language');
+        //
     }
 
     /**
