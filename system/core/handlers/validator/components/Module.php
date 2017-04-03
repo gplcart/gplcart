@@ -73,9 +73,7 @@ class Module extends ComponentValidator
         $file = $this->request->file('file');
 
         if (empty($file)) {
-            $vars = array('@field' => $this->language->text('File'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('file', $error);
+            $this->setErrorRequired('file', $this->language->text('File'));
             return false;
         }
 

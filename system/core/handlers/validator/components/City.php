@@ -99,9 +99,7 @@ class City extends ComponentValidator
         $data = $this->city->get($id);
 
         if (empty($data)) {
-            $vars = array('@name' => $this->language->text('City'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('update', $error);
+            $this->setErrorUnavailable('update', $this->language->text('City'));
             return false;
         }
 
@@ -115,35 +113,30 @@ class City extends ComponentValidator
      */
     protected function validateStateCity()
     {
-        $state_id = $this->getSubmitted('state_id');
+        $field = 'state_id';
+        $label = $this->language->text('State');
+        $state_id = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($state_id)) {
             return null;
         }
 
         if (empty($state_id)) {
-            $vars = array('@field' => $this->language->text('State'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('state_id', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         if (!is_numeric($state_id)) {
-            $vars = array('@field' => $this->language->text('State'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('state_id', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
 
         $state = $this->state->get($state_id);
 
         if (empty($state['state_id'])) {
-            $vars = array('@name' => $this->language->text('State'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('state_id', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
-
         return true;
     }
 
@@ -153,25 +146,23 @@ class City extends ComponentValidator
      */
     protected function validateZoneCity()
     {
-        $zone_id = $this->getSubmitted('zone_id');
+        $field = 'zone_id';
+        $label = $this->language->text('Zone');
+        $zone_id = $this->getSubmitted($field);
 
         if (empty($zone_id)) {
             return true;
         }
 
         if (!is_numeric($zone_id)) {
-            $vars = array('@field' => $this->language->text('Zone'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('zone_id', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
 
         $zone = $this->zone->get($zone_id);
 
         if (empty($zone['zone_id'])) {
-            $vars = array('@name' => $this->language->text('Zone'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('zone_id', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
 
@@ -184,28 +175,25 @@ class City extends ComponentValidator
      */
     protected function validateCountryCity()
     {
-        $code = $this->getSubmitted('country');
+        $field = 'country';
+        $label = $this->language->text('Country');
+        $code = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($code)) {
             return null;
         }
 
         if (empty($code)) {
-            $vars = array('@field' => $this->language->text('Country'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('country', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         $country = $this->country->get($code);
 
         if (empty($country['code'])) {
-            $vars = array('@name' => $this->language->text('Country'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('country', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
-
         return true;
     }
 

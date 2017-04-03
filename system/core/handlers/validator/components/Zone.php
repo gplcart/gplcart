@@ -68,9 +68,7 @@ class Zone extends ComponentValidator
         $data = $this->zone->get($id);
 
         if (empty($data)) {
-            $vars = array('@name' => $this->language->text('Zone'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('update', $error);
+            $this->setErrorUnavailable('update', $this->language->text('Zone'));
             return false;
         }
 

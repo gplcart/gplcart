@@ -127,9 +127,7 @@ class Order extends ComponentValidator
         $data = $this->order->get($id);
 
         if (empty($data)) {
-            $vars = array('@name' => $this->language->text('Order'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('update', $error);
+            $this->setErrorUnavailable('update', $this->language->text('Order'));
             return false;
         }
 
@@ -143,28 +141,25 @@ class Order extends ComponentValidator
      */
     protected function validatePaymentOrder()
     {
-        $module_id = $this->getSubmitted('payment');
+        $field = 'payment';
+        $label = $this->language->text('Payment');
+        $module_id = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($module_id)) {
             return null;
         }
 
         if (empty($module_id)) {
-            $vars = array('@field' => $this->language->text('Payment'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('payment', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         $method = $this->payment->get($module_id);
 
         if (empty($method['status'])) {
-            $vars = array('@name' => $this->language->text('Payment'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('payment', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
-
         return true;
     }
 
@@ -174,28 +169,25 @@ class Order extends ComponentValidator
      */
     protected function validateShippingOrder()
     {
-        $module_id = $this->getSubmitted('shipping');
+        $field = 'shipping';
+        $label = $this->language->text('Shipping');
+        $module_id = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($module_id)) {
             return null;
         }
 
         if (empty($module_id)) {
-            $vars = array('@field' => $this->language->text('Shipping'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('shipping', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         $method = $this->shipping->get($module_id);
 
         if (empty($method['status'])) {
-            $vars = array('@name' => $this->language->text('Shipping'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('shipping', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
-
         return true;
     }
 
@@ -205,7 +197,9 @@ class Order extends ComponentValidator
      */
     protected function validateStatusOrder()
     {
-        $status = $this->getSubmitted('status');
+        $field = 'status';
+        $label = $this->language->text('Status');
+        $status = $this->getSubmitted($field);
 
         if (!isset($status)) {
             return null;
@@ -214,12 +208,9 @@ class Order extends ComponentValidator
         $statuses = $this->order->getStatuses();
 
         if (empty($statuses[$status])) {
-            $vars = array('@name' => $this->language->text('Status'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('status', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
-
         return true;
     }
 
@@ -229,35 +220,30 @@ class Order extends ComponentValidator
      */
     protected function validateShippingAddressOrder()
     {
-        $address_id = $this->getSubmitted('shipping_address');
+        $field = 'shipping_address';
+        $label = $this->language->text('Shipping address');
+        $address_id = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($address_id)) {
             return null;
         }
 
         if (empty($address_id)) {
-            $vars = array('@field' => $this->language->text('Shipping address'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('shipping_address', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         if (!is_numeric($address_id)) {
-            $vars = array('@field' => $this->language->text('Shipping address'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('shipping_address', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
 
         $address = $this->address->get($address_id);
 
         if (empty($address)) {
-            $vars = array('@name' => $this->language->text('Shipping address'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('shipping_address', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
-
         return true;
     }
 
@@ -267,32 +253,28 @@ class Order extends ComponentValidator
      */
     protected function validatePaymentAddressOrder()
     {
-        $address_id = $this->getSubmitted('payment_address');
+        $field = 'payment_address';
+        $label = $this->language->text('Payment address');
+        $address_id = $this->getSubmitted($field);
 
         if (empty($address_id) && !$this->isError('shipping_address')) {
             $address_id = $this->getSubmitted('shipping_address');
         }
 
         if (empty($address_id)) {
-            $vars = array('@field' => $this->language->text('Payment address'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('payment_address', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         if (!is_numeric($address_id)) {
-            $vars = array('@field' => $this->language->text('Payment address'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('payment_address', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
 
         $address = $this->address->get($address_id);
 
         if (empty($address)) {
-            $vars = array('@name' => $this->language->text('Payment address'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('payment_address', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
 
@@ -306,28 +288,25 @@ class Order extends ComponentValidator
      */
     protected function validateCreatorOrder()
     {
-        $creator = $this->getSubmitted('creator');
+        $field = 'creator';
+        $label = $this->language->text('Creator');
+        $creator = $this->getSubmitted($field);
 
         if (empty($creator)) {
             return null;
         }
 
         if (!is_numeric($creator)) {
-            $vars = array('@field' => $this->language->text('Creator'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('creator', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
 
         $user = $this->user->get($creator);
 
         if (empty($user)) {
-            $vars = array('@name' => $this->language->text('Creator'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('creator', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
-
         return true;
     }
 
@@ -337,26 +316,23 @@ class Order extends ComponentValidator
      */
     protected function validateTotalOrder()
     {
-        $total = $this->getSubmitted('total');
+        $field = 'total';
+        $label = $this->language->text('Total');
+        $total = $this->getSubmitted($field);
 
         if (!isset($total)) {
             return null;
         }
 
         if (!is_numeric($total)) {
-            $vars = array('@field' => $this->language->text('Total'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('total', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
 
         if (strlen($total) > 10) {
-            $vars = array('@max' => 10, '@field' => $this->language->text('Total'));
-            $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('total', $error);
+            $this->setErrorLengthRange($field, $label, 0, 10);
             return false;
         }
-
         return true;
     }
 
@@ -366,6 +342,7 @@ class Order extends ComponentValidator
      */
     protected function validateComponentPricesOrder()
     {
+        $label = $this->language->text('Price');
         $components = $this->getSubmitted('data.components');
 
         if (empty($components)) {
@@ -374,16 +351,11 @@ class Order extends ComponentValidator
 
         foreach ($components as $id => $price) {
             if (is_numeric($id) && !is_numeric($price)) {
-                $vars = array('@field' => $this->language->text('Price'));
-                $error = $this->language->text('@field must be numeric', $vars);
-                $this->setError("data.components.$id", $error);
+                $this->setErrorNumeric("data.components.$id", $label);
                 continue;
             }
-
             if (strlen($price) > 10) {
-                $vars = array('@max' => 10, '@field' => $this->language->text('Price'));
-                $error = $this->language->text('@field must not be longer than @max characters', $vars);
-                $this->setError("data.components.$id", $error);
+                $this->setErrorLengthRange("data.components.$id", $label, 0, 10);
             }
         }
 
@@ -396,7 +368,8 @@ class Order extends ComponentValidator
      */
     protected function validateCurrencyOrder()
     {
-        $code = $this->getSubmitted('currency');
+        $field = 'currency';
+        $code = $this->getSubmitted($field);
 
         if (!isset($code)) {
             return null;
@@ -405,12 +378,9 @@ class Order extends ComponentValidator
         $currency = $this->currency->get($code);
 
         if (empty($currency)) {
-            $vars = array('@name' => $this->language->text('Currency'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('currency', $error);
+            $this->setErrorUnavailable($field, $this->language->text('Currency'));
             return false;
         }
-
         return true;
     }
 
@@ -420,15 +390,12 @@ class Order extends ComponentValidator
      */
     protected function validateCommentOrder()
     {
-        $comment = $this->getSubmitted('comment');
-
+        $field = 'comment';
+        $comment = $this->getSubmitted($field);
         if (isset($comment) && mb_strlen($comment) > 65535) {
-            $vars = array('@max' => 65535, '@field' => $this->language->text('Comment'));
-            $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('comment', $error);
+            $this->setErrorLengthRange($field, $this->language->text('Comment'), 0, 65535);
             return false;
         }
-
         return true;
     }
 
@@ -438,28 +405,25 @@ class Order extends ComponentValidator
      */
     protected function validateTransactionOrder()
     {
-        $transaction_id = $this->getSubmitted('transaction_id');
+        $field = 'transaction_id';
+        $label = $this->language->text('Transaction');
+        $transaction_id = $this->getSubmitted($field);
 
         if (!isset($transaction_id)) {
             return null;
         }
 
         if (!is_numeric($transaction_id)) {
-            $vars = array('@field' => $this->language->text('Transaction'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('transaction_id', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
 
         $transaction = $this->transaction->get($transaction_id);
 
         if (empty($transaction)) {
-            $vars = array('@name' => $this->language->text('Transaction'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('transaction_id', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
-
         return true;
     }
 
@@ -469,15 +433,10 @@ class Order extends ComponentValidator
      */
     protected function validateLogOrder()
     {
-        $log = (string) $this->getSubmitted('log');
-
-        if (mb_strlen($log) > 255) {
-            $vars = array('@max' => 255, '@field' => $this->language->text('Log'));
-            $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('log', $error);
+        if (mb_strlen($this->getSubmitted('log')) > 255) {
+            $this->setErrorLengthRange('log', $this->language->text('Log'), 0, 255);
             return false;
         }
-
         return true;
     }
 

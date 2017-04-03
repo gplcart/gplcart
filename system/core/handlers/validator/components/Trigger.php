@@ -81,9 +81,7 @@ class Trigger extends ComponentValidator
         $data = $this->trigger->get($id);
 
         if (empty($data)) {
-            $vars = array('@name' => $this->language->text('Trigger'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('update', $error);
+            $this->setErrorUnavailable('update', $this->language->text('Trigger'));
             return false;
         }
 
@@ -104,9 +102,7 @@ class Trigger extends ComponentValidator
         }
 
         if (empty($value)) {
-            $vars = array('@field' => $this->language->text('Conditions'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('data.conditions', $error);
+            $this->setErrorRequired('data.conditions', $this->language->text('Conditions'));
             return false;
         }
 
@@ -115,8 +111,8 @@ class Trigger extends ComponentValidator
         $prepared_operators = array_map('htmlspecialchars', array_keys($operators));
 
         foreach ($value as $line => $condition) {
-            $line++;
 
+            $line++;
             $condition = trim($condition);
             $parts = array_map('trim', explode(' ', $condition));
 
@@ -128,23 +124,29 @@ class Trigger extends ComponentValidator
             });
 
             if (empty($parameters)) {
-                $errors[] = $this->language->text('Error on line @num: !error', array('@num' => $line, '!error' => $this->language->text('No parameters')));
+                $errors[] = $this->language->text('Error on line @num: !error', array(
+                    '@num' => $line,
+                    '!error' => $this->language->text('No parameters')));
                 continue;
             }
 
             if (!in_array(htmlspecialchars($operator), $prepared_operators)) {
-                $errors[] = $this->language->text('Error on line @num: !error', array('@num' => $line, '!error' => $this->language->text('Invalid operator')));
+                $errors[] = $this->language->text('Error on line @num: !error', array(
+                    '@num' => $line,
+                    '!error' => $this->language->text('Invalid operator')));
                 continue;
             }
 
             $data = $this->getSubmitted();
             $parameters = array_unique($parameters);
             $handlers = $this->condition->getHandlers();
-            $result = Handler::call($handlers, $condition_id, 'validate', array($parameters, $operator, $condition_id, $data));
+            $result = Handler::call($handlers, $condition_id, 'validate', array(
+                        $parameters, $operator, $condition_id, $data));
 
             if ($result !== true) {
                 $error = empty($result) ? $this->language->text('Failed validation') : (string) $result;
-                $errors[] = $this->language->text('Error on line @num: !error', array('@num' => $line, '!error' => $error));
+                $errors[] = $this->language->text('Error on line @num: !error', array(
+                    '@num' => $line, '!error' => $error));
                 continue;
             }
 

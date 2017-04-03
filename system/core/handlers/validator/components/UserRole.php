@@ -70,9 +70,7 @@ class UserRole extends ComponentValidator
         $data = $this->role->get($id);
 
         if (empty($data)) {
-            $vars = array('@name' => $this->language->text('Role'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('update', $error);
+            $this->setErrorUnavailable('update', $this->language->text('Role'));
             return false;
         }
 
@@ -101,9 +99,7 @@ class UserRole extends ComponentValidator
         $difference = array_diff($value, array_keys($permissions));
 
         if (!empty($difference)) {
-            $vars = array('@name' => implode(',', $difference));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('permissions', $error);
+            $this->setErrorUnavailable('permissions', implode(',', $difference));
             return false;
         }
 
@@ -117,14 +113,10 @@ class UserRole extends ComponentValidator
     protected function validateRedirectUserRole()
     {
         $value = $this->getSubmitted('redirect');
-
         if (isset($value) && mb_strlen($value) > 255) {
-            $vars = array('@max' => 255, '@field' => $this->language->text('Redirect'));
-            $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('redirect', $error);
+            $this->setErrorLengthRange('redirect', $this->language->text('Redirect'), 0, 255);
             return false;
         }
-
         return true;
     }
 

@@ -78,9 +78,7 @@ class Wishlist extends ComponentValidator
         $data = $this->wishlist->get($id);
 
         if (empty($data)) {
-            $vars = array('@name' => $this->language->text('Wishlist'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('update', $error);
+            $this->setErrorUnavailable('update', $this->language->text('Wishlist'));
             return false;
         }
 
@@ -94,35 +92,30 @@ class Wishlist extends ComponentValidator
      */
     protected function validateProductWishlist()
     {
-        $value = $this->getSubmitted('product_id');
+        $field = 'product_id';
+        $label = $this->language->text('Product');
+        $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
         }
 
         if (empty($value)) {
-            $vars = array('@field' => $this->language->text('Product'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('product_id', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         if (!is_numeric($value)) {
-            $vars = array('@field' => $this->language->text('Product'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('product_id', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
 
         $product = $this->product->get($value);
 
         if (empty($product['status'])) {
-            $vars = array('@name' => $this->language->text('Product'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('product_id', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
-
         return true;
     }
 

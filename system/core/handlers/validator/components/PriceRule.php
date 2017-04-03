@@ -102,9 +102,7 @@ class PriceRule extends ComponentValidator
         $data = $this->rule->get($id);
 
         if (empty($data)) {
-            $vars = array('@name' => $this->language->text('Price rule'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('update', $error);
+            $this->setErrorUnavailable('update', $this->language->text('Price rule'));
             return false;
         }
 
@@ -118,35 +116,30 @@ class PriceRule extends ComponentValidator
      */
     protected function validateTriggerPriceRule()
     {
-        $trigger_id = $this->getSubmitted('trigger_id');
+        $field = 'trigger_id';
+        $label = $this->language->text('Trigger');
+        $trigger_id = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($trigger_id)) {
             return null;
         }
 
         if (empty($trigger_id)) {
-            $vars = array('@field' => $this->language->text('Trigger'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('trigger_id', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         if (!is_numeric($trigger_id)) {
-            $vars = array('@field' => $this->language->text('Trigger'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('trigger_id', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
 
         $trigger = $this->trigger->get($trigger_id);
 
         if (empty($trigger)) {
-            $vars = array('@name' => $this->language->text('Trigger'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('trigger_id', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
-
         return true;
     }
 
@@ -156,26 +149,23 @@ class PriceRule extends ComponentValidator
      */
     protected function validateUsedPriceRule()
     {
-        $used = $this->getSubmitted('used');
+        $field = 'used';
+        $label = $this->language->text('Times used');
+        $used = $this->getSubmitted($field);
 
         if (!isset($used)) {
             return null;
         }
 
         if (!is_numeric($used)) {
-            $vars = array('@field' => $this->language->text('Times used'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('used', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
 
         if (strlen($used) > 10) {
-            $vars = array('@max' => 10, '@field' => $this->language->text('Times used'));
-            $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('used', $error);
+            $this->setErrorLengthRange($field, $label, 0, 10);
             return false;
         }
-
         return true;
     }
 
@@ -185,28 +175,25 @@ class PriceRule extends ComponentValidator
      */
     protected function validateCurrencyPriceRule()
     {
-        $code = $this->getSubmitted('currency');
+        $field = 'currency';
+        $label = $this->language->text('Currency');
+        $code = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($code)) {
             return null;
         }
 
         if (empty($code)) {
-            $vars = array('@field' => $this->language->text('Currency'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('currency', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         $currency = $this->currency->get($code);
 
         if (empty($currency)) {
-            $vars = array('@name' => $this->language->text('Currency'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('currency', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
-
         return true;
     }
 
@@ -216,19 +203,17 @@ class PriceRule extends ComponentValidator
      */
     protected function validateValueTypePriceRule()
     {
-        $type = $this->getSubmitted('value_type');
+        $field = 'value_type';
+        $type = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($type)) {
             return null;
         }
 
         if (empty($type) || !in_array($type, array('percent', 'fixed'))) {
-            $vars = array('@field' => $this->language->text('Value type'), '@allowed' => 'percent, fixed');
-            $error = $this->language->text('@field has invalid value. Allowed values: @allowed', $vars);
-            $this->setError('value_type', $error);
+            $this->setErrorInvalidValue($field, $this->language->text('Value type'));
             return false;
         }
-
         return true;
     }
 
@@ -238,7 +223,9 @@ class PriceRule extends ComponentValidator
      */
     protected function validateCodePriceRule()
     {
-        $code = $this->getSubmitted('code');
+        $field = 'code';
+        $label = $this->language->text('Code');
+        $code = $this->getSubmitted($field);
 
         if (empty($code)) {
             return null;
@@ -251,9 +238,7 @@ class PriceRule extends ComponentValidator
         }
 
         if (mb_strlen($code) > 255) {
-            $vars = array('@max' => 255, '@field' => $this->language->text('Code'));
-            $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('code', $error);
+            $this->setErrorLengthRange($field, $label, 0, 255);
             return false;
         }
 
@@ -266,15 +251,11 @@ class PriceRule extends ComponentValidator
         // Search for exact match
         // because $this->rule->getList() uses LIKE for "code" field
         foreach ((array) $rules as $rule) {
-
             if ($rule['code'] === $code) {
-                $vars = array('@name' => $this->language->text('Code'));
-                $error = $this->language->text('@name already exists', $vars);
-                $this->setError('code', $error);
+                $this->setErrorExists($field, $label);
                 return false;
             }
         }
-
         return true;
     }
 
@@ -284,23 +265,21 @@ class PriceRule extends ComponentValidator
      */
     protected function validateValuePriceRule()
     {
-        $value = $this->getSubmitted('value');
+        $field = 'value';
+        $label = $this->language->text('Value');
+        $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
         }
 
         if (!isset($value) || strlen($value) > 10) {
-            $vars = array('@min' => 1, '@max' => 10, '@field' => $this->language->text('Value'));
-            $error = $this->language->text('@field must be @min - @max characters long', $vars);
-            $this->setError('value', $error);
+            $this->setErrorLengthRange($field, $label, 1, 10);
             return false;
         }
 
         if (!is_numeric($value)) {
-            $vars = array('@field' => $this->language->text('Value'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('value', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
 

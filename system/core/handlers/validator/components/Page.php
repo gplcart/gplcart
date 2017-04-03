@@ -86,9 +86,7 @@ class Page extends ComponentValidator
         $page = $this->page->get($id);
 
         if (empty($page)) {
-            $vars = array('@name' => $this->language->text('Page'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('update', $error);
+            $this->setErrorUnavailable('update', $this->language->text('Page'));
             return false;
         }
 
@@ -102,19 +100,18 @@ class Page extends ComponentValidator
      */
     protected function validateDescriptionPage()
     {
-        $description = $this->getSubmitted('description');
+        $field = 'description';
+        $label = $this->language->text('Description');
+        $description = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($description)) {
             return null;
         }
 
         if (empty($description) || mb_strlen($description) > 65535) {
-            $vars = array('@min' => 1, '@max' => 65535, '@field' => $this->language->text('Description'));
-            $error = $this->language->text('@field must be @min - @max characters long', $vars);
-            $this->setError('description', $error);
+            $this->setErrorLengthRange($field, $label, 1, 65535);
             return false;
         }
-
         return true;
     }
 
@@ -124,28 +121,25 @@ class Page extends ComponentValidator
      */
     protected function validateCategoryPage()
     {
-        $category_id = $this->getSubmitted('category_id');
+        $field = 'category_id';
+        $label = $this->language->text('Category');
+        $category_id = $this->getSubmitted($field);
 
         if (empty($category_id)) {
             return null; // Category ID is not required
         }
 
         if (!is_numeric($category_id)) {
-            $vars = array('@field' => $this->language->text('Category'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('category_id', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
 
         $category = $this->category->get($category_id);
 
         if (empty($category['category_id'])) {
-            $vars = array('@name' => $this->language->text('Category'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('category_id', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
-
         return true;
     }
 

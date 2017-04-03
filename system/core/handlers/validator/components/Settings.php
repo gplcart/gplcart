@@ -56,7 +56,6 @@ class Settings extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateSettings();
-
         return $this->getResult();
     }
 

@@ -103,9 +103,7 @@ class Import extends ComponentValidator
         $operation = $this->getSubmitted('operation');
 
         if (empty($operation)) {
-            $vars = array('@name' => $this->language->text('Operation'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('operation', $error);
+            $this->setErrorUnavailable('operation', $this->language->text('Operation'));
             return false;
         }
 
@@ -132,9 +130,7 @@ class Import extends ComponentValidator
             return true;
         }
 
-        $vars = array('@name' => $this->language->text('File'));
-        $error = $this->language->text('@name is unavailable', $vars);
-        $this->setError('file', $error);
+        $this->setErrorUnavailable('file', $this->language->text('File'));
         return false;
     }
 
@@ -153,9 +149,7 @@ class Import extends ComponentValidator
         $file = $this->request->file('file');
 
         if (empty($file)) {
-            $vars = array('@field' => $this->language->text('File'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('file', $error);
+            $this->setErrorRequired('file', $this->language->text('File'));
             return false;
         }
 
@@ -167,6 +161,7 @@ class Import extends ComponentValidator
         }
 
         $uploaded = $this->file->getUploadedFile();
+
         $this->setSubmitted('filepath', $uploaded);
         $this->setSubmitted('filesize', filesize($uploaded));
         return true;

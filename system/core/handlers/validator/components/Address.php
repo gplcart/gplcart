@@ -88,41 +88,6 @@ class Address extends ComponentValidator
     }
 
     /**
-     * Validates a user Id
-     * @return boolean
-     */
-    protected function validateUserIdAddress()
-    {
-        $user_id = $this->getSubmitted('user_id');
-
-        if ($this->isUpdating() && !isset($user_id)) {
-            return null;
-        }
-
-        if (empty($user_id) || mb_strlen($user_id) > 255) {
-            $vars = array('@min' => 1, '@max' => 255, '@field' => $this->language->text('User'));
-            $error = $this->language->text('@field must be @min - @max characters long', $vars);
-            $this->setError('user_id', $error);
-            return false;
-        }
-
-        if (!is_numeric($user_id)) {
-            return true; // Anonymous user
-        }
-
-        $user = $this->user->get($user_id);
-
-        if (empty($user)) {
-            $vars = array('@name' => $this->language->text('User'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('user_id', $error);
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
      * Validates an address to be updated
      * @return boolean
      */
@@ -137,13 +102,43 @@ class Address extends ComponentValidator
         $data = $this->address->get($id);
 
         if (empty($data)) {
-            $vars = array('@name' => $this->language->text('Address'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('update', $error);
+            $this->setErrorUnavailable('update', $this->language->text('Address'));
             return false;
         }
 
         $this->setUpdating($data);
+        return true;
+    }
+
+    /**
+     * Validates a user Id
+     * @return boolean
+     */
+    protected function validateUserIdAddress()
+    {
+        $field = 'user_id';
+        $label = $this->language->text('User');
+        $user_id = $this->getSubmitted($field);
+
+        if ($this->isUpdating() && !isset($user_id)) {
+            return null;
+        }
+
+        if (empty($user_id) || mb_strlen($user_id) > 255) {
+            $this->setErrorLengthRange($field, $label);
+            return false;
+        }
+
+        if (!is_numeric($user_id)) {
+            return true; // Anonymous user
+        }
+
+        $user = $this->user->get($user_id);
+
+        if (empty($user)) {
+            $this->setErrorUnavailable($field, $label);
+            return false;
+        }
         return true;
     }
 
@@ -153,7 +148,9 @@ class Address extends ComponentValidator
      */
     protected function validateCountryAddress()
     {
-        $code = $this->getSubmitted('country');
+        $field = 'country';
+        $label = $this->language->text('Country');
+        $code = $this->getSubmitted($field);
 
         if (empty($code)) {
             $countries = $this->country->getList();
@@ -167,9 +164,7 @@ class Address extends ComponentValidator
         $country = $this->country->get($code);
 
         if (empty($country['code'])) {
-            $vars = array('@name' => $this->language->text('Country'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('country', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
 
@@ -184,24 +179,23 @@ class Address extends ComponentValidator
      */
     protected function validateStateAddress()
     {
+        $field = 'state_id';
+        $label = $this->language->text('State');
+
         $format = $this->getSubmitted('format');
-        $state_id = $this->getSubmitted('state_id');
+        $state_id = $this->getSubmitted($field);
 
         if (!isset($state_id) || empty($format)) {
             return null;
         }
 
         if (empty($state_id) && !empty($format['state_id']['required'])) {
-            $vars = array('@field' => $this->language->text('State'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('state_id', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         if (!is_numeric($state_id)) {
-            $vars = array('@field' => $this->language->text('State'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('state_id', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
 
@@ -212,12 +206,9 @@ class Address extends ComponentValidator
         $state = $this->state->get($state_id);
 
         if (empty($state['state_id'])) {
-            $vars = array('@name' => $this->language->text('State'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('state_id', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
-
         return true;
     }
 
@@ -227,7 +218,9 @@ class Address extends ComponentValidator
      */
     protected function validateCityAddress()
     {
-        $city_id = $this->getSubmitted('city_id');
+        $field = 'city_id';
+        $label = $this->language->text('City');
+        $city_id = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($city_id)) {
             return null;
@@ -240,35 +233,24 @@ class Address extends ComponentValidator
         }
 
         if (empty($city_id)) {
-
             if (!empty($format['city_id']['required'])) {
-                $vars = array('@field' => $this->language->text('City'));
-                $error = $this->language->text('@field is required', $vars);
-                $this->setError('city_id', $error);
+                $this->setErrorRequired($field, $label);
                 return false;
             }
-
             return true;
         }
 
         // City ID can be either numeric ID or non-numeric human name
         if (is_numeric($city_id)) {
-
-            $city = $this->city->get($city_id);
-
-            if (empty($city)) {
-                $vars = array('@name' => $this->language->text('City'));
-                $error = $this->language->text('@name is unavailable', $vars);
-                $this->setError('city_id', $error);
+            if (!$this->city->get($city_id)) {
+                $this->setErrorUnavailable($field, $label);
                 return false;
             }
             return true;
         }
 
         if (mb_strlen($city_id) > 255) {
-            $vars = array('@max' => 255, '@field' => $this->language->text('City'));
-            $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('city_id', $error);
+            $this->setErrorLengthRange($field, $label);
             return false;
         }
 
@@ -291,8 +273,8 @@ class Address extends ComponentValidator
         // Loop over results to find exact match,
         // because we search "name" using "LIKE" condition
         foreach ($cities as $city) {
-            if (strcasecmp($city['name'], $city_id) == 0) {
-                $this->setSubmitted('city_id', $city['city_id']);
+            if (strcasecmp($city['name'], $city_id) === 0) {
+                $this->setSubmitted($field, $city['city_id']);
                 return true;
             }
         }
@@ -306,7 +288,8 @@ class Address extends ComponentValidator
      */
     protected function validateTypeAddress()
     {
-        $type = $this->getSubmitted('type');
+        $field = 'type';
+        $type = $this->getSubmitted($field);
 
         if (!isset($type)) {
             return null;
@@ -315,12 +298,9 @@ class Address extends ComponentValidator
         $types = $this->address->getTypes();
 
         if (!in_array($type, $types)) {
-            $vars = array('@name' => $this->language->text('Type'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('type', $error);
+            $this->setErrorUnavailable($field, $this->language->text('Type'));
             return false;
         }
-
         return true;
     }
 
@@ -339,6 +319,7 @@ class Address extends ComponentValidator
         $fields = array('address_1', 'address_2', 'phone', 'middle_name',
             'last_name', 'first_name', 'postcode', 'company', 'fax');
 
+        $errors = 0;
         foreach ($fields as $field) {
 
             if (empty($format[$field])) {
@@ -358,14 +339,12 @@ class Address extends ComponentValidator
             if (!isset($submitted_value)//
                     || $submitted_value === ''//
                     || mb_strlen($submitted_value) > 255) {
-
-                $vars = array('@min' => 1, '@max' => 255, '@field' => $format[$field]['name']);
-                $error = $this->language->text('@field must be @min - @max characters long', $vars);
-                $this->setError($field, $error);
+                $errors++;
+                $this->setErrorLengthRange($field, $format[$field]['name']);
             }
         }
 
-        return empty($error);
+        return empty($errors);
     }
 
 }

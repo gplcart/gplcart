@@ -68,31 +68,26 @@ class Rating extends ComponentValidator
      */
     protected function validateProductRating()
     {
-        $value = $this->getSubmitted('product_id');
+        $field = 'product_id';
+        $label = $this->language->text('Product');
+        $value = $this->getSubmitted($field);
 
         if (empty($value)) {
-            $vars = array('@field' => $this->language->text('Product'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('product_id', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         if (!is_numeric($value)) {
-            $vars = array('@field' => $this->language->text('Product'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('product_id', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
 
         $product = $this->product->get($value);
 
         if (empty($product['product_id'])) {
-            $vars = array('@name' => $this->language->text('Product'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('product_id', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
-
         return true;
     }
 
@@ -102,28 +97,24 @@ class Rating extends ComponentValidator
      */
     protected function validateValueRating()
     {
-        $value = $this->getSubmitted('rating');
+        $field = 'rating';
+        $label = $this->language->text('Rating');
+        $value = $this->getSubmitted($field);
 
         if (!isset($value)) {
-            $vars = array('@field' => $this->language->text('Rating'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('rating', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         if (!is_numeric($value)) {
-            $vars = array('@field' => $this->language->text('Rating'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('rating', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
 
         if ((float) $value > 5) {
-            $error = $this->language->text('Rating must not be greater than @num', array('@num' => 5));
-            $this->setError('rating', $error);
+            $this->setErrorInvalidValue($field, $label);
             return false;
         }
-
         return true;
     }
 

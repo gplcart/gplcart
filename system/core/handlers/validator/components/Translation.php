@@ -66,23 +66,22 @@ class Translation extends ComponentValidator
      */
     protected function validateLanguageTranslation()
     {
-        $code = $this->getSubmitted('language');
+        $field = 'language';
+        $label = $this->language->text('Language');
+        $code = $this->getSubmitted($field);
 
         if (empty($code)) {
-            $vars = array('@field' => $this->language->text('Language'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('language', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         $language = $this->language->get($code);
 
         if (empty($language)) {
-            $vars = array('@name' => $this->language->text('Language'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('language', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
+        return true;
     }
 
     /**
@@ -98,9 +97,7 @@ class Translation extends ComponentValidator
         $file = $this->request->file('file');
 
         if (empty($file)) {
-            $vars = array('@field' => $this->language->text('File'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('file', $error);
+            $this->setErrorRequired('file', $this->language->text('File'));
             return false;
         }
 

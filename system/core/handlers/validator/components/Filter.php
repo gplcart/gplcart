@@ -79,9 +79,7 @@ class Filter extends ComponentValidator
         $data = $this->filter->get($id);
 
         if (empty($data)) {
-            $vars = array('@name' => $this->language->text('Filter'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('update', $error);
+            $this->setErrorUnavailable('update', $this->language->text('Filter'));
             return false;
         }
 
@@ -95,7 +93,9 @@ class Filter extends ComponentValidator
      */
     protected function validateRoleFilter()
     {
-        $value = $this->getSubmitted('role_id');
+        $field = 'role_id';
+        $label = $this->language->text('Role');
+        $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
@@ -107,21 +107,16 @@ class Filter extends ComponentValidator
         }
 
         if (!is_numeric($value)) {
-            $vars = array('@field' => $this->language->text('Role'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('role_id', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
 
         $role = $this->role->get($value);
 
         if (empty($role['status'])) {
-            $vars = array('@name' => $this->language->text('Role'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('role_id', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
-
         return true;
     }
 

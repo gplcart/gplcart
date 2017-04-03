@@ -9,6 +9,8 @@
 
 namespace gplcart\core\handlers\validator;
 
+use gplcart\core\Container as Container;
+
 /**
  * Base validator class
  */
@@ -34,11 +36,17 @@ class Base
     protected $options = array();
 
     /**
+     * Language model instance
+     * @var \gplcart\core\models\Language $language
+     */
+    protected $language;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
-        //
+        $this->language = Container::get('gplcart\\core\\models\\Language');
     }
 
     /**
@@ -193,6 +201,70 @@ class Base
         $result = empty($this->errors) ? true : $this->errors;
         $this->errors = array(); // Important. Reset all errors
         return $result;
+    }
+
+    /**
+     * Set "Field required" error
+     * @param string $field
+     * @param string $label
+     */
+    protected function setErrorRequired($field, $label)
+    {
+        $this->setError($field, $this->language->text('@field is required', array('@field' => $label)));
+    }
+
+    /**
+     * Set "Field not numeric" error
+     * @param string $field
+     * @param string $label
+     */
+    protected function setErrorNumeric($field, $label)
+    {
+        $this->setError($field, $this->language->text('@field must be numeric', array('@field' => $label)));
+    }
+
+    /**
+     * Set "Object unavailable" error
+     * @param string $field
+     * @param string $label
+     */
+    protected function setErrorUnavailable($field, $label)
+    {
+        $this->setError($field, $this->language->text('@name is unavailable', array('@name' => $label)));
+    }
+
+    /**
+     * Set "Length must be between min and max" error
+     * @param string $field
+     * @param string $label
+     */
+    protected function setErrorLengthRange($field, $label, $min = 1, $max = 255)
+    {
+        $vars = array('@min' => $min, '@max' => $max, '@field' => $label);
+        $error = $this->language->text('@field must be @min - @max characters long', $vars);
+        $this->setError($field, $error);
+    }
+
+    /**
+     * Set "Invalid value" error
+     * @param string $field
+     * @param string $label
+     */
+    protected function setErrorInvalidValue($field, $label)
+    {
+        $error = $this->language->text('@field has invalid value', array('@field' => $label));
+        $this->setError($field, $error);
+    }
+
+    /**
+     * Set "Object already exists" error
+     * @param string $field
+     * @param string $label
+     */
+    protected function setErrorExists($field, $label)
+    {
+        $error = $this->language->text('@name already exists', array('@name' => $label));
+        $this->setError($field, $error);
     }
 
 }

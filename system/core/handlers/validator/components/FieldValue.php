@@ -105,9 +105,7 @@ class FieldValue extends ComponentValidator
         $data = $this->field_value->get($id);
 
         if (empty($data)) {
-            $vars = array('@name' => $this->language->text('Field value'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('update', $error);
+            $this->setErrorUnavailable('update', $this->language->text('Field value'));
             return false;
         }
 
@@ -121,36 +119,32 @@ class FieldValue extends ComponentValidator
      */
     protected function validateFieldFieldValue()
     {
-        $field_id = $this->getSubmitted('field_id');
+        $field = 'field_id';
+        $label = $this->language->text('Field');
+        $field_id = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($field_id)) {
             return null;
         }
 
         if (empty($field_id)) {
-            $vars = array('@field' => $this->language->text('Field'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('field_id', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         if (!is_numeric($field_id)) {
-            $vars = array('@field' => $this->language->text('Field'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('field_id', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
 
-        $field = $this->field->get($field_id);
+        $field_data = $this->field->get($field_id);
 
-        if (empty($field['field_id'])) {
-            $vars = array('@name' => $this->language->text('Field'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('field_id', $error);
+        if (empty($field_data['field_id'])) {
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
 
-        $this->setSubmitted('field', $field);
+        $this->setSubmitted('field', $field_data);
         return true;
     }
 
@@ -167,12 +161,9 @@ class FieldValue extends ComponentValidator
         }
 
         if (preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $color) !== 1) {
-            $vars = array('@field' => $this->language->text('Color'));
-            $error = $this->language->text('@field has invalid value', $vars);
-            $this->setError('color', $error);
+            $this->setErrorInvalidValue('color', $this->language->text('Color'));
             return false;
         }
-
         return true;
     }
 
@@ -195,15 +186,10 @@ class FieldValue extends ComponentValidator
         }
 
         if (isset($path)) {
-
             if (is_readable(GC_FILE_DIR . "/$path")) {
                 return true;
             }
-
-            $vars = array('@name' => $this->language->text('File'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('file', $error);
-
+            $this->setErrorUnavailable('file', $this->language->text('File'));
             return false;
         }
 

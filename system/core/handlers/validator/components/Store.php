@@ -100,9 +100,7 @@ class Store extends ComponentValidator
         $data = $this->store->get($id);
 
         if (empty($data)) {
-            $vars = array('@name' => $this->language->text('Store'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('update', $error);
+            $this->setErrorUnavailable('update', $this->language->text('Store'));
             return false;
         }
 
@@ -118,7 +116,9 @@ class Store extends ComponentValidator
      */
     protected function validateDomainStore()
     {
-        $value = $this->getSubmitted('domain');
+        $field = 'domain';
+        $label = $this->language->text('Domain');
+        $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
@@ -136,21 +136,16 @@ class Store extends ComponentValidator
         }
 
         if (!gplcart_valid_domain($value)) {
-            $vars = array('@field' => $this->language->text('Domain'));
-            $error = $this->language->text('@field has invalid value', $vars);
-            $this->setError('domain', $error);
+            $this->setErrorInvalidValue($field, $label);
             return false;
         }
 
         $existing = $this->store->get($value);
 
         if (!empty($existing)) {
-            $vars = array('@name' => $this->language->text('Domain'));
-            $error = $this->language->text('@name already exists', $vars);
-            $this->setError('domain', $error);
+            $this->setErrorExists($field, $label);
             return false;
         }
-
         return true;
     }
 
@@ -164,14 +159,16 @@ class Store extends ComponentValidator
             return null;
         }
 
-        $value = $this->getSubmitted('basepath');
+        $field = 'basepath';
+        $label = $this->language->text('Base path');
+        $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
         }
 
         if ($this->getSubmitted('default')) {
-            $this->unsetSubmitted('basepath');
+            $this->unsetSubmitted($field);
             return null; // Cannot update basepath of default store
         }
 
@@ -185,9 +182,7 @@ class Store extends ComponentValidator
         }
 
         if (preg_match('/^[a-z0-9]{0,50}$/', $value) !== 1) {
-            $vars = array('@field' => $this->language->text('Base path'));
-            $error = $this->language->text('@field has invalid value', $vars);
-            $this->setError('basepath', $error);
+            $this->setErrorInvalidValue($field, $label);
             return false;
         }
 
@@ -195,19 +190,14 @@ class Store extends ComponentValidator
         $stores = (array) $this->store->getList($conditions);
 
         foreach ($stores as $store_id => $data) {
-
             if (isset($updating['store_id']) && $updating['store_id'] == $store_id) {
                 continue;
             }
-
             if ($data['domain'] === $domain && $data['basepath'] === $value) {
-                $vars = array('@name' => $this->language->text('Base path'));
-                $error = $this->language->text('@name already exists', $vars);
-                $this->setError('basepath', $error);
+                $this->setErrorExists($field, $label);
                 return false;
             }
         }
-
         return true;
     }
 
@@ -217,16 +207,16 @@ class Store extends ComponentValidator
      */
     protected function validateEmailStore()
     {
-        $value = $this->getSubmitted('data.email');
+        $field = 'data.email';
+        $label = $this->language->text('E-mail');
+        $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
         }
 
         if (empty($value)) {
-            $vars = array('@field' => $this->language->text('E-mail'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('data.email', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
@@ -235,11 +225,9 @@ class Store extends ComponentValidator
         });
 
         if (count($value) != count($filtered)) {
-            $error = $this->language->text('Invalid E-mail');
-            $this->setError('data.email', $error);
+            $this->setErrorInvalidValue($field, $label);
             return false;
         }
-
         return true;
     }
 
@@ -249,28 +237,23 @@ class Store extends ComponentValidator
      */
     protected function validateMapStore()
     {
-        $value = $this->getSubmitted('data.map');
+        $field = 'data.map';
+        $label = $this->language->text('Map');
+        $value = $this->getSubmitted($field);
 
         if (empty($value)) {
             return null;
         }
 
         if (count($value) != 2) {
-            $vars = array('@field' => $this->language->text('Map'));
-            $error = $this->language->text('@field has invalid value', $vars);
-            $this->setError('data.map', $error);
+            $this->setErrorInvalidValue($field, $label);
             return false;
         }
 
-        $filtered = array_filter($value, 'is_numeric');
-
-        if (count($value) != count($filtered)) {
-            $vars = array('@field' => $this->language->text('Map'));
-            $error = $this->language->text('@field has invalid value', $vars);
-            $this->setError('data.map', $error);
+        if (count($value) != count(array_filter($value, 'is_numeric'))) {
+            $this->setErrorInvalidValue($field, $label);
             return false;
         }
-
         return true;
     }
 
@@ -388,7 +371,8 @@ class Store extends ComponentValidator
             'theme_tablet' => $this->language->text('Tablet theme')
         );
 
-        foreach ($mapping as $field => $name) {
+        $errors = 0;
+        foreach ($mapping as $field => $label) {
 
             $value = $this->getSubmitted("data.$field");
 
@@ -397,22 +381,24 @@ class Store extends ComponentValidator
             }
 
             if (empty($value)) {
-                $error = $this->language->text('@field is required', array('@field' => $name));
-                $this->setError("data.$field", $error);
+                $errors++;
+                $this->setErrorRequired("data.$field", $label);
                 continue;
             }
 
             $module = $this->module->get($value);
 
-            if (isset($module['type']) || $module['type'] === 'theme' && !empty($module['status'])) {
+            if (isset($module['type'])//
+                    || $module['type'] === 'theme'//
+                    && !empty($module['status'])) {
                 continue;
             }
 
-            $error = $this->language->text('@name is unavailable', array('@name' => $name));
-            $this->setError("data.$field", $error);
+            $errors++;
+            $this->setErrorUnavailable("data.$field", $label);
         }
 
-        return !isset($error);
+        return empty($errors);
     }
 
     /**

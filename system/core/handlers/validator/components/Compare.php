@@ -56,28 +56,24 @@ class Compare extends ComponentValidator
      */
     protected function validateProductCompare()
     {
-        $product_id = $this->getSubmitted('product_id');
+        $field = 'product_id';
+        $label = $this->language->text('Product');
+        $product_id = $this->getSubmitted($field);
 
         if (empty($product_id)) {
-            $vars = array('@field' => $this->language->text('Product'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('product_id', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         if (!is_numeric($product_id)) {
-            $vars = array('@field' => $this->language->text('Product'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('product_id', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
 
         $product = $this->product->get($product_id);
 
         if (empty($product['status'])) {
-            $vars = array('@name' => $this->language->text('Product'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('product_id', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
 

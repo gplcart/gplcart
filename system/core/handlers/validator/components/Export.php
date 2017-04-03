@@ -76,9 +76,7 @@ class Export extends ComponentValidator
         }
 
         if (empty($operation)) {
-            $vars = array('@name' => $this->language->text('Operation'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('operation', $error);
+            $this->setErrorUnavailable('operation', $this->language->text('Operation'));
             return false;
         }
 
@@ -122,16 +120,12 @@ class Export extends ComponentValidator
         $operation = $this->getSubmitted('operation');
 
         if (empty($delimiter)) {
-            $vars = array('@name' => $this->language->text('Delimiter'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('operation', $error);
+            $this->setErrorRequired('operation', $this->language->text('Delimiter'));
             return false;
         }
 
         if (empty($operation['csv']['header'])) {
-            $vars = array('@name' => $this->language->text('Header'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('operation', $error);
+            $this->setErrorRequired('operation', $this->language->text('Header'));
             return false;
         }
 

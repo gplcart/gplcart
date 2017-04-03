@@ -73,9 +73,7 @@ class ImageStyle extends ComponentValidator
         $imagestyle = $this->image->getStyle($id);
 
         if (empty($imagestyle)) {
-            $vars = array('@name' => $this->language->text('Image style'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('update', $error);
+            $this->setErrorUnavailable('update', $this->language->text('Image style'));
             return false;
         }
 
@@ -89,16 +87,16 @@ class ImageStyle extends ComponentValidator
      */
     public function validateActionsImageStyle()
     {
-        $actions = $this->getSubmitted('actions');
+        $field = 'actions';
+        $label = $this->language->text('Actions');
+        $actions = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($actions)) {
             return null;
         }
 
         if (empty($actions)) {
-            $vars = array('@field' => $this->language->text('Actions'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('actions', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
@@ -123,7 +121,7 @@ class ImageStyle extends ComponentValidator
         if (!empty($errors)) {
             $vars = array('@num' => implode(',', $errors));
             $error = $this->language->text('Error on line @num', $vars);
-            $this->setError('actions', $error);
+            $this->setError($field, $error);
         }
 
         if ($this->isError()) {

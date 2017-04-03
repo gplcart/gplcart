@@ -105,12 +105,9 @@ class CollectionItem extends ComponentValidator
         $url = $this->getSubmitted('data.url');
 
         if (isset($url) && mb_strlen($url) > 255) {
-            $vars = array('@max' => 255, '@field' => $this->language->text('Url'));
-            $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('data.url', $error);
+            $this->setErrorLengthRange('data.url', $this->language->text('URL'), 0, 255);
             return false;
         }
-
         return true;
     }
 
@@ -120,28 +117,24 @@ class CollectionItem extends ComponentValidator
      */
     protected function validateCollectionCollectionItem()
     {
-        $collection_id = $this->getSubmitted('collection_id');
+        $field = 'collection_id';
+        $label = $this->language->text('Collection ID');
+        $collection_id = $this->getSubmitted($field);
 
         if (empty($collection_id)) {
-            $vars = array('@field' => $this->language->text('Collection ID'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('collection_id', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         if (!is_numeric($collection_id)) {
-            $vars = array('@field' => $this->language->text('Collection ID'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('collection_id', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
 
         $collection = $this->collection->get($collection_id);
 
         if (empty($collection['collection_id'])) {
-            $vars = array('@name' => $this->language->text('Collection ID'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('collection_id', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
 
@@ -155,24 +148,23 @@ class CollectionItem extends ComponentValidator
      */
     protected function validateValueCollectionItem()
     {
+        $field = 'value';
+        $label = $this->language->text('Value');
 
+        $input = $this->getSubmitted('input');
+        $value = $this->getSubmitted($field);
         $collection = $this->getSubmitted('collection');
 
         if (empty($collection)) {
             return null;
         }
 
-        $input = $this->getSubmitted('input');
-        $value = $this->getSubmitted('value');
-
         if (isset($input) && is_numeric($input)) {
             $value = $input;
         }
 
         if (empty($value)) {
-            $vars = array('@field' => $this->language->text('Value'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('value', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
@@ -184,9 +176,7 @@ class CollectionItem extends ComponentValidator
         $collection_item = $this->collection_item->getList($conditions);
 
         if (!empty($collection_item)) {
-            $vars = array('@name' => $this->language->text('Value'));
-            $error = $this->language->text('@name already exists', $vars);
-            $this->setError('value', $error);
+            $this->setErrorExists($field, $label);
             return false;
         }
 

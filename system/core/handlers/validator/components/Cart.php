@@ -102,9 +102,7 @@ class Cart extends ComponentValidator
         $data = $this->cart->get($id);
 
         if (empty($data)) {
-            $vars = array('@name' => $this->language->text('Cart'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('update', $error);
+            $this->setErrorUnavailable('update', $this->language->text('Cart'));
             return false;
         }
 
@@ -118,32 +116,28 @@ class Cart extends ComponentValidator
      */
     protected function validateProductCart()
     {
-        $product_id = $this->getSubmitted('product_id');
+        $field = 'product_id';
+        $label = $this->language->text('Product');
+        $product_id = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($product_id)) {
             return null;
         }
 
         if (empty($product_id)) {
-            $vars = array('@field' => $this->language->text('Product'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('product_id', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         if (!is_numeric($product_id)) {
-            $vars = array('@field' => $this->language->text('Product'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('product_id', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
 
         $product = $this->product->get($product_id);
 
         if (empty($product['status'])) {
-            $vars = array('@name' => $this->language->text('Product'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('product_id', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
 
@@ -161,26 +155,25 @@ class Cart extends ComponentValidator
             return null;
         }
 
-        $sku = $this->getSubmitted('sku');
+        $field = 'sku';
+        $label = $this->language->text('SKU');
+
+        $sku = $this->getSubmitted($field);
+        $store_id = $this->getSubmitted('store_id');
 
         if (!isset($sku)) {
             return null;
         }
 
         if (empty($sku)) {
-            $vars = array('@field' => $this->language->text('SKU'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('sku', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
-        $store_id = $this->getSubmitted('store_id');
         $product = $this->product->getBySku($sku, $store_id);
 
         if (empty($product['product_id'])) {
-            $vars = array('@name' => $this->language->text('Product'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('sku', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
 
@@ -194,28 +187,25 @@ class Cart extends ComponentValidator
      */
     protected function validateOrderCart()
     {
-        $order_id = $this->getSubmitted('order_id');
+        $field = 'order_id';
+        $label = $this->language->text('Order');
+        $order_id = $this->getSubmitted($field);
 
         if (empty($order_id)) {
             return null;
         }
 
         if (!is_numeric($order_id)) {
-            $vars = array('@field' => $this->language->text('Order'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('order_id', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
 
         $order = $this->order->get($order_id);
 
         if (empty($order['order_id'])) {
-            $vars = array('@name' => $this->language->text('Order'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('order_id', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
-
         return true;
     }
 
@@ -225,33 +215,28 @@ class Cart extends ComponentValidator
      */
     protected function validateQuantityCart()
     {
-        $quantity = $this->getSubmitted('quantity');
+        $field = 'quantity';
+        $label = $this->language->text('Quantity');
+        $quantity = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($quantity)) {
             return null;
         }
 
         if (empty($quantity)) {
-            $vars = array('@field' => $this->language->text('Quantity'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('quantity', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         if (!is_numeric($quantity)) {
-            $vars = array('@field' => $this->language->text('Quantity'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('quantity', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
 
         if (strlen($quantity) > 2) {
-            $vars = array('@max' => 2, '@field' => $this->language->text('Quantity'));
-            $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('quantity', $error);
+            $this->setErrorLengthRange($field, $label, 1, 2);
             return false;
         }
-
         return true;
     }
 
@@ -263,12 +248,11 @@ class Cart extends ComponentValidator
     {
         $admin = $this->getSubmitted('admin');
         $product = $this->getSubmitted('product');
+        $increment = $this->getSubmitted('increment');
 
         if (!empty($admin) || empty($product) || $this->isError()) {
             return null;
         }
-
-        $increment = $this->getSubmitted('increment');
 
         if (!isset($increment)) {
             $increment = true;

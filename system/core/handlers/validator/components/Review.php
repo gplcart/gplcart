@@ -81,9 +81,7 @@ class Review extends ComponentValidator
         $data = $this->review->get($id);
 
         if (empty($data)) {
-            $vars = array('@name' => $this->language->text('Review'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('update', $error);
+            $this->setErrorUnavailable('update', $this->language->text('Review'));
             return false;
         }
 
@@ -97,16 +95,16 @@ class Review extends ComponentValidator
      */
     protected function validateTextReview()
     {
-        $value = $this->getSubmitted('text');
+        $field = 'text';
+        $label = $this->language->text('Text');
+        $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
         }
 
         if (empty($value)) {
-            $vars = array('@field' => $this->language->text('Text'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('text', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
@@ -114,12 +112,9 @@ class Review extends ComponentValidator
         $length = mb_strlen($value);
 
         if ($length < $limits['min'] || $length > $limits['max']) {
-            $vars = array('@min' => $limits['min'], '@max' => $limits['max'], '@field' => $this->language->text('Text'));
-            $error = $this->language->text('@field must be @min - @max characters long', $vars);
-            $this->setError('text', $error);
+            $this->setErrorLengthRange($field, $label, $limits['min'], $limits['max']);
             return false;
         }
-
         return true;
     }
 
@@ -129,7 +124,8 @@ class Review extends ComponentValidator
      */
     protected function validateCreatedReview()
     {
-        $value = $this->getSubmitted('created');
+        $field = 'created';
+        $value = $this->getSubmitted($field);
 
         if (!isset($value)) {
             return null;
@@ -138,9 +134,7 @@ class Review extends ComponentValidator
         $timestamp = strtotime($value);
 
         if (empty($timestamp)) {
-            $vars = array('@field' => $this->language->text('Created'));
-            $error = $this->language->text('@field is not a valid datetime description', $vars);
-            $this->setError('created', $error);
+            $this->setErrorInvalidValue($field, $this->language->text('Created'));
             return false;
         }
 
@@ -154,35 +148,30 @@ class Review extends ComponentValidator
      */
     protected function validateProductReview()
     {
-        $value = $this->getSubmitted('product_id');
+        $field = 'product_id';
+        $label = $this->language->text('Product');
+        $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
         }
 
         if (empty($value)) {
-            $vars = array('@field' => $this->language->text('Product'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('product_id', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         if (!is_numeric($value)) {
-            $vars = array('@field' => $this->language->text('Product'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('product_id', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
 
         $product = $this->product->get($value);
 
         if (empty($product['product_id'])) {
-            $vars = array('@name' => $this->language->text('Product'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('product_id', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
-
         return true;
     }
 
@@ -192,25 +181,23 @@ class Review extends ComponentValidator
      */
     protected function validateEmailReview()
     {
-        $value = $this->getSubmitted('email');
+        $field = 'email';
+        $label = $this->language->text('Email');
+        $value = $this->getSubmitted($field);
 
         if (!isset($value)) {
             return null;
         }
 
         if (empty($value)) {
-            $vars = array('@field' => $this->language->text('Email'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('email', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         $user = $this->user->getByEmail($value);
 
         if (empty($user['user_id'])) {
-            $vars = array('@name' => $this->language->text('Email'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('email', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
 

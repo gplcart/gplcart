@@ -66,9 +66,7 @@ class Language extends ComponentValidator
         $language = $this->language->get($id);
 
         if (empty($language)) {
-            $vars = array('@name' => $this->language->text('Language'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('update', $error);
+            $this->setErrorUnavailable('update', $this->language->text('Language'));
             return false;
         }
 
@@ -82,23 +80,21 @@ class Language extends ComponentValidator
      */
     protected function validateCodeLanguage()
     {
-        $code = $this->getSubmitted('code');
+        $field = 'code';
+        $label = $this->language->text('Code');
+        $code = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($code)) {
             return null;
         }
 
         if (empty($code)) {
-            $vars = array('@field' => $this->language->text('Code'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('code', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         if (preg_match('/^[A-Za-z-_]{1,10}$/', $code) !== 1) {
-            $vars = array('@field' => $this->language->text('Code'));
-            $error = $this->language->text('@field has invalid value', $vars);
-            $this->setError('code', $error);
+            $this->setErrorInvalidValue($field, $label);
             return false;
         }
 
@@ -111,12 +107,9 @@ class Language extends ComponentValidator
         $language = $this->language->get($code);
 
         if (!empty($language)) {
-            $vars = array('@name' => $this->language->text('Code'));
-            $error = $this->language->text('@name already exists', $vars);
-            $this->setError('code', $error);
+            $this->setErrorExists($field, $label);
             return false;
         }
-
         return true;
     }
 
@@ -126,19 +119,18 @@ class Language extends ComponentValidator
      */
     protected function validateNameLanguage()
     {
-        $name = $this->getSubmitted('name');
+        $field = 'name';
+        $label = $this->language->text('Name');
+        $name = $this->getSubmitted($field);
 
         if (!isset($name)) {
             return true; // If not set, code will be used instead
         }
 
         if (preg_match('/^[A-Za-z]{1,50}$/', $name) !== 1) {
-            $vars = array('@field' => $this->language->text('Name'));
-            $error = $this->language->text('@field has invalid value', $vars);
-            $this->setError('name', $error);
+            $this->setErrorInvalidValue($field, $label);
             return false;
         }
-
         return true;
     }
 
@@ -148,19 +140,18 @@ class Language extends ComponentValidator
      */
     protected function validateNativeNameLanguage()
     {
-        $name = $this->getSubmitted('native_name');
+        $field = 'native_name';
+        $label = $this->language->text('Native name');
+        $name = $this->getSubmitted($field);
 
         if (!isset($name)) {
             return true; // If not set, code will be used instead
         }
 
         if (mb_strlen($name) > 50) {
-            $vars = array('@max' => 50, '@field' => $this->language->text('Native name'));
-            $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('native_name', $error);
+            $this->setErrorLengthRange($field, $label, 0, 50);
             return false;
         }
-
         return true;
     }
 

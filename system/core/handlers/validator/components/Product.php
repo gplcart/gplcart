@@ -144,9 +144,7 @@ class Product extends ComponentValidator
         $data = $this->product->get($id);
 
         if (empty($data)) {
-            $vars = array('@name' => $this->language->text('Product'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('update', $error);
+            $this->setErrorUnavailable('update', $this->language->text('Product'));
             return false;
         }
 
@@ -176,28 +174,25 @@ class Product extends ComponentValidator
      */
     protected function validateCurrencyProduct()
     {
-        $value = $this->getSubmitted('currency');
+        $field = 'currency';
+        $label = $this->language->text('Currency');
+        $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
         }
 
         if (empty($value)) {
-            $vars = array('@field' => $this->language->text('Currency'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('currency', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         $currency = $this->currency->get($value);
 
         if (empty($currency)) {
-            $vars = array('@name' => $this->language->text('Currency'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('currency', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
-
         return true;
     }
 
@@ -212,7 +207,8 @@ class Product extends ComponentValidator
             'brand_category_id' => $this->language->text('Brand'),
         );
 
-        foreach ($fields as $field => $name) {
+        $errors = 0;
+        foreach ($fields as $field => $label) {
 
             $value = $this->getSubmitted($field);
 
@@ -221,9 +217,8 @@ class Product extends ComponentValidator
             }
 
             if (!is_numeric($value)) {
-                $vars = array('@field' => $name);
-                $error = $this->language->text('@field must be numeric', $vars);
-                $this->setError($field, $error);
+                $errors++;
+                $this->setErrorNumeric($field, $label);
                 continue;
             }
 
@@ -234,13 +229,12 @@ class Product extends ComponentValidator
             $category = $this->category->get($value);
 
             if (empty($category['category_id'])) {
-                $vars = array('@name' => $name);
-                $error = $this->language->text('@name is unavailable', $vars);
-                $this->setError($field, $error);
+                $errors++;
+                $this->setErrorUnavailable($field, $label);
             }
         }
 
-        return !isset($error);
+        return empty($errors);
     }
 
     /**
@@ -259,7 +253,8 @@ class Product extends ComponentValidator
             'weight_unit' => $this->language->text('Weight unit')
         );
 
-        foreach ($fields as $field => $name) {
+        $errors = 0;
+        foreach ($fields as $field => $label) {
 
             $value = $this->getSubmitted($field);
 
@@ -268,13 +263,12 @@ class Product extends ComponentValidator
             }
 
             if (!isset($allowed[$field][$value])) {
-                $vars = array('@name' => $name);
-                $error = $this->language->text('@name is unavailable', $vars);
-                $this->setError($field, $error);
+                $errors++;
+                $this->setErrorUnavailable($field, $label);
             }
         }
 
-        return !isset($error);
+        return empty($errors);
     }
 
     /**
@@ -283,26 +277,23 @@ class Product extends ComponentValidator
      */
     protected function validatePriceProduct()
     {
-        $value = $this->getSubmitted('price');
+        $field = 'price';
+        $label = $this->language->text('Price');
+        $value = $this->getSubmitted($field);
 
         if (!isset($value)) {
             return null;
         }
 
         if (!is_numeric($value)) {
-            $vars = array('@field' => $this->language->text('Price'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('price', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
 
         if (strlen($value) > 8) { // Major units
-            $vars = array('@max' => 8, '@field' => $this->language->text('Price'));
-            $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('price', $error);
+            $this->setErrorLengthRange($field, $label, 0, 8);
             return false;
         }
-
         return true;
     }
 
@@ -312,26 +303,23 @@ class Product extends ComponentValidator
      */
     protected function validateStockProduct()
     {
-        $value = $this->getSubmitted('stock');
+        $field = 'stock';
+        $label = $this->language->text('Stock');
+        $value = $this->getSubmitted($field);
 
         if (!isset($value)) {
             return null;
         }
 
         if (!is_numeric($value)) {
-            $vars = array('@field' => $this->language->text('Stock'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('stock', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
 
         if (strlen($value) > 10) {
-            $vars = array('@max' => 10, '@field' => $this->language->text('Stock'));
-            $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('stock', $error);
+            $this->setErrorLengthRange($field, $label, 0, 10);
             return false;
         }
-
         return true;
     }
 
@@ -348,7 +336,8 @@ class Product extends ComponentValidator
             'weight' => $this->language->text('Weight')
         );
 
-        foreach ($fields as $field => $name) {
+        $errors = 0;
+        foreach ($fields as $field => $label) {
 
             $value = $this->getSubmitted($field);
 
@@ -357,19 +346,17 @@ class Product extends ComponentValidator
             }
 
             if (!is_numeric($value)) {
-                $vars = array('@field' => $name);
-                $error = $this->language->text('@field must be numeric', $vars);
-                $this->setError($field, $error);
+                $errors++;
+                $this->setErrorNumeric($field, $label);
             }
 
             if (strlen($value) > 10) {
-                $vars = array('@max' => 10, '@field' => $name);
-                $error = $this->language->text('@field must not be longer than @max characters', $vars);
-                $this->setError($field, $error);
+                $errors++;
+                $this->setErrorLengthRange($field, $label, 0, 10);
             }
         }
 
-        return !isset($error);
+        return empty($errors);
     }
 
     /**
@@ -410,7 +397,9 @@ class Product extends ComponentValidator
             return null;
         }
 
-        $value = $this->getSubmitted('sku');
+        $field = 'sku';
+        $label = $this->language->text('SKU');
+        $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && empty($value)) {
             $data = $this->getSubmitted();
@@ -419,9 +408,7 @@ class Product extends ComponentValidator
         }
 
         if (isset($value) && mb_strlen($value) > 255) {
-            $vars = array('@max' => 255, '@field' => $this->language->text('SKU'));
-            $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('sku', $error);
+            $this->setErrorLengthRange($field, $label, 0, 255);
             return false;
         }
 
@@ -449,12 +436,9 @@ class Product extends ComponentValidator
         $existing = $this->sku->get($value, $store_id, $product_id);
 
         if (!empty($existing)) {
-            $vars = array('@name' => $this->language->text('SKU'));
-            $error = $this->language->text('@name already exists', $vars);
-            $this->setError('sku', $error);
+            $this->setErrorExists($field, $label);
             return false;
         }
-
         return true;
     }
 
@@ -464,25 +448,23 @@ class Product extends ComponentValidator
      */
     protected function validateClassProduct()
     {
-        $value = $this->getSubmitted('product_class_id');
+        $field = 'product_class_id';
+        $label = $this->language->text('Product class');
+        $value = $this->getSubmitted($field);
 
         if (empty($value)) {
             return null;
         }
 
         if (!is_numeric($value)) {
-            $vars = array('@field' => $this->language->text('Product class'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('product_class_id', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
 
         $product_class = $this->product_class->get($value);
 
         if (empty($product_class)) {
-            $vars = array('@name' => $this->language->text('Product class'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('product_class_id', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
 
@@ -504,15 +486,15 @@ class Product extends ComponentValidator
             return null;
         }
 
+        $errors = 0;
         foreach ($fields as $field_id => $field) {
             if (!empty($field['required']) && empty($attributes[$field_id])) {
-                $vars = array('@field' => $field['title']);
-                $error = $this->language->text('@field is required', $vars);
-                $this->setError("attribute.$field_id", $error);
+                $this->setErrorRequired("attribute.$field_id", $field['title']);
+                $errors++;
             }
         }
 
-        return $this->isError('attribute');
+        return empty($errors);
     }
 
     /**
@@ -587,15 +569,15 @@ class Product extends ComponentValidator
             return null;
         }
 
+        $errors = 0;
         foreach ($options as $field_id => $field) {
             if (!empty($field['required']) && !isset($combination['fields'][$field_id])) {
-                $vars = array('@field' => $field['title']);
-                $error = $this->language->text('@field is required', $vars);
-                $this->setError("combination.$index.fields.$field_id", $error);
+                $this->setErrorRequired("combination.$index.fields.$field_id", $field['title']);
+                $errors++;
             }
         }
 
-        return !isset($error);
+        return empty($errors);
     }
 
     /**
@@ -624,9 +606,7 @@ class Product extends ComponentValidator
         $store_id = $this->getSubmitted('store_id');
 
         if (mb_strlen($combination['sku']) > 255) {
-            $vars = array('@max' => 255, '@field' => $this->language->text('SKU'));
-            $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError("combination.$index.sku", $error);
+            $this->setErrorLengthRange("combination.$index.sku", $this->language->text('SKU'), 0, 255);
             return false;
         }
 

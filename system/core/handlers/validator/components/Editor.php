@@ -89,9 +89,7 @@ class Editor extends ComponentValidator
 
         // Invalid module ID or it's not a theme module
         if (empty($module['type']) || $module['type'] !== 'theme') {
-            $vars = array('@name' => $this->language->text('Module'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('module', $error);
+            $this->setErrorUnavailable('module', $this->language->text('Module'));
             return false;
         }
 
@@ -122,9 +120,7 @@ class Editor extends ComponentValidator
             return true;
         }
 
-        $vars = array('@name' => $this->language->text('File'));
-        $error = $this->language->text('@name is unavailable', $vars);
-        $this->setError('path', $error);
+        $this->setErrorUnavailable('path', $this->language->text('File'));
         return false;
     }
 

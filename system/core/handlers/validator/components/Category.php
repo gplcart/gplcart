@@ -89,9 +89,7 @@ class Category extends ComponentValidator
         $data = $this->category->get($id);
 
         if (empty($data)) {
-            $vars = array('@name' => $this->language->text('Category'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('update', $error);
+            $this->setErrorUnavailable('update', $this->language->text('Category'));
             return false;
         }
 
@@ -105,32 +103,28 @@ class Category extends ComponentValidator
      */
     protected function validateGroupCategory()
     {
-        $category_group_id = $this->getSubmitted('category_group_id');
+        $field = 'category_group_id';
+        $label = $this->language->text('Category group');
+        $category_group_id = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($category_group_id)) {
             return null;
         }
 
         if (empty($category_group_id)) {
-            $vars = array('@field' => $this->language->text('Category group'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('category_group_id', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         if (!is_numeric($category_group_id)) {
-            $vars = array('@field' => $this->language->text('Category group'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('category_group_id', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
 
         $category_group = $this->category_group->get($category_group_id);
 
         if (empty($category_group)) {
-            $vars = array('@name' => $this->language->text('Category group'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('category_group_id', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
 
@@ -143,37 +137,32 @@ class Category extends ComponentValidator
      */
     protected function validateParentCategory()
     {
-        $parent_id = $this->getSubmitted('parent_id');
+        $field = 'parent_id';
+        $label = $this->language->text('Parent category');
+        $parent_id = $this->getSubmitted($field);
 
         if (empty($parent_id)) {
             return null;
         }
 
         if (!is_numeric($parent_id)) {
-            $vars = array('@field' => $this->language->text('Parent category'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('parent_id', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
 
         $category = $this->getSubmitted('category');
 
         if (isset($category['category_id']) && $category['category_id'] == $parent_id) {
-            $vars = array('@field' => $this->language->text('Parent category'));
-            $error = $this->language->text('@field has invalid value', $vars);
-            $this->setError('parent_id', $error);
+            $this->setErrorInvalidValue($field, $label);
             return false;
         }
 
         $parent_category = $this->category->get($parent_id);
 
         if (empty($parent_category['category_id'])) {
-            $vars = array('@name' => $this->language->text('Parent category'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('parent_id', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
-
         return true;
     }
 
@@ -183,22 +172,21 @@ class Category extends ComponentValidator
      */
     protected function validateDescriptionCategory()
     {
-        $description_1 = $this->getSubmitted('description_1');
-        $description_2 = $this->getSubmitted('description_2');
+        $fields = array(
+            'description_1' => $this->language->text('First description'),
+            'description_2' => $this->language->text('Second description')
+        );
 
-        if (isset($description_1) && mb_strlen($description_1) > 65535) {
-            $vars = array('@max' => 65535, '@field' => $this->language->text('First description'));
-            $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('description_1', $error);
+        $errors = 0;
+        foreach ($fields as $field => $label) {
+            $value = $this->getSubmitted($field);
+            if (isset($value) && mb_strlen($value) > 65535) {
+                $errors++;
+                $this->setErrorLengthRange($field, $label, 0, 65535);
+            }
         }
 
-        if (isset($description_2) && mb_strlen($description_2) > 65535) {
-            $vars = array('@max' => 65535, '@field' => $this->language->text('Second description'));
-            $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('description_2', $error);
-        }
-
-        return empty($error);
+        return empty($errors);
     }
 
 }

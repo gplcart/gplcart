@@ -106,7 +106,6 @@ class User extends ComponentValidator
      */
     protected function validateStatusUser()
     {
-
         $user = $this->getSubmitted('user');
 
         if (is_numeric($user)) {
@@ -114,9 +113,7 @@ class User extends ComponentValidator
         }
 
         if (empty($user['status']) || empty($user['user_id'])) {
-            $vars = array('@name' => $this->language->text('User'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('user', $error);
+            $this->setErrorUnavailable('user', $this->language->text('User'));
             return false;
         }
 
@@ -139,9 +136,7 @@ class User extends ComponentValidator
         $data = $this->user->get($id);
 
         if (empty($data)) {
-            $vars = array('@name' => $this->language->text('User'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('update', $error);
+            $this->setErrorUnavailable('update', $this->language->text('User'));
             return false;
         }
 
@@ -173,9 +168,7 @@ class User extends ComponentValidator
             return true;
         }
 
-        $vars = array('@name' => $this->language->text('E-mail'));
-        $error = $this->language->text('@name already exists', $vars);
-        $this->setError('email', $error);
+        $this->setErrorExists('email', $this->language->text('E-mail'));
         return false;
     }
 
@@ -194,9 +187,7 @@ class User extends ComponentValidator
         $user = $this->user->getByEmail($value);
 
         if (empty($user['status'])) {
-            $vars = array('@name' => $this->language->text('E-mail'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('email', $error);
+            $this->setErrorUnavailable('email', $this->language->text('E-mail'));
             return false;
         }
 
@@ -217,12 +208,9 @@ class User extends ComponentValidator
         }
 
         if (empty($value)) {
-            $vars = array('@field' => $this->language->text('Password'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('password', $error);
+            $this->setErrorRequired('password', $this->language->text('Password'));
             return false;
         }
-
         return true;
     }
 
@@ -246,12 +234,9 @@ class User extends ComponentValidator
         $limit = $this->user->getPasswordLength();
 
         if ($length < $limit['min'] || $length > $limit['max']) {
-            $vars = array('@min' => $limit['min'], '@max' => $limit['max'], '@field' => $this->language->text('Password'));
-            $error = $this->language->text('@field must be @min - @max characters long', $vars);
-            $this->setError('password', $error);
+            $this->setErrorLengthRange('password', $this->language->text('Password'), $limit['min'], $limit['max']);
             return false;
         }
-
         return true;
     }
 
@@ -274,9 +259,7 @@ class User extends ComponentValidator
         $old_password = $this->getSubmitted('password_old');
 
         if (!isset($old_password) || $old_password === '') {
-            $vars = array('@field' => $this->language->text('Old password'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('password_old', $error);
+            $this->setErrorRequired('password_old', $this->language->text('Old password'));
             return false;
         }
 
@@ -298,28 +281,25 @@ class User extends ComponentValidator
      */
     protected function validateRoleUser()
     {
-        $value = $this->getSubmitted('role_id');
+        $field = 'role_id';
+        $label = $this->language->text('Role');
+        $value = $this->getSubmitted($field);
 
         if (empty($value)) {
             return null;
         }
 
         if (!is_numeric($value)) {
-            $vars = array('@field' => $this->language->text('Role'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('role_id', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
 
         $role = $this->role->get($value);
 
         if (empty($role)) {
-            $vars = array('@name' => $this->language->text('Role'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('role_id', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
-
         return true;
     }
 

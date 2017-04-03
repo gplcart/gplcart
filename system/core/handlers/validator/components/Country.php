@@ -91,9 +91,7 @@ class Country extends ComponentValidator
         $data = $this->country->get($id);
 
         if (empty($data)) {
-            $vars = array('@name' => $this->language->text('Country'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('update', $error);
+            $this->setErrorUnavailable('update', $this->language->text('Country'));
             return false;
         }
 
@@ -107,28 +105,25 @@ class Country extends ComponentValidator
      */
     protected function validateZoneCountry()
     {
-        $zone_id = $this->getSubmitted('zone_id');
+        $field = 'zone_id';
+        $label = $this->language->text('Zone');
+        $zone_id = $this->getSubmitted($field);
 
         if (empty($zone_id)) {
             return null;
         }
 
         if (!is_numeric($zone_id)) {
-            $vars = array('@field' => $this->language->text('Zone'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('zone_id', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
 
         $zone = $this->zone->get($zone_id);
 
         if (empty($zone['zone_id'])) {
-            $vars = array('@name' => $this->language->text('Zone'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('zone_id', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
-
         return true;
     }
 
@@ -138,19 +133,18 @@ class Country extends ComponentValidator
      */
     protected function validateNativeNameCountry()
     {
-        $native_name = $this->getSubmitted('native_name');
+        $field = 'native_name';
+        $label = $this->language->text('Native name');
+        $native_name = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($native_name)) {
             return null;
         }
 
         if (empty($native_name) || mb_strlen($native_name) > 255) {
-            $vars = array('@min' => 1, '@max' => 255, '@field' => $this->language->text('Native name'));
-            $error = $this->language->text('@field must be @min - @max characters long', $vars);
-            $this->setError('native_name', $error);
+            $this->setErrorLengthRange($field, $label);
             return false;
         }
-
         return true;
     }
 
@@ -160,22 +154,21 @@ class Country extends ComponentValidator
      */
     protected function validateCodeCountry()
     {
-        $code = $this->getSubmitted('code');
+        $field = 'code';
+        $label = $this->language->text('Code');
+        $code = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($code)) {
             return null;
         }
 
         if (empty($code)) {
-            $vars = array('@field' => $this->language->text('Code'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('code', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         if (preg_match('/^[A-Z]{2}$/', $code) !== 1) {
-            $error = $this->language->text('Invalid country code. It must conform to ISO 3166-2 standard');
-            $this->setError('code', $error);
+            $this->setErrorInvalidValue($field, $label);
             return false;
         }
 
@@ -189,9 +182,7 @@ class Country extends ComponentValidator
         $existing = $this->country->get($code);
 
         if (!empty($existing['code'])) {
-            $vars = array('@name' => $this->language->text('Code'));
-            $error = $this->language->text('@name already exists', $vars);
-            $this->setError('code', $error);
+            $this->setErrorExists($field, $label);
             return false;
         }
 

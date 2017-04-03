@@ -71,9 +71,7 @@ class Field extends ComponentValidator
         $data = $this->field->get($id);
 
         if (empty($data)) {
-            $vars = array('@name' => $this->language->text('Field'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('update', $error);
+            $this->setErrorUnavailable('update', $this->language->text('Field'));
             return false;
         }
 
@@ -91,24 +89,21 @@ class Field extends ComponentValidator
             return null; // Cannot change type of existing field
         }
 
-        $type = $this->getSubmitted('type');
+        $field = 'type';
+        $label = $this->language->text('Type');
+        $type = $this->getSubmitted($field);
 
         if (empty($type)) {
-            $vars = array('@field' => $this->language->text('Type'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('type', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         $types = $this->field->getTypes();
 
         if (empty($types[$type])) {
-            $vars = array('@name' => $this->language->text('Type'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('type', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
-
         return true;
     }
 
@@ -118,28 +113,25 @@ class Field extends ComponentValidator
      */
     protected function validateWidgetTypeField()
     {
-        $type = $this->getSubmitted('widget');
+        $field = 'widget';
+        $label = $this->language->text('Widget');
+        $type = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($type)) {
             return null;
         }
 
         if (empty($type)) {
-            $vars = array('@field' => $this->language->text('Widget'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('widget', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         $types = $this->field->getWidgetTypes();
 
         if (empty($types[$type])) {
-            $vars = array('@name' => $this->language->text('Widget'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('widget', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
-
         return true;
     }
 

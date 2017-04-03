@@ -68,9 +68,7 @@ class CategoryGroup extends ComponentValidator
         $data = $this->category_group->get($id);
 
         if (empty($data)) {
-            $vars = array('@name' => $this->language->text('Category group'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('update', $error);
+            $this->setErrorUnavailable('update', $this->language->text('Category group'));
             return false;
         }
 
@@ -88,7 +86,10 @@ class CategoryGroup extends ComponentValidator
             return null;
         }
 
-        $type = $this->getSubmitted('type');
+        $field = 'type';
+        $label = $this->language->text('Type');
+
+        $type = $this->getSubmitted($field);
         $store_id = $this->getSubmitted('store_id');
 
         if ($this->isUpdating() && !isset($type)) {
@@ -96,18 +97,14 @@ class CategoryGroup extends ComponentValidator
         }
 
         if (empty($type)) {
-            $vars = array('@field' => $this->language->text('Type'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('type', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         $types = $this->category_group->getTypes();
 
         if (!isset($types[$type])) {
-            $vars = array('@name' => $this->language->text('Type'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('type', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
 

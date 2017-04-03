@@ -126,12 +126,12 @@ class Install extends ComponentValidator
      */
     protected function validateUserPasswordInstall()
     {
-        $password = $this->getSubmitted('user.password');
+        $field = 'user.password';
+        $label = $this->language->text('Password');
+        $password = $this->getSubmitted($field);
 
         if (empty($password)) {
-            $vars = array('@field' => $this->language->text('Password'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('user.password', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
@@ -139,12 +139,9 @@ class Install extends ComponentValidator
         $length = mb_strlen($password);
 
         if ($length < $limit['min'] || $length > $limit['max']) {
-            $vars = array('@min' => $limit['min'], '@max' => $limit['max'], '@field' => $this->language->text('Password'));
-            $error = $this->language->text('@field must be @min - @max characters long', $vars);
-            $this->setError('user.password', $error);
+            $this->setErrorLengthRange($field, $label, $limit['min'], $limit['max']);
             return false;
         }
-
         return true;
     }
 
@@ -154,12 +151,12 @@ class Install extends ComponentValidator
      */
     protected function validateStoreHostInstall()
     {
-        $host = $this->getSubmitted('store.host');
+        $field = 'store.host';
+        $label = $this->language->text('Host');
+        $host = $this->getSubmitted($field);
 
         if (empty($host)) {
-            $vars = array('@field' => $this->language->text('Host'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('store.host', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
@@ -167,9 +164,7 @@ class Install extends ComponentValidator
             return true;
         }
 
-        $vars = array('@field' => $this->language->text('Host'));
-        $error = $this->language->text('@field has invalid value', $vars);
-        $this->setError('store.host', $error);
+        $this->setErrorInvalidValue($field, $label);
         return false;
     }
 
@@ -179,15 +174,13 @@ class Install extends ComponentValidator
      */
     protected function validateStoreTitleInstall()
     {
-        $title = $this->getSubmitted('store.title');
+        $field = 'store.title';
+        $title = $this->getSubmitted($field);
 
         if (empty($title) || mb_strlen($title) > 255) {
-            $vars = array('@min' => 1, '@max' => 255, '@field' => $this->language->text('Title'));
-            $error = $this->language->text('@field must be @min - @max characters long', $vars);
-            $this->setError('store.title', $error);
+            $this->setErrorLengthRange($field, $this->language->text('Title'));
             return false;
         }
-
         return true;
     }
 
@@ -197,18 +190,17 @@ class Install extends ComponentValidator
      */
     protected function validateStoreBasepathInstall()
     {
-        $basepath = $this->getSubmitted('store.basepath');
+        $field = 'store.basepath';
+        $basepath = $this->getSubmitted($field);
 
         if (!isset($basepath) || $basepath === '') {
             return true;
         }
 
         if (preg_match('/^[a-z0-9]{0,50}$/', $basepath) !== 1) {
-            $error = $this->language->text('Invalid basepath');
-            $this->setError('store.basepath', $error);
+            $this->setErrorInvalidValue($field, $this->language->text('Base path'));
             return false;
         }
-
         return true;
     }
 
@@ -218,23 +210,21 @@ class Install extends ComponentValidator
      */
     protected function validateStoreTimezoneInstall()
     {
-        $timezone = $this->getSubmitted('store.timezone');
+        $field = 'store.timezone';
+        $label = $this->language->text('Timezone');
+        $timezone = $this->getSubmitted($field);
 
         if (empty($timezone)) {
-            $vars = array('@field' => $this->language->text('Timezone'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('store.timezone', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         $timezones = gplcart_timezones();
 
         if (empty($timezones[$timezone])) {
-            $error = $this->language->text('Invalid timezone');
-            $this->setError('store.timezone', $error);
+            $this->setErrorInvalidValue($field, $label);
             return false;
         }
-
         return true;
     }
 
@@ -253,13 +243,10 @@ class Install extends ComponentValidator
         $installer = $this->install->get($installer_id);
 
         if (empty($installer)) {
-
             $installers = $this->install->getList();
             $list = implode(',', array_keys($installers));
-
             $vars = array('@field' => $this->language->text('Installer'), '@allowed' => $list);
             $error = $this->language->text('@field has invalid value. Allowed values: @allowed', $vars);
-
             $this->setError('installer', $error);
             return false;
         }
@@ -273,15 +260,13 @@ class Install extends ComponentValidator
      */
     protected function validateDbNameInstall()
     {
-        $dbname = $this->getSubmitted('database.name');
+        $field = 'database.name';
+        $dbname = $this->getSubmitted($field);
 
         if (empty($dbname)) {
-            $vars = array('@field' => $this->language->text('Database name'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('database.name', $error);
+            $this->setErrorRequired($field, $this->language->text('Database name'));
             return false;
         }
-
         return true;
     }
 
@@ -291,15 +276,13 @@ class Install extends ComponentValidator
      */
     protected function validateDbUserInstall()
     {
-        $dbuser = $this->getSubmitted('database.user');
+        $field = 'database.user';
+        $dbuser = $this->getSubmitted($field);
 
         if (empty($dbuser)) {
-            $vars = array('@field' => $this->language->text('Database user'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('database.user', $error);
+            $this->setErrorRequired($field, $this->language->text('Database user'));
             return false;
         }
-
         return true;
     }
 
@@ -309,13 +292,13 @@ class Install extends ComponentValidator
      */
     protected function validateDbPasswordInstall()
     {
-        $dbpassword = $this->getSubmitted('database.password');
+        $field = 'database.password';
+        $dbpassword = $this->getSubmitted($field);
 
         if (!isset($dbpassword)) {
-            $this->setSubmitted('database.password', '');
+            $this->setSubmitted($field, '');
             return null;
         }
-
         return true;
     }
 
@@ -325,15 +308,13 @@ class Install extends ComponentValidator
      */
     protected function validateDbHostInstall()
     {
-        $dbhost = $this->getSubmitted('database.host');
+        $field = 'database.host';
+        $dbhost = $this->getSubmitted($field);
 
         if (empty($dbhost)) {
-            $vars = array('@field' => $this->language->text('Database host'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('database.host', $error);
+            $this->setErrorRequired($field, $this->language->text('Database host'));
             return false;
         }
-
         return true;
     }
 
@@ -343,12 +324,11 @@ class Install extends ComponentValidator
      */
     protected function validateDbTypeInstall()
     {
-        $dbtype = $this->getSubmitted('database.type');
+        $field = 'database.type';
+        $dbtype = $this->getSubmitted($field);
 
         if (empty($dbtype)) {
-            $vars = array('@field' => $this->language->text('Database type'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('database.type', $error);
+            $this->setErrorRequired($field, $this->language->text('Database type'));
             return false;
         }
 
@@ -360,7 +340,7 @@ class Install extends ComponentValidator
 
         $vars = array('@list' => implode(',', $drivers));
         $error = $this->language->text('Unsupported database driver. Available drivers: @list', $vars);
-        $this->setError('database.type', $error);
+        $this->setError($field, $error);
         return false;
     }
 
@@ -370,22 +350,19 @@ class Install extends ComponentValidator
      */
     protected function validateDbPortInstall()
     {
-        $dbport = $this->getSubmitted('database.port');
+        $field = 'database.port';
+        $label = $this->language->text('Database port');
+        $dbport = $this->getSubmitted($field);
 
         if (empty($dbport)) {
-            $vars = array('@field' => $this->language->text('Database port'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('database.port', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         if (!is_numeric($dbport)) {
-            $vars = array('@field' => $this->language->text('Database port'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('database.port', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
-
         return true;
     }
 

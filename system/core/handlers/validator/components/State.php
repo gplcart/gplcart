@@ -90,9 +90,7 @@ class State extends ComponentValidator
         $data = $this->state->get($id);
 
         if (empty($data)) {
-            $vars = array('@name' => $this->language->text('State'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('update', $error);
+            $this->setErrorUnavailable('update', $this->language->text('State'));
             return false;
         }
 
@@ -106,28 +104,25 @@ class State extends ComponentValidator
      */
     protected function validateCountryState()
     {
-        $value = $this->getSubmitted('country');
+        $field = 'country';
+        $label = $this->language->text('Country');
+        $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
         }
 
         if (empty($value)) {
-            $vars = array('@field' => $this->language->text('Country'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('country', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         $country = $this->country->get($value);
 
         if (empty($country)) {
-            $vars = array('@name' => $this->language->text('Country'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('country', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
-
         return true;
     }
 
@@ -137,17 +132,17 @@ class State extends ComponentValidator
      */
     public function validateCodeState()
     {
+        $field = 'code';
+        $label = $this->language->text('Code');
         $updating = $this->getUpdating();
-        $value = $this->getSubmitted('code');
+        $value = $this->getSubmitted($field);
 
         if (isset($updating['code']) && $updating['code'] === $value) {
             return true;
         }
 
         if (empty($value)) {
-            $vars = array('@field' => $this->language->text('Code'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('code', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
@@ -155,12 +150,9 @@ class State extends ComponentValidator
         $existing = $this->state->getByCode($value, $country);
 
         if (!empty($existing)) {
-            $vars = array('@name' => $this->language->text('Code'));
-            $error = $this->language->text('@name already exists', $vars);
-            $this->setError('code', $error);
+            $this->setErrorExists($field, $label);
             return false;
         }
-
         return true;
     }
 
@@ -170,28 +162,25 @@ class State extends ComponentValidator
      */
     protected function validateZoneState()
     {
-        $value = $this->getSubmitted('zone_id');
+        $field = 'zone_id';
+        $label = $this->language->text('Code');
+        $value = $this->getSubmitted($field);
 
         if (empty($value)) {
             return null;
         }
 
         if (!is_numeric($value)) {
-            $vars = array('@field' => $this->language->text('Zone'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('zone_id', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
 
         $zone = $this->zone->get($value);
 
         if (empty($zone)) {
-            $vars = array('@name' => $this->language->text('Zone'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('zone_id', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
-
         return true;
     }
 

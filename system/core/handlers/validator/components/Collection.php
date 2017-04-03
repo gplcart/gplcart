@@ -71,9 +71,7 @@ class Collection extends ComponentValidator
         $data = $this->collection->get($id);
 
         if (empty($data)) {
-            $vars = array('@name' => $this->language->text('Collection'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('update', $error);
+            $this->setErrorUnavailable('update', $this->language->text('Collection'));
             return false;
         }
 
@@ -91,24 +89,21 @@ class Collection extends ComponentValidator
             return true; // Type cannot be updated
         }
 
-        $type = $this->getSubmitted('type');
+        $field = 'type';
+        $label = $this->language->text('Type');
+        $type = $this->getSubmitted($field);
 
         if (empty($type)) {
-            $vars = array('@field' => $this->language->text('Type'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('type', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         $types = $this->collection->getTypes();
 
         if (!isset($types[$type])) {
-            $vars = array('@name' => $this->language->text('Type'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('type', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
-
         return true;
     }
 

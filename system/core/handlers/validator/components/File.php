@@ -85,9 +85,7 @@ class File extends ComponentValidator
         $file = $this->file->get($id);
 
         if (empty($file)) {
-            $vars = array('@name' => $this->language->text('File'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('update', $error);
+            $this->setErrorUnavailable('update', $this->language->text('File'));
             return false;
         }
 
@@ -102,14 +100,10 @@ class File extends ComponentValidator
     protected function validateTitleFile()
     {
         $title = $this->getSubmitted('title');
-
         if (isset($title) && mb_strlen($title) > 255) {
-            $vars = array('@max' => 255, '@field' => $this->language->text('Title'));
-            $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('title', $error);
+            $this->setErrorLengthRange('title', $this->language->text('Title'), 0, 255);
             return false;
         }
-
         return true;
     }
 
@@ -119,33 +113,26 @@ class File extends ComponentValidator
      */
     protected function validatePathFile()
     {
-        if ($this->isUpdating()) {
-            return null; // Existing files cannot be changed
+        if ($this->isUpdating() || $this->isError()) {
+            return null;
         }
 
-        if ($this->isError()) {
-            return null; // Do not if an error has occured before
-        }
-
+        $field = 'file';
+        $label = $this->language->text('File');
         $path = $this->getSubmitted('path');
 
-        //Validate an existing file if the path is provided
         if (isset($path)) {
             if (is_readable(GC_FILE_DIR . "/$path")) {
                 return true;
             }
-            $vars = array('@name' => $this->language->text('File'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('file', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
 
         $file = $this->request->file('file');
 
         if (empty($file)) {
-            $vars = array('@field' => $this->language->text('File'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('file', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
