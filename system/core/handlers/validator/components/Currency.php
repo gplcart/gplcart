@@ -46,10 +46,10 @@ class Currency extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateCurrency();
-        $this->validateDefault();
-        $this->validateStatus();
+        $this->validateDefaultComponent();
+        $this->validateStatusComponent();
         $this->validateCodeCurrency();
-        $this->validateName();
+        $this->validateNameComponent();
         $this->validateNumericCodeCurrency();
         $this->validateSymbolCurrency();
         $this->validateMajorUnitCurrency();

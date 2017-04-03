@@ -56,9 +56,9 @@ class Filter extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateFilter();
-        $this->validateStatus();
-        $this->validateName();
-        $this->validateDescription();
+        $this->validateStatusComponent();
+        $this->validateNameComponent();
+        $this->validateDescriptionComponent();
         $this->validateRoleFilter();
 
         return $this->getResult();

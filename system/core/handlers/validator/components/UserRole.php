@@ -49,8 +49,8 @@ class UserRole extends ComponentValidator
         $this->validateUserRole();
         $this->validatePermissionsUserRole();
         $this->validateRedirectUserRole();
-        $this->validateStatus();
-        $this->validateName();
+        $this->validateStatusComponent();
+        $this->validateNameComponent();
 
         return $this->getResult();
     }

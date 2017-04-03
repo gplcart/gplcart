@@ -47,9 +47,9 @@ class Field extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateField();
-        $this->validateTitle();
-        $this->validateWeight();
-        $this->validateTranslation();
+        $this->validateTitleComponent();
+        $this->validateWeightComponent();
+        $this->validateTranslationComponent();
         $this->validateTypeField();
         $this->validateWidgetTypeField();
 

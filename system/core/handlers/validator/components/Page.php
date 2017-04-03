@@ -56,17 +56,17 @@ class Page extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validatePage();
-        $this->validateStatus();
-        $this->validateTitle();
+        $this->validateStatusComponent();
+        $this->validateTitleComponent();
         $this->validateDescriptionPage();
-        $this->validateMetaTitle();
-        $this->validateMetaDescription();
-        $this->validateTranslation();
-        $this->validateStoreId();
+        $this->validateMetaTitleComponent();
+        $this->validateMetaDescriptionComponent();
+        $this->validateTranslationComponent();
+        $this->validateStoreIdComponent();
         $this->validateCategoryPage();
-        $this->validateUserId();
-        $this->validateImages();
-        $this->validateAlias();
+        $this->validateUserIdComponent();
+        $this->validateImagesComponent();
+        $this->validateAliasComponent();
 
         return $this->getResult();
     }

@@ -57,8 +57,8 @@ class Wishlist extends ComponentValidator
 
         $this->validateWishlist();
         $this->validateProductWishlist();
-        $this->validateUserCartId();
-        $this->validateStoreId();
+        $this->validateUserCartIdComponent();
+        $this->validateStoreIdComponent();
 
         return $this->getResult();
     }

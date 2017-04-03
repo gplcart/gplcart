@@ -37,9 +37,9 @@ class Language extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateLanguage();
-        $this->validateWeight();
-        $this->validateStatus();
-        $this->validateDefault();
+        $this->validateWeightComponent();
+        $this->validateStatusComponent();
+        $this->validateDefaultComponent();
         $this->validateNameLanguage();
         $this->validateNativeNameLanguage();
         $this->validateCodeLanguage();

@@ -56,7 +56,7 @@ class Rating extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateProductRating();
-        $this->validateUserId();
+        $this->validateUserIdComponent();
         $this->validateValueRating();
 
         return $this->getResult();

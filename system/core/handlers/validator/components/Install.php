@@ -114,7 +114,7 @@ class Install extends ComponentValidator
         $options = $this->options;
         $this->options['parents'] = 'user';
 
-        $result = $this->validateEmail();
+        $result = $this->validateEmailComponent();
 
         $this->options = $options; // Restore original
         return $result;

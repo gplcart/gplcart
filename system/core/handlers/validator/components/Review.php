@@ -56,12 +56,12 @@ class Review extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateReview();
-        $this->validateStatus();
+        $this->validateStatusComponent();
         $this->validateTextReview();
         $this->validateCreatedReview();
         $this->validateProductReview();
         $this->validateEmailReview();
-        $this->validateUserId();
+        $this->validateUserIdComponent();
 
         return $this->getResult();
     }

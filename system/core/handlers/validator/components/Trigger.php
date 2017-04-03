@@ -57,10 +57,10 @@ class Trigger extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateTrigger();
-        $this->validateStatus();
-        $this->validateName();
-        $this->validateStoreId();
-        $this->validateWeight();
+        $this->validateStatusComponent();
+        $this->validateNameComponent();
+        $this->validateStoreIdComponent();
+        $this->validateWeightComponent();
         $this->validateConditionsTrigger();
 
         return $this->getResult();

@@ -75,8 +75,8 @@ class City extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateCity();
-        $this->validateStatus();
-        $this->validateName();
+        $this->validateStatusComponent();
+        $this->validateNameComponent();
         $this->validateStateCity();
         $this->validateZoneCity();
         $this->validateCountryCity();

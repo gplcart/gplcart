@@ -66,9 +66,9 @@ class State extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateState();
-        $this->validateStatus();
+        $this->validateStatusComponent();
         $this->validateCodeState();
-        $this->validateName();
+        $this->validateNameComponent();
         $this->validateCountryState();
         $this->validateZoneState();
 

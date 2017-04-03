@@ -94,13 +94,13 @@ class Order extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateOrder();
-        $this->validateStoreId();
+        $this->validateStoreIdComponent();
         $this->validatePaymentOrder();
         $this->validateShippingOrder();
         $this->validateStatusOrder();
         $this->validateShippingAddressOrder();
         $this->validatePaymentAddressOrder();
-        $this->validateUserCartId();
+        $this->validateUserCartIdComponent();
         $this->validateCreatorOrder();
         $this->validateTotalOrder();
         $this->validateComponentPricesOrder();

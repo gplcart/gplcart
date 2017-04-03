@@ -58,18 +58,18 @@ class Category extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateCategory();
-        $this->validateWeight();
-        $this->validateStatus();
-        $this->validateTitle();
-        $this->validateMetaTitle();
-        $this->validateMetaDescription();
+        $this->validateWeightComponent();
+        $this->validateStatusComponent();
+        $this->validateTitleComponent();
+        $this->validateMetaTitleComponent();
+        $this->validateMetaDescriptionComponent();
         $this->validateDescriptionCategory();
         $this->validateGroupCategory();
         $this->validateParentCategory();
-        $this->validateTranslation();
-        $this->validateUserId();
-        $this->validateImages();
-        $this->validateAlias();
+        $this->validateTranslationComponent();
+        $this->validateUserIdComponent();
+        $this->validateImagesComponent();
+        $this->validateAliasComponent();
 
         return $this->getResult();
     }

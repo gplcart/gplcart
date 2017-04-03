@@ -47,8 +47,8 @@ class ImageStyle extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateImageStyle();
-        $this->validateName();
-        $this->validateStatus();
+        $this->validateNameComponent();
+        $this->validateStatusComponent();
         $this->validateActionsImageStyle();
 
         // Remove data of updating image style

@@ -62,9 +62,9 @@ class File extends ComponentValidator
 
         $this->validateFile();
         $this->validateTitleFile();
-        $this->validateDescription();
-        $this->validateWeight();
-        $this->validateTranslation();
+        $this->validateDescriptionComponent();
+        $this->validateWeightComponent();
+        $this->validateTranslationComponent();
         $this->validatePathFile();
 
         return $this->getResult();

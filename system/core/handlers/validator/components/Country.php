@@ -66,10 +66,10 @@ class Country extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateCountry();
-        $this->validateWeight();
-        $this->validateStatus();
+        $this->validateWeightComponent();
+        $this->validateStatusComponent();
         $this->validateCodeCountry();
-        $this->validateName();
+        $this->validateNameComponent();
         $this->validateNativeNameCountry();
         $this->validateZoneCountry();
 

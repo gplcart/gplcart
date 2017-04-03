@@ -69,7 +69,7 @@ class Editor extends ComponentValidator
         $this->validateModuleEditor();
         $this->validateFileEditor();
         $this->validateTwigEditor();
-        $this->validateUserId();
+        $this->validateUserIdComponent();
 
         return $this->getResult();
     }

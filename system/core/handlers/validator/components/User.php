@@ -47,14 +47,14 @@ class User extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateUser();
-        $this->validateStatus();
-        $this->validateName();
-        $this->validateEmail();
+        $this->validateStatusComponent();
+        $this->validateNameComponent();
+        $this->validateEmailComponent();
         $this->validateEmailUniqueUser();
         $this->validatePasswordUser();
         $this->validatePasswordLengthUser();
         $this->validatePasswordOldUser();
-        $this->validateStoreId();
+        $this->validateStoreIdComponent();
         $this->validateRoleUser();
 
         return $this->getResult();
@@ -70,7 +70,7 @@ class User extends ComponentValidator
         $this->options = $options;
         $this->submitted = &$submitted;
 
-        $this->validateEmail();
+        $this->validateEmailComponent();
         $this->validatePasswordUser();
 
         return $this->getResult();
@@ -93,7 +93,7 @@ class User extends ComponentValidator
             $this->validateStatusUser();
             $this->validatePasswordLengthUser();
         } else if (isset($email)) {
-            $this->validateEmail();
+            $this->validateEmailComponent();
             $this->validateEmailExistsUser();
         }
 

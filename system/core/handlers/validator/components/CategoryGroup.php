@@ -45,9 +45,9 @@ class CategoryGroup extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateCategoryGroup();
-        $this->validateTitle();
-        $this->validateTranslation();
-        $this->validateStoreId();
+        $this->validateTitleComponent();
+        $this->validateTranslationComponent();
+        $this->validateStoreIdComponent();
         $this->validateTypeCategoryGroup();
 
         return $this->getResult();

@@ -46,11 +46,11 @@ class Collection extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateCollection();
-        $this->validateStatus();
-        $this->validateTitle();
-        $this->validateDescription();
-        $this->validateTranslation();
-        $this->validateStoreId();
+        $this->validateStatusComponent();
+        $this->validateTitleComponent();
+        $this->validateDescriptionComponent();
+        $this->validateTranslationComponent();
+        $this->validateStoreIdComponent();
         $this->validateTypeCollection();
 
         return $this->getResult();

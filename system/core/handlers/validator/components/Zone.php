@@ -47,8 +47,8 @@ class Zone extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateZone();
-        $this->validateStatus();
-        $this->validateTitle();
+        $this->validateStatusComponent();
+        $this->validateTitleComponent();
 
         return $this->getResult();
     }

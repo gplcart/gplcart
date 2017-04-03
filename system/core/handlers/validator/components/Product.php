@@ -104,27 +104,27 @@ class Product extends ComponentValidator
 
         $this->validateProduct();
         $this->validateSubtractProduct();
-        $this->validateStatus();
+        $this->validateStatusComponent();
         $this->validateCurrencyProduct();
         $this->validateCategoryProduct();
         $this->validateUnitProduct();
         $this->validatePriceProduct();
         $this->validateStockProduct();
-        $this->validateTitle();
-        $this->validateDescription();
-        $this->validateMetaTitle();
-        $this->validateMetaDescription();
-        $this->validateTranslation();
-        $this->validateImages();
-        $this->validateStoreId();
-        $this->validateUserId();
+        $this->validateTitleComponent();
+        $this->validateDescriptionComponent();
+        $this->validateMetaTitleComponent();
+        $this->validateMetaDescriptionComponent();
+        $this->validateTranslationComponent();
+        $this->validateImagesComponent();
+        $this->validateStoreIdComponent();
+        $this->validateUserIdComponent();
         $this->validateDimensionProduct();
         $this->validateRelatedProduct();
         $this->validateClassProduct();
         $this->validateSkuProduct();
         $this->validateAttributeProduct();
         $this->validateCombinationProduct();
-        $this->validateAlias();
+        $this->validateAliasComponent();
 
         return $this->getResult();
     }

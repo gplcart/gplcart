@@ -47,8 +47,8 @@ class ProductClass extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateProductClass();
-        $this->validateStatus();
-        $this->validateTitle();
+        $this->validateStatusComponent();
+        $this->validateTitleComponent();
 
         return $this->getResult();
     }

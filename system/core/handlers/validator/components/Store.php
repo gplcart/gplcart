@@ -68,10 +68,10 @@ class Store extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateStore();
-        $this->validateStatus();
+        $this->validateStatusComponent();
         $this->validateDomainStore();
         $this->validateBasepathStore();
-        $this->validateName();
+        $this->validateNameComponent();
         $this->validateEmailStore();
         $this->validateMapStore();
         $this->validateTitleStore();
@@ -283,7 +283,7 @@ class Store extends ComponentValidator
         $options = $this->options;
         $this->options += array('parents' => 'data');
 
-        $result = $this->validateTitle();
+        $result = $this->validateTitleComponent();
 
         $this->options = $options;
         return $result;
@@ -298,7 +298,7 @@ class Store extends ComponentValidator
         $options = $this->options;
         $this->options += array('parents' => 'data');
 
-        $result = $this->validateMetaTitle();
+        $result = $this->validateMetaTitleComponent();
 
         $this->options = $options;
         return $result;
@@ -313,7 +313,7 @@ class Store extends ComponentValidator
         $options = $this->options;
         $this->options += array('parents' => 'data');
 
-        $result = $this->validateMetaDescription();
+        $result = $this->validateMetaDescriptionComponent();
 
         $this->options = $options;
         return $result;
@@ -328,7 +328,7 @@ class Store extends ComponentValidator
         $options = $this->options;
         $this->options += array('parents' => 'data');
 
-        $result = $this->validateTranslation();
+        $result = $this->validateTranslationComponent();
 
         $this->options = $options;
         return $result;

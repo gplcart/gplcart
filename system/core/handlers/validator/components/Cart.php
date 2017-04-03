@@ -75,10 +75,10 @@ class Cart extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateCart();
-        $this->validateStoreId();
+        $this->validateStoreIdComponent();
         $this->validateProductCart();
         $this->validateSkuCart();
-        $this->validateUserCartId();
+        $this->validateUserCartIdComponent();
         $this->validateOrderCart();
         $this->validateQuantityCart();
         $this->validateOptionsCart();

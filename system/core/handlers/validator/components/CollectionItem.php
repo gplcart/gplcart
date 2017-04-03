@@ -86,8 +86,8 @@ class CollectionItem extends ComponentValidator
         $this->options = $options;
         $this->submitted = &$submitted;
 
-        $this->validateStatus();
-        $this->validateWeight();
+        $this->validateStatusComponent();
+        $this->validateWeightComponent();
         $this->validateUrlCollectionItem();
         $this->validateCollectionCollectionItem();
         $this->validateValueCollectionItem();

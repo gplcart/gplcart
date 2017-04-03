@@ -75,8 +75,8 @@ class PriceRule extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validatePriceRule();
-        $this->validateName();
-        $this->validateWeight();
+        $this->validateNameComponent();
+        $this->validateWeightComponent();
         $this->validateUsedPriceRule();
         $this->validateTriggerPriceRule();
         $this->validateCurrencyPriceRule();

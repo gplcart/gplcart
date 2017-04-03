@@ -52,7 +52,7 @@ class Component extends ElementValidator
      * Validates a title
      * @return boolean|null
      */
-    protected function validateTitle()
+    protected function validateTitleComponent()
     {
         $title = $this->getSubmitted('title');
 
@@ -74,7 +74,7 @@ class Component extends ElementValidator
      * Validates a name
      * @return boolean|null
      */
-    protected function validateName()
+    protected function validateNameComponent()
     {
         $name = $this->getSubmitted('name');
 
@@ -96,7 +96,7 @@ class Component extends ElementValidator
      * Validates a meta title
      * @return boolean
      */
-    protected function validateMetaTitle()
+    protected function validateMetaTitleComponent()
     {
         $meta_title = $this->getSubmitted('meta_title');
 
@@ -114,7 +114,7 @@ class Component extends ElementValidator
      * Validates a meta description
      * @return boolean
      */
-    protected function validateMetaDescription()
+    protected function validateMetaDescriptionComponent()
     {
         $meta_description = $this->getSubmitted('meta_description');
 
@@ -132,7 +132,7 @@ class Component extends ElementValidator
      * Validates a description field
      * @return boolean
      */
-    protected function validateDescription()
+    protected function validateDescriptionComponent()
     {
         $description = $this->getSubmitted('description');
 
@@ -150,7 +150,7 @@ class Component extends ElementValidator
      * Validates a weight field
      * @return boolean
      */
-    protected function validateWeight()
+    protected function validateWeightComponent()
     {
         $weight = $this->getSubmitted('weight');
 
@@ -168,7 +168,7 @@ class Component extends ElementValidator
      * Sets "Status" field to an integer value
      * @return boolean
      */
-    protected function validateStatus()
+    protected function validateStatusComponent()
     {
         $status = $this->getSubmitted('status');
 
@@ -184,7 +184,7 @@ class Component extends ElementValidator
      * Sets "Default" field to integer value
      * @return boolean
      */
-    protected function validateDefault()
+    protected function validateDefaultComponent()
     {
         $default = $this->getSubmitted('default');
 
@@ -200,7 +200,7 @@ class Component extends ElementValidator
      * Validates category translations
      * @return boolean|null
      */
-    protected function validateTranslation()
+    protected function validateTranslationComponent()
     {
         $translations = $this->getSubmitted('translation');
 
@@ -248,7 +248,7 @@ class Component extends ElementValidator
      * Validates / prepares an array of submitted images
      * @return null|bool
      */
-    protected function validateImages()
+    protected function validateImagesComponent()
     {
         $images = $this->getSubmitted('images');
 
@@ -295,7 +295,7 @@ class Component extends ElementValidator
      * Validates an alias
      * @return boolean|null
      */
-    protected function validateAlias()
+    protected function validateAliasComponent()
     {
         $alias = $this->getSubmitted('alias');
 
@@ -338,7 +338,7 @@ class Component extends ElementValidator
      * Validates store ID field
      * @return boolean|null
      */
-    protected function validateStoreId()
+    protected function validateStoreIdComponent()
     {
         $store_id = $this->getSubmitted('store_id');
 
@@ -376,7 +376,7 @@ class Component extends ElementValidator
      * Validates a user ID
      * @return boolean|null
      */
-    protected function validateUserId()
+    protected function validateUserIdComponent()
     {
         $user_id = $this->getSubmitted('user_id');
 
@@ -414,7 +414,7 @@ class Component extends ElementValidator
      * Validates a user cart ID
      * @return boolean|null
      */
-    protected function validateUserCartId()
+    protected function validateUserCartIdComponent()
     {
         $user_id = $this->getSubmitted('user_id');
 
@@ -456,7 +456,7 @@ class Component extends ElementValidator
      * Validates an E-mail
      * @return boolean
      */
-    protected function validateEmail()
+    protected function validateEmailComponent()
     {
         $value = $this->getSubmitted('email');
 

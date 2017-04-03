@@ -80,9 +80,9 @@ class FieldValue extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateFieldValue();
-        $this->validateTitle();
-        $this->validateWeight();
-        $this->validateTranslation();
+        $this->validateTitleComponent();
+        $this->validateWeightComponent();
+        $this->validateTranslationComponent();
         $this->validateFieldFieldValue();
         $this->validateColorFieldValue();
         $this->validateFileFieldValue();
