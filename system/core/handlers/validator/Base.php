@@ -153,13 +153,15 @@ class Base
 
     /**
      * Sets a validation error
-     * @param string $key
+     * @param string|array $key
      * @param string $error
+     * @return array
      */
     protected function setError($key, $error)
     {
         $parents = $this->getParents($key);
         gplcart_array_set_value($this->errors, $parents, $error);
+        return $this->errors;
     }
 
     /**
@@ -207,64 +209,73 @@ class Base
      * Set "Field required" error
      * @param string $field
      * @param string $label
+     * @return array
      */
     protected function setErrorRequired($field, $label)
     {
-        $this->setError($field, $this->language->text('@field is required', array('@field' => $label)));
+        $error = $this->language->text('@field is required', array('@field' => $label));
+        return $this->setError($field, $error);
     }
 
     /**
      * Set "Field not numeric" error
      * @param string $field
      * @param string $label
+     * @return array
      */
     protected function setErrorNumeric($field, $label)
     {
-        $this->setError($field, $this->language->text('@field must be numeric', array('@field' => $label)));
+        $error = $this->language->text('@field must be numeric', array('@field' => $label));
+        return $this->setError($field, $error);
     }
 
     /**
      * Set "Object unavailable" error
      * @param string $field
      * @param string $label
+     * @return array
      */
     protected function setErrorUnavailable($field, $label)
     {
-        $this->setError($field, $this->language->text('@name is unavailable', array('@name' => $label)));
+        $error = $this->language->text('@name is unavailable', array('@name' => $label));
+        return $this->setError($field, $error);
     }
 
     /**
      * Set "Length must be between min and max" error
      * @param string $field
      * @param string $label
+     * @return array
      */
     protected function setErrorLengthRange($field, $label, $min = 1, $max = 255)
     {
         $vars = array('@min' => $min, '@max' => $max, '@field' => $label);
         $error = $this->language->text('@field must be @min - @max characters long', $vars);
-        $this->setError($field, $error);
+        return $this->setError($field, $error);
     }
 
     /**
      * Set "Invalid value" error
      * @param string $field
      * @param string $label
+     * @return array
      */
     protected function setErrorInvalidValue($field, $label)
     {
         $error = $this->language->text('@field has invalid value', array('@field' => $label));
-        $this->setError($field, $error);
+        return $this->setError($field, $error);
     }
 
     /**
      * Set "Object already exists" error
      * @param string $field
      * @param string $label
+     * @return array
      */
     protected function setErrorExists($field, $label)
     {
         $error = $this->language->text('@name already exists', array('@name' => $label));
-        $this->setError($field, $error);
+        return $this->setError($field, $error);
     }
 
 }
