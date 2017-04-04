@@ -33,7 +33,7 @@
         <div class="col-md-4">
           <?php if(empty($code)) { ?>
           <input maxlength="2" name="country[code]" class="form-control" value="<?php echo isset($country['code']) ? $this->escape($country['code']) : ''; ?>">
-          <?php } else { ?>
+          <?php } else if(isset($country['code'])) { ?>
           <span class="form-control"><?php echo $this->escape($country['code']); ?></span>
           <?php } ?>
           <div class="help-block">
