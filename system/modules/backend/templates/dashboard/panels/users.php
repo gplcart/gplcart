@@ -22,7 +22,7 @@
     </ul>
     <div class="text-right">
       <a href="<?php echo $this->url('admin/user/list'); ?>">
-        <?php echo $this->text('See all users'); ?>
+        <?php echo $this->text('See all'); ?>
       </a>
     </div>
   </div>
