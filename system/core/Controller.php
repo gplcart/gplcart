@@ -1466,7 +1466,7 @@ class Controller
 
         $items = array();
         foreach ($this->data[$region] as $item) {
-            $items[] = isset($item['content']) ? (string) $item['content'] : (string) $item;
+            $items[] = isset($item['rendered']) ? (string) $item['rendered'] : (string) $item;
         }
 
         $this->data[$region] = $this->render($template, array($region => $items));
@@ -1509,7 +1509,7 @@ class Controller
 
         if (trim($content) !== '') {
             $weight = isset($this->data[$region]) ? count($this->data[$region]) : 0;
-            $this->data[$region][] = array('content' => $content, 'weight' => $weight++);
+            $this->data[$region][] = array('rendered' => $content, 'weight' => $weight++);
         }
     }
 
