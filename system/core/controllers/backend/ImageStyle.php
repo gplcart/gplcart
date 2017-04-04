@@ -191,7 +191,7 @@ class ImageStyle extends BackendController
 
         $this->validateComponent('image_style');
 
-        return !$this->hasErrors('imagestyle');
+        return !$this->hasErrors();
     }
 
     /**

@@ -140,7 +140,7 @@ class Currency extends BackendController
 
         $this->validateComponent('currency');
 
-        return !$this->hasErrors('currency');
+        return !$this->hasErrors();
     }
 
     /**

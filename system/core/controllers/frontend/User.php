@@ -101,7 +101,7 @@ class User extends FrontendController
 
         $this->validateComponent('user_login');
 
-        return !$this->hasErrors('user', false);
+        return !$this->hasErrors(false);
     }
 
     /**
@@ -196,7 +196,7 @@ class User extends FrontendController
 
         $this->validateComponent('user');
 
-        return !$this->hasErrors('user');
+        return !$this->hasErrors();
     }
 
     /**
@@ -331,7 +331,7 @@ class User extends FrontendController
 
         $this->validateComponent('user_reset_password');
 
-        return !$this->hasErrors('user');
+        return !$this->hasErrors();
     }
 
     /**

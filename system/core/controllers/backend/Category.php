@@ -345,7 +345,7 @@ class Category extends BackendController
 
         $this->validateComponent('category');
 
-        return !$this->hasErrors('category');
+        return !$this->hasErrors();
     }
 
     /**

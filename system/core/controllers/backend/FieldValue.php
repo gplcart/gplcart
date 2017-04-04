@@ -306,7 +306,7 @@ class FieldValue extends BackendController
 
         $this->validateComponent('field_value');
 
-        return !$this->hasErrors('field_value');
+        return !$this->hasErrors();
     }
 
     /**

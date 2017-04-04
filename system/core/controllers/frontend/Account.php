@@ -403,7 +403,7 @@ class Account extends FrontendController
 
         $this->validateComponent('user');
 
-        return !$this->hasErrors('user');
+        return !$this->hasErrors();
     }
 
     /**

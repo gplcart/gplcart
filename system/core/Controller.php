@@ -227,6 +227,12 @@ class Controller
     protected $submitted = array();
 
     /**
+     * A key to get submitted data for $this->submitted
+     * @var string
+     */
+    protected $form_source;
+
+    /**
      * Array of validation errors
      * @var array
      */
@@ -1058,6 +1064,7 @@ class Controller
         }
 
         if (!isset($value) && empty($this->submitted)) {
+            $this->form_source = $key;
             $this->submitted = (array) $this->request->post($key, array(), $filter);
             return $this->submitted;
         }
@@ -1961,13 +1968,11 @@ class Controller
     }
 
     /**
-     * Returns true if an error occurred
-     * and passes back to template the submitted data
-     * @param string $key
+     * Returns true if an error occurred and pass back to template the submitted data
      * @param boolean $message
      * @return boolean
      */
-    public function hasErrors($key = null, $message = true)
+    public function hasErrors($message = true)
     {
         if (empty($this->errors)) {
             return false;
@@ -1977,10 +1982,9 @@ class Controller
             $this->setMessage($this->text('One or more errors occurred'), 'danger');
         }
 
-        if (isset($key)) {
-            $this->setData($key, $this->submitted);
+        if (isset($this->form_source)) {
+            $this->setData($this->form_source, $this->submitted);
         }
-
         return true;
     }
 

@@ -263,7 +263,7 @@ class Review extends BackendController
         
         $this->validateComponent('review');
 
-        return !$this->hasErrors('review');
+        return !$this->hasErrors();
     }
 
     /**

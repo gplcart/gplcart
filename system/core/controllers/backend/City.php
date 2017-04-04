@@ -358,7 +358,7 @@ class City extends BackendController
 
         $this->validateComponent('city');
 
-        return !$this->hasErrors('city');
+        return !$this->hasErrors();
     }
 
     /**

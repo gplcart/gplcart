@@ -215,7 +215,7 @@ class Collection extends BackendController
 
         $this->validateComponent('collection');
 
-        return !$this->hasErrors('collection');
+        return !$this->hasErrors();
     }
 
     /**

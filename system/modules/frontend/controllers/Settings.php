@@ -74,26 +74,14 @@ class Settings extends BackendController
 
     /**
      * Saves the submitted settings
-     * @return null
      */
     protected function submitSettings()
     {
         if ($this->isPosted('reset')) {
-            return $this->resetSettings();
-        }
-
-        if (!$this->isPosted('save')) {
-            return null;
-        }
-
-        $this->setSubmitted('settings');
-        $this->validateSettings();
-
-        if (!$this->hasErrors('settings')) {
+            $this->resetSettings();
+        } else if ($this->isPosted('save') && $this->validateSettings()) {
             $this->updateSettings();
         }
-
-        return null;
     }
 
     /**
@@ -124,18 +112,20 @@ class Settings extends BackendController
 
     /**
      * Validates an array of submitted settings
+     * @return bool
      */
     protected function validateSettings()
     {
+        $this->setSubmitted('settings');
+
         $this->setSubmittedBool('twig.debug');
         $this->setSubmittedBool('twig.auto_reload');
         $this->setSubmittedBool('twig.strict_variables');
 
-        $limit = $this->getSubmitted('catalog_limit');
+        $this->validateElement('numeric', 'catalog_limit');
+        $this->validateElement('length', 'catalog_limit', array(1, 2));
 
-        if (!is_numeric($limit) || strlen($limit) > 2) {
-            $this->setError('catalog_limit', $this->text('Catalog limit must be numeric and no longer than 2 digits'));
-        }
+        return !$this->hasErrors();
     }
 
     /**

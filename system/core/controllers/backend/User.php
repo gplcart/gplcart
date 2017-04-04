@@ -280,7 +280,7 @@ class User extends BackendController
 
         $this->validateComponent('user', array('admin' => $this->access('user_edit')));
 
-        return !$this->hasErrors('user');
+        return !$this->hasErrors();
     }
 
     /**

@@ -90,7 +90,7 @@ class Filter extends BackendController
         $this->setSubmitted('update', $this->data_filter);
         $this->validateComponent('filter');
 
-        return !$this->hasErrors('filter');
+        return !$this->hasErrors();
     }
 
     /**

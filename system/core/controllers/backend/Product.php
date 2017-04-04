@@ -442,7 +442,7 @@ class Product extends BackendController
 
         $this->validateComponent('product');
 
-        return !$this->hasErrors('product');
+        return !$this->hasErrors();
     }
 
     /**

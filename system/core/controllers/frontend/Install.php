@@ -219,7 +219,7 @@ class Install extends FrontendController
 
         $this->validateComponent('install');
 
-        return !$this->hasErrors('settings');
+        return !$this->hasErrors();
     }
 
 }

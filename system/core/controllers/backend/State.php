@@ -309,7 +309,7 @@ class State extends BackendController
 
         $this->validateComponent('state');
 
-        return !$this->hasErrors('state');
+        return !$this->hasErrors();
     }
 
     /**

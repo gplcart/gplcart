@@ -300,7 +300,7 @@ class PriceRule extends BackendController
 
         $this->validateComponent('price_rule');
 
-        return !$this->hasErrors('price_rule');
+        return !$this->hasErrors();
     }
 
     /**

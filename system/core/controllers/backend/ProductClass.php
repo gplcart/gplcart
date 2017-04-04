@@ -237,7 +237,7 @@ class ProductClass extends BackendController
 
         $this->validateComponent('product_class');
 
-        return !$this->hasErrors('product_class');
+        return !$this->hasErrors();
     }
 
     /**

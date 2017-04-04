@@ -269,7 +269,7 @@ class Trigger extends BackendController
 
         $this->validateComponent('trigger');
 
-        return !$this->hasErrors('trigger');
+        return !$this->hasErrors();
     }
 
     /**

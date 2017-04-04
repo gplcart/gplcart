@@ -262,7 +262,7 @@ class CollectionItem extends BackendController
 
         $this->validateComponent('collection_item');
 
-        return !$this->hasErrors('collection_item');
+        return !$this->hasErrors();
     }
 
     /**

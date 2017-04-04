@@ -291,7 +291,7 @@ class Page extends BackendController
 
         $this->validateComponent('page');
 
-        return !$this->hasErrors('page');
+        return !$this->hasErrors();
     }
 
     /**

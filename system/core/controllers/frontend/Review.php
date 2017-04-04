@@ -197,7 +197,7 @@ class Review extends FrontendController
 
         $this->validateComponent('review');
 
-        return !$this->hasErrors('review', false);
+        return !$this->hasErrors(false);
     }
 
     /**

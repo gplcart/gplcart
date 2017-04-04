@@ -134,7 +134,7 @@ class Language extends BackendController
 
         $this->validateComponent('language');
 
-        return !$this->hasErrors('language');
+        return !$this->hasErrors();
     }
 
     /**

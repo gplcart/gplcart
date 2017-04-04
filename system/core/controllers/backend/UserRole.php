@@ -137,7 +137,7 @@ class UserRole extends BackendController
 
         $this->validateComponent('user_role');
 
-        return !$this->hasErrors('role');
+        return !$this->hasErrors();
     }
 
     /**

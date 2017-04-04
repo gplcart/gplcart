@@ -256,7 +256,7 @@ class Editor extends BackendController
 
         $this->validateComponent('editor');
 
-        return !$this->hasErrors('editor');
+        return !$this->hasErrors();
     }
 
     /**

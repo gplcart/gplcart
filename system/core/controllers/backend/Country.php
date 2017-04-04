@@ -277,7 +277,7 @@ class Country extends BackendController
 
         $this->validateComponent('country');
 
-        return !$this->hasErrors('country');
+        return !$this->hasErrors();
     }
 
     /**

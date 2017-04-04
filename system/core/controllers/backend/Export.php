@@ -136,7 +136,7 @@ class Export extends BackendController
 
         $this->validateComponent('export');
 
-        return !$this->hasErrors('settings');
+        return !$this->hasErrors();
     }
 
     /**

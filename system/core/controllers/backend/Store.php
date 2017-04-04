@@ -338,7 +338,7 @@ class Store extends BackendController
 
         $this->validateComponent('store');
 
-        return !$this->hasErrors('store');
+        return !$this->hasErrors();
     }
 
     /**
