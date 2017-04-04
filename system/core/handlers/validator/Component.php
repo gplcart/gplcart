@@ -54,19 +54,18 @@ class Component extends ElementValidator
      */
     protected function validateTitleComponent()
     {
-        $title = $this->getSubmitted('title');
+        $field = 'title';
+        $label = $this->language->text('Title');
+        $title = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($title)) {
             return null;
         }
 
         if (empty($title) || mb_strlen($title) > 255) {
-            $vars = array('@min' => 1, '@max' => 255, '@field' => $this->language->text('Title'));
-            $error = $this->language->text('@field must be @min - @max characters long', $vars);
-            $this->setError('title', $error);
+            $this->setErrorLengthRange($field, $label);
             return false;
         }
-
         return true;
     }
 
@@ -76,19 +75,18 @@ class Component extends ElementValidator
      */
     protected function validateNameComponent()
     {
-        $name = $this->getSubmitted('name');
+        $field = 'name';
+        $label = $this->language->text('Name');
+        $name = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($name)) {
             return null;
         }
 
         if (empty($name) || mb_strlen($name) > 255) {
-            $vars = array('@min' => 1, '@max' => 255, '@field' => $this->language->text('Name'));
-            $error = $this->language->text('@field must be @min - @max characters long', $vars);
-            $this->setError('name', $error);
+            $this->setErrorLengthRange($field, $label);
             return false;
         }
-
         return true;
     }
 
@@ -98,15 +96,14 @@ class Component extends ElementValidator
      */
     protected function validateMetaTitleComponent()
     {
-        $meta_title = $this->getSubmitted('meta_title');
+        $field = 'meta_title';
+        $label = $this->language->text('Meta title');
+        $meta_title = $this->getSubmitted($field);
 
         if (isset($meta_title) && mb_strlen($meta_title) > 60) {
-            $vars = array('@max' => 60, '@field' => $this->language->text('Meta title'));
-            $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('meta_title', $error);
+            $this->setErrorLengthRange($field, $label, 0, 60);
             return false;
         }
-
         return true;
     }
 
@@ -116,15 +113,14 @@ class Component extends ElementValidator
      */
     protected function validateMetaDescriptionComponent()
     {
-        $meta_description = $this->getSubmitted('meta_description');
+        $field = 'meta_description';
+        $label = $this->language->text('Meta description');
+        $meta_description = $this->getSubmitted($field);
 
         if (isset($meta_description) && mb_strlen($meta_description) > 160) {
-            $vars = array('@max' => 160, '@field' => $this->language->text('Meta description'));
-            $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('meta_description', $error);
+            $this->setErrorLengthRange($field, $label, 0, 160);
             return false;
         }
-
         return true;
     }
 
@@ -134,15 +130,14 @@ class Component extends ElementValidator
      */
     protected function validateDescriptionComponent()
     {
-        $description = $this->getSubmitted('description');
+        $field = 'description';
+        $label = $this->language->text('Description');
+        $description = $this->getSubmitted($field);
 
         if (isset($description) && mb_strlen($description) > 65535) {
-            $vars = array('@max' => 65535, '@field' => $this->language->text('Description'));
-            $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('description', $error);
+            $this->setErrorLengthRange($field, $label, 0, 65535);
             return false;
         }
-
         return true;
     }
 
@@ -152,15 +147,14 @@ class Component extends ElementValidator
      */
     protected function validateWeightComponent()
     {
-        $weight = $this->getSubmitted('weight');
+        $field = 'weight';
+        $label = $this->language->text('Weight');
+        $weight = $this->getSubmitted($field);
 
         if (isset($weight) && !is_numeric($weight)) {
-            $vars = array('@field' => $this->language->text('Weight'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('weight', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
-
         return true;
     }
 
@@ -170,13 +164,13 @@ class Component extends ElementValidator
      */
     protected function validateStatusComponent()
     {
-        $status = $this->getSubmitted('status');
+        $field = 'status';
+        $status = $this->getSubmitted($field);
 
         if (isset($status)) {
             $value = (int) gplcart_string_bool($status);
-            $this->setSubmitted('status', $value);
+            $this->setSubmitted($field, $value);
         }
-
         return true;
     }
 
@@ -186,13 +180,13 @@ class Component extends ElementValidator
      */
     protected function validateDefaultComponent()
     {
-        $default = $this->getSubmitted('default');
+        $field = 'default';
+        $default = $this->getSubmitted($field);
 
         if (isset($default)) {
             $value = (int) gplcart_string_bool($default);
-            $this->setSubmitted('default', $value);
+            $this->setSubmitted($field, $value);
         }
-
         return true;
     }
 
@@ -208,7 +202,6 @@ class Component extends ElementValidator
             return null;
         }
 
-        // Max allowed length per field name
         $lengths = array(
             'meta_title' => 60,
             'meta_description' => 160
@@ -217,29 +210,24 @@ class Component extends ElementValidator
         foreach ($translations as $lang => $translation) {
             foreach ($translation as $field => $value) {
 
-                // Empty fields have no sence, remove them
                 if ($value === '') {
                     unset($translations[$lang][$field]);
                     continue;
                 }
 
-                // Default length is 255 chars
                 $max = isset($lengths[$field]) ? $lengths[$field] : 255;
 
                 if (mb_strlen($value) > $max) {
-                    $vars = array('@field' => ucfirst(str_replace('_', ' ', $field)), '@lang' => $lang, '@max' => $max);
-                    $error = $this->language->text('@field in @lang must not be longer than @max characters', $vars);
-                    $this->setError("translation.$lang.$field", $error);
+                    $label = ucfirst(str_replace('_', ' ', $field));
+                    $this->setErrorLengthRange("translation.$lang.$field", $label, 0, $max);
                 }
             }
 
-            // If all translation fields were removed, remove also the language key
             if (empty($translations[$lang])) {
                 unset($translations[$lang]);
             }
         }
 
-        // Set possible updates
         $this->setSubmitted('translation', $translations);
         return !$this->isError('translation');
     }
@@ -297,22 +285,21 @@ class Component extends ElementValidator
      */
     protected function validateAliasComponent()
     {
-        $alias = $this->getSubmitted('alias');
+        $field = 'alias';
+        $label = $this->language->text('Alias');
+        $alias = $this->getSubmitted($field);
 
         if (empty($alias)) {
             return null;
         }
 
         if (mb_strlen($alias) > 255) {
-            $vars = array('@max' => 255, '@field' => $this->language->text('Alias'));
-            $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('alias', $error);
+            $this->setErrorLengthRange($field, $label, 0, 255);
             return false;
         }
 
         if (preg_match('/^[A-Za-z0-9_.-]+$/', $alias) !== 1) {
-            $error = $this->language->text('Alias must contain only alphanumeric characters, dashes, dots and underscores');
-            $this->setError('alias', $error);
+            $this->setErrorInvalidValue($field, $label);
             return false;
         }
 
@@ -325,12 +312,9 @@ class Component extends ElementValidator
         }
 
         if ($this->alias->exists($alias)) {
-            $vars = array('@name' => $this->language->text('Alias'));
-            $error = $this->language->text('@name already exists', $vars);
-            $this->setError('alias', $error);
+            $this->setErrorExists($field, $label);
             return false;
         }
-
         return true;
     }
 
@@ -340,35 +324,30 @@ class Component extends ElementValidator
      */
     protected function validateStoreIdComponent()
     {
-        $store_id = $this->getSubmitted('store_id');
+        $field = 'store_id';
+        $label = $this->language->text('Store');
+        $store_id = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($store_id)) {
             return null;
         }
 
         if (empty($store_id)) {
-            $vars = array('@field' => $this->language->text('Store'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('store_id', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         if (!is_numeric($store_id)) {
-            $vars = array('@field' => $this->language->text('Store'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('store_id', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
 
         $store = $this->store->get($store_id);
 
         if (empty($store)) {
-            $vars = array('@name' => $this->language->text('Store'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('store_id', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
-
         return true;
     }
 
@@ -378,35 +357,30 @@ class Component extends ElementValidator
      */
     protected function validateUserIdComponent()
     {
-        $user_id = $this->getSubmitted('user_id');
+        $field = 'user_id';
+        $label = $this->language->text('User');
+        $user_id = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($user_id)) {
             return null;
         }
 
         if (empty($user_id)) {
-            $vars = array('@field' => $this->language->text('User'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('user_id', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         if (!is_numeric($user_id)) {
-            $vars = array('@field' => $this->language->text('User'));
-            $error = $this->language->text('@field must be numeric', $vars);
-            $this->setError('user_id', $error);
+            $this->setErrorNumeric($field, $label);
             return false;
         }
 
         $user = $this->user->get($user_id);
 
         if (empty($user)) {
-            $vars = array('@name' => $this->language->text('User'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('user_id', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
-
         return true;
     }
 
@@ -416,23 +390,21 @@ class Component extends ElementValidator
      */
     protected function validateUserCartIdComponent()
     {
-        $user_id = $this->getSubmitted('user_id');
+        $field = 'user_id';
+        $label = $this->language->text('User');
+        $user_id = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($user_id)) {
             return null;
         }
 
         if (empty($user_id)) {
-            $vars = array('@field' => $this->language->text('User'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('user_id', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         if (strlen($user_id) > 255) {
-            $vars = array('@max' => 255, '@field' => $this->language->text('User'));
-            $error = $this->language->text('@field must not be longer than @max characters', $vars);
-            $this->setError('user_id', $error);
+            $this->setErrorLengthRange($field, $label, 0, 255);
             return false;
         }
 
@@ -443,12 +415,9 @@ class Component extends ElementValidator
         $user = $this->user->get($user_id);
 
         if (empty($user)) {
-            $vars = array('@name' => $this->language->text('User'));
-            $error = $this->language->text('@name is unavailable', $vars);
-            $this->setError('user_id', $error);
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
-
         return true;
     }
 
@@ -458,25 +427,23 @@ class Component extends ElementValidator
      */
     protected function validateEmailComponent()
     {
-        $value = $this->getSubmitted('email');
+        $field = 'email';
+        $label = $this->language->text('E-mail');
+        $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
         }
 
         if (empty($value)) {
-            $vars = array('@field' => $this->language->text('E-mail'));
-            $error = $this->language->text('@field is required', $vars);
-            $this->setError('email', $error);
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
         if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
-            $error = $this->language->text('Invalid E-mail');
-            $this->setError('email', $error);
+            $this->setErrorInvalidValue($field, $label);
             return false;
         }
-
         return true;
     }
 
