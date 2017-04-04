@@ -102,9 +102,10 @@ class Dashboard extends BackendController
         $panels[] = array('rendered' => $this->renderPanelEventsDashboard());
         $panels[] = array('rendered' => $this->renderPanelSummaryDashboard());
 
-        gplcart_array_sort($panels);
-
         $columns = $this->config('dashboard_columns', 2);
+        $this->hook->fire('template.dashboard', $panels, $columns);
+
+        gplcart_array_sort($panels);
         $splitted = gplcart_array_split($panels, $columns);
 
         $this->setData('columns', $columns);
