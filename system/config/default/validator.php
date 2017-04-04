@@ -7,6 +7,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 return array(
+    // File type validators
     'image' => array(
         'handlers' => array(
             'validate' => array('gplcart\\core\\handlers\\validator\\FileType', 'image')
@@ -27,6 +28,7 @@ return array(
             'validate' => array('gplcart\\core\\handlers\\validator\\FileType', 'zip')
         )
     ),
+    // Component validators
     'cart' => array(
         'handlers' => array(
             'validate' => array('gplcart\\core\\handlers\\validator\\components\\Cart', 'cart')
@@ -231,6 +233,27 @@ return array(
         'handlers' => array(
             'validate' => array('gplcart\\core\\handlers\\validator\\components\\Order', 'order')
         )
-    )
+    ),
+    // Element validators
+    'required' => array(
+        'handlers' => array(
+            'validate' => array('gplcart\\core\\handlers\\validator\\elements\\Common', 'required')
+        )
+    ),
+    'numeric' => array(
+        'handlers' => array(
+            'validate' => array('gplcart\\core\\handlers\\validator\\elements\\Common', 'numeric')
+        )
+    ),
+    'length' => array(
+        'handlers' => array(
+            'validate' => array('gplcart\\core\\handlers\\validator\\elements\\Common', 'length')
+        )
+    ),
+    'regexp' => array(
+        'handlers' => array(
+            'validate' => array('gplcart\\core\\handlers\\validator\\elements\\Common', 'regexp')
+        )
+    ),
 );
 
