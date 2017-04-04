@@ -10,12 +10,12 @@
 namespace gplcart\core\handlers\validator;
 
 use gplcart\core\Container as Container;
-use gplcart\core\handlers\validator\Element as ElementValidator;
+use gplcart\core\handlers\validator\Base as BaseValidator;
 
 /**
  * Methods to validate components
  */
-class Component extends ElementValidator
+class Component extends BaseValidator
 {
 
     /**
