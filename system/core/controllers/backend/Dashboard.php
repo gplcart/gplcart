@@ -97,10 +97,10 @@ class Dashboard extends BackendController
     {
         $panels = array();
 
-        $panels[] = array('rendered' => $this->renderPanelUsersDashboard());
-        $panels[] = array('rendered' => $this->renderPanelOrdersDashboard());
-        $panels[] = array('rendered' => $this->renderPanelEventsDashboard());
-        $panels[] = array('rendered' => $this->renderPanelSummaryDashboard());
+        $panels['user'] = array('rendered' => $this->renderPanelUsersDashboard());
+        $panels['order'] = array('rendered' => $this->renderPanelOrdersDashboard());
+        $panels['event'] = array('rendered' => $this->renderPanelEventsDashboard());
+        $panels['summary'] = array('rendered' => $this->renderPanelSummaryDashboard());
 
         $columns = $this->config('dashboard_columns', 2);
         $this->hook->fire('template.dashboard', $panels, $columns);
