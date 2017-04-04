@@ -12,26 +12,21 @@
     <?php echo $this->text('System events'); ?>
   </div>
   <div class="panel-body">
-    <?php if (!empty($events)) { ?>   
-    <ul class="list-inline text-right">
-      <li role="presentation" class="active">
-        <a href="#tab-chart-events" data-toggle="tab"><?php echo $this->text('Summary'); ?></a>
-      </li>
+    <?php if (!empty($events)) { ?>
+    <ul class="nav nav-tabs">
+      <?php $first_event_tab = key($events); ?>
       <?php foreach ($events as $severity => $items) { ?>
       <?php if (!empty($items)) { ?>
-      <li role="presentation">
+      <li role="presentation" class="<?php echo $first_event_tab == $severity ? 'active' : ''; ?>">
         <a href="#event-<?php echo $severity; ?>" data-toggle="tab"><?php echo $this->text($severity); ?></a>
       </li>
       <?php } ?>
       <?php } ?>
-    </ul>    
+    </ul>
     <div class="tab-content">
-      <div class="tab-pane active" id="tab-chart-events">
-        <canvas id="chart-events"></canvas>
-      </div>
       <?php foreach ($events as $severity => $items) { ?>
       <?php if (!empty($items)) { ?>
-      <div class="tab-pane" id="event-<?php echo $severity; ?>">
+      <div class="tab-pane<?php echo $first_event_tab == $severity ? ' in active' : ''; ?>" id="event-<?php echo $severity; ?>">
         <ul class="list-unstyled">
           <?php foreach ($items as $event) { ?>
           <li class="list-group-item clearfix">

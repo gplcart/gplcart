@@ -181,40 +181,8 @@ class Dashboard extends BackendController
             $events[$severity] = $items;
         }
 
-        $this->setJsChartEventsDashboard();
+
         return $this->render('dashboard/panels/events', array('events' => $events));
-    }
-
-    /**
-     * Sets JS settings for events chart
-     */
-    protected function setJsChartEventsDashboard()
-    {
-        $allowed = array(
-            'info' => '#36A2EB',
-            'danger' => '#FF6384',
-            'warning' => '#FFCE56'
-        );
-
-        $counted = $this->report->countSeverity();
-        $results = array_filter(array_intersect_key($counted, $allowed));
-
-        $chart = array(
-            'options' => array(
-                'responsive' => true,
-                'maintainAspectRatio' => false
-            )
-        );
-
-        $i = 0;
-        foreach ($results as $severity => $count) {
-            $chart['labels'][$i] = $severity;
-            $chart['datasets'][0]['data'][$i] = $count;
-            $chart['datasets'][0]['backgroundColor'][$i] = $allowed[$severity];
-            $i++;
-        }
-
-        $this->setJsSettings('chart_events', $chart);
     }
 
     /**

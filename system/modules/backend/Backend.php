@@ -39,23 +39,22 @@ class Backend extends Module
      */
     public function hookTheme($controller)
     {
-        if (!$controller->isCurrentTheme('backend')) {
-            return null;
+        if ($controller->isCurrentTheme('backend')) {
+
+            $controller->setJs('system/modules/backend/js/common.js');
+
+            $libraries = array('bootstrap', 'font_awesome', 'summernote', 'primeui',
+                'jquery_file_upload', 'bootstrap_select', 'bootstrap_colorpicker',
+                'codemirror');
+
+            $controller->addAssetLibrary($libraries);
+            $controller->setCss('system/modules/backend/css/style.css');
+
+            $controller->setMeta(array('charset' => 'utf-8'));
+            $controller->setMeta(array('http-equiv' => 'X-UA-Compatible', 'content' => 'IE=edge'));
+            $controller->setMeta(array('name' => 'viewport', 'content' => 'width=device-width, initial-scale=1'));
+            $controller->setMeta(array('name' => 'author', 'content' => 'GPL Cart'));
         }
-
-        $controller->setJs('system/modules/backend/js/common.js');
-
-        $libraries = array('bootstrap', 'font_awesome', 'summernote', 'primeui',
-            'jquery_file_upload', 'bootstrap_select', 'bootstrap_colorpicker',
-            'codemirror', 'chart');
-
-        $controller->addAssetLibrary($libraries);
-        $controller->setCss('system/modules/backend/css/style.css');
-
-        $controller->setMeta(array('charset' => 'utf-8'));
-        $controller->setMeta(array('http-equiv' => 'X-UA-Compatible', 'content' => 'IE=edge'));
-        $controller->setMeta(array('name' => 'viewport', 'content' => 'width=device-width, initial-scale=1'));
-        $controller->setMeta(array('name' => 'author', 'content' => 'GPL Cart'));
     }
 
 }

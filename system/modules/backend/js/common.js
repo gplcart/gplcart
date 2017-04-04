@@ -1,4 +1,4 @@
-/* global window, document, GplCart, jQuery, Chart */
+/* global window, document, GplCart, jQuery*/
 (function (window, document, GplCart, $) {
 
     "use strict";
@@ -111,47 +111,11 @@
         }
 
         var settings = {life: 1000},
-        message = [{severity: severity, summary: '', detail: text}];
+                message = [{severity: severity, summary: '', detail: text}];
 
         $('.growl-message').remove();
         $('body').append('<div class="growl-message"></div>');
         $('.growl-message').puigrowl(settings).puigrowl('show', message);
-    };
-
-    /**
-     * Creates a chart
-     * @param {String} source
-     * @param {String} type
-     * @returns {undefined}
-     */
-    var setChart = function (source, type) {
-
-        if (typeof Chart === 'undefined') {
-            return;
-        }
-
-        var el, options, key = 'chart_' + source, settings = GplCart.settings;
-
-        if (!settings[key] || !settings[key].datasets) {
-            return;
-        }
-
-        el = document.getElementById('chart-' + source);
-
-        if (!el) {
-            return;
-        }
-
-        options = {
-            type: type,
-            options: settings[key].options,
-            data: {
-                labels: settings[key].labels,
-                datasets: settings[key].datasets
-            }
-        };
-
-        new Chart(el, options);
     };
 
     /**
@@ -166,14 +130,6 @@
                 $(this).closest('form').find('[name="status"]:submit').click();
             }
         });
-    };
-
-    /**
-     * Draw charts
-     * @returns {undefined}
-     */
-    GplCart.onload.drawChart = function () {
-        setChart('events', 'doughnut');
     };
 
     /**
@@ -649,7 +605,7 @@
 
         var el = $('[data-datepicker="true"]');
         var settings = {dateFormat: 'dd.mm.yy'},
-        inline_settings = el.data('datepicker-settings') || {};
+                inline_settings = el.data('datepicker-settings') || {};
 
         if (typeof inline_settings === 'object') {
             settings = $.extend(settings, inline_settings);
