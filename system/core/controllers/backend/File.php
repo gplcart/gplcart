@@ -284,7 +284,7 @@ class File extends BackendController
         $this->setSubmitted('file');
 
         $this->setSubmitted('update', $this->data_file);
-        $this->validate('file');
+        $this->validateComponent('file');
 
         return !$this->hasErrors('file');
     }

@@ -304,7 +304,7 @@ class FieldValue extends BackendController
         $this->setSubmitted('update', $this->data_field_value);
         $this->setSubmitted('field_id', $this->data_field['field_id']);
 
-        $this->validate('field_value');
+        $this->validateComponent('field_value');
 
         return !$this->hasErrors('field_value');
     }

@@ -275,7 +275,7 @@ class Country extends BackendController
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $this->data_country);
 
-        $this->validate('country');
+        $this->validateComponent('country');
 
         return !$this->hasErrors('country');
     }

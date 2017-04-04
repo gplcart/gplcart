@@ -132,7 +132,7 @@ class Language extends BackendController
         $this->setSubmittedBool('default');
         $this->setSubmitted('update', $this->data_language);
 
-        $this->validate('language');
+        $this->validateComponent('language');
 
         return !$this->hasErrors('language');
     }

@@ -194,7 +194,7 @@ class Field extends BackendController
         $this->setSubmitted('field');
 
         $this->setSubmitted('update', $this->data_field);
-        $this->validate('field');
+        $this->validateComponent('field');
 
         return !$this->hasErrors('field');
     }

@@ -88,7 +88,7 @@ class Filter extends BackendController
 
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $this->data_filter);
-        $this->validate('filter');
+        $this->validateComponent('filter');
 
         return !$this->hasErrors('filter');
     }

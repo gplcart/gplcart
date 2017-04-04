@@ -254,7 +254,7 @@ class Editor extends BackendController
         $this->setSubmitted('path', $this->data_file);
         $this->setSubmitted('module', $this->data_module);
 
-        $this->validate('editor');
+        $this->validateComponent('editor');
 
         return !$this->hasErrors('editor');
     }

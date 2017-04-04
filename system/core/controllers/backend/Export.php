@@ -134,7 +134,7 @@ class Export extends BackendController
         $this->setSubmitted('delimiter', $this->export->getCsvDelimiter());
         $this->setSubmitted('multiple_delimiter', $this->export->getCsvDelimiterMultiple());
 
-        $this->validate('export');
+        $this->validateComponent('export');
 
         return !$this->hasErrors('settings');
     }

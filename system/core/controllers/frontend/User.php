@@ -99,7 +99,7 @@ class User extends FrontendController
     {
         $this->setSubmitted('user', null, 'raw');
 
-        $this->validate('user_login');
+        $this->validateComponent('user_login');
 
         return !$this->hasErrors('user', false);
     }
@@ -194,7 +194,7 @@ class User extends FrontendController
         $this->setSubmitted('user', null, 'raw');
         $this->setSubmitted('store_id', $this->store_id);
 
-        $this->validate('user');
+        $this->validateComponent('user');
 
         return !$this->hasErrors('user');
     }
@@ -329,7 +329,7 @@ class User extends FrontendController
         $this->setSubmitted('user', null, 'raw');
         $this->setSubmitted('user', $this->data_user);
 
-        $this->validate('user_reset_password');
+        $this->validateComponent('user_reset_password');
 
         return !$this->hasErrors('user');
     }

@@ -404,7 +404,7 @@ class Module extends BackendController
      */
     protected function validateUploadModule()
     {
-        $this->validate('module_upload');
+        $this->validateComponent('module_upload');
         return !$this->hasErrors();
     }
 

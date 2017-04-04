@@ -83,7 +83,7 @@ class Translation extends BackendController
     protected function validateTranslation()
     {
         $this->setSubmitted('language', $this->data_language['code']);
-        $this->validate('translation_upload');
+        $this->validateComponent('translation_upload');
         return !$this->hasErrors();
     }
 

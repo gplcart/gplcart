@@ -200,7 +200,7 @@ class CategoryGroup extends BackendController
         $this->setSubmitted('category_group');
 
         $this->setSubmitted('update', $this->data_category_group);
-        $this->validate('category_group');
+        $this->validateComponent('category_group');
 
         return !$this->hasErrors('category_group');
     }

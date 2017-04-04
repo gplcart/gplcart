@@ -153,7 +153,7 @@ class Import extends BackendController
         $this->setSubmitted('limit', $this->import->getLimit());
         $this->setSubmitted('delimiter', $this->import->getCsvDelimiter());
 
-        $errors = $this->validate('import');
+        $errors = $this->validateComponent('import');
         return empty($errors);
     }
 

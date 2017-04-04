@@ -167,7 +167,7 @@ class Order extends BackendController
         $this->setSubmitted('order');
         $this->setSubmitted('update', $this->data_order);
 
-        $this->validate('order');
+        $this->validateComponent('order');
         return !$this->isError();
     }
 

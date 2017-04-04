@@ -138,7 +138,7 @@ class Currency extends BackendController
         $this->setSubmittedBool('default');
         $this->setSubmitted('update', $this->data_currency);
 
-        $this->validate('currency');
+        $this->validateComponent('currency');
 
         return !$this->hasErrors('currency');
     }

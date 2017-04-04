@@ -195,7 +195,7 @@ class Review extends FrontendController
         $this->setSubmitted('product_id', $this->data_product['product_id']);
         $this->setSubmitted('status', (int) $this->config('review_status', 1));
 
-        $this->validate('review');
+        $this->validateComponent('review');
 
         return !$this->hasErrors('review', false);
     }
@@ -216,7 +216,7 @@ class Review extends FrontendController
      */
     protected function validateRatingReview()
     {
-        $this->validate('rating');
+        $this->validateComponent('rating');
 
         return !$this->isError();
     }

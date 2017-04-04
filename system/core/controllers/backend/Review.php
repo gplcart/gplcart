@@ -261,7 +261,7 @@ class Review extends BackendController
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $this->data_review);
         
-        $this->validate('review');
+        $this->validateComponent('review');
 
         return !$this->hasErrors('review');
     }

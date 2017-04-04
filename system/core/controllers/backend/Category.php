@@ -343,7 +343,7 @@ class Category extends BackendController
             $this->setSubmitted('user_id', $this->uid);
         }
 
-        $this->validate('category');
+        $this->validateComponent('category');
 
         return !$this->hasErrors('category');
     }

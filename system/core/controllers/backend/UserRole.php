@@ -135,7 +135,7 @@ class UserRole extends BackendController
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $this->data_role);
 
-        $this->validate('user_role');
+        $this->validateComponent('user_role');
 
         return !$this->hasErrors('role');
     }

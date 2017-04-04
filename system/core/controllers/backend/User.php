@@ -278,7 +278,7 @@ class User extends BackendController
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $this->data_user);
 
-        $this->validate('user', array('admin' => $this->access('user_edit')));
+        $this->validateComponent('user', array('admin' => $this->access('user_edit')));
 
         return !$this->hasErrors('user');
     }

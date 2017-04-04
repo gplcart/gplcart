@@ -1985,21 +1985,51 @@ class Controller
     }
 
     /**
-     * Validates a submitted data
+     * Validates a submitted set of elements
      * @param string $handler_id
      * @param array $options
      * @return array
      */
-    protected function validate($handler_id, array $options = array())
+    protected function validateComponent($handler_id, array $options = array())
     {
         $result = $this->validator->run($handler_id, $this->submitted, $options);
 
         if ($result === true) {
             return array();
         }
-
         $this->errors = (array) $result;
         return $this->errors;
+    }
+
+    /**
+     * Validates a single element
+     * @param string $handler_id
+     * @param string|array $field
+     * @param string|array $args
+     * @return boolean
+     */
+    protected function validateElement($handler_id, $field, $args = array())
+    {
+        if (is_array($field)) {
+            $label = reset($field);
+            $field = key($field);
+        }
+
+        $options = array(
+            'field' => $field,
+            'arguments' => (array) $args,
+            'label' => empty($label) ? $this->text('Field') : $label
+        );
+
+        $result = $this->validator->run($handler_id, $this->submitted, $options);
+
+        if ($result === true) {
+            return true;
+        }
+
+        settype($result, 'array');
+        $this->errors = gplcart_array_merge($this->errors, $result);
+        return false;
     }
 
     /**

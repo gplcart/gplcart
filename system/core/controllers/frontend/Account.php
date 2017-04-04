@@ -401,7 +401,7 @@ class Account extends FrontendController
         $this->setSubmitted('update', $this->data_user);
         $this->setSubmitted('user_id', $this->data_user['user_id']);
 
-        $this->validate('user');
+        $this->validateComponent('user');
 
         return !$this->hasErrors('user');
     }

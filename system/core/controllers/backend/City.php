@@ -356,7 +356,7 @@ class City extends BackendController
         $this->setSubmitted('country', $this->data_country['code']);
         $this->setSubmitted('state_id', $this->data_state['state_id']);
 
-        $this->validate('city');
+        $this->validateComponent('city');
 
         return !$this->hasErrors('city');
     }

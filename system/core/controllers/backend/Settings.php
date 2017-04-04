@@ -109,7 +109,7 @@ class Settings extends BackendController
         $this->setSubmitted('settings');
         $this->setSubmittedBool('smtp_auth');
 
-        $this->validate('settings');
+        $this->validateComponent('settings');
 
         return !$this->hasErrors('settings');
     }

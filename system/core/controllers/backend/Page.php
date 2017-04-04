@@ -289,7 +289,7 @@ class Page extends BackendController
             $this->setSubmitted('user_id', $this->uid);
         }
 
-        $this->validate('page');
+        $this->validateComponent('page');
 
         return !$this->hasErrors('page');
     }

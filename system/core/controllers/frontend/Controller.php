@@ -285,7 +285,7 @@ class Controller extends BaseController
         $this->setSubmitted('store_id', $this->store_id);
         $this->setSubmitted('quantity', $this->getSubmitted('quantity', 1));
 
-        $this->validate('cart');
+        $this->validateComponent('cart');
     }
 
     /**
@@ -437,7 +437,7 @@ class Controller extends BaseController
      */
     protected function validateAddToCompare()
     {
-        $this->validate('compare');
+        $this->validateComponent('compare');
     }
 
     /**
@@ -463,7 +463,7 @@ class Controller extends BaseController
         $this->setSubmitted('user_id', $this->cart_uid);
         $this->setSubmitted('store_id', $this->store_id);
 
-        $this->validate('wishlist');
+        $this->validateComponent('wishlist');
     }
 
     /**

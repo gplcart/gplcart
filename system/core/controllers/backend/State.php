@@ -307,7 +307,7 @@ class State extends BackendController
         $this->setSubmitted('update', $this->data_state);
         $this->setSubmitted('country', $this->data_country['code']);
 
-        $this->validate('state');
+        $this->validateComponent('state');
 
         return !$this->hasErrors('state');
     }

@@ -440,7 +440,7 @@ class Product extends BackendController
             $this->setSubmitted('currency', $this->currency->getDefault());
         }
 
-        $this->validate('product');
+        $this->validateComponent('product');
 
         return !$this->hasErrors('product');
     }

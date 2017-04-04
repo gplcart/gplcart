@@ -236,7 +236,7 @@ class Zone extends BackendController
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $this->data_zone);
 
-        $this->validate('zone');
+        $this->validateComponent('zone');
 
         return !$this->hasErrors('zone');
     }

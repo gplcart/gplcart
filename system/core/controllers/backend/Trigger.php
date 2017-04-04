@@ -267,7 +267,7 @@ class Trigger extends BackendController
         $this->setSubmittedArray('data.conditions');
         $this->setSubmitted('update', $this->data_trigger);
 
-        $this->validate('trigger');
+        $this->validateComponent('trigger');
 
         return !$this->hasErrors('trigger');
     }

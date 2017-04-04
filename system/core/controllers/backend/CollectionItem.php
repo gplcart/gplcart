@@ -260,7 +260,7 @@ class CollectionItem extends BackendController
         $this->setSubmittedBool('status');
         $this->setSubmitted('collection_id', $this->data_collection['collection_id']);
 
-        $this->validate('collection_item');
+        $this->validateComponent('collection_item');
 
         return !$this->hasErrors('collection_item');
     }

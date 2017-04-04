@@ -336,7 +336,7 @@ class Store extends BackendController
             $this->setSubmittedArray("data.$field");
         }
 
-        $this->validate('store');
+        $this->validateComponent('store');
 
         return !$this->hasErrors('store');
     }

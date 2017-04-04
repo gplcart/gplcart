@@ -217,7 +217,7 @@ class Install extends FrontendController
         $this->setSubmitted('store.host', $this->request->host());
         $this->setSubmitted('store.basepath', trim($this->request->base(true), '/'));
 
-        $this->validate('install');
+        $this->validateComponent('install');
 
         return !$this->hasErrors('settings');
     }

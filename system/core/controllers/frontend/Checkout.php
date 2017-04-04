@@ -692,7 +692,7 @@ class Checkout extends FrontendController
         $this->setSubmitted('update', $item);
         $this->setSubmitted("cart.items.$sku", $item);
 
-        return $this->validate('cart', array('parents' => "cart.items.$sku"));
+        return $this->validateComponent('cart', array('parents' => "cart.items.$sku"));
     }
 
     /**
@@ -788,7 +788,7 @@ class Checkout extends FrontendController
     {
         if ($this->{"{$type}_address_form"}) {
             $this->setSubmitted("address.{$type}.user_id", $this->order_user_id);
-            return $this->validate('address', array('parents' => "address.$type"));
+            return $this->validateComponent('address', array('parents' => "address.$type"));
         }
 
         return array();
@@ -809,7 +809,7 @@ class Checkout extends FrontendController
         $this->setSubmitted('user_id', $this->order_user_id);
         $this->setSubmitted('creator', $this->admin_user_id);
 
-        return $this->validate('order');
+        return $this->validateComponent('order');
     }
 
     /**
