@@ -842,6 +842,17 @@ class Controller
     }
 
     /**
+     * Returns a GET query
+     * @param string|null $key
+     * @param mixed $default
+     * @return mixed
+     */
+    public function getQuery($key, $default = null)
+    {
+        return $this->request->get($key, $default);
+    }
+
+    /**
      * Whether a key is presented in the submitted values array
      * @param string|array $key
      * @return boolean

@@ -39,7 +39,7 @@ class Install extends FrontendController
         parent::__construct();
 
         $this->install = $install;
-        $this->install_language = $this->request->get('lang', 'en');
+        $this->install_language = $this->getQuery('lang', 'en');
     }
 
     /**

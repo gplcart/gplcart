@@ -90,8 +90,7 @@ class Editor extends BackendController
             $this->outputHttpStatus(403);
         }
 
-        $this->data_module = $module;
-        return $module;
+        return $this->data_module = $module;
     }
 
     /**
@@ -354,8 +353,7 @@ class Editor extends BackendController
             $this->outputHttpStatus(404);
         }
 
-        $this->data_file = $file;
-        return $file;
+        return $this->data_file = $file;
     }
 
     /**

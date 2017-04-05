@@ -9,8 +9,8 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Field as FieldModel;
-use gplcart\core\models\ProductClass as ProductClassModel;
+use gplcart\core\models\Field as FieldModel,
+    gplcart\core\models\ProductClass as ProductClassModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -78,14 +78,14 @@ class ProductClass extends BackendController
      */
     protected function actionProductClass()
     {
-        $action = (string) $this->request->post('action');
+        $action = (string) $this->getPosted('action');
 
         if (empty($action)) {
             return null;
         }
 
-        $value = (int) $this->request->post('value');
-        $selected = (array) $this->request->post('selected', array());
+        $value = (int) $this->getPosted('value');
+        $selected = (array) $this->getPosted('selected', array());
 
         $updated = $deleted = 0;
         foreach ($selected as $id) {

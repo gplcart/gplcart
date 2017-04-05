@@ -9,8 +9,8 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Review as ReviewModel;
-use gplcart\core\models\Product as ProductModel;
+use gplcart\core\models\Review as ReviewModel,
+    gplcart\core\models\Product as ProductModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -80,14 +80,14 @@ class Review extends BackendController
      */
     protected function actionReview()
     {
-        $action = (string) $this->request->post('action');
+        $action = (string) $this->getPosted('action');
 
         if (empty($action)) {
             return null;
         }
 
-        $value = (int) $this->request->post('value');
-        $selected = (array) $this->request->post('selected', array());
+        $value = (int) $this->getPosted('value');
+        $selected = (array) $this->getPosted('selected', array());
 
         $updated = $deleted = 0;
         foreach ($selected as $review_id) {
@@ -225,8 +225,7 @@ class Review extends BackendController
             $this->outputHttpStatus(404);
         }
 
-        $this->data_review = $review;
-        return $review;
+        return $this->data_review = $review;
     }
 
     /**
@@ -260,7 +259,7 @@ class Review extends BackendController
         $this->setSubmitted('review');
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $this->data_review);
-        
+
         $this->validateComponent('review');
 
         return !$this->hasErrors();

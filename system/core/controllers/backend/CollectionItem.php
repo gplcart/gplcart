@@ -87,8 +87,7 @@ class CollectionItem extends BackendController
             $this->outputHttpStatus(404);
         }
 
-        $this->data_collection = $collection;
-        return $collection;
+        return $this->data_collection = $collection;
     }
 
     /**
@@ -97,14 +96,14 @@ class CollectionItem extends BackendController
      */
     protected function actionCollectionItem()
     {
-        $action = (string) $this->request->post('action');
+        $action = (string) $this->getPosted('action');
 
         if (empty($action)) {
             return null;
         }
 
-        $value = (int) $this->request->post('value');
-        $selected = (array) $this->request->post('selected', array());
+        $value = (int) $this->getPosted('value');
+        $selected = (array) $this->getPosted('selected', array());
 
         if ($action === 'weight' && $this->access('collection_item_edit')) {
             $this->updateWeightCollectionItem($selected);

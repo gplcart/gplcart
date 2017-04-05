@@ -498,7 +498,7 @@ class Account extends FrontendController
      */
     protected function deleteAddressAccount()
     {
-        $address_id = (int) $this->request->get('delete');
+        $address_id = (int) $this->getQuery('delete');
 
         if (empty($address_id)) {
             return null;

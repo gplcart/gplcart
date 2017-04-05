@@ -152,8 +152,7 @@ class Export extends BackendController
             $this->outputHttpStatus(404);
         }
 
-        $this->data_operation = $operation;
-        return $operation;
+        return $this->data_operation = $operation;
     }
 
     /**

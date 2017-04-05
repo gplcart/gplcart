@@ -9,10 +9,10 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Price as PriceModel;
-use gplcart\core\models\Trigger as TriggerModel;
-use gplcart\core\models\Currency as CurrencyModel;
-use gplcart\core\models\PriceRule as PriceRuleModel;
+use gplcart\core\models\Price as PriceModel,
+    gplcart\core\models\Trigger as TriggerModel,
+    gplcart\core\models\Currency as CurrencyModel,
+    gplcart\core\models\PriceRule as PriceRuleModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -100,14 +100,14 @@ class PriceRule extends BackendController
      */
     protected function actionPriceRule()
     {
-        $action = (string) $this->request->post('action');
+        $action = (string) $this->getPosted('action');
 
         if (empty($action)) {
             return null;
         }
 
-        $value = (int) $this->request->post('value');
-        $selected = (array) $this->request->post('selected', array());
+        $value = (int) $this->getPosted('value');
+        $selected = (array) $this->getPosted('selected', array());
 
         $deleted = $updated = 0;
         foreach ($selected as $rule_id) {

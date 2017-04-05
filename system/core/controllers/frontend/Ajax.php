@@ -9,13 +9,13 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\Sku as SkuModel;
-use gplcart\core\models\City as CityModel;
-use gplcart\core\models\File as FileModel;
-use gplcart\core\models\Search as SearchModel;
-use gplcart\core\models\Rating as RatingModel;
-use gplcart\core\models\Collection as CollectionModel;
-use gplcart\core\models\CollectionItem as CollectionItemModel;
+use gplcart\core\models\Sku as SkuModel,
+    gplcart\core\models\City as CityModel,
+    gplcart\core\models\File as FileModel,
+    gplcart\core\models\Search as SearchModel,
+    gplcart\core\models\Rating as RatingModel,
+    gplcart\core\models\Collection as CollectionModel,
+    gplcart\core\models\CollectionItem as CollectionItemModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
@@ -100,7 +100,7 @@ class Ajax extends FrontendController
             $this->response->error403();
         }
 
-        $action = (string) $this->request->post('action');
+        $action = (string) $this->getPosted('action');
 
         if (empty($action)) {
             $this->response->json(array('error' => $this->text('Missing handler')));
@@ -136,9 +136,9 @@ class Ajax extends FrontendController
         }
 
         $options = array(
-            'status' => $this->request->post('status', null),
-            'store_id' => $this->request->post('store_id', null),
-            'title' => (string) $this->request->post('term', ''),
+            'status' => $this->getPosted('status', null),
+            'store_id' => $this->getPosted('store_id', null),
+            'title' => (string) $this->getPosted('term', ''),
             'limit' => array(0, $this->config('admin_autocomplete_limit', 10))
         );
 
@@ -185,8 +185,8 @@ class Ajax extends FrontendController
         }
 
         $options = array(
-            'email' => (string) $this->request->post('term', ''),
-            'store_id' => $this->request->post('store_id', null),
+            'email' => (string) $this->getPosted('term', ''),
+            'store_id' => $this->getPosted('store_id', null),
             'limit' => array(0, $this->config('admin_autocomplete_limit', 10)));
 
         return $this->user->getList($options);
@@ -198,8 +198,8 @@ class Ajax extends FrontendController
      */
     public function switchProductOptionsAjax()
     {
-        $product_id = (int) $this->request->post('product_id');
-        $field_value_ids = (array) $this->request->post('values');
+        $product_id = (int) $this->getPosted('product_id');
+        $field_value_ids = (array) $this->getPosted('values');
 
         $product = $this->product->get($product_id);
         $response = $this->sku->selectCombination($product, $field_value_ids);
@@ -243,7 +243,7 @@ class Ajax extends FrontendController
      */
     public function searchProductsAjax()
     {
-        $term = (string) $this->request->post('term');
+        $term = (string) $this->getPosted('term');
 
         if (empty($term)) {
             return array();
@@ -277,8 +277,8 @@ class Ajax extends FrontendController
      */
     public function getCollectionItemAjax()
     {
-        $term = (string) $this->request->post('term');
-        $collection_id = (int) $this->request->post('collection_id');
+        $term = (string) $this->getPosted('term');
+        $collection_id = (int) $this->getPosted('collection_id');
 
         if (empty($term) || empty($collection_id)) {
             return array('error' => $this->text('An error occurred'));
@@ -307,7 +307,7 @@ class Ajax extends FrontendController
     public function uploadImageAjax()
     {
         $path = 'image/upload';
-        $type = $this->request->post('type');
+        $type = $this->getPosted('type');
 
         if (!empty($type)) {
             $type = (string) $type;
@@ -352,8 +352,8 @@ class Ajax extends FrontendController
      */
     public function rateAjax()
     {
-        $stars = (int) $this->request->post('stars', 0);
-        $product_id = (int) $this->request->post('product_id');
+        $stars = (int) $this->getPosted('stars', 0);
+        $product_id = (int) $this->getPosted('product_id');
 
         if (empty($product_id) || empty($this->uid)) {
             return array('error' => $this->text('No access'));
@@ -380,8 +380,8 @@ class Ajax extends FrontendController
      */
     public function searchCityAjax()
     {
-        $country = (string) $this->request->post('country', '');
-        $state_id = (string) $this->request->post('state_id', '');
+        $country = (string) $this->getPosted('country', '');
+        $state_id = (string) $this->getPosted('state_id', '');
 
         if (empty($country) || empty($state_id)) {
             return array();

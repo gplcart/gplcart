@@ -527,7 +527,7 @@ class Checkout extends FrontendController
         );
 
         foreach ($actions as $field => $action) {
-            $value = $this->request->post($field);
+            $value = $this->getPosted($field);
             if (isset($value)) {
                 $this->{"{$value}_address_form"} = $action;
             }
@@ -540,7 +540,7 @@ class Checkout extends FrontendController
      */
     protected function submitAddAddressCheckout()
     {
-        $type = $this->request->post('save_address');
+        $type = $this->getPosted('save_address');
 
         if (empty($type)) {
             return null;
@@ -589,7 +589,7 @@ class Checkout extends FrontendController
      */
     protected function validateCouponCheckout()
     {
-        $price_rule_id = (int) $this->request->post('check_pricerule');
+        $price_rule_id = (int) $this->getPosted('check_pricerule');
 
         if (empty($price_rule_id)) {
             return null;

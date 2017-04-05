@@ -9,9 +9,9 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Zone as ZoneModel;
-use gplcart\core\models\State as StateModel;
-use gplcart\core\models\Country as CountryModel;
+use gplcart\core\models\Zone as ZoneModel,
+    gplcart\core\models\State as StateModel,
+    gplcart\core\models\Country as CountryModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -114,14 +114,14 @@ class State extends BackendController
      */
     protected function actionState()
     {
-        $action = (string) $this->request->post('action');
+        $action = (string) $this->getPosted('action');
 
         if (empty($action)) {
             return null;
         }
 
-        $value = (int) $this->request->post('value');
-        $selected = (array) $this->request->post('selected', array());
+        $value = (int) $this->getPosted('value');
+        $selected = (array) $this->getPosted('selected', array());
 
         $deleted = $updated = 0;
         foreach ($selected as $id) {

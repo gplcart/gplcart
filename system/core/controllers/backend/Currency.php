@@ -173,8 +173,7 @@ class Currency extends BackendController
             $this->outputHttpStatus(404);
         }
 
-        $this->data_currency = (array) $currency;
-        return $this->data_currency;
+        return $this->data_currency = (array) $currency;
     }
 
     /**

@@ -9,8 +9,8 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\Search as SearchModel;
-use gplcart\core\models\CategoryGroup as CategoryGroupModel;
+use gplcart\core\models\Search as SearchModel,
+    gplcart\core\models\CategoryGroup as CategoryGroupModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**

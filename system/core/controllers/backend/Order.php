@@ -188,9 +188,9 @@ class Order extends BackendController
         $this->logOrder($submitted);
 
         $messages = array(
-            self::NOTIFICATION_DISABLED => array('success', 'Order has been updated'),
-            self::NOTIFICATION_ERROR => array('warning', 'Order has been updated, notification has not been sent to customer'),
-            self::NOTIFICATION_SENT => array('success', 'Order has been updated, notification has been sent to customer')
+            static::NOTIFICATION_DISABLED => array('success', 'Order has been updated'),
+            static::NOTIFICATION_ERROR => array('warning', 'Order has been updated, notification has not been sent to customer'),
+            static::NOTIFICATION_SENT => array('success', 'Order has been updated, notification has been sent to customer')
         );
 
         list($severity, $text) = $messages[$submitted['notify']];
@@ -229,16 +229,16 @@ class Order extends BackendController
     protected function setNotificationOrder($order_id)
     {
         if (!$this->config('order_update_notify_customer', 1)) {
-            return self::NOTIFICATION_DISABLED;
+            return static::NOTIFICATION_DISABLED;
         }
 
         $order = $this->order->get($order_id);
 
         if ($this->order->setNotificationUpdated($order) === true) {
-            return self::NOTIFICATION_SENT;
+            return static::NOTIFICATION_SENT;
         }
 
-        return self::NOTIFICATION_ERROR;
+        return static::NOTIFICATION_ERROR;
     }
 
     /**
@@ -504,14 +504,14 @@ class Order extends BackendController
      */
     protected function actionOrder()
     {
-        $action = (string) $this->request->post('action');
+        $action = (string) $this->getPosted('action');
 
         if (empty($action)) {
             return null;
         }
 
-        $value = (string) $this->request->post('value');
-        $selected = (array) $this->request->post('selected', array());
+        $value = (string) $this->getPosted('value');
+        $selected = (array) $this->getPosted('selected', array());
 
         $deleted = $updated = 0;
         $failed_notifications = array();
@@ -520,7 +520,7 @@ class Order extends BackendController
 
             if ($action === 'status' && $this->access('order_edit')//
                     && $this->order->update($id, array('status' => $value))) {
-                if ($this->setNotificationOrder($id) == self::NOTIFICATION_ERROR) {
+                if ($this->setNotificationOrder($id) == static::NOTIFICATION_ERROR) {
                     $failed_notifications[] = $id;
                 }
                 $updated++;

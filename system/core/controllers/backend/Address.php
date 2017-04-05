@@ -81,13 +81,13 @@ class Address extends BackendController
      */
     protected function actionAddress()
     {
-        $action = (string) $this->request->post('action');
+        $action = (string) $this->getPosted('action');
 
         if (empty($action)) {
             return null;
         }
 
-        $selected = (array) $this->request->post('selected', array());
+        $selected = (array) $this->getPosted('selected', array());
 
         $deleted = 0;
         foreach ($selected as $id) {

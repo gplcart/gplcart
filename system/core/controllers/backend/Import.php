@@ -96,7 +96,7 @@ class Import extends BackendController
      */
     protected function downloadTemplateImport()
     {
-        $operation_id = $this->request->get('download_template');
+        $operation_id = $this->getQuery('download_template');
         $operation = $this->import->getOperation($operation_id);
 
         if (!empty($operation['csv']['template'])) {
@@ -109,7 +109,7 @@ class Import extends BackendController
      */
     protected function downloadErrorsImport()
     {
-        $operation_id = $this->request->get('download_errors');
+        $operation_id = $this->getQuery('download_errors');
         $operation = $this->import->getOperation($operation_id);
 
         if (!empty($operation['log']['errors'])) {
@@ -123,7 +123,7 @@ class Import extends BackendController
      */
     protected function submitImport()
     {
-        $operation_id = $this->request->post('import');
+        $operation_id = $this->getPosted('import');
 
         if (empty($operation_id)) {
             return null;

@@ -11,6 +11,9 @@ namespace gplcart\core\controllers\frontend;
 
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 
+/**
+ * Handles incoming requests and outputs data related to user wishlists
+ */
 class Wishlist extends FrontendController
 {
 

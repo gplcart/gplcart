@@ -9,8 +9,8 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Trigger as TriggerModel;
-use gplcart\core\models\Condition as ConditionModel;
+use gplcart\core\models\Trigger as TriggerModel,
+    gplcart\core\models\Condition as ConditionModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -79,14 +79,14 @@ class Trigger extends BackendController
      */
     protected function actionTrigger()
     {
-        $action = (string) $this->request->post('action');
+        $action = (string) $this->getPosted('action');
 
         if (empty($action)) {
             return null;
         }
 
-        $value = (int) $this->request->post('value');
-        $selected = (array) $this->request->post('selected', array());
+        $value = (int) $this->getPosted('value');
+        $selected = (array) $this->getPosted('selected', array());
 
         $deleted = $updated = 0;
 

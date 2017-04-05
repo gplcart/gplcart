@@ -70,13 +70,13 @@ class Field extends BackendController
      */
     protected function actionField()
     {
-        $action = (string) $this->request->post('action');
+        $action = (string) $this->getPosted('action');
 
         if (empty($action)) {
             return null;
         }
 
-        $selected = (array) $this->request->post('selected', array());
+        $selected = (array) $this->getPosted('selected', array());
 
         $deleted = 0;
         foreach ($selected as $field_id) {
@@ -227,8 +227,7 @@ class Field extends BackendController
             $this->outputHttpStatus(404);
         }
 
-        $this->data_field = $field;
-        return $field;
+        return $this->data_field = $field;
     }
 
     /**

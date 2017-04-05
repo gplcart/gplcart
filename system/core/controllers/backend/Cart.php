@@ -65,14 +65,14 @@ class Cart extends BackendController
      */
     protected function actionCart()
     {
-        $action = (string) $this->request->post('action');
+        $action = (string) $this->getPosted('action');
 
         if (empty($action)) {
             return null;
         }
 
         $deleted = 0;
-        foreach ((array) $this->request->post('selected', array()) as $id) {
+        foreach ((array) $this->getPosted('selected', array()) as $id) {
             if ($action === 'delete' && $this->access('cart_delete')) {
                 $deleted += (int) $this->cart->delete($id);
             }

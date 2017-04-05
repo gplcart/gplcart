@@ -9,10 +9,10 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\Field as FieldModel;
-use gplcart\core\models\FieldValue as FieldValueModel;
-use gplcart\core\models\ProductClass as ProductClassModel;
-use gplcart\core\models\ProductField as ProductFieldModel;
+use gplcart\core\models\Field as FieldModel,
+    gplcart\core\models\FieldValue as FieldValueModel,
+    gplcart\core\models\ProductClass as ProductClassModel,
+    gplcart\core\models\ProductField as ProductFieldModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
@@ -181,7 +181,7 @@ class Compare extends FrontendController
 
         $conditions = array(
             'product_id' => $this->compare->getList());
-        
+
         $products = $this->getProducts($conditions, $options);
 
         if (empty($products)) {

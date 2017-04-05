@@ -69,11 +69,10 @@ class File extends BackendController
      */
     protected function downloadFile()
     {
-        if ($this->isQuery('download')) {
+        $file_id = (int) $this->getQuery('download');
 
-            $file_id = (int) $this->request->get('download');
+        if (!empty($file_id)) {
             $file = $this->file->get($file_id);
-
             $filepath = GC_FILE_DIR . '/' . $file['path'];
             $this->response->download($filepath);
         }
@@ -85,13 +84,13 @@ class File extends BackendController
      */
     protected function actionFile()
     {
-        $action = (string) $this->request->post('action');
+        $action = (string) $this->getPosted('action');
 
         if (empty($action)) {
             return null;
         }
 
-        $selected = (array) $this->request->post('selected', array());
+        $selected = (array) $this->getPosted('selected', array());
 
         $deleted_disk = $deleted_database = 0;
 
@@ -233,8 +232,7 @@ class File extends BackendController
             $this->outputHttpStatus(404);
         }
 
-        $this->data_file = $file;
-        return $file;
+        return $this->data_file = $file;
     }
 
     /**
@@ -282,7 +280,6 @@ class File extends BackendController
     protected function validateFile()
     {
         $this->setSubmitted('file');
-
         $this->setSubmitted('update', $this->data_file);
         $this->validateComponent('file');
         return !$this->hasErrors();

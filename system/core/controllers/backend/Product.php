@@ -130,14 +130,14 @@ class Product extends BackendController
      */
     protected function actionProduct()
     {
-        $action = (string) $this->request->post('action');
+        $action = (string) $this->getPosted('action');
 
         if (empty($action)) {
             return null;
         }
 
-        $value = (int) $this->request->post('value');
-        $selected = (array) $this->request->post('selected', array());
+        $value = (int) $this->getPosted('value');
+        $selected = (array) $this->getPosted('selected', array());
 
         $deleted = $updated = 0;
         foreach ($selected as $id) {
@@ -274,7 +274,7 @@ class Product extends BackendController
      */
     protected function outputCategoriesProduct()
     {
-        $store_id = (int) $this->request->get('store_id');
+        $store_id = (int) $this->getQuery('store_id');
 
         if (!empty($store_id) && $this->request->isAjax()) {
             $response = $this->getListCategoryProduct($store_id);
@@ -500,7 +500,7 @@ class Product extends BackendController
     protected function setDataFieldsProduct()
     {
         $output_field_form = false;
-        $get_product_class_id = $this->request->get('product_class_id');
+        $get_product_class_id = $this->getQuery('product_class_id');
         $product_class_id = $this->getData('product.product_class_id', 0);
 
         if (isset($get_product_class_id)) {

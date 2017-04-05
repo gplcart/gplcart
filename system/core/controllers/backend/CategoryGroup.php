@@ -163,8 +163,7 @@ class CategoryGroup extends BackendController
             $this->outputHttpStatus(404);
         }
 
-        $this->data_category_group = $category_group;
-        return $category_group;
+        return $this->data_category_group = $category_group;
     }
 
     /**

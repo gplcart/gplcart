@@ -112,8 +112,7 @@ class FieldValue extends BackendController
             $this->outputHttpStatus(404);
         }
 
-        $this->data_field = $field;
-        return $field;
+        return $this->data_field = $field;
     }
 
     /**
@@ -121,13 +120,13 @@ class FieldValue extends BackendController
      */
     protected function actionFieldValue()
     {
-        $action = (string) $this->request->post('action');
+        $action = (string) $this->getPosted('action');
 
         if (empty($action)) {
             return null;
         }
 
-        $selected = (array) $this->request->post('selected', array());
+        $selected = (array) $this->getPosted('selected', array());
 
         if ($action === 'weight' && $this->access('field_value_edit')) {
             $this->updateWeightFieldValue($selected);
@@ -326,8 +325,7 @@ class FieldValue extends BackendController
             $this->outputHttpStatus(404);
         }
 
-        $this->data_field_value = $field_value;
-        return $field_value;
+        return $this->data_field_value = $field_value;
     }
 
     /**

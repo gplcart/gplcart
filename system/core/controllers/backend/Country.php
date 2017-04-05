@@ -78,14 +78,14 @@ class Country extends BackendController
      */
     protected function actionCountry()
     {
-        $action = (string) $this->request->post('action');
+        $action = (string) $this->getPosted('action');
 
         if (empty($action)) {
             return null;
         }
 
-        $value = (int) $this->request->post('value');
-        $selected = (array) $this->request->post('selected', array());
+        $value = (int) $this->getPosted('value');
+        $selected = (array) $this->getPosted('selected', array());
 
         if ($action === 'weight' && $this->access('country_edit')) {
             return $this->updateWeightCountry($selected);

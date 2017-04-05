@@ -9,8 +9,8 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\helpers\Curl as CurlHelper;
-use gplcart\core\helpers\Graph as GraphHelper;
+use gplcart\core\helpers\Curl as CurlHelper,
+    gplcart\core\helpers\Graph as GraphHelper;
 use gplcart\core\models\Module as ModuleModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
@@ -89,8 +89,8 @@ class Module extends BackendController
      */
     protected function actionModule()
     {
-        $action = (string) $this->request->get('action');
-        $module_id = (string) $this->request->get('module_id');
+        $action = (string) $this->getQuery('action');
+        $module_id = (string) $this->getQuery('module_id');
 
         if (empty($action) || empty($module_id)) {
             return null;
@@ -105,6 +105,7 @@ class Module extends BackendController
     /**
      * Set module data
      * @param string $module_id
+     * @return array
      */
     protected function setModule($module_id)
     {
@@ -114,7 +115,7 @@ class Module extends BackendController
             $this->outputHttpStatus(403);
         }
 
-        $this->data_module = $module;
+        return $this->data_module = $module;
     }
 
     /**
@@ -188,6 +189,7 @@ class Module extends BackendController
     protected function getListModule(array $query, array $limit = array())
     {
         $modules = $this->module->getList();
+
         $this->sortListModule($modules, $query);
         $this->filterListModule($modules, $query);
         $this->limitListModule($modules, $limit);

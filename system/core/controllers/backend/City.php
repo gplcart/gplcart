@@ -123,8 +123,7 @@ class City extends BackendController
             $this->outputHttpStatus(404);
         }
 
-        $this->data_state = $state;
-        return $state;
+        return $this->data_state = $state;
     }
 
     /**
@@ -140,8 +139,7 @@ class City extends BackendController
             $this->outputHttpStatus(404);
         }
 
-        $this->data_country = $country;
-        return $country;
+        return $this->data_country = $country;
     }
 
     /**
@@ -150,14 +148,14 @@ class City extends BackendController
      */
     protected function actionCity()
     {
-        $action = (string) $this->request->post('action');
+        $action = (string) $this->getPosted('action');
 
         if (empty($action)) {
             return null;
         }
 
-        $value = (int) $this->request->post('value');
-        $selected = (array) $this->request->post('selected', array());
+        $value = (int) $this->getPosted('value');
+        $selected = (array) $this->getPosted('selected', array());
 
         $deleted = $updated = 0;
         foreach ($selected as $id) {

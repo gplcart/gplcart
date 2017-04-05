@@ -108,14 +108,14 @@ class Category extends BackendController
      */
     protected function actionCategory()
     {
-        $action = (string) $this->request->post('action');
+        $action = (string) $this->getPosted('action');
 
         if (empty($action)) {
             return null;
         }
 
-        $value = (int) $this->request->post('value');
-        $categories = (array) $this->request->post('selected', array());
+        $value = (int) $this->getPosted('value');
+        $categories = (array) $this->getPosted('selected', array());
 
         if ($action === 'weight' && $this->access('category_edit')) {
             return $this->updateWeightCategory($categories);
@@ -241,7 +241,7 @@ class Category extends BackendController
         $this->setData('category', $this->data_category);
         $this->setData('can_delete', $this->canDeleteCategory());
         $this->setData('category_group', $this->data_category_group);
-        $this->setData('parent_id', (int) $this->request->get('parent_id'));
+        $this->setData('parent_id', (int) $this->getQuery('parent_id'));
         $this->setData('categories', $this->getOptionsCategory($category_group_id));
 
         $this->submitCategory();

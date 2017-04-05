@@ -10,8 +10,8 @@
 namespace gplcart\core\controllers\cli;
 
 use gplcart\core\CliController;
-use gplcart\core\models\User as UserModel;
-use gplcart\core\models\Install as InstallModel;
+use gplcart\core\models\User as UserModel,
+    gplcart\core\models\Install as InstallModel;
 
 /**
  * Handles CLI commands related to system installation

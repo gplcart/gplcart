@@ -158,8 +158,7 @@ class Language extends BackendController
     {
         $this->controlAccess('language_add');
 
-        $values = $this->getSubmitted();
-        $this->language->add($values);
+        $this->language->add($this->getSubmitted());
 
         $message = $this->text('Language has been added');
         $this->redirect('admin/settings/language', $message, 'success');
@@ -228,7 +227,7 @@ class Language extends BackendController
      */
     protected function refreshLanguage()
     {
-        $code = (string) $this->request->get('refresh');
+        $code = (string) $this->getQuery('refresh');
 
         if (empty($code)) {
             return null;

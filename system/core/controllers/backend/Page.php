@@ -9,9 +9,9 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Page as PageModel;
-use gplcart\core\models\Alias as AliasModel;
-use gplcart\core\models\Category as CategoryModel;
+use gplcart\core\models\Page as PageModel,
+    gplcart\core\models\Alias as AliasModel,
+    gplcart\core\models\Category as CategoryModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -91,14 +91,14 @@ class Page extends BackendController
      */
     protected function actionPage()
     {
-        $action = (string) $this->request->post('action');
+        $action = (string) $this->getPosted('action');
 
         if (empty($action)) {
             return null;
         }
 
-        $value = (int) $this->request->post('value');
-        $selected = (array) $this->request->post('selected', array());
+        $value = (int) $this->getPosted('value');
+        $selected = (array) $this->getPosted('selected', array());
 
         if ($action === 'categories') {
             $this->outputCategoriesPage();
@@ -131,7 +131,7 @@ class Page extends BackendController
     protected function outputCategoriesPage()
     {
         $default = $this->store->getDefault();
-        $store_id = (int) $this->request->post('store_id', $default);
+        $store_id = (int) $this->getPosted('store_id', $default);
 
         $categories = $this->category->getOptionListByStore($store_id);
         $this->response->json($categories);
