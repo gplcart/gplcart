@@ -6,6 +6,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
+<?php if($this->access('report_events')) { ?>
 <div class="panel panel-default">
   <div class="panel-heading">
     <?php echo $this->text('System events'); ?>
@@ -48,3 +49,4 @@
     <?php } ?>
   </div>
 </div>
+<?php } ?>

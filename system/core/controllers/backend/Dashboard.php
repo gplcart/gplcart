@@ -122,23 +122,10 @@ class Dashboard extends BackendController
     protected function getDefaultPanelsDashboard()
     {
         $panels = array();
-
-        if ($this->access('user')) {
-            $panels['user'] = array('rendered' => $this->renderPanelUsersDashboard());
-        }
-
-        if ($this->access('order')) {
-            $panels['order'] = array('rendered' => $this->renderPanelOrdersDashboard());
-        }
-
-        if ($this->access('report_events')) {
-            $panels['event'] = array('rendered' => $this->renderPanelEventsDashboard());
-        }
-
-        if ($this->access('report')) {
-            $panels['summary'] = array('rendered' => $this->renderPanelSummaryDashboard());
-        }
-
+        $panels['user'] = array('rendered' => $this->renderPanelUsersDashboard());
+        $panels['order'] = array('rendered' => $this->renderPanelOrdersDashboard());
+        $panels['event'] = array('rendered' => $this->renderPanelEventsDashboard());
+        $panels['summary'] = array('rendered' => $this->renderPanelSummaryDashboard());
         return $panels;
     }
 
@@ -211,8 +198,6 @@ class Dashboard extends BackendController
 
             $events[$severity] = $items;
         }
-
-        $this->setJsSettings('panels', array('event' => $events));
         return $this->render('dashboard/panels/events', array('events' => $events));
     }
 

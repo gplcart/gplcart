@@ -6,6 +6,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
+<?php if($this->access('user')) { ?>
 <div class="panel panel-default">
   <div class="panel-heading"><?php echo $this->text('Recent users'); ?></div>
   <div class="panel-body">
@@ -26,3 +27,4 @@
     </div>
   </div>
 </div>
+<?php } ?>
