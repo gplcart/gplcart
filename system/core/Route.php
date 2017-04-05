@@ -110,8 +110,8 @@ class Route
      */
     public function process()
     {
-        $this->callControllerAlias();
-        $this->callControllerRoute();
+        $this->seekControllerAlias();
+        $this->seekControllerRoute();
         $this->callControllerNotFound();
     }
 
@@ -167,7 +167,7 @@ class Route
      * @return null
      * @todo Do refactoring
      */
-    protected function callControllerAlias()
+    protected function seekControllerAlias()
     {
         if (empty($this->db)) {
             return; // No database available, exit
@@ -284,30 +284,41 @@ class Route
     }
 
     /**
-     * Calls an appropriate controller for the current URL
+     * Find an appropriate controller for the current URL
      */
-    protected function callControllerRoute()
+    protected function seekControllerRoute()
     {
         foreach ($this->getList() as $pattern => $route) {
 
             $pattern = trim($pattern, '/');
-
-            if (empty($route['arguments'])) {
-                $route['arguments'] = array();
-            }
+            $route += array('arguments' => array());
 
             $arguments = gplcart_parse_pattern($this->path, $pattern);
-
-            if ($arguments === false) {
-                continue;
+            if ($arguments !== false) {
+                $route['arguments'] += $arguments;
+                $this->callControllerRoute($pattern, $route);
+                break; // Not really needed, but...
             }
-
-            $route['arguments'] += $arguments;
-            $this->route = $route + array('pattern' => $pattern);
-
-            Handler::call($route, null, 'controller', $route['arguments']);
-            throw new RouteException('An error occurred while processing the route');
         }
+    }
+
+    /**
+     * Call a route controller
+     * @param string $pattern
+     * @param array $route
+     * @throws RouteException
+     */
+    protected function callControllerRoute($pattern, $route)
+    {
+        $this->route = $route + array('pattern' => $pattern);
+        $handler = Handler::get($route, null, 'controller');
+
+        if (!$handler[0] instanceof \gplcart\core\Controller) {
+            throw new RouteException('Controller must be instance of \gplcart\core\Controller');
+        }
+
+        call_user_func_array($handler, $route['arguments']); // We should stop here
+        throw new RouteException('An error occurred while processing the route');
     }
 
     /**
