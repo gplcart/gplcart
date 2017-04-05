@@ -554,6 +554,16 @@ class Controller
     }
 
     /**
+     * Returns JSON escaped string
+     * @param mixed $data
+     * @return string
+     */
+    public function json($data)
+    {
+        return htmlspecialchars(json_encode($data), ENT_QUOTES, 'UTF-8');
+    }
+
+    /**
      * Strips or encodes unwanted characters
      * @param string $string
      * @return string
