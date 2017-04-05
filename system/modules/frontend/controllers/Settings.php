@@ -121,9 +121,8 @@ class Settings extends BackendController
         $this->setSubmittedBool('twig.debug');
         $this->setSubmittedBool('twig.auto_reload');
         $this->setSubmittedBool('twig.strict_variables');
-
-        $this->validateElement('catalog_limit', 'numeric');
-        $this->validateElement('catalog_limit', 'length', array(1, 2));
+        
+        $this->validateElement('catalog_limit', 'regexp', '/^[\d]{1,2}$/');
 
         return !$this->hasErrors();
     }
