@@ -10,6 +10,7 @@
 namespace gplcart\core\controllers\frontend;
 
 use gplcart\core\models\Oauth as OauthModel;
+use gplcart\core\exceptions\OauthAuthorizationException;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
@@ -96,24 +97,24 @@ class Oauth extends FrontendController
         $parsed = $this->oauth->parseState($this->data_state);
 
         if (empty($parsed['id']) || !isset($parsed['url'])) {
-            throw new \InvalidArgumentException('Invalid provider Id and/or returning URL');
+            throw new OauthAuthorizationException('Invalid provider Id and/or returning URL');
         }
 
         if (!$this->oauth->isValidState($this->data_state, $parsed['id'])) {
-            throw new \InvalidArgumentException('Invalid state code');
+            throw new OauthAuthorizationException('Invalid state code');
         }
 
         $this->data_provider = $this->oauth->getProvider($parsed['id']);
 
         if (empty($this->data_provider)) {
-            throw new \InvalidArgumentException('Invalid Oauth provider');
+            throw new OauthAuthorizationException('Invalid Oauth provider');
         }
 
         // Be sure that URL domain belongs to our enabled store
         $store = $this->store->get(parse_url($parsed['url'], PHP_URL_HOST));
 
         if (empty($store['status'])) {
-            throw new \InvalidArgumentException('Invalid domain in redirect URL');
+            throw new OauthAuthorizationException('Invalid domain in redirect URL');
         }
 
         $this->data_url = $parsed['url'];
@@ -144,7 +145,7 @@ class Oauth extends FrontendController
         $this->data_token = $this->oauth->exchangeToken($this->data_provider, $query);
 
         if (empty($this->data_token['access_token'])) {
-            throw new \InvalidArgumentException('Failed to get access token');
+            throw new OauthAuthorizationException('Failed to get access token');
         }
     }
 

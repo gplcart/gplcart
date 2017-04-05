@@ -9,7 +9,7 @@
 
 namespace gplcart\core\helpers;
 
-use gplcart\core\exceptions\UserAccessException;
+use gplcart\core\exceptions\AuthorizationException;
 
 /**
  * Provides methods to work with sessions
@@ -19,12 +19,12 @@ class Session
 
     /**
      * Starts a session
-     * @throws UserAccessException
+     * @throws AuthorizationException
      */
     public function init()
     {
         if (!$this->started() && !session_start()) {
-            throw new UserAccessException('Failed to start the session');
+            throw new AuthorizationException('Failed to start the session');
         }
     }
 
@@ -50,7 +50,7 @@ class Session
         }
 
         if (!$success) {
-            throw new UserAccessException('Failed to regenerate the current session');
+            throw new AuthorizationException('Failed to regenerate the current session');
         }
     }
 
@@ -119,7 +119,7 @@ class Session
         if (!isset($key)) {
             session_unset();
             if (!session_destroy()) {
-                throw new UserAccessException('Failed to delete the session');
+                throw new AuthorizationException('Failed to delete the session');
             }
 
             return true;

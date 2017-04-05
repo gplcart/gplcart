@@ -15,6 +15,7 @@ use gplcart\core\Model,
 use gplcart\core\helpers\Url as UrlHelper,
     gplcart\core\helpers\Curl as CurlHelper,
     gplcart\core\helpers\Session as SessionHelper;
+use gplcart\core\exceptions\OauthAuthorizationException;
 
 /**
  * Manages basic behaviors and data related to Oauth 2.0 functionality
@@ -321,7 +322,7 @@ class Oauth extends Model
             $data['certificate_file'] = GC_FILE_DIR . '/' . $data['certificate_file'];
         }
 
-        if (!is_readable($data['certificate_file'])) {
+        if (!is_readable($data['certificate_file']) || !is_file($data['certificate_file'])) {
             throw new \InvalidArgumentException('Private key does not exist');
         }
 
@@ -405,8 +406,14 @@ class Oauth extends Model
             'token_url' => $provider['url']['token']
         );
 
+        try {
+            $assertion = $this->generateJwt($jwt);
+        } catch (\InvalidArgumentException $ex) {
+            throw new OauthAuthorizationException('Failed to exchange Oauth service token: ' . $ex->getMessage());
+        }
+
         $request = array(
-            'assertion' => $this->generateJwt($jwt),
+            'assertion' => $assertion,
             'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer'
         );
 
