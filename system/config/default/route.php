@@ -33,7 +33,7 @@ return array(
     'cron' => array(
         'internal' => true,
         'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\backend\\Cron', 'executeCron')
+            'controller' => array('gplcart\\core\\controllers\\frontend\\Cron', 'executeCron')
         )
     ),
     'product/(\d+)' => array(

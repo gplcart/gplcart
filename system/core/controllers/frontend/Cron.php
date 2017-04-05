@@ -7,15 +7,15 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace gplcart\core\controllers\backend;
+namespace gplcart\core\controllers\frontend;
 
 use gplcart\core\models\Report as ReportModel;
-use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
  * Handles incoming requests and outputs data related to cron jobs
  */
-class Cron extends BackendController
+class Cron extends FrontendController
 {
 
     /**
