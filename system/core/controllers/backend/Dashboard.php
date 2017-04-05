@@ -95,22 +95,51 @@ class Dashboard extends BackendController
      */
     protected function setDataContentDashboard()
     {
-        $panels = array();
-
-        $panels['user'] = array('rendered' => $this->renderPanelUsersDashboard());
-        $panels['order'] = array('rendered' => $this->renderPanelOrdersDashboard());
-        $panels['event'] = array('rendered' => $this->renderPanelEventsDashboard());
-        $panels['summary'] = array('rendered' => $this->renderPanelSummaryDashboard());
-
-        $this->hook->fire('template.dashboard', $panels, $this);
-
-        gplcart_array_sort($panels);
-
+        $panels = $this->getPanelsDashboard();
         $columns = $this->config('dashboard_columns', 2);
         $splitted = gplcart_array_split($panels, $columns);
 
         $this->setData('columns', $columns);
         $this->setData('dashboard', $splitted);
+    }
+
+    /**
+     * Returns an array of sorted panels
+     * @return array
+     */
+    protected function getPanelsDashboard()
+    {
+        $panels = $this->getDefaultPanelsDashboard();
+        $this->hook->fire('template.dashboard', $panels, $this);
+        gplcart_array_sort($panels);
+        return $panels;
+    }
+
+    /**
+     * Returns an array of default dashboard panels
+     * @return array
+     */
+    protected function getDefaultPanelsDashboard()
+    {
+        $panels = array();
+
+        if ($this->access('user')) {
+            $panels['user'] = array('rendered' => $this->renderPanelUsersDashboard());
+        }
+
+        if ($this->access('order')) {
+            $panels['order'] = array('rendered' => $this->renderPanelOrdersDashboard());
+        }
+
+        if ($this->access('report_events')) {
+            $panels['event'] = array('rendered' => $this->renderPanelEventsDashboard());
+        }
+
+        if ($this->access('report')) {
+            $panels['summary'] = array('rendered' => $this->renderPanelSummaryDashboard());
+        }
+
+        return $panels;
     }
 
     /**
@@ -183,7 +212,7 @@ class Dashboard extends BackendController
             $events[$severity] = $items;
         }
 
-
+        $this->setJsSettings('panels', array('event' => $events));
         return $this->render('dashboard/panels/events', array('events' => $events));
     }
 
