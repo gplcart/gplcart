@@ -91,4 +91,20 @@ class Common extends ElementValidator
         return true;
     }
 
+    /**
+     * Validates a date format
+     * @param array $submitted
+     * @param array $options
+     * @link http://php.net/manual/en/function.strtotime.php
+     * @return boolean
+     */
+    public function dateformat(array $submitted, array $options)
+    {
+        $value = gplcart_array_get_value($submitted, $options['field']);
+        if (strtotime($value) === false) {
+            return $this->setErrorInvalidValue($options['field'], $options['label']);
+        }
+        return true;
+    }
+
 }

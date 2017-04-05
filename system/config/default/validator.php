@@ -255,5 +255,10 @@ return array(
             'validate' => array('gplcart\\core\\handlers\\validator\\elements\\Common', 'regexp')
         )
     ),
+    'dateformat' => array(
+        'handlers' => array(
+            'validate' => array('gplcart\\core\\handlers\\validator\\elements\\Common', 'dateformat')
+        )
+    )
 );
 
