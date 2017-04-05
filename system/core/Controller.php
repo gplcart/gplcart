@@ -2018,12 +2018,12 @@ class Controller
 
     /**
      * Validates a single element
-     * @param string $handler_id
      * @param string|array $field
+     * @param string $handler_id
      * @param string|array $args
      * @return boolean
      */
-    protected function validateElement($handler_id, $field, $args = array())
+    protected function validateElement($field, $handler_id, $args = array())
     {
         if (is_array($field)) {
             $label = reset($field);
