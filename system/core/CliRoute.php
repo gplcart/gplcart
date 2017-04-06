@@ -44,6 +44,12 @@ class CliRoute
     protected $arguments = array();
 
     /**
+     * A source data to be parsed into arguments
+     * @var string|array
+     */
+    protected $source;
+
+    /**
      * Constructor
      * @param Cli $cli
      * @param Hook $hook
@@ -53,16 +59,19 @@ class CliRoute
         $this->cli = $cli;
         $this->hook = $hook;
 
-        $this->init();
+        $this->source = isset($_SERVER['argv']) ? $_SERVER['argv'] : array();
+        $this->arguments = $this->cli->parse($this->source);
+
+        $this->hook->fire('construct.cli.route', $this);
     }
 
     /**
-     * Sets parsed arguments
+     * Set a source data to be parsed
+     * @param string|array $source
      */
-    protected function init()
+    public function setSource($source)
     {
-        $source = GC_CLI_EMULATE ? $_POST['command'] : $_SERVER['argv'];
-        $this->arguments = $this->cli->parse($source);
+        $this->source = $source;
     }
 
     /**
@@ -81,6 +90,15 @@ class CliRoute
     public function getArguments()
     {
         return $this->arguments;
+    }
+
+    /**
+     * Set an array of CLI arguments
+     * @param array $arguments
+     */
+    public function setArguments(array $arguments)
+    {
+        $this->arguments = $arguments;
     }
 
     /**

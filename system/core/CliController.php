@@ -9,8 +9,6 @@
 
 namespace gplcart\core;
 
-use gplcart\core\exceptions\AuthorizationException;
-
 /**
  * Basic CLI controller
  */
@@ -106,11 +104,6 @@ class CliController
      */
     public function __construct()
     {
-        if (GC_CLI_EMULATE) {
-            ini_set('memory_limit', '-1');
-            ini_set('max_execution_time', 0);
-        }
-
         $this->setInstanceProperties();
         $this->setRouteProperties();
         $this->controlAccess();
@@ -153,25 +146,6 @@ class CliController
     protected function text($text, array $arguments = array())
     {
         return $this->language->text($text, $arguments);
-    }
-
-    /**
-     * Controls global access
-     */
-    protected function controlAccess()
-    {
-        if (!GC_CLI_EMULATE) {
-            return null;
-        }
-
-        if (!$this->config->tokenValid($this->request->post('cli_token'))) {
-            throw new AuthorizationException('Invalid token');
-        }
-
-        if (!$this->user->access('cli')) {
-            $this->setError($this->text('No access'));
-            $this->output();
-        }
     }
 
     /**
@@ -347,11 +321,7 @@ class CliController
      */
     protected function printError($error)
     {
-        if (GC_CLI_EMULATE) {
-            echo $this->prepare($error);
-        } else {
-            fwrite(STDERR, $error);
-        }
+        fwrite(STDERR, $error);
     }
 
     /**
@@ -360,11 +330,7 @@ class CliController
      */
     protected function printMessage($message)
     {
-        if (GC_CLI_EMULATE) {
-            echo $this->prepare($message);
-        } else {
-            fwrite(STDOUT, $message);
-        }
+        fwrite(STDOUT, $message);
     }
 
     /**

@@ -27,11 +27,6 @@
       <div id="navbar" class="navbar-collapse collapse">
         <?php echo $this->menu(); ?>
         <ul class="nav navbar-nav navbar-right right-links hidden-sm hidden-xs">
-          <?php if($this->access('cli')) { ?>
-          <li>
-            <a href="#" data-terminal="true"><i class="fa fa-terminal"></i></a>
-          </li>
-          <?php } ?>
           <li class="dropdown">
             <a href="#" class="dropdown-toggle " data-toggle="dropdown">
               <i class="fa fa-globe"></i>

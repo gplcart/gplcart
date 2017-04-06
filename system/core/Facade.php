@@ -59,6 +59,12 @@ class Facade
     protected $logger;
 
     /**
+     * Whether CLI mode is enabled
+     * @var bool
+     */
+    protected $cli = false;
+
+    /**
      * Constructor
      * @param Route $route
      * @param Config $config
@@ -77,17 +83,23 @@ class Facade
         $this->logger = $logger;
         $this->session = $session;
 
+        $this->cli = GC_CLI;
+
         date_default_timezone_set($this->config->get('timezone', 'Europe/London'));
 
         $this->setErrorReportingLevel();
         $this->setErrorHandlers();
 
-        if (!GC_CLI) {
-            $this->session->init();
-        }
-
-        $this->hook->fire('construct', $this);
         $this->hook->registerAll();
+        $this->hook->fire('construct', $this);
+    }
+
+    /**
+     * Set command line mode
+     */
+    public function setCliMode()
+    {
+        $this->cli = true;
     }
 
     /**
@@ -95,9 +107,10 @@ class Facade
      */
     public function route()
     {
-        if (GC_CLI || GC_CLI_EMULATE) {
+        if ($this->cli) {
             $this->routeCli();
         } else {
+            $this->session->init();
             $this->routeHttp();
         }
     }

@@ -9,7 +9,6 @@
 define('GC_VERSION', '1.0.0');
 define('GC_START', microtime(true));
 define('GC_CLI', (PHP_SAPI === 'cli'));
-define('GC_CLI_EMULATE', (isset($_POST['cli_token']) && isset($_POST['command'])));
 define('GC_ROOT_DIR', realpath(__DIR__ . '/../'));
 define('GC_TEST_DIR', GC_ROOT_DIR . '/tests');
 define('GC_TEST_UNIT_DIR', GC_TEST_DIR . '/unit');

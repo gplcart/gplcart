@@ -337,48 +337,6 @@
     };
 
     /**
-     * Handles CLI terminal
-     * @returns {undefined}
-     */
-    GplCart.onload.handleTerminal = function () {
-
-        if (!$.fn.puiterminal) {
-            return;
-        }
-
-        var handler;
-
-        $('*[data-terminal]').click(function () {
-            setModal('<div id="terminal"></div>', 'terminal-wrapper');
-            $('#terminal').puiterminal({
-                prompt: '> ',
-                handler: function (request, response) {
-                    request = $.trim(request);
-                    if (request === 'clear') {
-                        $('#terminal').puiterminal('clear');
-                        return false;
-                    }
-
-                    handler = this;
-
-                    $.ajax({
-                        method: 'POST',
-                        url: GplCart.settings.urn,
-                        data: {
-                            command: 'gplcart ' + request,
-                            cli_token: GplCart.settings.token
-                        },
-                        success: function (data) {
-                            response.call(handler, data);
-                        }
-                    });
-                }
-            });
-            return false;
-        });
-    };
-
-    /**
      * Makes uploaded images sortable
      * @returns {undefined}
      */
