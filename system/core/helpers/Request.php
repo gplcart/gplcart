@@ -15,6 +15,9 @@ namespace gplcart\core\helpers;
 class Request
 {
 
+    /**
+     * Cookie prefix
+     */
     const COOKIE_PREFIX = 'gplcart_';
 
     /**
@@ -52,7 +55,7 @@ class Request
      * @param mixed $default
      * @return mixed
      */
-    protected function server($var, $default = '')
+    public function server($var, $default = '')
     {
         $data = filter_input_array(INPUT_SERVER, FILTER_SANITIZE_STRING);
         return isset($data[$var]) ? trim($data[$var]) : $default;
@@ -217,7 +220,8 @@ class Request
         }
 
         if (isset($name)) {
-            return isset($post[$name]) ? $post[$name] : $default;
+            $result = gplcart_array_get_value($post, $name);
+            return isset($result) ? $result : $default;
         }
 
         return $post;
@@ -239,7 +243,8 @@ class Request
         }
 
         if (isset($name)) {
-            return isset($request[$name]) ? $request[$name] : $default;
+            $result = gplcart_array_get_value($request, $name);
+            return isset($result) ? $result : $default;
         }
 
         return $request;
@@ -328,7 +333,8 @@ class Request
         gplcart_array_trim($get, $filter);
 
         if (isset($name)) {
-            return isset($get[$name]) ? urldecode($get[$name]) : $default;
+            $result = gplcart_array_get_value($get, $name);
+            return isset($result) ? $result : $default;
         }
 
         return $get;
