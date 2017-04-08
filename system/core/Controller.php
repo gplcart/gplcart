@@ -684,6 +684,15 @@ class Controller
     }
 
     /**
+     * Whether the current URL is backend area (i.e /admin)
+     * @return bool
+     */
+    public function isBackend()
+    {
+        return $this->url->isBackend();
+    }
+
+    /**
      * If $path isset - returns TRUE if the path pattern mathes the current URL path
      * If $path is not set or NULL - returns the current URL path
      * @param null|string $pattern
@@ -908,7 +917,7 @@ class Controller
      */
     protected function setRouteProperties()
     {
-        $this->is_backend = $this->url->isBackend();
+        $this->is_backend = $this->isBackend();
         $this->is_installing = $this->url->isInstall();
         $this->current_route = $this->route->getCurrent();
 
