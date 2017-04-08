@@ -23,7 +23,6 @@ class Account extends BaseHandler
     }
 
     /**
-     * Sends an e-mail to admin when a new customer is registered
      * @param array $user
      * @return boolean
      */
@@ -52,13 +51,10 @@ class Account extends BaseHandler
         $message = $this->language->text($message_text, $message_arguments);
 
         $options['from'] = array(reset($store['data']['email']), $store['name']);
-        $to = array($options['from']);
-
-        return $this->mail->send($to, array($subject => $message), $options);
+        return array($options['from'], $subject, $message, $options);
     }
 
     /**
-     * Sends an e-mail to a customer upon registration
      * @param array $user
      * @return boolean
      */
@@ -95,8 +91,7 @@ class Account extends BaseHandler
         $message = $this->language->text($message_text, $message_arguments);
 
         $options['from'] = array(reset($store['data']['email']), $store_name);
-        $to = array($user['email']);
-        return $this->mail->send($to, array($subject => $message), $options);
+        return array($user['email'], $subject, $message, $options);
     }
 
     /**
@@ -140,8 +135,7 @@ class Account extends BaseHandler
         $message = $this->language->text($message_text, $message_arguments);
 
         $options['from'] = array(reset($store['data']['email']), $store_name);
-        $to = array($user['email']);
-        return $this->mail->send($to, array($subject => $message), $options);
+        return array($user['email'], $subject, $message, $options);
     }
 
     /**
@@ -169,9 +163,7 @@ class Account extends BaseHandler
         $message = $this->language->text($message_text, $message_arguments);
 
         $options['from'] = array(reset($store['data']['email']), $store_name);
-        $to = array($user['email']);
-
-        return $this->mail->send($to, array($subject => $message), $options);
+        return array($user['email'], $subject, $message, $options);
     }
 
 }

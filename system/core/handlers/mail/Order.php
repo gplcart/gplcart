@@ -10,8 +10,8 @@
 namespace gplcart\core\handlers\mail;
 
 use gplcart\core\helpers\Url as UrlHelper;
-use gplcart\core\models\Price as PriceModel;
-use gplcart\core\models\Order as OrderModel;
+use gplcart\core\models\Price as PriceModel,
+    gplcart\core\models\Order as OrderModel;
 use gplcart\core\handlers\mail\Base as BaseHandler;
 
 class Order extends BaseHandler
@@ -90,8 +90,7 @@ class Order extends BaseHandler
         );
 
         $message = $this->language->text($message_text, $message_arguments);
-
-        return $this->mail->send(array($admin_email), array($subject => $message), $options);
+        return array($admin_email, $subject, $message, $options);
     }
 
     /**
@@ -131,8 +130,7 @@ class Order extends BaseHandler
 
         $message_arguments = array_merge($message_arguments, $this->signatureVariables($options));
         $message = $this->language->text($message_text, $message_arguments);
-
-        return $this->mail->send(array($order['user_email']), array($subject => $message), $options);
+        return array($order['user_email'], $subject, $message, $options);
     }
 
     /**
@@ -169,8 +167,7 @@ class Order extends BaseHandler
 
         $message_arguments = array_merge($message_arguments, $this->signatureVariables($options));
         $message = $this->language->text($message_text, $message_arguments);
-
-        return $this->mail->send(array($order['user_email']), array($subject => $message), $options);
+        return array($order['user_email'], $subject, $message, $options);
     }
 
 }
