@@ -174,11 +174,6 @@ return array(
             'validate' => array('gplcart\\core\\handlers\\validator\\components\\Review', 'review')
         )
     ),
-    'settings' => array(
-        'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Settings', 'settings')
-        )
-    ),
     'state' => array(
         'handlers' => array(
             'validate' => array('gplcart\\core\\handlers\\validator\\components\\State', 'state')
