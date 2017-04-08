@@ -36,7 +36,6 @@ class Settings extends BackendController
         $this->setData('timezones', gplcart_timezones());
 
         $this->submitSettings();
-        $this->setDataEditSettings();
 
         $this->outputEditSettings();
     }
@@ -61,13 +60,7 @@ class Settings extends BackendController
             'cron_key' => '',
             'error_level' => 2,
             'error_live_report' => 0,
-            'email_method' => 'mail',
-            'smtp_auth' => 1,
-            'smtp_secure' => 'tls',
-            'smtp_host' => array('smtp.gmail.com'),
-            'smtp_username' => '',
-            'smtp_password' => '',
-            'smtp_port' => 587,
+            'mailer' => '',
             'gapi_browser_key' => '',
             'timezone' => 'Europe/London'
         );
@@ -107,9 +100,10 @@ class Settings extends BackendController
     protected function validateSettings()
     {
         $this->setSubmitted('settings');
-        $this->setSubmittedBool('smtp_auth');
 
-        $this->validateComponent('settings');
+        if (!$this->getSubmitted('cron_key')) {
+            $this->setSubmitted('cron_key', gplcart_string_random());
+        }
 
         return !$this->hasErrors();
     }
@@ -143,15 +137,6 @@ class Settings extends BackendController
 
         $message = $this->text('Settings have been updated');
         $this->redirect('', $message, 'success');
-    }
-
-    /**
-     * Prepares settings values before passing them to template
-     */
-    protected function setDataEditSettings()
-    {
-        $smtp_host = $this->getData('settings.smtp_host');
-        $this->setData('settings.smtp_host', implode("\n", (array) $smtp_host));
     }
 
     /**

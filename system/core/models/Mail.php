@@ -11,8 +11,6 @@ namespace gplcart\core\models;
 
 use gplcart\core\Model,
     gplcart\core\Cache,
-    gplcart\core\Logger,
-    gplcart\core\Library,
     gplcart\core\Handler;
 
 /**
@@ -22,51 +20,18 @@ class Mail extends Model
 {
 
     /**
-     * Debug info
-     * @var string
-     */
-    protected $debug = '';
-
-    /**
-     * Errors
-     * @var string
-     */
-    protected $errors = '';
-
-    /**
-     * PHPMailer instance
-     * @var \PHPMailer $mailer
-     */
-    protected $mailer;
-
-    /**
-     * Library class instance
-     * @var \gplcart\core\Library $library
-     */
-    protected $library;
-
-    /**
-     * Logger class instance
-     * @var \gplcart\core\Logger $logger
-     */
-    protected $logger;
-
-    /**
      * Constructor
-     * @param Logger $logger
      */
-    public function __construct(Logger $logger, Library $library)
+    public function __construct()
     {
         parent::__construct();
-        $this->logger = $logger;
-        $this->library = $library;
     }
 
     /**
-     * Returns an array of email handlers
+     * Returns an array of mailers
      * @return array
      */
-    protected function getHandlers()
+    public function getMailers()
     {
         $handlers = &Cache::memory(__METHOD__);
 
@@ -74,60 +39,77 @@ class Mail extends Model
             return $handlers;
         }
 
-        $handlers = $this->getDefaultHandlers();
+        $handlers = array();
         $this->hook->fire('mail.handlers', $handlers);
         return $handlers;
     }
 
     /**
-     * Returns an array of default handlers
+     * Returns an array of email data handlers
      * @return array
      */
-    protected function getDefaultHandlers()
+    public function getDataHandlers()
+    {
+        $handlers = &Cache::memory(__METHOD__);
+
+        if (isset($handlers)) {
+            return $handlers;
+        }
+
+        $handlers = $this->getDefaultDataHandlers();
+        $this->hook->fire('mail.data.handlers', $handlers);
+        return $handlers;
+    }
+
+    /**
+     * Returns an array of default message handlers
+     * @return array
+     */
+    protected function getDefaultDataHandlers()
     {
         $handlers = array();
 
         $handlers['order_created_admin'] = array(
             'access' => 'order',
             'handlers' => array(
-                'process' => array('gplcart\\core\\handlers\\mail\\Order', 'createdToAdmin')
+                'get' => array('gplcart\\core\\handlers\\mail\\Order', 'createdToAdmin')
             ),
         );
 
         $handlers['order_created_customer'] = array(
             'handlers' => array(
-                'process' => array('gplcart\\core\\handlers\\mail\\Order', 'createdToCustomer'),
+                'get' => array('gplcart\\core\\handlers\\mail\\Order', 'createdToCustomer'),
             ),
         );
 
         $handlers['order_updated_customer'] = array(
             'handlers' => array(
-                'process' => array('gplcart\\core\\handlers\\mail\\Order', 'updatedToCustomer'),
+                'get' => array('gplcart\\core\\handlers\\mail\\Order', 'updatedToCustomer'),
             ),
         );
 
         $handlers['user_registered_admin'] = array(
             'access' => 'user',
             'handlers' => array(
-                'process' => array('gplcart\\core\\handlers\\mail\\Account', 'registeredToAdmin'),
+                'get' => array('gplcart\\core\\handlers\\mail\\Account', 'registeredToAdmin'),
             ),
         );
 
         $handlers['user_registered_customer'] = array(
             'handlers' => array(
-                'process' => array('gplcart\\core\\handlers\\mail\\Account', 'registeredToCustomer'),
+                'get' => array('gplcart\\core\\handlers\\mail\\Account', 'registeredToCustomer'),
             ),
         );
 
         $handlers['user_reset_password'] = array(
             'handlers' => array(
-                'process' => array('gplcart\\core\\handlers\\mail\\Account', 'resetPassword'),
+                'get' => array('gplcart\\core\\handlers\\mail\\Account', 'resetPassword'),
             ),
         );
 
         $handlers['user_changed_password'] = array(
             'handlers' => array(
-                'process' => array('gplcart\\core\\handlers\\mail\\Account', 'changedPassword'),
+                'get' => array('gplcart\\core\\handlers\\mail\\Account', 'changedPassword'),
             ),
         );
 
@@ -137,102 +119,32 @@ class Mail extends Model
     /**
      * Sends an e-mail
      * @param string|array $to
-     * @param array $message
+     * @param string $subject
+     * @param string $message
      * @param array $options
-     * @return boolean
+     * @return mixed
      */
-    public function send($to, array $message, array $options = array())
+    public function send($to, $subject, $message, array $options = array())
     {
-        $options += $this->defaultOptions();
+        $this->hook->fire('mail.send.before', $to, $subject, $message, $options);
 
-        $this->hook->fire('mail.send.before', $to, $message, $options);
-
-        if (empty($options['from']) || empty($to) || empty($message)) {
-            return false; // Allows modules to abort sending
+        if (empty($options['from']) || empty($to)) {
+            return false;
         }
 
-        $this->library->load('phpmailer');
+        $mailers = $this->getMailers();
+        $mailer = $this->config->get('mailer');
 
-        // Get fresh instance for each sending
-        $this->mailer = new \PHPMailer;
-
-        if (isset($options['email_method']) && $options['email_method'] === 'smtp') {
-            $this->mailer->isSMTP();
+        if (empty($mailer)) {
+            $result = $this->mail($to, $subject, $message, $options);
+        } else if (isset($mailers[$mailer]['handlers']['send'])) {
+            $result = Handler::call($mailers, $mailer, 'send', func_get_args());
+        } else {
+            $result = false;
         }
 
-        $this->mailer->Host = implode(';', (array) $options['smtp_host']);
-        $this->mailer->SMTPAuth = !empty($options['smtp_auth']);
-        $this->mailer->Username = $options['smtp_username'];
-        $this->mailer->Password = $options['smtp_password'];
-        $this->mailer->SMTPSecure = $options['smtp_secure'];
-        $this->mailer->Port = $options['smtp_port'];
-
-        $body = reset($message);
-
-        $this->mailer->Subject = key($message);
-        $this->mailer->Body = $body;
-
-        if (is_array($body)) {
-            $this->mailer->Body = reset($body);
-            if (count($body) > 1) {
-                $this->mailer->AltBody = end($body);
-            }
-        }
-
-        call_user_func_array(array($this->mailer, 'setFrom'), (array) $options['from']);
-
-        $addresses = array();
-        foreach ((array) $to as $address) {
-            $address = (array) $address;
-            call_user_func_array(array($this->mailer, 'addAddress'), $address);
-            $addresses[] = reset($address);
-        }
-
-        if (!empty($options['reply'])) {
-            call_user_func_array(array($this->mailer, 'addReplyTo'), (array) $options['reply']);
-        }
-
-        if (!empty($options['cc'])) {
-            $this->mailer->addCC($options['cc']);
-        }
-
-        if (!empty($options['bcc'])) {
-            $this->mailer->addBCC($options['bcc']);
-        }
-
-        if (!empty($options['attachment'])) {
-            foreach ($options['attachment'] as $attachment) {
-                call_user_func_array(array($this->mailer, 'addAttachment'), (array) $attachment);
-            }
-        }
-
-        if (!empty($options['html'])) {
-            $this->mailer->isHTML(true);
-        }
-
-        if (isset($options['debug'])) {
-            $this->mailer->SMTPDebug = (int) $options['debug'];
-            $this->mailer->Debugoutput = function ($str) {
-                $this->debug = $str;
-            };
-        }
-
-        $options['status'] = $this->mailer->send();
-        $this->errors = $this->mailer->ErrorInfo;
-
-        $this->log(implode(',', $addresses), $options);
-
-        $this->hook->fire('mail.send.after', $to, $message, $options);
-        return (bool) $options['status'];
-    }
-
-    /**
-     * Returns the current instance of PHPMailer
-     * @return object
-     */
-    public function getMailer()
-    {
-        return $this->mailer;
+        $this->hook->fire('mail.send.after', $to, $subject, $message, $options, $result);
+        return $result;
     }
 
     /**
@@ -243,84 +155,41 @@ class Mail extends Model
      */
     public function set($handler_id, array $arguments)
     {
-        $handlers = $this->getHandlers();
+        $handlers = $this->getDataHandlers();
 
         if (empty($handlers[$handler_id])) {
             return false;
         }
 
-        return Handler::call($handlers, $handler_id, 'process', $arguments);
+        $data = Handler::call($handlers, $handler_id, 'get', $arguments);
+        return call_user_func_array(array($this, 'send'), $data);
     }
 
     /**
-     * Returns a debug information
-     * @return string
-     */
-    public function getDebug()
-    {
-        return $this->debug;
-    }
-
-    /**
-     * Returns an array of errors
-     * @return array
-     */
-    public function getErrors()
-    {
-        return $this->errors;
-    }
-
-    /**
-     * Returns an array of default settings
-     * @return array
-     */
-    protected function defaultOptions()
-    {
-        return array(
-            'cc' => '',
-            'bcc' => '',
-            'from' => '',
-            'reply' => '',
-            'debug' => 2,
-            'html' => false,
-            'attachment' => array(),
-            'smtp_auth' => $this->config->get('smtp_auth', 1),
-            'smtp_port' => $this->config->get('smtp_port', 587),
-            'smtp_secure' => $this->config->get('smtp_secure', 'tls'),
-            'smtp_username' => $this->config->get('smtp_username', ''),
-            'smtp_password' => $this->config->get('smtp_password', ''),
-            'smtp_host' => $this->config->get('smtp_host', array('smtp.gmail.com')),
-            'email_method' => $this->config->get('email_method', 'mail'),
-        );
-    }
-
-    /**
-     * Logs sending an email
-     * @param string $address
+     * Send E-mail using PHP native mail()
+     * @param array|string $to
+     * @param string $subject
+     * @param string $message
      * @param array $options
+     * @return bool
      */
-    protected function log($address, $options)
+    public function mail($to, $subject, $message, array $options)
     {
-        $severity = 'info';
-        $message = 'E-mail to !address has been sent.';
+        settype($to, 'array');
 
-        if (empty($options['status'])) {
-            $severity = 'warning';
-            $message = 'Failed to send E-mail to !address.';
+        $from = "=?UTF-8?B?" . base64_encode($options['from']) . "?=";
+        $subject = "=?UTF-8?B?" . base64_encode($subject) . "?=";
+
+        $headers = "From: $from <$from>\r\n"
+                . "MIME-Version: 1.0" . "\r\n"
+                . "Content-type: text/html; charset=UTF-8\r\n";
+
+        $sent = 0;
+        foreach ($to as $address) {
+            $sent += (int) mail($address, $subject, $message, $headers);
         }
 
-        $message .= '<br>Errors: <pre>!errors</pre>Debugging info:<pre>!debug</pre>';
-
-        $log = array(
-            'message' => $message,
-            'variables' => array(
-                '!address' => $address,
-                '!debug' => $this->debug,
-                '!errors' => $this->errors
-            )
-        );
-
-        $this->logger->log('mail', $log, $severity);
+        return $sent == count($to);
     }
 
 }
