@@ -306,38 +306,6 @@
           </div>
         </div>
       </div>
-      <div class="form-group<?php echo $this->error('data.theme_mobile', ' has-error'); ?>">
-        <label class="col-md-2 control-label"><?php echo $this->text('Mobile theme'); ?></label>
-        <div class="col-md-4">
-          <select name="store[data][theme_mobile]" class="form-control">
-            <?php foreach ($themes as $theme_id => $theme) { ?>
-            <option value="<?php echo $theme_id; ?>"<?php echo $store['data']['theme_mobile'] == $theme_id ? ' selected' : ''; ?>><?php echo $this->escape($theme['name']); ?></option>
-            <?php } ?>
-          </select>
-          <div class="help-block">
-            <?php echo $this->error('data.theme_mobile'); ?>
-            <div class="text-muted">
-              <?php echo $this->text('Select a theme module used to display front-end of the store to all mobile devices'); ?>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="form-group<?php echo $this->error('data.theme_tablet', ' has-error'); ?>">
-        <label class="col-md-2 control-label"><?php echo $this->text('Tablet theme'); ?></label>
-        <div class="col-md-4">
-          <select name="store[data][theme_tablet]" class="form-control">
-            <?php foreach ($themes as $theme_id => $theme) { ?>
-            <option value="<?php echo $theme_id; ?>"<?php echo $store['data']['theme_tablet'] == $theme_id ? ' selected' : ''; ?>><?php echo $this->escape($theme['name']); ?></option>
-            <?php } ?>
-          </select>
-          <div class="help-block">
-            <?php echo $this->error('data.theme_tablet'); ?>
-            <div class="text-muted">
-              <?php echo $this->text('Select a theme module used to display front-end of the store to tablet devices'); ?>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
   <div class="panel panel-default">

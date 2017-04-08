@@ -241,8 +241,6 @@ class Store extends Model
             'owner' => '',
             'phone' => array(),
             'theme' => 'frontend',
-            'theme_tablet' => 'frontend',
-            'theme_mobile' => 'frontend',
             'title' => 'GPL Cart',
             'collection_file' => 1,
             'collection_product' => 2,

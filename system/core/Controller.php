@@ -76,6 +76,12 @@ class Controller
     protected $breadcrumbs = array();
 
     /**
+     * Current theme name
+     * @var string
+     */
+    protected $theme;
+
+    /**
      * Frontend theme module name
      * @var string
      */
@@ -188,12 +194,6 @@ class Controller
      * @var array
      */
     protected $current_store = array();
-
-    /**
-     * Device type
-     * @var string
-     */
-    protected $current_device;
 
     /**
      * Array of the current theme
@@ -341,12 +341,6 @@ class Controller
     protected $filter;
 
     /**
-     * Device class instance
-     * @var \gplcart\core\Device $device
-     */
-    protected $device;
-
-    /**
      * Pager class instance
      * @var \gplcart\core\helpers\Pager $pager
      */
@@ -374,7 +368,6 @@ class Controller
         $this->token = $this->config->token();
 
         $this->setRouteProperties();
-        $this->setDeviceProperties();
         $this->setStoreProperties();
 
         $this->setDefaultJsAssets();
@@ -935,30 +928,6 @@ class Controller
     }
 
     /**
-     * Defines the current user device
-     * @return null
-     */
-    protected function setDeviceProperties()
-    {
-        $device = $this->session->get('device');
-
-        if (!empty($device)) {
-            $this->current_device = $device;
-            return null;
-        }
-
-        $this->current_device = 'desktop';
-        $this->library->load('mobile_detect');
-        $this->device = Container::get('Mobile_Detect');
-
-        if ($this->device->isMobile()) {
-            $this->current_device = $this->device->isTablet() ? 'tablet' : 'mobile';
-        }
-
-        $this->session->set('device', $this->current_device);
-    }
-
-    /**
      * Sets the current store data
      */
     protected function setStoreProperties()
@@ -971,42 +940,34 @@ class Controller
     }
 
     /**
-     * Sets theme data
+     * Sets theme properties
      */
     protected function setThemeProperties()
     {
         $this->theme_frontend = $this->config('theme', 'frontend');
         $this->theme_backend = $this->config('theme_backend', 'backend');
 
-        $theme = null;
-
         if ($this->is_backend) {
-            $theme = $this->theme_backend;
+            $this->theme = $this->theme_backend;
         } elseif ($this->is_installing) {
-            $theme = $this->theme_frontend;
+            $this->theme = $this->theme_frontend;
         } elseif (!empty($this->current_store)) {
-            $this->theme_frontend = $theme = $this->store->config('theme');
-
-            if ($this->current_device === 'mobile') {
-                $this->theme_frontend = $theme = $this->store->config('theme_mobile');
-            }
-
-            if ($this->current_device === 'tablet') {
-                $this->theme_frontend = $theme = $this->store->config('theme_tablet');
-            }
+            $this->theme_frontend = $this->theme = $this->store->config('theme');
         }
 
-        if (empty($theme)) {
+        $this->hook->fire('theme', $this);
+
+        if (empty($this->theme)) {
             $this->response->error404();
         }
 
-        $this->current_theme = $this->config->getModuleData($theme);
+        $this->current_theme = $this->config->getModuleData($this->theme);
 
         if (empty($this->current_theme['info'])) {
             $this->response->error404();
         }
 
-        $this->theme_settings = (array) $this->config->module($theme, null, array());
+        $this->theme_settings = (array) $this->config->module($this->theme, null, array());
         $this->is_twig = !empty($this->theme_settings['twig']['status']);
 
         if (empty($this->theme_settings['templates'])) {
@@ -1014,8 +975,15 @@ class Controller
         } else {
             $this->templates = $this->theme_settings['templates'];
         }
+    }
 
-        $this->hook->fire('theme', $this);
+    /**
+     * Set the current theme
+     * @param string $name
+     */
+    public function setCurrentTheme($name)
+    {
+        $this->theme = $name;
     }
 
     /**
@@ -1025,7 +993,7 @@ class Controller
      */
     public function isCurrentTheme($name)
     {
-        return $this->current_theme['id'] === $name;
+        return $this->theme === $name;
     }
 
     /**

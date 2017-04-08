@@ -365,40 +365,29 @@ class Store extends ComponentValidator
      */
     protected function validateThemeStore()
     {
-        $mapping = array(
-            'theme' => $this->language->text('Theme'),
-            'theme_mobile' => $this->language->text('Mobile theme'),
-            'theme_tablet' => $this->language->text('Tablet theme')
-        );
+        $field = 'data.theme';
+        $label = $this->language->text('Theme');
+        $value = $this->getSubmitted($field);
 
-        $errors = 0;
-        foreach ($mapping as $field => $label) {
-
-            $value = $this->getSubmitted("data.$field");
-
-            if ($this->isUpdating() && !isset($value)) {
-                continue;
-            }
-
-            if (empty($value)) {
-                $errors++;
-                $this->setErrorRequired("data.$field", $label);
-                continue;
-            }
-
-            $module = $this->module->get($value);
-
-            if (isset($module['type'])//
-                    || $module['type'] === 'theme'//
-                    && !empty($module['status'])) {
-                continue;
-            }
-
-            $errors++;
-            $this->setErrorUnavailable("data.$field", $label);
+        if ($this->isUpdating() && !isset($value)) {
+            continue;
         }
 
-        return empty($errors);
+        if (empty($value)) {
+            $this->setErrorRequired($field, $label);
+            return false;
+        }
+
+        $module = $this->module->get($value);
+
+        if (isset($module['type'])//
+                || $module['type'] === 'theme'//
+                && !empty($module['status'])) {
+            return true;
+        }
+
+        $this->setErrorUnavailable($field, $label);
+        return false;
     }
 
     /**
