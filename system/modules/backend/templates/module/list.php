@@ -143,7 +143,7 @@
                 </a>
               </li>
               <?php } ?>
-              <?php if (!empty($info['status']) && $info['configure'] && $this->access('module_edit')) { ?>
+              <?php if (!empty($info['status']) && !empty($info['configure']) && $this->access('module_edit')) { ?>
               <li>
                 <a href="<?php echo $this->url($info['configure']); ?>">
                   <?php echo mb_strtolower($this->text('Configure')); ?>
