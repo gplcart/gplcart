@@ -12,6 +12,7 @@ namespace gplcart\core\models;
 use gplcart\core\Model,
     gplcart\core\Cache,
     gplcart\core\Handler;
+use gplcart\core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to sending e-mails
@@ -20,11 +21,19 @@ class Mail extends Model
 {
 
     /**
-     * Constructor
+     * Language model class instance
+     * @var \gplcart\core\models\Language $language
      */
-    public function __construct()
+    protected $language;
+
+    /**
+     * @param LanguageModel $language
+     */
+    public function __construct(LanguageModel $language)
     {
         parent::__construct();
+
+        $this->language = $language;
     }
 
     /**
@@ -39,9 +48,25 @@ class Mail extends Model
             return $handlers;
         }
 
-        $handlers = array();
+        $handlers = $this->getDefaultMailers();
         $this->hook->fire('mail.handlers', $handlers);
         return $handlers;
+    }
+
+    /**
+     * Returns an array of default mailers
+     * @return array
+     */
+    protected function getDefaultMailers()
+    {
+        return array(
+            'php' => array(
+                'name' => 'PHP',
+                'handlers' => array(
+                    'send' => array(__CLASS__, 'mail')
+                ),
+            )
+        );
     }
 
     /**
@@ -70,46 +95,53 @@ class Mail extends Model
         $handlers = array();
 
         $handlers['order_created_admin'] = array(
+            'name' => $this->language->text('E-mail to an admin after an order has been created'),
             'access' => 'order',
             'handlers' => array(
-                'get' => array('gplcart\\core\\handlers\\mail\\Order', 'createdToAdmin')
+                'data' => array('gplcart\\core\\handlers\\mail\\data\\Order', 'createdToAdmin')
             ),
         );
 
         $handlers['order_created_customer'] = array(
+            'name' => $this->language->text('E-mail to a customer after its order has been created'),
             'handlers' => array(
-                'get' => array('gplcart\\core\\handlers\\mail\\Order', 'createdToCustomer'),
+                'data' => array('gplcart\\core\\handlers\\mail\\data\\Order', 'createdToCustomer'),
             ),
         );
 
         $handlers['order_updated_customer'] = array(
+            'name' => $this->language->text('E-mail to a customer after its order has been updated'),
             'handlers' => array(
-                'get' => array('gplcart\\core\\handlers\\mail\\Order', 'updatedToCustomer'),
+                'data' => array('gplcart\\core\\handlers\\mail\\data\\Order', 'updatedToCustomer'),
             ),
         );
 
         $handlers['user_registered_admin'] = array(
+            'name' => $this->language->text('E-mail to an admin after a user account has been created'),
             'access' => 'user',
             'handlers' => array(
-                'get' => array('gplcart\\core\\handlers\\mail\\Account', 'registeredToAdmin'),
+                'data' => array('gplcart\\core\\handlers\\mail\\data\\Account', 'registeredToAdmin'),
             ),
         );
 
         $handlers['user_registered_customer'] = array(
+            'name' => $this->language->text('E-mail to a user after its account has been created'),
             'handlers' => array(
-                'get' => array('gplcart\\core\\handlers\\mail\\Account', 'registeredToCustomer'),
+                'data' => array('gplcart\\core\\handlers\\mail\\data\\Account', 'registeredToCustomer'),
             ),
         );
 
         $handlers['user_reset_password'] = array(
+            'name' => $this->language->text('E-mail to a user after he/she requested a new password'),
             'handlers' => array(
-                'get' => array('gplcart\\core\\handlers\\mail\\Account', 'resetPassword'),
+                'data' => array('gplcart\\core\\handlers\\mail\\data\\Account', 'resetPassword'),
             ),
         );
 
         $handlers['user_changed_password'] = array(
+            'name' => $this->language->text('E-mail to a user after its account password has been changed'),
             'handlers' => array(
-                'get' => array('gplcart\\core\\handlers\\mail\\Account', 'changedPassword'),
+                'data' => array('gplcart\\core\\handlers\\mail\\data\\Account', 'changedPassword'),
             ),
         );
 
@@ -133,15 +165,8 @@ class Mail extends Model
         }
 
         $mailers = $this->getMailers();
-        $mailer = $this->config->get('mailer');
-
-        if (empty($mailer)) {
-            $result = $this->mail($to, $subject, $message, $options);
-        } else if (isset($mailers[$mailer]['handlers']['send'])) {
-            $result = Handler::call($mailers, $mailer, 'send', func_get_args());
-        } else {
-            $result = false;
-        }
+        $mailer = $this->config->get('mailer', 'php');
+        $result = Handler::call($mailers, $mailer, 'send', func_get_args());
 
         $this->hook->fire('mail.send.after', $to, $subject, $message, $options, $result);
         return $result;
@@ -161,7 +186,7 @@ class Mail extends Model
             return false;
         }
 
-        $data = Handler::call($handlers, $handler_id, 'get', $arguments);
+        $data = Handler::call($handlers, $handler_id, 'data', $arguments);
         return call_user_func_array(array($this, 'send'), $data);
     }
 

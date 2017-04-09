@@ -9,17 +9,26 @@
 
 namespace gplcart\core\controllers\backend;
 
+use gplcart\core\models\Mail as MailModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 class Settings extends BackendController
 {
 
     /**
+     * Mail model class instance
+     * @var \gplcart\core\models\Mail $mail
+     */
+    protected $mail;
+
+    /**
      * Constructor
      */
-    public function __construct()
+    public function __construct(MailModel $mail)
     {
         parent::__construct();
+
+        $this->mail = $mail;
     }
 
     /**
@@ -34,6 +43,7 @@ class Settings extends BackendController
 
         $this->setData('settings', $this->getSettings());
         $this->setData('timezones', gplcart_timezones());
+        $this->setData('mailers', $this->mail->getMailers());
 
         $this->submitSettings();
 
@@ -85,10 +95,7 @@ class Settings extends BackendController
     {
         if ($this->isPosted('delete_cached_assets')) {
             $this->clearCacheAssetsSettings();
-            return null;
-        }
-
-        if ($this->isPosted('save') && $this->validateSettings()) {
+        } else if ($this->isPosted('save') && $this->validateSettings()) {
             $this->updateSettings();
         }
     }
@@ -165,7 +172,7 @@ class Settings extends BackendController
      */
     protected function outputEditSettings()
     {
-        $this->output('settings/settings');
+        $this->output('settings/common');
     }
 
 }

@@ -7,9 +7,9 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace gplcart\core\handlers\mail;
+namespace gplcart\core\handlers\mail\data;
 
-use gplcart\core\handlers\mail\Base as BaseHandler;
+use gplcart\core\handlers\mail\data\Base as BaseHandler;
 
 class Account extends BaseHandler
 {

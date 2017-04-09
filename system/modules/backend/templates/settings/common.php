@@ -59,13 +59,12 @@
         <label class="col-md-2 control-label"><?php echo $this->text('Mailer'); ?></label>
         <div class="col-md-4">
           <select  name="settings[mailer]" class="form-control">
-            <option value=""><?php echo $this->text('Default'); ?></option>
-            <option value="mail"<?php echo ($settings['mailer'] == 'mail') ? ' selected' : ''; ?>>
-            <?php echo $this->text('mail()'); ?>
-            </option>
+            <?php foreach($mailers as $id => $mailer) { ?>
+            <option value="<?php echo $id; ?>"<?php echo ($settings['mailer'] == $id) ? ' selected' : ''; ?>><?php echo $this->escape($mailer['name']); ?></option>
+            <?php } ?>
           </select>
           <div class="help-block">
-            <?php echo $this->text('Select a mailer to send store E-mails. Default is using native mail() function. Mailers are provided by modules, check their settings'); ?>
+            <?php echo $this->text('Select a mailer to send store E-mails. Default is PHP mail() function. Mailers are provided by modules, check out their settings'); ?>
           </div>
         </div>
       </div>
