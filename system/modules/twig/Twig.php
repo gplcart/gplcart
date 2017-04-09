@@ -54,11 +54,12 @@ class Twig extends Module
     {
         return array(
             'name' => 'Twig',
-            'version' => '1.0.0-dev',
+            'version' => GC_VERSION,
             'description' => 'Twig template engine',
             'author' => 'Iurii Makukh ',
             'core' => '1.x',
             'license' => 'GPL-3.0+',
+            'status' => true,
             'configure' => 'admin/module/settings/twig',
             'settings' => array(
                 'cache' => true,

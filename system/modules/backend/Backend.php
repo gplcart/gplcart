@@ -29,7 +29,8 @@ class Backend extends Module
             'author' => 'Iurii Makukh',
             'core' => '1.x',
             'type' => 'theme',
-            'settings' => array()
+            'status' => true,
+            'version' => GC_VERSION
         );
     }
 

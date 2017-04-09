@@ -29,6 +29,8 @@ class Frontend extends Module
             'author' => 'IURII MAKUKH',
             'core' => '1.x',
             'type' => 'theme',
+            'status' => true,
+            'version' => GC_VERSION,
             'configure' => 'admin/module/settings/frontend',
             'settings' => array(
                 'catalog_limit' => 20,
