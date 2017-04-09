@@ -9,7 +9,7 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\helpers\Twig as TwigHelper,
+use gplcart\modules\twig\Twig as TwigModule,
     gplcart\core\models\Module as ModuleModel,
     gplcart\core\Controller as BaseController;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
@@ -21,10 +21,10 @@ class Editor extends ComponentValidator
 {
 
     /**
-     * Twig helper instance
-     * @var \gplcart\core\helpers\Twig $twig
+     * Library instance
+     * @var \gplcart\modules\twig\Twig $twig
      */
-    protected $twig;
+    protected $twig_module;
 
     /**
      * Module model instance
@@ -40,19 +40,18 @@ class Editor extends ComponentValidator
     protected $controller;
 
     /**
-     * Constructor
      * @param ModuleModel $module
-     * @param TwigHelper $twig
+     * @param TwigModule $twig_module
      * @param BaseController $controller
      */
-    public function __construct(ModuleModel $module, TwigHelper $twig,
+    public function __construct(ModuleModel $module, TwigModule $twig_module,
             BaseController $controller)
     {
         parent::__construct();
 
-        $this->twig = $twig;
         $this->module = $module;
         $this->controller = $controller;
+        $this->twig_module = $twig_module;
     }
 
     /**
@@ -83,11 +82,9 @@ class Editor extends ComponentValidator
         $module = $this->getSubmitted('module');
 
         if (!is_array($module)) {
-            // We have only module ID, so load the module
             $module = $this->module->get($module);
         }
 
-        // Invalid module ID or it's not a theme module
         if (empty($module['type']) || $module['type'] !== 'theme') {
             $this->setErrorUnavailable('module', $this->language->text('Module'));
             return false;
@@ -110,7 +107,6 @@ class Editor extends ComponentValidator
         $path = $this->getSubmitted('path');
         $module = $this->getSubmitted('module');
 
-        // Make the path absolute if it's not
         if (strpos($path, $module['directory']) === false) {
             $path = "{$module['directory']}/$path";
         }
@@ -134,10 +130,9 @@ class Editor extends ComponentValidator
             return null;
         }
 
-        $path = $this->getSubmitted('path');
+        $info = pathinfo($this->getSubmitted('path'));
 
-        // Twig templates always have .twig extension
-        if (pathinfo($path, PATHINFO_EXTENSION) !== 'twig') {
+        if ($info['extension'] !== 'twig') {
             return null;
         }
 
@@ -147,13 +142,16 @@ class Editor extends ComponentValidator
             return null;
         }
 
-        $result = $this->twig->validate($content, $path, $this->controller);
+        $this->twig_module->initTwig();
+        $twig = $this->twig_module->getTwigInstance($info['dirname'], $this->controller);
 
-        if ($result === true) {
+        try {
+            $twig->parse($twig->tokenize(new \Twig_Source($content, $info['basename'])));
             return true;
+        } catch (\Twig_Error_Syntax $e) {
+            $this->setError('content', $e->getMessage());
         }
 
-        $this->setError('content', (string) $result);
         return false;
     }
 

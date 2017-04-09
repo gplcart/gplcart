@@ -34,12 +34,6 @@ class Controller
     protected $is_backend;
 
     /**
-     * Whether the current theme supports TWIG templates
-     * @var boolean
-     */
-    protected $is_twig = false;
-
-    /**
      * Weight of JS settings
      * @var integer
      */
@@ -321,12 +315,6 @@ class Controller
      * @var \gplcart\core\Hook $hook
      */
     protected $hook;
-
-    /**
-     * Twig class instance
-     * @var \gplcart\core\helpers\Twig $twig
-     */
-    protected $twig;
 
     /**
      * Logger class instance
@@ -726,71 +714,45 @@ class Controller
      */
     public function render($file, array $data = array(), $fullpath = false)
     {
-        if (empty($file)) {
-            return $this->text('No template file provided');
-        }
-
         $template = $this->getTemplateFile($file, $fullpath);
 
-        $this->hook->fire('template.render', $template, $data, $this);
+        $this->hook->fire('template', $template, $data, $this);
 
-        if (empty($template)) {
-            return $this->text('Could not load template %path', array('%path' => $template));
-        }
-
-        if ($file == 'layout/body') {
+        if ($file === 'layout/body') {
             $this->setPhpErrors($data);
         }
 
-        if (pathinfo($template, PATHINFO_EXTENSION) === 'twig') {
-            $settings = empty($this->theme_settings['twig']) ? array() : $this->theme_settings['twig'];
-            return $this->renderTwig($template, $data, $settings);
+        $rendered = null;
+        $this->hook->fire('template.render', $template, $data, $rendered, $this);
+
+        if (isset($rendered)) {
+            return $rendered;
         }
 
-        return $this->renderPhp($template, $data);
+        $template .= '.php';
+
+        if (is_file($template)) {
+            return $this->renderTemplate($template, $data);
+        }
+
+        return $this->text('Could not load template %path', array('%path' => $template));
     }
 
     /**
-     * Returns a full path to a module template
+     * Returns a full path to a module template WITHOUT extension
      * @param string $file
      * @param boolean $fullpath
      * @return string
      */
     protected function getTemplateFile($file, $fullpath)
     {
-        $module = $this->current_theme['id'];
-        $is_twig = $this->is_twig;
-
+        $module = $this->theme;
         if (strpos($file, '|') !== false) {
             $fullpath = false;
             list($module, $file) = explode('|', $file, 2);
-
-            if ($module !== $this->current_theme['id']) {
-                $settings = $this->config->module($module, 'twig');
-                $is_twig = !empty($settings['status']);
-            }
         }
 
-        $path = $fullpath ? $file : GC_MODULE_DIR . "/$module/templates/$file";
-
-        $extensions = array('php');
-
-        if ($is_twig) {
-            if (!isset($this->twig)) {
-                $this->twig = Container::get('gplcart\\core\\helpers\\Twig');
-            }
-
-            array_unshift($extensions, 'twig');
-        }
-
-        foreach ($extensions as $extension) {
-            $template = "$path.$extension";
-            if (is_readable($template)) {
-                return $template;
-            }
-        }
-
-        return '';
+        return $fullpath ? $file : GC_MODULE_DIR . "/$module/templates/$file";
     }
 
     /**
@@ -977,7 +939,6 @@ class Controller
         }
 
         $this->theme_settings = (array) $this->config->module($this->theme, null, array());
-        $this->is_twig = !empty($this->theme_settings['twig']['status']);
 
         if (empty($this->theme_settings['templates'])) {
             $this->templates = $this->getDefaultTemplates();
@@ -1652,33 +1613,12 @@ class Controller
     }
 
     /**
-     * Renders TWIG templates
-     * @param string $template
-     * @param array $data
-     * @param array $options
-     * @return string
-     */
-    public function renderTwig($template, array $data, array $options = array())
-    {
-        $parts = explode('/', $template);
-        $file = array_pop($parts);
-        $directory = implode('/', $parts);
-
-        $this->twig->set($directory, $this, $options);
-
-        // Make global $this->data available in every .twig template
-        $merged = gplcart_array_merge($this->data, $data);
-
-        return $this->twig->render($file, $merged);
-    }
-
-    /**
      * Renders PHP templates
      * @param string $template
      * @param array $data
      * @return string
      */
-    public function renderPhp($template, array $data)
+    public function renderTemplate($template, array $data)
     {
         extract($data, EXTR_SKIP);
         ob_start();

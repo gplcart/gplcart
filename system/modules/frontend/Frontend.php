@@ -30,7 +30,23 @@ class Frontend extends Module
             'core' => '1.x',
             'type' => 'theme',
             'configure' => 'admin/module/settings/frontend',
-            'settings' => $this->getDefaultSettings()
+            'settings' => array(
+                'catalog_limit' => 20,
+                'catalog_front_sort' => 'price',
+                'catalog_front_order' => 'asc',
+                'catalog_sort' => 'price',
+                'catalog_order' => 'asc',
+                'catalog_view' => 'grid',
+                'image_style_page' => 5,
+                'image_style_category' => 3,
+                'image_style_category_child' => 3,
+                'image_style_product' => 6,
+                'image_style_product_grid' => 3,
+                'image_style_product_list' => 3,
+                'image_style_cart' => 3,
+                'image_style_option' => 1,
+                'image_style_collection_banner' => 7
+            )
         );
     }
 
@@ -80,36 +96,6 @@ class Frontend extends Module
         $controller->setMeta(array('http-equiv' => 'X-UA-Compatible', 'content' => 'IE=edge'));
         $controller->setMeta(array('name' => 'viewport', 'content' => 'width=device-width, initial-scale=1'));
         $controller->setMeta(array('name' => 'author', 'content' => 'GPL Cart'));
-    }
-
-    /**
-     * Returns an array of default module settings
-     * @return array
-     */
-    protected function getDefaultSettings()
-    {
-        return array(
-            'catalog_limit' => 20,
-            'catalog_front_sort' => 'price',
-            'catalog_front_order' => 'asc',
-            'catalog_sort' => 'price',
-            'catalog_order' => 'asc',
-            'catalog_view' => 'grid',
-            'image_style_page' => 5,
-            'image_style_category' => 3,
-            'image_style_category_child' => 3,
-            'image_style_product' => 6,
-            'image_style_product_grid' => 3,
-            'image_style_product_list' => 3,
-            'image_style_cart' => 3,
-            'image_style_option' => 1,
-            'image_style_collection_banner' => 7,
-            'twig' => array(
-                'status' => true,
-                'cache' => 'cache',
-                'auto_reload' => true
-            )
-        );
     }
 
 }

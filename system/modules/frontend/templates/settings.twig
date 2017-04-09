@@ -14,69 +14,6 @@
 <form method="post" class="module-settings frontend-settings form-horizontal">
   <input type="hidden" name="token" value="{{ prop('token') }}">
   <div class="panel panel-default">
-    <div class="panel-heading">{{ text('Twig') }}</div>
-    <div class="panel-body">
-      <div class="form-group">
-        <label class="col-md-2 control-label">{{ text('Debug mode') }}</label>
-        <div class="col-md-4">
-          <div class="checkbox">
-            <label>
-              <input type="checkbox" name="settings[twig][debug]" value="1"{{ settings['twig']['debug'] is defined and settings['twig']['debug'] ? ' checked' : '' }}> {{ text('Enabled') }}
-            </label>
-          </div>
-          <div class="help-block">
-            <div class="text-muted">
-              {{ text('If enabled you can use native Twig debugger to see available variables in templates {{ dump }}. Otherwise use built-in tool {{ d }} which is more spectacular') }}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="col-md-2 control-label">{{ text('Auto reload') }}</label>
-        <div class="col-md-4">
-          <div class="checkbox">
-            <label>
-              <input type="checkbox" name="settings[twig][auto_reload]" value="1"{{ settings['twig']['auto_reload'] is defined and settings['twig']['auto_reload'] ? ' checked' }}> {{ text('Enabled') }}
-            </label>
-          </div>
-          <div class="help-block">
-            <div class="text-muted">
-              {{ text('Recompile Twig template whenever the source code changes. Should be disabled in production!') }}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="col-md-2 control-label">{{ text('Strict variables') }}</label>
-        <div class="col-md-4">
-          <div class="checkbox">
-            <label>
-              <input type="checkbox" name="settings[twig][strict_variables]" value="1"{{ settings['twig']['strict_variables'] is defined and settings['twig']['strict_variables'] ? ' checked' : '' }}> {{ text('Enabled') }}
-            </label>
-          </div>
-          <div class="help-block">
-            <div class="text-muted">
-              {{ text('If enabled Twig will throw exceptions on invalid variables. Should be disabled in production!') }}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="col-md-2 control-label">
-          {{ text('Cache') }}
-        </label>
-        <div class="col-md-3">
-          <input name="settings[twig][cache]" class="form-control" value="{{ settings['twig']['cache'] }}">
-          <div class="help-block">
-            <div class="text-muted">
-              {{ text('A folder within the module directory to keep compiled Twig templates. Recommended name - "cache". If the folder does not exist, it will be created. If not specified, caching will be disabled, which is bad for performance') }}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="panel panel-default">
     <div class="panel-heading">{{ text('Options') }}</div>
     <div class="panel-body">
       <div class="form-group{{ error('catalog_limit', ' has-error') }}">
