@@ -232,34 +232,25 @@ class Config
             $module_info['hooks'] = $this->getModuleHooks($module_instance);
 
             $module_info += array(
-                'class' => $module_data['class'],
-                'directory' => GC_MODULE_DIR . "/$module_name",
-                'name' => $module_name,
-                'description' => '',
-                'version' => '',
-                'author' => '',
-                'image' => '',
-                'settings' => array(),
-                'configure' => false,
                 'type' => 'module',
-                'key' => '',
                 'id' => $module_name,
-                'dependencies' => array()
+                'name' => $module_name,
+                'class' => $module_data['class'],
+                'directory' => GC_MODULE_DIR . "/$module_name"
             );
 
             if (isset($saved_modules[$module_info['id']])) {
+
+                // Do not rewrite status and weight set in code
+                if (isset($module_info['status'])) {
+                    unset($saved_modules[$module_info['id']]['status']);
+                }
+                if (isset($module_info['weight'])) {
+                    unset($saved_modules[$module_info['id']]['weight']);
+                }
+
                 $module_info['installed'] = true;
-                $module_info = gplcart_array_merge($module_info, $saved_modules[$module_info['id']]);
-            }
-
-            if (in_array($module_info['id'], array('backend', 'frontend'))) {
-                $module_info['status'] = 1;
-                $module_info['version'] = GC_VERSION;
-            }
-
-            if ($module_info['type'] === 'installer') {
-                // Enable installers only when needed. Null means "uninstalled"
-                $module_info['status'] = $installation ? true : null;
+                $module_info = array_merge($module_info, $saved_modules[$module_info['id']]);
             }
 
             $modules[$module_info['id']] = $module_info;
