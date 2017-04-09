@@ -379,7 +379,7 @@ class Controller
         if (property_exists($this, $name)) {
             return $this->$name;
         }
-        throw new \InvalidArgumentException("Property $name does not exist in class " . __CLASS__);
+        throw new \InvalidArgumentException("Property $name does not exist");
     }
 
     /**
