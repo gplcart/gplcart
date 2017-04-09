@@ -46,7 +46,8 @@ class Frontend extends Module
                 'image_style_cart' => 3,
                 'image_style_option' => 1,
                 'image_style_collection_banner' => 7
-            )
+            ),
+            'dependencies' => array('twig' => '>= 1.0')
         );
     }
 
