@@ -689,8 +689,7 @@ class Controller
     public function path($pattern = null)
     {
         if (isset($pattern)) {
-            $result = gplcart_parse_pattern($this->path, $pattern);
-            return $result !== false;
+            return preg_match("~$pattern~i", $this->path) === 1;
         }
 
         return $this->path;
