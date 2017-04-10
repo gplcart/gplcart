@@ -13,7 +13,7 @@
     <?php echo $this->text('Uknown'); ?>
     <?php } else { ?>
     <div class="row">
-      <div class="col-md-6">
+      <div class="col-md-12">
         <table class="table table-condensed">
           <?php foreach ($order['address_translated']['shipping'] as $key => $value) { ?>
           <tr>
@@ -22,18 +22,6 @@
           </tr>
           <?php } ?>
         </table>
-      </div>
-      <div class="col-md-6 hidden-print">
-        <div class="embed-responsive embed-responsive-4by3">
-          <div id="map-container-shipping" class="embed-responsive-item text-muted">
-            <?php if (!$this->config('gapi_browser_key')) { ?>
-            <?php echo $this->text('Google Map API key is not set'); ?>
-            <?php if ($this->access('settings')) { ?>
-            <a href="<?php echo $this->url('admin/settings/common'); ?>"><?php echo mb_strtolower($this->text('Edit')); ?></a>
-            <?php } ?>
-            <?php } ?>
-          </div>
-        </div>
       </div>
     </div>
     <?php } ?>

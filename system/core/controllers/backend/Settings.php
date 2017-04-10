@@ -71,7 +71,6 @@ class Settings extends BackendController
             'error_level' => 2,
             'error_live_report' => 0,
             'mailer' => '',
-            'gapi_browser_key' => '',
             'timezone' => 'Europe/London'
         );
     }

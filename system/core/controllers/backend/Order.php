@@ -117,7 +117,6 @@ class Order extends BackendController
         $this->setDataPanePaymentAddressOrder();
         $this->setDataPaneShippingAddressOrder();
 
-        $this->setJsSettingsViewOrder();
         $this->outputViewOrder();
     }
 
@@ -254,21 +253,6 @@ class Order extends BackendController
         $this->logOrder($update);
 
         $this->redirect("checkout/clone/{$this->data_order['order_id']}");
-    }
-
-    /**
-     * Sets JS settings on the view order page
-     */
-    protected function setJsSettingsViewOrder()
-    {
-        $map = array('key' => $this->config('gapi_browser_key', ''));
-
-        foreach ($this->data_order['address'] as $type => $address) {
-            $translated = $this->address->getTranslated($address);
-            $map['address'][$type] = $this->address->getGeocodeQuery($translated);
-        }
-
-        $this->setJsSettings('map', $map);
     }
 
     /**

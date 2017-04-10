@@ -52,11 +52,7 @@ class Address extends BackendController
 
         $this->setFilterAddress();
         $limit = $this->setPager($this->getTotalAddress(), $this->data_filter);
-
-        $addresses = $this->getListAddress($limit);
-        $this->setJsSettingsListAddress($addresses);
-
-        $this->setData('addresses', $addresses);
+        $this->setData('addresses', $this->getListAddress($limit));
         $this->outputListAddress();
     }
 
@@ -128,20 +124,6 @@ class Address extends BackendController
             $address['translated'] = $this->address->getTranslated($address, true);
         }
         return $addresses;
-    }
-
-    /**
-     * Set JS settings on the address overview page
-     * @param array $addresses
-     */
-    protected function setJsSettingsListAddress(array $addresses)
-    {
-        $settings = array('key' => $this->config('gapi_browser_key', ''));
-        foreach ($addresses as $address) {
-            $query = $this->address->getGeocodeQuery($address);
-            $settings['addresses'][$address['address_id']] = $query;
-        }
-        $this->setJsSettings('map', $settings);
     }
 
     /**

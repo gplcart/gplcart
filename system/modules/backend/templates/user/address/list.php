@@ -94,7 +94,7 @@
         <tr id="address-id-<?php echo $address_id; ?>" class="collapse">
           <td colspan="8">
             <div class="row">
-              <div class="col-md-8">
+              <div class="col-md-12">
                 <table class="table table-condensed">
                   <?php foreach ($address['translated'] as $label => $value) { ?>
                   <tr>
@@ -103,11 +103,6 @@
                   </tr>
                   <?php } ?>
                 </table>
-              </div>
-              <div class="col-md-4">
-                <div class="embed-responsive embed-responsive-4by3">
-                  <div id="map-container-address-<?php echo $address_id; ?>" class="embed-responsive-item text-muted"></div>
-                </div>
               </div>
             </div>
           </td>

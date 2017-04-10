@@ -316,27 +316,6 @@
     };
 
     /**
-     * Set up Google Map
-     * @returns {undefined}
-     */
-    GplCart.onload.drawMap = function () {
-
-        if (!GplCart.settings.map) {
-            return;
-        }
-
-        if (GplCart.settings.map.address) {
-            $.each(GplCart.settings.map.address, function (type, address) {
-                GplCart.gmap(address, false, GplCart.settings.map.key, 'map-container-' + type);
-            });
-        }
-
-        if (GplCart.settings.map[0] && GplCart.settings.map[1]) {
-            GplCart.gmap(GplCart.settings.map[0], GplCart.settings.map[1], GplCart.settings.map.key);
-        }
-    };
-
-    /**
      * Makes uploaded images sortable
      * @returns {undefined}
      */
@@ -1051,21 +1030,6 @@
         }).autocomplete("instance")._renderItem = function (ul, item) {
             return $("<li>").append("<a>" + item.label + "</a>").appendTo(ul);
         };
-    };
-
-    /**
-     * Init Google Map on address details click
-     * @returns {undefined}
-     */
-    GplCart.onload.handleAddressDetails = function () {
-        var address_id, id;
-        $('[data-address-details]').click(function () {
-            address_id = $(this).data('address-details');
-            if (GplCart.settings.map && GplCart.settings.map.key && GplCart.settings.map.addresses[address_id]) {
-                id = 'map-container-address-' + address_id;
-                GplCart.gmap(GplCart.settings.map.addresses[id], '', GplCart.settings.map.key, id);
-            }
-        });
     };
 
 })(window, document, GplCart, jQuery);

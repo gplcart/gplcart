@@ -88,18 +88,6 @@
           </div>
         </div>
       </div>
-      <div class="form-group<?php echo $this->error('gapi_browser_key', ' has-error'); ?>">
-        <label class="col-md-2 control-label"><?php echo $this->text('Google API browser key'); ?></label>
-        <div class="col-md-4">
-          <input name="settings[gapi_browser_key]" class="form-control" value="<?php echo $this->escape($settings['gapi_browser_key']); ?>">
-          <div class="help-block">
-            <?php echo $this->error('gapi_browser_key'); ?>
-            <div class="text-muted">
-              <?php echo $this->text('A browser key from Google Developers Console. Used for standard API like Google Maps etc'); ?>
-            </div>
-          </div>
-        </div>
-      </div>
       <div class="form-group">
         <label class="col-md-2 control-label"><?php echo $this->text('Cron key'); ?></label>
         <div class="col-md-4">

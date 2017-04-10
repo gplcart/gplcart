@@ -120,7 +120,6 @@ $config = array();
 # $config['filter_3_config']                      = array(); // Array of HTML Purifier's options for "Maximum" filter (ID 3)
 # $config['compress_js']                          = 0; // Whether to aggregate JS files
 # $config['compress_css']                         = 0; // Whether to aggregate and compress CSS files
-# $config['gapi_browser_key']                     = ''; // Google API browser key
 # $config['mailer']                               = 'php'; // Mailer  
 # $config['email_subject_order_created_admin']    = ''; // Text of E-mail subject sent after order has been created to an admin
 # $config['email_message_order_created_admin']    = ''; // Text of E-mail message sent after order has been created to an admin
