@@ -45,8 +45,7 @@ class Backend extends Module
             $controller->setJs('system/modules/backend/js/common.js');
 
             $libraries = array('bootstrap', 'font_awesome', 'summernote', 'primeui',
-                'jquery_file_upload', 'bootstrap_select', 'bootstrap_colorpicker',
-                'codemirror');
+                'jquery_file_upload', 'bootstrap_select', 'bootstrap_colorpicker');
 
             $controller->addAssetLibrary($libraries);
             $controller->setCss('system/modules/backend/css/style.css');
