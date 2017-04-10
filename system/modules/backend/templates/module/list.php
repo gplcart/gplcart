@@ -88,13 +88,6 @@
           <td class="middle">
             <?php if($info['type'] != 'installer') { ?>
             <ul class="list-inline">
-              <?php if ($info['type'] === 'theme' && $this->access('editor')) { ?>
-              <li>
-                <a href="<?php echo $this->url("admin/tool/editor/$module_id"); ?>">
-                  <?php echo mb_strtolower($this->text('Edit')); ?>
-                </a>
-              </li>
-              <?php } ?>
               <?php if (isset($info['status'])) { ?>
               <?php if ($info['status']) { ?>
               <?php if ($this->access('module_disable') && empty($info['always_enabled'])) { ?>

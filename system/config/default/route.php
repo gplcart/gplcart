@@ -283,18 +283,6 @@ return array(
             'controller' => array('gplcart\\core\\controllers\\backend\\Backup', 'listBackup')
         )
     ),
-    'admin/tool/editor/(\w+)' => array(
-        'access' => 'editor',
-        'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\backend\\Editor', 'listEditor')
-        )
-    ),
-    'admin/tool/editor/(\w+)/([^/]+)' => array(
-        'access' => 'editor_content',
-        'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\backend\\Editor', 'editEditor')
-        )
-    ),
     'admin/sale' => array(
         'menu' => array('admin' => 'Sales'),
         'handlers' => array(
