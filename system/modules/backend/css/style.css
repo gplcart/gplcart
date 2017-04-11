@@ -64,10 +64,6 @@ body.js .hidden-js {
     color: #fff;
 }
 
-.CodeMirror {
-    height: auto;
-}
-
 .note-editable {
     border: 1px solid #ccc;
 }
