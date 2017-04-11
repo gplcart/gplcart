@@ -20,8 +20,18 @@ class Database extends PDO
 {
 
     /**
-     * Sets up the database connection
-     * Database constructor.
+     * Whether to collect simple query logs
+     * @var bool
+     */
+    protected $log = false;
+
+    /**
+     * An array of collected logs
+     * @var array
+     */
+    protected $logs = array();
+
+    /**
      * @param array $config
      * @throws DatabaseException
      */
@@ -34,9 +44,64 @@ class Database extends PDO
             parent::__construct($dns, $config['user'], $config['password']);
             $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $exc) {
-            // Throw custom exception to hide connection details in the message
             throw new DatabaseException('Could not connect to database');
         }
+    }
+
+    /**
+     * Collect query logs
+     */
+    public function enableLog()
+    {
+        $this->log = true;
+    }
+
+    /**
+     * Returns an array of collected query logs
+     * @return array
+     */
+    public function getLogs()
+    {
+        return $this->logs;
+    }
+
+    /**
+     * Executes an SQL statement, returning a result set as a PDOStatement object
+     * @param string $statement
+     * @return PDOStatement
+     */
+    public function query($statement)
+    {
+        if ($this->log) {
+            $start = microtime(true);
+        }
+
+        $result = parent::query($statement);
+
+        if ($this->log) {
+            $this->logs[] = array('time' => microtime(true) - $start, 'statement' => $statement);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Execute an SQL statement and return the number of affected rows
+     * @param string $statement
+     * @return integer
+     */
+    public function exec($statement)
+    {
+        if ($this->log) {
+            $start = microtime(true);
+        }
+
+        $result = parent::exec($statement);
+
+        if ($this->log) {
+            $this->logs[] = array('time' => microtime(true) - $start, 'statement' => $statement);
+        }
+        return $result;
     }
 
     /**
@@ -60,6 +125,10 @@ class Database extends PDO
      */
     public function run($sql, array $params = array())
     {
+        if ($this->log) {
+            $start = microtime(true);
+        }
+
         $sth = $this->prepare($sql);
 
         foreach ($params as $key => $value) {
@@ -68,6 +137,11 @@ class Database extends PDO
         }
 
         $sth->execute($params);
+
+        if ($this->log) {
+            $this->logs[] = array('time' => microtime(true) - $start, 'statement' => $sql);
+        }
+
         return $sth;
     }
 
@@ -104,19 +178,14 @@ class Database extends PDO
      * Prepares a single result, e.g unserialize serialized data
      * @param mixed $data
      * @param array $options
-     * @return null
      */
     protected function prepareResult(&$data, array $options)
     {
-        if (empty($options['unserialize']) || empty($data)) {
-            return null;
+        if (!empty($options['unserialize']) && !empty($data)) {
+            foreach ((array) $options['unserialize'] as $field) {
+                $data[$field] = empty($data[$field]) ? array() : unserialize($data[$field]);
+            }
         }
-
-        foreach ((array) $options['unserialize'] as $field) {
-            $data[$field] = empty($data[$field]) ? array() : unserialize($data[$field]);
-        }
-
-        return null;
     }
 
     /**
