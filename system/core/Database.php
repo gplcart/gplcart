@@ -20,13 +20,7 @@ class Database extends PDO
 {
 
     /**
-     * Whether to collect simple query logs
-     * @var bool
-     */
-    protected $log = false;
-
-    /**
-     * An array of collected logs
+     * An array of collected queries
      * @var array
      */
     protected $logs = array();
@@ -49,14 +43,6 @@ class Database extends PDO
     }
 
     /**
-     * Collect query logs
-     */
-    public function enableLog()
-    {
-        $this->log = true;
-    }
-
-    /**
      * Returns an array of collected query logs
      * @return array
      */
@@ -72,16 +58,8 @@ class Database extends PDO
      */
     public function query($statement)
     {
-        if ($this->log) {
-            $start = microtime(true);
-        }
-
         $result = parent::query($statement);
-
-        if ($this->log) {
-            $this->logs[] = array('time' => microtime(true) - $start, 'statement' => $statement);
-        }
-
+        $this->logs[] = $statement;
         return $result;
     }
 
@@ -92,15 +70,8 @@ class Database extends PDO
      */
     public function exec($statement)
     {
-        if ($this->log) {
-            $start = microtime(true);
-        }
-
         $result = parent::exec($statement);
-
-        if ($this->log) {
-            $this->logs[] = array('time' => microtime(true) - $start, 'statement' => $statement);
-        }
+        $this->logs[] = $statement;
         return $result;
     }
 
@@ -125,10 +96,6 @@ class Database extends PDO
      */
     public function run($sql, array $params = array())
     {
-        if ($this->log) {
-            $start = microtime(true);
-        }
-
         $sth = $this->prepare($sql);
 
         foreach ($params as $key => $value) {
@@ -137,11 +104,7 @@ class Database extends PDO
         }
 
         $sth->execute($params);
-
-        if ($this->log) {
-            $this->logs[] = array('time' => microtime(true) - $start, 'statement' => $sql);
-        }
-
+        $this->logs[] = $sql;
         return $sth;
     }
 
