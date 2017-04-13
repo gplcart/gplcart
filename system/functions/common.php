@@ -68,6 +68,7 @@ function gplcart_parse_pattern($string, $pattern)
 {
     $pattern = '/^' . str_replace('/', '\/', $pattern) . '$/';
 
+    $params = array();
     if (preg_match($pattern, $string, $params)) {
         array_shift($params);
         return array_values($params);
@@ -108,35 +109,6 @@ function gplcart_timezones()
 }
 
 /**
- * Wrapper for Kint's ddd() debugger
- * @param mixed $data
- */
-function ddd($data)
-{
-    $file = GC_VENDOR_DIR . '/gplcart/libraries/php/kint/Kint.class.php';
-    require_once $file;
-
-    if (Kint::enabled()) {
-        Kint::dump($data);
-        exit;
-    }
-}
-
-/**
- * Wrapper for Kint's d() debugger
- * @param mixed $data
- */
-function d($data)
-{
-    $file = GC_VENDOR_DIR . '/gplcart/libraries/php/kint/Kint.class.php';
-    require_once $file;
-
-    if (Kint::enabled()) {
-        Kint::dump($data);
-    }
-}
-
-/**
  * Returns an absolute path to the file
  * @param string $file
  * @return string
@@ -162,14 +134,4 @@ function gplcart_relative_path($absolute)
         return trim(substr($absolute, strlen($prefix)), '/');
     }
     return $absolute;
-}
-
-/**
- * Measures script execution time in seconds
- * @return string
- */
-function gplcart_timer()
-{
-    $time = microtime(true) - GC_START;
-    return number_format($time, 3);
 }
