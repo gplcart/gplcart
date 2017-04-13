@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @package GPL Cart core
+ * @package Twig
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
@@ -55,11 +55,10 @@ class Twig extends Module
         return array(
             'name' => 'Twig',
             'version' => GC_VERSION,
-            'description' => 'Twig template engine',
+            'description' => 'A GPL Cart module that allows to render .twig templates',
             'author' => 'Iurii Makukh ',
             'core' => '1.x',
             'license' => 'GPL-3.0+',
-            'status' => true,
             'configure' => 'admin/module/settings/twig',
             'settings' => array(
                 'cache' => true,
@@ -67,6 +66,30 @@ class Twig extends Module
                 'auto_reload' => false,
                 'strict_variables' => false
             ),
+        );
+    }
+
+    /**
+     * Implements hook "library.list"
+     * @param array $libraries
+     */
+    public function hookLibraryList(array &$libraries)
+    {
+        $libraries['twig'] = array(
+            'name' => 'Twig',
+            'description' => 'Twig is a template engine for PHP',
+            'url' => 'https://github.com/twigphp/Twig',
+            'download' => 'https://github.com/twigphp/Twig/archive/v1.33.0.zip',
+            'type' => 'php',
+            'module' => 'twig',
+            'version_source' => array(
+                'lines' => 100,
+                'pattern' => '/.*VERSION.*(\\d+\\.+\\d+\\.+\\d+)/',
+                'file' => 'vendor/twig/twig/lib/Twig/Environment.php'
+            ),
+            'files' => array(
+                'vendor/autoload.php'
+            )
         );
     }
 
@@ -99,26 +122,12 @@ class Twig extends Module
         if (is_file($template)) {
 
             if (empty($this->twig)) {
-                $this->initTwig();
+                $this->library->load('twig');
                 $this->settings = $this->config->module('twig');
             }
 
             $rendered = $this->render($template, $data, $object);
         }
-    }
-
-    /**
-     * Load and initialize TWIG library
-     */
-    public function initTwig()
-    {
-        $this->library->load('twig');
-
-        if (!class_exists('Twig_Autoloader')) {
-            throw new \InvalidArgumentException('Class Twig_Autoloader not found');
-        }
-
-        \Twig_Autoloader::register();
     }
 
     /**
@@ -265,6 +274,38 @@ class Twig extends Module
         });
 
         return $functions;
+    }
+
+    /**
+     * Implements hook "module.enable.after"
+     */
+    public function hookModuleEnableAfter()
+    {
+        $this->library->clearCache();
+    }
+
+    /**
+     * Implements hook "module.disable.after"
+     */
+    public function hookModuleDisableAfter()
+    {
+        $this->library->clearCache();
+    }
+
+    /**
+     * Implements hook "module.install.after"
+     */
+    public function hookModuleInstallAfter()
+    {
+        $this->library->clearCache();
+    }
+
+    /**
+     * Implements hook "module.uninstall.after"
+     */
+    public function hookModuleUninstallAfter()
+    {
+        $this->library->clearCache();
     }
 
 }
