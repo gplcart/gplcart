@@ -7,7 +7,6 @@ composer.lock
 system/modules/*
 !system/modules/frontend
 !system/modules/backend
-!system/modules/twig
 
 files/private/*
 !files/private/.htaccess
