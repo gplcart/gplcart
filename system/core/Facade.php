@@ -76,14 +76,14 @@ class Facade
     public function __construct(Route $route, Config $config, Hook $hook,
             Logger $logger, UrlHelper $url, SessionHelper $session)
     {
+        $this->cli = GC_CLI;
+
         $this->url = $url;
         $this->hook = $hook;
         $this->route = $route;
         $this->config = $config;
         $this->logger = $logger;
         $this->session = $session;
-
-        $this->cli = GC_CLI;
 
         date_default_timezone_set($this->config->get('timezone', 'Europe/London'));
 
@@ -92,6 +92,14 @@ class Facade
 
         $this->hook->registerAll();
         $this->hook->fire('construct', $this);
+    }
+
+    /**
+     * Destructor
+     */
+    public function __destruct()
+    {
+        $this->hook->fire('destruct', $this);
     }
 
     /**
@@ -121,8 +129,7 @@ class Facade
     protected function routeCli()
     {
         if ($this->config->get('cli_disabled', 0)) {
-            echo "CLI access has been disabled";
-            exit(1);
+            exit('CLI access has been disabled');
         }
 
         Container::get('gplcart\\core\\CliRoute')->process();
@@ -135,9 +142,9 @@ class Facade
     {
         if ($this->isInstalling()) {
             $this->url->redirect('install');
+        } else {
+            $this->route->process();
         }
-
-        $this->route->process();
     }
 
     /**
@@ -168,9 +175,8 @@ class Facade
                 error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
                 break;
             case 2:
-                // Show all but E_USER_DEPRECATED
-                // Hides annoying Twig notifications
-                error_reporting(E_ALL ^ E_USER_DEPRECATED);
+                // Show all errors
+                error_reporting(E_ALL);
         }
     }
 
