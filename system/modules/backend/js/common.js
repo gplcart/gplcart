@@ -227,43 +227,6 @@
     };
 
     /**
-     * Adds WYSIWYG editor to a textarea
-     * @returns {undefined}
-     * @todo Inline settings in data attr
-     */
-    GplCart.onload.setWysiwyg = function () {
-
-        if (!$.fn.summernote) {
-            return;
-        }
-
-        var selector = $('textarea[data-wysiwyg="true"]');
-
-        if (selector.length === 0) {
-            return;
-        }
-
-        var settings = {
-            height: 150,
-            lang: GplCart.settings.lang_region,
-            toolbar: [
-                ['font', ['bold', 'italic', 'underline', 'clear']],
-                ['style', ['style']],
-                ['para', ['ul', 'ol']],
-                ['table', ['table']],
-                ['insert', ['link', 'picture', 'hr']],
-                ['view', ['fullscreen', 'codeview']]
-            ]};
-
-        var inline_settings = selector.data('wysiwyg-settings') || {};
-
-        if (typeof inline_settings === 'object') {
-            settings = $.extend(settings, inline_settings);
-        }
-        selector.summernote(settings);
-    };
-
-    /**
      * Delete uploaded images
      * @returns {undefined}
      */
