@@ -249,6 +249,11 @@ return array(
         'handlers' => array(
             'validate' => array('gplcart\\core\\handlers\\validator\\elements\\Common', 'dateformat')
         )
-    )
+    ),
+    'json_encoded' => array(
+        'handlers' => array(
+            'validate' => array('gplcart\\core\\handlers\\validator\\elements\\Common', 'json')
+        )
+    ),
 );
 

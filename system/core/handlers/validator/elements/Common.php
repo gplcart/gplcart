@@ -107,4 +107,19 @@ class Common extends ElementValidator
         return true;
     }
 
+    /**
+     * Validates a JSON encoded string
+     * @param array $submitted
+     * @param array $options
+     * @return boolean
+     */
+    public function json(array $submitted, array $options)
+    {
+        $value = gplcart_array_get_value($submitted, $options['field']);
+        if (json_decode($value) === null) {
+            return $this->setErrorInvalidValue($options['field'], $options['label']);
+        }
+        return true;
+    }
+
 }
