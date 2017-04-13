@@ -750,19 +750,6 @@ return array(
             'controller' => array('gplcart\\core\\controllers\\backend\\Zone', 'editZone')
         )
     ),
-    'admin/settings/filter' => array(
-        'access' => 'filter',
-        'menu' => array('admin' => 'Filters'),
-        'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\backend\\Filter', 'listFilter')
-        )
-    ),
-    'admin/settings/filter/edit/(\d+)' => array(
-        'access' => 'filter_edit',
-        'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\backend\\Filter', 'editFilter')
-        )
-    ),
     'admin/report' => array(
         'access' => 'report',
         'menu' => array('admin' => 'Reports'),

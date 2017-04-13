@@ -109,15 +109,6 @@ $config = array();
 # $config['order_complete_message_anonymous']     = 'Thank you for your order! Order ID: !order_id, status: !status';          // Default message to show when order is completed by anonymous
 # $config['cli_disabled']                         = 0; // Whether comman line support enabled
 # $config['filter_superadmin']                    = 0; // Filter ID for superadmin. Defaults to disabled, i.e raw output
-# $config['filter_1_status']                      = 1; // Status of "Minimal" filter (ID 1)
-# $config['filter_1_role_id']                     = 1; // Role ID for "Minimal" filter (ID 1)
-# $config['filter_1_config']                      = array(); // Array of HTML Purifier's options for "Minimal" filter (ID 1)
-# $config['filter_2_status']                      = 1; // Status of "Advanced" filter (ID 2)
-# $config['filter_2_role_id']                     = 1; // Role ID for "Advanced" filter (ID 2)
-# $config['filter_2_config']                      = array(); // Array of HTML Purifier's options for "Advanced" filter (ID 2)
-# $config['filter_3_status']                      = 1; // Status of "Maximum" filter (ID 3)
-# $config['filter_3_role_id']                     = 1; // Role ID for "Maximum" filter (ID 3)
-# $config['filter_3_config']                      = array(); // Array of HTML Purifier's options for "Maximum" filter (ID 3)
 # $config['compress_js']                          = 0; // Whether to aggregate JS files
 # $config['compress_css']                         = 0; // Whether to aggregate and compress CSS files
 # $config['mailer']                               = 'php'; // Mailer  
@@ -130,5 +121,5 @@ $config = array();
 
 /**
  * End of configurable settings
- * The settings below are appended automatically during installation.
+ * The settings below are appended automatically during installation
  */

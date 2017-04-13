@@ -598,11 +598,9 @@ class Controller
         if (!isset($key)) {
             return $this->theme_settings;
         }
-
         if (array_key_exists($key, $this->theme_settings)) {
             return $this->theme_settings[$key];
         }
-
         return $default;
     }
 
@@ -617,12 +615,10 @@ class Controller
         if (!isset($filter)) {
             $filter = $this->current_filter;
         }
-
         if ($filter === false) {
-            return $string; // Superadmin output
+            return $string; // Superadmin
         }
-
-        return $this->filter->filter($string, $filter);
+        return $this->filter->run($string, $filter);
     }
 
     /**
@@ -649,16 +645,13 @@ class Controller
     public function summary($text, $xss = true, $filter = null)
     {
         $summary = '';
-
         if ($text !== '') {
             $parts = $this->explodeText($text);
             $summary = trim(reset($parts));
         }
-
         if ($summary !== '' && $xss) {
             $summary = $this->xss($summary, $filter);
         }
-
         return $summary;
     }
 
@@ -1887,21 +1880,15 @@ class Controller
     public function setHtmlFilter($data)
     {
         if (isset($data['user_id']) && $this->isSuperadmin($data['user_id'])) {
-
             $filter_id = $this->config('filter_superadmin');
-
             if (empty($filter_id)) {
-                $this->current_filter = false; // Disable filtering at all
-            } else {
-                $this->current_filter = $this->filter->get($filter_id);
+                return $this->current_filter = false; // Disable filtering at all
             }
-
-            return $this->current_filter;
+            return $this->current_filter = $this->filter->get($filter_id);
         }
 
         $role_id = isset($data['role_id']) ? $data['role_id'] : 0;
-        $this->current_filter = $this->filter->getByRole($role_id);
-        return $this->current_filter;
+        return $this->current_filter = $this->filter->getByRole($role_id);
     }
 
     /**

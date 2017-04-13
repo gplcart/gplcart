@@ -109,11 +109,6 @@ return array(
             'validate' => array('gplcart\\core\\handlers\\validator\\components\\File', 'file')
         )
     ),
-    'filter' => array(
-        'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Filter', 'filter')
-        )
-    ),
     'image_style' => array(
         'handlers' => array(
             'validate' => array('gplcart\\core\\handlers\\validator\\components\\ImageStyle', 'imageStyle')

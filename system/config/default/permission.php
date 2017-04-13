@@ -127,8 +127,6 @@ return array(
     'file_edit' => 'File: edit',
     'file_delete' => 'File: delete',
     'file_upload' => 'File: upload',
-    'filter' => 'Filter: access',
-    'filter_edit' => 'Filter: edit',
     'import' => 'Import: access',
     'export' => 'Export: access',
     'settings' => 'Settings: access',
