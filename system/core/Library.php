@@ -93,6 +93,16 @@ class Library
     }
 
     /**
+     * Whether the given library exists
+     * @param string $library_id
+     */
+    public function exists($library_id)
+    {
+        $library = $this->get($library_id);
+        return isset($library['id']);
+    }
+
+    /**
      * Returns an array of libraries
      * @return array
      */
@@ -277,8 +287,6 @@ class Library
         if (isset($data['version'])) {
             return preg_replace('/^[\D\\s]+/', '', $data['version']);
         }
-
-        return null;
     }
 
     /**
@@ -395,7 +403,6 @@ class Library
             });
             $prepared = array_merge($prepared, $library['files']);
         }
-
         return $prepared;
     }
 
