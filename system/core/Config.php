@@ -445,7 +445,7 @@ class Config
      */
     public function isEnabledModule($module_id)
     {
-        $modules = $this->getInstalledModules();
+        $modules = $this->getEnabledModules();
         return !empty($modules[$module_id]['status']);
     }
 
