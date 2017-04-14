@@ -92,141 +92,22 @@
             <thead>
               <tr>
                 <td><?php echo $this->text('Key'); ?></td>
-                <td><?php echo $this->text('Parameters'); ?></td>
+                <td><?php echo $this->text('Name'); ?></td>
                 <td><?php echo $this->text('Description'); ?></td>
               </tr>
             </thead>
             <tbody>
+              <?php foreach($action_handlers as $action_id => $handler) { ?>
               <tr>
-                <td>flip</td>
-                <td><?php echo $this->text('%x or %y', array('%x' => 'x', '%y' => 'y')); ?></td>
-                <td><?php echo $this->text('Flip horizontally (x) or vertically (y)'); ?></td>
+                <td class="middle"><?php echo $this->escape($action_id); ?></td>
+                <td class="middle"><?php echo $this->text($handler['name']); ?></td>
+                <td class="middle">
+                  <?php if(isset($handler['description'])) { ?>
+                  <?php echo $this->text($handler['description']); ?>
+                  <?php } ?>
+                </td>
               </tr>
-              <tr>
-                <td>rotate</td>
-                <td><?php echo $this->text('Integer 0 - 360'); ?></td>
-                <td><?php echo $this->text('Rotate a certain number of degrees clockwise'); ?></td>
-              </tr>
-              <tr>
-                <td>auto_orient</td>
-                <td></td>
-                <td><?php echo $this->text('Adjust orientation if needed using its EXIF Orientation property'); ?></td>
-              </tr>
-              <tr>
-                <td>resize</td>
-                <td><?php echo $this->text('Two integers, width and height, separated by comma'); ?></td>
-                <td><?php echo $this->text('Resize to fixed width and height'); ?></td>
-              </tr>
-              <tr>
-                <td>thumbnail</td>
-                <td><?php echo $this->text('Two integers, width and height, separated by comma'); ?></td>
-                <td><?php echo $this->text('Trim and resize to exact width and height'); ?></td>
-              </tr>
-              <tr>
-                <td>fit_to_width</td>
-                <td><?php echo $this->text('Integer'); ?></td>
-                <td><?php echo $this->text('Shrink to the specified width while maintaining proportion (width)'); ?></td>
-              </tr>
-              <tr>
-                <td>fit_to_height</td>
-                <td><?php echo $this->text('Integer'); ?></td>
-                <td><?php echo $this->text('Shrink to the specified height while maintaining proportion (height)'); ?></td>
-              </tr>
-              <tr>
-                <td>best_fit</td>
-                <td><?php echo $this->text('Two integers, width and height, separated by comma'); ?></td>
-                <td><?php echo $this->text('Shrink proportionally to fit inside a box'); ?></td>
-              </tr>
-              <tr>
-                <td>crop</td>
-                <td><?php echo $this->text('Four integers, separated by comma'); ?></td>
-                <td><?php echo $this->text('Crop a portion of image from x1, y1 to x2, y2'); ?></td>
-              </tr>
-              <tr>
-                <td>fill</td>
-                <td><?php echo $this->text('HEX color code'); ?></td>
-                <td><?php echo $this->text('Fill with a color'); ?></td>
-              </tr>
-              <tr>
-                <td>desaturate</td>
-                <td></td>
-                <td><?php echo $this->text('Desaturate (grayscale)'); ?></td>
-              </tr>
-              <tr>
-                <td>invert</td>
-                <td></td>
-                <td><?php echo $this->text('Invert'); ?></td>
-              </tr>
-              <tr>
-                <td>brightness</td>
-                <td><?php echo $this->text('Integer from -255 to 255'); ?></td>
-                <td><?php echo $this->text('Adjust brightness'); ?></td>
-              </tr>
-              <tr>
-                <td>contrast</td>
-                <td><?php echo $this->text('Integer from -100 to 100'); ?></td>
-                <td><?php echo $this->text('Adjust contrast'); ?></td>
-              </tr>
-              <tr>
-                <td>colorize</td>
-                <td><?php echo $this->text('HEX color and decimal opacity, separated by comma, e.g #FF0000, 0.5'); ?></td>
-                <td><?php echo $this->text('Colorize with the specified color and opacity'); ?></td>
-              </tr>
-              <tr>
-                <td>edges</td>
-                <td></td>
-                <td><?php echo $this->text('Edges filter'); ?></td>
-              </tr>
-              <tr>
-                <td>emboss</td>
-                <td></td>
-                <td><?php echo $this->text('Emboss filter'); ?></td>
-              </tr>
-              <tr>
-                <td>mean_remove</td>
-                <td></td>
-                <td><?php echo $this->text('Mean removal filter'); ?></td>
-              </tr>
-              <tr>
-                <td>blur</td>
-                <td></td>
-                <td><?php echo $this->text('Selective blur (one pass)'); ?></td>
-              </tr>
-              <tr>
-                <td>sketch</td>
-                <td></td>
-                <td><?php echo $this->text('Sketch filter'); ?></td>
-              </tr>
-              <tr>
-                <td>smooth</td>
-                <td><?php echo $this->text('One integer, from -10 to 10'); ?></td>
-                <td><?php echo $this->text('Smooth filter'); ?></td>
-              </tr>
-              <tr>
-                <td>pixelate</td>
-                <td><?php echo $this->text('One positive integer'); ?></td>
-                <td><?php echo $this->text('Pixelate using blocks of pixels'); ?></td>
-              </tr>
-              <tr>
-                <td>sepia</td>
-                <td></td>
-                <td><?php echo $this->text('Sepia effect (simulated)'); ?></td>
-              </tr>
-              <tr>
-                <td>opacity</td>
-                <td><?php echo $this->text('One integer or decimal'); ?></td>
-                <td><?php echo $this->text('Change opacity'); ?></td>
-              </tr>
-              <tr>
-                <td>overlay</td>
-                <td><?php echo $this->text('Five values. 1-th: watermark image path, 2-th: watermark position, 3-th: opacity, 4 and 5-th: horizontal and vertical margin. E.g: "watermark.png,bottom right,.5, -10,-10"'); ?></td>
-                <td><?php echo $this->text('Overlay another image (watermarking)'); ?></td>
-              </tr>
-              <tr>
-                <td>text</td>
-                <td><?php echo $this->text('7 values. 1-th: Your text, 2-th: font path, 3-th: points(32), 4-th: HEX color, 5-th: position, 6-th and 7-th: offsets. E.g: "Your Text,font.ttf,32,#FFFFFF,top,0,20"'); ?></td>
-                <td><?php echo $this->text('Add image caption'); ?></td>
-              </tr>
+              <?php } ?>
             </tbody>
           </table>
         </div>
