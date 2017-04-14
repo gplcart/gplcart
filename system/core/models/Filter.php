@@ -51,7 +51,7 @@ class Filter extends Model
         $this->hook->fire('filter', $text, $filter, $filtered);
 
         if (isset($filtered)) {
-            return $filtered;
+            return (string) $filtered;
         }
 
         return $this->filter->filter($text);

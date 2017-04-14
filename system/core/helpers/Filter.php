@@ -63,7 +63,7 @@ class Filter
 
     /**
      * Filter a string
-     * @param type $string
+     * @param string $string
      * @return string
      */
     public function filter($string)
@@ -93,7 +93,7 @@ class Filter
         // Named entities.
         $string = preg_replace('/&amp;([A-Za-z][A-Za-z0-9]*;)/', '&\1', $string);
 
-        return preg_replace_callback('%
+        return (string) preg_replace_callback('%
             (
             <(?=[^a-zA-Z!/])  # a lone <
             |                 # or
@@ -213,7 +213,7 @@ class Filter
                         $working = 1;
                         $mode = 0;
 
-                        if (!$skip) {
+                        if (empty($skip)) {
                             $attrarr[] = $attrname;
                         }
 
