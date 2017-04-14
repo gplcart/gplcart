@@ -34,6 +34,8 @@ define('GC_CONFIG_CLI_ROUTE', GC_CONFIG_DIR . '/default/cli_route.php');
 define('GC_CONFIG_PERMISSION', GC_CONFIG_DIR . '/default/permission.php');
 define('GC_CONFIG_COMMON_DEFAULT', GC_CONFIG_DIR . '/default/common.php');
 define('GC_CONFIG_VALIDATOR', GC_CONFIG_DIR . '/default/validator.php');
+define('GC_CONFIG_IMAGE_STYLE', GC_CONFIG_DIR . '/default/image_style.php');
+define('GC_CONFIG_IMAGE_ACTION', GC_CONFIG_DIR . '/default/image_action.php');
 define('GC_UPLOAD_DIR', GC_FILE_DIR . '/upload');
 define('GC_DOWNLOAD_DIR', GC_FILE_DIR . '/download');
 define('GC_PRIVATE_DIR', GC_FILE_DIR . '/private');
