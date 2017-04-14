@@ -11,8 +11,7 @@ namespace gplcart\core\models;
 
 use gplcart\core\Route,
     gplcart\core\Cache,
-    gplcart\core\Model,
-    gplcart\core\Library;
+    gplcart\core\Model;
 
 /**
  * Manages basic behaviors and data related to languages and their translations
@@ -31,12 +30,6 @@ class Language extends Model
      * @var \gplcart\core\Route $route
      */
     protected $route;
-
-    /**
-     * Library instance
-     * @var \gplcart\core\Library $library
-     */
-    protected $library;
 
     /**
      * Current language code
@@ -65,17 +58,13 @@ class Language extends Model
     protected $compiled_directory_js = '';
 
     /**
-     * Constructor
      * @param Route $route
-     * @param Library $library
      */
-    public function __construct(Route $route, Library $library)
+    public function __construct(Route $route)
     {
         parent::__construct();
 
         $this->route = $route;
-        $this->library = $library;
-
         $langcode = $this->route->getLangcode();
 
         if ($this->exists($langcode)) {
@@ -318,7 +307,7 @@ class Language extends Model
      */
     public function isDefault($code)
     {
-        return ($code == $this->getDefault());
+        return ($code === $this->getDefault());
     }
 
     /**
@@ -410,8 +399,6 @@ class Language extends Model
             return array();
         }
 
-        // Reindex the array
-        // First column (source string) becomes a key
         foreach ($rows as $row) {
             $key = array_shift($row);
             $translations[$key] = $row;
@@ -486,17 +473,17 @@ class Language extends Model
      */
     public function translit($string, $language)
     {
-        $this->hook->fire('language.translit.before', $string, $language);
+        $translit = null;
+        $this->hook->fire('language.translit', $string, $language, $translit);
 
-        if (empty($string)) {
-            return '';
+        if (isset($translit)) {
+            return $translit;
         }
 
-        $this->library->load('transliterator');
-
-        $translit = \Translit::get($string, '?', $language);
-        $this->hook->fire('language.translit.after', $string, $language, $translit);
-        return $translit;
+        if (function_exists('transliterator_transliterate')) {
+            return transliterator_transliterate('Any-Latin; Latin-ASCII; [\u0100-\u7fff] remove', $string);
+        }
+        return $string;
     }
 
     /**
@@ -507,11 +494,9 @@ class Language extends Model
     public function getIso($code = null)
     {
         $data = include GC_CONFIG_LANGUAGE;
-
         if (isset($code)) {
             return isset($data[$code]) ? (array) $data[$code] : array();
         }
-
         return $data;
     }
 

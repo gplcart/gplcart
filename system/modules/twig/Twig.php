@@ -120,12 +120,6 @@ class Twig extends Module
         $template .= '.twig';
 
         if (is_file($template)) {
-
-            if (empty($this->twig)) {
-                $this->library->load('twig');
-                $this->settings = $this->config->module('twig');
-            }
-
             $rendered = $this->render($template, $data, $object);
         }
     }
@@ -137,6 +131,11 @@ class Twig extends Module
      */
     public function getTwigInstance($path, $object)
     {
+        if (empty($this->twig)) {
+            $this->library->load('twig');
+            $this->settings = $this->config->module('twig');
+        }
+        
         if (isset($this->twig[$path])) {
             return $this->twig[$path];
         }

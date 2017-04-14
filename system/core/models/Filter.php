@@ -11,6 +11,7 @@ namespace gplcart\core\models;
 
 use gplcart\core\Model,
     gplcart\core\Cache;
+use gplcart\core\helpers\Filter as FilterHelper;
 
 /**
  * Manages basic behaviors and data related to HTML filters
@@ -19,11 +20,19 @@ class Filter extends Model
 {
 
     /**
-     * Constructor
+     * Filter helper instance
+     * @var \gplcart\core\helpers\Filter $filter
      */
-    public function __construct()
+    protected $filter;
+
+    /**
+     * @param FilterHelper $filter
+     */
+    public function __construct(FilterHelper $filter)
     {
         parent::__construct();
+
+        $this->filter = $filter;
     }
 
     /**
@@ -45,7 +54,7 @@ class Filter extends Model
             return $filtered;
         }
 
-        return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
+        return $this->filter->filter($text);
     }
 
     /**
