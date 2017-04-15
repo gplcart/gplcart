@@ -20,7 +20,14 @@ Also you'll need the following extension enabled:
 
 ## Installation ##
 
-See INSTALL.txt
+Old school:
+
+1. Download and extract to your hosting directory all files inside "gplcart" directory
+2. Go to http://yourdomain.com and follow the instructions
+
+Composer:
+
+    composer require gplcart/gplcart
 
 ## Some key features ##
 

@@ -17,4 +17,3 @@ files/private/*
 !files/private/examples
 !files/private/logs
 !files/private/backup
-/vendor/

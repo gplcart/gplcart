@@ -9,7 +9,6 @@
 
 namespace gplcart\core;
 
-use RuntimeException;
 use gplcart\core\Hook,
     gplcart\core\Cache;
 use gplcart\core\helpers\Graph as GraphHelper;
@@ -47,12 +46,6 @@ class Library
     protected $loaded = array();
 
     /**
-     * Path to default library config file
-     * @var string
-     */
-    protected $default_config;
-
-    /**
      * Constructor
      * @param Cache $cache
      * @param Hook $hook
@@ -63,17 +56,6 @@ class Library
         $this->hook = $hook;
         $this->cache = $cache;
         $this->graph = $graph;
-
-        $required_vendor = GC_VENDOR_NAME;
-        $this->default_config = GC_VENDOR_DIR . "/$required_vendor/" . GC_VENDOR_CONFIG;
-
-        if (!is_readable($this->default_config)) {
-            $this->clearCache();
-            $message = "Required library $required_vendor not found."
-                    . " Did you install it from https://github.com/$required_vendor?"
-                    . " See INSTALL.txt for details.";
-            throw new RuntimeException($message);
-        }
     }
 
     /**
@@ -121,7 +103,7 @@ class Library
             return $libraries;
         }
 
-        $libraries = $this->getJsonData($this->default_config);
+        $libraries = include GC_CONFIG_LIBRARY;
         $this->hook->fire('library.list', $libraries);
 
         $libraries = $this->prepareList($libraries);
@@ -146,14 +128,24 @@ class Library
     {
         foreach ($libraries as $library_id => &$library) {
 
+            if (empty($library['type'])) {
+                unset($libraries[$library_id]);
+                continue;
+            }
+
             $library['id'] = $library_id;
 
             if (!empty($library['module']) && empty($library['basepath'])) {
                 $library['basepath'] = GC_MODULE_DIR . "/{$library['module']}";
             }
 
+            if (empty($library['basepath']) && $library['type'] === 'asset') {
+                $library['basepath'] = GC_ASSET_LIBRARY_DIR . "/$library_id";
+            }
+
             if (empty($library['basepath'])) {
-                $library['basepath'] = $this->getDefaultBasePath($library);
+                unset($libraries[$library_id]);
+                continue;
             }
 
             if (!isset($library['version'])) {
@@ -187,8 +179,9 @@ class Library
         }
 
         $readable = 0;
-        foreach ($library['files'] as $file) {
-            $readable += (int) is_readable($library['basepath'] . "/$file");
+        foreach ($library['files'] as $path) {
+            $file = $library['basepath'] . "/$path";
+            $readable += (int) (is_file($file) && is_readable($file));
         }
 
         return count($library['files']) == $readable;
@@ -224,17 +217,6 @@ class Library
         }
 
         return $this->getVersionSource($file, $library);
-    }
-
-    /**
-     * Returns a base path to a library
-     * @param array $library
-     * @return string
-     */
-    protected function getDefaultBasePath(array $library)
-    {
-        $base = GC_VENDOR_DIR_NAME . '/' . GC_VENDOR_NAME . "/{$library['type']}/{$library['id']}";
-        return gplcart_absolute_path($base);
     }
 
     /**
