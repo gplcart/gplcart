@@ -27,7 +27,9 @@ Old school:
 
 Composer:
 
-    composer require gplcart/gplcart
+Clone to `test` directory
+
+    composer create-project gplcart/gplcart test --stability dev
 
 ## Some key features ##
 
