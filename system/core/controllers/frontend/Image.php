@@ -25,6 +25,30 @@ class Image extends FrontendController
     protected $response;
 
     /**
+     * A path to the cached image from the current URL
+     * @var string
+     */
+    protected $data_path;
+
+    /**
+     * A full server path to the source image file
+     * @var string
+     */
+    protected $data_source_file;
+
+    /**
+     * An image style ID from the current URL
+     * @var string
+     */
+    protected $data_imagestyle_id;
+
+    /**
+     * A full server path to the cached image
+     * @var string
+     */
+    protected $data_cached_file;
+
+    /**
      * Constructor
      * @param ResponseHelper $response
      */
@@ -40,6 +64,67 @@ class Image extends FrontendController
      */
     public function cache()
     {
+        $this->setPathImage();
+        $this->setFileImage();
+        $this->setDirectoryImage();
+        $this->setCacheImage();
+
+        $this->tryOutputImage();
+        $this->checkCacheDirectoryImage();
+        $this->applyActionsImage();
+
+        $this->tryOutputImage();
+        $this->response->error404(false);
+    }
+
+    /**
+     * Set full server path to the cached image
+     */
+    protected function setCacheImage()
+    {
+        $this->data_cached_file = "{$this->data_imagestyle_directory}/" . basename($this->data_path);
+    }
+
+    /**
+     * Check image the image style directory exists. If not - create it
+     */
+    protected function checkCacheDirectoryImage()
+    {
+        if (!is_dir($this->data_imagestyle_directory) && !mkdir($this->data_imagestyle_directory, 0755, true)) {
+            $this->response->error404(false);
+        }
+    }
+
+    /**
+     * Apply all defined actions to the source image
+     */
+    protected function applyActionsImage()
+    {
+        $actions = $this->image->getStyleActions($this->data_imagestyle_id);
+
+        if (empty($actions)) {
+            $this->response->error404(false);
+        } else {
+            $this->image->applyActions($actions, $this->data_source_file, $this->data_cached_file);
+        }
+    }
+
+    /**
+     * Check if the cached image exists and output it
+     */
+    protected function tryOutputImage()
+    {
+        if (is_file($this->data_cached_file)) {
+            $headers = array('headers' => $this->getHeaders($this->data_cached_file));
+            $this->response->file($this->data_cached_file, $headers);
+        }
+    }
+
+    /**
+     * Parse the current URL path and extract an image style ID and expected path to the cached image
+     */
+    protected function setPathImage()
+    {
         $path = urldecode(strtok($this->request->urn(), '?'));
         $parts = explode('files/image/cache/', $path);
 
@@ -53,50 +138,46 @@ class Image extends FrontendController
             $this->response->error404(false);
         }
 
-        $imagestyle_id = array_shift($parts);
+        $this->data_imagestyle_id = array_shift($parts);
 
         if ($parts[0] == 'image') {
             unset($parts[0]);
         }
 
-        $image = implode('/', $parts);
-
-        $server_file = GC_FILE_DIR . "/image/$image";
-
-        if (!file_exists($server_file)) {
-            $this->response->error404(false);
-        }
-
-        $imagestyle_directory = GC_IMAGE_CACHE_DIR . "/$imagestyle_id";
-        $image_directory = pathinfo($image, PATHINFO_DIRNAME);
-
-        if (!empty($image_directory)) {
-            $imagestyle_directory = GC_IMAGE_CACHE_DIR . "/$imagestyle_id/$image_directory";
-        }
-
-        $cached_image = "$imagestyle_directory/" . basename($image);
-
-        if (file_exists($cached_image)) {
-            $this->response->file($cached_image, array('headers' => $this->getHeaders($cached_image)));
-        }
-
-        if (!file_exists($imagestyle_directory) && !mkdir($imagestyle_directory, 0755, true)) {
-            $this->response->error404(false);
-        }
-
-        $actions = $this->image->getStyleActions($imagestyle_id);
-
-        if (empty($actions)) {
-            $this->response->error404(false);
-        }
-
-        $actions['save'] = array('value' => array($cached_image));
-        $this->image->modify($server_file, $actions);
-        $this->response->file($cached_image, array('headers' => $this->getHeaders($cached_image)));
+        $this->data_path = implode('/', $parts);
     }
 
     /**
-     * Returns cache headers
+     * Set the current image style directory
+     */
+    protected function setDirectoryImage()
+    {
+        $imagestyle_directory = GC_IMAGE_CACHE_DIR . "/{$this->data_imagestyle_id}";
+        $image_directory = pathinfo($this->data_path, PATHINFO_DIRNAME);
+
+        if (!empty($image_directory)) {
+            $imagestyle_directory = GC_IMAGE_CACHE_DIR . "/{$this->data_imagestyle_id}/$image_directory";
+        }
+
+        $this->data_imagestyle_directory = $imagestyle_directory;
+    }
+
+    /**
+     * Set the full expected server path to the cached image
+     */
+    protected function setFileImage()
+    {
+        $file = GC_FILE_DIR . "/image/{$this->data_path}";
+
+        if (is_file($file)) {
+            $this->data_source_file = $file;
+        } else {
+            $this->response->error404(false);
+        }
+    }
+
+    /**
+     * Returns HTTP headers
      * @param string $file
      * @return array
      */

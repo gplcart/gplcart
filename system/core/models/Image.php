@@ -9,10 +9,12 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
-use gplcart\core\Library;
+use gplcart\core\Model,
+    gplcart\core\Cache,
+    gplcart\core\Handler;
 use gplcart\core\helpers\Url as UrlHelper;
-use gplcart\core\models\File as FileModel;
+use gplcart\core\models\File as FileModel,
+    gplcart\core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to images
@@ -27,31 +29,72 @@ class Image extends Model
     protected $file;
 
     /**
+     * Language model instance
+     * @var \gplcart\core\models\Language $language;
+     */
+    protected $language;
+
+    /**
      * Url class instance
      * @var \gplcart\core\helpers\Url $url
      */
     protected $url;
 
     /**
-     * Library class instance
-     * @var \gplcart\core\Library $library
-     */
-    protected $library;
-
-    /**
-     * Constructor
+     * @param LanguageModel $language
      * @param FileModel $file
      * @param UrlHelper $url
-     * @param Library $library
      */
-    public function __construct(FileModel $file, UrlHelper $url,
-            Library $library)
+    public function __construct(LanguageModel $language, FileModel $file,
+            UrlHelper $url)
     {
         parent::__construct();
 
         $this->url = $url;
         $this->file = $file;
-        $this->library = $library;
+        $this->language = $language;
+    }
+
+    /**
+     * Returns an array of image style action handlers
+     * @return array
+     */
+    public function getActionHandlers()
+    {
+        $handlers = &Cache::memory(__METHOD__);
+
+        if (isset($handlers)) {
+            return $handlers;
+        }
+
+        $handlers = include GC_CONFIG_IMAGE_ACTION;
+        $this->hook->fire('imagestyle.action.handlers', $handlers);
+        return $handlers;
+    }
+
+    /**
+     * Returns a single image action handler
+     * @param string $action_id
+     * @return array
+     */
+    public function getActionHandler($action_id)
+    {
+        $actions = $this->getActionHandlers();
+        return empty($actions[$action_id]) ? array() : $actions[$action_id];
+    }
+
+    /**
+     * Apply a single action to an image file
+     * @param string $source
+     * @param string $target
+     * @param array $handler
+     * @param array $action
+     * @return boolean
+     */
+    public function processAction(&$source, &$target, $handler, &$action)
+    {
+        $callback = Handler::get($handler, null, 'process');
+        return call_user_func_array($callback, array(&$source, &$target, &$action));
     }
 
     /**
@@ -94,31 +137,21 @@ class Image extends Model
     }
 
     /**
-     * Modify an image (crop, watermark etc)
-     * @param string $file
+     * Modify an image
      * @param array $actions
+     * @param string $source
+     * @param string $target
+     * @return int
      */
-    public function modify($file, array $actions = array())
+    public function applyActions(array $actions, $source, $target)
     {
-        $this->library->load('simpleimage');
-
         $applied = 0;
-
-        try {
-
-            $object = new \abeautifulsite\SimpleImage($file);
-
-            foreach ($actions as $action_id => $action) {
-                if ($this->validateAction($file, $action_id, $action)) {
-                    $applied++;
-                    call_user_func_array(array($object, $action_id), (array) $action['value']);
-                }
+        foreach ($actions as $action_id => $data) {
+            $handler = $this->getActionHandler($action_id);
+            if (!empty($handler)) {
+                $applied += (int) $this->processAction($source, $target, $handler, $data);
             }
-        } catch (\Exception $e) {
-            trigger_error($e->getMessage());
-            return 0;
         }
-
         return $applied;
     }
 
@@ -132,7 +165,6 @@ class Image extends Model
         foreach ($this->getStyleList() as $imagestyle_id => $imagestyle) {
             $names[$imagestyle_id] = $imagestyle['name'];
         }
-
         return $names;
     }
 
@@ -142,9 +174,8 @@ class Image extends Model
      */
     public function getStyleList()
     {
-        $default_imagestyles = $this->defaultStyles();
+        $default_imagestyles = include GC_CONFIG_IMAGE_STYLE;
         $saved_imagestyles = $this->config->get('imagestyles', array());
-
         $imagestyles = gplcart_array_merge($default_imagestyles, $saved_imagestyles);
 
         foreach ($imagestyles as $imagestyle_id => &$imagestyle) {
@@ -153,7 +184,6 @@ class Image extends Model
         }
 
         $this->hook->fire('imagestyle.list', $imagestyles);
-
         return $imagestyles;
     }
 
@@ -206,7 +236,6 @@ class Image extends Model
         $this->config->set('imagestyles', $imagestyles);
 
         $this->hook->fire('imagestyle.add.after', $data, $imagestyle_id);
-
         return $imagestyle_id;
     }
 
@@ -308,12 +337,10 @@ class Image extends Model
         }
 
         $image = trim($image, "/");
-
         $file = GC_IMAGE_CACHE_DIR . "/$imagestyle_id/" . preg_replace('/^image\//', '', $image);
         $options = file_exists($file) ? array('v' => filemtime($file)) : array('v' => GC_TIME);
-        $path = "files/image/cache/$imagestyle_id/$image";
 
-        return $this->url->get($path, $options, $absolute);
+        return $this->url->get("files/image/cache/$imagestyle_id/$image", $options, $absolute);
     }
 
     /**
@@ -323,130 +350,8 @@ class Image extends Model
      */
     public function urlFromPath($path)
     {
-        return $this->url->get('files/' . gplcart_relative_path($path), array(
-                    'v' => filemtime(GC_FILE_DIR . "/$path")));
-    }
-
-    /**
-     * Returns true if the action is valid
-     * @param string $file
-     * @param integer $action_id
-     * @param array $action
-     * @return boolean
-     */
-    protected function validateAction($file, $action_id, array &$action)
-    {
-        if ($action_id == 'overlay') {
-
-            $action['value'][0] = GC_FILE_DIR . '/' . $action['value'][0];
-            $overlay_pathinfo = pathinfo($action['value'][0]);
-            $fileinfo = pathinfo($file);
-
-            if ($overlay_pathinfo['extension'] != $fileinfo['extension']) {
-                $action['value'][0] = GC_FILE_DIR . "/{$overlay_pathinfo['filename']}.{$fileinfo['extension']}";
-            }
-
-            if (!file_exists($action['value'][0])) {
-                return false;
-            }
-        }
-
-        if ($action_id == 'text') {
-            $action['value'][1] = GC_FILE_DIR . '/' . $action['value'][1];
-            if (!file_exists($action['value'][1])) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Returns default image styles
-     * @return array
-     */
-    protected function defaultStyles()
-    {
-        $styles = array();
-
-        $styles[1] = array(
-            'name' => '50X50',
-            'status' => 1,
-            'actions' => array(
-                'thumbnail' => array(
-                    'weight' => 0,
-                    'value' => array(50, 50),
-                ),
-            ),
-        );
-
-        $styles[2] = array(
-            'name' => '100X100',
-            'status' => 1,
-            'actions' => array(
-                'thumbnail' => array(
-                    'weight' => 0,
-                    'value' => array(100, 100),
-                ),
-            ),
-        );
-
-        $styles[3] = array(
-            'name' => '150X150',
-            'status' => 1,
-            'actions' => array(
-                'thumbnail' => array(
-                    'weight' => 0,
-                    'value' => array(150, 150),
-                ),
-            ),
-        );
-
-        $styles[4] = array(
-            'name' => '200X200',
-            'status' => 1,
-            'actions' => array(
-                'thumbnail' => array(
-                    'weight' => 0,
-                    'value' => array(200, 200),
-                ),
-            ),
-        );
-
-        $styles[5] = array(
-            'name' => '300X300',
-            'status' => 1,
-            'actions' => array(
-                'thumbnail' => array(
-                    'weight' => 0,
-                    'value' => array(300, 300),
-                ),
-            ),
-        );
-
-        $styles[6] = array(
-            'name' => '400X400',
-            'status' => 1,
-            'actions' => array(
-                'thumbnail' => array(
-                    'weight' => 0,
-                    'value' => array(400, 400),
-                ),
-            ),
-        );
-
-        $styles[7] = array(
-            'name' => '1140X400',
-            'status' => 1,
-            'actions' => array(
-                'thumbnail' => array(
-                    'weight' => 0,
-                    'value' => array(1140, 380),
-                ),
-            ),
-        );
-
-        return $styles;
+        $query = array('v' => filemtime(GC_FILE_DIR . "/$path"));
+        return $this->url->get('files/' . gplcart_relative_path($path), $query);
     }
 
 }

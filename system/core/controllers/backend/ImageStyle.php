@@ -109,6 +109,7 @@ class ImageStyle extends BackendController
         $this->setBreadcrumbEditImageStyle();
 
         $this->setData('imagestyle', $this->data_imagestyle);
+        $this->setData('action_handlers', $this->image->getActionHandlers());
 
         $this->submitImageStyle();
         $this->setDataEditImageStyle();

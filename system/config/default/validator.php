@@ -111,7 +111,7 @@ return array(
     ),
     'image_style' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\components\\ImageStyle', 'imageStyle')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Image', 'style')
         )
     ),
     'import' => array(
