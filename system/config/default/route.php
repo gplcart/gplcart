@@ -532,7 +532,7 @@ return array(
     ),
     'admin/module/list' => array(
         'access' => 'module',
-        'menu' => array('admin' => 'Local'),
+        'menu' => array('admin' => 'On site'),
         'handlers' => array(
             'controller' => array('gplcart\\core\\controllers\\backend\\Module', 'listModule')
         )
@@ -541,13 +541,6 @@ return array(
         'access' => 'module_upload',
         'handlers' => array(
             'controller' => array('gplcart\\core\\controllers\\backend\\Module', 'uploadModule')
-        )
-    ),
-    'admin/module/marketplace' => array(
-        'access' => 'marketplace',
-        'menu' => array('admin' => 'Marketplace'),
-        'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\backend\\Module', 'marketplaceModule')
         )
     ),
     'admin/settings' => array(

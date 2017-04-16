@@ -16,11 +16,6 @@
         <?php echo $this->text('Upload'); ?>
       </a>
       <?php } ?>
-      <?php if ($this->access('marketplace')) { ?>
-      <a class="btn btn-default" href="<?php echo $this->url('admin/module/marketplace'); ?>">
-        <?php echo $this->text('Marketplace'); ?>
-      </a>
-      <?php } ?>
     </div>
   </div>
   <?php } ?>
@@ -86,7 +81,7 @@
             <?php } ?>
           </td>
           <td class="middle">
-            <?php if($info['type'] != 'installer') { ?>
+            <?php if($info['type'] !== 'installer') { ?>
             <ul class="list-inline">
               <?php if (isset($info['status'])) { ?>
               <?php if ($info['status']) { ?>

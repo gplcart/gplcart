@@ -72,7 +72,6 @@ return array(
     'order_add' => 'Order: add',
     'order_edit' => 'Order: edit',
     'order_delete' => 'Order: delete',
-    'marketplace' => 'Marketplace: access',
     'module' => 'Module: access',
     'module_edit' => 'Module: configure',
     'module_install' => 'Module: install',

@@ -9,8 +9,7 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\helpers\Curl as CurlHelper,
-    gplcart\core\helpers\Graph as GraphHelper;
+use gplcart\core\helpers\Graph as GraphHelper;
 use gplcart\core\models\Module as ModuleModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
@@ -35,29 +34,19 @@ class Module extends BackendController
     protected $graph;
 
     /**
-     * Curl class instance
-     * @var \gplcart\core\helpers\Curl $curl
-     */
-    protected $curl;
-
-    /**
      * The current module
      * @var array
      */
     protected $data_module = array();
 
     /**
-     * Constructor
      * @param ModuleModel $module
-     * @param CurlHelper $curl
      * @param GraphHelper $graph
      */
-    public function __construct(ModuleModel $module, CurlHelper $curl,
-            GraphHelper $graph)
+    public function __construct(ModuleModel $module, GraphHelper $graph)
     {
         parent::__construct();
 
-        $this->curl = $curl;
         $this->graph = $graph;
         $this->module = $module;
     }
@@ -350,7 +339,9 @@ class Module extends BackendController
     {
         $this->setBreadcrumbUploadModule();
         $this->setTitleUploadModule();
+
         $this->controlAccessUploadModule();
+
         $this->submitUploadModule();
         $this->outputUploadModule();
     }
@@ -444,109 +435,6 @@ class Module extends BackendController
     protected function outputUploadModule()
     {
         $this->output('module/upload');
-    }
-
-    /**
-     * Displays the marketplace overview page
-     */
-    public function marketplaceModule()
-    {
-        $this->setTitleMarketplaceModule();
-        $this->setBreadcrumbMarketplaceModule();
-
-        $default = array(
-            'sort' => $this->config('marketplace_sort', 'views'),
-            'order' => $this->config('marketplace_order', 'desc')
-        );
-
-        $query = $this->getFilterQuery($default);
-        $total = $this->getTotalMarketplaceModule($query);
-
-        $query['limit'] = $this->setPager($total, $query);
-        $results = $this->getListMarketplaceModule($query);
-
-        $fields = array('category_id', 'price', 'views',
-            'rating', 'title', 'downloads');
-
-        $this->setFilter($fields);
-        $this->setData('marketplace', $results);
-        $this->outputMarketplaceModule();
-    }
-
-    /**
-     * Returns total marketplace items found for the given conditions
-     * @param array $options
-     * @return integer
-     */
-    protected function getTotalMarketplaceModule(array $options = array())
-    {
-        $options['count'] = true;
-        $result = $this->getListMarketplaceModule($options);
-
-        return empty($result['total']) ? 0 : (int) $result['total'];
-    }
-
-    /**
-     * Returns an array of marketplace items or null on error
-     * @param array $options
-     * @return array|null
-     */
-    protected function getListMarketplaceModule(array $options = array())
-    {
-        $options += array('core' => strtok(GC_VERSION, '.'));
-        $response = $this->curl->post(GC_MARKETPLACE_API_URL, array('fields' => $options));
-        $info = $this->curl->getInfo();
-
-        if (empty($info['http_code']) || $info['http_code'] != 200) {
-            return array();
-        }
-
-        $results = json_decode($response, true);
-
-        if (empty($results['items'])) {
-            return $results;
-        }
-
-        foreach ($results['items'] as &$item) {
-            $item['price'] = floatval($item['price']);
-        }
-        return $results;
-    }
-
-    /**
-     * Sets titles on the marketplace overview page
-     */
-    protected function setTitleMarketplaceModule()
-    {
-        $this->setTitle($this->text('Marketplace'));
-    }
-
-    /**
-     * Sets breadcrumbs on the marketplace overview page
-     */
-    protected function setBreadcrumbMarketplaceModule()
-    {
-        $breadcrumbs = array();
-
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')
-        );
-
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin/module/list'),
-            'text' => $this->text('Modules')
-        );
-
-        $this->setBreadcrumbs($breadcrumbs);
-    }
-
-    /**
-     * Renders an outputs the marketplace overview page
-     */
-    protected function outputMarketplaceModule()
-    {
-        $this->output('module/marketplace');
     }
 
 }
