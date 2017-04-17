@@ -535,6 +535,16 @@ class Controller
     }
 
     /**
+     * Shortcut for escape()
+     * @param string $string
+     * @return string
+     */
+    public function e($string)
+    {
+        return $this->escape($string);
+    }
+
+    /**
      * Returns JSON escaped string
      * @param mixed $data
      * @return string
