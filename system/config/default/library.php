@@ -72,59 +72,6 @@ return array(
             'jquery' => '>= 1.7.0',
         )
     ),
-    'lightgallery' => array(
-        'name' => 'JQuery lightGallery',
-        'description' => 'A customizable, modular, responsive, lightbox gallery plugin',
-        'type' => 'asset',
-        'url' => 'https://github.com/sachinchoolur/lightGallery',
-        'download' => 'https://github.com/sachinchoolur/lightGallery/archive/1.3.8.zip',
-        'version_source' => array(
-            'file' => 'dist/js/lightgallery.min.js',
-            'pattern' => '/v(\\d+\\.+\\d+\\.+\\d+)/',
-        ),
-        'files' => array(
-            'dist/js/lightgallery.min.js',
-            'dist/css/lightgallery.min.css',
-        ),
-        'dependencies' => array(
-            'jquery' => '>= 1.8',
-        )
-    ),
-    'lightgallery_thumbnail' => array(
-        'name' => 'LightGallery thumbnail',
-        'description' => 'Thumbnail module for lightGallery',
-        'type' => 'asset',
-        'url' => 'https://github.com/sachinchoolur/lg-thumbnail',
-        'download' => 'https://github.com/sachinchoolur/lg-thumbnail/archive/1.0.2.zip',
-        'version_source' => array(
-            'file' => 'dist/lg-thumbnail.min.js',
-            'pattern' => '/v(\\d+\\.+\\d+\\.+\\d+)/',
-        ),
-        'files' => array(
-            'dist/lg-thumbnail.min.js',
-        ),
-        'dependencies' => array(
-            'lightgallery' => '>= 1.3.0',
-        )
-    ),
-    'lightslider' => array(
-        'name' => 'JQuery lightSlider',
-        'description' => 'A lightweight responsive content slider with carousel thumbnails navigation',
-        'type' => 'asset',
-        'url' => 'https://github.com/sachinchoolur/lightslider',
-        'download' => 'https://github.com/sachinchoolur/lightslider/archive/1.1.6.zip',
-        'version_source' => array(
-            'file' => 'dist/js/lightslider.min.js',
-            'pattern' => '/v(\\d+\\.+\\d+\\.+\\d+)/',
-        ),
-        'files' => array(
-            'dist/js/lightslider.min.js',
-            'dist/css/lightslider.min.css',
-        ),
-        'dependencies' => array(
-            'jquery' => '>= 1.8',
-        )
-    ),
     'jquery_match_height' => array(
         'name' => 'jQuery Match Height',
         'description' => 'A responsive equal heights plugin for jQuery',
