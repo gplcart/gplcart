@@ -46,6 +46,12 @@ class Compare extends FrontendController
     protected $field_value;
 
     /**
+     * An array of product ID to compare
+     * @var array
+     */
+    protected $data_compare = array();
+
+    /**
      * Constructor
      * @param ProductClassModel $product_class
      * @param FieldModel $field
@@ -145,13 +151,24 @@ class Compare extends FrontendController
      */
     public function compareCompare($ids)
     {
+        $this->setProductCompare($ids);
+        $this->controlAccessCompareCompare();
+
         $this->setTitleCompareCompare();
         $this->setBreadcrumbCompareCompare();
 
-        $this->controlAccessCompareCompare();
-
         $this->setDataCompareCompare();
         $this->outputCompareCompare();
+    }
+
+    /**
+     * Set an array of product IDs to compare
+     * @param string $ids
+     * @return array
+     */
+    protected function setProductCompare($ids)
+    {
+        return $this->data_compare = array_filter(array_map('trim', explode(',', $ids)), 'ctype_digit');
     }
 
     /**
@@ -159,9 +176,7 @@ class Compare extends FrontendController
      */
     protected function controlAccessCompareCompare()
     {
-        $items = $this->compare->getList();
-
-        if (count($items) < 2) {
+        if (count($this->data_compare) < 2) {
             $this->redirect('compare');
         }
     }
@@ -179,9 +194,7 @@ class Compare extends FrontendController
             )
         );
 
-        $conditions = array(
-            'product_id' => $this->compare->getList());
-
+        $conditions = array('product_id' => $this->data_compare);
         $products = $this->getProducts($conditions, $options);
 
         if (empty($products)) {
@@ -193,18 +206,16 @@ class Compare extends FrontendController
         $fields = array('option' => array(), 'attribute' => array());
 
         foreach ($reindexed[$product_class_id] as $product_id => &$product) {
-
             $product_fields = $this->product_field->getList($product_id);
-
             foreach ($product_fields as $type => $items) {
 
-                $fields = (array) $this->field->getList(array('field_id' => array_keys($items)));
-                $values = (array) $this->field_value->getList(array('field_id' => array_keys($items)));
+                $field_list = (array) $this->field->getList(array('field_id' => array_keys($items)));
+                $values_list = (array) $this->field_value->getList(array('field_id' => array_keys($items)));
 
-                foreach ($fields as $field_id => $field) {
+                foreach ($field_list as $field_id => $field) {
                     $fields[$type][$field_id] = $field['title'];
                     foreach ($items[$field_id] as $field_value_id) {
-                        $product["{$type}_values"][$field_id][] = $values[$field_value_id]['title'];
+                        $product["{$type}_values"][$field_id][] = $values_list[$field_value_id]['title'];
                     }
                 }
             }
