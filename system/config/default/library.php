@@ -149,25 +149,6 @@ return array(
             'jquery' => '>= 1.9.1',
         )
     ),
-    'bootstrap_colorpicker' => array(
-        'name' => 'Bootstrap Colorpicker 2',
-        'description' => 'Simple and customizable colorpicker component for Twitter Bootstrap',
-        'type' => 'asset',
-        'url' => 'https://github.com/itsjavi/bootstrap-colorpicker',
-        'download' => 'https://github.com/itsjavi/bootstrap-colorpicker/archive/2.3.5.zip',
-        'version_source' => array(
-            'file' => 'dist/js/bootstrap-colorpicker.min.js',
-            'pattern' => '/v(\\d+\\.+\\d+\\.+\\d+)/',
-        ),
-        'files' => array(
-            'dist/js/bootstrap-colorpicker.min.js',
-            'dist/css/bootstrap-colorpicker.min.css',
-        ),
-        'dependencies' => array(
-            'jquery' => '>= 1.1',
-            'bootstrap' => '>= 3.0',
-        )
-    ),
     'bootstrap_select' => array(
         'name' => 'Bootstrap Select',
         'description' => 'A jQuery plugin that utilizes Bootstrap\'s dropdown.js to style and bring additional functionality to standard select elements',

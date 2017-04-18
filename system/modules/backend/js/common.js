@@ -363,14 +363,6 @@
     };
 
     /**
-     * Adds colorpicker to the field
-     * @returns {undefined}
-     */
-    GplCart.onload.handleColorpicker = function () {
-        $('.input-group.color').colorpicker();
-    };
-
-    /**
      * Updates categories depending on chosen store
      * @returns {undefined}
      */
