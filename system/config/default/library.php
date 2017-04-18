@@ -71,27 +71,6 @@ return array(
             'jquery' => '>= 1.7.0',
         )
     ),
-    'primeui' => array(
-        'name' => 'Prime UI',
-        'description' => 'Rich set of javascript-css only widgets',
-        'type' => 'asset',
-        'url' => 'https://github.com/primefaces/primeui',
-        'download' => 'https://github.com/primefaces/primeui/archive/v4.1.15.zip',
-        'version_source' => array(
-            'file' => 'package.json',
-        ),
-        'files' => array(
-            'components/core/core.js',
-            'components/growl/growl.js',
-            'components/terminal/terminal.js',
-            'components/core/core.css',
-            'components/growl/growl.css',
-            'components/terminal/terminal.css',
-        ),
-        'dependencies' => array(
-            'jquery_ui' => '>= 1.12',
-        )
-    ),
     'jquery_ui' => array(
         'name' => 'jQuery UI',
         'description' => 'jQuery user interface library',

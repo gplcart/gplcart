@@ -99,26 +99,6 @@
     };
 
     /**
-     * Displays an alert popup with a custom message
-     * @param {String} message
-     * @param {String} type
-     * @returns {undefined}
-     */
-    var setAlert = function (text, severity) {
-
-        if (!$.fn.puigrowl) {
-            return;
-        }
-
-        var settings = {life: 1000},
-                message = [{severity: severity, summary: '', detail: text}];
-
-        $('.growl-message').remove();
-        $('body').append('<div class="growl-message"></div>');
-        $('.growl-message').puigrowl(settings).puigrowl('show', message);
-    };
-
-    /**
      * Updates order view form
      * @returns {undefined}
      */
@@ -328,7 +308,7 @@
                     url: GplCart.settings.urn,
                     success: function (data) {
                         if (typeof data === 'object' && data.success) {
-                            setAlert(data.success, 'success');
+                            alert(data.success);
                             $.each(weight, function (i, v) {
                                 $('tr[data-id=' + i + ']').find('td .weight').text(v);
                             });
@@ -365,7 +345,7 @@
                     $(this).closest('tr').find('td .weight').text(i);
                 });
                 message = GplCart.text('Changes will not be saved until the form is submitted');
-                setAlert(message, 'warning');
+                alert(message);
             }
         });
     };
