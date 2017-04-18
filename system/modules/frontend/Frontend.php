@@ -48,8 +48,7 @@ class Frontend extends Module
                 'image_style_cart' => 3,
                 'image_style_option' => 1,
                 'image_style_collection_banner' => 7
-            ),
-            'dependencies' => array('twig' => '>= 1.0')
+            )
         );
     }
 
@@ -81,7 +80,7 @@ class Frontend extends Module
 
         if (!$controller->isInstalling()) {
             $controller->setJs('system/modules/frontend/js/common.js');
-            $libraries = array_merge($libraries, array('jquery_match_height', 'lightgallery', 'lightgallery_thumbnail', 'lightslider', 'jquery_ui'));
+            $libraries = array_merge($libraries, array('jquery_match_height', 'jquery_ui'));
         }
 
         $controller->addAssetLibrary($libraries);
