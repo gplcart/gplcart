@@ -184,7 +184,7 @@ class Compare extends Model
         }
 
         $array = explode('|', urldecode($cookie));
-        $items = array_filter(array_map('trim', $array), 'is_numeric');
+        $items = array_filter(array_map('trim', $array), 'ctype_digit');
 
         $this->hook->fire('compare.list', $items);
         return $items;
