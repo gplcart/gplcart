@@ -22,24 +22,6 @@ return array(
             'jquery-2.2.4.min.js',
         )
     ),
-    'jquery_mobile' => array(
-        'name' => 'Jquery Mobile',
-        'description' => 'A Touch-Optimized Web Framework',
-        'type' => 'asset',
-        'url' => 'https://jquerymobile.com',
-        'download' => 'http://jquerymobile.com/resources/download/jquery.mobile-1.4.5.zip',
-        'version_source' => array(
-            'file' => 'jquery.mobile-1.4.5.min.js',
-            'pattern' => '/jQuery Mobile (\\d+\\.+\\d+\\.+\\d+)/',
-        ),
-        'files' => array(
-            'jquery.mobile-1.4.5.min.js',
-            'jquery.mobile-1.4.5.min.css',
-        ),
-        'dependencies' => array(
-            'jquery' => '>= 1.8.0',
-        )
-    ),
     'cookie' => array(
         'name' => 'Cookie',
         'description' => 'A simple, lightweight JavaScript API for handling browser cookies',
