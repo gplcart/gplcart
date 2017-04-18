@@ -37,7 +37,7 @@
               <span aria-hidden="true">&times;</span>
             </button>
             <?php foreach ($strings as $string) { ?>
-            <?php echo $this->xss($string); ?>
+            <?php echo $this->filter($string); ?>
             <?php } ?>
           </div>
           <?php } ?>

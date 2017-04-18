@@ -88,7 +88,7 @@
         <tr class="collapse active" id="message-<?php echo $record['log_id']; ?>">
           <td colspan="5">
             <ul class="list-unstyled">
-              <li><b><?php echo $this->text('Message'); ?></b> : <?php echo $this->xss($record['text']); ?></li>
+              <li><b><?php echo $this->text('Message'); ?></b> : <?php echo $this->filter($record['text']); ?></li>
               <?php if (!empty($record['data']['file'])) { ?>
               <li><b><?php echo $this->text('File'); ?></b> : <?php echo $this->escape($record['data']['file']); ?></li>
               <?php } ?>

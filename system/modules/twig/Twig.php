@@ -240,8 +240,8 @@ class Twig extends Module
             d($object->getData($key));
         });
 
-        $functions[] = new \Twig_SimpleFunction('xss', function ($text, $filter = null) use ($object) {
-            return $object->xss($text, $filter);
+        $functions[] = new \Twig_SimpleFunction('filter', function ($text, $filter = null) use ($object) {
+            return $object->filter($text, $filter);
         }, array('is_safe' => array('all')));
 
         $functions[] = new \Twig_SimpleFunction('truncate', function ($string, $length = 100, $trimmarker = '...') use ($object) {

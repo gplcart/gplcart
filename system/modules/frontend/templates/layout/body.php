@@ -123,13 +123,13 @@
           <ol class="breadcrumb">
             <?php foreach ($breadcrumb as $item) { ?>
             <?php if (empty($item['url'])) { ?>
-            <li><?php echo $this->xss($item['text']); ?></li>
+            <li><?php echo $this->filter($item['text']); ?></li>
             <?php } else { ?>
-            <li><a href="<?php echo $this->e($item['url']); ?>"><?php echo $this->xss($item['text']); ?></a></li>
+            <li><a href="<?php echo $this->e($item['url']); ?>"><?php echo $this->filter($item['text']); ?></a></li>
             <?php } ?>
             <?php } ?>
             <?php if (!empty($page_title)) { ?>
-            <li><h1><?php echo $this->xss($page_title); ?></h1></li>
+            <li><h1><?php echo $this->filter($page_title); ?></h1></li>
             <?php } ?>
           </ol>
         </div>
@@ -167,7 +167,7 @@
             <div class="alert alert-<?php echo $this->e($type); ?> alert-dismissible fade in">
               <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">×</span></button>
               <?php foreach ($strings as $string) { ?>
-              <?php echo $this->xss($string); ?><br>
+              <?php echo $this->filter($string); ?><br>
               <?php } ?>
             </div>
             <?php } ?>
@@ -197,7 +197,7 @@
             &copy; 2015 - <?php echo date('Y'); ?> <a href="http://gplcart.com">GPL Cart</a>
           <ul class="list-unstyled">
             <?php if ($this->store('data.address')) { ?>
-            <li><i class="fa fa-map-marker"></i> <?php echo $this->xss($this->store('data.address')); ?></li>
+            <li><i class="fa fa-map-marker"></i> <?php echo $this->filter($this->store('data.address')); ?></li>
             <?php } ?>
             <?php if ($this->store('data.phone')) { ?>
             <li><i class="fa fa-phone"></i> <?php echo $this->e(implode(', ', $this->store('data.phone'))); ?></li>

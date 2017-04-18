@@ -21,7 +21,7 @@
     <?php } else { ?>
     <?php echo $this->e($method['name']); ?>
     <?php if (!empty($method['description'])) { ?>
-    <br><span class="small text-muted"><?php echo $this->xss($method['description']); ?></span>
+    <br><span class="small text-muted"><?php echo $this->filter($method['description']); ?></span>
     <?php } ?>
     <?php } ?>
   </td>

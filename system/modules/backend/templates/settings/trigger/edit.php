@@ -156,7 +156,7 @@
                 <td>
                 <?php echo $this->escape($info['title']); ?>
                 <?php if (!empty($info['description'])) { ?>
-                  <div class="text-muted small"><?php echo $this->xss($info['description']); ?></div>
+                  <div class="text-muted small"><?php echo $this->filter($info['description']); ?></div>
                 <?php } ?>
                 </td>
               </tr>

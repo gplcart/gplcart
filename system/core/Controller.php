@@ -555,16 +555,6 @@ class Controller
     }
 
     /**
-     * Strips or encodes unwanted characters
-     * @param string $string
-     * @return string
-     */
-    public function filter($string)
-    {
-        return filter_var($string, FILTER_SANITIZE_STRING);
-    }
-
-    /**
      * Returns truncated string with specified width
      * @param string $string
      * @param integer $length
@@ -615,12 +605,12 @@ class Controller
     }
 
     /**
-     * Clean up HTML string using HTML Purifier
+     * Clean up HTML string using defined HTML filters
      * @param string $string
      * @param mixed $filter
      * @return string
      */
-    public function xss($string, $filter = null)
+    public function filter($string, $filter = null)
     {
         if (!isset($filter)) {
             $filter = $this->current_filter;
@@ -660,7 +650,7 @@ class Controller
             $summary = trim(reset($parts));
         }
         if ($summary !== '' && $xss) {
-            $summary = $this->xss($summary, $filter);
+            $summary = $this->filter($summary, $filter);
         }
         return $summary;
     }

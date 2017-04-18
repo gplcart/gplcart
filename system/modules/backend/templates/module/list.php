@@ -151,7 +151,7 @@
             <?php } ?>
             <?php if ($info['description']) { ?>
             <div class="description">
-              <b><?php echo $this->text('Description'); ?></b>: <?php echo $this->xss($this->truncate($info['description'], 100)); ?>
+              <b><?php echo $this->text('Description'); ?></b>: <?php echo $this->filter($this->truncate($info['description'], 100)); ?>
             </div>
             <?php } ?>
             <?php if (isset($info['weight'])) { ?>

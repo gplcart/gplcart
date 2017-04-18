@@ -67,13 +67,13 @@
         <ol class="breadcrumb">
           <?php foreach ($breadcrumb as $item) { ?>
           <?php if(empty($item['url'])) { ?>
-          <li><?php echo $this->xss($item['text']); ?></li>
+          <li><?php echo $this->filter($item['text']); ?></li>
           <?php } else { ?>
-          <li><a href="<?php echo $this->escape($item['url']); ?>"><?php echo $this->xss($item['text']); ?></a></li>
+          <li><a href="<?php echo $this->escape($item['url']); ?>"><?php echo $this->filter($item['text']); ?></a></li>
           <?php } ?>
           <?php } ?>
           <?php if(!empty($page_title)) { ?>
-          <li><?php echo $this->xss($page_title); ?></li>
+          <li><?php echo $this->filter($page_title); ?></li>
           <?php } ?>
         </ol>
         <?php } ?>
@@ -96,7 +96,7 @@
             <span aria-hidden="true">×</span>
           </button>
           <?php foreach ($strings as $string) { ?>
-          <?php echo $this->xss($string); ?><br>
+          <?php echo $this->filter($string); ?><br>
           <?php } ?>
         </div>
         <?php } ?>

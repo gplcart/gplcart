@@ -14,7 +14,7 @@
         <td class="col-md-3">
           <?php echo $this->escape($status['title']); ?>
           <?php if (!empty($status['description'])) { ?>
-          <p class="small"><?php echo $this->xss($status['description']); ?></p>
+          <p class="small"><?php echo $this->filter($status['description']); ?></p>
           <?php } ?>
         </td>
         <td class="col-md-9">
@@ -29,7 +29,7 @@
           <div class="collapse" id="status-details-<?php echo $status_id; ?>">
             <ul class="list-unstyled">
               <?php foreach ($status['details'] as $status_message) { ?>
-              <li><?php echo $this->xss($status_message); ?></li>
+              <li><?php echo $this->filter($status_message); ?></li>
               <?php } ?>
             </ul>
           </div>

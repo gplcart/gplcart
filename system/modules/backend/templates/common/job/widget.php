@@ -20,7 +20,7 @@
           </div>
           <div class="message">
             <?php if (!empty($job['message']['start'])) { ?>
-            <span class="start"><?php echo $this->xss($job['message']['start']); ?></span>
+            <span class="start"><?php echo $this->filter($job['message']['start']); ?></span>
             <?php } ?>
           </div>
         </div>

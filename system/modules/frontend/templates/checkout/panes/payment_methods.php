@@ -32,7 +32,7 @@
             <?php } ?>
             <input type="radio" name="order[payment]" value="<?php echo $this->e($method_id); ?>"<?php echo isset($order['payment']) && $order['payment'] == $method_id ? ' checked' : ''; ?>> <?php echo $this->e($method['title']); ?>
             <?php if (!empty($method['description'])) { ?>
-            <div class="description small"><?php echo $this->xss($method['description']); ?></div>
+            <div class="description small"><?php echo $this->filter($method['description']); ?></div>
             <?php } ?>
           </label>
         </div>

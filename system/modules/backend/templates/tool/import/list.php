@@ -19,7 +19,7 @@
             <?php echo $this->error("$id.file"); ?>
             <?php if (!empty($operation['description'])) { ?>
             <div class="text-muted">
-              <?php echo $this->xss($operation['description']); ?>
+              <?php echo $this->filter($operation['description']); ?>
             </div>
             <?php } ?>
             <?php if (!empty($operation['csv']['template'])) { ?>

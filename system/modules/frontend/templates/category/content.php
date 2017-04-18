@@ -13,7 +13,7 @@
 <?php } ?>
 <?php if (!empty($category['description_1'])) { ?>
 <div class="row section description-1">
-  <div class="col-md-10"><?php echo $this->xss($category['description_1']); ?></div>
+  <div class="col-md-10"><?php echo $this->filter($category['description_1']); ?></div>
 </div>
 <?php } ?>
 <?php if (!empty($children)) { ?>
@@ -40,6 +40,6 @@
 <?php } ?>
 <?php if (!empty($category['description_2'])) { ?>
 <div class="row section description-2">
-  <div class="col-md-12"><?php echo $this->xss($category['description_2']); ?></div>
+  <div class="col-md-12"><?php echo $this->filter($category['description_2']); ?></div>
 </div>
 <?php } ?>

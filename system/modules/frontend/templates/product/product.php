@@ -24,7 +24,7 @@
     <?php if ($product['description']) { ?>
     <div class="row section description">
       <div class="col-md-12">
-        <?php echo $this->xss($product['description']); ?>
+        <?php echo $this->filter($product['description']); ?>
       </div>
     </div>
     <?php } ?>

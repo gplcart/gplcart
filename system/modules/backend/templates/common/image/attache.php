@@ -70,7 +70,7 @@
             </div>
             <div class="row">
               <div class="col-md-12">
-                <textarea class="form-control input-sm" name="<?php echo $name_prefix; ?>[images][<?php echo $index; ?>][translation][<?php echo $code; ?>][description]" placeholder="<?php echo $this->text('Description'); ?>"><?php echo isset($image['translation'][$code]['description']) ? $this->xss($image['translation'][$code]['description']) : ''; ?></textarea>
+                <textarea class="form-control input-sm" name="<?php echo $name_prefix; ?>[images][<?php echo $index; ?>][translation][<?php echo $code; ?>][description]" placeholder="<?php echo $this->text('Description'); ?>"><?php echo isset($image['translation'][$code]['description']) ? $this->filter($image['translation'][$code]['description']) : ''; ?></textarea>
               </div>
             </div>
           </div>

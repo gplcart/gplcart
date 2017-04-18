@@ -15,7 +15,7 @@
       <button type="button" class="close" data-dismiss="alert">
         <span aria-hidden="true">&times;</span>
       </button>
-      <?php echo $this->xss($text); ?>
+      <?php echo $this->filter($text); ?>
     </div>
     <?php } ?>
     <?php } ?>
@@ -133,7 +133,7 @@
       <button type="button" class="close" data-dismiss="alert">
         <span aria-hidden="true">&times;</span>
       </button>
-      <?php echo $this->xss($text); ?>
+      <?php echo $this->filter($text); ?>
     </div>
     <?php } ?>
     <?php } ?>
