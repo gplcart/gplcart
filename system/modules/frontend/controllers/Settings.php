@@ -9,8 +9,8 @@
 
 namespace gplcart\modules\frontend\controllers;
 
-use gplcart\core\models\Image as ImageModel;
-use gplcart\core\models\Module as ModuleModel;
+use gplcart\core\models\Image as ImageModel,
+    gplcart\core\models\Module as ModuleModel;
 use gplcart\modules\frontend\Frontend as FrontendModule;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
@@ -39,7 +39,6 @@ class Settings extends BackendController
     protected $frontend;
 
     /**
-     * Constructor
      * @param ImageModel $image
      * @param ModuleModel $module
      * @param FrontendModule $frontend
@@ -64,12 +63,32 @@ class Settings extends BackendController
 
         $this->setData('settings', $settings);
         $this->setData('imagestyles', $imagestyles);
+        $this->setData('imagestyle_fields', $this->getImageStyleFieldsSettings());
 
         $this->submitSettings();
 
         $this->setTitleEditSettings();
         $this->setBreadcrumbEditSettings();
         $this->outputEditSettings();
+    }
+
+    /**
+     * Returns an array of image style settings keys and their corresponding field labels
+     * @return array
+     */
+    protected function getImageStyleFieldsSettings()
+    {
+        return array(
+            'image_style_category' => $this->text('Category page'),
+            'image_style_category_child' => $this->text('Category page (child)'),
+            'image_style_product' => $this->text('Product page'),
+            'image_style_page' => $this->text('Page'),
+            'image_style_product_grid' => $this->text('Product catalog (grid)'),
+            'image_style_product_list' => $this->text('Product catalog (list)'),
+            'image_style_cart' => $this->text('Cart'),
+            'image_style_option' => $this->text('Product option'),
+            'image_style_collection_banner' => $this->text('Collection (banners)')
+        );
     }
 
     /**
@@ -117,13 +136,7 @@ class Settings extends BackendController
     protected function validateSettings()
     {
         $this->setSubmitted('settings');
-
-        $this->setSubmittedBool('twig.debug');
-        $this->setSubmittedBool('twig.auto_reload');
-        $this->setSubmittedBool('twig.strict_variables');
-        
         $this->validateElement('catalog_limit', 'regexp', '/^[\d]{1,2}$/');
-
         return !$this->hasErrors();
     }
 
