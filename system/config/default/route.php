@@ -150,7 +150,7 @@ return array(
     ),
     'compare/([^/]+)' => array(
         'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\frontend\\Compare', 'compare')
+            'controller' => array('gplcart\\core\\controllers\\frontend\\Compare', 'compareCompare')
         )
     ),
     'search' => array(
