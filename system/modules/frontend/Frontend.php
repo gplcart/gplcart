@@ -76,17 +76,13 @@ class Frontend extends Module
             return null;
         }
 
-        $libraries = array('bootstrap', 'font_awesome');
-
+        $libraries = array('font_awesome');
         if (!$controller->isInstalling()) {
             $controller->setJs('system/modules/frontend/js/common.js');
             $libraries = array_merge($libraries, array('jquery_match_height', 'jquery_ui'));
         }
 
         $controller->addAssetLibrary($libraries);
-
-        $condition_libraries = array('html5shiv', 'respond');
-        $controller->addAssetLibrary($condition_libraries, array('aggregate' => false, 'condition' => 'if lt IE 9'));
 
         if ($controller->isInstalling()) {
             $controller->setCss('system/modules/frontend/css/install.css');

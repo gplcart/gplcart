@@ -1648,6 +1648,9 @@ class Controller
     {
         $this->addAssetLibrary('jquery');
         $this->setJs('files/assets/system/js/common.js');
+
+        $this->addAssetLibrary('bootstrap');
+        $this->addAssetLibrary(array('html5shiv', 'respond'), array('aggregate' => false, 'condition' => 'if lt IE 9'));
     }
 
     /**
