@@ -301,52 +301,6 @@ class Ajax extends FrontendController
     }
 
     /**
-     * Uploads an image
-     * @return array
-     */
-    public function uploadImageAjax()
-    {
-        $path = 'image/upload';
-        $type = $this->getPosted('type');
-
-        if (!empty($type)) {
-            $type = (string) $type;
-            $path .= '/' . $this->config("{$type}_image_dirname", $type);
-        }
-
-        $result = $this->file->upload($this->request->file('file'), null, $path);
-
-        if ($result !== true) {
-            return array('error' => (string) $result);
-        }
-
-        $response = array();
-
-        $uploaded = $this->file->getUploadedFile(true);
-        $imagestyle = $this->config('image_style_admin', 2);
-        $thumb = $this->image->url($imagestyle, $uploaded, true);
-
-        $key = uniqid(); // Random array key to prevent merging items in the array
-        $timestamp = filemtime(GC_FILE_DIR . "/$uploaded");
-
-        $image = array(
-            'weight' => 0,
-            'thumb' => $thumb,
-            'path' => $uploaded,
-            'uploaded' => $timestamp
-        );
-
-        $data = array(
-            'name_prefix' => $type,
-            'languages' => $this->languages,
-            'images' => array($key => $image));
-
-        $attached = $this->render('backend|common/image/attache', $data, true);
-        $response['files'][] = array('html' => $attached);
-        return $response;
-    }
-
-    /**
      * Rates a product
      * @return array
      */

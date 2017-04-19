@@ -67,6 +67,7 @@ class Page extends ComponentValidator
         $this->validateUserIdComponent();
         $this->validateImagesComponent();
         $this->validateAliasComponent();
+        $this->validateUploadImagesComponent('page');
 
         return $this->getResult();
     }

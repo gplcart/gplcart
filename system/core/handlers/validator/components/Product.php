@@ -125,6 +125,7 @@ class Product extends ComponentValidator
         $this->validateAttributeProduct();
         $this->validateCombinationProduct();
         $this->validateAliasComponent();
+        $this->validateUploadImagesComponent('product');
 
         return $this->getResult();
     }

@@ -9,10 +9,8 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\helpers\Csv as CsvHelper,
-    gplcart\core\helpers\Request as RequestHelper;
-use gplcart\core\models\File as FileModel,
-    gplcart\core\models\Import as ImportModel;
+use gplcart\core\helpers\Csv as CsvHelper;
+use gplcart\core\models\Import as ImportModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
@@ -33,39 +31,21 @@ class Import extends ComponentValidator
     protected $csv;
 
     /**
-     * Request class instance
-     * @var \gplcart\core\helpers\Request
-     */
-    protected $request;
-
-    /**
      * Import model instance
      * @var \gplcart\core\models\Import $import
      */
     protected $import;
 
     /**
-     * File model instance
-     * @var \gplcart\core\models\File $file
-     */
-    protected $file;
-
-    /**
-     * Constructor
      * @param CsvHelper $csv
-     * @param RequestHelper $request
      * @param ImportModel $import
-     * @param FileModel $file
      */
-    public function __construct(CsvHelper $csv, RequestHelper $request,
-            ImportModel $import, FileModel $file)
+    public function __construct(CsvHelper $csv, ImportModel $import)
     {
         parent::__construct();
 
         $this->csv = $csv;
-        $this->file = $file;
         $this->import = $import;
-        $this->request = $request;
     }
 
     /**

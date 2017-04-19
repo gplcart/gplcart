@@ -220,45 +220,6 @@
     };
 
     /**
-     * AJAX image upload
-     * @returns {undefined}
-     */
-    GplCart.onload.handleFileUpload = function () {
-
-        if (!$.fn.fileupload) {
-            return;
-        }
-
-        var fileinput = $('#fileinput'), container = $(theme_settings.image_container);
-
-        if (fileinput.length === 0) {
-            return;
-        }
-
-        fileinput.fileupload({
-            dataType: 'json',
-            url: GplCart.settings.base + 'ajax',
-            formData: {
-                type: fileinput.attr('data-entity-type'),
-                action: 'uploadImageAjax',
-                token: GplCart.settings.token
-            },
-            done: function (e, data) {
-                if (typeof data === 'object' && 'result' in data && data.result.files) {
-                    $.each(data.result.files, function (index, file) {
-                        if (file.html) {
-                            container.append(file.html);
-                        }
-                    });
-                    container.find('input[name$="[weight]"]').each(function (i) {
-                        $(this).val(i);
-                    });
-                }
-            }
-        });
-    };
-
-    /**
      * Makes uploaded images sortable
      * @returns {undefined}
      */

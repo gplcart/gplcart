@@ -36,24 +36,6 @@ return array(
             'src/js.cookie.js',
         )
     ),
-    'jquery_file_upload' => array(
-        'name' => 'jQuery File Upload',
-        'description' => 'File Upload widget with multiple file selection, drag&drop support, progress bar, validation and preview images, audio and video for jQuery',
-        'type' => 'asset',
-        'url' => 'https://github.com/blueimp/jQuery-File-Upload',
-        'download' => 'https://github.com/blueimp/jQuery-File-Upload/archive/v9.14.2.zip',
-        'version_source' => array(
-            'file' => 'bower.json',
-        ),
-        'files' => array(
-            'js/vendor/jquery.ui.widget.js',
-            'js/jquery.iframe-transport.js',
-            'js/jquery.fileupload.js',
-        ),
-        'dependencies' => array(
-            'jquery' => '>= 1.7.0',
-        )
-    ),
     'jquery_match_height' => array(
         'name' => 'jQuery Match Height',
         'description' => 'A responsive equal heights plugin for jQuery',

@@ -37,15 +37,36 @@ class Component extends BaseValidator
     protected $user;
 
     /**
+     * File model class instance
+     * @var \gplcart\core\models\File $file
+     */
+    protected $file;
+
+    /**
+     * Config class instance
+     * @var \gplcart\core\Config $config
+     */
+    protected $config;
+
+    /**
+     * Request helper class instance
+     * @var \gplcart\core\helpers\Request $request
+     */
+    protected $request;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
         parent::__construct();
 
+        $this->config = Container::get('gplcart\\core\\Config');
+        $this->file = Container::get('gplcart\\core\\models\\File');
         $this->user = Container::get('gplcart\\core\\models\\User');
         $this->store = Container::get('gplcart\\core\\models\\Store');
         $this->alias = Container::get('gplcart\\core\\models\\Alias');
+        $this->request = Container::get('gplcart\\core\\helpers\Request');
     }
 
     /**
@@ -277,6 +298,44 @@ class Component extends BaseValidator
 
         $this->setSubmitted('images', $images);
         return true;
+    }
+
+    /**
+     * Validates multiple uploaded images
+     * @param string $entity
+     * @return bool
+     */
+    protected function validateUploadImagesComponent($entity)
+    {
+        $files = $this->request->file('files');
+
+        // Bulk upload never empty, so check the $_FILES structure
+        if (empty($files['name']) || (count($files['name']) == 1 && empty($files['name'][0]))) {
+            return null;
+        }
+
+        $errors = 0;
+        $path = 'image/upload/' . $this->config->get("{$entity}_image_dirname", $entity);
+
+        // Convert submitted data
+        $converted = array();
+        foreach ($files as $key => $all) {
+            foreach ($all as $i => $val) {
+                $converted[$i][$key] = $val;
+            }
+        }
+
+        foreach ($converted as $key => $file) {
+            $result = $this->file->upload($file, 'image', $path);
+            if ($result === true) {
+                $this->setSubmitted("images.$key.path", $this->file->getUploadedFile(true));
+                continue;
+            }
+            $errors++;
+            $this->setError('images', (string) $result);
+        }
+
+        return empty($errors);
     }
 
     /**

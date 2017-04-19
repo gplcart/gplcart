@@ -7,6 +7,7 @@
  */
 ?>
 <?php if (!empty($images)) { ?>
+<div class="row image-container">
 <?php foreach ($images as $index => $image) { ?>
 <?php $file_id = empty($image['file_id']) ? '' : $image['file_id']; ?>
 <div class="sortable-thumb">
@@ -82,4 +83,13 @@
   </div>
 </div>
 <?php } ?>
+</div>
+<?php } ?>
+<?php if ($this->access('file_upload')) { ?>
+<div class="form-group<?php echo $this->error('images', ' has-error'); ?>">
+  <div class="col-md-4">
+    <input type="file" class="form-control" name="files[]" multiple accept="image/*">
+    <?php echo $this->error('images'); ?>
+  </div>
+</div>
 <?php } ?>

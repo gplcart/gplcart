@@ -9,11 +9,11 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
-use gplcart\core\Cache;
-use gplcart\core\models\File as FileModel;
-use gplcart\core\models\Alias as AliasModel;
-use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\Model,
+    gplcart\core\Cache;
+use gplcart\core\models\File as FileModel,
+    gplcart\core\models\Alias as AliasModel,
+    gplcart\core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to pages
@@ -21,9 +21,8 @@ use gplcart\core\models\Language as LanguageModel;
 class Page extends Model
 {
 
-    use \gplcart\core\traits\EntityImage;
-
-use \gplcart\core\traits\EntityAlias;
+    use \gplcart\core\traits\EntityImage,
+        \gplcart\core\traits\EntityAlias;
 
     /**
      * Cache instance

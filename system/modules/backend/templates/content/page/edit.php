@@ -6,7 +6,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
-<form method="post" id="edit-page" class="form-horizontal">
+<form method="post" id="edit-page" enctype="multipart/form-data" class="form-horizontal">
   <input type="hidden" name="token" value="<?php echo $this->prop('token'); ?>">
   <div class="panel panel-default">
     <div class="panel-heading"><?php echo $this->text('Description'); ?></div>
@@ -137,25 +137,8 @@
   <div class="panel panel-default">
     <div class="panel-heading"><?php echo $this->text('Image'); ?></div>
     <div class="panel-body">
-      <div class="row">
-        <div class="col-md-12">
-          <div class="row image-container">
-          <?php if (!empty($attached_images)) { ?>
-          <?php echo $attached_images; ?>
-          <?php } ?>
-          </div>
-        </div>
-      </div>
-      <?php if ($this->access('file_upload')) { ?>
-      <div class="row">
-        <div class="col-md-12">
-          <label for="fileinput" class="btn btn-default"><i class="fa fa-upload"></i> <?php echo $this->text('Upload'); ?></label>
-          <input class="hide" type="file" id="fileinput" data-entity-type="page" name="file" multiple="multiple" accept="image/*">
-          <div class="help-block">
-          <?php echo $this->text('Upload one or more images to be displayed on the page'); ?>
-          </div>
-        </div>
-      </div>
+      <?php if (!empty($attached_images)) { ?>
+      <?php echo $attached_images; ?>
       <?php } ?>
     </div>
   </div>

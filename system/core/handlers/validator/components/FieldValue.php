@@ -9,10 +9,8 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\models\File as FileModel,
-    gplcart\core\models\Field as FieldModel,
+use gplcart\core\models\Field as FieldModel,
     gplcart\core\models\FieldValue as FieldValueModel;
-use gplcart\core\helpers\Request as RequestHelper;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
@@ -27,18 +25,6 @@ class FieldValue extends ComponentValidator
     const UPLOAD_PATH = 'image/upload/field_value';
 
     /**
-     * Request class instance
-     * @var \gplcart\core\helpers\Request $request
-     */
-    protected $request;
-
-    /**
-     * File model instance
-     * @var \gplcart\core\models\File $file
-     */
-    protected $file;
-
-    /**
      * Field model instance
      * @var \gplcart\core\models\Field $field
      */
@@ -51,20 +37,14 @@ class FieldValue extends ComponentValidator
     protected $field_value;
 
     /**
-     * Constructor
      * @param FieldModel $field
      * @param FieldValueModel $field_value
-     * @param FileModel $file
-     * @param RequestHelper $request
      */
-    public function __construct(FieldModel $field, FieldValueModel $field_value,
-            FileModel $file, RequestHelper $request)
+    public function __construct(FieldModel $field, FieldValueModel $field_value)
     {
         parent::__construct();
 
-        $this->file = $file;
         $this->field = $field;
-        $this->request = $request;
         $this->field_value = $field_value;
     }
 

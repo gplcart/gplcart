@@ -70,6 +70,7 @@ class Category extends ComponentValidator
         $this->validateUserIdComponent();
         $this->validateImagesComponent();
         $this->validateAliasComponent();
+        $this->validateUploadImagesComponent('category');
 
         return $this->getResult();
     }

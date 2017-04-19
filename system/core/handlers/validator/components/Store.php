@@ -9,9 +9,7 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\models\File as FileModel,
-    gplcart\core\models\Module as ModuleModel;
-use gplcart\core\helpers\Request as RequestHelper;
+use gplcart\core\models\Module as ModuleModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
@@ -20,13 +18,10 @@ use gplcart\core\handlers\validator\Component as ComponentValidator;
 class Store extends ComponentValidator
 {
 
-    const UPLOAD_PATH = 'image/upload/store';
-
     /**
-     * File model instance
-     * @var \gplcart\core\models\File $file
+     * File upload path
      */
-    protected $file;
+    const UPLOAD_PATH = 'image/upload/store';
 
     /**
      * Module model instance
@@ -35,25 +30,13 @@ class Store extends ComponentValidator
     protected $module;
 
     /**
-     * Request class instance
-     * @var \gplcart\core\helpers\Request $request
-     */
-    protected $request;
-
-    /**
-     * Constructor
-     * @param FileModel $file
      * @param ModuleModel $module
-     * @param RequestHelper $request
      */
-    public function __construct(FileModel $file, ModuleModel $module,
-            RequestHelper $request)
+    public function __construct(ModuleModel $module)
     {
         parent::__construct();
 
-        $this->file = $file;
         $this->module = $module;
-        $this->request = $request;
     }
 
     /**

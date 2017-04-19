@@ -10,8 +10,7 @@
 namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\Handler;
-use gplcart\core\models\File as FileModel,
-    gplcart\core\models\Page as PageModel,
+use gplcart\core\models\Page as PageModel,
     gplcart\core\models\Product as ProductModel,
     gplcart\core\models\Collection as CollectionModel,
     gplcart\core\models\CollectionItem as CollectionItemModel;
@@ -36,12 +35,6 @@ class CollectionItem extends ComponentValidator
     protected $page;
 
     /**
-     * File model instance
-     * @var \gplcart\core\models\File $file
-     */
-    protected $file;
-
-    /**
      * Collection model instance
      * @var \gplcart\core\models\Collection $collection
      */
@@ -54,21 +47,17 @@ class CollectionItem extends ComponentValidator
     protected $collection_item;
 
     /**
-     * Constructor
-     * @param FileModel $file
      * @param PageModel $page
      * @param ProductModel $product
      * @param CollectionModel $collection
      * @param CollectionItemModel $collection_item
      */
-    public function __construct(FileModel $file, PageModel $page,
-            ProductModel $product, CollectionModel $collection,
-            CollectionItemModel $collection_item)
+    public function __construct(PageModel $page, ProductModel $product,
+            CollectionModel $collection, CollectionItemModel $collection_item)
     {
 
         parent::__construct();
 
-        $this->file = $file;
         $this->page = $page;
         $this->product = $product;
         $this->collection = $collection;
