@@ -147,6 +147,9 @@ class Job extends Model
                 'finish' => '',
                 'errors' => '',
             ),
+            'log' => array(
+                'errors' => ''
+            )
         );
     }
 
@@ -366,33 +369,6 @@ class Job extends Model
         }
 
         $handlers = array();
-
-        $handlers['export_product'] = array(
-            'handlers' => array(
-                'total' => array('gplcart\\core\\handlers\\job\\export\\Product', 'total'),
-                'process' => array('gplcart\\core\\handlers\\job\\export\\Product', 'process')
-            ),
-        );
-
-        $handlers['export_category'] = array(
-            'handlers' => array(
-                'total' => array('gplcart\\core\\handlers\\job\\export\\Category', 'total'),
-                'process' => array('gplcart\\core\\handlers\\job\\export\\Category', 'process')
-            ),
-        );
-
-        $handlers['import_category'] = array(
-            'handlers' => array(
-                'process' => array('gplcart\\core\\handlers\\job\\import\\Category', 'process')
-            ),
-        );
-
-        $handlers['import_product'] = array(
-            'handlers' => array(
-                'process' => array('gplcart\\core\\handlers\\job\\import\\Product', 'process')
-            ),
-        );
-
         $this->hook->fire('job.handlers', $handlers);
         return $handlers;
     }
@@ -405,8 +381,8 @@ class Job extends Model
     {
         $this->delete($job['id']);
 
-        if (!empty($job['data']['operation']['log']['errors'])) {
-            file_put_contents($job['data']['operation']['log']['errors'], '');
+        if (!empty($job['log']['errors'])) {
+            file_put_contents($job['log']['errors'], '');
         }
 
         $this->set($job);
