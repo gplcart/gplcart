@@ -114,11 +114,6 @@ return array(
             'validate' => array('gplcart\\core\\handlers\\validator\\components\\Image', 'style')
         )
     ),
-    'import' => array(
-        'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Import', 'import')
-        )
-    ),
     'install' => array(
         'handlers' => array(
             'validate' => array('gplcart\\core\\handlers\\validator\\components\\Install', 'install')
