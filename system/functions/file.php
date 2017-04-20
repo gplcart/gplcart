@@ -49,7 +49,7 @@ function gplcart_file_scan($path, $pattern)
  */
 function gplcart_file_delete_recursive($directory)
 {
-    if (!file_exists($directory)) {
+    if (!is_dir($directory)) {
         return false;
     }
 
@@ -106,7 +106,7 @@ function gplcart_file_mime($file)
  */
 function gplcart_file_unique($file)
 {
-    if (!file_exists($file)) {
+    if (!is_file($file)) {
         return $file;
     }
 
@@ -119,7 +119,7 @@ function gplcart_file_unique($file)
         $counter++;
         $modified_filename = $info['filename'] . '-' . $counter . $extension;
         $modified_file = "{$info['dirname']}/$modified_filename";
-    } while (file_exists($modified_file));
+    } while (is_file($modified_file));
 
     return $modified_file;
 }
