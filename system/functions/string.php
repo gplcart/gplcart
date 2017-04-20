@@ -88,18 +88,11 @@ function gplcart_string_replace($pattern, array $placeholders, array $data)
 /**
  * Splits a text by new lines
  * @param string $string
- * @param null|integer $limit
  * @return array
  */
-function gplcart_string_array($string, $limit = null)
+function gplcart_string_array($string)
 {
-    if (isset($limit)) {
-        $array = explode("\n", str_replace("\r", "", $string), $limit);
-    } else {
-        $array = explode("\n", str_replace("\r", "", $string));
-    }
-
-    return array_filter(array_map('trim', $array));
+    return array_filter(array_map('trim', explode("\n", str_replace("\r", "", $string))));
 }
 
 /**
