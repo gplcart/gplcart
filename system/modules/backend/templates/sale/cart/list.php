@@ -127,7 +127,11 @@
               <?php } ?>
             </td>
             <td class="middle">
+              <?php if(isset($cart['product_status'])) { ?>
               <a href="<?php echo $cart['url']; ?>"><?php echo $this->escape($this->truncate($cart['sku'], 30)); ?></a>
+              <?php } else { ?>
+              <?php echo $this->escape($this->truncate($cart['sku'], 30)); ?>
+              <?php } ?>
             </td>
             <td class="middle">
               <?php if (empty($cart['order_id'])) { ?>
