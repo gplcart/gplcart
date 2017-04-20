@@ -10,8 +10,8 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Model;
-use gplcart\core\models\File as FileModel;
-use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\models\File as FileModel,
+    gplcart\core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to field values
@@ -256,6 +256,17 @@ class FieldValue extends Model
 
         $result = $this->db->fetchColumn($sql, array($field_value_id));
         return empty($result);
+    }
+
+    /**
+     * Returns a relative to file directory path for uploaded images
+     * @return string
+     */
+    public function getImagePath()
+    {
+        $path = trim(substr(GC_IMAGE_DIR, strlen(GC_FILE_DIR)), '/');
+        $path .= '/' . $this->config->get('field_value_image_dirname', 'field_value');
+        return $path;
     }
 
 }

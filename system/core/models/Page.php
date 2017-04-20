@@ -268,4 +268,15 @@ class Page extends Model
         return $list;
     }
 
+    /**
+     * Returns a relative to file directory path for uploaded images
+     * @return string
+     */
+    public function getImagePath()
+    {
+        $path = trim(substr(GC_IMAGE_DIR, strlen(GC_FILE_DIR)), '/');
+        $path .= '/' . $this->config->get('page_image_dirname', 'page');
+        return $path;
+    }
+
 }

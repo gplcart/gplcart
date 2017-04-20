@@ -871,4 +871,15 @@ class Product extends Model
         }
     }
 
+    /**
+     * Returns a relative to file directory path for uploaded images
+     * @return string
+     */
+    public function getImagePath()
+    {
+        $path = trim(substr(GC_IMAGE_DIR, strlen(GC_FILE_DIR)), '/');
+        $path .= '/' . $this->config->get('product_image_dirname', 'product');
+        return $path;
+    }
+
 }

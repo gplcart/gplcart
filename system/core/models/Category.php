@@ -9,12 +9,12 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
-use gplcart\core\Cache;
-use gplcart\core\models\File as FileModel;
-use gplcart\core\models\Alias as AliasModel;
-use gplcart\core\models\Language as LanguageModel;
-use gplcart\core\models\CategoryGroup as CategoryGroupModel;
+use gplcart\core\Model,
+    gplcart\core\Cache;
+use gplcart\core\models\File as FileModel,
+    gplcart\core\models\Alias as AliasModel,
+    gplcart\core\models\Language as LanguageModel,
+    gplcart\core\models\CategoryGroup as CategoryGroupModel;
 
 /**
  * Manages basic behaviors and data related to product categories
@@ -463,6 +463,17 @@ class Category extends Model
                 . ' AND NOT EXISTS (SELECT category_id FROM category WHERE parent_id=:id)';
 
         return (bool) $this->db->fetchColumn($sql, array('id' => $category_id));
+    }
+
+    /**
+     * Returns a relative to file directory path for uploaded images
+     * @return string
+     */
+    public function getImagePath()
+    {
+        $path = trim(substr(GC_IMAGE_DIR, strlen(GC_FILE_DIR)), '/');
+        $path .= '/' . $this->config->get('category_image_dirname', 'category');
+        return $path;
     }
 
 }
