@@ -43,7 +43,7 @@ For developers:
 - Tons of hooks
 - Command line support (extensible)
 - Ability to rewrite almost any core method from a module (no monkey patching, "VQ mods")
-- Supports both PHP and TWIG templates (you can even mix them!)
+- Supports any template engine, including [TWIG](https://github.com/gplcart/twig)
 - Supports versioned dependencies for modules and 3-d party libraries
 
 For owners:
@@ -61,7 +61,6 @@ For owners:
 - Product classes
 - Product fields (images, colors, text)
 - Product combinations (XL + red, XL + green etc) with the easiest management you've ever seen
-- Powerful export/import for everything (*100.000* products on "3 bucks" hosting? Yes, it's possible!)
 - Super flexible price rules both for catalog and checkout (including coupons)
 - Roles and access control
 - Backups
