@@ -93,15 +93,11 @@ class Cron extends FrontendController
      */
     protected function deleteExpiredFilesCron()
     {
-        $directories = array(
-            'log' => GC_PRIVATE_LOGS_DIR,
-            'import' => GC_PRIVATE_IMPORT_DIR,
-            'export' => GC_PRIVATE_DOWNLOAD_DIR
-        );
+        $directories = array('log' => GC_PRIVATE_LOGS_DIR);
 
         $deleted = 0;
         foreach ($directories as $key => $path) {
-            $extensions = array('csv');
+            $extensions = array('csv', 'txt');
             $lifespan = $this->config("{$key}_lifespan", 86400);
             $deleted += gplcart_file_delete($path, $extensions, $lifespan);
         }
