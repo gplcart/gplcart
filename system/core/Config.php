@@ -250,7 +250,7 @@ class Config
                 }
 
                 $module_info['installed'] = true;
-                $module_info = gplcart_array_merge($module_info, $saved_modules[$module_info['id']]);
+                $module_info = array_merge($module_info, $saved_modules[$module_info['id']]);
             }
 
             $modules[$module_info['id']] = $module_info;
