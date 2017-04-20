@@ -30,7 +30,7 @@
           <button class="btn btn-default" name="login" value="1"><?php echo $this->text('Log in'); ?></button>
           <?php if(!empty($oauth_buttons)) { ?>
           <?php foreach($oauth_buttons as $oauth_button) { ?>
-          &nbsp;&nbsp;<?php echo $button['rendered']; ?>
+          &nbsp;&nbsp;<?php echo $oauth_button['rendered']; ?>
           <?php } ?>
           <?php } ?>
         </div>
