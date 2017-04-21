@@ -40,7 +40,6 @@ define('GC_DOWNLOAD_DIR', GC_FILE_DIR . '/download');
 define('GC_PRIVATE_DIR', GC_FILE_DIR . '/private');
 define('GC_PRIVATE_BACKUP_DIR', GC_PRIVATE_DIR . '/backup');
 define('GC_PRIVATE_DOWNLOAD_DIR', GC_PRIVATE_DIR . '/download');
-define('GC_PRIVATE_EXPORT_DIR', GC_PRIVATE_DIR . '/export');
 define('GC_PRIVATE_LOGS_DIR', GC_PRIVATE_DIR . '/logs');
 define('GC_IMAGE_DIR', GC_FILE_DIR . '/image/upload');
 define('GC_IMAGE_CACHE_DIR', GC_FILE_DIR . '/image/cache');

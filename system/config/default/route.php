@@ -256,19 +256,6 @@ return array(
             'controller' => array('gplcart\\core\\controllers\\backend\\Controller', 'adminSections')
         )
     ),
-    'admin/tool/export' => array(
-        'access' => 'export',
-        'menu' => array('admin' => 'Export'),
-        'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\backend\\Export', 'listExport')
-        )
-    ),
-    'admin/tool/export/(\w+)' => array(
-        'access' => 'export',
-        'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\backend\\Export', 'editExport')
-        )
-    ),
     'admin/tool/backup' => array(
         'access' => 'backup',
         'menu' => array('admin' => 'Backup'),

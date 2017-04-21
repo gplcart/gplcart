@@ -42,7 +42,6 @@ $config = array();
 # $config['date_suffix']                          = ' H:i'; // Default time format - minutes
 # $config['error_level']                          = 2; // Default error reporting level
 # $config['error_live_report']                    = 0; // Whether to inform about PHP errors on every page
-# $config['export_limit']                         = 50; // Max number of CSV rows to parse per one export iteration
 # $config['file_upload_translit']                 = 1; // Whether to transliterate names of uploaded files
 # $config['history_lifespan']                     = 2628000; // Max number of seconds to keep records in "history" table
 # $config['image_cache_lifetime']                 = 31536000; // Max number of seconds to keep in browser cache processed images

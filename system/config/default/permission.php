@@ -126,7 +126,6 @@ return array(
     'file_edit' => 'File: edit',
     'file_delete' => 'File: delete',
     'file_upload' => 'File: upload',
-    'export' => 'Export: access',
     'settings' => 'Settings: access',
     'alias' => 'Alias: access',
     'alias_delete' => 'Alias: delete',

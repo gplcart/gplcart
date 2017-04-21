@@ -69,11 +69,6 @@ return array(
             'validate' => array('gplcart\\core\\handlers\\validator\\components\\Compare', 'compare')
         )
     ),
-    'export' => array(
-        'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Export', 'export')
-        )
-    ),
     'address' => array(
         'handlers' => array(
             'validate' => array('gplcart\\core\\handlers\\validator\\components\\Address', 'address')
