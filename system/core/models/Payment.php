@@ -9,8 +9,8 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Cache;
-use gplcart\core\Model;
+use gplcart\core\Cache,
+    gplcart\core\Model;
 use gplcart\core\models\Language as LanguageModel;
 
 /**
