@@ -197,7 +197,7 @@ class Install extends ComponentValidator
             return true;
         }
 
-        if (preg_match('/^[a-z0-9]{0,50}$/', $basepath) !== 1) {
+        if (preg_match('/^[a-z0-9-]{0,50}$/', $basepath) !== 1) {
             $this->setErrorInvalidValue($field, $this->language->text('Base path'));
             return false;
         }

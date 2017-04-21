@@ -164,7 +164,7 @@ class Store extends ComponentValidator
             return true;
         }
 
-        if (preg_match('/^[a-z0-9]{0,50}$/', $value) !== 1) {
+        if (preg_match('/^[a-z0-9-]{0,50}$/', $value) !== 1) {
             $this->setErrorInvalidValue($field, $label);
             return false;
         }
