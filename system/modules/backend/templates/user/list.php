@@ -40,13 +40,11 @@
         </ul>
         <?php } ?>
       </div>
-      <?php if ($this->access('user_add') || $this->access('import')) { ?>
+      <?php if ($this->access('user_add')) { ?>
       <div class="btn-toolbar pull-right">
-        <?php if ($this->access('user_add')) { ?>
         <a class="btn btn-default" href="<?php echo $this->url('admin/user/add'); ?>">
           <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
         </a>
-        <?php } ?>
       </div>
       <?php } ?>
     </div>

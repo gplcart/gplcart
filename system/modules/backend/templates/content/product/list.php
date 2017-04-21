@@ -41,18 +41,13 @@
         </ul>
         <?php } ?>
       </div>
+      <?php if ($this->access('product_add')) { ?>
       <div class="btn-toolbar pull-right">
-        <?php if ($this->access('product_add')) { ?>
         <a class="btn btn-default" href="<?php echo $this->url('admin/content/product/add'); ?>">
           <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
         </a>
-        <?php } ?>
-        <?php if ($this->access('import') && $this->access('file_upload')) { ?>
-        <a class="btn btn-default" href="<?php echo $this->url('admin/tool/import/product'); ?>">
-          <i class="fa fa-upload"></i> <?php echo $this->text('Import'); ?>
-        </a>
-        <?php } ?>
       </div>
+      <?php } ?>
     </div>
     <div class="panel-body table-responsive">
       <table class="table table-condensed products">

@@ -44,11 +44,6 @@
       <a href="<?php echo $this->url("admin/content/category/add/$category_group_id"); ?>" class="btn btn-default add">
         <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
       </a>
-      <?php if ($this->access('import') && $this->access('file_upload')) { ?>
-      <a class="btn btn-default import" href="<?php echo $this->url('admin/tool/import'); ?>">
-        <i class="fa fa-upload"></i> <?php echo $this->text('Import'); ?>
-      </a>
-      <?php } ?>
       <?php } ?>
     </div>
   </div>
@@ -124,11 +119,6 @@
     <a class="btn btn-default" href="<?php echo $this->url("admin/content/category/add/$category_group_id"); ?>">
       <?php echo $this->text('Add'); ?>
     </a>
-    <?php if ($this->access('import') && $this->access('file_upload')) { ?>
-    <a class="btn btn-default" href="<?php echo $this->url('admin/tool/import'); ?>">
-      <?php echo $this->text('Import'); ?>
-    </a>
-    <?php } ?>
     <?php } ?>
   </div>
 </div>
