@@ -704,7 +704,7 @@ class File extends Model
         }
 
         if (!file_exists($destination) && !mkdir($destination, 0644, true)) {
-            return $this->language->text('Unable to create upload directory @name', array('@name' => $destination));
+            return $this->language->text('Unable to create @name', array('@name' => $destination));
         }
 
         $rand = gplcart_string_random(6);
