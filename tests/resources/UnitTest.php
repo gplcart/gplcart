@@ -17,16 +17,10 @@ class UnitTest extends PHPUnit_Framework_TestCase
 {
 
     /**
-     * The current testing object
+     * The testing object
      * @var object
      */
     protected $object;
-
-    /**
-     * An array of temporary created files
-     * @var array
-     */
-    protected $files = array();
 
     /**
      * Constructor
@@ -90,73 +84,6 @@ class UnitTest extends PHPUnit_Framework_TestCase
     {
         $this->expectOutputString('');
         print_r($data);
-    }
-
-    /**
-     * Creates a dummy file
-     * @param string $ext
-     * @param string $content
-     * @return string
-     */
-    protected function createFile($ext, $content = null)
-    {
-        if (!isset($content)) {
-            $content = $this->getRandomString(mt_rand(1, 1000));
-        }
-
-        $file = $this->getRandomFileName($ext);
-        file_put_contents($file, $content);
-        chmod($file, 0600);
-
-        $this->addFile($file);
-        return $file;
-    }
-
-    /**
-     * Creates multiple files
-     * @param array $exts
-     */
-    protected function createFiles(array $exts)
-    {
-        $created = 0;
-        foreach ($exts as $ext) {
-            $created++;
-            $this->createFile($ext);
-        }
-
-        return $created;
-    }
-
-    /**
-     * Returns a random temporary file name
-     * @param string $ext
-     * @return string
-     */
-    protected function getRandomFileName($ext)
-    {
-        $random = $this->getRandomString();
-        return GC_TEST_DIR . "/files/unit-test-$random.$ext";
-    }
-
-    /**
-     * Clears all temporary created files
-     */
-    protected function clearFiles()
-    {
-        foreach ($this->files as $file) {
-            unlink($file);
-        }
-
-        $this->files = array();
-    }
-
-    /**
-     * Adds a file to an array of created files
-     * @param string $file
-     */
-    protected function addFile($file)
-    {
-        $this->files[] = $file;
     }
 
     /**
