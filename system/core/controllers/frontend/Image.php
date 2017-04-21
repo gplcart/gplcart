@@ -49,6 +49,12 @@ class Image extends FrontendController
     protected $data_cached_file;
 
     /**
+     * Image style directory
+     * @var string
+     */
+    protected $data_imagestyle_directory;
+
+    /**
      * Constructor
      * @param ResponseHelper $response
      */

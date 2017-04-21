@@ -241,8 +241,6 @@ class Image
             $format = $this->format;
         }
 
-        $result = false;
-
         switch (strtolower($format)) {
             case 'gif':
                 $result = imagegif($this->image, $filename);

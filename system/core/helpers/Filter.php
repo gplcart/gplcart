@@ -187,8 +187,9 @@ class Filter
         $attrname = '';
 
         while (strlen($attr) != 0) {
-            // Was the last operation successful?
+
             $working = 0;
+            $skip = false;
 
             switch ($mode) {
                 case 0:
@@ -213,7 +214,7 @@ class Filter
                         $working = 1;
                         $mode = 0;
 
-                        if (empty($skip)) {
+                        if (!$skip) {
                             $attrarr[] = $attrname;
                         }
 
@@ -236,6 +237,7 @@ class Filter
                     }
 
                     if (preg_match("/^'([^']*)'(\s+|$)/", $attr, $match)) {
+
                         $thisval = $this->badProtocol($match[1]);
 
                         if (!$skip) {

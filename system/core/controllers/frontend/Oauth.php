@@ -111,7 +111,11 @@ class Oauth extends FrontendController
         }
 
         // Be sure that URL domain belongs to our enabled store
-        $store = $this->store->get(parse_url($parsed['url'], PHP_URL_HOST));
+        $domain = parse_url($parsed['url'], PHP_URL_HOST);
+
+        if (!empty($domain)) {
+            $store = $this->store->get($domain);
+        }
 
         if (empty($store['status'])) {
             throw new OauthAuthorizationException('Invalid domain in redirect URL');

@@ -22,7 +22,7 @@ trait ControllerOauth
     protected function getOauthButtonsTrait($controller)
     {
         if (!$controller instanceof \gplcart\core\Controller) {
-            throw new \RuntimeException("Object is not instance of \gplcart\core\Controller");
+            throw new \InvalidArgumentException("Object is not instance of \gplcart\core\Controller");
         }
 
         /* @var $model \gplcart\core\models\Oauth */

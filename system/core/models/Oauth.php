@@ -75,7 +75,7 @@ class Oauth extends Model
     /**
      * Returns an array of Oauth providers
      * @param array $data
-     * @return string
+     * @return array
      */
     public function getProviders(array $data = array())
     {
@@ -221,7 +221,7 @@ class Oauth extends Model
 
     /**
      * Save a token data in the session
-     * @param string $token
+     * @param array $token
      * @param string $provider_id
      */
     public function setToken($token, $provider_id)
@@ -250,7 +250,7 @@ class Oauth extends Model
     /**
      * Returns a saved token data from the session
      * @param string $provider_id
-     * @return string
+     * @return array
      */
     public function getToken($provider_id)
     {

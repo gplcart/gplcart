@@ -13,7 +13,6 @@ use UnexpectedValueException;
 
 /**
  * Helper class to convert measurement units
- * Inspired by Oliver Folkerd <oliver.folkerd@gmail.com>
  */
 class Convertor
 {
@@ -161,7 +160,7 @@ class Convertor
      * @param string $unit
      * @param null|integer $decimals
      * @param bool $round
-     * @return number
+     * @return mixed
      * @throws UnexpectedValueException
      */
     public function to($unit, $decimals = null, $round = true)
@@ -188,7 +187,6 @@ class Convertor
             throw new UnexpectedValueException('Cannot convert between units of different types');
         }
 
-        $result = 0;
         if (is_callable($this->units[$unit]['conversion'])) {
             $result = $this->units[$unit]['conversion']($this->value, true);
         } else {

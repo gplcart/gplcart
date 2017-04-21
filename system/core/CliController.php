@@ -111,6 +111,13 @@ class CliController
 
         $this->hook->fire('construct.cli.controller', $this);
     }
+    
+    /**
+     * Control access for the current user
+     */
+    protected function controlAccess(){
+        //
+    }
 
     /**
      * Sets route properties

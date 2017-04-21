@@ -134,7 +134,7 @@ class Controller extends BaseController
             $this->triggered = $this->getFiredTriggers();
             $this->data_categories = $this->getCategories();
             $this->cart_uid = $this->cart->uid();
-            $this->current_currency = $this->currency->get();
+            $this->current_currency = (string) $this->currency->get();
         }
     }
 

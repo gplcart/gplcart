@@ -1015,7 +1015,7 @@ class Controller
         }
 
         if (!isset($value) && empty($this->submitted)) {
-            $this->form_source = $key;
+            $this->form_source = (string) $key;
             $this->submitted = (array) $this->request->post($key, array(), $filter);
             return $this->submitted;
         }

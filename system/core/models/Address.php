@@ -102,7 +102,7 @@ class Address extends Model
     public function getTranslatedList($user_id, $status = true)
     {
         $conditions = array('user_id' => $user_id, 'status' => $status);
-        $list = $this->getList($conditions);
+        $list = (array) $this->getList($conditions);
 
         $addresses = array();
         foreach ($list as $address_id => $address) {

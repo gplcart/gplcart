@@ -316,7 +316,7 @@ class User extends Model
      * Logs in a user
      * @param array $data
      * @param bool $check_password
-     * @return string
+     * @return array
      */
     public function login(array $data, $check_password = true)
     {

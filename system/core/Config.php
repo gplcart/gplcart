@@ -205,7 +205,6 @@ class Config
             return $modules;
         }
 
-        $installation = !$this->exists();
         $saved_modules = $this->getInstalledModules();
 
         $modules = array();

@@ -17,7 +17,7 @@ class Cache
 
     /**
      * Cache file modification time
-     * @var string
+     * @var integer
      */
     protected $filemtime;
 

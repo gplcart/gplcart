@@ -174,7 +174,7 @@ class Cart extends Model
      * Returns an array of cart items
      * @param array $data
      * @param string $index
-     * @return array
+     * @return array|integer
      */
     public function getList(array $data = array(), $index = 'sku')
     {
