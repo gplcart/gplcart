@@ -53,7 +53,9 @@ function gplcart_file_delete_recursive($directory)
         return false;
     }
 
-    foreach (glob("{$directory}/*") as $file) {
+    $files = gplcart_file_scan_recursive($directory);
+
+    foreach ($files as $file) {
         if (is_dir($file)) {
             gplcart_file_delete_recursive($file);
         } else {
@@ -106,7 +108,7 @@ function gplcart_file_mime($file)
  */
 function gplcart_file_unique($file)
 {
-    if (!is_file($file)) {
+    if (!file_exists($file)) { // use file_exists to check dirs and files
         return $file;
     }
 
