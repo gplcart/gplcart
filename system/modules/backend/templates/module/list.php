@@ -8,17 +8,6 @@
 ?>
 <?php if (!empty($modules) || $filtering) { ?>
 <div class="panel panel-default">
-  <?php if ($this->access('module_upload') || $this->access('marketplace')) { ?>
-  <div class="panel-heading clearfix">
-    <div class="btn-toolbar pull-right">
-      <?php if ($this->access('module_upload') && $this->access('file_upload') && $this->access('module_install')) { ?>
-      <a class="btn btn-default" href="<?php echo $this->url('admin/module/upload'); ?>">
-        <?php echo $this->text('Upload'); ?>
-      </a>
-      <?php } ?>
-    </div>
-  </div>
-  <?php } ?>
   <div class="panel-body table-responsive">
     <?php if ($filtering && empty($modules)) { ?>
     <?php echo $this->text('No results'); ?>
@@ -116,20 +105,6 @@
                 </a>
               </li>
               <?php } ?>
-              <?php if($this->access('module_delete')) { ?>
-              <li>
-                <a href="<?php echo $this->url(false, array('action' => 'delete', 'module_id' => $module_id)); ?>" onclick="return confirm(GplCart.text('Are you sure you want to remove this module from disk? It cannot be undone!'));">
-                  <?php echo mb_strtolower($this->text('Delete')); ?>
-                </a>
-              </li>
-              <?php } ?>
-              <?php } ?>
-              <?php if ($this->access('module_backup')) { ?>
-              <li>
-                <a href="<?php echo $this->url(false, array('action' => 'backup', 'module_id' => $module_id)); ?>">
-                  <?php echo mb_strtolower($this->text('Backup')); ?>
-                </a>
-              </li>
               <?php } ?>
               <?php if (!empty($info['status']) && !empty($info['configure']) && $this->access('module_edit')) { ?>
               <li>

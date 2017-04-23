@@ -12,10 +12,7 @@ namespace gplcart\core\models;
 use gplcart\core\Model,
     gplcart\core\Cache,
     gplcart\core\Hook;
-use gplcart\core\models\Backup as BackupModel,
-    gplcart\core\models\Language as LanguageModel;
-use gplcart\core\helpers\Zip as ZipHelper;
-use gplcart\core\exceptions\ModuleException;
+use gplcart\core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to modules
@@ -26,22 +23,10 @@ class Module extends Model
     use \gplcart\core\traits\Dependency;
 
     /**
-     * Zip helper instance
-     * @var \gplcart\core\helpers\Zip $zip
-     */
-    protected $zip;
-
-    /**
      * Language model instance
      * @var \gplcart\core\models\Language $language
      */
     protected $language;
-
-    /**
-     * Backup model instance
-     * @var \gplcart\core\models\Backup $backup
-     */
-    protected $backup;
 
     /**
      * Hook class instance
@@ -50,19 +35,14 @@ class Module extends Model
     protected $hook;
 
     /**
-     * Constructor
+     * @param Hook $hook
      * @param LanguageModel $language
-     * @param BackupModel $backup
-     * @param ZipHelper $zip
      */
-    public function __construct(Hook $hook, LanguageModel $language,
-            BackupModel $backup, ZipHelper $zip)
+    public function __construct(Hook $hook, LanguageModel $language)
     {
         parent::__construct();
 
-        $this->zip = $zip;
         $this->hook = $hook;
-        $this->backup = $backup;
         $this->language = $language;
     }
 
@@ -219,17 +199,21 @@ class Module extends Model
 
     /**
      * Checks PHP version compatibility for the module ID
-     * @param string $module_id
+     * @param string|array $module
      * @param array $modules
      * @return boolean|string
      */
-    protected function checkPhpVersion($module_id, array $modules)
+    public function checkPhpVersion($module, array $modules = array())
     {
-        if (empty($modules[$module_id]['php'])) {
+        if (!is_array($module)) {
+            $module = isset($modules[$module]) ? $modules[$module] : array();
+        }
+
+        if (empty($module['php'])) {
             return true;
         }
 
-        $components = $this->getVersionComponentsTrait($modules[$module_id]['php']);
+        $components = $this->getVersionComponentsTrait($module['php']);
 
         if (empty($components)) {
             return $this->language->text('Requires incompatible version of @name', array('@name' => 'PHP'));
@@ -272,7 +256,7 @@ class Module extends Model
      * @param string $module_id
      * @return boolean|string
      */
-    protected function checkModuleId($module_id)
+    public function checkModuleId($module_id)
     {
         if ($this->config->validModuleId($module_id)) {
             return true;
@@ -283,17 +267,21 @@ class Module extends Model
 
     /**
      * Checks core version requirements
-     * @param string $module_id
+     * @param string|array $module
      * @param array $modules
      * @return boolean|string
      */
-    protected function checkCore($module_id, $modules)
+    public function checkCore($module, $modules = array())
     {
-        if (empty($modules[$module_id]['core'])) {
+        if (!is_array($module)) {
+            $module = isset($modules[$module]) ? $modules[$module] : array();
+        }
+
+        if (empty($module['core'])) {
             return $this->language->text('Missing core version');
         }
 
-        if (version_compare(GC_VERSION, $modules[$module_id]['core']) < 0) {
+        if (version_compare(GC_VERSION, $module['core']) < 0) {
             return $this->language->text('Module incompatible with the current system core version');
         }
 
@@ -504,20 +492,6 @@ class Module extends Model
     }
 
     /**
-     * Deletes a module from disk
-     * @param string $module_id
-     * @return boolean
-     */
-    public function delete($module_id)
-    {
-        if ($this->isInstalled($module_id) || $this->isEnabled($module_id)) {
-            return false;
-        }
-
-        return gplcart_file_delete_recursive(GC_MODULE_DIR . "/$module_id");
-    }
-
-    /**
      * Returns the max weight of the installed modules
      * @return integer
      */
@@ -673,163 +647,6 @@ class Module extends Model
     protected function getNextWeight()
     {
         return $this->getMaxWeight() + 1;
-    }
-
-    /**
-     * Installs a module from a zip archive
-     * @param string $file
-     * @return mixed
-     */
-    public function installFromZip($file)
-    {
-        $module_id = $this->getIdFromZip($file);
-
-        if (empty($module_id)) {
-            return $this->language->text('Invalid zip content');
-        }
-
-        $module = $this->get($module_id);
-
-        if (empty($module)) {
-            return $this->installFromZipNew($file, $module_id);
-        }
-
-        return $this->installFromZipUpdate($file, $module);
-    }
-
-    /**
-     * Installs a new module from a ZIP file
-     * @param string $file
-     * @param string $module_id
-     * @return boolean|string
-     */
-    protected function installFromZipNew($file, $module_id)
-    {
-        if (!$this->extractFromZip($file)) {
-            return $this->language->text('Failed to extract the module files');
-        }
-
-        return $this->install($module_id, false);
-    }
-
-    /**
-     * Updates an existing module from a ZIP file
-     * @param string $file
-     * @param array $module
-     * @return boolean|string
-     */
-    protected function installFromZipUpdate($file, array $module)
-    {
-        // Only disabled modules can by updated
-        if ($this->isEnabled($module['id'])) {
-            return $this->language->text('Disable the module before updating');
-        }
-
-        // Backup the current version
-        if (!$this->backup($module)) {
-            return $this->language->text('Failed to backup the module');
-        }
-
-        // Extract and override
-        if (!$this->extractFromZip($file)) {
-            return $this->language->text('Failed to extract the module files');
-        }
-
-        if ($this->isInstalled($module['id'])) {
-            return true;
-        }
-
-        // Install but not enable
-        return $this->install($module['id'], false);
-    }
-
-    /**
-     * Backups an existing module
-     * @param array|string $module
-     * @return boolean
-     */
-    public function backup($module)
-    {
-        if (!is_array($module)) {
-            $module = $this->get($module);
-        }
-
-        $vars = array('@name' => $module['name'], '@date' => date("D M j G:i:s"));
-        $name = $this->language->text('Module @name. Backed up on @date', $vars);
-        $data = array('name' => $name, 'module' => $module);
-
-        $result = $this->backup->backup('module', $data);
-        return is_numeric($result);
-    }
-
-    /**
-     * Extracts module files from a ZIP file
-     * @param string $file
-     * @return boolean
-     */
-    protected function extractFromZip($file)
-    {
-        return $this->zip->set($file)->extract(GC_MODULE_DIR);
-    }
-
-    /**
-     * Returns an array of files in a ZIP file
-     * @param string $file
-     * @return array
-     */
-    public function getFilesFromZip($file)
-    {
-        try {
-            $files = $this->zip->set($file)->getList();
-        } catch (ModuleException $e) {
-            trigger_error($e->getMessage());
-            return array();
-        }
-
-        if (count($files) < 2) {
-            return array();
-        }
-
-        return $files;
-    }
-
-    /**
-     * Returns a module id from zip file or false on error
-     * @param string $file
-     * @return boolean
-     */
-    public function getIdFromZip($file)
-    {
-        $list = $this->getFilesFromZip($file);
-
-        if (empty($list)) {
-            return false;
-        }
-
-        $folder = reset($list);
-
-        if (strrchr($folder, '/') !== '/') {
-            return false;
-        }
-
-        $nested = 0;
-        foreach ($list as $item) {
-            if (strpos($item, $folder) === 0) {
-                $nested++;
-            }
-        }
-
-        if (count($list) != $nested) {
-            return false;
-        }
-
-        $id = rtrim($folder, '/');
-
-        if ($this->checkModuleId($id) === true) {
-            return $id;
-        }
-
-        return false;
     }
 
 }

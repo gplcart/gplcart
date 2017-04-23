@@ -517,12 +517,6 @@ return array(
             'controller' => array('gplcart\\core\\controllers\\backend\\Module', 'listModule')
         )
     ),
-    'admin/module/upload' => array(
-        'access' => 'module_upload',
-        'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\backend\\Module', 'uploadModule')
-        )
-    ),
     'admin/settings' => array(
         'menu' => array('admin' => 'Settings'),
         'handlers' => array(

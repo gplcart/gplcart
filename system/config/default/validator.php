@@ -119,11 +119,6 @@ return array(
             'validate' => array('gplcart\\core\\handlers\\validator\\components\\Language', 'language')
         )
     ),
-    'module_upload' => array(
-        'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Module', 'upload')
-        )
-    ),
     'page' => array(
         'handlers' => array(
             'validate' => array('gplcart\\core\\handlers\\validator\\components\\Page', 'page')
