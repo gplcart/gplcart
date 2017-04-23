@@ -160,10 +160,6 @@ class Module extends BackendController
                 return $this->module->install($id);
             case 'uninstall':
                 return $this->module->uninstall($id);
-            case 'delete':
-                return $this->module->delete($id);
-            case 'backup':
-                return $this->module->backup($id);
         }
 
         $this->outputHttpStatus(403);
@@ -330,111 +326,6 @@ class Module extends BackendController
     protected function outputListModule()
     {
         $this->output('module/list');
-    }
-
-    /**
-     * Displays upload module page
-     */
-    public function uploadModule()
-    {
-        $this->setBreadcrumbUploadModule();
-        $this->setTitleUploadModule();
-
-        $this->controlAccessUploadModule();
-
-        $this->submitUploadModule();
-        $this->outputUploadModule();
-    }
-
-    /**
-     * Controls access to module upload form
-     */
-    protected function controlAccessUploadModule()
-    {
-        $access = $this->access('module_install')//
-                && $this->access('file_upload')//
-                && $this->access('module_upload');
-
-        if (!$access) {
-            $this->outputHttpStatus(403);
-        }
-    }
-
-    /**
-     * Installs a uploaded module
-     */
-    protected function submitUploadModule()
-    {
-        if ($this->isPosted('install') && $this->validateUploadModule()) {
-            $this->installUploadedModule();
-        }
-    }
-
-    /**
-     * Install a uploaded module
-     */
-    protected function installUploadedModule()
-    {
-        $this->controlAccessUploadModule();
-
-        $uploaded = $this->getSubmitted('destination');
-        $result = $this->module->installFromZip($uploaded);
-
-        if ($result !== true) {
-            $errors = implode('<br>', array_filter((array) $result));
-            $message = empty($errors) ? $this->text('An error occurred') : $errors;
-            $this->redirect('', $message, 'warning');
-        }
-
-        $vars = array('!href' => $this->url('admin/module/list'));
-        $message = $this->text('The module has been <a href="!href">uploaded and installed</a>. You have to enable it manually', $vars);
-        $this->redirect('', $message, 'success');
-    }
-
-    /**
-     * Validates and uploads a zip archive
-     * @return boolean
-     */
-    protected function validateUploadModule()
-    {
-        $this->validateComponent('module_upload');
-        return !$this->hasErrors();
-    }
-
-    /**
-     * Sets breadcrumbs on the module upload page
-     */
-    protected function setBreadcrumbUploadModule()
-    {
-        $breadcrumbs = array();
-
-        $breadcrumbs[] = array(
-            'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')
-        );
-
-        $breadcrumbs[] = array(
-            'text' => $this->text('Modules'),
-            'url' => $this->url('admin/module/list')
-        );
-
-        $this->setBreadcrumbs($breadcrumbs);
-    }
-
-    /**
-     * Sets titles on the module upload page
-     */
-    protected function setTitleUploadModule()
-    {
-        $this->setTitle($this->text('Upload module'));
-    }
-
-    /**
-     * Renders the module upload page
-     */
-    protected function outputUploadModule()
-    {
-        $this->output('module/upload');
     }
 
 }
