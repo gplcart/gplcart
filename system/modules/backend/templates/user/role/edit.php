@@ -86,13 +86,13 @@
   <div class="panel panel-default">
     <div class="panel-body">
       <div class="row">
+        <?php if (isset($role['role_id']) && $this->access('user_role_delete')) { ?>
         <div class="col-md-2">
-          <?php if (isset($role['role_id']) && $this->access('user_role_delete')) { ?>
           <button class="btn btn-danger delete" name="delete" value="1" onclick="return confirm(GplCart.text('Are you sure? It cannot be undone!'));">
             <i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?>
           </button>
-          <?php } ?>
         </div>
+        <?php } ?>
         <div class="col-md-10">
           <a href="<?php echo $this->url('admin/user/role'); ?>" class="btn btn-default cancel">
             <i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?>
