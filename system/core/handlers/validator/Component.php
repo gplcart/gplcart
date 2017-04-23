@@ -62,11 +62,11 @@ class Component extends BaseValidator
         parent::__construct();
 
         $this->config = Container::get('gplcart\\core\\Config');
-        $this->file = Container::get('gplcart\\core\\models\\File');
         $this->user = Container::get('gplcart\\core\\models\\User');
         $this->store = Container::get('gplcart\\core\\models\\Store');
         $this->alias = Container::get('gplcart\\core\\models\\Alias');
         $this->request = Container::get('gplcart\\core\\helpers\Request');
+        $this->file = Container::get('gplcart\\core\\models\\File');
     }
 
     /**
@@ -328,7 +328,7 @@ class Component extends BaseValidator
         foreach ($converted as $key => $file) {
             $result = $this->file->upload($file, 'image', $path);
             if ($result === true) {
-                $this->setSubmitted("images.$key.path", $this->file->getUploadedFile(true));
+                $this->setSubmitted("images.$key.path", $this->file->getTransferred(true));
                 continue;
             }
             $errors++;

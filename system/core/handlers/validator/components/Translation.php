@@ -91,7 +91,7 @@ class Translation extends ComponentValidator
             return false;
         }
 
-        $uploaded = $this->file->getUploadedFile();
+        $uploaded = $this->file->getTransferred();
         $this->setSubmitted('destination', $uploaded);
         return true;
     }

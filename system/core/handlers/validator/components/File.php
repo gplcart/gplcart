@@ -124,7 +124,7 @@ class File extends ComponentValidator
             return false;
         }
 
-        $uploaded = $this->file->getUploadedFile(true);
+        $uploaded = $this->file->getTransferred(true);
         $this->setSubmitted('path', $uploaded);
         return true;
     }

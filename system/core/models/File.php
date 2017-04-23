@@ -43,31 +43,36 @@ class File extends Model
     protected $url;
 
     /**
-     * Upload directory
-     * @var string
-     */
-    protected $path = '';
-
-    /**
      * CURL class instance
      * @var \gplcart\core\helpers\Curl $curl
      */
     protected $curl;
 
     /**
-     * Current handler
+     * Transfer file destination
+     * @var string
+     */
+    protected $destination;
+
+    /**
+     * The current handler
      * @var mixed
      */
     protected $handler;
 
     /**
-     * Path of a uploaded file
+     * Path of a transferred file
      * @var string
      */
-    private $uploaded;
+    private $transferred;
 
     /**
-     * Constructor
+     * The last error
+     * @var string
+     */
+    protected $error;
+
+    /**
      * @param LanguageModel $language
      * @param ValidatorModel $validator
      * @param UrlHelper $url
@@ -212,109 +217,6 @@ class File extends Model
     }
 
     /**
-     * Uploads a file
-     * @param array $postfile
-     * @param null|string $handler
-     * @param null|string $path
-     * @return mixed
-     */
-    public function upload($postfile, $handler = null, $path = null)
-    {
-        $this->hook->fire('file.upload.before', $postfile, $handler, $path);
-
-        if (empty($postfile)) {
-            return $this->language->text('Nothing to upload');
-        }
-
-        if (!empty($postfile['error']) || empty($postfile['tmp_name']) || empty($postfile['name'])) {
-            return $this->language->text('Unable to upload the file');
-        }
-
-        $tempname = $postfile['tmp_name'];
-        $file = $postfile['name'];
-
-        if (!is_uploaded_file($tempname)) {
-            return $this->language->text('Unable to upload the file');
-        }
-
-        if (isset($handler)) {
-            $this->setHandler($handler);
-        }
-
-        if (isset($path)) {
-            $this->setUploadPath($path);
-        }
-
-        $valid = $this->validate($tempname, $file);
-
-        if ($valid !== true) {
-            return $valid;
-        }
-
-        $result = $this->move($tempname, $file);
-
-        if ($result !== true) {
-            return $result;
-        }
-
-        $this->hook->fire('file.upload.after', $postfile, $handler, $path, $this->uploaded);
-        return true;
-    }
-
-    /**
-     * Validate a file
-     * @param string $path
-     * @param null|string $filename
-     * @return boolean|string
-     */
-    public function validate($path, $filename = null)
-    {
-        $pathinfo = isset($filename) ? pathinfo($filename) : pathinfo($path);
-
-        if (empty($pathinfo['filename'])) {
-            return $this->language->text('Unknown filename');
-        }
-
-        if (empty($pathinfo['extension'])) {
-            return $this->language->text('Unknown file extension');
-        }
-
-        if ($this->handler === false) {
-            return true;
-        }
-
-        $extension = $pathinfo['extension'];
-
-        if (isset($this->handler['extensions']) && !in_array($extension, $this->handler['extensions'])) {
-            return $this->language->text('Unsupported file extension');
-        }
-
-        if (!isset($this->handler)) {
-            $supported_extensions = $this->supportedExtensions();
-            if (!in_array($extension, $supported_extensions)) {
-                return $this->language->text('Unsupported file extension');
-            }
-            $this->handler = $this->getHandler(".$extension");
-        }
-
-        if (empty($this->handler['validator'])) {
-            return $this->language->text('Missing validator');
-        }
-
-        if (isset($this->handler['filesize']) && filesize($path) > $this->handler['filesize']) {
-            return $this->language->text('File size exceeds %num bytes', array('%num' => $this->handler['filesize']));
-        }
-
-        $result = $this->validator->run($this->handler['validator'], $path, $this->handler);
-
-        if ($result === true) {
-            return true;
-        }
-
-        return $result; // Error
-    }
-
-    /**
      * Returns an array of all supported file extensions
      * @param boolean $dot
      * @return array
@@ -328,17 +230,54 @@ class File extends Model
             }
         }
 
-        // Remove repeating extensions
         $extensions = array_unique($extensions);
 
         if ($dot) {
-            // Prepend a dot to the each extension in the array
             $extensions = array_map(function ($value) {
                 return ".$value";
             }, $extensions);
         }
 
         return $extensions;
+    }
+
+    /**
+     * Returns an array of all defined file handlers
+     * @return array
+     */
+    protected function getHandlers()
+    {
+        $handlers = &Cache::memory(__METHOD__);
+
+        if (isset($handlers)) {
+            return $handlers;
+        }
+
+        $handlers = array();
+
+        $handlers['image'] = array(
+            'extensions' => array('jpg', 'jpeg', 'gif', 'png'),
+            'validator' => 'image'
+        );
+
+        $handlers['json'] = array(
+            'extensions' => array('json'),
+            'validator' => 'json'
+        );
+
+        $handlers['csv'] = array(
+            'extensions' => array('csv'),
+            'validator' => 'csv'
+        );
+
+        $handlers['zip'] = array(
+            'extensions' => array('zip'),
+            'validator' => 'zip'
+        );
+
+        $this->hook->fire('file.handlers', $handlers);
+
+        return $handlers;
     }
 
     /**
@@ -370,7 +309,7 @@ class File extends Model
     }
 
     /**
-     * Sets the current handler
+     * Sets the current tranfer handler
      * @param mixed $id
      *  - string: load by validator ID
      *  - false: disable validator at all,
@@ -384,76 +323,7 @@ class File extends Model
         } else {
             $this->handler = $id;
         }
-
         return $this;
-    }
-
-    /**
-     * Downloads a file from the remoted URL
-     * @param string $url
-     * @return boolean|string
-     */
-    public function wget($url)
-    {
-        $this->hook->fire('file.download.before', $url);
-
-        if (empty($url)) {
-            return false;
-        }
-
-        $header = $this->curl->header($url);
-
-        if (!isset($header['download_content_length'])) {
-            return $this->language->text('Unknown filesize');
-        }
-
-        $remote = $this->curl->get($url);
-        $tempname = tempnam(sys_get_temp_dir(), 'DWN');
-        $handle = fopen($tempname, "w");
-
-        fwrite($handle, $remote);
-        fclose($handle);
-
-        $validation_result = $this->validate($tempname, $url);
-
-        if ($validation_result !== true) {
-            unlink($tempname);
-            return $validation_result;
-        }
-
-        $move_result = $this->move($tempname, $url);
-
-        if ($move_result !== true) {
-            return $move_result;
-        }
-
-        $this->hook->fire('file.download.after', $url, $tempname);
-        return true;
-    }
-
-    /**
-     * Sets a upload destination
-     * @param string $path
-     * @return \gplcart\core\models\File
-     */
-    public function setUploadPath($path)
-    {
-        $this->path = trim($path, '/');
-        return $this;
-    }
-
-    /**
-     * Returns path of uploaded file
-     * @param bool $relative
-     * @return string
-     */
-    public function getUploadedFile($relative = false)
-    {
-        if ($relative) {
-            return $this->path($this->uploaded);
-        }
-
-        return $this->uploaded;
     }
 
     /**
@@ -630,102 +500,303 @@ class File extends Model
     }
 
     /**
-     * Returns an array of all defined file handlers
-     * @return array
+     * Uploads a file
+     * @param array $post
+     * @param null|string|false $handler
+     * @param string $path
+     * @return mixed
      */
-    protected function getHandlers()
+    public function upload($post, $handler, $path)
     {
-        $handlers = &Cache::memory(__METHOD__);
+        $this->hook->fire('file.upload.before', $post, $handler, $path, $this);
 
-        if (isset($handlers)) {
-            return $handlers;
+        $this->error = '';
+        if (!empty($post['error']) || empty($post['tmp_name']) || !is_uploaded_file($post['tmp_name'])) {
+            return $this->error = $this->language->text('Unable to upload the file');
         }
 
-        $handlers = array();
+        $this->setHandler($handler);
+        $this->setDestination($path);
 
-        $handlers['image'] = array(
-            'extensions' => array('jpg', 'jpeg', 'gif', 'png'),
-            'path' => 'image/upload/common',
-            'filesize' => null,
-            'validator' => 'image'
-        );
+        if (!$this->validate($post['tmp_name'], $post['name'])) {
+            return $this->error;
+        }
 
-        $handlers['json'] = array(
-            'extensions' => array('json'),
-            'path' => 'upload',
-            'validator' => 'json'
-        );
+        if (!$this->finalizeTransfer($post['tmp_name'], $post['name'], true)) {
+            return $this->error;
+        }
 
-        $handlers['csv'] = array(
-            'extensions' => array('csv'),
-            'path' => 'image/upload/common',
-            'validator' => 'csv'
-        );
-
-        $handlers['zip'] = array(
-            'extensions' => array('zip'),
-            'path' => 'upload',
-            'validator' => 'zip'
-        );
-
-        $this->hook->fire('file.handlers', $handlers);
-
-        return $handlers;
+        $this->hook->fire('file.upload.after', $post, $this);
+        return true;
     }
 
     /**
-     * Moview a file from temporary to final destination
-     * @param string $tempname
-     * @param string $source
+     * Downloads a file from a remote URL
+     * @param string $url
+     * @param null|false|string $handler
+     * @param string $path
+     * @return mixed
+     */
+    public function download($url, $handler, $path)
+    {
+        $this->hook->fire('file.download.before', $url, $handler, $path, $this);
+
+        $this->error = '';
+        if (empty($url)) {
+            return $this->language->text('Nothing to download');
+        }
+
+        $temp = $this->writeTempFile($url);
+
+        if (empty($temp)) {
+            return $this->error;
+        }
+
+        $this->setHandler($handler);
+        $this->setDestination($path);
+
+        if (!$this->validateHandler($temp)) {
+            unlink($temp);
+            return $this->error;
+        }
+
+        if (!$this->finalizeTransfer($temp, $this->destination, false)) {
+            return $this->error;
+        }
+
+        $this->hook->fire('file.download.after', $url, $temp, $this);
+        return true;
+    }
+
+    /**
+     * Writes a temporary file from a remote file
+     * @param string $url
+     * @return string|false
+     */
+    protected function writeTempFile($url)
+    {
+        $content = $this->curl->get($url);
+        $error = $this->curl->getError();
+
+        if (!empty($error)) {
+            $this->error = $error;
+            return false;
+        }
+
+        $file = tempnam(sys_get_temp_dir(), 'DWN');
+        $fh = fopen($file, "w");
+        fwrite($fh, $content);
+        fclose($fh);
+        return $file;
+    }
+
+    /**
+     * Finalize file transfer
+     * @param string $temp
+     * @param string $to
+     * @param bool $upload
+     * @return boolean
+     */
+    protected function finalizeTransfer($temp, $to, $upload)
+    {
+        $directory = GC_UPLOAD_DIR . '/' . $this->path($this->destination);
+        $pathinfo = $upload ? pathinfo($to) : pathinfo($directory);
+
+        if ($upload) {
+            $filename = $this->getSecureFileName($pathinfo['filename'], $pathinfo['extension']);
+        } else {
+            $filename = $pathinfo['basename'];
+            $directory = $pathinfo['dirname'];
+        }
+
+        if (!file_exists($directory) && !mkdir($directory, 0644, true)) {
+            $this->error = $this->language->text('Unable to create @name', array('@name' => $directory));
+            return false;
+        }
+
+        $destination = "$directory/$filename";
+
+        if (!$this->moveTemp($temp, $destination)) {
+            return $this->error;
+        }
+
+        $this->chmod($destination);
+        $this->transferred = $destination;
+        return true;
+    }
+
+    /**
+     * Move a temporary file to its final destination
+     * @param string $from
+     * @param string $to
+     * @return boolean
+     */
+    protected function moveTemp($from, $to)
+    {
+        $copied = copy($from, $to);
+        unlink($from);
+
+        if ($copied) {
+            return true;
+        }
+
+        $vars = array('@source' => $from, '@destination' => $to);
+        $this->error = $this->language->text('Unable to move @source to @destination', $vars);
+        return false;
+    }
+
+    /**
+     * Clean up file name
+     * @param string $filename
+     * @return string
+     */
+    protected function cleanFileName($filename)
+    {
+        $clean = preg_replace('/[^A-Za-z0-9.]/', '', $filename);
+        if ($this->config->get('file_upload_translit', 1) && preg_match('/[^A-Za-z0-9_.-]/', $clean) === 1) {
+            $clean = $this->language->translit($clean, null);
+        }
+        return $clean;
+    }
+
+    /**
+     * Build a secure filename
+     * @param string $filename
+     * @param string $extension
+     * @return string
+     */
+    protected function getSecureFileName($filename, $extension)
+    {
+        $suffix = gplcart_string_random(6);
+        $clean = $this->cleanFileName($filename);
+        return "$clean-$suffix.$extension";
+    }
+
+    /**
+     * Validate a file
+     * @param string $path
+     * @param null|string $filename
      * @return boolean|string
      */
-    protected function move($tempname, $source)
+    public function validate($path, $filename = null)
     {
-        $pathinfo = pathinfo(strtok($source, '?'));
-        $filename = preg_replace('/[^A-Za-z0-9.]/', '', $pathinfo['filename']);
+        $pathinfo = isset($filename) ? pathinfo($filename) : pathinfo($path);
+
+        if (empty($pathinfo['filename'])) {
+            return $this->error = $this->language->text('Unknown filename');
+        }
+
+        if (empty($pathinfo['extension'])) {
+            return $this->error = $this->language->text('Unknown file extension');
+        }
+
+        if ($this->handler === false) {
+            return true;
+        }
+
         $extension = $pathinfo['extension'];
-
-        if ($this->config->get('file_upload_translit', 1) && preg_match('/[^A-Za-z0-9_.-]/', $filename) === 1) {
-            $filename = $this->language->translit($filename, null);
+        if (isset($this->handler['extensions']) && !in_array($extension, $this->handler['extensions'])) {
+            return $this->error = $this->language->text('Unsupported file extension');
         }
 
-        if (empty($this->path) && !empty($this->handler['path'])) {
-            $this->path = $this->handler['path'];
+        if (!isset($this->handler) && !$this->setHandlerByExtension($extension)) {
+            return $this->error;
         }
 
-        $destination = GC_UPLOAD_DIR;
-
-        if (!empty($this->path)) {
-            if (strpos($this->path, GC_ROOT_DIR) === 0) {
-                $destination = $this->path;
-            } else {
-                $destination = GC_FILE_DIR . '/' . trim($this->path, '/');
-            }
+        if (!$this->validateHandler($path)) {
+            return $this->error;
         }
 
-        if (!file_exists($destination) && !mkdir($destination, 0644, true)) {
-            return $this->language->text('Unable to create @name', array('@name' => $destination));
-        }
-
-        $rand = gplcart_string_random(6);
-        $destination = "$destination/$filename-$rand.$extension";
-
-        $copied = copy($tempname, $destination);
-        unlink($tempname);
-
-        if (!$copied) {
-            $vars = array('@source' => $tempname, '@destination' => $destination);
-            return $this->language->text('Unable to move @source to @destination', $vars);
-        }
-
-        if (strpos($destination, GC_PRIVATE_DIR) !== false) {
-            chmod($destination, 0640);
-        } else {
-            chmod($destination, 0644);
-        }
-
-        $this->uploaded = $destination;
         return true;
+    }
+
+    /**
+     * Find and set handler by a file extension
+     * @param string $extension
+     * @return boolean
+     */
+    protected function setHandlerByExtension($extension)
+    {
+        if (!in_array($extension, $this->supportedExtensions())) {
+            $this->error = $this->language->text('Unsupported file extension');
+            return false;
+        }
+
+        $this->handler = $this->getHandler(".$extension");
+        return true;
+    }
+
+    /**
+     * Validates a file using a validator
+     * @param string $file
+     * @return boolean
+     */
+    protected function validateHandler($file)
+    {
+        if (empty($this->handler['validator'])) {
+            $this->error = $this->language->text('Missing validator');
+            return false;
+        }
+
+        if (isset($this->handler['filesize']) && filesize($file) > $this->handler['filesize']) {
+            $this->error = $this->language->text('File size exceeds %num bytes', array('%num' => $this->handler['filesize']));
+            return false;
+        }
+
+        $result = $this->validator->run($this->handler['validator'], $file, $this->handler);
+
+        if ($result === true) {
+            return true;
+        }
+
+        $this->error = $result;
+        return false;
+    }
+
+    /**
+     * Sets path to the file final destination
+     * @param string $path
+     * @return \gplcart\core\models\File
+     */
+    public function setDestination($path)
+    {
+        $this->destination = $path;
+        return $this;
+    }
+
+    /**
+     * Returns a path to the transferred file
+     * @param bool $relative
+     * @return string
+     */
+    public function getTransferred($relative = false)
+    {
+        if ($relative) {
+            return $this->path($this->transferred);
+        }
+        return $this->transferred;
+    }
+
+    /**
+     * Returns the last error
+     * @return string
+     */
+    public function getError()
+    {
+        return $this->error;
+    }
+
+    /**
+     * Set directory permissions depending on public/private access
+     * @param string $file
+     * @return boolean
+     */
+    protected function chmod($file)
+    {
+        if (strpos($file, GC_PRIVATE_DIR) === 0) {
+            return chmod($file, 0640);
+        }
+        return chmod($file, 0644);
     }
 
 }

@@ -335,7 +335,7 @@ class Store extends ComponentValidator
                 continue;
             }
 
-            $uploaded = $this->file->getUploadedFile(true);
+            $uploaded = $this->file->getTransferred(true);
             $this->setSubmitted("data.$field", $uploaded);
         }
 
@@ -353,7 +353,7 @@ class Store extends ComponentValidator
         $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($value)) {
-            continue;
+            return null;
         }
 
         if (empty($value)) {
