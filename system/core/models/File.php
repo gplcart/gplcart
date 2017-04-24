@@ -438,10 +438,7 @@ class File extends Model
      */
     public function path($absolute)
     {
-        if (substr($absolute, 0, strlen(GC_FILE_DIR)) == GC_FILE_DIR) {
-            return trim(substr($absolute, strlen(GC_FILE_DIR)), '/');
-        }
-        return $absolute;
+        return gplcart_file_relative_path($absolute);
     }
 
     /**
@@ -510,7 +507,7 @@ class File extends Model
     {
         $this->hook->fire('file.upload.before', $post, $handler, $path, $this);
 
-        $this->error = '';
+        $this->error = null;
         if (!empty($post['error']) || empty($post['tmp_name']) || !is_uploaded_file($post['tmp_name'])) {
             return $this->error = $this->language->text('Unable to upload the file');
         }
@@ -518,7 +515,8 @@ class File extends Model
         $this->setHandler($handler);
         $this->setDestination($path);
 
-        if (!$this->validate($post['tmp_name'], $post['name'])) {
+        if ($this->validate($post['tmp_name'], $post['name']) !== true) {
+            unlink($post['tmp_name']);
             return $this->error;
         }
 
@@ -610,11 +608,16 @@ class File extends Model
         }
 
         if (!file_exists($directory) && !mkdir($directory, 0644, true)) {
+            unlink($temp);
             $this->error = $this->language->text('Unable to create @name', array('@name' => $directory));
             return false;
         }
 
         $destination = "$directory/$filename";
+
+        if ($upload) {
+            $destination = gplcart_file_unique($destination);
+        }
 
         if (!$this->moveTemp($temp, $destination)) {
             return $this->error;
@@ -694,11 +697,6 @@ class File extends Model
             return true;
         }
 
-        $extension = $pathinfo['extension'];
-        if (isset($this->handler['extensions']) && !in_array($extension, $this->handler['extensions'])) {
-            return $this->error = $this->language->text('Unsupported file extension');
-        }
-
         if (!isset($this->handler) && !$this->setHandlerByExtension($extension)) {
             return $this->error;
         }
@@ -717,13 +715,13 @@ class File extends Model
      */
     protected function setHandlerByExtension($extension)
     {
-        if (!in_array($extension, $this->supportedExtensions())) {
-            $this->error = $this->language->text('Unsupported file extension');
-            return false;
+        if (in_array($extension, $this->supportedExtensions())) {
+            $this->handler = $this->getHandler(".$extension");
+            return true;
         }
 
-        $this->handler = $this->getHandler(".$extension");
-        return true;
+        $this->error = $this->language->text('Unsupported file extension');
+        return false;
     }
 
     /**
