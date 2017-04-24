@@ -9,55 +9,59 @@
 
 namespace gplcart\core\handlers\backup;
 
-use gplcart\core\handlers\backup\Base as BaseHandler;
+use gplcart\core\helpers\Zip as ZipHelper;
+use gplcart\core\models\Language as LanguageModel;
 
 /**
- * Provides methods to backup/restore modules
+ * Provides methods to backup modules
  */
-class Module extends BaseHandler
+class Module
 {
 
     /**
-     * Constructor
+     * Language model instance
+     * @var \gplcart\core\models\Language $language
      */
-    public function __construct()
+    protected $language;
+
+    /**
+     * Zip helper class instance
+     * @var \gplcart\core\helpers\Zip $zip
+     */
+    protected $zip;
+
+    /**
+     * @param LanguageModel $language
+     * @param ZipHelper $zip
+     */
+    public function __construct(LanguageModel $language, ZipHelper $zip)
     {
-        parent::__construct();
+        $this->zip = $zip;
+        $this->language = $language;
     }
 
     /**
      * Creates a module backup
      * @param array $data
-     * @return integer
+     * @param \gplcart\core\models\Backup $model
+     * @return boolean
      */
-    public function backup(array $data)
+    public function backup(array $data, $model)
     {
         $data['type'] = 'module';
-        $data['module_id'] = $data['module']['id'];
-        $data['version'] = isset($data['module']['version']) ? $data['module']['version'] : '';
 
-        $data['path'] = $this->zip($data);
+        $vars = array('@name' => $data['name'], '@date' => date("D M j G:i:s"));
+        $data['name'] = $this->language->text('Module @name. Saved @date', $vars);
 
-        if (empty($data['path'])) {
-            return false;
-        }
+        $time = date('d-m-Y--G-i');
+        $path = GC_PRIVATE_BACKUP_DIR . "/module_{$data['module_id']}_{$time}.zip";
+        $destination = gplcart_file_unique($path);
 
-        $data['path'] = $this->getRelativePath($data['path']);
-        return $this->backup->add($data);
-    }
+        $success = $this->zip->folder($data['directory'], $destination, $data['module_id']);
 
-    /**
-     * Adds module files to an archive
-     * @param array $data
-     * @return boolean|string A path to the created archive
-     */
-    protected function zip(array $data)
-    {
-        $destination = $this->getZipPath($data['module']['id']);
-        $result = $this->zip->folder($data['module']['directory'], $destination, $data['module']['id']);
-
-        if ($result === true) {
-            return $destination;
+        if ($success) {
+            $data['path'] = gplcart_file_relative_path($destination);
+            return (bool) $model->add($data);
         }
 
         return false;
