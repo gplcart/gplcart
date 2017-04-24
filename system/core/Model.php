@@ -63,4 +63,16 @@ abstract class Model
         return $this->db;
     }
 
+    /**
+     * Append LIMIT clause to a SQL string
+     * @param string $sql
+     * @param array $data
+     */
+    protected function setSqlLimit(&$sql, array $data)
+    {
+        if (!empty($data['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        }
+    }
+
 }
