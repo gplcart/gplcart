@@ -239,15 +239,6 @@ class Config
             );
 
             if (isset($saved_modules[$module_info['id']])) {
-
-                // Do not rewrite status and weight set in code
-                if (isset($module_info['status'])) {
-                    unset($saved_modules[$module_info['id']]['status']);
-                }
-                if (isset($module_info['weight'])) {
-                    unset($saved_modules[$module_info['id']]['weight']);
-                }
-
                 $module_info['installed'] = true;
                 $module_info = array_replace_recursive($module_info, $saved_modules[$module_info['id']]);
             }
@@ -293,7 +284,6 @@ class Config
         try {
             $instance = Container::get($class);
         } catch (\ReflectionException $exc) {
-            trigger_error($exc->getMessage());
             return null;
         }
 
