@@ -234,6 +234,6 @@ return array(
         'handlers' => array(
             'validate' => array('gplcart\\core\\handlers\\validator\\elements\\Common', 'json')
         )
-    ),
+    )
 );
 
