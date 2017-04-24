@@ -194,8 +194,8 @@ class Cart extends Model
 
         $where = array($this->language->current());
 
-        $this->setSqlConditionsListUser($data, $sql, $where);
-        $this->setSqlSortListUser($data, $sql);
+        $this->setSqlConditionsList($data, $sql, $where);
+        $this->setSqlSortList($data, $sql);
 
         if (!empty($data['limit'])) {
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
@@ -218,7 +218,7 @@ class Cart extends Model
      * @param string $sql
      * @param array $where
      */
-    protected function setSqlConditionsListUser(array $data, &$sql, &$where)
+    protected function setSqlConditionsList(array $data, &$sql, &$where)
     {
         if (isset($data['user_id'])) {
             $sql .= ' AND c.user_id=?';
@@ -251,7 +251,7 @@ class Cart extends Model
      * @param array $data
      * @param string $sql
      */
-    protected function setSqlSortListUser(array $data, &$sql)
+    protected function setSqlSortList(array $data, &$sql)
     {
         $allowed_order = array('asc', 'desc');
 
