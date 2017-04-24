@@ -152,3 +152,17 @@ function gplcart_file_csv($file, $data, $del = ",", $en = '"', $limit = 0)
     fclose($handle);
     return ($result !== false);
 }
+
+/**
+ * Converts absolute file path to relative
+ * @param string $absolute
+ * @return string
+ */
+function gplcart_file_relative_path($absolute)
+{
+    $prefix = GC_FILE_DIR . '/';
+    if (substr($absolute, 0, strlen($prefix)) === $prefix) {
+        return trim(substr($absolute, strlen($prefix)), '/');
+    }
+    return $absolute;
+}
