@@ -165,17 +165,22 @@ class Controller extends BaseController
      */
     public function cart($key = null)
     {
-        $conditions = array('user_id' => $this->cart_uid, 'store_id' => $this->store_id);
-
-        if (!isset($key)) {
-            return $this->cart->getContent($conditions);
-        }
-        if ($key == 'count_total') {
-            return (int) $this->cart->getQuantity($conditions, 'total');
-        }
-        if ($key == 'user_id') {
+        if ($key === 'user_id') {
             return $this->cart_uid;
         }
+
+        $conditions = array(
+            'user_id' => $this->cart_uid,
+            'store_id' => $this->store_id
+        );
+
+        $cart = $this->cart->getContent($conditions);
+
+        if ($key === 'count_total') {
+            return empty($cart['quantity']) ? 0 : $cart['quantity'];
+        }
+
+        return $cart;
     }
 
     /**
@@ -561,7 +566,6 @@ class Controller extends BaseController
     }
 
     /**
-     * 
      * @param array $conditions
      * @return string
      */
