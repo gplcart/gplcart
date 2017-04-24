@@ -9,10 +9,11 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Cache;
-use gplcart\core\Model;
-use gplcart\core\Handler;
-use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\Cache,
+    gplcart\core\Model,
+    gplcart\core\Handler;
+use gplcart\core\models\User as UserModel,
+    gplcart\core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to backups
@@ -27,13 +28,20 @@ class Backup extends Model
     protected $language;
 
     /**
-     * Constructor
+     * User model instance
+     * @var \gplcart\core\models\User $user
+     */
+    protected $user;
+
+    /**
+     * @param UserModel $user
      * @param LanguageModel $language
      */
-    public function __construct(LanguageModel $language)
+    public function __construct(UserModel $user, LanguageModel $language)
     {
         parent::__construct();
 
+        $this->user = $user;
         $this->language = $language;
     }
 
@@ -109,11 +117,15 @@ class Backup extends Model
             return false;
         }
 
-        $data['created'] = GC_TIME;
+        if (empty($data['user_id'])) {
+            $data['user_id'] = (int) $this->user->getSession('user_id');
+        }
 
-        $id = $this->db->insert('backup', $data);
-        $this->hook->fire('backup.add.after', $data, $id);
-        return $id;
+        $data['created'] = GC_TIME;
+        $data['backup_id'] = $this->db->insert('backup', $data);
+
+        $this->hook->fire('backup.add.after', $data);
+        return $data['backup_id'];
     }
 
     /**
@@ -140,9 +152,7 @@ class Backup extends Model
             return false;
         }
 
-        $deleted_file = $this->deleteZip($id);
-
-        if (!$deleted_file) {
+        if (!$this->deleteZip($id)) {
             return false;
         }
 
@@ -173,7 +183,7 @@ class Backup extends Model
     public function backup($handler_id, $data)
     {
         $handlers = $this->getHandlers();
-        return Handler::call($handlers, $handler_id, 'backup', array($data));
+        return Handler::call($handlers, $handler_id, 'backup', array($data, $this));
     }
 
     /**
@@ -185,7 +195,7 @@ class Backup extends Model
     public function restore($handler_id, $data)
     {
         $handlers = $this->getHandlers();
-        return Handler::call($handlers, $handler_id, 'restore', array($data));
+        return Handler::call($handlers, $handler_id, 'restore', array($data, $this));
     }
 
     /**
