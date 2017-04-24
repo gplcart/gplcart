@@ -21,7 +21,6 @@
           <th><a href="<?php echo $sort_version; ?>"><?php echo $this->text('Version'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_type; ?>"><?php echo $this->text('Type'); ?> <i class="fa fa-sort"></i></a></th>
           <th><?php echo $this->text('Dependencies'); ?></th>
-          <th><?php echo $this->text('Status'); ?></th>
           <th></th>
         </tr>
       </thead>
@@ -54,22 +53,6 @@
             <?php } ?>
           </td>
           <td class="middle">
-            <?php if (isset($info['status'])) { ?>
-            <?php if ($info['status']) { ?>
-            <span class="text-success"><?php echo $this->text('Enabled'); ?></span>
-            <?php } else { ?>
-            <span class="text-danger"><?php echo $this->text('Disabled'); ?></span>
-            <?php } ?>
-            <?php } else { ?>
-            <span class="text-warning"><?php echo $this->text('Not installed'); ?></span>
-            <?php } ?>
-            <?php if(!empty($info['errors'])) { ?>
-            <a data-toggle="collapse" href="#module-details-<?php echo $module_id; ?>">
-              <?php echo $this->text('Error'); ?>
-            </a>
-            <?php } ?>
-          </td>
-          <td class="middle">
             <?php if($info['type'] !== 'installer') { ?>
             <ul class="list-inline">
               <?php if (isset($info['status'])) { ?>
@@ -77,7 +60,7 @@
               <?php if ($this->access('module_disable') && empty($info['always_enabled'])) { ?>
               <li>
                 <a href="<?php echo $this->url(false, array('action' => 'disable', 'module_id' => $module_id)); ?>">
-                  <?php echo mb_strtolower($this->text('Disable')); ?>
+                  <b><?php echo mb_strtolower($this->text('Disable')); ?></b>
                 </a>
               </li>
               <?php } ?>
@@ -118,7 +101,7 @@
           </td>
         </tr>
         <tr class="collapse active" id="module-details-<?php echo $module_id; ?>">
-          <td colspan="7">
+          <td colspan="6">
             <?php if ($info['author']) { ?>
             <div class="author">
               <b><?php echo $this->text('Author'); ?></b>: <?php echo $this->escape($this->truncate($info['author'], 100)); ?>
