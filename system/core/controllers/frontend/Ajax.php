@@ -238,40 +238,6 @@ class Ajax extends FrontendController
     }
 
     /**
-     * Returns an array of products based on certain conditions
-     * @return array
-     */
-    public function searchProductsAjax()
-    {
-        $term = (string) $this->getPosted('term');
-
-        if (empty($term)) {
-            return array();
-        }
-
-        $conditions = array(
-            'status' => 1,
-            'language' => $this->langcode,
-            'store_id' => $this->store_id,
-            'limit' => array(0, $this->config('autocomplete_limit', 10)),
-        );
-
-        $products = $this->search->search('product', $term, $conditions);
-
-        if (empty($products)) {
-            return array();
-        }
-
-        $options = array(
-            'entity' => 'product',
-            'template_item' => 'search/suggestion',
-            'imagestyle' => $this->settings('image_style_product_list', 3)
-        );
-
-        return $this->prepareEntityItems($products, $options);
-    }
-
-    /**
      * Returns an array of suggested collection entities
      * @return array
      */

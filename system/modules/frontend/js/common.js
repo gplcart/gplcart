@@ -560,49 +560,6 @@
     };
 
     /**
-     * Search autocomplete field
-     * @returns {undefined}
-     */
-    GplCart.onload.searchAutocomplete = function () {
-
-        var params, input = $('input[name="q"]');
-
-        if (input.length === 0) {
-            return;
-        }
-
-        input.autocomplete({
-            minLength: 2,
-            source: function (request, response) {
-
-                params = {
-                    term: request.term,
-                    action: 'searchProductsAjax',
-                    token: GplCart.settings.token
-                };
-
-                $.post(GplCart.settings.base + 'ajax', params, function (data) {
-                    response($.map(data, function (value, key) {
-                        return {suggestion: value.rendered};
-                    }));
-                });
-            },
-            select: function () {
-                return false;
-            }
-        }).autocomplete('instance')._renderItem = function (ul, item) {
-            return $('<li>').append('<a>' + item.suggestion + '</a>').appendTo(ul);
-        };
-
-        // Retain searching on focus
-        input.focus(function () {
-            if ($(this).val()) {
-                $(this).autocomplete("search");
-            }
-        });
-    };
-
-    /**
      * Add state change listener that updates city autocomplete field
      * @returns {undefined}
      */
