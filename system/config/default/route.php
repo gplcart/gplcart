@@ -256,13 +256,6 @@ return array(
             'controller' => array('gplcart\\core\\controllers\\backend\\Controller', 'adminSections')
         )
     ),
-    'admin/tool/backup' => array(
-        'access' => 'backup',
-        'menu' => array('admin' => 'Backup'),
-        'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\backend\\Backup', 'listBackup')
-        )
-    ),
     'admin/sale' => array(
         'menu' => array('admin' => 'Sales'),
         'handlers' => array(
@@ -743,6 +736,13 @@ return array(
         'menu' => array('admin' => 'Libraries'),
         'handlers' => array(
             'controller' => array('gplcart\\core\\controllers\\backend\\Library', 'listLibrary')
+        )
+    ),
+    'admin/report/backup' => array(
+        'access' => 'backup',
+        'menu' => array('admin' => 'Backups'),
+        'handlers' => array(
+            'controller' => array('gplcart\\core\\controllers\\backend\\Backup', 'listBackup')
         )
     ),
     'admin/report/route' => array(
