@@ -194,6 +194,32 @@ class Cart extends Model
 
         $where = array($this->language->current());
 
+        $this->setSqlConditionsListUser($data, $sql, $where);
+        $this->setSqlSortListUser($data, $sql);
+
+        if (!empty($data['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        }
+
+        if (!empty($data['count'])) {
+            return (int) $this->db->fetchColumn($sql, $where);
+        }
+
+        $options = array('unserialize' => 'data', 'index' => $index);
+        $list = $this->db->fetchAll($sql, $where, $options);
+
+        $this->hook->fire('cart.list', $list);
+        return $list;
+    }
+
+    /**
+     * Set SQL query conditions for getList() method
+     * @param array $data
+     * @param string $sql
+     * @param array $where
+     */
+    protected function setSqlConditionsListUser(array $data, &$sql, &$where)
+    {
         if (isset($data['user_id'])) {
             $sql .= ' AND c.user_id=?';
             $where[] = $data['user_id'];
@@ -218,7 +244,15 @@ class Cart extends Model
             $sql .= ' AND c.sku LIKE ?';
             $where[] = "%{$data['sku']}%";
         }
+    }
 
+    /**
+     * Set SQL query sort and order clauses for getList() method
+     * @param array $data
+     * @param string $sql
+     */
+    protected function setSqlSortListUser(array $data, &$sql)
+    {
         $allowed_order = array('asc', 'desc');
 
         $allowed_sort = array(
@@ -238,20 +272,6 @@ class Cart extends Model
         } else {
             $sql .= ' ORDER BY c.created DESC';
         }
-
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
-        }
-
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $where);
-        }
-
-        $options = array('unserialize' => 'data', 'index' => $index);
-        $list = $this->db->fetchAll($sql, $where, $options);
-
-        $this->hook->fire('cart.list', $list);
-        return $list;
     }
 
     /**
