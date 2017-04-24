@@ -599,7 +599,7 @@ class File extends Model
      */
     protected function finalizeTransfer($temp, $to, $upload)
     {
-        $directory = GC_UPLOAD_DIR . '/' . $this->path($this->destination);
+        $directory = GC_FILE_DIR . '/' . $this->path($this->destination);
         $pathinfo = $upload ? pathinfo($to) : pathinfo($directory);
 
         if ($upload) {
