@@ -39,11 +39,6 @@ abstract class Module
     }
 
     /**
-     * Returns an array of module info
-     */
-    abstract public function info();
-
-    /**
      * Returns a class instance
      * @return object
      */

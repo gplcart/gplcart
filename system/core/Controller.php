@@ -924,9 +924,9 @@ class Controller
             $this->response->error404();
         }
 
-        $this->current_theme = $this->config->getModuleData($this->theme);
+        $this->current_theme = $this->config->getModuleInfo($this->theme);
 
-        if (empty($this->current_theme['info'])) {
+        if (empty($this->current_theme)) {
             $this->response->error404();
         }
 

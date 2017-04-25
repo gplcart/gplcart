@@ -1,0 +1,27 @@
+{
+    "name": "Frontend theme",
+    "description": "Frontend theme",
+    "author": "IURII MAKUKH",
+    "core": "1.x",
+    "type": "theme",
+    "status": true,
+    "version": "1.0.0",
+    "configure": "admin/module/settings/frontend",
+    "settings": {
+        "catalog_limit": 20,
+        "catalog_front_sort": "price",
+        "catalog_front_order": "asc",
+        "catalog_sort": "price",
+        "catalog_order": "asc",
+        "catalog_view": "grid",
+        "image_style_page": 5,
+        "image_style_category": 3,
+        "image_style_category_child": 3,
+        "image_style_product": 6,
+        "image_style_product_grid": 3,
+        "image_style_product_list": 3,
+        "image_style_cart": 3,
+        "image_style_option": 1,
+        "image_style_collection_banner": 7
+    }
+}

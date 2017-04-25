@@ -1,0 +1,9 @@
+{
+    "name": "Backend theme",
+    "description": "Backend theme",
+    "author": "Iurii Makukh",
+    "core": "1.x",
+    "type": "theme",
+    "status": true,
+    "version": "1.0.0"
+}

@@ -205,71 +205,80 @@ class Config
             return $modules;
         }
 
-        $saved_modules = $this->getInstalledModules();
+        $installed = $this->getInstalledModules();
 
         $modules = array();
-        foreach (scandir(GC_MODULE_DIR) as $module_dir) {
+        foreach (scandir(GC_MODULE_DIR) as $module_id) {
 
-            if (!$this->validModuleId($module_dir)) {
+            if (!$this->validModuleId($module_id)) {
                 continue;
             }
 
-            $module_name = $module_dir;
-            $module_data = $this->getModuleData($module_name);
+            // Parse module.json
+            $info = $this->getModuleInfo($module_id);
 
-            if (empty($module_data['info']['core'])) {
+            if (empty($info['core'])) {
                 continue;
             }
 
-            $module_info = $module_data['info'];
-            $module_instance = $module_data['instance'];
+            $info['directory'] = GC_MODULE_DIR . "/$module_id";
+            $info += array('type' => 'module', 'name' => $module_id);
 
-            if (isset($module_info['id']) && !$this->validModuleId($module_info['id'])) {
-                continue;
+            // Do not override status set in module.json
+            if (isset($info['status'])) {
+                unset($installed[$module_id]['status']);
             }
 
-            $module_info['hooks'] = $this->getModuleHooks($module_instance);
-
-            $module_info += array(
-                'type' => 'module',
-                'id' => $module_name,
-                'name' => $module_name,
-                'class' => $module_data['class'],
-                'directory' => GC_MODULE_DIR . "/$module_name"
-            );
-
-            if (isset($saved_modules[$module_info['id']])) {
-                $module_info['installed'] = true;
-                $module_info = array_replace_recursive($module_info, $saved_modules[$module_info['id']]);
+            // Replace default settings with settings saved in the database
+            if (isset($installed[$module_id])) {
+                $info['installed'] = true;
+                $info = array_replace_recursive($info, $installed[$module_id]);
             }
 
-            $modules[$module_info['id']] = $module_info;
+            // Instantiate main class only for enabled modules
+            if (!empty($info['status'])) {
+                $instance = $this->getModuleInstance($module_id);
+                if ($instance instanceof \gplcart\core\Module) {
+                    $info['hooks'] = $this->getModuleHooks($instance);
+                    $info['class'] = get_class($instance);
+                }
+            }
+
+            $modules[$module_id] = $info;
         }
 
         return $modules;
     }
 
     /**
-     * Returns an array containing module info and instance
+     * Returns an array of module data from module.json
+     * @staticvar array $infos
      * @param string $module_id
      * @return array
      */
-    public function getModuleData($module_id)
+    public function getModuleInfo($module_id)
     {
-        $instance = $this->getModuleInstance($module_id);
+        static $infos = array();
 
-        if (!$instance instanceof \gplcart\core\Module) {
-            return array();
+        if (isset($infos[$module_id])) {
+            return $infos[$module_id];
         }
 
-        $info = $instance->info();
+        $file = GC_MODULE_DIR . "/$module_id/module.json";
 
-        return array(
-            'info' => $info,
-            'instance' => $instance,
-            'class' => get_class($instance),
-            'id' => isset($info['id']) ? $info['id'] : $module_id
-        );
+        $decoded = null;
+        if (is_file($file)) {
+            $decoded = json_decode(file_get_contents($file), true);
+        }
+
+        if (is_array($decoded)) {
+            $decoded['id'] = $module_id;
+            $infos[$module_id] = $decoded;
+        } else {
+            $infos[$module_id] = array();
+        }
+
+        return $infos[$module_id];
     }
 
     /**

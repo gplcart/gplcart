@@ -18,20 +18,11 @@ class Backend extends Module
 {
 
     /**
-     * Returns the module info
-     * @return array
+     * Constructor
      */
-    public function info()
+    public function __construct()
     {
-        return array(
-            'name' => 'Backend theme',
-            'description' => 'Backend theme',
-            'author' => 'Iurii Makukh',
-            'core' => '1.x',
-            'type' => 'theme',
-            'status' => true,
-            'version' => GC_VERSION
-        );
+        parent::__construct();
     }
 
     /**
@@ -46,7 +37,7 @@ class Backend extends Module
 
             $libraries = array('font_awesome', 'jquery_ui', 'bootstrap_select');
             $controller->addAssetLibrary($libraries);
-            
+
             $controller->setCss('system/modules/backend/css/style.css');
 
             $controller->setMeta(array('charset' => 'utf-8'));
