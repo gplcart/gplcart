@@ -128,6 +128,7 @@ class Module extends Model
         }
 
         $this->update($module_id, array('status' => 1));
+
         $this->setOverrideConfig();
         $this->setTranslations($module_id);
 
@@ -142,6 +143,10 @@ class Module extends Model
      */
     public function canEnable($module_id)
     {
+        // Test module class
+        // If a fatal error occurs here, the module won't be enabled
+        $this->config->getModuleInstance($module_id);
+
         if ($this->isEnabled($module_id)) {
             return $this->language->text('Module already installed and enabled');
         }
@@ -156,6 +161,10 @@ class Module extends Model
      */
     public function canInstall($module_id)
     {
+        // Test module class
+        // If a fatal error occurs here, the module won't be installed
+        $this->config->getModuleInstance($module_id);
+
         if ($this->isInstalled($module_id)) {
             return $this->language->text('Module already installed');
         }
@@ -168,7 +177,7 @@ class Module extends Model
      * @param string $module_id
      * @return mixed
      */
-    protected function checkRequirements($module_id)
+    public function checkRequirements($module_id)
     {
         $result_module_id = $this->checkModuleId($module_id);
 
@@ -176,39 +185,34 @@ class Module extends Model
             return $result_module_id;
         }
 
-        $modules = $this->getList();
+        $module = $this->config->getModuleInfo($module_id);
 
-        $result_core = $this->checkCore($module_id, $modules);
+        $result_core = $this->checkCore($module);
 
         if ($result_core !== true) {
             return $result_core;
         }
 
-        $result_php = $this->checkPhpVersion($module_id, $modules);
+        $result_php = $this->checkPhpVersion($module);
 
         if ($result_php !== true) {
             return $result_php;
         }
 
-        if ($modules[$module_id]['type'] === 'installer') {
+        if (isset($module['type']) && $module['type'] === 'installer') {
             return $this->language->text('Cannot install/enable installer modules on runtime');
         }
 
-        return $this->checkDependenciesModule($module_id, $modules);
+        return $this->checkDependenciesModule($module_id);
     }
 
     /**
      * Checks PHP version compatibility for the module ID
-     * @param string|array $module
-     * @param array $modules
+     * @param array $module
      * @return boolean|string
      */
-    public function checkPhpVersion($module, array $modules = array())
+    public function checkPhpVersion(array $module)
     {
-        if (!is_array($module)) {
-            $module = isset($modules[$module]) ? $modules[$module] : array();
-        }
-
         if (empty($module['php'])) {
             return true;
         }
@@ -231,11 +235,11 @@ class Module extends Model
     /**
      * Checks module dependencies
      * @param string $module_id
-     * @param array $modules
      * @return boolean|array
      */
-    protected function checkDependenciesModule($module_id, array $modules)
+    protected function checkDependenciesModule($module_id)
     {
+        $modules = $this->getList();
         $validated = $this->validateDependenciesTrait($modules, true);
 
         if (empty($validated[$module_id]['errors'])) {
@@ -267,16 +271,11 @@ class Module extends Model
 
     /**
      * Checks core version requirements
-     * @param string|array $module
-     * @param array $modules
+     * @param array $module
      * @return boolean|string
      */
-    public function checkCore($module, $modules = array())
+    public function checkCore(array $module)
     {
-        if (!is_array($module)) {
-            $module = isset($modules[$module]) ? $modules[$module] : array();
-        }
-
         if (empty($module['core'])) {
             return $this->language->text('Missing core version');
         }
@@ -469,10 +468,7 @@ class Module extends Model
      */
     public function install($module_id, $status = true)
     {
-        // Clear static cache to see available modules.
-        // Important when uploading a module!
         Cache::clearMemory('modules');
-
         $result = $this->canInstall($module_id);
 
         $this->hook->fire("module.install.before|$module_id", $result);
@@ -484,6 +480,7 @@ class Module extends Model
         }
 
         $this->add(array('module_id' => $module_id, 'status' => $status));
+
         $this->setOverrideConfig();
         $this->setTranslations($module_id);
 
@@ -497,7 +494,7 @@ class Module extends Model
      */
     public function getMaxWeight()
     {
-        return (int) $this->db->fetchColumn('SELECT MAX(weight) FROM module', array());
+        return (int) $this->db->fetchColumn('SELECT COUNT(*) FROM module', array());
     }
 
     /**
