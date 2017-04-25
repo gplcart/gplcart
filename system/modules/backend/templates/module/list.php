@@ -38,7 +38,7 @@
             </div>
           </td>
           <td class="middle">
-            <?php echo $info['version'] ? $this->escape($info['version']) : $this->text('Unknown'); ?>
+            <?php echo empty($info['version']) ? $this->text('Unknown') : $this->escape($info['version']); ?>
           </td>
           <td class="middle">
             <?php echo $this->escape($info['type_name']); ?>
