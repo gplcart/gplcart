@@ -1009,7 +1009,7 @@ class Checkout extends FrontendController
         $this->setData('complete_templates', $this->getTemplatesCheckout('complete', $this->data_order));
         $this->setData('complete_message', $this->getCompleteMessageCheckout());
 
-        $this->hook->fire('order.complete.page', $order, $this);
+        $this->hook->fire('order.complete.page', $order, $this, $this->order);
 
         $this->outputCompleteCheckout();
     }
