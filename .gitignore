@@ -12,5 +12,5 @@ files/private/*
 !files/private/.htaccess
 !files/private/stopwords
 !files/private/download
-!files/private/logs
+!files/private/temp
 !files/private/backup

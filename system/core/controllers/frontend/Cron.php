@@ -93,26 +93,13 @@ class Cron extends FrontendController
      */
     protected function deleteExpiredFilesCron()
     {
-        $directories = array('log' => GC_PRIVATE_LOGS_DIR);
-
-        $deleted = 0;
-        foreach ($directories as $key => $path) {
-            $extensions = array('csv', 'txt');
-            $lifespan = $this->config("{$key}_lifespan", 86400);
-            $deleted += gplcart_file_delete($path, $extensions, $lifespan);
+        foreach (gplcart_file_scan_recursive(GC_PRIVATE_TEMP_DIR) as $file) {
+            if (is_dir($file)) {
+                gplcart_file_delete_recursive($file);
+            } else if (basename($file) !== '.gitignore') {
+                unlink($file);
+            }
         }
-
-        if (empty($deleted)) {
-            return false;
-        }
-
-        $log = array(
-            'message' => 'Deleted @num expired files',
-            'variables' => array('@num' => $deleted)
-        );
-
-        $this->logger->log('cron', $log);
-        return true;
     }
 
     /**
