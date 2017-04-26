@@ -272,7 +272,8 @@ class Config
         }
 
         if (is_array($decoded)) {
-            $decoded['id'] = $module_id;
+            // @todo - remove id key everywhere
+            $decoded['id'] = $decoded['module_id'] = $module_id;
             $infos[$module_id] = $decoded;
         } else {
             $infos[$module_id] = array();
