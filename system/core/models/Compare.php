@@ -211,7 +211,7 @@ class Compare extends Model
         $lifespan = $this->config->get('comparison_cookie_lifespan', 604800);
         $result = $this->request->setCookie('comparison', implode('|', (array) $product_ids), $lifespan);
 
-        Cache::clearMemory('comparison');
+        Cache::clearMemory();
         return $result;
     }
 

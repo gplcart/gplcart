@@ -468,7 +468,7 @@ class Module extends Model
      */
     public function install($module_id, $status = true)
     {
-        Cache::clearMemory('modules');
+        Cache::clearMemory();
         $result = $this->canInstall($module_id);
 
         $this->hook->fire("module.install.before|$module_id", $result);
@@ -543,7 +543,7 @@ class Module extends Model
      */
     protected function getOverrideMap()
     {
-        Cache::clearMemory('modules');
+        Cache::clearMemory();
 
         $map = array();
         foreach ($this->getEnabled() as $module) {
