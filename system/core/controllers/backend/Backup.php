@@ -77,7 +77,7 @@ class Backup extends BackendController
         $backup = $this->backup->get($backup_id);
 
         if (!empty($backup['path'])) {
-            $this->response->download(GC_FILE_DIR . "/{$backup['path']}");
+            $this->download(GC_FILE_DIR . "/{$backup['path']}");
         }
     }
 
