@@ -405,6 +405,17 @@ class Controller
     }
 
     /**
+     * Download a file
+     * @param string $file
+     * @param string $filename
+     * @param array $options
+     */
+    public function download($file, $filename = '', $options = array())
+    {
+        $this->response->download($file, $filename, $options);
+    }
+
+    /**
      * Translates a text
      * @param string $string
      * @param array $arguments
