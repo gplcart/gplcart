@@ -165,26 +165,25 @@ class Response
      */
     public function download($file, $filename = '', $options = array())
     {
-        if (!file_exists($file)) {
+        if (is_file($file)) {
+
+            if ($filename === '') {
+                $filename = basename($file);
+            }
+
+            $this->addHeader('Content-Description', 'File Transfer');
+            $this->addHeader('Content-Type', 'application/octet-stream');
+            $this->addHeader('Content-Disposition', 'attachment; filename=' . $filename);
+            $this->addHeader('Expires', 0);
+            $this->addHeader('Cache-Control', 'must-revalidate');
+            $this->addHeader('Pragma', 'public');
+            $this->addHeader('Content-Length', filesize($file));
+
+            $this->addOptionalHeaders($options);
+            $this->sendHeaders();
+            readfile($file);
             exit;
         }
-
-        if ($filename === '') {
-            $filename = basename($file);
-        }
-
-        $this->addHeader('Content-Description', 'File Transfer');
-        $this->addHeader('Content-Type', 'application/octet-stream');
-        $this->addHeader('Content-Disposition', 'attachment; filename=' . $filename);
-        $this->addHeader('Expires', 0);
-        $this->addHeader('Cache-Control', 'must-revalidate');
-        $this->addHeader('Pragma', 'public');
-        $this->addHeader('Content-Length', filesize($file));
-
-        $this->addOptionalHeaders($options);
-        $this->sendHeaders();
-        readfile($file);
-        exit;
     }
 
     /**
