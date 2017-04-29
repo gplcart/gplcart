@@ -31,6 +31,11 @@ Clone to `test` directory
 
     composer create-project gplcart/gplcart test --stability dev
 
+then you can perform full installation:
+
+1. move to `test` directory `cd test`
+2. run installation wizard `php gplcart install`
+
 ## Some key features ##
 
 For developers:
