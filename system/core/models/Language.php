@@ -66,7 +66,6 @@ class Language extends Model
 
         $this->route = $route;
         $this->set($this->route->getLangcode());
-        $this->init();
     }
 
     /**
@@ -78,6 +77,8 @@ class Language extends Model
         if ($this->exists($langcode)) {
             $this->langcode = $langcode;
         }
+
+        $this->init();
     }
 
     /**
@@ -172,8 +173,6 @@ class Language extends Model
         if (!file_exists($this->compiled_directory_js)) {
             mkdir($this->compiled_directory_js, 0755, true);
         }
-
-        return null;
     }
 
     /**
@@ -387,7 +386,9 @@ class Language extends Model
             $file = "{$this->compiled_directory_csv}/$filename.csv";
         }
 
-        if (!file_exists($file)) {
+        $file = ltrim($file, '/'); // Make sure no leading slashes
+
+        if (!is_file($file)) {
             return array();
         }
 
