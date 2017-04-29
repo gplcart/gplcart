@@ -11,6 +11,9 @@ namespace gplcart\core\handlers\mail\data;
 
 use gplcart\core\handlers\mail\data\Base as BaseHandler;
 
+/**
+ * Mail data handlers related to user accouts
+ */
 class Account extends BaseHandler
 {
 
@@ -23,146 +26,103 @@ class Account extends BaseHandler
     }
 
     /**
+     * Sent to an admin when a user has been registered
      * @param array $user
      * @return boolean
      */
-    public function registeredToAdmin($user)
+    public function registeredToAdmin(array $user)
     {
         $store = $this->store->get($user['store_id']);
-        $options = $this->store->config(null, $store);
 
-        $default_message = "A new account has been created at !store\n\n"
-                . "E-mail: !email\nName: !name\nUser ID: !user_id\nStatus: !status\n\n";
-
-        $subject_text = $this->config->get('email_subject_user_registered_admin', 'New account at !store');
-        $subject_arguments = array('!store' => $store['name']);
-
-        $message_text = $this->config->get('email_message_user_registered_admin', $default_message);
-
-        $message_arguments = array(
-            '!store' => $store['name'],
-            '!email' => $user['email'],
-            '!name' => $user['name'],
-            '!user_id' => $user['user_id'],
-            '!status' => empty($user['status']) ? $this->language->text('Inactive') : $this->language->text('Active')
+        $vars = array(
+            '@name' => $user['name'],
+            '@store' => $store['name'],
+            '@email' => $user['email'],
+            '@user_id' => $user['user_id'],
+            '@status' => empty($user['status']) ? $this->language->text('Inactive') : $this->language->text('Active')
         );
 
-        $subject = $this->language->text($subject_text, $subject_arguments);
-        $message = $this->language->text($message_text, $message_arguments);
+        $subject = $this->language->text('New account on @store', $vars);
+        $message = $this->language->text("A new account has been created on @store\r\n\r\nE-mail: @email\r\nName: @name\r\nUser ID: @user_id\r\nStatus: @status", $vars);
 
-        $options['from'] = array(reset($store['data']['email']), $store['name']);
+        $options = array('from' => $this->store->config('email.0', $store));
         return array($options['from'], $subject, $message, $options);
     }
 
     /**
+     * Sent to a user when his account has been created
      * @param array $user
      * @return boolean
      */
-    public function registeredToCustomer($user)
+    public function registeredToCustomer(array $user)
     {
         $store = $this->store->get($user['store_id']);
         $options = $this->store->config(null, $store);
         $store_name = $this->store->getTranslation('title', $this->language->current(), $store);
-
-        $subject_default = "Account details for !name at !store";
-
-        $subject_text = $this->config->get('email_subject_user_registered_customer', $subject_default);
-        $subject_arguments = array('!name' => $user['name'], '!store' => $store_name);
-        $subject = $this->language->text($subject_text, $subject_arguments);
-
-        $message_default = "Thank you for registering at !store\n\n"
-                . "Account status: !status\n\n"
-                . "Edit account: !edit\n"
-                . "View orders: !order\n"
-                . $this->signatureText($options);
-
-        $message_text = $this->config->get('email_message_user_registered_customer', $message_default);
-
         $base = $this->store->url($store);
 
-        $message_arguments = array(
-            '!store' => $store_name,
-            '!edit' => "$base/account/{$user['user_id']}/edit",
-            '!order' => "$base/account/{$user['user_id']}",
-            '!status' => empty($user['status']) ? $this->language->text('Inactive') : $this->language->text('Active')
+        $vars = array(
+            '@store' => $store_name,
+            '@name' => $user['name'],
+            '@order' => "$base/account/{$user['user_id']}",
+            '@edit' => "$base/account/{$user['user_id']}/edit",
+            '@status' => empty($user['status']) ? $this->language->text('Inactive') : $this->language->text('Active')
         );
 
-        $message_arguments = array_merge($message_arguments, $this->signatureVariables($options));
-        $message = $this->language->text($message_text, $message_arguments);
+        $subject = $this->language->text('Account details for @name on @store', $vars);
+        $message = $this->language->text("Thank you for registering on @store\r\n\r\nAccount status: @status\r\n\r\nEdit account: @edit\r\nView orders: @order", $vars);
+        $message .= $this->getSignature($options);
 
-        $options['from'] = array(reset($store['data']['email']), $store_name);
+        $options['from'] = $this->store->config('email.0', $store);
         return array($user['email'], $subject, $message, $options);
     }
 
     /**
-     * Sends to a user password reset link
+     * Sent when a user wants to reset his password
      * @param array $user
      */
-    public function resetPassword($user)
+    public function resetPassword(array $user)
     {
         $store = $this->store->get($user['store_id']);
         $options = $this->store->config(null, $store);
         $store_name = $this->store->getTranslation('title', $this->language->current(), $store);
-
-        $subject_default = "Password recovery for !name at !store";
-        $subject_text = $this->config->get('email_subject_reset_password', $subject_default);
-        $subject_arguments = array('!name' => $user['name'], '!store' => $store_name);
-        $subject = $this->language->text($subject_text, $subject_arguments);
-
-        $message_default = "You or someone else requested a new password at !store\n\n"
-                . "To get the password please click on the following link:\n"
-                . "!link\n\n"
-                . "This link expires on !expires and nothing will happen if it's not used\n\n"
-                . $this->signatureText($options);
-
-        $message_text = $this->config->get('email_message_reset_password', $message_default);
-
         $base = $this->store->url($store);
 
         $date_format = $this->config->get('date_prefix', 'd.m.Y');
         $date_format .= $this->config->get('date_suffix', ' H:i');
 
-        $message_arguments = array(
-            '!store' => $store_name,
-            '!expires' => date($date_format, $user['data']['reset_password']['expires']),
-            '!link' => "$base/forgot?" . http_build_query(array(
-                'key' => $user['data']['reset_password']['token'],
-                'user_id' => $user['user_id']
-            )),
+        $vars = array(
+            '@name' => $user['name'],
+            '@store' => $store_name,
+            '@expires' => date($date_format, $user['data']['reset_password']['expires']),
+            '@link' => "$base/forgot?" . http_build_query(array('key' => $user['data']['reset_password']['token'], 'user_id' => $user['user_id'])),
         );
 
-        $message_arguments = array_merge($message_arguments, $this->signatureVariables($options));
-        $message = $this->language->text($message_text, $message_arguments);
+        $subject = $this->language->text('Password recovery for @name on @store', $vars);
+        $message = $this->language->text("You or someone else requested a new password on @store\r\n\r\nTo get the password please click on the following link:\r\n@link\r\n\r\nThis link expires on @expires and nothing will happen if it's not used", $vars);
+        $message .= $this->getSignature($options);
 
-        $options['from'] = array(reset($store['data']['email']), $store_name);
+        $options['from'] = $this->store->config('email.0', $store);
         return array($user['email'], $subject, $message, $options);
     }
 
     /**
-     * Sends the password changed message via E-mail
+     * Sent to a user whose password has been changed
      * @param array $user
      */
-    public function changedPassword($user)
+    public function changedPassword(array $user)
     {
         $store = $this->store->get($user['store_id']);
         $options = $this->store->config(null, $store);
         $store_name = $this->store->getTranslation('title', $this->language->current(), $store);
 
-        $subject_default = "Password has been changed for !name at !store";
-        $subject_text = $this->config->get('email_subject_changed_password', $subject_default);
-        $subject_arguments = array('!name' => $user['name'], '!store' => $store_name);
-        $subject = $this->language->text($subject_text, $subject_arguments);
+        $vars = array('@store' => $store_name, '@name' => $user['name']);
+        $subject = $this->language->text('Password has been changed for @name on @store', $vars);
 
-        $message_default = "Your password at !store has been changed\n\n"
-                . $this->signatureText($options);
+        $message = $this->language->text('Your password on @store has been changed', $vars);
+        $message .= $this->getSignature($options);
 
-        $message_text = $this->config->get('email_message_changed_password', $message_default);
-        $message_arguments = array('!store' => $store_name);
-
-        $message_arguments = array_merge($message_arguments, $this->signatureVariables($options));
-        $message = $this->language->text($message_text, $message_arguments);
-
-        $options['from'] = array(reset($store['data']['email']), $store_name);
+        $options['from'] = $this->store->config('email.0', $store);
         return array($user['email'], $subject, $message, $options);
     }
 

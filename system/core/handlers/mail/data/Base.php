@@ -12,7 +12,7 @@ namespace gplcart\core\handlers\mail\data;
 use gplcart\core\Container;
 
 /**
- * Base mail handler class
+ * Base mail data handler class
  */
 class Base
 {
@@ -22,6 +22,12 @@ class Base
      * @var \gplcart\core\models\Store $store
      */
     protected $store;
+
+    /**
+     * User model instance
+     * @var \gplcart\core\models\User $user
+     */
+    protected $user;
 
     /**
      * Language model instance
@@ -41,6 +47,7 @@ class Base
     public function __construct()
     {
         $this->config = Container::get('gplcart\\core\\Config');
+        $this->user = Container::get('gplcart\\core\\models\\User');
         $this->store = Container::get('gplcart\\core\\models\\Store');
         $this->language = Container::get('gplcart\\core\\models\\Language');
     }
@@ -50,56 +57,46 @@ class Base
      * @param array $options Store settings
      * @return string
      */
-    protected function signatureText(array $options)
+    protected function getSignature(array $options)
     {
-        $signature = array();
+        $replacements = array();
+        $signature = array("\r\n\r\n-------------------------------------");
 
         if (!empty($options['owner'])) {
-            $signature[] = "!owner";
+            $signature[] = '@owner';
+            $replacements['@owner'] = $options['owner'];
         }
 
         if (!empty($options['address'])) {
-            $signature[] = "!address";
+            $signature[] = '@address';
+            $replacements['@address'] = $options['address'];
         }
 
         if (!empty($options['phone'])) {
-            $signature[] = "tel: !phone";
+            $signature[] = $this->language->text('Tel: @phone');
+            $replacements['@phone'] = implode(',', $options['phone']);
         }
 
         if (!empty($options['fax'])) {
-            $signature[] = "fax: !fax";
+            $signature[] = $this->language->text('Fax: @fax');
+            $replacements['@fax'] = implode(',', $options['fax']);
         }
 
         if (!empty($options['email'])) {
-            $signature[] = "e-mail: !store_email";
+            $signature[] = $this->language->text('E-mail: @store_email');
+            $replacements['@store_email'] = implode(',', $options['email']);
         }
 
         if (!empty($options['map'])) {
-            $signature[] = "Find us on Google Maps: !map";
+            $signature[] = $this->language->text('Find us on Google Maps: @map');
+            $replacements['@map'] = 'http://maps.google.com/?q=' . implode(',', $options['map']);
         }
 
         if (empty($signature)) {
             return '';
         }
 
-        return "-------------------------------------\n" . implode("\n", $signature);
-    }
-
-    /**
-     * Returns an array of placeholders for the signature
-     * @param array $options
-     * @return array
-     */
-    protected function signatureVariables(array $options)
-    {
-        return array(
-            '!owner' => $options['owner'],
-            '!phone' => implode(',', $options['phone']),
-            '!store_email' => implode(',', $options['email']),
-            '!fax' => implode(',', $options['fax']),
-            '!address' => $options['address'],
-            '!map' => empty($options['map']) ? '' : 'http://maps.google.com/?q=' . implode(',', $options['map']),
-        );
+        return gplcart_string_format(implode("\r\n", $signature), $replacements);
     }
 
 }

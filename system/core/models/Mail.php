@@ -96,7 +96,6 @@ class Mail extends Model
 
         $handlers['order_created_admin'] = array(
             'name' => $this->language->text('E-mail to an admin after an order has been created'),
-            'access' => 'order',
             'handlers' => array(
                 'data' => array('gplcart\\core\\handlers\\mail\\data\\Order', 'createdToAdmin')
             ),
@@ -118,7 +117,6 @@ class Mail extends Model
 
         $handlers['user_registered_admin'] = array(
             'name' => $this->language->text('E-mail to an admin after a user account has been created'),
-            'access' => 'user',
             'handlers' => array(
                 'data' => array('gplcart\\core\\handlers\\mail\\data\\Account', 'registeredToAdmin'),
             ),
@@ -158,16 +156,16 @@ class Mail extends Model
      */
     public function send($to, $subject, $message, array $options = array())
     {
+        $mailers = $this->getMailers();
+        $options['mailer'] = $this->config->get('mailer', 'php');
+
         $this->hook->fire('mail.send.before', $to, $subject, $message, $options);
 
-        if (empty($options['from']) || empty($to)) {
+        if (empty($options['mailer']) || empty($to)) {
             return false;
         }
 
-        $mailers = $this->getMailers();
-        $mailer = $this->config->get('mailer', 'php');
-        $result = Handler::call($mailers, $mailer, 'send', func_get_args());
-
+        $result = Handler::call($mailers, $options['mailer'], 'send', array($to, $subject, $message, $options));
         $this->hook->fire('mail.send.after', $to, $subject, $message, $options, $result);
         return $result;
     }
@@ -176,45 +174,64 @@ class Mail extends Model
      * Sends E-mail with predefined parameters using a handler ID
      * @param string $handler_id
      * @param array $arguments
-     * @return boolean
+     * @return integer
      */
     public function set($handler_id, array $arguments)
     {
-        $handlers = $this->getDataHandlers();
-
-        if (empty($handlers[$handler_id])) {
-            return false;
-        }
-
-        $data = Handler::call($handlers, $handler_id, 'data', $arguments);
+        $data = $this->getData($handler_id, $arguments);
         return call_user_func_array(array($this, 'send'), $data);
     }
 
     /**
-     * Send E-mail using PHP native mail()
+     * Returns an array of data for a given handler used to send E-mails
+     * @param string $handler_id
+     * @param array $arguments
+     * @return array
+     */
+    public function getData($handler_id, array $arguments)
+    {
+        $handlers = $this->getDataHandlers();
+
+        if (empty($handlers[$handler_id])) {
+            return array();
+        }
+
+        $data = Handler::call($handlers, $handler_id, 'data', array($arguments));
+        $this->hook->fire('mail.data', $handler_id, $arguments, $data);
+        return $data;
+    }
+
+    /**
+     * Send E-mail using PHP mail() function
      * @param array|string $to
      * @param string $subject
      * @param string $message
      * @param array $options
-     * @return bool
+     * @return integer
      */
     public function mail($to, $subject, $message, array $options)
     {
         settype($to, 'array');
 
-        $from = "=?UTF-8?B?" . base64_encode($options['from']) . "?=";
         $subject = "=?UTF-8?B?" . base64_encode($subject) . "?=";
+        $from = "=?UTF-8?B?" . base64_encode($options['from']) . "?=";
 
-        $headers = "From: $from <$from>\r\n"
-                . "MIME-Version: 1.0" . "\r\n"
-                . "Content-type: text/html; charset=UTF-8\r\n";
+        $headers = array();
+        $headers[] = "From: $from <$from>";
+        $headers[] = "MIME-Version: 1.0";
+
+        if (!empty($options['html'])) {
+            $headers[] = "Content-type: text/html; charset=UTF-8";
+        }
+
+        $header = implode("\r\n", $headers);
 
         $sent = 0;
         foreach ($to as $address) {
-            $sent += (int) mail($address, $subject, $message, $headers);
+            $sent += (int) mail($address, $subject, $message, $header);
         }
 
-        return $sent == count($to);
+        return $sent;
     }
 
 }
