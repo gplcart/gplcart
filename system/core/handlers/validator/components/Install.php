@@ -176,6 +176,10 @@ class Install extends ComponentValidator
             return false;
         }
 
+        if (filter_var($host, FILTER_VALIDATE_IP) !== false) {
+            return true;
+        }
+
         if ($host === 'localhost' || gplcart_valid_domain($host)) {
             return true;
         }
