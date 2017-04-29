@@ -44,12 +44,6 @@ class CliRoute
     protected $arguments = array();
 
     /**
-     * A source data to be parsed into arguments
-     * @var string|array
-     */
-    protected $source;
-
-    /**
      * Constructor
      * @param Cli $cli
      * @param Hook $hook
@@ -59,19 +53,11 @@ class CliRoute
         $this->cli = $cli;
         $this->hook = $hook;
 
-        $this->source = isset($_SERVER['argv']) ? $_SERVER['argv'] : array();
-        $this->arguments = $this->cli->parse($this->source);
+        if (!empty($_SERVER['argv'])) {
+            $this->arguments = $this->cli->parse($_SERVER['argv']);
+        }
 
         $this->hook->fire('construct.cli.route', $this);
-    }
-
-    /**
-     * Set a source data to be parsed
-     * @param string|array $source
-     */
-    public function setSource($source)
-    {
-        $this->source = $source;
     }
 
     /**
@@ -107,7 +93,6 @@ class CliRoute
     public function getList()
     {
         $routes = include GC_CONFIG_CLI_ROUTE;
-
         $this->hook->fire('cli.route.list', $routes);
         return $routes;
     }
@@ -117,28 +102,20 @@ class CliRoute
      */
     public function process()
     {
-        $this->callController();
-    }
-
-    /**
-     * Finds and calls an appropriate controller for the current command
-     * @return mixed
-     */
-    protected function callController()
-    {
         $routes = $this->getList();
         $command = array_shift($this->arguments);
 
         if (empty($routes[$command])) {
-            exit("Unknown command. Use 'help' command to see what you have");
+            exit("Unknown command. Use 'help' command to see supported commands");
         }
 
         $routes[$command]['command'] = $command;
         $routes[$command]['arguments'] = $this->arguments;
+
         $this->route = $routes[$command];
 
         Handler::call($this->route, null, 'process', array($this->arguments));
-        exit('The command was not completed correctly');
+        exit('The command was completed incorrectly');
     }
 
 }

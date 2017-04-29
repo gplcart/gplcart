@@ -170,17 +170,16 @@ class Cli
      */
     public function menu($items, $default = null, $title = 'Choose an item')
     {
-        $map = array_values($items);
-
-        if (isset($items[$default]) && strpos($title, '[') === false) {
-            $title .= ' [' . $items[$default] . ']';
-        }
-
-        foreach ($map as $i => $item) {
-            $this->line(sprintf('  %d. %s', $i + 1, $item));
+        $values = array_values($items);
+        if (isset($values[$default]) && strpos($title, '[') === false) {
+            $title .= ' [' . $values[$default] . ']';
         }
 
         $this->line(sprintf('%s: ', $title));
+
+        foreach ($values as $i => $item) {
+            $this->line(sprintf('  %d. %s', $i + 1, $item));
+        }
 
         $selected = $this->in();
 
@@ -188,11 +187,10 @@ class Cli
             return $default;
         }
 
-        if (isset($map[$selected - 1])) {
-            return $map[$selected - 1];
+        if (isset($values[$selected - 1])) {
+            return $values[$selected - 1];
         }
 
-        $this->error('Invalid menu selection');
         return null;
     }
 
@@ -212,7 +210,7 @@ class Cli
         $lowercase = str_ireplace($default, strtoupper($default), strtolower($choice));
         $choices = trim(implode('/', preg_split('//', $lowercase)), '/');
 
-        $line = $this->prompt(sprintf('%s? [%s]', $question, $choices), $default, '');
+        $line = $this->prompt(sprintf('%s [%s]', $question, $choices), $default, '');
 
         if (stripos($choice, $line) !== false) {
             return strtolower($line);

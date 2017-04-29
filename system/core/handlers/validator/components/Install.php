@@ -76,6 +76,10 @@ class Install extends ComponentValidator
      */
     protected function validateRequirementsInstall()
     {
+        if (isset($this->options['field']) && $this->options['field'] !== 'requirements') {
+            return null;
+        }
+
         if ($this->install->isInstalled()) {
             $error = $this->language->text('System already installed');
             $this->setError('installed', $error);
@@ -111,12 +115,15 @@ class Install extends ComponentValidator
      */
     protected function validateUserEmailInstall()
     {
+        if (isset($this->options['field']) && $this->options['field'] !== 'user.email') {
+            return null;
+        }
+
         $options = $this->options;
         $this->options['parents'] = 'user';
-
         $result = $this->validateEmailComponent();
-
         $this->options = $options; // Restore original
+
         return $result;
     }
 
@@ -127,6 +134,10 @@ class Install extends ComponentValidator
     protected function validateUserPasswordInstall()
     {
         $field = 'user.password';
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $label = $this->language->text('Password');
         $password = $this->getSubmitted($field);
 
@@ -142,6 +153,7 @@ class Install extends ComponentValidator
             $this->setErrorLengthRange($field, $label, $limit['min'], $limit['max']);
             return false;
         }
+
         return true;
     }
 
@@ -152,6 +164,10 @@ class Install extends ComponentValidator
     protected function validateStoreHostInstall()
     {
         $field = 'store.host';
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $label = $this->language->text('Host');
         $host = $this->getSubmitted($field);
 
@@ -175,12 +191,16 @@ class Install extends ComponentValidator
     protected function validateStoreTitleInstall()
     {
         $field = 'store.title';
-        $title = $this->getSubmitted($field);
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
 
+        $title = $this->getSubmitted($field);
         if (empty($title) || mb_strlen($title) > 255) {
             $this->setErrorLengthRange($field, $this->language->text('Title'));
             return false;
         }
+
         return true;
     }
 
@@ -191,6 +211,10 @@ class Install extends ComponentValidator
     protected function validateStoreBasepathInstall()
     {
         $field = 'store.basepath';
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $basepath = $this->getSubmitted($field);
 
         if (!isset($basepath) || $basepath === '') {
@@ -201,6 +225,7 @@ class Install extends ComponentValidator
             $this->setErrorInvalidValue($field, $this->language->text('Base path'));
             return false;
         }
+
         return true;
     }
 
@@ -211,6 +236,10 @@ class Install extends ComponentValidator
     protected function validateStoreTimezoneInstall()
     {
         $field = 'store.timezone';
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $label = $this->language->text('Timezone');
         $timezone = $this->getSubmitted($field);
 
@@ -225,6 +254,7 @@ class Install extends ComponentValidator
             $this->setErrorInvalidValue($field, $label);
             return false;
         }
+
         return true;
     }
 
@@ -234,7 +264,12 @@ class Install extends ComponentValidator
      */
     protected function validateInstallerInstall()
     {
-        $installer_id = $this->getSubmitted('installer');
+        $field = 'installer';
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
+        $installer_id = $this->getSubmitted($field);
 
         if (empty($installer_id)) {
             return null;
@@ -247,7 +282,7 @@ class Install extends ComponentValidator
             $list = implode(',', array_keys($installers));
             $vars = array('@field' => $this->language->text('Installer'), '@allowed' => $list);
             $error = $this->language->text('@field has invalid value. Allowed values: @allowed', $vars);
-            $this->setError('installer', $error);
+            $this->setError($field, $error);
             return false;
         }
 
@@ -261,12 +296,16 @@ class Install extends ComponentValidator
     protected function validateDbNameInstall()
     {
         $field = 'database.name';
-        $dbname = $this->getSubmitted($field);
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
 
+        $dbname = $this->getSubmitted($field);
         if (empty($dbname)) {
             $this->setErrorRequired($field, $this->language->text('Database name'));
             return false;
         }
+
         return true;
     }
 
@@ -277,12 +316,16 @@ class Install extends ComponentValidator
     protected function validateDbUserInstall()
     {
         $field = 'database.user';
-        $dbuser = $this->getSubmitted($field);
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
 
+        $dbuser = $this->getSubmitted($field);
         if (empty($dbuser)) {
             $this->setErrorRequired($field, $this->language->text('Database user'));
             return false;
         }
+
         return true;
     }
 
@@ -293,12 +336,16 @@ class Install extends ComponentValidator
     protected function validateDbPasswordInstall()
     {
         $field = 'database.password';
-        $dbpassword = $this->getSubmitted($field);
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
 
+        $dbpassword = $this->getSubmitted($field);
         if (!isset($dbpassword)) {
             $this->setSubmitted($field, '');
             return null;
         }
+
         return true;
     }
 
@@ -309,12 +356,16 @@ class Install extends ComponentValidator
     protected function validateDbHostInstall()
     {
         $field = 'database.host';
-        $dbhost = $this->getSubmitted($field);
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
 
+        $dbhost = $this->getSubmitted($field);
         if (empty($dbhost)) {
             $this->setErrorRequired($field, $this->language->text('Database host'));
             return false;
         }
+
         return true;
     }
 
@@ -325,8 +376,11 @@ class Install extends ComponentValidator
     protected function validateDbTypeInstall()
     {
         $field = 'database.type';
-        $dbtype = $this->getSubmitted($field);
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
 
+        $dbtype = $this->getSubmitted($field);
         if (empty($dbtype)) {
             $this->setErrorRequired($field, $this->language->text('Database type'));
             return false;
@@ -351,6 +405,10 @@ class Install extends ComponentValidator
     protected function validateDbPortInstall()
     {
         $field = 'database.port';
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $label = $this->language->text('Database port');
         $dbport = $this->getSubmitted($field);
 
@@ -363,6 +421,7 @@ class Install extends ComponentValidator
             $this->setErrorNumeric($field, $label);
             return false;
         }
+
         return true;
     }
 
@@ -373,7 +432,12 @@ class Install extends ComponentValidator
     protected function validateDbConnectInstall()
     {
         if ($this->isError()) {
-            return null; // Do not connect to the database if an error has occurred
+            return null;
+        }
+
+        $field = 'database.connect';
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
         }
 
         $settings = $this->getSubmitted('database');
@@ -387,7 +451,7 @@ class Install extends ComponentValidator
             $result = $this->language->text('Could not connect to database');
         }
 
-        $this->setError('database.connect', (string) $result);
+        $this->setError($field, (string) $result);
         return false;
     }
 

@@ -1,16 +1,21 @@
 #!/usr/bin/env php
 <?php
-
 /**
  * @package GPL Cart core
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
-
 if (PHP_SAPI !== 'cli') {
     echo("Only CLI access allowed!");
     exit(1);
 }
 
+// Turn off HTML tags in error messages
+ini_set('html_errors', 'off');
+
+// Prepare stuff
 require 'system/bootstrap.php';
+
+// Route commands
+\gplcart\core\Container::get('gplcart\\core\\Facade')->route();

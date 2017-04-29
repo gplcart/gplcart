@@ -139,7 +139,6 @@ class Logger
             'message' => $message
         );
 
-        // Get a unique key for every error to check if it has already caught
         $key = md5(json_encode($error));
 
         if (isset($this->php_errors[$key])) {
@@ -222,10 +221,15 @@ class Logger
             $message .= "<h3>$header</h3>\n";
         }
 
-        $message .= "Message: {$error['message']}<br>";
-        $message .= "Code: {$error['code']}<br>";
-        $message .= "File: {$error['file']}<br>";
-        $message .= "Line: {$error['line']}<br>";
+        $message .= "Message: {$error['message']}<br>\n";
+        $message .= "Code: {$error['code']}<br>\n";
+        $message .= "File: {$error['file']}<br>\n";
+        $message .= "Line: {$error['line']}<br>\n";
+
+        if (GC_CLI) {
+            $message = strip_tags($message);
+            return "\033[31m$message\033[0m";
+        }
 
         return $message;
     }

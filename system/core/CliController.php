@@ -10,10 +10,16 @@
 namespace gplcart\core;
 
 /**
- * Basic CLI controller
+ * Base parent CLI controller
  */
 class CliController
 {
+
+    /**
+     * Cli helper class instance
+     * @var \gplcart\core\helpers\Cli $cli
+     */
+    protected $cli;
 
     /**
      * User model instance
@@ -58,22 +64,22 @@ class CliController
     protected $hook;
 
     /**
-     * Request class instance
-     * @var \gplcart\core\helpers\Request $request
-     */
-    protected $request;
-
-    /**
      * An array of the current CLI route data
      * @var array
      */
     protected $current_route = array();
 
     /**
-     * The current command
+     * The current CLI command
      * @var string
      */
     protected $command;
+
+    /**
+     * The current CLI command arguments
+     * @var array
+     */
+    protected $arguments = array();
 
     /**
      * An array of mapped data ready for validation
@@ -82,22 +88,10 @@ class CliController
     protected $submitted = array();
 
     /**
-     * An array of messages to output to the user
-     * @var array
-     */
-    protected $messages = array();
-
-    /**
      * An array of errors to output to the user
      * @var array
      */
     protected $errors = array();
-
-    /**
-     * Whether in dialog mode
-     * @var bool
-     */
-    protected $dialog = false;
 
     /**
      * Constructor
@@ -106,26 +100,31 @@ class CliController
     {
         $this->setInstanceProperties();
         $this->setRouteProperties();
-        $this->controlAccess();
         $this->outputHelp();
 
         $this->hook->fire('construct.cli.controller', $this);
     }
-    
+
     /**
-     * Control access for the current user
+     * Destructor
      */
-    protected function controlAccess(){
-        //
+    public function __destruct()
+    {
+        $this->hook->fire('destruct.cli.controller', $this);
     }
 
     /**
-     * Sets route properties
+     * Handle calls to unexisting static methods
+     * @param string $method
+     * @param array $args
      */
-    protected function setRouteProperties()
+    public static function __callStatic($method, $args)
     {
-        $this->current_route = $this->route->get();
-        $this->command = $this->current_route['command'];
+        if (strpos($method, 'composer') === 0) {
+            /* @var $hook \gplcart\core\Hook */
+            $hook = Container::get('gplcart\\core\\Hook');
+            $hook->fire('cli.composer', $method, $args, $this);
+        }
     }
 
     /**
@@ -137,11 +136,20 @@ class CliController
         $this->config = Container::get('gplcart\\core\\Config');
         $this->logger = Container::get('gplcart\\core\\Logger');
         $this->route = Container::get('gplcart\\core\\CliRoute');
-
+        $this->cli = Container::get('gplcart\\core\\helpers\Cli');
         $this->user = Container::get('gplcart\\core\\models\\User');
         $this->language = Container::get('gplcart\\core\\models\\Language');
         $this->validator = Container::get('gplcart\\core\\models\\Validator');
-        $this->request = Container::get('gplcart\\core\\helpers\Request');
+    }
+
+    /**
+     * Sets route properties
+     */
+    protected function setRouteProperties()
+    {
+        $this->current_route = $this->route->get();
+        $this->arguments = $this->getArguments();
+        $this->command = $this->current_route['command'];
     }
 
     /**
@@ -158,28 +166,32 @@ class CliController
     /**
      * Sets an array of submitted mapped data
      * @param array $map
+     * @param null|array $arguments
      * @param array $default
-     * @param boolean $filter
      * @return array
      */
-    protected function setSubmittedMapped($map, $default = array(),
-            $filter = true)
+    protected function setSubmittedMapped(array $map, $arguments = null,
+            $default = array())
     {
-        $arguments = $this->getArguments($filter);
-        $mapped = $this->mapArguments($arguments, $map);
-        $data = gplcart_array_merge($default, $mapped);
-
-        return $this->setSubmitted($data);
+        $mapped = $this->mapArguments($map, $arguments);
+        $merged = gplcart_array_merge($default, $mapped);
+        return $this->setSubmitted(null, $merged);
     }
 
     /**
-     * Sets an array of submitted data
-     * @param array $data
+     * Sets a submitted data
+     * @param null|string $key
+     * @param mixed $data
+     * @return array
      */
-    protected function setSubmitted(array $data)
+    protected function setSubmitted($key, $data)
     {
-        $this->submitted = $data;
-        return $this->submitted;
+        if (isset($key)) {
+            gplcart_array_set_value($this->submitted, $key, $data);
+            return $this->submitted;
+        }
+
+        return $this->submitted = (array) $data;
     }
 
     /**
@@ -191,9 +203,9 @@ class CliController
     protected function getSubmitted($key = null, $default = null)
     {
         if (isset($key)) {
-            return array_key_exists($key, $this->submitted) ? $this->submitted[$key] : $default;
+            $value = gplcart_array_get_value($this->submitted, $key);
+            return isset($value) ? $value : $default;
         }
-
         return $this->submitted;
     }
 
@@ -208,38 +220,14 @@ class CliController
     }
 
     /**
-     * Sets a single message
-     * @param string $message
-     * @return \gplcart\core\CliController
-     */
-    protected function setMessage($message)
-    {
-        $this->messages[$message] = $message;
-        return $this;
-    }
-
-    /**
-     * Sets php errors recorded by the logger
-     */
-    protected function setPhpErrors()
-    {
-        foreach ($this->logger->getPhpErrors() as $message) {
-            $this->setMessage($message);
-        }
-    }
-
-    /**
      * Whether a error is set
      * @param null|string $key
      * @return boolean
      */
     protected function isError($key = null)
     {
-        if (isset($key)) {
-            return isset($this->errors[$key]);
-        }
-
-        return !empty($this->errors);
+        $value = $this->getError($key);
+        return !empty($value);
     }
 
     /**
@@ -254,101 +242,60 @@ class CliController
 
     /**
      * Sets an error
+     * @param null|string $key
      * @param string $error
-     * @param string $key
      * @return array
      */
-    protected function setError($error, $key = null)
+    protected function setError($key, $error)
     {
         if (isset($key)) {
-            $this->errors[$key] = $error;
+            gplcart_array_set_value($this->errors, $key, $error);
             return $this->errors;
         }
+        return $this->errors = (array) $error;
+    }
 
-        $this->errors[] = $error;
+    /**
+     * Returns a single error or an array of all defined errors
+     * @param null|string $key
+     * @return string|array
+     */
+    protected function getError($key = null)
+    {
+        if (isset($key)) {
+            return gplcart_array_get_value($this->errors, $key);
+        }
         return $this->errors;
     }
 
     /**
-     * Outputs all defined messages
-     * @param bool $exit
+     * Outputs and clears all existing errors
+     * @param null|string|array $errors
+     * @param boolean $abort
      */
-    protected function outputMessages($exit = true)
+    protected function outputErrors($errors = null, $abort = false)
     {
-        foreach ($this->messages as $key => $message) {
-            $this->printMessage((string) $message);
-            unset($this->messages[$key]);
+        if (isset($errors)) {
+            $this->errors = (array) $errors;
         }
 
-        if ($exit) {
-            exit;
-        }
-    }
-
-    /**
-     * Outputs a error message(s)
-     * @param null|string $key
-     * @param bool $exit
-     * @return null
-     */
-    protected function outputError($key, $exit = true)
-    {
-        if (isset($this->errors[$key])) {
-            $this->printError($this->errors[$key]);
-            unset($this->errors[$key]);
-        }
-
-        if ($exit) {
-            exit(1);
+        if (!empty($this->errors)) {
+            $this->error(implode("\n", gplcart_array_flatten($this->errors)));
+            $this->errors = array();
+            $this->line();
+            if ($abort) {
+                $this->abort();
+            }
         }
     }
 
     /**
-     * Outputs all defined errors
-     * @param bool $exit
+     * Output all to the user
      */
-    protected function outputErrors($exit = true)
+    protected function output()
     {
-        $errors = gplcart_array_flatten($this->errors);
-
-        foreach ($errors as $error) {
-            $this->printError($error);
-        }
-
-        $this->errors = array();
-
-        if ($exit) {
-            exit(1);
-        }
-    }
-
-    /**
-     * Prints an error message
-     * @param string $error
-     */
-    protected function printError($error)
-    {
-        fwrite(STDERR, $error);
-    }
-
-    /**
-     * Prints a simple message
-     * @param string $message
-     */
-    protected function printMessage($message)
-    {
-        fwrite(STDOUT, $message);
-    }
-
-    /**
-     * Prepares and filters a string before output
-     * @param string $string
-     * @return string
-     */
-    protected function prepare($string)
-    {
-        $filtered = filter_var($string, FILTER_SANITIZE_STRING);
-        return nl2br(str_replace(' ', '&nbsp;', $filtered));
+        $this->setError('php_errors', $this->logger->getPhpErrors());
+        $this->outputErrors(null, true);
     }
 
     /**
@@ -356,66 +303,68 @@ class CliController
      */
     protected function outputHelp()
     {
-        $arguments = $this->getArguments();
-
-        if (!empty($arguments['help'])) {
-            $message = $this->getHelpMessage();
-            $this->setMessage($message)->outputMessages(true);
+        if (!empty($this->arguments['help'])) {
+            $this->outputCommandHelpMessage();
+            $this->abort();
         }
     }
 
     /**
-     * Returns a formatted help message
-     * @return string
+     * Output a formatted help message
      */
-    protected function getHelpMessage()
+    protected function outputCommandHelpMessage()
     {
-        $message = '';
-
+        $output = false;
         if (!empty($this->current_route['help']['description'])) {
-            $message .= $this->current_route['help']['description'] . PHP_EOL;
+            $output = true;
+            $this->line($this->text($this->current_route['help']['description']));
         }
 
         if (!empty($this->current_route['help']['options'])) {
-            $list = array();
+            $output = true;
+            $this->line($this->text('Options'));
             foreach ($this->current_route['help']['options'] as $option => $description) {
-                $list[] = "    $option - $description";
+                $vars = array('@option' => $option, '@description' => $this->text($description));
+                $this->line($this->text('  @option - @description', $vars));
+            }
+        }
+
+        if (!$output) {
+            $this->line($this->text('No description available'));
+        }
+    }
+
+    /**
+     * Help command callback. Lists all available commands
+     */
+    public function help()
+    {
+        $this->line($this->text('List of available commands. To see help for a certain command use --help option'));
+
+        foreach ($this->route->getList() as $command => $info) {
+            $description = $this->text('No description available');
+            if (!empty($info['help']['description'])) {
+                $description = $this->text($info['help']['description']);
             }
 
-            $message .= $this->text("Options:\n@list", array('@list' => implode(PHP_EOL, $list)));
+            $vars = array('@command' => $command, '@description' => $description);
+            $this->line($this->text('  @command - @description', $vars));
         }
 
-        if (empty($message)) {
-            $message = $this->text('No description available') . PHP_EOL;
-        }
-
-        return $message;
+        $this->output();
     }
 
     /**
-     * Outputs errors and messages to the user
-     */
-    protected function output()
-    {
-        $this->setPhpErrors();
-
-        if ($this->isError()) {
-            $this->outputErrors();
-        }
-
-        $this->outputMessages();
-    }
-
-    /**
-     * Returns an array of mapped data
-     * @param array $arguments
-     * @param array $map
+     * Map command line options to an array of submitted data to be passed to validators
+     * @param array $map An array of pairs "options-name" => "some.array.value", e.g 'db-name' => 'database.name'
+     * which turns --db-name command option into nested array $submitted['database']['name']
+     * @param null|array $arguments
      * @return array
      */
-    protected function mapArguments(array $arguments, array $map)
+    protected function mapArguments(array $map, $arguments = null)
     {
-        if (empty($map) || empty($arguments)) {
-            return array();
+        if (!isset($arguments)) {
+            $arguments = $this->arguments;
         }
 
         $mapped = array();
@@ -429,42 +378,118 @@ class CliController
     }
 
     /**
-     * Help command callback. Lists all available commands
-     */
-    public function help()
-    {
-        $list = $this->route->getList();
-
-        $message = $this->text('List of available commands. To see command options use \'--help\' option:') . PHP_EOL;
-
-        foreach ($list as $command => $info) {
-            $description = $this->text('No description available');
-            if (!empty($info['help']['description'])) {
-                $description = $info['help']['description'];
-            }
-
-            $message .= "    $command - $description" . PHP_EOL;
-        }
-
-        $this->setMessage($message)->output();
-    }
-
-    /**
-     * Validates a submitted data
+     * Validates a submitted set of data
      * @param string $handler_id
      * @param array $options
      * @return array
      */
-    protected function validate($handler_id, array $options = array())
+    protected function validateComponent($handler_id, array $options = array())
     {
         $result = $this->validator->run($handler_id, $this->submitted, $options);
-
         if ($result === true) {
-            return array();
+            return true;
         }
 
-        $this->errors = (array) $result;
-        return $this->errors;
+        $this->setError(null, $result);
+        return $result;
+    }
+
+    /**
+     * Whether an input passed a field validation
+     * @param string $field
+     * @return boolean
+     */
+    protected function isValidInput($input, $field, $handler_id)
+    {
+        $this->setSubmitted($field, $input);
+        $result = $this->validateComponent($handler_id, array('field' => $field));
+        return $result === true;
+    }
+
+    /**
+     * Output a error message
+     * @param string $text
+     * @return $this
+     */
+    protected function error($text)
+    {
+        $this->cli->error("\033[31m$text\033[0m");
+        return $this;
+    }
+
+    /**
+     * Output a text
+     * @param string $text
+     * @return $this
+     */
+    protected function out($text)
+    {
+        $this->cli->out($text);
+        return $this;
+    }
+
+    /**
+     * Output a line with an optional text
+     * @param string $text
+     * @return $this
+     */
+    protected function line($text = '')
+    {
+        $this->cli->line($text);
+        return $this;
+    }
+
+    /**
+     * Output an input prompt
+     * @param string $question
+     * @param string $default
+     * @param string $marker
+     */
+    protected function prompt($question, $default = '', $marker = ': ')
+    {
+        return $this->cli->prompt($question, $default, $marker);
+    }
+
+    /**
+     * Presents a user with a multiple choice questions
+     * @param string $question
+     * @param string $choice
+     * @param string $default
+     * @return string
+     */
+    protected function choose($question, $choice = 'yn', $default = 'n')
+    {
+        return $this->cli->choose($question, $choice, $default);
+    }
+
+    /**
+     * Displays a menu where a user can enter a number to choose an option
+     * @param array $items
+     * @param mixed $default
+     * @param string $title
+     * @return null|string
+     */
+    protected function menu(array $items, $default = null, $title = '')
+    {
+        return $this->cli->menu($items, $default, $title);
+    }
+
+    /**
+     * Terminate the current script with an optional code or message
+     * @param integer|string $code
+     */
+    protected function abort($code = 0)
+    {
+        exit($code);
+    }
+
+    /**
+     * Read the user input
+     * @return string
+     */
+    protected function in($format = '')
+    {
+        return $this->cli->in($format);
     }
 
 }
