@@ -120,7 +120,7 @@ class CliController
      */
     public static function __callStatic($method, $args)
     {
-        if (strpos($method, 'composer') === 0) {
+        if (strpos($method, 'composer') === 0 && defined('GC_VERSION')) {
             /* @var $hook \gplcart\core\Hook */
             $hook = Container::get('gplcart\\core\\Hook');
             $hook->fire('cli.composer', $method, $args, $this);
