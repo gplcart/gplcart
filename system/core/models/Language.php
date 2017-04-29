@@ -65,13 +65,19 @@ class Language extends Model
         parent::__construct();
 
         $this->route = $route;
-        $langcode = $this->route->getLangcode();
+        $this->set($this->route->getLangcode());
+        $this->init();
+    }
 
+    /**
+     * Set a langcode
+     * @param string $langcode
+     */
+    public function set($langcode)
+    {
         if ($this->exists($langcode)) {
             $this->langcode = $langcode;
         }
-
-        $this->init();
     }
 
     /**
@@ -101,7 +107,6 @@ class Language extends Model
         $default = $this->getDefault();
         $available = $this->getAvailable();
         $saved = $this->config->get('languages', array());
-
         $languages = gplcart_array_merge($available, $saved);
 
         foreach ($languages as $code => &$language) {
@@ -131,23 +136,17 @@ class Language extends Model
     public function getAvailable()
     {
         $languages = array();
-        foreach (glob(GC_LOCALE_DIR . '/*', GLOB_ONLYDIR) as $directory) {
-
-            $langcode = basename($directory);
-
-            // Skip invalid language codes
-            if (preg_match('/^[a-z]{2}(_[A-Z]{2})?$/', $langcode) !== 1) {
-                continue;
+        foreach (scandir(GC_LOCALE_DIR) as $langcode) {
+            if (preg_match('/^[a-z]{2}(_[A-Z]{2})?$/', $langcode) === 1) {
+                $languages[$langcode] = array(
+                    'weight' => 0,
+                    'status' => false,
+                    'default' => false,
+                    'code' => $langcode,
+                    'name' => $langcode,
+                    'native_name' => $langcode
+                );
             }
-
-            $languages[$langcode] = array(
-                'weight' => 0,
-                'status' => false,
-                'default' => false,
-                'code' => $langcode,
-                'name' => $langcode,
-                'native_name' => $langcode
-            );
         }
 
         return $languages;
@@ -307,7 +306,7 @@ class Language extends Model
      */
     public function isDefault($code)
     {
-        return ($code === $this->getDefault());
+        return $code === $this->getDefault();
     }
 
     /**
@@ -360,7 +359,6 @@ class Language extends Model
         if (!isset($data[0]) || $data[0] === '') {
             return gplcart_string_format($source, $args);
         }
-
         return gplcart_string_format($data[0], $args);
     }
 
