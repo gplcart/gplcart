@@ -227,8 +227,7 @@ class Logger
         $message .= "Line: {$error['line']}<br>\n";
 
         if (GC_CLI) {
-            $message = strip_tags($message);
-            return "\033[31m$message\033[0m";
+            return strip_tags($message);
         }
 
         return $message;

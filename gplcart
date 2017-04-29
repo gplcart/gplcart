@@ -7,8 +7,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 if (PHP_SAPI !== 'cli') {
-    echo("Only CLI access allowed!");
-    exit(1);
+    exit('Only CLI access allowed!');
 }
 
 // Turn off HTML tags in error messages
