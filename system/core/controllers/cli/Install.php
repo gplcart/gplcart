@@ -104,7 +104,8 @@ class Install extends CliController
         );
 
         $this->setSubmitted('store.language', $language);
-        $this->setSubmitted('store.host', gethostname());
+        $host = GC_WIN ? gethostbyname(gethostname()) : gethostname();
+        $this->setSubmitted('store.host', $host);
         $this->setSubmitted('store.timezone', date_default_timezone_get());
 
         $this->validateComponent('install');
