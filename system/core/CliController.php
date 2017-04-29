@@ -413,7 +413,7 @@ class CliController
      */
     protected function error($text)
     {
-        $this->cli->error("\033[31m$text\033[0m");
+        $this->cli->error($text);
         return $this;
     }
 
