@@ -29,7 +29,7 @@ Composer:
 
 Clone to `test` directory
 
-    composer create-project gplcart/gplcart test --stability dev
+    composer create-project gplcart/gplcart test --stability dev --no-interaction
 
 then you can perform full installation:
 
