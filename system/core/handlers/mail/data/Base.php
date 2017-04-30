@@ -9,12 +9,13 @@
 
 namespace gplcart\core\handlers\mail\data;
 
-use gplcart\core\Container;
+use gplcart\core\Container,
+    gplcart\core\Handler;
 
 /**
  * Base mail data handler class
  */
-class Base
+class Base extends Handler
 {
 
     /**
@@ -36,17 +37,12 @@ class Base
     protected $language;
 
     /**
-     * Config class instance
-     * @var \gplcart\core\Config $config
-     */
-    protected $config;
-
-    /**
      * Constructor
      */
     public function __construct()
     {
-        $this->config = Container::get('gplcart\\core\\Config');
+        parent::__construct();
+
         $this->user = Container::get('gplcart\\core\\models\\User');
         $this->store = Container::get('gplcart\\core\\models\\Store');
         $this->language = Container::get('gplcart\\core\\models\\Language');

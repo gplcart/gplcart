@@ -9,13 +9,15 @@
 
 namespace gplcart\core\handlers\search;
 
-use gplcart\core\Container;
+use gplcart\core\Container,
+    gplcart\core\Handler;
 
 /**
  * Base search handler class
  */
-class Base
+class Base extends Handler
 {
+
     /**
      * Database helper instance
      * @var \gplcart\core\Database $db
@@ -29,23 +31,14 @@ class Base
     protected $search;
 
     /**
-     * Config instance
-     * @var \gplcart\core\Config $config
-     */
-    protected $config;
-
-    /**
      * Constructor
      */
     public function __construct()
     {
-        /* @var $search \gplcart\core\models\Search */
-        $this->search = Container::get('gplcart\\core\\models\\Search');
-
-        /* @var $config \gplcart\core\Config */
-        $this->config = Container::get('gplcart\\core\\Config');
+        parent::__construct();
 
         $this->db = $this->config->getDb();
+        $this->search = Container::get('gplcart\\core\\models\\Search');
     }
 
 }

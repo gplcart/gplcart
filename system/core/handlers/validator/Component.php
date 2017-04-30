@@ -43,12 +43,6 @@ class Component extends BaseValidator
     protected $file;
 
     /**
-     * Config class instance
-     * @var \gplcart\core\Config $config
-     */
-    protected $config;
-
-    /**
      * Request helper class instance
      * @var \gplcart\core\helpers\Request $request
      */
@@ -61,12 +55,11 @@ class Component extends BaseValidator
     {
         parent::__construct();
 
-        $this->config = Container::get('gplcart\\core\\Config');
+        $this->file = Container::get('gplcart\\core\\models\\File');
         $this->user = Container::get('gplcart\\core\\models\\User');
         $this->store = Container::get('gplcart\\core\\models\\Store');
         $this->alias = Container::get('gplcart\\core\\models\\Alias');
         $this->request = Container::get('gplcart\\core\\helpers\Request');
-        $this->file = Container::get('gplcart\\core\\models\\File');
     }
 
     /**
