@@ -9,26 +9,17 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Mail as MailModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 class Settings extends BackendController
 {
 
     /**
-     * Mail model class instance
-     * @var \gplcart\core\models\Mail $mail
-     */
-    protected $mail;
-
-    /**
      * Constructor
      */
-    public function __construct(MailModel $mail)
+    public function __construct()
     {
         parent::__construct();
-
-        $this->mail = $mail;
     }
 
     /**
@@ -43,7 +34,6 @@ class Settings extends BackendController
 
         $this->setData('settings', $this->getSettings());
         $this->setData('timezones', gplcart_timezones());
-        $this->setData('mailers', $this->mail->getMailers());
 
         $this->submitSettings();
 
@@ -70,7 +60,6 @@ class Settings extends BackendController
             'cron_key' => '',
             'error_level' => 2,
             'error_live_report' => 0,
-            'mailer' => '',
             'timezone' => 'Europe/London'
         );
     }
