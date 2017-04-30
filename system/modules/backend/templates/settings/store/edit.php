@@ -328,15 +328,6 @@
         </div>
       </div>
       <div class="form-group">
-        <label class="col-md-2 control-label"><?php echo $this->text('Invoice prefix'); ?></label>
-        <div class="col-md-4">
-          <input name="store[data][invoice_prefix]" class="form-control" value="<?php echo $this->escape($store['data']['invoice_prefix']); ?>">
-          <div class="help-block">
-            <?php echo $this->text('Prepend this string to all invoice numbers associated with this store'); ?>
-          </div>
-        </div>
-      </div>
-      <div class="form-group">
         <label class="col-md-2 control-label"><?php echo $this->text('Code'); ?></label>
         <div class="col-md-6">
           <textarea name="store[data][js]" rows="10" class="form-control"><?php echo $this->escape($store['data']['js']); ?></textarea>

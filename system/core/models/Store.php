@@ -233,7 +233,6 @@ class Store extends Model
             'email' => array(),
             'favicon' => '',
             'fax' => array(),
-            'invoice_prefix' => '',
             'logo' => '',
             'map' => array(),
             'meta_title' => 'GPL Cart',
