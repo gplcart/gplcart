@@ -513,7 +513,7 @@ class Order extends Model
     /**
      * Notify when an order has been created
      * @param array $order
-     * @return mixed
+     * @return boolean
      */
     public function setNotificationCreated(array $order)
     {
@@ -529,7 +529,7 @@ class Order extends Model
     /**
      * Notify when an order has been updated
      * @param array $order
-     * @return mixed
+     * @return boolean
      */
     public function setNotificationUpdated(array $order)
     {
