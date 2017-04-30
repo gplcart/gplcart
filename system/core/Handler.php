@@ -18,6 +18,20 @@ class Handler
 {
 
     /**
+     * Config class instance
+     * @var \gplcart\core\Config $config
+     */
+    protected $config;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->config = Container::get('gplcart\\core\\Config');
+    }
+
+    /**
      * Calls a handler
      * @param array $handlers
      * @param string $handler_id
