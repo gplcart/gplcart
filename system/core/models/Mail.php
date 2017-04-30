@@ -87,7 +87,7 @@ class Mail extends Model
     }
 
     /**
-     * Returns an array of default message handlers
+     * Returns an array of default data handlers
      * @return array
      */
     protected function getDefaultDataHandlers()
@@ -152,7 +152,7 @@ class Mail extends Model
      * @param string $subject
      * @param string $message
      * @param array $options
-     * @return mixed
+     * @return integer
      */
     public function send($to, $subject, $message, array $options = array())
     {
