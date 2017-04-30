@@ -166,7 +166,7 @@ class Cli
      * @param array $items
      * @param mixed $default
      * @param string $title
-     * @return integer|null
+     * @return mixed
      */
     public function menu($items, $default = null, $title = 'Choose an item')
     {

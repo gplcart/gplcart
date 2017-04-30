@@ -19,20 +19,21 @@ class Filter
      * An array of allowed protocols
      * @var array
      */
-    protected $protocols = array('http', 'ftp', 'mailto');
+    protected $protocols;
 
     /**
      * An array of allowed tags
      * @var array
      */
-    protected $tags = array('a', 'i', 'b', 'em', 'span', 'strong', 'ul', 'ol', 'li');
+    protected $tags;
 
     /**
      * Constructor
      */
     public function __construct()
     {
-        // Preserved
+        $this->protocols = array('http', 'ftp', 'mailto');
+        $this->tags = array('a', 'i', 'b', 'em', 'span', 'strong', 'ul', 'ol', 'li');
     }
 
     /**
@@ -185,11 +186,11 @@ class Filter
         $attrarr = array();
         $mode = 0;
         $attrname = '';
+        $skip = false;
 
         while (strlen($attr) != 0) {
 
             $working = 0;
-            $skip = false;
 
             switch ($mode) {
                 case 0:

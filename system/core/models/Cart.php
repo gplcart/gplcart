@@ -122,7 +122,7 @@ class Cart extends Model
 
         $total = 0;
         $quantity = 0;
-        foreach ($items as $sku => $item) {
+        foreach ((array) $items as $sku => $item) {
 
             $prepared = $this->prepareItem($item, $cart);
 
@@ -457,7 +457,7 @@ class Cart extends Model
         $items = $this->getList($conditions);
         $result = array('total' => 0, 'sku' => array());
 
-        foreach ($items as $item) {
+        foreach ((array) $items as $item) {
             $result['total'] += (int) $item['quantity'];
             $result['sku'][$item['sku']] = (int) $item['quantity'];
         }
@@ -548,7 +548,7 @@ class Cart extends Model
 
         if (!$this->config->get('cart_login_merge', 0)) {
             $items = $this->getList(array('user_id' => $user['user_id'], 'order_id' => 0));
-            foreach ($items as $item) {
+            foreach ((array) $items as $item) {
                 $this->delete($item['cart_id']);
             }
         }

@@ -243,7 +243,7 @@ class CliController
     /**
      * Sets an error
      * @param null|string $key
-     * @param string $error
+     * @param mixed $error
      * @return array
      */
     protected function setError($key, $error)
@@ -381,7 +381,7 @@ class CliController
      * Validates a submitted set of data
      * @param string $handler_id
      * @param array $options
-     * @return array
+     * @return mixed
      */
     protected function validateComponent($handler_id, array $options = array())
     {
@@ -467,7 +467,7 @@ class CliController
      * @param array $items
      * @param mixed $default
      * @param string $title
-     * @return null|string
+     * @return mixed
      */
     protected function menu(array $items, $default = null, $title = '')
     {

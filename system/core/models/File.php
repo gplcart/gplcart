@@ -697,7 +697,7 @@ class File extends Model
             return true;
         }
 
-        if (!isset($this->handler) && !$this->setHandlerByExtension($extension)) {
+        if (!isset($this->handler) && !$this->setHandlerByExtension($pathinfo['extension'])) {
             return $this->error;
         }
 

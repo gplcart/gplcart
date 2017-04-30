@@ -146,7 +146,7 @@ class Install extends CliController
                 $this->outputErrors($this->text('Invalid language'));
                 $this->validateInputLanguageInstall();
             } else {
-                $this->langcode = $selected;
+                $this->langcode = (string) $selected;
                 $this->language->set($this->langcode);
             }
         }

@@ -104,7 +104,7 @@ class Cart extends BackendController
         $limit = $this->setPager($total, $this->data_filter);
 
         $options = array('limit' => $limit) + $this->data_filter;
-        $list = $this->cart->getList($options, 'cart_id');
+        $list = (array) $this->cart->getList($options, 'cart_id');
 
         $this->attachEntityUrl($list, 'product');
         return $list;

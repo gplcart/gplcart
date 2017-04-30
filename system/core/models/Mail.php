@@ -59,7 +59,7 @@ class Mail extends Model
      * @param string $subject
      * @param string $message
      * @param array $options
-     * @return integer
+     * @return mixed
      */
     public function send($to, $subject, $message, array $options)
     {

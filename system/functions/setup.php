@@ -71,15 +71,13 @@ function gplcart_setup_ini()
  */
 function gplcart_setup_ini_session()
 {
-    if (GC_CLI) {
-        return null;
+    if (!GC_CLI) {
+        ini_set('session.use_cookies', '1');
+        ini_set('session.use_only_cookies', '1');
+        ini_set('session.use_trans_sid', '0');
+        ini_set('session.cache_limiter', '');
+        ini_set('session.cookie_httponly', '1');
     }
-
-    ini_set('session.use_cookies', '1');
-    ini_set('session.use_only_cookies', '1');
-    ini_set('session.use_trans_sid', '0');
-    ini_set('session.cache_limiter', '');
-    ini_set('session.cookie_httponly', '1');
 }
 
 /**
@@ -89,15 +87,12 @@ function gplcart_setup_ini_session()
  */
 function gplcart_setup_ini_memory($value)
 {
-    if (!GC_CLI) {
-        return null;
-    }
-
-    $bytes = gplcart_to_bytes($value);
-    $limit = trim(ini_get('memory_limit'));
-
-    if ($limit != -1 && $bytes < 1024 * 1024 * 1024) {
-        ini_set('memory_limit', $value);
+    if (GC_CLI) {
+        $bytes = gplcart_to_bytes($value);
+        $limit = trim(ini_get('memory_limit'));
+        if ($limit != -1 && $bytes < 1024 * 1024 * 1024) {
+            ini_set('memory_limit', $value);
+        }
     }
 }
 
@@ -109,21 +104,15 @@ function gplcart_setup_autoload()
 {
     return spl_autoload_register(function($namespace) {
 
-        // Convert \ to /
         $path = str_replace('\\', '/', $namespace);
 
-        // Our stuff under "gplcart"
         if (strpos($path, 'gplcart/') !== 0) {
             return false;
         }
 
         // Remove "gplcart/" from the path
         $path = substr($path, 8);
-
-        // Define the root
         $file = (strpos($path, 'tests') === 0) ? GC_ROOT_DIR : GC_SYSTEM_DIR;
-
-        // Final full path to the class
         $file .= "/$path.php";
 
         if (file_exists($file)) {
@@ -131,8 +120,7 @@ function gplcart_setup_autoload()
             return true;
         }
 
-        // Check lowercase class name
-        // to prevent "file not found" for
+        // Check lowercase class name to prevent "file not found" for
         // classes like gplcart\\modules\\test_module\\TestModule
         $lowerfile = strtolower($file);
 
