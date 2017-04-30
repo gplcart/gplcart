@@ -108,13 +108,7 @@ $config = array();
 # $config['field_value_image_dirname']            = 'field_value'; // Default folder for uploaded field value images
 # $config['compress_js']                          = 0; // Whether to aggregate JS files
 # $config['compress_css']                         = 0; // Whether to aggregate and compress CSS files
-# $config['mailer']                               = 'php'; // Mailer  
-# $config['email_subject_order_created_admin']    = ''; // Text of E-mail subject sent after order has been created to an admin
-# $config['email_message_order_created_admin']    = ''; // Text of E-mail message sent after order has been created to an admin
-# $config['email_subject_order_created_customer'] = ''; // Text of E-mail subject sent after order has been created to a customer
-# $config['email_message_order_created_customer'] = ''; // Text of E-mail message sent after order has been created to a customer
-# $config['email_subject_order_updated_customer'] = ''; // Text of E-mail subject sent after order has been updated to a customer
-# $config['email_message_order_updated_customer'] = ''; // Text of E-mail message sent after order has been updated to a customer
+# $config['mailer']                               = 'php'; // Mailer
 
 /**
  * End of configurable settings
