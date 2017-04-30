@@ -36,6 +36,7 @@ define('GC_CONFIG_VALIDATOR', GC_CONFIG_DIR . '/default/validator.php');
 define('GC_CONFIG_IMAGE_STYLE', GC_CONFIG_DIR . '/default/image_style.php');
 define('GC_CONFIG_IMAGE_ACTION', GC_CONFIG_DIR . '/default/image_action.php');
 define('GC_CONFIG_LIBRARY', GC_CONFIG_DIR . '/default/library.php');
+define('GC_CONFIG_MAIL', GC_CONFIG_DIR . '/default/mail.php');
 define('GC_UPLOAD_DIR', GC_FILE_DIR . '/upload');
 define('GC_DOWNLOAD_DIR', GC_FILE_DIR . '/download');
 define('GC_PRIVATE_DIR', GC_FILE_DIR . '/private');

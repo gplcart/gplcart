@@ -37,10 +37,10 @@ class Mail extends Model
     }
 
     /**
-     * Returns an array of mailers
+     * Returns an array of email handlers
      * @return array
      */
-    public function getMailers()
+    public function getHandlers()
     {
         $handlers = &Cache::memory(__METHOD__);
 
@@ -48,101 +48,8 @@ class Mail extends Model
             return $handlers;
         }
 
-        $handlers = $this->getDefaultMailers();
+        $handlers = require GC_CONFIG_MAIL;
         $this->hook->fire('mail.handlers', $handlers);
-        return $handlers;
-    }
-
-    /**
-     * Returns an array of default mailers
-     * @return array
-     */
-    protected function getDefaultMailers()
-    {
-        return array(
-            'php' => array(
-                'name' => 'PHP',
-                'handlers' => array(
-                    'send' => array(__CLASS__, 'mail')
-                ),
-            )
-        );
-    }
-
-    /**
-     * Returns an array of email data handlers
-     * @return array
-     */
-    public function getDataHandlers()
-    {
-        $handlers = &Cache::memory(__METHOD__);
-
-        if (isset($handlers)) {
-            return $handlers;
-        }
-
-        $handlers = $this->getDefaultDataHandlers();
-        $this->hook->fire('mail.data.handlers', $handlers);
-        return $handlers;
-    }
-
-    /**
-     * Returns an array of default data handlers
-     * @return array
-     */
-    protected function getDefaultDataHandlers()
-    {
-        $handlers = array();
-
-        $handlers['order_created_admin'] = array(
-            'name' => $this->language->text('E-mail to an admin after an order has been created'),
-            'handlers' => array(
-                'data' => array('gplcart\\core\\handlers\\mail\\data\\Order', 'createdToAdmin')
-            ),
-        );
-
-        $handlers['order_created_customer'] = array(
-            'name' => $this->language->text('E-mail to a customer after its order has been created'),
-            'handlers' => array(
-                'data' => array('gplcart\\core\\handlers\\mail\\data\\Order', 'createdToCustomer'),
-            ),
-        );
-
-        $handlers['order_updated_customer'] = array(
-            'name' => $this->language->text('E-mail to a customer after its order has been updated'),
-            'handlers' => array(
-                'data' => array('gplcart\\core\\handlers\\mail\\data\\Order', 'updatedToCustomer'),
-            ),
-        );
-
-        $handlers['user_registered_admin'] = array(
-            'name' => $this->language->text('E-mail to an admin after a user account has been created'),
-            'handlers' => array(
-                'data' => array('gplcart\\core\\handlers\\mail\\data\\Account', 'registeredToAdmin'),
-            ),
-        );
-
-        $handlers['user_registered_customer'] = array(
-            'name' => $this->language->text('E-mail to a user after its account has been created'),
-            'handlers' => array(
-                'data' => array('gplcart\\core\\handlers\\mail\\data\\Account', 'registeredToCustomer'),
-            ),
-        );
-
-        $handlers['user_reset_password'] = array(
-            'name' => $this->language->text('E-mail to a user after he/she requested a new password'),
-            'handlers' => array(
-                'data' => array('gplcart\\core\\handlers\\mail\\data\\Account', 'resetPassword'),
-            ),
-        );
-
-        $handlers['user_changed_password'] = array(
-            'name' => $this->language->text('E-mail to a user after its account password has been changed'),
-            'handlers' => array(
-                'data' => array('gplcart\\core\\handlers\\mail\\data\\Account', 'changedPassword'),
-            ),
-        );
-
         return $handlers;
     }
 
@@ -154,65 +61,44 @@ class Mail extends Model
      * @param array $options
      * @return integer
      */
-    public function send($to, $subject, $message, array $options = array())
+    public function send($to, $subject, $message, array $options)
     {
-        $mailers = $this->getMailers();
-        $options['mailer'] = $this->config->get('mailer', 'php');
-
+        settype($to, 'array');
         $this->hook->fire('mail.send.before', $to, $subject, $message, $options);
 
-        if (empty($options['mailer']) || empty($to)) {
-            return false;
+        $result = null;
+        $this->hook->fire('mail.send', $to, $subject, $message, $options, $result);
+
+        if (isset($result)) {
+            return $result;
         }
 
-        $result = Handler::call($mailers, $options['mailer'], 'send', array($to, $subject, $message, $options));
-        $this->hook->fire('mail.send.after', $to, $subject, $message, $options, $result);
-        return $result;
+        return $this->mail($to, $subject, $message, $options);
     }
 
     /**
      * Sends E-mail with predefined parameters using a handler ID
      * @param string $handler_id
      * @param array $arguments
-     * @return integer
+     * @return boolean
      */
     public function set($handler_id, array $arguments)
     {
-        $data = $this->getData($handler_id, $arguments);
+        $handlers = $this->getHandlers();
+        $data = Handler::call($handlers, $handler_id, 'data', array($arguments));
         return call_user_func_array(array($this, 'send'), $data);
     }
 
     /**
-     * Returns an array of data for a given handler used to send E-mails
-     * @param string $handler_id
-     * @param array $arguments
-     * @return array
-     */
-    public function getData($handler_id, array $arguments)
-    {
-        $handlers = $this->getDataHandlers();
-
-        if (empty($handlers[$handler_id])) {
-            return array();
-        }
-
-        $data = Handler::call($handlers, $handler_id, 'data', array($arguments));
-        $this->hook->fire('mail.data', $handler_id, $arguments, $data);
-        return $data;
-    }
-
-    /**
      * Send E-mail using PHP mail() function
-     * @param array|string $to
+     * @param array $receivers
      * @param string $subject
      * @param string $message
      * @param array $options
-     * @return integer
+     * @return boolean
      */
-    public function mail($to, $subject, $message, array $options)
+    public function mail(array $receivers, $subject, $message, array $options)
     {
-        settype($to, 'array');
-
         $subject = "=?UTF-8?B?" . base64_encode($subject) . "?=";
         $from = "=?UTF-8?B?" . base64_encode($options['from']) . "?=";
 
@@ -226,12 +112,16 @@ class Mail extends Model
 
         $header = implode("\r\n", $headers);
 
-        $sent = 0;
-        foreach ($to as $address) {
-            $sent += (int) mail($address, $subject, $message, $header);
+        $to = array();
+        foreach ($receivers as $address) {
+            if (is_array($address)) {
+                $to[] = "{$address[0]} <{$address[1]}>";
+            } else {
+                $to[] = $address;
+            }
         }
 
-        return $sent;
+        return mail(implode(',', $to), $subject, $message, $header);
     }
 
 }
