@@ -103,7 +103,7 @@ class Library
             return $libraries;
         }
 
-        $libraries = include GC_CONFIG_LIBRARY;
+        $libraries = require GC_CONFIG_LIBRARY;
         $this->hook->fire('library.list', $libraries);
 
         $libraries = $this->prepareList($libraries);

@@ -348,7 +348,7 @@ class Currency extends Model
      */
     public function getIso($code = null)
     {
-        $data = include GC_CONFIG_CURRENCY;
+        $data = require GC_CONFIG_CURRENCY;
 
         if (isset($code)) {
             return isset($data[$code]) ? $data[$code] + array('code' => $code) : array();

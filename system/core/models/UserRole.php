@@ -210,7 +210,7 @@ class UserRole extends Model
      */
     protected function getDefaultPermissions()
     {
-        $permissions = include GC_CONFIG_PERMISSION;
+        $permissions = require GC_CONFIG_PERMISSION;
         asort($permissions);
         return $permissions;
     }

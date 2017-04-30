@@ -368,7 +368,7 @@ class Country extends Model
      */
     public function getIso($code = null)
     {
-        $data = include GC_CONFIG_COUNTRY;
+        $data = require GC_CONFIG_COUNTRY;
 
         if (isset($code)) {
             return isset($data[$code]) ? $data[$code] : '';

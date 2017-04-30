@@ -268,7 +268,7 @@ class Database extends PDO
      */
     public function getScheme($table = null)
     {
-        $data = include GC_CONFIG_DATABASE;
+        $data = require GC_CONFIG_DATABASE;
 
         if (empty($data)) {
             throw new DatabaseException('Failed to load database scheme');

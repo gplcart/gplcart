@@ -99,7 +99,7 @@ class Route
             return $routes;
         }
 
-        $routes = include GC_CONFIG_ROUTE;
+        $routes = require GC_CONFIG_ROUTE;
 
         $this->hook->fire('route.list', $routes);
         return $routes;

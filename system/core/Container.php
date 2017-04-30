@@ -55,7 +55,7 @@ class Container
 
         // Override class namespace
         if (!isset(static::$override_config) && is_readable(GC_CONFIG_OVERRIDE)) {
-            static::$override_config = include GC_CONFIG_OVERRIDE;
+            static::$override_config = require GC_CONFIG_OVERRIDE;
         }
 
         if (isset(static::$override_config[$class])) {

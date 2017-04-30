@@ -492,7 +492,7 @@ class Language extends Model
      */
     public function getIso($code = null)
     {
-        $data = include GC_CONFIG_LANGUAGE;
+        $data = require GC_CONFIG_LANGUAGE;
         if (isset($code)) {
             return isset($data[$code]) ? (array) $data[$code] : array();
         }

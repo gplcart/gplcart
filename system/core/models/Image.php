@@ -67,7 +67,7 @@ class Image extends Model
             return $handlers;
         }
 
-        $handlers = include GC_CONFIG_IMAGE_ACTION;
+        $handlers = require GC_CONFIG_IMAGE_ACTION;
         $this->hook->fire('imagestyle.action.handlers', $handlers);
         return $handlers;
     }
@@ -174,7 +174,7 @@ class Image extends Model
      */
     public function getStyleList()
     {
-        $default_imagestyles = include GC_CONFIG_IMAGE_STYLE;
+        $default_imagestyles = require GC_CONFIG_IMAGE_STYLE;
         $saved_imagestyles = $this->config->get('imagestyles', array());
         $imagestyles = gplcart_array_merge($default_imagestyles, $saved_imagestyles);
 
