@@ -279,6 +279,7 @@ class Wishlist extends Model
 
         $sql .= ' FROM wishlist w'
                 . ' LEFT JOIN user u ON(w.user_id = u.user_id)'
+                . ' LEFT JOIN product p ON(w.product_id = p.product_id)'
                 . ' WHERE w.wishlist_id > 0';
 
         $where = array();
@@ -304,6 +305,11 @@ class Wishlist extends Model
         if (isset($data['created'])) {
             $sql .= ' AND w.created = ?';
             $where[] = $data['created'];
+        }
+
+        if (isset($data['product_status'])) {
+            $sql .= ' AND p.status = ?';
+            $where[] = (int) $data['product_status'];
         }
 
         $allowed_order = array('asc', 'desc');
