@@ -54,7 +54,6 @@
           <th><input type="checkbox" id="select-all" value="1"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
           <th><?php echo $this->text('ID'); ?></th>
           <th><?php echo $this->text('Title'); ?></th>
-          <th><?php echo $this->text('Alias'); ?></th>
           <th><?php echo $this->text('Enabled'); ?></th>
           <th><?php echo $this->text('Weight'); ?></th>
           <th></th>
@@ -65,10 +64,7 @@
         <tr data-id="<?php echo $category['category_id']; ?>">
           <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $category['category_id']; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>></td>
           <td class="middle"><?php echo $category['category_id']; ?></td>
-          <td class="middle"><?php echo $category['indentation']; ?><?php echo $this->truncate($this->escape($category['title'])); ?></td>
-          <td class="middle">
-            <a target="_blank" href="<?php echo $this->escape($category['url']); ?>"><?php echo $this->truncate($this->escape($category['alias'])); ?></a>
-          </td>
+          <td class="middle"><?php echo $category['indentation']; ?><a target="_blank" href="<?php echo $this->escape($category['url']); ?>"><?php echo $this->truncate($this->escape($category['title'])); ?></a></td>
           <td class="middle">
             <?php if (empty($category['status'])) { ?>
             <i class="fa fa-square-o"></i>
