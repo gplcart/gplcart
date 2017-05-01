@@ -13,9 +13,9 @@
   <li class="depth-<?php echo $this->e($item['depth']); ?><?php echo empty($item['active']) ? '' : ' active'; ?>">
     <?php echo $item['indentation']; ?>
     <?php if (empty($item['active'])) { ?>
-    <a title="<?php echo $this->e($item['title']); ?>" href="<?php echo $this->e($item['url']); ?>"><?php echo $this->e($item['title']); ?></a>
+    <a title="<?php echo $this->e($item['title']); ?>" href="<?php echo $this->e($item['url']); ?>"><?php echo $this->e($this->truncate($item['title'], 30)); ?></a>
     <?php } else { ?>
-    <a class="disabled"><?php echo $this->e($item['title']); ?></a>
+    <a class="disabled"><?php echo $this->e($this->truncate($item['title'], 30)); ?></a>
     <?php } ?>
   </li>
   <?php } ?>
