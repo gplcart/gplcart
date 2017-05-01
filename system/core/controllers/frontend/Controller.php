@@ -201,7 +201,7 @@ class Controller extends BaseController
     {
         $items = $this->compare->getList();
 
-        if ($key == 'count') {
+        if ($key === 'count') {
             return count($items);
         }
         return $items;
@@ -214,13 +214,14 @@ class Controller extends BaseController
     public function wishlist($key = null)
     {
         $options = array(
+            'product_status' => 1,
             'user_id' => $this->cart_uid,
             'store_id' => $this->store_id
         );
 
         $result = (array) $this->wishlist->getList($options);
 
-        if ($key == 'count') {
+        if ($key === 'count') {
             return count($result);
         }
         return $result;
@@ -539,16 +540,12 @@ class Controller extends BaseController
     /**
      * Returns an array of collection items
      * @param array $conditions
+     * @param array $options
      * @return array
      */
-    protected function getCollectionItems($conditions = array(),
-            $options = array())
+    protected function getCollectionItems(array $conditions, array $options)
     {
-        $conditions += array(
-            'status' => 1,
-            'store_id' => $this->store_id
-        );
-
+        $conditions += array('status' => 1, 'store_id' => $this->store_id);
         $items = $this->collection_item->getItems($conditions);
 
         if (empty($items)) {
@@ -558,6 +555,7 @@ class Controller extends BaseController
         $item = reset($items);
 
         $options += array(
+            'no_item_url' => true,
             'entity' => $item['collection_item']['type'],
             'template_item' => $item['collection_handler']['template']['item']
         );
@@ -566,12 +564,14 @@ class Controller extends BaseController
     }
 
     /**
+     * Returns a rendered collection
      * @param array $conditions
+     * @param array $options
      * @return string
      */
-    protected function renderCollection(array $conditions)
+    protected function renderCollection(array $conditions, $options = array())
     {
-        $items = $this->getCollectionItems($conditions);
+        $items = $this->getCollectionItems($conditions, $options);
 
         if (empty($items)) {
             return '';
@@ -699,6 +699,11 @@ class Controller extends BaseController
             return $data;
         }
 
+        if (!empty($data['path'])) {
+            $data['thumb'] = $this->image->url($options['imagestyle'], $data['path']);
+            return $data;
+        }
+
         if (empty($data['images'])) {
             $data['thumb'] = $this->image->getThumb($data, $options);
             return $data; // Processing single item, exit 
@@ -743,7 +748,7 @@ class Controller extends BaseController
      */
     protected function attachItemUrl(array &$data, array $options)
     {
-        if (isset($options['id_key'])) {
+        if (isset($options['id_key']) && empty($options['no_item_url'])) {
             $id = $data[$options['id_key']];
             $entity = preg_replace('/_id$/', '', $options['id_key']);
             $data['url'] = empty($data['alias']) ? $this->url("$entity/$id") : $this->url($data['alias']);
@@ -824,7 +829,8 @@ class Controller extends BaseController
     protected function attachItemUrlActive(array &$item)
     {
         if (isset($item['url'])) {
-            $item['active'] = ($this->base . (string) $this->path($item['url'])) !== '';
+            $path = substr($item['url'], strlen($this->base));
+            $item['active'] = $this->path($path);
         }
     }
 
