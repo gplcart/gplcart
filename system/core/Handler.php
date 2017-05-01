@@ -32,19 +32,24 @@ class Handler
     }
 
     /**
-     * Calls a handler
+     * Call a handler
      * @param array $handlers
      * @param string $handler_id
      * @param string $method
      * @param array $args
      * @return mixed
+     * @throws \InvalidArgumentException
      */
     public static function call($handlers, $handler_id, $method, $args = array())
     {
-        $handler = static::get($handlers, $handler_id, $method);
+        try {
+            $handler = static::get($handlers, $handler_id, $method);
+        } catch (\ReflectionException $ex) {
+            throw new \InvalidArgumentException($ex->getMessage());
+        }
 
         if (empty($handler[0])) {
-            return false;
+            throw new \InvalidArgumentException('Invalid handler instance');
         }
 
         return call_user_func_array($handler, $args);
