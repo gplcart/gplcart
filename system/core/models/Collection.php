@@ -224,7 +224,7 @@ class Collection extends Model
             'id_key' => 'product_id',
             'handlers' => array(
                 'list' => array('gplcart\\core\\models\\Product', 'getList'),
-                'validate' => array('gplcart\\core\\handlers\\validator\\CollectionItem', 'product'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\components\\CollectionItem', 'product'),
             ),
             'template' => array(
                 'item' => 'product/item/grid',
@@ -237,7 +237,7 @@ class Collection extends Model
             'id_key' => 'file_id',
             'handlers' => array(
                 'list' => array('gplcart\\core\\models\\File', 'getList'),
-                'validate' => array('gplcart\\core\\handlers\\validator\\CollectionItem', 'file'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\components\\CollectionItem', 'file'),
             ),
             'template' => array(
                 'item' => 'collection/item/file',
@@ -250,7 +250,7 @@ class Collection extends Model
             'id_key' => 'page_id',
             'handlers' => array(
                 'list' => array('gplcart\\core\\models\\Page', 'getList'),
-                'validate' => array('gplcart\\core\\handlers\\validator\\CollectionItem', 'page'),
+                'validate' => array('gplcart\\core\\handlers\\validator\\components\\CollectionItem', 'page'),
             ),
             'template' => array(
                 'item' => 'collection/item/page',
