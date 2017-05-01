@@ -87,7 +87,9 @@ class Settings extends BackendController
             'image_style_product_list' => $this->text('Product catalog (list)'),
             'image_style_cart' => $this->text('Cart'),
             'image_style_option' => $this->text('Product option'),
-            'image_style_collection_banner' => $this->text('Collection (banners)')
+            'image_style_collection_file' => $this->text('Banners'),
+            'image_style_collection_page' => $this->text('Pages'),
+            'image_style_collection_product' => $this->text('Featured products'),
         );
     }
 
@@ -123,7 +125,8 @@ class Settings extends BackendController
         $this->controlAccess('module_edit');
 
         $settings = $this->getSubmitted();
-        $this->module->setSettings('frontend', $settings);
+        // array_filter() - remove empty ("default") values
+        $this->module->setSettings('frontend', array_filter($settings));
 
         $message = $this->text('Settings have been updated');
         $this->redirect('admin/module/list', $message, 'success');
