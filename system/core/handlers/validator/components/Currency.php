@@ -31,6 +31,7 @@ class Currency extends ComponentValidator
     public function __construct(CurrencyModel $currency)
     {
         parent::__construct();
+
         $this->currency = $currency;
     }
 

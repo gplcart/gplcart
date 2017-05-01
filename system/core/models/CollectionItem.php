@@ -9,9 +9,9 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
-use gplcart\core\Cache;
-use gplcart\core\Handler;
+use gplcart\core\Model,
+    gplcart\core\Cache,
+    gplcart\core\Handler;
 use gplcart\core\models\Collection as CollectionModel;
 
 /**
