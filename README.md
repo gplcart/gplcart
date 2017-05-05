@@ -20,12 +20,12 @@ Also you'll need the following extension enabled:
 
 ## Installation ##
 
-Old school:
+**Old school:**
 
 1. Download and extract to your hosting directory all files inside "gplcart" directory
-2. Go to http://yourdomain.com and follow the instructions
+2. Go to `http://yourdomain.com` and follow the instructions
 
-Composer:
+**Composer:**
 
 Clone to `test` directory
 
@@ -33,8 +33,10 @@ Clone to `test` directory
 
 then you can perform full installation:
 
-1. move to `test` directory `cd test`
-2. run installation wizard `php gplcart install`
+1. `cd test`
+2. `php gplcart install`
+
+In one line: `composer create-project gplcart/gplcart test --stability dev --no-interaction && cd test && php gplcart install`
 
 ## Some key features ##
 
