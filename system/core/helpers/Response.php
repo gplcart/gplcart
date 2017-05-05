@@ -27,16 +27,15 @@ class Response
      */
     protected function sendHeaders()
     {
-        if (!headers_sent()) {
-            foreach ($this->headers as $header) {
-                header($header, true);
-            }
-
-            return true;
+        if (headers_sent()) {
+            $this->headers = array();
+            return false;
         }
 
-        $this->headers = array();
-        return false;
+        foreach ($this->headers as $header) {
+            header($header, true);
+        }
+        return true;
     }
 
     /**
