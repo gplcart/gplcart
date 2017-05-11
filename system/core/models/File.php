@@ -505,9 +505,11 @@ class File extends Model
      */
     public function upload($post, $handler, $path)
     {
+        $this->error = null;
+        $this->transferred = null;
+
         $this->hook->fire('file.upload.before', $post, $handler, $path, $this);
 
-        $this->error = null;
         if (!empty($post['error']) || empty($post['tmp_name']) || !is_uploaded_file($post['tmp_name'])) {
             return $this->error = $this->language->text('Unable to upload the file');
         }
@@ -537,9 +539,11 @@ class File extends Model
      */
     public function download($url, $handler, $path)
     {
+        $this->error = null;
+        $this->transferred = null;
+
         $this->hook->fire('file.download.before', $url, $handler, $path, $this);
 
-        $this->error = '';
         if (empty($url)) {
             return $this->language->text('Nothing to download');
         }
