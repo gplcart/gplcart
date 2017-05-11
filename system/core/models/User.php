@@ -237,7 +237,9 @@ class User extends Model
         if ($this->isSuperadmin($user)) {
             return true;
         }
-
+        if ($permission === '__superadmin') {
+            return false;
+        }
         $permissions = $this->getPermissions($user);
         return in_array($permission, $permissions);
     }
