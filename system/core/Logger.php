@@ -9,6 +9,7 @@
 
 namespace gplcart\core;
 
+use Exception;
 use gplcart\core\Config;
 
 /**
@@ -106,7 +107,13 @@ class Logger
             'log_id' => gplcart_string_random(6)
         );
 
-        return (bool) $this->db->insert('log', $data);
+        // In some cases the log table may not be available
+        // so we use try catch here
+        try {
+            return (bool) $this->db->insert('log', $data);
+        } catch (Exception $ex) {
+            return false;
+        }
     }
 
     /**
