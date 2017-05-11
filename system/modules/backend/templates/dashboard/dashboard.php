@@ -6,6 +6,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
+<?php if(empty($intro)) { ?>
 <div class="row">
   <?php foreach ($dashboard as $panels) { ?>
   <div class="col-md-<?php echo 12 / $columns; ?>">
@@ -15,3 +16,6 @@
   </div>
   <?php } ?>
 </div>
+<?php } else { ?>
+<?php echo $intro; ?>
+<?php } ?>

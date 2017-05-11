@@ -101,6 +101,26 @@ class Dashboard extends BackendController
 
         $this->setData('columns', $columns);
         $this->setData('dashboard', $splitted);
+
+        if ($this->config('intro', false) && $this->isSuperadmin()) {
+            $this->setData('intro', $this->render('dashboard/intro', array(
+                        'items' => $this->getIntroItemsDashboard())));
+        }
+    }
+
+    /**
+     * Returns an array of dashboard intro items
+     */
+    protected function getIntroItemsDashboard()
+    {
+        $items = array();
+        foreach (array('header', 'settings', 'product', 'module') as $i => $item) {
+            $items[$item] = array('weight' => $i, 'rendered' => $this->render("dashboard/intro/$item"));
+        }
+
+        $this->hook->fire('dashboard.intro', $items, $this);
+        gplcart_array_sort($items);
+        return $items;
     }
 
     /**
@@ -110,7 +130,7 @@ class Dashboard extends BackendController
     protected function getPanelsDashboard()
     {
         $panels = $this->getDefaultPanelsDashboard();
-        $this->hook->fire('template.dashboard', $panels, $this);
+        $this->hook->fire('dashboard.panels', $panels, $this);
         gplcart_array_sort($panels);
         return $panels;
     }
@@ -231,12 +251,6 @@ class Dashboard extends BackendController
      */
     protected function outputDashboard()
     {
-        $intro = (bool) $this->config('intro', 0);
-
-        if ($intro && $this->isSuperadmin()) {
-            $this->output('dashboard/intro');
-        }
-
         $this->output('dashboard/dashboard');
     }
 
