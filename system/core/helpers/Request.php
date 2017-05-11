@@ -115,17 +115,7 @@ class Request
      */
     public function method()
     {
-        $method = $this->server('HTTP_X_HTTP_METHOD_OVERRIDE', null);
-
-        if (!isset($method)) {
-            $method = (string) $this->request('_method');
-        }
-
-        if (!isset($method)) {
-            $method = $this->server('REQUEST_METHOD', 'GET');
-        }
-
-        return filter_var(strtoupper($method), FILTER_SANITIZE_STRING);
+        return strtoupper($this->server('REQUEST_METHOD', 'GET'));
     }
 
     /**
