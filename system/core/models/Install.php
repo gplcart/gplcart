@@ -9,11 +9,11 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
-use gplcart\core\Database;
-use gplcart\core\Container;
-use gplcart\core\models\Store as StoreModel;
-use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\Model,
+    gplcart\core\Database,
+    gplcart\core\Container;
+use gplcart\core\models\Store as StoreModel,
+    gplcart\core\models\Language as LanguageModel;
 use gplcart\core\exceptions\DatabaseException;
 
 /**
