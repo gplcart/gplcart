@@ -15,7 +15,7 @@
   </div>
   <div class="panel-footer text-center">
     <a href="<?php echo $this->url('', array('skip_intro' => 1)); ?>">
-      <?php echo $this->text('Skip these steps'); ?>
+      <?php echo $this->text('Skip'); ?>
     </a>
   </div>
 </div>
