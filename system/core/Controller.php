@@ -1271,6 +1271,16 @@ class Controller
     }
 
     /**
+     * Restrict access to only superadmin (UID 1)
+     */
+    protected function controlAccessSuperAdmin()
+    {
+        if (!$this->isSuperadmin()) {
+            $this->outputHttpStatus(403);
+        }
+    }
+
+    /**
      * Contols access to account pages
      * @return boolean|null
      */
