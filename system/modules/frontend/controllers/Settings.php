@@ -125,7 +125,7 @@ class Settings extends BackendController
         $this->controlAccess('module_edit');
 
         $settings = $this->getSubmitted();
-        // array_filter() - remove empty ("default") values
+        // array_filter - remove empty ("default") values
         $this->module->setSettings('frontend', array_filter($settings));
 
         $message = $this->text('Settings have been updated');
