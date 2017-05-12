@@ -22,6 +22,8 @@
         "image_style_product_list": 3,
         "image_style_cart": 3,
         "image_style_option": 1,
-        "image_style_collection_banner": 7
+        "image_style_collection_file": 7,
+        "image_style_collection_page": 6,
+        "image_style_collection_product": 6
     }
 }
