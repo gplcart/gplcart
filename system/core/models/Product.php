@@ -872,14 +872,19 @@ class Product extends Model
     }
 
     /**
-     * Returns a relative to file directory path for uploaded images
+     * Returns a relative/absolute path for uploaded images
+     * @param boolean $absolute
      * @return string
      */
-    public function getImagePath()
+    public function getImagePath($absolute = false)
     {
-        $path = trim(substr(GC_IMAGE_DIR, strlen(GC_FILE_DIR)), '/');
-        $path .= '/' . $this->config->get('product_image_dirname', 'product');
-        return $path;
+        $dirname = $this->config->get('product_image_dirname', 'product');
+
+        if ($absolute) {
+            return GC_IMAGE_DIR . "/$dirname";
+        }
+
+        return trim(substr(GC_IMAGE_DIR, strlen(GC_FILE_DIR)), '/') . "/$dirname";
     }
 
 }
