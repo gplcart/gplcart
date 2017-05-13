@@ -60,21 +60,26 @@ class Install extends CliController
     protected function processInstall()
     {
         $result = $this->install->full($this->getSubmitted());
+
+        $message = '';
         if ($result === true) {
-            $this->setMessageCompletedInstall();
+            $message = $this->getMessageCompletedInstall();
         }
+
+        $this->hook->fire('cli.install.finish', $result, $message, $this);
+        $this->line($message);
     }
 
     /**
      * Sets a message on success installation
+     * @return string
      */
-    protected function setMessageCompletedInstall()
+    protected function getMessageCompletedInstall()
     {
         $host = $this->getSubmitted('store.host');
         $basepath = $this->getSubmitted('store.basepath');
         $vars = array('@url' => rtrim("$host/$basepath", '/'));
-        $text = $this->text("Your store has been installed.\nURL: @url\nAdmin area: @url/admin\nGood luck!", $vars);
-        $this->line($text);
+        return $this->text("Your store has been installed.\nURL: @url\nAdmin area: @url/admin", $vars);
     }
 
     /**
