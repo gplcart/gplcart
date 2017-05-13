@@ -463,7 +463,8 @@ class File extends Model
             return false;
         }
 
-        return unlink(GC_FILE_DIR . '/' . $file['path']);
+        $path = GC_FILE_DIR . "/{$file['path']}";
+        return file_exists($path) ? unlink($path) : false;
     }
 
     /**
