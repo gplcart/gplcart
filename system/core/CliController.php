@@ -158,7 +158,7 @@ class CliController
      * @param array $arguments
      * @return string
      */
-    protected function text($text, array $arguments = array())
+    public function text($text, array $arguments = array())
     {
         return $this->language->text($text, $arguments);
     }
@@ -170,7 +170,7 @@ class CliController
      * @param array $default
      * @return array
      */
-    protected function setSubmittedMapped(array $map, $arguments = null,
+    public function setSubmittedMapped(array $map, $arguments = null,
             $default = array())
     {
         $mapped = $this->mapArguments($map, $arguments);
@@ -184,7 +184,7 @@ class CliController
      * @param mixed $data
      * @return array
      */
-    protected function setSubmitted($key, $data)
+    public function setSubmitted($key, $data)
     {
         if (isset($key)) {
             gplcart_array_set_value($this->submitted, $key, $data);
@@ -200,7 +200,7 @@ class CliController
      * @param mixed $default
      * @return mixed
      */
-    protected function getSubmitted($key = null, $default = null)
+    public function getSubmitted($key = null, $default = null)
     {
         if (isset($key)) {
             $value = gplcart_array_get_value($this->submitted, $key);
@@ -214,7 +214,7 @@ class CliController
      * @param bool $filter
      * @return array
      */
-    protected function getArguments($filter = true)
+    public function getArguments($filter = true)
     {
         return gplcart_array_trim($this->current_route['arguments'], $filter);
     }
@@ -224,7 +224,7 @@ class CliController
      * @param null|string $key
      * @return boolean
      */
-    protected function isError($key = null)
+    public function isError($key = null)
     {
         $value = $this->getError($key);
         return !empty($value);
@@ -235,7 +235,7 @@ class CliController
      * @param string $key
      * @return boolean
      */
-    protected function isSubmitted($key)
+    public function isSubmitted($key)
     {
         return (bool) $this->getSubmitted($key);
     }
@@ -246,7 +246,7 @@ class CliController
      * @param mixed $error
      * @return array
      */
-    protected function setError($key, $error)
+    public function setError($key, $error)
     {
         if (isset($key)) {
             gplcart_array_set_value($this->errors, $key, $error);
@@ -260,7 +260,7 @@ class CliController
      * @param null|string $key
      * @return string|array
      */
-    protected function getError($key = null)
+    public function getError($key = null)
     {
         if (isset($key)) {
             return gplcart_array_get_value($this->errors, $key);
@@ -273,7 +273,7 @@ class CliController
      * @param null|string|array $errors
      * @param boolean $abort
      */
-    protected function outputErrors($errors = null, $abort = false)
+    public function outputErrors($errors = null, $abort = false)
     {
         if (isset($errors)) {
             $this->errors = (array) $errors;
@@ -292,7 +292,7 @@ class CliController
     /**
      * Output all to the user
      */
-    protected function output()
+    public function output()
     {
         $this->setError('php_errors', $this->logger->getPhpErrors());
         $this->outputErrors(null, true);
@@ -301,7 +301,7 @@ class CliController
     /**
      * Displays --help message for the current command
      */
-    protected function outputHelp()
+    public function outputHelp()
     {
         if (!empty($this->arguments['help'])) {
             $this->outputCommandHelpMessage();
@@ -312,7 +312,7 @@ class CliController
     /**
      * Output a formatted help message
      */
-    protected function outputCommandHelpMessage()
+    public function outputCommandHelpMessage()
     {
         $output = false;
         if (!empty($this->current_route['help']['description'])) {
@@ -361,7 +361,7 @@ class CliController
      * @param null|array $arguments
      * @return array
      */
-    protected function mapArguments(array $map, $arguments = null)
+    public function mapArguments(array $map, $arguments = null)
     {
         if (!isset($arguments)) {
             $arguments = $this->arguments;
@@ -383,7 +383,7 @@ class CliController
      * @param array $options
      * @return mixed
      */
-    protected function validateComponent($handler_id, array $options = array())
+    public function validateComponent($handler_id, array $options = array())
     {
         $result = $this->validator->run($handler_id, $this->submitted, $options);
         if ($result === true) {
@@ -399,7 +399,7 @@ class CliController
      * @param string $field
      * @return boolean
      */
-    protected function isValidInput($input, $field, $handler_id)
+    public function isValidInput($input, $field, $handler_id)
     {
         $this->setSubmitted($field, $input);
         $result = $this->validateComponent($handler_id, array('field' => $field));
@@ -411,7 +411,7 @@ class CliController
      * @param string $text
      * @return $this
      */
-    protected function error($text)
+    public function error($text)
     {
         $this->cli->error($text);
         return $this;
@@ -422,7 +422,7 @@ class CliController
      * @param string $text
      * @return $this
      */
-    protected function out($text)
+    public function out($text)
     {
         $this->cli->out($text);
         return $this;
@@ -433,7 +433,7 @@ class CliController
      * @param string $text
      * @return $this
      */
-    protected function line($text = '')
+    public function line($text = '')
     {
         $this->cli->line($text);
         return $this;
@@ -445,7 +445,7 @@ class CliController
      * @param string $default
      * @param string $marker
      */
-    protected function prompt($question, $default = '', $marker = ': ')
+    public function prompt($question, $default = '', $marker = ': ')
     {
         return $this->cli->prompt($question, $default, $marker);
     }
@@ -457,7 +457,7 @@ class CliController
      * @param string $default
      * @return string
      */
-    protected function choose($question, $choice = 'yn', $default = 'n')
+    public function choose($question, $choice = 'yn', $default = 'n')
     {
         return $this->cli->choose($question, $choice, $default);
     }
@@ -469,7 +469,7 @@ class CliController
      * @param string $title
      * @return mixed
      */
-    protected function menu(array $items, $default = null, $title = '')
+    public function menu(array $items, $default = null, $title = '')
     {
         return $this->cli->menu($items, $default, $title);
     }
@@ -478,7 +478,7 @@ class CliController
      * Terminate the current script with an optional code or message
      * @param integer|string $code
      */
-    protected function abort($code = 0)
+    public function abort($code = 0)
     {
         exit($code);
     }
@@ -487,7 +487,7 @@ class CliController
      * Read the user input
      * @return string
      */
-    protected function in($format = '')
+    public function in($format = '')
     {
         return $this->cli->in($format);
     }
