@@ -106,7 +106,7 @@ class CliRoute
         $command = array_shift($this->arguments);
 
         if (empty($routes[$command])) {
-            exit("Unknown command. Use 'help' command to see supported commands");
+            exit("Unknown command. Use 'help' command to see what you got");
         }
 
         $routes[$command]['command'] = $command;
