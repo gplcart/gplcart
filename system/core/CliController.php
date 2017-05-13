@@ -210,13 +210,24 @@ class CliController
     }
 
     /**
-     * Returns an array of cleaned arguments
+     * Returns an array of filtered arguments
      * @param bool $filter
      * @return array
      */
     public function getArguments($filter = true)
     {
         return gplcart_array_trim($this->current_route['arguments'], $filter);
+    }
+
+    /**
+     * Returns a single argument value
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     */
+    public function getArgument($key, $default = null)
+    {
+        return isset($this->arguments[$key]) ? $this->arguments[$key] : $default;
     }
 
     /**
@@ -282,10 +293,11 @@ class CliController
         if (!empty($this->errors)) {
             $this->error(implode("\n", gplcart_array_flatten($this->errors)));
             $this->errors = array();
-            $this->line();
             if ($abort) {
                 $this->abort();
             }
+
+            $this->line();
         }
     }
 
