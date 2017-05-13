@@ -79,7 +79,7 @@ class Install extends CliController
         $host = $this->getSubmitted('store.host');
         $basepath = $this->getSubmitted('store.basepath');
         $vars = array('@url' => rtrim("$host/$basepath", '/'));
-        return $this->text("Your store has been installed.\nURL: @url\nAdmin area: @url/admin", $vars);
+        return $this->text("Your store has been installed.\nURL: @url\nAdmin area: @url/admin\nGood luck!", $vars);
     }
 
     /**
