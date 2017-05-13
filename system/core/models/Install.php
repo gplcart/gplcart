@@ -284,60 +284,9 @@ class Install extends Model
         $user_id = $this->createSuperadmin($settings, $store_id);
 
         $this->createLanguages($settings);
-        $this->createCollections($store_id);
-        $this->createCategoryGroups($store_id);
         $this->createPages($user_id, $store_id);
 
         return true;
-    }
-
-    /**
-     * Creates default collections
-     * @param integer $store_id
-     */
-    protected function createCollections($store_id)
-    {
-        $collections = array();
-
-        $collections[] = array(
-            'type' => 'file',
-            'title' => 'Banners',
-            'description' => 'Block with banners on the front page',
-        );
-
-        $collections[] = array(
-            'type' => 'product',
-            'title' => 'Featured products',
-            'description' => 'Block with featured products on the front page',
-        );
-
-        $collections[] = array(
-            'type' => 'page',
-            'title' => 'News/articles',
-            'description' => 'Block with news/articles on the front page',
-        );
-
-        foreach ($collections as $collection) {
-            $collection += array('status' => 1, 'store_id' => $store_id);
-            $this->database->insert('collection', $collection);
-        }
-    }
-
-    /**
-     * Creates default category groups
-     * @param integer $store_id
-     */
-    protected function createCategoryGroups($store_id)
-    {
-        $groups = array();
-
-        $groups[] = array('type' => 'brand', 'title' => 'Brand');
-        $groups[] = array('type' => 'catalog', 'title' => 'Catalog');
-
-        foreach ($groups as $group) {
-            $group += array('store_id' => $store_id);
-            $this->database->insert('category_group', $group);
-        }
     }
 
     /**
