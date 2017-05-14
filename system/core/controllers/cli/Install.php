@@ -59,7 +59,14 @@ class Install extends CliController
      */
     protected function processInstall()
     {
-        $result = $this->install->full($this->getSubmitted());
+        $settings = $this->getSubmitted();
+
+        // Make sure the database is set up
+        // If a connection error has occurred before the database remains uninitialized
+        $this->install->connect($settings['database']);
+
+        // Perform full installation
+        $result = $this->install->full($settings);
 
         $message = '';
         if ($result === true) {
