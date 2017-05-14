@@ -422,7 +422,7 @@ class Product extends BackendController
      */
     protected function validateProduct()
     {
-        $this->setSubmitted('product', null, 'raw');
+        $this->setSubmitted('product', null, false);
 
         $this->setSubmittedBool('status');
         $this->setSubmittedBool('subtract');

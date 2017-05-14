@@ -262,7 +262,7 @@ class Trigger extends BackendController
      */
     protected function validateTrigger()
     {
-        $this->setSubmitted('trigger');
+        $this->setSubmitted('trigger', null, false);
         $this->setSubmittedBool('status');
         $this->setSubmittedArray('data.conditions');
         $this->setSubmitted('update', $this->data_trigger);

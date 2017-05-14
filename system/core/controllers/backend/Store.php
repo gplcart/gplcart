@@ -326,7 +326,7 @@ class Store extends BackendController
      */
     protected function validateStore()
     {
-        $this->setSubmitted('store', null, 'raw');
+        $this->setSubmitted('store', null, false);
 
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $this->data_store);

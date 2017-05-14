@@ -397,7 +397,7 @@ class Account extends FrontendController
      */
     protected function validateAccount()
     {
-        $this->setSubmitted('user', null, 'raw');
+        $this->setSubmitted('user', null, false);
         $this->setSubmitted('update', $this->data_user);
         $this->setSubmitted('user_id', $this->data_user['user_id']);
 

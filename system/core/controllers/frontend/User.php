@@ -97,7 +97,7 @@ class User extends FrontendController
      */
     protected function validateLoginUser()
     {
-        $this->setSubmitted('user', null, 'raw');
+        $this->setSubmitted('user', null, false);
 
         $this->validateComponent('user_login');
 
