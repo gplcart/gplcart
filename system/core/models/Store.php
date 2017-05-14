@@ -181,7 +181,7 @@ class Store extends Model
             $store['data'] += $this->defaultConfig();
         }
 
-        $this->hook->fire('store.get.after', $store_id, $store);
+        $this->hook->fire('store.get.after', $store);
         return $store;
     }
 
