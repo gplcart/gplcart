@@ -9,13 +9,13 @@
 <div class="grid product item col-md-3 col-sm-4 col-xs-6">
   <div class="thumbnail">
     <?php if (!empty($product['thumb'])) { ?>
-    <a href="<?php echo $this->e($product['url']); ?>">
+    <a href="<?php echo empty($product['url']) ? $this->url("product/{$product['product_id']}") : $this->e($product['url']); ?>">
       <img class="img-responsive thumbnail" title="<?php echo $this->e($product['title']); ?>" alt="<?php echo $this->e($product['title']); ?>" src="<?php echo $this->e($product['thumb']); ?>">
     </a>
     <?php } ?>
     <div class="caption text-center">
       <div class="title" data-equal-height="true">
-        <a href="<?php echo $this->e($product['url']); ?>">
+        <a href="<?php echo empty($product['url']) ? $this->url("product/{$product['product_id']}") : $this->e($product['url']); ?>">
           <?php echo $this->e($this->truncate($product['title'], 50)); ?>
         </a>
       </div>

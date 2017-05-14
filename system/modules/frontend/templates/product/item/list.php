@@ -12,13 +12,15 @@
       <div class="row">
         <div class="col-md-2">
           <?php if (!empty($product['thumb'])) { ?>
-          <a href="<?php echo $this->e($product['url']); ?>">
+          <a href="<?php echo empty($product['url']) ? $this->url("product/{$product['product_id']}") : $this->e($product['url']); ?>">
             <img class="img-responsive thumbnail" title="<?php echo $this->e($product['title']); ?>" alt="<?php echo $this->e($product['title']); ?>" src="<?php echo $this->e($product['thumb']); ?>">
           </a>
           <?php } ?>
         </div>
         <div class="col-md-7">
-          <a href="<?php echo $this->e($product['url']); ?>"><?php echo $this->e($product['title']); ?></a>
+          <a href="<?php echo empty($product['url']) ? $this->url("product/{$product['product_id']}") : $this->e($product['url']); ?>">
+            <?php echo $this->e($product['title']); ?>
+          </a>
           <?php if(!empty($product['description'])) { ?>
           <p><?php echo $this->truncate($this->summary(strip_tags($product['description']))); ?></p>
           <?php } ?>
