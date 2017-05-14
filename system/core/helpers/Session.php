@@ -18,12 +18,12 @@ class Session
 {
 
     /**
-     * Starts a session
+     * Constructor
      * @throws AuthorizationException
      */
-    public function init()
+    public function __construct()
     {
-        if (!$this->started() && !session_start()) {
+        if (!GC_CLI && !$this->started() && !session_start()) {
             throw new AuthorizationException('Failed to start the session');
         }
     }
@@ -84,7 +84,9 @@ class Session
      */
     public function get($key, $default = null)
     {
-        $value = gplcart_array_get_value($_SESSION, $key);
+        if (isset($_SESSION)) {
+            $value = gplcart_array_get_value($_SESSION, $key);
+        }
 
         if (isset($value)) {
             return $value;
@@ -101,8 +103,11 @@ class Session
      */
     public function set($key, $value = null)
     {
-        gplcart_array_set_value($_SESSION, $key, $value);
-        return true;
+        if (isset($_SESSION)) {
+            gplcart_array_set_value($_SESSION, $key, $value);
+            return true;
+        }
+        return false;
     }
 
     /**
