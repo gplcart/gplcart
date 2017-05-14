@@ -66,7 +66,7 @@ class Install extends CliController
             $message = $this->getMessageCompletedInstall();
         }
 
-        $this->hook->fire('cli.install.finish', $result, $message, $this);
+        $this->hook->fire('cli.install.after', $result, $message, $this);
         $this->line($message);
     }
 
