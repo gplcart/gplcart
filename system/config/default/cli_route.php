@@ -9,7 +9,7 @@
 return array(
     'help' => array(
         'handlers' => array(
-            'process' => array('gplcart\core\CliController', 'help')
+            'process' => array('gplcart\\core\\CliController', 'help')
         ),
         'help' => array(
             'description' => 'Displays all available commands'
@@ -17,7 +17,7 @@ return array(
     ),
     'install' => array(
         'handlers' => array(
-            'process' => array('gplcart\core\controllers\cli\Install', 'storeInstall')
+            'process' => array('gplcart\\core\\controllers\\cli\\Install', 'storeInstall')
         ),
         'help' => array(
             'description' => 'Performs full system installation. Simple step-by-step wizard, has no options'
