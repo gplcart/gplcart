@@ -536,12 +536,6 @@ return array(
             'controller' => array('gplcart\\core\\controllers\\backend\\Language', 'editLanguage')
         )
     ),
-    'admin/settings/language/upload-translation/(\w+)' => array(
-        'access' => 'translation_add',
-        'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\backend\\Translation', 'uploadTranslation')
-        )
-    ),
     'admin/settings/language/add' => array(
         'access' => 'language_add',
         'handlers' => array(

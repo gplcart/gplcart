@@ -60,13 +60,6 @@
                 </a>
               </li>
               <?php } ?>
-              <?php if($this->access('translation_add') && $this->access('file_upload')) { ?>
-              <li>
-                <a href="<?php echo $this->url("admin/settings/language/upload-translation/$code"); ?>">
-                  <?php echo mb_strtolower($this->text('Upload translation')); ?>
-                </a>
-              </li>
-              <?php } ?>
             </ul>
           </td>
         </tr>
