@@ -59,12 +59,6 @@ class Facade
     protected $logger;
 
     /**
-     * Whether CLI mode is enabled
-     * @var bool
-     */
-    protected $cli = false;
-
-    /**
      * Constructor
      * @param Route $route
      * @param Config $config
@@ -76,7 +70,6 @@ class Facade
     public function __construct(Route $route, Config $config, Hook $hook,
             Logger $logger, UrlHelper $url, SessionHelper $session)
     {
-        $this->cli = GC_CLI;
 
         $this->url = $url;
         $this->hook = $hook;
@@ -103,22 +96,13 @@ class Facade
     }
 
     /**
-     * Set command line mode
-     */
-    public function setCliMode()
-    {
-        $this->cli = true;
-    }
-
-    /**
      * Routes incoming requests
      */
     public function route()
     {
-        if ($this->cli) {
+        if (GC_CLI) {
             $this->routeCli();
         } else {
-            $this->session->init();
             $this->routeHttp();
         }
     }
