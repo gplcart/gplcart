@@ -338,18 +338,18 @@
       </div>
     </div>
   </div>
-  <?php if(isset($store['store_id'])) { ?>
+  <?php if(isset($store['store_id']) && !empty($collections)) { ?>
   <div class="panel panel-default">
     <div class="panel-heading"><?php echo $this->text('Collections'); ?></div>
     <div class="panel-body">
       <div class="form-group">
-        <label class="col-md-2 control-label"><?php echo $this->text('Banners'); ?></label>
+        <label class="col-md-2 control-label"><?php echo $this->text('File'); ?></label>
         <div class="col-md-4">
-          <select name="store[data][collection_banner]" class="form-control">
+          <select name="store[data][collection_file]" class="form-control">
           <option value="0"><?php echo $this->text('Disabled'); ?></option>
           <?php if(!empty($collections['file'])) { ?>
           <?php foreach($collections['file'] as $collection_id => $collection) { ?>
-          <?php if(isset($store['data']['collection_banner']) && $store['data']['collection_banner'] == $collection_id) { ?>
+          <?php if(isset($store['data']['collection_file']) && $store['data']['collection_file'] == $collection_id) { ?>
           <option value="<?php echo $collection_id; ?>" selected><?php echo $this->escape($collection['title']); ?></option>
           <?php } else { ?>
           <option value="<?php echo $collection_id; ?>"><?php echo $this->escape($collection['title']); ?></option>
@@ -365,11 +365,11 @@
       <div class="form-group">
         <label class="col-md-2 control-label"><?php echo $this->text('Featured products'); ?></label>
         <div class="col-md-4">
-          <select name="store[data][collection_featured]" class="form-control">
+          <select name="store[data][collection_product]" class="form-control">
           <option value="0"><?php echo $this->text('Disabled'); ?></option>
           <?php if(!empty($collections['product'])) { ?>
           <?php foreach($collections['product'] as $collection_id => $collection) { ?>
-          <?php if(isset($store['data']['collection_featured']) && $store['data']['collection_featured'] == $collection_id) { ?>
+          <?php if(isset($store['data']['collection_product']) && $store['data']['collection_product'] == $collection_id) { ?>
           <option value="<?php echo $collection_id; ?>" selected><?php echo $this->escape($collection['title']); ?></option>
           <?php } else { ?>
           <option value="<?php echo $collection_id; ?>"><?php echo $this->escape($collection['title']); ?></option>
