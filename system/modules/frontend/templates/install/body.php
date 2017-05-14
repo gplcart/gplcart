@@ -7,7 +7,7 @@
  */
 ?>
 <body class="install">
-  <div class="container">
+  <div class="container-fluid">
     <form method="post" class="form-horizontal">
       <div class="row">
         <div class="col-md-12">
@@ -176,32 +176,34 @@
         </div>
         <?php } ?>
         <div class="<?php echo $severity === 'danger' ? 'col-md-12' : 'col-md-4'; ?>">
-          <div class="well">
-            <table class="table-condensed requirements">
-              <tbody>
-                <?php foreach ($requirements as $section => $items) { ?>
-                <?php foreach ($items as $name => $info) { ?>
-                <tr>
-                  <td><?php echo $this->text($info['message']); ?></td>
-                  <td>
-                    <?php if ($info['status']) { ?>
-                    <i class="fa fa-check-square-o"></i>
-                    <?php } else { ?>
-                    <i class="fa fa-square-o"></i>
-                    <?php if ($info['severity'] === 'warning') { ?>
-                    <i class="fa fa-exclamation-triangle" title="<?php echo $this->text('Non-critical issue'); ?>"></i>
-                    <?php } else if ($info['severity'] === 'danger') { ?>
-                    <i class="fa fa-exclamation-triangle" title="<?php echo $this->text('Critical issue'); ?>"></i>
-                    <?php } else { ?>
-                    <i class="fa fa-exclamation-triangle"></i>
-                    <?php } ?>
-                    <?php } ?>
-                  </td>
-                </tr>
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <table class="table-condensed requirements">
+                <tbody>
+                  <?php foreach ($requirements as $section => $items) { ?>
+                  <?php foreach ($items as $name => $info) { ?>
+                  <tr>
+                    <td><?php echo $this->text($info['message']); ?></td>
+                    <td>
+                      <?php if ($info['status']) { ?>
+                      <i class="fa fa-check-square-o"></i>
+                      <?php } else { ?>
+                      <i class="fa fa-square-o"></i>
+                      <?php if ($info['severity'] === 'warning') { ?>
+                      <i class="fa fa-exclamation-triangle" title="<?php echo $this->text('Non-critical issue'); ?>"></i>
+                      <?php } else if ($info['severity'] === 'danger') { ?>
+                      <i class="fa fa-exclamation-triangle" title="<?php echo $this->text('Critical issue'); ?>"></i>
+                      <?php } else { ?>
+                      <i class="fa fa-exclamation-triangle"></i>
+                      <?php } ?>
+                      <?php } ?>
+                    </td>
+                  </tr>
                 <?php } ?>
                 <?php } ?>
               </tbody>
             </table>
+            </div>
           </div>
           <?php if ($severity === 'danger') { ?>
           <p><b><?php echo $this->text('Please fix all critical errors in your environment before continue'); ?></b></p>
