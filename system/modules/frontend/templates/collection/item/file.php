@@ -8,7 +8,7 @@
 ?>
 <?php if(!empty($file['thumb'])) { ?>
 <?php if (empty($file['collection_item']['data']['url'])) { ?>
-<img alt="<?php echo $this->e($file['title']); ?>" src="<?php echo $this->e($file['thumb']); ?>">
+<img class="fill" alt="<?php echo $this->e($file['title']); ?>" src="<?php echo $this->e($file['thumb']); ?>">
 <?php } else { ?>
 <a href="<?php echo $this->e($file['collection_item']['data']['url']); ?>"><img alt="<?php echo $this->e($file['title']); ?>" src="<?php echo $this->e($file['thumb']); ?>"></a>
 <?php } ?>
