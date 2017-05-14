@@ -2,7 +2,7 @@ body {
     background-color: #f7f7f7;
 }
 
-.container {
+.container-fluid {
     background-color: #fff;
     min-height: 100vh;
 }
@@ -15,31 +15,4 @@ table.requirements {
 span.required:before {
     content: "* ";
     color: red;
-}
-
-.form-control,
-.btn,
-.btn-link,
-.dropdown-menu,
-.input-group-addon,
-.input-group-btn,
-.nav-tabs a,
-.nav-pills a,
-.navbar,
-.navbar-toggle,
-.icon-bar,
-.breadcrumb,
-.pagination,
-.pager *,
-.label,
-.alert,
-.progress,
-.panel,
-.well,
-.modal-content,
-.tooltip-inner,
-.popover,
-.popover-title,
-.carousel-indicators li {
-    border-radius:0 !important;
 }
