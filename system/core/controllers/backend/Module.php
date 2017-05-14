@@ -179,6 +179,7 @@ class Module extends BackendController
         $this->sortListModule($modules, $query);
         $this->filterListModule($modules, $query);
         $this->limitListModule($modules, $limit);
+        $this->prepareListModule($modules);
 
         return $modules;
     }
@@ -192,6 +193,18 @@ class Module extends BackendController
     {
         $this->validateDependenciesTrait($modules);
         $modules = $this->graph->build($modules);
+    }
+
+    /**
+     * Adds axtra data to every module in the array
+     * @param array $modules
+     */
+    protected function prepareListModule(array &$modules)
+    {
+        foreach ($modules as &$module) {
+            $module['always_enabled'] = $this->module->isActiveTheme($module['id']);
+            $module['type_name'] = $this->text(ucfirst($module['type']));
+        }
     }
 
     /**
