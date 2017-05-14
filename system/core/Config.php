@@ -224,8 +224,8 @@ class Config
             $info['directory'] = GC_MODULE_DIR . "/$module_id";
             $info += array('type' => 'module', 'name' => $module_id);
 
-            // Do not override status set in module.json
-            if (isset($info['status'])) {
+            // Do not override status set in module.json for locked modules
+            if (isset($info['status']) && !empty($info['lock'])) {
                 unset($installed[$module_id]['status']);
             }
 
@@ -457,6 +457,17 @@ class Config
     {
         $modules = $this->getInstalledModules();
         return isset($modules[$module_id]);
+    }
+
+    /**
+     * Whether the module locked
+     * @param string $module_id
+     * @return boolean
+     */
+    public function isLockedModule($module_id)
+    {
+        $modules = $this->getModules();
+        return !empty($modules[$module_id]['lock']);
     }
 
     /**

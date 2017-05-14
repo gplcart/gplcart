@@ -41,7 +41,7 @@
             <?php echo empty($info['version']) ? $this->text('Unknown') : $this->escape($info['version']); ?>
           </td>
           <td class="middle">
-            <?php echo $this->escape($info['type_name']); ?>
+            <?php echo $this->text(ucfirst($info['type'])); ?>
           </td>
           <td>
             <?php if(empty($info['requires']) && empty($info['required_by'])) { ?>
@@ -53,11 +53,10 @@
             <?php } ?>
           </td>
           <td class="middle">
-            <?php if($info['type'] !== 'installer') { ?>
             <ul class="list-inline">
               <?php if (isset($info['status'])) { ?>
               <?php if ($info['status']) { ?>
-              <?php if ($this->access('module_disable') && empty($info['always_enabled'])) { ?>
+              <?php if ($this->access('module_disable') && empty($info['lock'])) { ?>
               <li>
                 <a href="<?php echo $this->url(false, array('action' => 'disable', 'module_id' => $module_id)); ?>">
                   <b><?php echo mb_strtolower($this->text('Disable')); ?></b>
@@ -65,14 +64,14 @@
               </li>
               <?php } ?>
               <?php } else { ?>
-              <?php if ($this->access('module_enable')) { ?>
+              <?php if ($this->access('module_enable') && empty($info['lock'])) { ?>
               <li>
                 <a href="<?php echo $this->url(false, array('action' => 'enable', 'module_id' => $module_id)); ?>">
                   <?php echo mb_strtolower($this->text('Enable')); ?>
                 </a>
               </li>
               <?php } ?>
-              <?php if ($this->access('module_uninstall') && empty($info['always_enabled'])) { ?>
+              <?php if ($this->access('module_uninstall') && empty($info['lock'])) { ?>
               <li>
                 <a href="<?php echo $this->url(false, array('action' => 'uninstall', 'module_id' => $module_id)); ?>">
                   <?php echo mb_strtolower($this->text('Uninstall')); ?>
@@ -97,7 +96,6 @@
               </li>
               <?php } ?>
             </ul>
-            <?php } ?>
           </td>
         </tr>
         <tr class="collapse active" id="module-details-<?php echo $module_id; ?>">

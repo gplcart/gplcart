@@ -57,6 +57,16 @@ class Module extends Model
     }
 
     /**
+     * Whether the module is locked
+     * @param string $module_id
+     * @return bool
+     */
+    public function isLocked($module_id)
+    {
+        return $this->config->isLockedModule($module_id);
+    }
+
+    /**
      * Whether the module installed, e.g exists in database
      * @param string $module_id
      * @return boolean
@@ -151,6 +161,10 @@ class Module extends Model
             return $this->language->text('Module already installed and enabled');
         }
 
+        if ($this->isLocked($module_id)) {
+            return $this->language->text('Module is locked in code');
+        }
+
         return $this->checkRequirements($module_id);
     }
 
@@ -161,15 +175,58 @@ class Module extends Model
      */
     public function canInstall($module_id)
     {
-        // Test module class
-        // If a fatal error occurs here, the module won't be installed
-        $this->config->getModuleInstance($module_id);
-
         if ($this->isInstalled($module_id)) {
             return $this->language->text('Module already installed');
         }
 
+        if ($this->isLocked($module_id)) {
+            return $this->language->text('Module is locked in code');
+        }
+
+        // Test module class
+        // If a fatal error occurs here, the module won't be installed
+        $instance = $this->config->getModuleInstance($module_id);
+
+        if (!$instance instanceof \gplcart\core\Module) {
+            return $this->language->text('Main module class is not instance of gplcart\core\Module');
+        }
+
         return $this->checkRequirements($module_id);
+    }
+
+    /**
+     * Whether a given module can be disabled
+     * @param string $module_id
+     * @return boolean|string
+     */
+    public function canDisable($module_id)
+    {
+        return $this->canUninstall($module_id);
+    }
+
+    /**
+     * Whether a given module can be uninstalled
+     * @param string $module_id
+     * @return mixed
+     */
+    public function canUninstall($module_id)
+    {
+        if ($this->isActiveTheme($module_id)) {
+            return $this->language->text('Active theme modules cannot be disabled/uninstalled');
+        }
+
+        if ($this->isLocked($module_id)) {
+            return $this->language->text('Module is locked in code');
+        }
+
+        $modules = $this->getList();
+        $dependent = $this->checkDependentModules($module_id, $modules);
+
+        if ($dependent === true) {
+            return true;
+        }
+
+        return $dependent;
     }
 
     /**
@@ -355,42 +412,16 @@ class Module extends Model
             return $result;
         }
 
-        $this->update($module_id, array('status' => false));
+        if ($this->isInstalled($module_id)) {
+            $this->update($module_id, array('status' => false));
+        } else {
+            $this->add(array('status' => false, 'module_id' => $module_id));
+        }
+
         $this->setOverrideConfig();
 
         $this->hook->fire("module.disable.after|$module_id", $result);
         return $result;
-    }
-
-    /**
-     * Whether a given module can be disabled
-     * @param string $module_id
-     * @return boolean|string
-     */
-    public function canDisable($module_id)
-    {
-        return $this->canUninstall($module_id);
-    }
-
-    /**
-     * Whether a given module can be uninstalled
-     * @param string $module_id
-     * @return mixed
-     */
-    public function canUninstall($module_id)
-    {
-        if ($this->isActiveTheme($module_id)) {
-            return $this->language->text('Active theme modules cannot be uninstalled');
-        }
-
-        $modules = $this->getList();
-        $dependent = $this->checkDependentModules($module_id, $modules);
-
-        if ($dependent === true) {
-            return true;
-        }
-
-        return $dependent;
     }
 
     /**
@@ -575,7 +606,7 @@ class Module extends Model
         foreach (scandir($directory) as $value) {
             $path = "$directory/$value";
             if (is_file($path)) {
-                if ((substr($path, -4) === '.php')) {
+                if (substr($path, -4) === '.php') {
                     $results[] = rtrim($path, '.php');
                 }
             } elseif ($value !== '.' && $value !== '..') {
