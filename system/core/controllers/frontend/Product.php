@@ -52,7 +52,6 @@ class Product extends FrontendController
     protected $data_product = array();
 
     /**
-     * Constructor
      * @param ProductClassModel $product_class
      * @param SkuModel $sku
      * @param ReviewModel $review
@@ -77,18 +76,18 @@ class Product extends FrontendController
     {
         $this->setProduct($product_id);
 
-        $this->setMetaProduct();
+        $this->setMetaIndexProduct();
         $this->setTitleIndexProduct();
         $this->setBreadcrumbIndexProduct();
 
-        $this->setDataImagesProduct();
-        $this->setDataRecentProduct();
-        $this->setDataReviewsProduct();
-        $this->setDataRelatedProduct();
-        $this->setDataCartFormProduct();
-        $this->setDataRatingWidgetProduct();
+        $this->setDataImagesIndexProduct();
+        $this->setDataRecentIndexProduct();
+        $this->setDataReviewsIndexProduct();
+        $this->setDataRelatedIndexProduct();
+        $this->setDataCartFormIndexProduct();
+        $this->setDataRatingWidgetIndexProduct();
 
-        $this->setHtmlFilter($this->data_product);
+        $this->setHtmlFilterIndexProduct();
 
         $this->setData('product', $this->data_product);
         $this->setData('share', $this->renderShareWidget());
@@ -98,9 +97,17 @@ class Product extends FrontendController
     }
 
     /**
+     * Set HTML filter on the product page
+     */
+    protected function setHtmlFilterIndexProduct()
+    {
+        $this->setHtmlFilter($this->data_product);
+    }
+
+    /**
      * Set meta tags on the product page
      */
-    protected function setMetaProduct()
+    protected function setMetaIndexProduct()
     {
         $this->setMetaEntity($this->data_product);
     }
@@ -109,7 +116,7 @@ class Product extends FrontendController
      * Sets list of reviews related to the product
      * @return null
      */
-    protected function setDataReviewsProduct()
+    protected function setDataReviewsIndexProduct()
     {
         if (!$this->config('review_enabled', 1)) {
             return null;
@@ -128,8 +135,7 @@ class Product extends FrontendController
             'reviews' => $this->getReviewsProduct($limit)
         );
 
-        $html = $this->render('product/panes/reviews', $options);
-        $this->setData('pane_reviews', $html);
+        $this->setData('pane_reviews', $this->render('product/reviews', $options));
     }
 
     /**
@@ -186,27 +192,25 @@ class Product extends FrontendController
     /**
      * Sets rendered rating widget
      */
-    protected function setDataRatingWidgetProduct()
+    protected function setDataRatingWidgetIndexProduct()
     {
         $rating = $this->rating->getByProduct($this->data_product['product_id']);
 
         $options = array('rating' => $rating, 'product' => $this->data_product);
-        $html = $this->render('common/rating/static', $options);
-        $this->setData('rating', $html);
+        $this->setData('rating', $this->render('common/rating/static', $options));
     }
 
     /**
      * Sets rendered "Add to cart form"
      */
-    protected function setDataCartFormProduct()
+    protected function setDataCartFormIndexProduct()
     {
         $cart = array(
             'product' => $this->data_product,
             'field_data' => $this->data_product['fields']
         );
 
-        $html = $this->render('cart/add', $cart);
-        $this->setData('cart_form', $html);
+        $this->setData('cart_form', $this->render('cart/add', $cart));
     }
 
     /**
@@ -237,7 +241,7 @@ class Product extends FrontendController
             'text' => $this->text('Home')
         );
 
-        $categories = $this->geCategorytBreadcrumbsIndexProduct($this->data_product['category_id']);
+        $categories = $this->getCategorytBreadcrumbsProduct($this->data_product['category_id']);
         $this->setBreadcrumbs(array_merge($breadcrumbs, $categories));
     }
 
@@ -247,7 +251,7 @@ class Product extends FrontendController
      * @param array $breadcrumbs
      * @return null
      */
-    protected function buildCategoryBreadcrumbsIndexProduct($category_id,
+    protected function buildCategoryBreadcrumbsProduct($category_id,
             array &$breadcrumbs)
     {
         if (empty($this->data_categories[$category_id]['parents'])) {
@@ -265,7 +269,7 @@ class Product extends FrontendController
         );
 
         array_unshift($breadcrumbs, $breadcrumb);
-        $this->buildCategoryBreadcrumbsIndexProduct($parent, $breadcrumbs);
+        $this->buildCategoryBreadcrumbsProduct($parent, $breadcrumbs);
     }
 
     /**
@@ -273,10 +277,10 @@ class Product extends FrontendController
      * @param integer $category_id
      * @return array
      */
-    protected function geCategorytBreadcrumbsIndexProduct($category_id)
+    protected function getCategorytBreadcrumbsProduct($category_id)
     {
         $breadcrumbs = array();
-        $this->buildCategoryBreadcrumbsIndexProduct($category_id, $breadcrumbs);
+        $this->buildCategoryBreadcrumbsProduct($category_id, $breadcrumbs);
         return $breadcrumbs;
     }
 
@@ -291,30 +295,25 @@ class Product extends FrontendController
     /**
      * Sets block with recent products on the product page
      */
-    protected function setDataRecentProduct()
+    protected function setDataRecentIndexProduct()
     {
-        $products = $this->getRecentProduct();
-
-        $options = array('products' => $products);
-        $html = $this->render('product/panes/recent', $options);
-
-        $this->setData('pane_recent', $html);
+        $options = array('products' => $this->getRecentProduct());
+        $this->setData('pane_recent', $this->render('product/recent', $options));
     }
 
     /**
      * Sets block with related products on the product page
      */
-    protected function setDataRelatedProduct()
+    protected function setDataRelatedIndexProduct()
     {
         $options = array('products' => $this->getRelatedProduct());
-        $html = $this->render('product/panes/related', $options);
-        $this->setData('pane_related', $html);
+        $this->setData('pane_related', $this->render('product/related', $options));
     }
 
     /**
      * Sets rendered product images
      */
-    protected function setDataImagesProduct()
+    protected function setDataImagesIndexProduct()
     {
         $options = array(
             'imagestyle' => $this->settings('image_style_product', 5)
@@ -328,8 +327,7 @@ class Product extends FrontendController
         }
 
         $data = array('product' => $this->data_product);
-        $html = $this->render('product/images', $data);
-        $this->setData('images', $html);
+        $this->setData('images', $this->render('product/images', $data));
     }
 
     /**
@@ -420,9 +418,7 @@ class Product extends FrontendController
         );
 
         $products = (array) $this->product->getRelated($this->data_product['product_id'], true, $conditions);
-
-        $options = array('entity' => 'product');
-        return $this->prepareEntityItems($products, $options);
+        return $this->prepareEntityItems($products, array('entity' => 'product'));
     }
 
     /**
