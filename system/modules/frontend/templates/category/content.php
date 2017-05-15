@@ -6,14 +6,16 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
-<?php if (!empty($images)) { ?>
-<div class="row section images">
-  <div class="col-md-12"><?php echo $images; ?></div>
-</div>
-<?php } ?>
+<?php if (!empty($images) || !empty($category['description_1'])) { ?>
+<div class="row section">
+  <?php $class_description_1 = 'col-md-12'; ?>
+  <?php if(!empty($images)) { ?>
+  <?php $class_description_1 = 'col-md-10'; ?>
+  <div class="col-md-2 images"><?php echo $images; ?></div>
+  <?php } ?>
 <?php if (!empty($category['description_1'])) { ?>
-<div class="row section description-1">
-  <div class="col-md-10"><?php echo $this->filter($category['description_1']); ?></div>
+  <div class="description-1 <?php echo $class_description_1; ?>"><?php echo $this->filter($category['description_1']); ?></div>
+<?php } ?>
 </div>
 <?php } ?>
 <?php if (!empty($children)) { ?>
@@ -28,7 +30,9 @@
 </div>
 <?php } ?>
 <?php } else { ?>
+<?php if(!empty($navbar)) { ?>
 <?php echo $navbar; ?>
+<?php } ?>
 <?php echo $products; ?>
 <?php if (!empty($pager)) { ?>
 <div class="row">

@@ -7,7 +7,7 @@
  */
 ?>
 <body<?php echo $this->attributes(array('class' => $body_classes)); ?>>
-  <div class="container wrapper">
+  <div class="container-fluid wrapper">
     <div class="row">
       <nav class="navbar navbar-inverse navbar-static-top first">
         <div class="container-fluid">
@@ -109,13 +109,13 @@
             </form>
             <?php if ($this->store('data.phone.0')) { ?>
             <p class="nav navbar-text">
-            <i class="fa fa-phone"></i> <?php echo $this->e($this->store('data.phone.0')); ?></p>
+            <i class="fa fa-phone-square"></i> <?php echo $this->e($this->store('data.phone.0')); ?></p>
             <?php } ?>
           </div>
         </div>
       </nav>
-      <nav class="navbar navbar-static-top second">
-        <div class="container-fluid"><?php echo $this->menu(); ?></div>
+      <nav class="navbar navbar-inverse navbar-static-top second">
+        <?php echo $this->menu(); ?>
       </nav>
     </div>
     <?php if ($breadcrumb) { ?>
@@ -189,7 +189,7 @@
     </div>
   </div>
   <div class="footer">
-    <div class="container">
+    <div class="container-fluid">
       <div class="row">
         <div class="col-md-6">
           <p>
