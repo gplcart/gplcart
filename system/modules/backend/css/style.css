@@ -3,48 +3,6 @@ html {
     min-height: 100%;
 }
 
-code,
-kbd,
-pre,
-.list-group-item,
-.img-rounded,
-.img-thumbnail,
-.img-circle,
-.form-control,
-.btn,
-.btn-link,
-.dropdown-menu,
-.input-group-addon,
-.input-group-btn,
-.nav-tabs a,
-.nav-pills a,
-.navbar,
-.navbar-toggle,
-.icon-bar,
-.breadcrumb,
-.pagination,
-.pager *,
-.label,
-.jumbotron,
-.thumbnail,
-.alert,
-.progress,
-.panel,
-.well,
-.modal-content,
-.tooltip-inner,
-.popover,
-.popover-title,
-.carousel-indicators li {
-    border-radius:0 !important;
-}
-
-.content-header {
-    background-color: #fff;
-    padding-top: 20px;
-    padding-bottom:20px;
-}
-
 body {
     padding-top: 50px;
     margin-bottom: 80px;
@@ -53,6 +11,12 @@ body {
 
 body.js .hidden-js {
     display: none !important;
+}
+
+.content-header {
+    background-color: #fff;
+    padding-top: 20px;
+    padding-bottom:20px;
 }
 
 .navbar-fixed-top {
@@ -121,16 +85,9 @@ h1 {
     padding-top: 20px;
 }
 
-.growl-message {
-    z-index: 9999 !important;
-    opacity: 1;
-    background-color: #fff;
-    background-image: none !important;
-}
-
 #message .alert {
     border-color: #fff;
-    border-width: 10px;
+    border-width: 3px;
 }
 
 .no-border {
@@ -186,16 +143,6 @@ td .list-inline {
 
 .table > thead > tr > th {
     border: none;
-}
-
-.phpinfo table {
-    margin: 0 !important;
-}
-
-.phpinfo h2 {
-    margin: 0;
-    font-size: 18px;
-    font-weight: bold;
 }
 
 .modal.loading .progress {
