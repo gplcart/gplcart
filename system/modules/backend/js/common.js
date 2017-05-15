@@ -3,7 +3,7 @@
 
     "use strict";
 
-    var theme_settings = {image_container: '.image-container'};
+    var image_container = '.image-container';
 
     /**
      * Returns html for modal
@@ -62,6 +62,26 @@
     };
 
     /**
+     * Returns HTML of alert popup
+     * @param {String} message
+     * @param {String} id
+     * @param {String} type
+     * @returns {String}
+     */
+    var htmlAlert = function (message, id, type) {
+
+        var html = '';
+
+        html += '<div id="' + id + '" class="popup alert alert-' + type + ' alert-dismissible" role="alert">';
+        html += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
+        html += '<span aria-hidden="true">&times;</span></button>';
+        html += message;
+        html += '</div>';
+
+        return html;
+    };
+
+    /**
      * Displays a modal popup with a custom content
      * @param {String} content
      * @param {String} id
@@ -88,14 +108,36 @@
      */
     var setLoading = function (mode) {
 
-        var html;
-
         if (mode === false) {
             $('body').find('.loading').remove();
         } else {
-            html = htmlLoading();
-            $('body').append(html);
+            $('body').append(htmlLoading());
         }
+    };
+
+    /**
+     * Set alert message
+     * @param {String} message
+     * @param {String} id
+     * @param {String} type
+     * @returns {undefined}
+     */
+    var setAlert = function (message, id, type = 'info') {
+
+        $('body').append(htmlAlert(message, id, type));
+
+        var alert = $('#' + id + '.popup.alert');
+
+        alert.css({
+            'right': '15px',
+            'z-index': 99999,
+            'position': 'absolute',
+            'top': $(window).height() - 70
+        });
+
+        setTimeout(function () {
+            alert.remove();
+        }, 3000);
     };
 
     /**
@@ -103,10 +145,8 @@
      * @returns {undefined}
      */
     GplCart.onload.updateOrder = function () {
-        var conf;
         $('[name="order[status]"]').change(function () {
-            conf = confirm(GplCart.text('Do you want to change order status?'));
-            if (conf) {
+            if (confirm(GplCart.text('Do you want to change order status?'))) {
                 $(this).closest('form').find('[name="status"]:submit').click();
             }
         });
@@ -118,7 +158,7 @@
      */
     GplCart.onload.bulkAction = function () {
 
-        var conf, selected = [];
+        var selected = [];
 
         $('[data-action]').click(function () {
 
@@ -132,32 +172,29 @@
                 return false;
             }
 
-            conf = confirm($(this).data('action-confirm'));
-
-            if (!conf) {
-                return false;
+            if (confirm($(this).data('action-confirm'))) {
+                $.ajax({
+                    method: 'POST',
+                    url: GplCart.settings.urn,
+                    data: {
+                        selected: selected,
+                        token: GplCart.settings.token,
+                        action: $(this).data('action'),
+                        value: $(this).data('action-value')
+                    },
+                    success: function () {
+                        // Skip page numbers
+                        window.location = window.location.href.split("?")[0];
+                    },
+                    beforeSend: function () {
+                        setLoading(true);
+                    },
+                    complete: function () {
+                        setLoading(false);
+                    }
+                });
             }
 
-            $.ajax({
-                method: 'POST',
-                url: GplCart.settings.urn,
-                data: {
-                    selected: selected,
-                    token: GplCart.settings.token,
-                    action: $(this).data('action'),
-                    value: $(this).data('action-value')
-                },
-                success: function () {
-                    // Skip page numbers
-                    window.location = window.location.href.split("?")[0];
-                },
-                beforeSend: function () {
-                    setLoading(true);
-                },
-                complete: function () {
-                    setLoading(false);
-                }
-            });
             return false;
         });
     };
@@ -196,12 +233,11 @@
                 return $(e).val() !== "";
             }).serialize();
 
-            if (!query) {
-                return false;
+            if (query) {
+                url = GplCart.settings.urn.split("?")[0] + '?' + query;
+                window.location.replace(url);
             }
 
-            url = GplCart.settings.urn.split("?")[0] + '?' + query;
-            window.location.replace(url);
             return false;
         });
     };
@@ -235,7 +271,7 @@
             }
         };
 
-        $(theme_settings.image_container).sortable(settings);
+        $(image_container).sortable(settings);
     };
 
     /**
@@ -246,44 +282,42 @@
 
         var weight = {}, selector = $('table[data-sortable-weight="true"] tbody');
 
-        if (selector.length === 0) {
-            return;
-        }
+        if (selector.length) {
+            selector.sortable({
+                cursor: 'n-resize',
+                handle: '.handle',
+                stop: function () {
 
-        selector.sortable({
-            cursor: 'n-resize',
-            handle: '.handle',
-            stop: function () {
+                    selector.find('tr').each(function (i) {
+                        weight[$(this).attr('data-id')] = i;
+                    });
 
-                selector.find('tr').each(function (i) {
-                    weight[$(this).attr('data-id')] = i;
-                });
-
-                $.ajax({
-                    data: {
-                        action: 'weight',
-                        selected: weight,
-                        token: GplCart.settings.token
-                    },
-                    type: 'POST',
-                    url: GplCart.settings.urn,
-                    success: function (data) {
-                        if (typeof data === 'object' && data.success) {
-                            alert(data.success);
-                            $.each(weight, function (i, v) {
-                                $('tr[data-id=' + i + ']').find('td .weight').text(v);
-                            });
+                    $.ajax({
+                        data: {
+                            action: 'weight',
+                            selected: weight,
+                            token: GplCart.settings.token
+                        },
+                        type: 'POST',
+                        url: GplCart.settings.urn,
+                        success: function (data) {
+                            if (typeof data === 'object' && data.success) {
+                                setAlert(data.success, 'weight-updating-success');
+                                $.each(weight, function (i, v) {
+                                    $('tr[data-id=' + i + ']').find('td .weight').text(v);
+                                });
+                            }
+                        },
+                        beforeSend: function () {
+                            setLoading(true);
+                        },
+                        complete: function () {
+                            setLoading(false);
                         }
-                    },
-                    beforeSend: function () {
-                        setLoading(true);
-                    },
-                    complete: function () {
-                        setLoading(false);
-                    }
-                });
-            }
-        });
+                    });
+                }
+            });
+        }
     };
 
     /**
@@ -292,23 +326,21 @@
      */
     GplCart.onload.handleSortableTableWeigthInput = function () {
 
-        var message, selector = $('table[data-sortable-input-weight="true"] tbody');
+        var selector = $('table[data-sortable-input-weight="true"] tbody'),
+                text = GplCart.text('Changes will not be saved until the form is submitted');
 
-        if (selector.length === 0) {
-            return;
+        if (selector.length) {
+            selector.sortable({
+                handle: '.handle',
+                stop: function () {
+                    $('input[name$="[weight]"]').each(function (i) {
+                        $(this).val(i);
+                        $(this).closest('tr').find('td .weight').text(i);
+                    });
+                    setAlert(text, 'sort-weigth-input-warning', 'warning');
+                }
+            });
         }
-
-        selector.sortable({
-            handle: '.handle',
-            stop: function () {
-                $('input[name$="[weight]"]').each(function (i) {
-                    $(this).val(i);
-                    $(this).closest('tr').find('td .weight').text(i);
-                });
-                message = GplCart.text('Changes will not be saved until the form is submitted');
-                alert(message);
-            }
-        });
     };
 
     /**
@@ -533,7 +565,7 @@
         var src,
                 path,
                 html = '',
-                images = $(theme_settings.image_container).find('.thumb');
+                images = $(image_container).find('.thumb');
 
         if (images.length === 0) {
             return '';
@@ -574,7 +606,6 @@
     var htmlRelatedProducts = function (item) {
 
         var html = '';
-
         html += '<span class="related-product-item tag">';
         html += '<input type="hidden" name="product[related][]" value="' + item.value + '">';
         html += '<span class="btn btn-default">';
@@ -655,13 +686,12 @@
 
             html = htmlProductImageModal();
 
-            if (html.length === 0) {
-                return false;
+            if (html.length) {
+                setModal(html, 'select-image-modal');
+                modal = $('#select-image-modal').attr('data-active-row', $(this).closest('tr').index());
+                markSelectedCombinationImage(modal);
             }
 
-            setModal(html, 'select-image-modal');
-            modal = $('#select-image-modal').attr('data-active-row', $(this).closest('tr').index());
-            markSelectedCombinationImage(modal);
             return false;
         });
     };
@@ -703,37 +733,37 @@
     GplCart.onload.handleAutocompleteRelatedProducts = function () {
 
         var params, input = $('.related-product');
-        if (input.length === 0) {
-            return;
+
+        if (input.length) {
+            input.autocomplete({
+                minLength: 2,
+                source: function (request, response) {
+                    params = {
+                        status: 1,
+                        term: request.term,
+                        action: 'getProductsAjax',
+                        token: GplCart.settings.token,
+                        store_id: $('select[name$="[store_id]"] option:selected').val()
+                    };
+                    $.post(GplCart.settings.base + 'ajax', params, function (data) {
+                        response($.map(data, function (value, key) {
+                            return {
+                                url: value.url,
+                                value: value.product_id,
+                                label: value.title ? value.title + ' (' + value.product_id + ')' : '--'
+                            };
+                        }));
+                    });
+                },
+                select: function (event, ui) {
+                    $('#related-products').append(htmlRelatedProducts(ui.item));
+                    $('.related-product').val('');
+                    return false;
+                }
+            }).autocomplete("instance")._renderItem = function (ul, item) {
+                return $("<li>").append("<a>" + item.label + "</a>").appendTo(ul);
+            };
         }
-        input.autocomplete({
-            minLength: 2,
-            source: function (request, response) {
-                params = {
-                    status: 1,
-                    term: request.term,
-                    action: 'getProductsAjax',
-                    token: GplCart.settings.token,
-                    store_id: $('select[name$="[store_id]"] option:selected').val()
-                };
-                $.post(GplCart.settings.base + 'ajax', params, function (data) {
-                    response($.map(data, function (value, key) {
-                        return {
-                            url: value.url,
-                            value: value.product_id,
-                            label: value.title ? value.title + ' (' + value.product_id + ')' : '--'
-                        };
-                    }));
-                });
-            },
-            select: function (event, ui) {
-                $('#related-products').append(htmlRelatedProducts(ui.item));
-                $('.related-product').val('');
-                return false;
-            }
-        }).autocomplete("instance")._renderItem = function (ul, item) {
-            return $("<li>").append("<a>" + item.label + "</a>").appendTo(ul);
-        };
     };
 
     /**
@@ -789,34 +819,32 @@
 
         var params, input = $('[data-autocomplete-source="user"]');
 
-        if (input.length === 0) {
-            return;
+        if (input.length) {
+            input.autocomplete({
+                minLength: 2,
+                source: function (request, response) {
+                    params = {
+                        term: request.term,
+                        action: 'getUsersAjax',
+                        token: GplCart.settings.token
+                    };
+                    $.post(GplCart.settings.base + 'ajax', params, function (data) {
+                        response($.map(data, function (value, key) {
+                            return {
+                                value: value.email,
+                                label: value.email
+                            };
+                        }));
+                    });
+                },
+                select: function (event, ui) {
+                    input.val(ui.item.label);
+                    return false;
+                }
+            }).autocomplete("instance")._renderItem = function (ul, item) {
+                return $("<li>").append("<a>" + item.label + "</a>").appendTo(ul);
+            };
         }
-
-        input.autocomplete({
-            minLength: 2,
-            source: function (request, response) {
-                params = {
-                    term: request.term,
-                    action: 'getUsersAjax',
-                    token: GplCart.settings.token
-                };
-                $.post(GplCart.settings.base + 'ajax', params, function (data) {
-                    response($.map(data, function (value, key) {
-                        return {
-                            value: value.email,
-                            label: value.email
-                        };
-                    }));
-                });
-            },
-            select: function (event, ui) {
-                input.val(ui.item.label);
-                return false;
-            }
-        }).autocomplete("instance")._renderItem = function (ul, item) {
-            return $("<li>").append("<a>" + item.label + "</a>").appendTo(ul);
-        };
     };
 
     /**
@@ -829,41 +857,39 @@
                 input = $('[data-autocomplete-source="product"]'),
                 inputId = $('[data-autocomplete-target="product"]');
 
-        if (input.length === 0) {
-            return;
+        if (input.length) {
+            input.autocomplete({
+                minLength: 2,
+                source: function (request, response) {
+
+                    params = {
+                        term: request.term,
+                        action: 'getProductsAjax',
+                        token: GplCart.settings.token
+                    };
+
+                    $.post(GplCart.settings.base + 'ajax', params, function (data) {
+
+                        response($.map(data, function (value, key) {
+                            return {
+                                value: value.product_id,
+                                label: value.title ? value.title + ' (' + value.product_id + ')' : '--'
+                            };
+                        }));
+                    });
+                },
+                select: function (event, ui) {
+                    input.val(ui.item.label);
+                    inputId.val(ui.item.value);
+                    return false;
+                },
+                search: function () {
+                    inputId.val('');
+                }
+            }).autocomplete("instance")._renderItem = function (ul, item) {
+                return $("<li>").append("<a>" + item.label + "</a>").appendTo(ul);
+            };
         }
-
-        input.autocomplete({
-            minLength: 2,
-            source: function (request, response) {
-
-                params = {
-                    term: request.term,
-                    action: 'getProductsAjax',
-                    token: GplCart.settings.token
-                };
-
-                $.post(GplCart.settings.base + 'ajax', params, function (data) {
-
-                    response($.map(data, function (value, key) {
-                        return {
-                            value: value.product_id,
-                            label: value.title ? value.title + ' (' + value.product_id + ')' : '--'
-                        };
-                    }));
-                });
-            },
-            select: function (event, ui) {
-                input.val(ui.item.label);
-                inputId.val(ui.item.value);
-                return false;
-            },
-            search: function () {
-                inputId.val('');
-            }
-        }).autocomplete("instance")._renderItem = function (ul, item) {
-            return $("<li>").append("<a>" + item.label + "</a>").appendTo(ul);
-        };
     };
 
 })(window, document, GplCart, jQuery);
