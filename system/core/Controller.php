@@ -729,13 +729,14 @@ class Controller
         $this->hook->fire('template.render', $template, $data, $rendered, $this);
 
         if (isset($rendered)) {
-            return $rendered;
+            return trim($rendered);
         }
 
         $template .= '.php';
 
         if (is_file($template)) {
-            return $this->renderTemplate($template, $data);
+            $rendered = $this->renderTemplate($template, $data);
+            return trim($rendered);
         }
 
         return $this->text('Could not load template %path', array('%path' => $template));
@@ -824,7 +825,7 @@ class Controller
      * @param mixed $default
      * @return mixed
      */
-    public function getQuery($key, $default = null)
+    public function getQuery($key = null, $default = null)
     {
         return $this->request->get($key, $default);
     }
@@ -896,7 +897,7 @@ class Controller
 
         $this->path = $this->url->path();
         $this->base = $this->request->base();
-        $this->query = (array) $this->request->get();
+        $this->query = (array) $this->getQuery();
         $this->langcode = $this->route->getLangcode();
         $this->uri = $this->scheme . $this->host . $this->urn;
     }
