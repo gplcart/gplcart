@@ -581,7 +581,8 @@ class Controller extends BaseController
 
         $data = array(
             'items' => $items,
-            'title' => $item['collection_item']['collection_title']
+            'title' => $item['collection_item']['collection_title'],
+            'collection_id' => $item['collection_item']['collection_id']
         );
 
         return $this->render($item['collection_handler']['template']['list'], $data);
@@ -706,7 +707,7 @@ class Controller extends BaseController
 
         if (empty($data['images'])) {
             $data['thumb'] = $this->image->getThumb($data, $options);
-            return $data; // Processing single item, exit 
+            return $data; // Processing single item, exit
         }
 
         foreach ($data['images'] as &$image) {
@@ -752,6 +753,8 @@ class Controller extends BaseController
             $id = $data[$options['id_key']];
             $entity = preg_replace('/_id$/', '', $options['id_key']);
             $data['url'] = empty($data['alias']) ? $this->url("$entity/$id") : $this->url($data['alias']);
+            // URL with preserved query to retain view, sort etc
+            $data['url_query'] = empty($data['alias']) ? $this->url("$entity/$id", $this->query) : $this->url($data['alias'], $this->query);
         }
     }
 
