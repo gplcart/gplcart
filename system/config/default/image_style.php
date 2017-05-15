@@ -68,12 +68,12 @@ return array(
         )
     ),
     7 => array(
-        'name' => '1140X400',
+        'name' => '1400X500',
         'status' => 1,
         'actions' => array(
             'thumbnail' => array(
                 'weight' => 0,
-                'value' => array(1140, 380),
+                'value' => array(1400, 500),
             ),
         )
     )
