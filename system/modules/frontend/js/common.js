@@ -3,9 +3,7 @@
 
     "use strict";
 
-    var selected_option_values = [],
-            loaded_sliders = {},
-            theme_settings = {product_gallery_id: 'product-image-gallery'};
+    var selected_option_values = [];
 
     /**
      * Returns HTML of modal pop-up
@@ -16,9 +14,7 @@
      */
     var htmlModal = function (content, id, header) {
 
-        var html = '';
-
-        html = '<div class="modal fade" id="' + id + '">';
+        var html = '<div class="modal fade" id="' + id + '">';
         html += '<div class="modal-dialog">';
         html += '<div class="modal-content">';
         html += '<div class="modal-header clearfix">';
@@ -30,6 +26,27 @@
         }
 
         html += '</div><div class="modal-body">' + content + '</div></div></div>';
+        return html;
+    };
+
+    /**
+     * Returns HTML of gallery pop-up
+     * @param {String} src
+     * @param {String} id
+     * @returns {String}
+     */
+    var htmlGalleryModal = function (src, id) {
+
+        var html = '<div class="modal fade gallery" id="' + id + '">';
+        html += '<div class="modal-dialog">';
+        html += '<div class="modal-content">';
+        html += '<div class="modal-body text-center">';
+        html += '<img class="img-responsive" src="' + src + '">';
+        html += '</div>';
+        html += '</div>';
+        html += '</div>';
+        html += '</div>';
+
         return html;
     };
 
@@ -210,8 +227,8 @@
     };
 
     /**
-     * 
-     * @param {type} data
+     * Set a message that displays a selected option combination
+     * @param {Object} data
      * @returns {undefined}
      */
     var setSelectedMessage = function (data) {
@@ -281,31 +298,6 @@
      */
     GplCart.onload.fixRadio = function () {
         $('label.btn > input[type="radio"]').attr('autocomplete', 'off');
-    };
-
-    /**
-     * Sets up lightSlider
-     * @returns {undefined}
-     */
-    GplCart.onload.slider = function () {
-
-        if (!$.fn.lightSlider) {
-            return;
-        }
-
-        var slider_settings, gallery_settings;
-
-        $('[data-slider="true"]').each(function () {
-            slider_settings = $(this).data('slider-settings') || {};
-            if ($.fn.lightGallery) {
-                gallery_settings = $(this).data('gallery-settings') || {};
-                slider_settings.onSliderLoad = function (gallery) {
-                    gallery.lightGallery(gallery_settings);
-                };
-            }
-
-            loaded_sliders[$(this).attr('id')] = $(this).lightSlider(slider_settings);
-        });
     };
 
     /**
@@ -458,13 +450,15 @@
 
                     if (data.combination.file_id) {
 
-                        slider = $('#' + theme_settings.product_gallery_id);
-                        image = slider.find('img[data-file-id="' + data.combination.file_id + '"]');
-
-                        if (image.length && loaded_sliders[theme_settings.product_gallery_id]) {
-                            images = slider.find('img[data-file-id]');
-                            loaded_sliders[theme_settings.product_gallery_id].goToSlide(images.index(image));
-                        }
+                        /**
+                         slider = $('#' + theme_settings.product_gallery_id);
+                         image = slider.find('img[data-file-id="' + data.combination.file_id + '"]');
+                         
+                         if (image.length && loaded_sliders[theme_settings.product_gallery_id]) {
+                         images = slider.find('img[data-file-id]');
+                         loaded_sliders[theme_settings.product_gallery_id].goToSlide(images.index(image));
+                         }
+                         **/
                     }
 
                     $(':input[data-field-value-id]').closest('label').removeClass('related');
@@ -570,16 +564,6 @@
     };
 
     /**
-     * Redirects to a page when clicked on the suggested item
-     * @returns {undefined}
-     */
-    GplCart.onload.redirectSuggestions = function () {
-        $(document).on('click', '.ui-autocomplete .suggestion', function () {
-            window.location.href = $(this).attr('data-url');
-        });
-    };
-
-    /**
      * Handles checkout form submits
      * @returns {undefined}
      */
@@ -672,6 +656,55 @@
             }
 
             return false;
+        });
+    };
+
+    /**
+     * Set gallery image modal
+     * @param {String} src
+     * @param {String} id
+     * @returns {undefined}
+     */
+    var setGalleryModal = function (src, id) {
+
+        $('.modal').remove();
+        $('.modal-backdrop').remove();
+        $('body').removeClass('modal-open').removeAttr('style');
+
+        $('body').append(htmlGalleryModal(src, id));
+        $('#' + id).modal('show');
+    };
+
+    /**
+     * Handles simple image gallery
+     * @returns {undefined}
+     */
+    GplCart.onload.gallery = function () {
+        var el, id, target, a;
+
+        $('[data-gallery]').on('click', function () {
+            el = $(this);
+            id = el.data('gallery');
+            if (el.data('gallery-main-image')) {
+                target = el.attr('href');
+                setGalleryModal(target, id);
+            } else {
+                a = $('[data-gallery-main-image="true"][data-gallery="' + id + '"]');
+                a.find('img').attr('src', el.data('gallery-thumb'));
+                a.attr('href', el.attr('href'));
+            }
+
+            return false;
+        }).on('mouseover', function () {
+
+            el = $(this);
+            id = el.data('gallery');
+
+            if (!el.data('gallery-main-image')) {
+                a = $('[data-gallery-main-image="true"][data-gallery="' + id + '"]');
+                a.find('img').attr('src', el.data('gallery-thumb'));
+                a.attr('href', el.attr('href'));
+            }
         });
     };
 
