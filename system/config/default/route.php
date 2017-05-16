@@ -160,7 +160,7 @@ return array(
     ),
     'admin' => array(
         'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\backend\\Dashboard', 'dashboard')
+            'controller' => array('gplcart\\core\\controllers\\backend\\Dashboard', 'indexDashboard')
         )
     ),
     'admin/content' => array(
