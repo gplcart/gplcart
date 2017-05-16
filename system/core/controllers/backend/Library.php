@@ -26,7 +26,7 @@ class Library extends BackendController
     }
 
     /**
-     * Returns the zone overview page
+     * Displays the library overview page
      */
     public function listLibrary()
     {
@@ -36,7 +36,6 @@ class Library extends BackendController
         $this->setBreadcrumbListLibrary();
 
         $this->setData('libraries', $this->getListLibrary());
-
         $this->outputListLibrary();
     }
 
@@ -56,7 +55,7 @@ class Library extends BackendController
     }
 
     /**
-     * Clear library cache
+     * Clear cached libraries
      */
     protected function clearCacheLibrary()
     {
@@ -67,7 +66,7 @@ class Library extends BackendController
     }
 
     /**
-     * Sets titles on the libraries overview page
+     * Sets titles on the library overview page
      */
     protected function setTitleListLibrary()
     {
@@ -75,7 +74,7 @@ class Library extends BackendController
     }
 
     /**
-     * Sets breadcrumbs on the libraries overview page
+     * Sets breadcrumbs on the library overview page
      */
     protected function setBreadcrumbListLibrary()
     {
@@ -88,7 +87,7 @@ class Library extends BackendController
     }
 
     /**
-     * Renders the libraries overview page
+     * Renders the library overview page
      */
     protected function outputListLibrary()
     {

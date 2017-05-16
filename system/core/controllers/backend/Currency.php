@@ -31,8 +31,6 @@ class Currency extends BackendController
     protected $data_currency = array();
 
     /**
-     * Constructor
-     * Currency constructor.
      * @param CurrencyModel $currency
      */
     public function __construct(CurrencyModel $currency)
@@ -57,7 +55,7 @@ class Currency extends BackendController
     }
 
     /**
-     * Sets titles on the currency overview page
+     * Sets title on the currency overview page
      */
     protected function setTitleListCurrency()
     {
@@ -100,22 +98,21 @@ class Currency extends BackendController
         $this->setData('can_delete', $this->canDeleteCurrency());
         $this->setData('default_currency', $this->currency->getDefault());
 
-        $this->submitCurrency();
+        $this->submitEditCurrency();
         $this->outputEditCurrency();
     }
 
     /**
-     * Saves a currency
-     * @return null
+     * Handles a submitted currency data
      */
-    protected function submitCurrency()
+    protected function submitEditCurrency()
     {
         if ($this->isPosted('delete')) {
             $this->deleteCurrency();
             return null;
         }
 
-        if (!$this->isPosted('save') || !$this->validateCurrency()) {
+        if (!$this->isPosted('save') || !$this->validateEditCurrency()) {
             return null;
         }
 
@@ -130,16 +127,14 @@ class Currency extends BackendController
      * Validates a currency data
      * @return bool
      */
-    protected function validateCurrency()
+    protected function validateEditCurrency()
     {
         $this->setSubmitted('currency');
-
         $this->setSubmittedBool('status');
         $this->setSubmittedBool('default');
         $this->setSubmitted('update', $this->data_currency);
 
         $this->validateComponent('currency');
-
         return !$this->hasErrors();
     }
 
@@ -156,24 +151,17 @@ class Currency extends BackendController
     }
 
     /**
-     * Returns a currency
-     * or displays a 404 error on invalid code
+     * Set a currency data
      * @param string $code
-     * @return array
      */
     protected function setCurrency($code)
     {
-        if (empty($code)) {
-            return array();
+        if (!empty($code)) {
+            $this->data_currency = (array) $this->currency->get($code);
+            if (empty($this->data_currency)) {
+                $this->outputHttpStatus(404);
+            }
         }
-
-        $currency = $this->currency->get($code);
-
-        if (empty($currency)) {
-            $this->outputHttpStatus(404);
-        }
-
-        return $this->data_currency = (array) $currency;
     }
 
     /**

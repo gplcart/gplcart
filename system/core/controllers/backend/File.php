@@ -25,13 +25,30 @@ class File extends BackendController
     protected $file;
 
     /**
-     * The current file to be updated
+     * The current file
      * @var array
      */
     protected $data_file = array();
 
     /**
-     * Constructor
+     * An array of filter parameters
+     * @var array
+     */
+    protected $data_filter = array();
+
+    /**
+     * Pager limits
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
+     * A total number of items found for the filter conditions
+     * @var integer
+     */
+    protected $data_total;
+
+    /**
      * @param FileModel $file
      */
     public function __construct(FileModel $file)
@@ -42,30 +59,44 @@ class File extends BackendController
     }
 
     /**
-     * Displays the file admin overview page
+     * Displays the file overview page
      */
     public function listFile()
     {
         $this->downloadFile();
-        $this->actionFile();
+        $this->actionListFile();
 
         $this->setTitleListFile();
         $this->setBreadcrumbListFile();
 
-        $query = $this->getFilterQuery();
-        $allowed = array('title', 'mime_type', 'file_id', 'created', 'path');
-        $this->setFilter($allowed, $query);
+        $this->setFilterListFile();
+        $this->setTotalListFile();
+        $this->setPagerListFile();
 
-        $total = $this->getTotalFile($query);
-        $limit = $this->setPager($total, $query);
-        $files = $this->getListFile($limit, $query);
-
-        $this->setData('files', $files);
+        $this->setData('files', $this->getListFile());
         $this->outputListFile();
     }
 
     /**
-     * Downloads a file using a file id from the URL
+     * Set filter on the file overview page
+     */
+    protected function setFilterListFile()
+    {
+        $this->data_filter = $this->getFilterQuery();
+        $allowed = array('title', 'mime_type', 'file_id', 'created', 'path');
+        $this->setFilter($allowed, $this->data_filter);
+    }
+
+    /**
+     * Set pager on the file overview page
+     */
+    protected function setPagerListFile()
+    {
+        $this->data_limit = $this->setPager($this->data_total, $this->data_filter);
+    }
+
+    /**
+     * Downloads a file
      */
     protected function downloadFile()
     {
@@ -80,9 +111,8 @@ class File extends BackendController
 
     /**
      * Applies an action to the selected files
-     * @return null
      */
-    protected function actionFile()
+    protected function actionListFile()
     {
         $action = (string) $this->getPosted('action');
 
@@ -108,43 +138,47 @@ class File extends BackendController
     }
 
     /**
-     * Returns total number of files depending on the current conditions
-     * @param array $query
-     * @return int
+     * Set a total number of files depending on the filter conditions
      */
-    protected function getTotalFile(array $query)
+    protected function setTotalListFile()
     {
+        $query = $this->data_filter;
         $query['count'] = true;
-        return (int) $this->file->getList($query);
+        $this->data_total = (int) $this->file->getList($query);
     }
 
     /**
      * Returns an array of files
-     * @param array $limit
-     * @param array $query
      * @return array
      */
-    protected function getListFile(array $limit, array $query)
+    protected function getListFile()
     {
-        $query['limit'] = $limit;
+        $query = $this->data_filter;
+        $query['limit'] = $this->data_limit;
         $files = (array) $this->file->getList($query);
+        return $this->prepareListFile($files);
+    }
 
+    /**
+     * Prepare an array of files
+     * @param array $files
+     * @return array
+     */
+    protected function prepareListFile(array $files)
+    {
         foreach ($files as &$file) {
-
             // Prevent php errors for invalid/empty paths
             $path = strval(str_replace("\0", "", $file['path']));
-
             $file['url'] = '';
             if ($path && file_exists(GC_FILE_DIR . '/' . $path)) {
                 $file['url'] = $this->file->url($file['path']);
             }
         }
-
         return $files;
     }
 
     /**
-     * Sets titles on the files overview page
+     * Sets title on the files overview page
      */
     protected function setTitleListFile()
     {
@@ -165,7 +199,7 @@ class File extends BackendController
     }
 
     /**
-     * Renders the files overview page
+     * Renders the file overview page
      */
     protected function outputListFile()
     {
@@ -190,12 +224,12 @@ class File extends BackendController
         $this->setData('can_delete', $this->canDeleteFile());
         $this->setData('extensions', $this->file->supportedExtensions(true));
 
-        $this->submitFile();
+        $this->submitEditFile();
         $this->outputEditFile();
     }
 
     /**
-     * Controls access to edit the file
+     * Controls access to the edit file page
      */
     protected function controlAccessEditFile()
     {
@@ -216,37 +250,34 @@ class File extends BackendController
     }
 
     /**
-     * Returns an array of file data
+     * Sets a file data
      * @param integer $file_id
-     * @return array
      */
     protected function setFile($file_id)
     {
-        if (!is_numeric($file_id)) {
-            return array();
+        if (is_numeric($file_id)) {
+            $file = $this->file->get($file_id);
+
+            if (empty($file)) {
+                $this->outputHttpStatus(404);
+            }
+
+            $this->data_file = $file;
         }
-
-        $file = $this->file->get($file_id);
-
-        if (empty($file)) {
-            $this->outputHttpStatus(404);
-        }
-
-        return $this->data_file = $file;
     }
 
     /**
      * Saves an array of submitted values
      * @return null
      */
-    protected function submitFile()
+    protected function submitEditFile()
     {
         if ($this->isPosted('delete') && isset($this->data_file['file_id'])) {
             $this->deleteFile();
             return null;
         }
 
-        if (!$this->isPosted('save') || !$this->validateFile()) {
+        if (!$this->isPosted('save') || !$this->validateEditFile()) {
             return null;
         }
 
@@ -258,7 +289,7 @@ class File extends BackendController
     }
 
     /**
-     * Completely deletes a file from the database an disk
+     * Deletes a file from the database an disk
      */
     protected function deleteFile()
     {
@@ -277,16 +308,17 @@ class File extends BackendController
     /**
      * Validates a submitted data
      */
-    protected function validateFile()
+    protected function validateEditFile()
     {
         $this->setSubmitted('file');
         $this->setSubmitted('update', $this->data_file);
+
         $this->validateComponent('file');
         return !$this->hasErrors();
     }
 
     /**
-     * Updates a file with submitted values
+     * Updates a file
      */
     protected function updateFile()
     {
@@ -305,7 +337,7 @@ class File extends BackendController
     }
 
     /**
-     * Adds a new file using an array of submitted values
+     * Adds a new file
      */
     protected function addFile()
     {
@@ -358,7 +390,7 @@ class File extends BackendController
     }
 
     /**
-     * Renders the edit file page
+     * Render and output the edit file page
      */
     protected function outputEditFile()
     {

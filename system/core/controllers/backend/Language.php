@@ -46,7 +46,7 @@ class Language extends BackendController
         $this->setData('can_delete', $this->canDeleteLanguage());
         $this->setData('default_language', $this->language->getDefault());
 
-        $this->submitLanguage();
+        $this->submitEditLanguage();
         $this->outputEditLanguage();
     }
 
@@ -62,28 +62,21 @@ class Language extends BackendController
     /**
      * Returns a language
      * @param string $code
-     * @return array
      */
     protected function setLanguage($code)
     {
-        if (empty($code)) {
-            return array();
+        if (!empty($code)) {
+            $this->data_language = $this->language->get($code);
+            if (empty($this->data_language)) {
+                $this->outputHttpStatus(404);
+            }
         }
-
-        $language = $this->language->get($code);
-
-        if (empty($language)) {
-            $this->outputHttpStatus(404);
-        }
-
-        return $this->data_language = $language;
     }
 
     /**
-     * Saves a submitted language
-     * @return null
+     * Handles a submitted data
      */
-    protected function submitLanguage()
+    protected function submitEditLanguage()
     {
         if ($this->isPosted('delete')) {
             $this->deleteLanguage();
@@ -103,7 +96,6 @@ class Language extends BackendController
 
     /**
      * Deletes a language
-     * @return null
      */
     protected function deleteLanguage()
     {
@@ -127,13 +119,11 @@ class Language extends BackendController
     protected function validateLanguage()
     {
         $this->setSubmitted('language');
-
         $this->setSubmittedBool('status');
         $this->setSubmittedBool('default');
         $this->setSubmitted('update', $this->data_language);
 
         $this->validateComponent('language');
-
         return !$this->hasErrors();
     }
 
@@ -223,20 +213,16 @@ class Language extends BackendController
 
     /**
      * Removes cached translations for the given language
-     * @return null|void
      */
     protected function refreshLanguage()
     {
         $code = (string) $this->getQuery('refresh');
 
-        if (empty($code)) {
-            return null;
+        if (!empty($code)) {
+            $this->controlAccess('language_edit');
+            $this->language->refresh($code);
+            $this->redirect('', $this->text('Cache has been deleted'), 'success');
         }
-
-        $this->controlAccess('language_edit');
-
-        $this->language->refresh($code);
-        $this->redirect('', $this->text('Cache has been deleted'), 'success');
     }
 
     /**
@@ -261,7 +247,7 @@ class Language extends BackendController
     }
 
     /**
-     * Renders the language overview page templates
+     * Render and output the language overview page
      */
     protected function outputListLanguage()
     {

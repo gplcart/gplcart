@@ -32,13 +32,12 @@ class CollectionItem extends BackendController
     protected $collection_item;
 
     /**
-     * The current collection
+     * The current collection data
      * @var array
      */
     protected $data_collection = array();
 
     /**
-     * Constructor
      * @param CollectionModel $collection
      * @param CollectionItemModel $collection_item
      */
@@ -52,14 +51,13 @@ class CollectionItem extends BackendController
     }
 
     /**
-     * Displays the collection items overview page
+     * Displays the collection item overview page
      * @param integer $collection_id
      */
     public function listCollectionItem($collection_id)
     {
         $this->setCollectionCollectionItem($collection_id);
-
-        $this->actionCollectionItem();
+        $this->actionListCollectionItem();
 
         $this->setTitleListCollectionItem();
         $this->setBreadcrumbListCollectionItem();
@@ -71,30 +69,23 @@ class CollectionItem extends BackendController
     }
 
     /**
-     * Returns an collection
+     * Sets a collection data
      * @param integer $collection_id
-     * @return array
      */
     protected function setCollectionCollectionItem($collection_id)
     {
-        if (!is_numeric($collection_id)) {
-            return array();
+        if (is_numeric($collection_id)) {
+            $this->data_collection = $this->collection->get($collection_id);
+            if (empty($this->data_collection)) {
+                $this->outputHttpStatus(404);
+            }
         }
-
-        $collection = $this->collection->get($collection_id);
-
-        if (empty($collection)) {
-            $this->outputHttpStatus(404);
-        }
-
-        return $this->data_collection = $collection;
     }
 
     /**
      * Applies an action to the selected collections
-     * @return null
      */
-    protected function actionCollectionItem()
+    protected function actionListCollectionItem()
     {
         $action = (string) $this->getPosted('action');
 
@@ -164,7 +155,7 @@ class CollectionItem extends BackendController
     }
 
     /**
-     * Sets title on the collection items page
+     * Sets title on the collection item overview page
      */
     protected function setTitleListCollectionItem()
     {
@@ -174,7 +165,7 @@ class CollectionItem extends BackendController
     }
 
     /**
-     * Sets breadcrumbs on the collection items page
+     * Sets breadcrumbs on the collection item overview page
      */
     protected function setBreadcrumbListCollectionItem()
     {
@@ -194,7 +185,7 @@ class CollectionItem extends BackendController
     }
 
     /**
-     * Renders the collection items page
+     * Render an output the collection item overview page
      */
     protected function outputListCollectionItem()
     {
@@ -202,7 +193,7 @@ class CollectionItem extends BackendController
     }
 
     /**
-     * Displays add collection item form
+     * Displays the edit collection item form
      * @param integer $collection_id
      */
     public function editCollectionItem($collection_id)
@@ -216,7 +207,7 @@ class CollectionItem extends BackendController
         $this->setData('handler', $this->getHandlerCollectionItem());
         $this->setData('weight', $this->collection_item->getNextWeight($collection_id));
 
-        $this->submitCollectionItem();
+        $this->submitEditCollectionItem();
 
         $this->setJsEditCollectionItem();
         $this->outputEditCollectionItem();
@@ -225,9 +216,9 @@ class CollectionItem extends BackendController
     /**
      * Saves a submitted collection item
      */
-    protected function submitCollectionItem()
+    protected function submitEditCollectionItem()
     {
-        if ($this->isPosted('save') && $this->validateCollectionItem()) {
+        if ($this->isPosted('save') && $this->validateEditCollectionItem()) {
             $this->addCollectionItem();
         }
     }
@@ -252,20 +243,18 @@ class CollectionItem extends BackendController
      * Validates a submitted collection item
      * @return bool
      */
-    protected function validateCollectionItem()
+    protected function validateEditCollectionItem()
     {
         $this->setSubmitted('collection_item');
-
         $this->setSubmittedBool('status');
         $this->setSubmitted('collection_id', $this->data_collection['collection_id']);
 
         $this->validateComponent('collection_item');
-
         return !$this->hasErrors();
     }
 
     /**
-     * Adds a new item to the collection
+     * Adds a new collection item
      */
     protected function addCollectionItem()
     {
@@ -292,7 +281,7 @@ class CollectionItem extends BackendController
     }
 
     /**
-     * Sets title on the collection items page
+     * Sets title on the edit collection item page
      */
     protected function setTitleEditCollectionItem()
     {
@@ -302,7 +291,7 @@ class CollectionItem extends BackendController
     }
 
     /**
-     * Sets breadcrumbs on the collection items page
+     * Sets breadcrumbs on the edit collection item page
      */
     protected function setBreadcrumbEditCollectionItem()
     {
@@ -327,7 +316,7 @@ class CollectionItem extends BackendController
     }
 
     /**
-     * Renders the collection items page
+     * Render and output the edit collection item page
      */
     protected function outputEditCollectionItem()
     {

@@ -31,7 +31,7 @@ class Backup extends BackendController
     protected $data_filter = array();
 
     /**
-     * Total number of items found
+     * A total number of items found for the filter parameters
      * @var integer
      */
     protected $data_total;
@@ -75,31 +75,25 @@ class Backup extends BackendController
 
     /**
      * Set pager limits
-     * @return array
      */
     protected function setPagerListBackup()
     {
-        return $this->data_limit = $this->setPager($this->data_total, $this->data_filter);
+        $this->data_limit = $this->setPager($this->data_total, $this->data_filter);
     }
 
     /**
      * Sets filter parameters
-     * @return array
      */
     protected function setFilterListBackup()
     {
         $this->data_filter = $this->getFilterQuery();
-
         $allowed = array('created', 'name', 'user_id', 'type',
             'version', 'module_id', 'backup_id');
-
         $this->setFilter($allowed, $this->data_filter);
-        return $this->data_filter;
     }
 
     /**
      * Downloads a backup
-     * @return null
      */
     protected function downloadListBackup()
     {
@@ -119,7 +113,6 @@ class Backup extends BackendController
 
     /**
      * Applies an action to the selected backups
-     * @return null
      */
     protected function actionListBackup()
     {
@@ -168,7 +161,7 @@ class Backup extends BackendController
     }
 
     /**
-     * Renders templates of the backup overview page
+     * Render and output the backup overview page
      */
     protected function outputListBackup()
     {
@@ -187,14 +180,13 @@ class Backup extends BackendController
     }
 
     /**
-     * Returns a total number of backups depending on the filter conditions
-     * @return integer
+     * Sets a total number of backups depending on the filter conditions
      */
     protected function setTotalListBackup()
     {
         $query = $this->data_filter;
         $query['count'] = true;
-        return $this->data_total = (int) $this->backup->getList($query);
+        $this->data_total = (int) $this->backup->getList($query);
     }
 
     /**

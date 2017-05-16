@@ -57,7 +57,24 @@ class FieldValue extends BackendController
     protected $data_field_value = array();
 
     /**
-     * Constructor
+     * An array of filter data
+     * @var array
+     */
+    protected $data_filter = array();
+
+    /**
+     * A total number of items found for the filter conditions
+     * @var integer
+     */
+    protected $data_total;
+
+    /**
+     * Pager limits
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * @param FieldModel $field
      * @param FieldValueModel $field_value
      * @param FileModel $file
@@ -73,36 +90,48 @@ class FieldValue extends BackendController
     }
 
     /**
-     * Displays the field values overview page
+     * Displays the field value overview page
      * @param integer $field_id
      */
     public function listFieldValue($field_id)
     {
         $this->setFieldFieldValue($field_id);
-
-        $this->actionFieldValue();
+        $this->actionListFieldValue();
 
         $this->setTitleListFieldValue();
         $this->setBreadcrumbListFieldValue();
 
-        $query = $this->getFilterQuery();
-
-        $allowed = array('title', 'color', 'weight', 'image', 'field_value_id');
-        $this->setFilter($allowed, $query);
-
-        $total = $this->getTotalFieldValue($field_id, $query);
-        $limit = $this->setPager($total, $query);
+        $this->setFilterListFieldValue();
+        $this->setTotalListFieldValue();
+        $this->setPagerListFieldValue();
 
         $this->setData('field', $this->data_field);
-        $this->setData('values', $this->getListFieldValue($limit, $field_id, $query));
+        $this->setData('values', $this->getListFieldValue());
 
         $this->outputListFieldValue();
     }
 
     /**
-     * Returns a field
+     * Set pager on the field value overview page
+     */
+    protected function setPagerListFieldValue()
+    {
+        $this->data_limit = $this->setPager($this->data_total, $this->data_filter);
+    }
+
+    /**
+     * Set filter on the field value overview page
+     */
+    protected function setFilterListFieldValue()
+    {
+        $this->data_filter = $this->getFilterQuery();
+        $allowed = array('title', 'color', 'weight', 'image', 'field_value_id');
+        $this->setFilter($allowed, $this->data_filter);
+    }
+
+    /**
+     * Set a field data
      * @param integer $field_id
-     * @return array
      */
     protected function setFieldFieldValue($field_id)
     {
@@ -112,13 +141,13 @@ class FieldValue extends BackendController
             $this->outputHttpStatus(404);
         }
 
-        return $this->data_field = $field;
+        $this->data_field = $field;
     }
 
     /**
      * Applies an action to the selected field values
      */
-    protected function actionFieldValue()
+    protected function actionListFieldValue()
     {
         $action = (string) $this->getPosted('action');
 
@@ -164,45 +193,49 @@ class FieldValue extends BackendController
     }
 
     /**
-     * Returns total number of values for a given field and conditions
-     * @param integer $field_id
-     * @param array $query
-     * @return integer
+     * Sets total number of values for a given field and conditions
      */
-    protected function getTotalFieldValue($field_id, array $query)
+    protected function setTotalListFieldValue()
     {
-        $options = array('count' => true, 'field_id' => $field_id);
-        $options += $query;
+        $options = array(
+            'count' => true,
+            'field_id' => $this->data_field['field_id']) + $this->data_filter;
 
-        return (int) $this->field_value->getList($options);
+        $this->data_total = (int) $this->field_value->getList($options);
     }
 
     /**
      * Returns an array of field values for a given field
-     * @param array $limit
-     * @param integer $field_id
-     * @param array $query
      * @return array
      */
-    protected function getListFieldValue(array $limit, $field_id, array $query)
+    protected function getListFieldValue()
     {
-        $options = array('limit' => $limit, 'field_id' => $field_id);
-        $options += $query;
+        $options = array(
+            'limit' => $this->data_limit,
+            'field_id' => $this->data_field['field_id']) + $this->data_filter;
 
         $values = (array) $this->field_value->getList($options);
-        $imagestyle = $this->config('image_style_admin', 2);
+        return $this->prepareFieldValues($values);
+    }
 
+    /**
+     * Prepare an array of field values
+     * @param array $values
+     * @return array
+     */
+    protected function prepareFieldValues(array $values)
+    {
+        $imagestyle = $this->config('image_style_admin', 2);
         foreach ($values as &$value) {
             if (!empty($value['path'])) {
                 $value['thumb'] = $this->image->url($imagestyle, $value['path']);
             }
         }
-
         return $values;
     }
 
     /**
-     * Sets titles on the field values overview page
+     * Sets title on the field values overview page
      */
     protected function setTitleListFieldValue()
     {
@@ -256,17 +289,16 @@ class FieldValue extends BackendController
         $this->setData('field_value', $this->data_field_value);
         $this->setData('widget_types', $this->field->getWidgetTypes());
 
-        $this->submitFieldValue();
+        $this->submitEditFieldValue();
         $this->setDataEditFieldValue();
 
         $this->outputEditFieldValue();
     }
 
     /**
-     * Saves a field value
-     * @return null
+     * Handles a submitted field value data
      */
-    protected function submitFieldValue()
+    protected function submitEditFieldValue()
     {
         if ($this->isPosted('delete')) {
             $this->deleteFieldValue();
@@ -281,7 +313,7 @@ class FieldValue extends BackendController
             $this->deleteImageFieldValue();
         }
 
-        if (!$this->validateFieldValue()) {
+        if (!$this->validateEditFieldValue()) {
             return null;
         }
 
@@ -293,39 +325,32 @@ class FieldValue extends BackendController
     }
 
     /**
-     * Performs validation checks on the given field value
+     * Validates a submitted field value
      * @return bool
      */
-    protected function validateFieldValue()
+    protected function validateEditFieldValue()
     {
         $this->setSubmitted('field_value');
-
         $this->setSubmitted('update', $this->data_field_value);
         $this->setSubmitted('field_id', $this->data_field['field_id']);
 
         $this->validateComponent('field_value');
-
         return !$this->hasErrors();
     }
 
     /**
-     * Returns a field value
+     * Set a field value data
      * @param integer $field_value_id
-     * @return array
      */
     protected function setFieldValue($field_value_id)
     {
-        if (!is_numeric($field_value_id)) {
-            return array();
+        if (is_numeric($field_value_id)) {
+            $field_value = $this->field_value->get($field_value_id);
+            if (empty($field_value)) {
+                $this->outputHttpStatus(404);
+            }
+            $this->data_field_value = $field_value;
         }
-
-        $field_value = $this->field_value->get($field_value_id);
-
-        if (empty($field_value)) {
-            $this->outputHttpStatus(404);
-        }
-
-        return $this->data_field_value = $field_value;
     }
 
     /**
@@ -348,7 +373,7 @@ class FieldValue extends BackendController
     }
 
     /**
-     * Deletes a saved field value image
+     * Deletes a field value image
      */
     protected function deleteImageFieldValue()
     {
@@ -362,7 +387,7 @@ class FieldValue extends BackendController
     }
 
     /**
-     * Updates a field value with submitted data
+     * Updates a field value
      */
     protected function updateFieldValue()
     {
@@ -377,7 +402,7 @@ class FieldValue extends BackendController
     }
 
     /**
-     * Adds a new field value using a submitted data
+     * Adds a new field value
      */
     protected function addFieldValue()
     {
@@ -391,7 +416,7 @@ class FieldValue extends BackendController
     }
 
     /**
-     * Modifies the field values array
+     * Set template data on the edit field value page
      */
     protected function setDataEditFieldValue()
     {
@@ -446,7 +471,7 @@ class FieldValue extends BackendController
     }
 
     /**
-     * Renders the edit field value page
+     * Render and output the edit field value page
      */
     protected function outputEditFieldValue()
     {

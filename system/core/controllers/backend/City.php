@@ -46,25 +46,42 @@ class City extends BackendController
     protected $zone;
 
     /**
-     * The current country state
+     * An array of country state data
      * @var array
      */
     protected $data_state = array();
 
     /**
-     * The current city
+     * An array of city data
      * @var array
      */
     protected $data_city = array();
 
     /**
-     * The current country
+     * An array of country data
      * @var array
      */
     protected $data_country = array();
 
     /**
-     * Constructor
+     * Pager limits
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
+     * An array of filter parameters
+     * @var array
+     */
+    protected $data_filter = array();
+
+    /**
+     * A total number of results found for the current filter conditions
+     * @var integer
+     */
+    protected $data_total;
+
+    /**
      * @param CountryModel $country
      * @param StateModel $state
      * @param CityModel $city
@@ -91,62 +108,70 @@ class City extends BackendController
         $this->setStateCity($state_id);
         $this->setCountryCity($country_code);
 
-        $this->actionCity();
+        $this->actionListCity();
 
         $this->setTitleListCity();
         $this->setBreadcrumbListCity();
 
-        $query = $this->getFilterQuery();
-        $allowed = array('city_id', 'name', 'status');
-        $this->setFilter($allowed, $query);
-
-        $total = $this->getTotalCity($state_id, $query);
-        $limit = $this->setPager($total, $query);
+        $this->setFilterListCity();
+        $this->setTotalListCity();
+        $this->setPagerListCity();
 
         $this->setData('state', $this->data_state);
         $this->setData('country', $this->data_country);
-        $this->setData('cities', $this->getListCity($limit, $query, $state_id));
+        $this->setData('cities', $this->getListCity());
 
         $this->outputListCity();
     }
 
     /**
-     * Returns an array of state data
+     * Set pager on the city overview page
+     */
+    protected function setPagerListCity()
+    {
+        $this->data_limit = $this->setPager($this->data_total, $this->data_filter);
+    }
+
+    /**
+     * Set filter on the city overview page
+     */
+    protected function setFilterListCity()
+    {
+        $this->data_filter = $this->getFilterQuery();
+        $allowed = array('city_id', 'name', 'status');
+        $this->setFilter($allowed, $this->data_filter);
+    }
+
+    /**
+     * Sets an array of state data
      * @param integer $state_id
-     * @return array
      */
     protected function setStateCity($state_id)
     {
-        $state = $this->state->get($state_id);
+        $this->data_state = $this->state->get($state_id);
 
-        if (empty($state)) {
+        if (empty($this->data_state)) {
             $this->outputHttpStatus(404);
         }
-
-        return $this->data_state = $state;
     }
 
     /**
      * Returns an array of country data
      * @param string $country_code
-     * @return array
      */
     protected function setCountryCity($country_code)
     {
-        $country = $this->country->get($country_code);
+        $this->data_country = $this->country->get($country_code);
 
-        if (empty($country)) {
+        if (empty($this->data_country)) {
             $this->outputHttpStatus(404);
         }
-
-        return $this->data_country = $country;
     }
 
     /**
      * Applies an action to the selected cities
-     * @return null
      */
-    protected function actionCity()
+    protected function actionListCity()
     {
         $action = (string) $this->getPosted('action');
 
@@ -181,34 +206,28 @@ class City extends BackendController
     }
 
     /**
-     * Returns total number of cities depending on various conditions
-     * @param integer $state_id
-     * @param array $query
-     * @return integer
+     * Sets a total number of cities found for the filter conditions
      */
-    protected function getTotalCity($state_id, array $query)
+    protected function setTotalListCity()
     {
         $options = array(
-            'count' => true, 'state_id' => $state_id);
+            'count' => true, 'state_id' => $this->data_state['state_id']);
 
-        $options += $query;
-        return (int) $this->city->getList($options);
+        $options += $this->data_filter;
+        $this->data_total = (int) $this->city->getList($options);
     }
 
     /**
-     * Returns an array of cities
-     * @param array $limit
-     * @param array $query
-     * @param integer $state_id
+     * Returns an array of cities found for the filter conditions
      * @return array
      */
-    protected function getListCity(array $limit, array $query, $state_id)
+    protected function getListCity()
     {
         $options = array(
-            'limit' => $limit, 'state_id' => $state_id);
+            'limit' => $this->data_limit, 'state_id' => $this->data_state['state_id']);
 
-        $options += $query;
-        return $this->city->getList($options);
+        $options += $this->data_filter;
+        return (array) $this->city->getList($options);
     }
 
     /**
@@ -275,7 +294,7 @@ class City extends BackendController
         $this->setData('zones', $this->getZonesCity());
         $this->setData('can_delete', $this->canDeleteCity());
 
-        $this->submitCity();
+        $this->submitEditCity();
         $this->outputEditCity();
     }
 
@@ -300,37 +319,30 @@ class City extends BackendController
     }
 
     /**
-     * Returns an array of city data
+     * Sets an array of city data
      * @param integer $city_id
-     * @return array
      */
     protected function setCity($city_id)
     {
-        if (!is_numeric($city_id)) {
-            return array();
+        if (is_numeric($city_id)) {
+            $this->data_city = $this->city->get($city_id);
+            if (empty($this->data_city)) {
+                $this->outputHttpStatus(404);
+            }
         }
-
-        $city = $this->city->get($city_id);
-
-        if (empty($city)) {
-            $this->outputHttpStatus(404);
-        }
-
-        return $this->data_city = $city;
     }
 
     /**
-     * Saves an array of submitted city
-     * @return null
+     * Handles a submitted city
      */
-    protected function submitCity()
+    protected function submitEditCity()
     {
         if ($this->isPosted('delete')) {
             $this->deleteCity();
             return null;
         }
 
-        if (!$this->isPosted('save') || !$this->validateCity()) {
+        if (!$this->isPosted('save') || !$this->validateEditCity()) {
             return null;
         }
 
@@ -345,7 +357,7 @@ class City extends BackendController
      * Validates an array of submitted city data
      * @return bool
      */
-    protected function validateCity()
+    protected function validateEditCity()
     {
         $this->setSubmitted('city');
 
@@ -355,7 +367,6 @@ class City extends BackendController
         $this->setSubmitted('state_id', $this->data_state['state_id']);
 
         $this->validateComponent('city');
-
         return !$this->hasErrors();
     }
 
@@ -408,7 +419,7 @@ class City extends BackendController
     }
 
     /**
-     * Sets titles on the city edit page
+     * Sets page title on the city edit page
      */
     protected function setTitleEditCity()
     {
@@ -453,7 +464,7 @@ class City extends BackendController
     }
 
     /**
-     * Renders the city edit page
+     * Render and output the city edit page
      */
     protected function outputEditCity()
     {

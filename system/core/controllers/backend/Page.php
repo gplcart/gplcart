@@ -45,7 +45,24 @@ class Page extends BackendController
     protected $data_page = array();
 
     /**
-     * Constructor
+     * An array of filter parameters
+     * @var array
+     */
+    protected $data_filter = array();
+
+    /**
+     * Pager limits
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
+     * A total number of items found for the filter conditions
+     * @var integer
+     */
+    protected $data_total;
+
+    /**
      * @param PageModel $page
      * @param CategoryModel $category
      * @param AliasModel $alias
@@ -61,7 +78,7 @@ class Page extends BackendController
     }
 
     /**
-     * Displays the page overview page
+     * Displays the page overview
      */
     public function listPage()
     {
@@ -70,20 +87,33 @@ class Page extends BackendController
         $this->setTitleListPage();
         $this->setBreadcrumbListPage();
 
-        $query = $this->getFilterQuery();
-
-        $filters = array('title', 'store_id', 'page_id',
-            'status', 'created', 'email');
-
-        $this->setFilter($filters, $query);
-
-        $total = $this->getTotalPage($query);
-        $limit = $this->setPager($total, $query);
+        $this->setFilterListPage();
+        $this->setTotalListPage();
+        $this->setPagerListPage();
 
         $this->setData('stores', $this->store->getNames());
-        $this->setData('pages', $this->getListPage($limit, $query));
+        $this->setData('pages', $this->getListPage());
 
         $this->outputListPage();
+    }
+
+    /**
+     * Sets pager on the page overview
+     */
+    protected function setPagerListPage()
+    {
+        $this->data_limit = $this->setPager($this->data_total, $this->data_filter);
+    }
+
+    /**
+     * Set filter on the page overview
+     */
+    protected function setFilterListPage()
+    {
+        $this->data_filter = $this->getFilterQuery();
+        $allowed = array('title', 'store_id', 'page_id',
+            'status', 'created', 'email');
+        $this->setFilter($allowed, $this->data_filter);
     }
 
     /**
@@ -138,25 +168,23 @@ class Page extends BackendController
     }
 
     /**
-     * Returns number of total pages for pager
-     * @param array $query
-     * @return integer
+     * Sets a total number of pages for the current filter parameters
      */
-    protected function getTotalPage(array $query)
+    protected function setTotalListPage()
     {
+        $query = $this->data_filter;
         $query['count'] = true;
-        return (int) $this->page->getList($query);
+        $this->data_total = (int) $this->page->getList($query);
     }
 
     /**
      * Returns an array of pages
-     * @param array $limit
-     * @param array $query
      * @return array
      */
-    protected function getListPage(array $limit, array $query)
+    protected function getListPage()
     {
-        $query['limit'] = $limit;
+        $query = $this->data_filter;
+        $query['limit'] = $this->data_limit;
         $pages = (array) $this->page->getList($query);
 
         $this->attachEntityUrl($pages, 'page');
@@ -185,7 +213,7 @@ class Page extends BackendController
     }
 
     /**
-     * Renders templates for the pages overview page
+     * Render and output the page overview
      */
     protected function outputListPage()
     {
@@ -199,7 +227,6 @@ class Page extends BackendController
     public function editPage($page_id = null)
     {
         $this->setPage($page_id);
-
         $this->actionPage();
 
         $this->setTitleEditPage();
@@ -208,32 +235,27 @@ class Page extends BackendController
         $this->setData('page', $this->data_page);
         $this->setData('stores', $this->store->getNames());
 
-        $this->submitPage();
+        $this->submitEditPage();
 
-        $this->setDataImagesPage();
-        $this->setDataCategoriesPage();
+        $this->setDataImagesEditPage();
+        $this->setDataCategoriesEditPage();
 
         $this->outputEditPage();
     }
 
     /**
-     * Returns a page
+     * Set a page data
      * @param integer $page_id
-     * @return array
      */
     protected function setPage($page_id)
     {
-        if (!is_numeric($page_id)) {
-            return array();
+        if (is_numeric($page_id)) {
+            $this->data_page = $this->page->get($page_id);
+            if (empty($this->data_page)) {
+                $this->outputHttpStatus(404);
+            }
+            $this->data_page = $this->preparePage($this->data_page);
         }
-
-        $page = $this->page->get($page_id);
-
-        if (empty($page)) {
-            $this->outputHttpStatus(404);
-        }
-
-        return $this->data_page = $this->preparePage($page);
     }
 
     /**
@@ -250,17 +272,16 @@ class Page extends BackendController
     }
 
     /**
-     * Saves a submitted page
-     * @return null
+     * Handles a submitted page
      */
-    protected function submitPage()
+    protected function submitEditPage()
     {
         if ($this->isPosted('delete')) {
             $this->deletePage();
             return null;
         }
 
-        if (!$this->isPosted('save') || !$this->validatePage()) {
+        if (!$this->isPosted('save') || !$this->validateEditPage()) {
             return null;
         }
 
@@ -274,13 +295,12 @@ class Page extends BackendController
     }
 
     /**
-     * Validates a single page
+     * Validates a submitted page
      * @return bool
      */
-    protected function validatePage()
+    protected function validateEditPage()
     {
         $this->setSubmitted('page', null, false);
-
         $this->setSubmittedBool('form');
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $this->data_page);
@@ -290,7 +310,6 @@ class Page extends BackendController
         }
 
         $this->validateComponent('page');
-
         return !$this->hasErrors();
     }
 
@@ -308,7 +327,7 @@ class Page extends BackendController
     }
 
     /**
-     * Updates a page with submitted values
+     * Updates a page
      */
     protected function updatePage()
     {
@@ -322,7 +341,7 @@ class Page extends BackendController
     }
 
     /**
-     * Adds a new page using an array of submitted values
+     * Adds a new page
      */
     protected function addPage()
     {
@@ -337,7 +356,7 @@ class Page extends BackendController
     /**
      * Adds images on the page edit form
      */
-    protected function setDataImagesPage()
+    protected function setDataImagesEditPage()
     {
         $images = $this->getData('page.images', array());
         $this->attachThumbs($images);
@@ -347,7 +366,7 @@ class Page extends BackendController
     /**
      * Adds list of categories on the page edit form
      */
-    protected function setDataCategoriesPage()
+    protected function setDataCategoriesEditPage()
     {
         $default = $this->store->getDefault();
         $store_id = $this->getData('page.store_id', $default);
@@ -357,7 +376,7 @@ class Page extends BackendController
     }
 
     /**
-     * Sets titles on the page edit page
+     * Sets titles on the page edit
      */
     protected function setTitleEditPage()
     {
@@ -372,7 +391,7 @@ class Page extends BackendController
     }
 
     /**
-     * Sets breadcrumbs on the page edit page
+     * Sets breadcrumbs on the page edit
      */
     protected function setBreadcrumbEditPage()
     {
@@ -392,7 +411,7 @@ class Page extends BackendController
     }
 
     /**
-     * Renders the page edit templates
+     * Render and output the page edit
      */
     protected function outputEditPage()
     {

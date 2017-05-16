@@ -31,7 +31,24 @@ class CategoryGroup extends BackendController
     protected $data_category_group = array();
 
     /**
-     * Constructor
+     * Pager limits
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
+     * An array of filter parameters
+     * @var array
+     */
+    protected $data_filter = array();
+
+    /**
+     * A number of total results found for the filter conditions
+     * @var array
+     */
+    protected $data_total;
+
+    /**
      * @param CategoryGroupModel $category_group
      */
     public function __construct(CategoryGroupModel $category_group)
@@ -48,46 +65,58 @@ class CategoryGroup extends BackendController
     {
         $this->setTitleListCategoryGroup();
         $this->setBreadcrumbListCategoryGroup();
+        $this->setFilterListCategoryGroup();
 
-        $query = $this->getFilterQuery();
-
-        $filters = array('title', 'store_id', 'type', 'category_group_id');
-        $this->setFilter($filters, $query);
-
-        $total = $this->getTotalCategoryGroup($query);
-        $limit = $this->setPager($total, $query);
+        $this->setTotalListCategoryGroup();
+        $this->setPagerListCategoryGroup();
 
         $this->setData('stores', $this->store->getNames());
-        $this->setData('groups', $this->getListCategoryGroup($limit, $query));
+        $this->setData('groups', $this->getListCategoryGroup());
 
         $this->outputListCategoryGroup();
     }
 
     /**
-     * Returns total number of category groups for pager
-     * @param array $query
-     * @return integer
+     * Sets pager on the category group overview page
      */
-    protected function getTotalCategoryGroup(array $query)
+    protected function setPagerListCategoryGroup()
     {
+        $this->data_limit = $this->setPager($this->data_total, $this->data_filter);
+    }
+
+    /**
+     * Sets the current filter parameters
+     */
+    protected function setFilterListCategoryGroup()
+    {
+        $this->data_filter = $this->getFilterQuery();
+        $allowed = array('title', 'store_id', 'type', 'category_group_id');
+        $this->setFilter($allowed, $this->data_filter);
+    }
+
+    /**
+     * Sets a total number of category groups found for the filter conditions
+     */
+    protected function setTotalListCategoryGroup()
+    {
+        $query = $this->data_filter;
         $query['count'] = true;
-        return (int) $this->category_group->getList($query);
+        $this->data_total = (int) $this->category_group->getList($query);
     }
 
     /**
      * Returns an array of category groups
-     * @param array $limit
-     * @param array $query
      * @return array
      */
-    protected function getListCategoryGroup(array $limit, array $query)
+    protected function getListCategoryGroup()
     {
-        $query['limit'] = $limit;
+        $query = $this->data_filter;
+        $query['limit'] = $this->data_limit;
         return $this->category_group->getList($query);
     }
 
     /**
-     * Sets titles to the category group overview page
+     * Sets page title on the category group overview page
      */
     protected function setTitleListCategoryGroup()
     {
@@ -95,7 +124,7 @@ class CategoryGroup extends BackendController
     }
 
     /**
-     * Sets breadcrumbs to the category group overview page
+     * Sets breadcrumbs on the category group overview page
      */
     protected function setBreadcrumbListCategoryGroup()
     {
@@ -108,7 +137,7 @@ class CategoryGroup extends BackendController
     }
 
     /**
-     * Renders the category group overview page
+     * Render and output the category group overview page
      */
     protected function outputListCategoryGroup()
     {
@@ -116,7 +145,7 @@ class CategoryGroup extends BackendController
     }
 
     /**
-     * Displays the add/edit category group page
+     * Displays the edit category group page
      * @param integer|null $category_group_id
      */
     public function editCategoryGroup($category_group_id = null)
@@ -131,7 +160,7 @@ class CategoryGroup extends BackendController
         $this->setData('category_group', $this->data_category_group);
         $this->setData('can_delete', $this->canDeleteCategoryGroup());
 
-        $this->submitCategoryGroup();
+        $this->submitEditCategoryGroup();
         $this->outputEditCategoryGroup();
     }
 
@@ -147,40 +176,30 @@ class CategoryGroup extends BackendController
     }
 
     /**
-     * Returns an array of category group
+     * Sets the category group data
      * @param integer $category_group_id
-     * @return array
      */
     protected function setCategoryGroup($category_group_id)
     {
-        if (!is_numeric($category_group_id)) {
-            return array();
+        if (is_numeric($category_group_id)) {
+            $this->data_category_group = $this->category_group->get($category_group_id);
+            if (empty($this->data_category_group)) {
+                $this->outputHttpStatus(404);
+            }
         }
-
-        $category_group = $this->category_group->get($category_group_id);
-
-        if (empty($category_group)) {
-            $this->outputHttpStatus(404);
-        }
-
-        return $this->data_category_group = $category_group;
     }
 
     /**
-     * Saves a submitted category group
-     * @return mixed
+     * Handles a submitted category group data
      */
-    protected function submitCategoryGroup()
+    protected function submitEditCategoryGroup()
     {
         if ($this->isPosted('delete')) {
-            return $this->deleteCategoryGroup();
-        }
-
-        if (!$this->isPosted('save')) {
+            $this->deleteCategoryGroup();
             return null;
         }
 
-        if (!$this->validateCategoryGroup()) {
+        if (!$this->isPosted('save') || !$this->validateEditCategoryGroup()) {
             return null;
         }
 
@@ -192,15 +211,14 @@ class CategoryGroup extends BackendController
     }
 
     /**
-     * Performs validation checks on the given category group
+     * Validates a submitted category group data
      */
-    protected function validateCategoryGroup()
+    protected function validateEditCategoryGroup()
     {
         $this->setSubmitted('category_group');
-
         $this->setSubmitted('update', $this->data_category_group);
-        $this->validateComponent('category_group');
 
+        $this->validateComponent('category_group');
         return !$this->hasErrors();
     }
 
@@ -286,7 +304,7 @@ class CategoryGroup extends BackendController
     }
 
     /**
-     * Renders the category group edit page
+     * Render and output the category group edit page
      */
     protected function outputEditCategoryGroup()
     {

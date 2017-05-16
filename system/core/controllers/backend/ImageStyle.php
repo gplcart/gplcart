@@ -28,10 +28,9 @@ class ImageStyle extends BackendController
      * The current imagestyle
      * @var array
      */
-    protected $data_imagestyle = array();
+    protected $data_imagestyle = array('actions' => array());
 
     /**
-     * Constructor
      * @param FileModel $file
      */
     public function __construct(FileModel $file)
@@ -52,17 +51,15 @@ class ImageStyle extends BackendController
         $this->setBreadcrumbListImageStyle();
 
         $this->setData('styles', $this->image->getStyleList());
-
         $this->outputListImageStyle();
     }
 
     /**
-     * Clears cached images for an image style set in the URL query
+     * Clear cached images
      */
     protected function clearCacheImageStyle()
     {
         $style_id = (string) $this->getQuery('clear');
-
         if (!empty($style_id) && $this->image->clearCache($style_id)) {
             $this->redirect('', $this->text('Cache has been cleared'), 'success');
         }
@@ -111,44 +108,38 @@ class ImageStyle extends BackendController
         $this->setData('imagestyle', $this->data_imagestyle);
         $this->setData('action_handlers', $this->image->getActionHandlers());
 
-        $this->submitImageStyle();
+        $this->submitEditImageStyle();
         $this->setDataEditImageStyle();
+
         $this->outputEditImageStyle();
     }
 
     /**
-     * Returns an image style
+     * Sets an image style data
      * @param integer $style_id
      * @return array
      */
     protected function setImageStyle($style_id)
     {
-        if (!is_numeric($style_id)) {
-            $this->data_imagestyle = array('actions' => array());
-            return $this->data_imagestyle;
+        if (is_numeric($style_id)) {
+            $this->data_imagestyle = $this->image->getStyle($style_id);
+            if (empty($this->data_imagestyle)) {
+                $this->outputHttpStatus(404);
+            }
         }
-
-        $imagestyle = $this->image->getStyle($style_id);
-
-        if (empty($imagestyle)) {
-            $this->outputHttpStatus(404);
-        }
-
-        return $this->data_imagestyle = $imagestyle;
     }
 
     /**
-     * Saves an image style
-     * @return null
+     * Handles a submitted data
      */
-    protected function submitImageStyle()
+    protected function submitEditImageStyle()
     {
         if ($this->isPosted('delete')) {
             $this->deleteImageStyle();
             return null;
         }
 
-        if (!$this->isPosted('save') || !$this->validateImageStyle()) {
+        if (!$this->isPosted('save') || !$this->validateEditImageStyle()) {
             return null;
         }
 
@@ -182,7 +173,7 @@ class ImageStyle extends BackendController
      * Validates an image style
      * @return bool
      */
-    protected function validateImageStyle()
+    protected function validateEditImageStyle()
     {
         $this->setSubmitted('imagestyle');
 
@@ -191,12 +182,11 @@ class ImageStyle extends BackendController
         $this->setSubmitted('update', $this->data_imagestyle);
 
         $this->validateComponent('image_style');
-
         return !$this->hasErrors();
     }
 
     /**
-     * Updates an image styles using an array of submitted values
+     * Updates an image style
      */
     protected function updateImageStyle()
     {
@@ -211,7 +201,7 @@ class ImageStyle extends BackendController
     }
 
     /**
-     * Adds a new image style using an array of submitted values
+     * Adds a new image style
      */
     protected function addImageStyle()
     {
@@ -225,15 +215,13 @@ class ImageStyle extends BackendController
     }
 
     /**
-     * Modifies image style actions
-     * @return null
+     * Sets template data on the edit image style page
      */
     protected function setDataEditImageStyle()
     {
         $actions = $this->getData('imagestyle.actions');
 
         if (!$this->isError()) {
-            // Do not sort on errors when "weight" is not set
             gplcart_array_sort($actions);
         }
 
@@ -293,7 +281,7 @@ class ImageStyle extends BackendController
     }
 
     /**
-     * Renders the image style edit page
+     * Render and output the image style edit page
      */
     protected function outputEditImageStyle()
     {

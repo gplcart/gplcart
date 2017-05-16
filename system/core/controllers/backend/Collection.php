@@ -31,7 +31,24 @@ class Collection extends BackendController
     protected $data_collection = array();
 
     /**
-     * Constructor
+     * An array of filter parameters
+     * @var array
+     */
+    protected $data_filter = array();
+
+    /**
+     * A number of total results found for the filter conditions
+     * @var integer
+     */
+    protected $data_total;
+
+    /**
+     * Pager limits
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * @param CollectionModel $collection
      */
     public function __construct(CollectionModel $collection)
@@ -46,30 +63,44 @@ class Collection extends BackendController
      */
     public function listCollection()
     {
-        $this->actionCollection();
+        $this->actionListCollection();
 
         $this->setTitleListCollection();
         $this->setBreadcrumbListCollection();
 
-        $query = $this->getFilterQuery();
-
-        $allowed = array('type', 'store_id', 'status', 'title', 'collection_id');
-        $this->setFilter($allowed, $query);
-
-        $total = $this->getTotalCollection($query);
-        $limit = $this->setPager($total, $query);
+        $this->setFilterListCollection();
+        $this->setTotalListCollection();
+        $this->setPagerListCollection();
 
         $this->setData('stores', $this->store->getNames());
+        $this->setData('collections', $this->getListCollection());
         $this->setData('handlers', $this->collection->getHandlers());
-        $this->setData('collections', $this->getListCollection($limit, $query));
 
         $this->outputListCollection();
     }
 
     /**
+     * Set a number of total results found for the filter conditions
+     */
+    protected function setPagerListCollection()
+    {
+        $this->data_limit = $this->setPager($this->data_total, $this->data_filter);
+    }
+
+    /**
+     * Set the current filter
+     */
+    protected function setFilterListCollection()
+    {
+        $this->data_filter = $this->getFilterQuery();
+        $allowed = array('type', 'store_id', 'status', 'title', 'collection_id');
+        $this->setFilter($allowed, $this->data_filter);
+    }
+
+    /**
      * Applies an action to the selected collections
      */
-    protected function actionCollection()
+    protected function actionListCollection()
     {
         $action = (string) $this->getPosted('action');
 
@@ -105,26 +136,24 @@ class Collection extends BackendController
     }
 
     /**
-     * Returns total number of collections
-     * @param array $query
-     * @return integer
+     * Sets a total number of collections
      */
-    protected function getTotalCollection(array $query)
+    protected function setTotalListCollection()
     {
+        $query = $this->data_filter;
         $query['count'] = true;
-        return (int) $this->collection->getList($query);
+        $this->data_total = (int) $this->collection->getList($query);
     }
 
     /**
      * Returns an array of collections
-     * @param array $limit
-     * @param array $query
      * @return array
      */
-    protected function getListCollection(array $limit, array $query)
+    protected function getListCollection()
     {
-        $query['limit'] = $limit;
-        return $this->collection->getList($query);
+        $query = $this->data_filter;
+        $query['limit'] = $this->data_limit;
+        return (array) $this->collection->getList($query);
     }
 
     /**
@@ -172,26 +201,21 @@ class Collection extends BackendController
         $this->setData('collection', $this->data_collection);
         $this->setData('can_delete', $this->canDeleteCollection());
 
-        $this->submitCollection();
+        $this->submitEditCollection();
         $this->outputEditCollection();
     }
 
     /**
      * Saves an array of submitted collection data
-     * @return null
      */
-    protected function submitCollection()
+    protected function submitEditCollection()
     {
         if ($this->isPosted('delete')) {
             $this->deleteCollection();
             return null;
         }
 
-        if (!$this->isPosted('save')) {
-            return null;
-        }
-
-        if (!$this->validateCollection()) {
+        if (!$this->isPosted('save') || !$this->validateEditCollection()) {
             return null;
         }
 
@@ -206,15 +230,13 @@ class Collection extends BackendController
      * Validates a submitted collection
      * @return bool
      */
-    protected function validateCollection()
+    protected function validateEditCollection()
     {
         $this->setSubmitted('collection');
-
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $this->data_collection);
 
         $this->validateComponent('collection');
-
         return !$this->hasErrors();
     }
 
@@ -230,24 +252,17 @@ class Collection extends BackendController
     }
 
     /**
-     * Returns an collection
+     * Sets a collection data
      * @param integer $collection_id
-     * @return array
      */
     protected function setCollection($collection_id)
     {
-        if (!is_numeric($collection_id)) {
-            return array();
+        if (is_numeric($collection_id)) {
+            $this->data_collection = $this->collection->get($collection_id);
+            if (empty($this->data_collection)) {
+                $this->outputHttpStatus(404);
+            }
         }
-
-        $collection = $this->collection->get($collection_id);
-
-        if (empty($collection)) {
-            $this->outputHttpStatus(404);
-        }
-
-        $this->data_collection = $collection;
-        return $collection;
     }
 
     /**
@@ -256,7 +271,6 @@ class Collection extends BackendController
     protected function deleteCollection()
     {
         $this->controlAccess('collection_delete');
-
         $result = $this->collection->delete($this->data_collection['collection_id']);
 
         if (empty($result)) {
@@ -269,7 +283,7 @@ class Collection extends BackendController
     }
 
     /**
-     * Updates a collection with submitted values
+     * Updates a collection
      */
     protected function updateCollection()
     {
@@ -288,7 +302,7 @@ class Collection extends BackendController
     }
 
     /**
-     * Adds a new collection using an array of submitted data
+     * Adds a new collection
      */
     protected function addCollection()
     {
@@ -342,7 +356,7 @@ class Collection extends BackendController
     }
 
     /**
-     * Renders the edit collection page
+     * Render and output the edit collection page
      */
     protected function outputEditCollection()
     {

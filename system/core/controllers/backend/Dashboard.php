@@ -59,7 +59,6 @@ class Dashboard extends BackendController
     protected $review;
 
     /**
-     * Constructor
      * @param ProductModel $product
      * @param PriceModel $price
      * @param OrderModel $order
@@ -82,18 +81,18 @@ class Dashboard extends BackendController
     /**
      * Displays the admin dashboard page
      */
-    public function dashboard()
+    public function indexDashboard()
     {
-        $this->toggleIntroDashboard();
-        $this->setTitleDashboard();
-        $this->setDataContentDashboard();
-        $this->outputDashboard();
+        $this->toggleIntroIndexDashboard();
+        $this->setTitleIndexDashboard();
+        $this->setDataContentIndexDashboard();
+        $this->outputIndexDashboard();
     }
 
     /**
      * Sets dashboard content data
      */
-    protected function setDataContentDashboard()
+    protected function setDataContentIndexDashboard()
     {
         $panels = $this->getPanelsDashboard();
         $columns = $this->config('dashboard_columns', 2);
@@ -152,7 +151,7 @@ class Dashboard extends BackendController
     /**
      * Toggles dashboard page from post-installation intro to normal view
      */
-    protected function toggleIntroDashboard()
+    protected function toggleIntroIndexDashboard()
     {
         if ($this->isQuery('skip_intro')) {
             $this->config->reset('intro');
@@ -241,7 +240,7 @@ class Dashboard extends BackendController
     /**
      * Sets titles on the admin dashboard page
      */
-    protected function setTitleDashboard()
+    protected function setTitleIndexDashboard()
     {
         $this->setTitle($this->text('Dashboard'), false);
     }
@@ -249,7 +248,7 @@ class Dashboard extends BackendController
     /**
      * Renders the admin dashboard page
      */
-    protected function outputDashboard()
+    protected function outputIndexDashboard()
     {
         $this->output('dashboard/dashboard');
     }

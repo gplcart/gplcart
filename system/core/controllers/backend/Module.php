@@ -40,6 +40,24 @@ class Module extends BackendController
     protected $data_module = array();
 
     /**
+     * An array of filter parameters
+     * @var array
+     */
+    protected $data_filter = array();
+
+    /**
+     * Pager limits
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
+     * A total number of items found for the current filter
+     * @var integer
+     */
+    protected $data_total;
+
+    /**
      * @param ModuleModel $module
      * @param GraphHelper $graph
      */
@@ -56,55 +74,62 @@ class Module extends BackendController
      */
     public function listModule()
     {
-        $this->actionModule();
+        $this->actionListModule();
 
         $this->setTitleListModule();
         $this->setBreadcrumbListModule();
 
-        $query = $this->getFilterQuery();
-        $allowed = array('type', 'name', 'version', 'id');
-        $this->setFilter($allowed, $query);
+        $this->setFilterListModule();
+        $this->setTotalListModule();
+        $this->setPagerListModule();
 
-        $total = $this->getTotalModule($query);
-        $limit = $this->setPager($total, $query);
-        $modules = $this->getListModule($query, $limit);
-
-        $this->setData('modules', $modules);
+        $this->setData('modules', $this->getListModule());
         $this->outputListModule();
     }
 
     /**
-     * Applies an action to the module
+     * Set pager on the module overview page
      */
-    protected function actionModule()
+    protected function setPagerListModule()
+    {
+        $this->data_limit = $this->setPager($this->data_total, $this->data_filter);
+    }
+
+    /**
+     * Sets the filter on the module overview page
+     */
+    protected function setFilterListModule()
+    {
+        $this->data_filter = $this->getFilterQuery();
+        $allowed = array('type', 'name', 'version', 'id');
+        $this->setFilter($allowed, $this->data_filter);
+    }
+
+    /**
+     * Applies an action to a module
+     */
+    protected function actionListModule()
     {
         $action = (string) $this->getQuery('action');
         $module_id = (string) $this->getQuery('module_id');
 
-        if (empty($action) || empty($module_id)) {
-            return null;
+        if (!empty($action) && !empty($module_id)) {
+            $this->setModule($module_id);
+            $result = $this->startActionModule($action);
+            $this->finishActionModule($action, $result);
         }
-
-        $this->setModule($module_id);
-
-        $result = $this->startActionModule($action);
-        $this->finishActionModule($action, $result);
     }
 
     /**
-     * Set module data
+     * Set a module data
      * @param string $module_id
-     * @return array
      */
     protected function setModule($module_id)
     {
-        $module = $this->module->get($module_id);
-
-        if (empty($module)) {
+        $this->data_module = $this->module->get($module_id);
+        if (empty($this->data_module)) {
             $this->outputHttpStatus(403);
         }
-
-        return $this->data_module = $module;
     }
 
     /**
@@ -115,14 +140,11 @@ class Module extends BackendController
     protected function finishActionModule($action, $result)
     {
         if ($result === true) {
-
             $message = $this->text('Module has been updated');
-
             if ($action === 'backup') {
                 $vars = array('@url' => $this->url('admin/tool/backup'));
                 $message = $this->text('Backup has been <a href="@url">created</a>', $vars);
             }
-
             $this->redirect('', $message, 'success');
         }
 
@@ -146,7 +168,6 @@ class Module extends BackendController
     protected function startActionModule($action)
     {
         $this->controlAccess("module_$action");
-
         $id = $this->data_module['id'];
 
         // Don't call methods like $this->module->{$action}
@@ -167,25 +188,22 @@ class Module extends BackendController
 
     /**
      * Returns an array of modules
-     * @param array $query
-     * @param array $limit
      * @return array
      */
-    protected function getListModule(array $query, array $limit = array())
+    protected function getListModule()
     {
         $modules = $this->module->getList();
         $this->checkDependenciesListModule($modules);
 
-        $this->sortListModule($modules, $query);
-        $this->filterListModule($modules, $query);
-        $this->limitListModule($modules, $limit);
+        $this->sortListModule($modules);
+        $this->filterListModule($modules);
+        $this->limitListModule($modules);
 
         return $modules;
     }
 
     /**
-     * Validates dependencies and append requires/required by info
-     * to every module in the array
+     * Validates module dependencies
      * @param array $modules
      */
     protected function checkDependenciesListModule(array &$modules)
@@ -195,38 +213,32 @@ class Module extends BackendController
     }
 
     /**
-     * Returns a total number of modules found 
-     * @param array $query
-     * @return integer
+     * Sets a total number of modules found for the current filter
      */
-    protected function getTotalModule(array $query)
+    protected function setTotalListModule()
     {
-        $modules = $this->getListModule($query);
-        return count($modules);
+        $modules = $this->getListModule($this->data_filter);
+        $this->data_total = count($modules);
     }
 
     /**
-     * Filters modules using by a field
+     * Filters modules by a field
      * @param array $modules
-     * @param array $query
      * @return array
      */
-    protected function filterListModule(array &$modules, array $query)
+    protected function filterListModule(array &$modules)
     {
+        $query = $this->data_filter;
         $allowed = array('type', 'name', 'version', 'id');
-
-        // Remove all but white-listed fields
         $filter = array_intersect_key($query, array_flip($allowed));
 
         if (empty($filter)) {
             return $modules;
         }
 
-        // Use only first pair field => search term
         $term = reset($filter);
         $field = key($filter);
 
-        // %LIKE% filter
         $filtered = array_filter($modules, function ($module) use ($field, $term) {
             return stripos($module[$field], $term) !== false;
         });
@@ -236,14 +248,13 @@ class Module extends BackendController
     }
 
     /**
-     * Slices an array of modules using starting offset and max length
+     * Slices an array of modules
      * @param array $modules
-     * @param array $limit
      */
-    protected function limitListModule(array &$modules, array $limit)
+    protected function limitListModule(array &$modules)
     {
-        if (!empty($limit)) {
-            list($from, $to) = $limit;
+        if (!empty($this->data_limit)) {
+            list($from, $to) = $this->data_limit;
             $modules = array_slice($modules, $from, $to, true);
         }
     }
@@ -251,11 +262,12 @@ class Module extends BackendController
     /**
      * Sort modules by a field
      * @param array $modules
-     * @param array $query
      * @return array
      */
-    protected function sortListModule(array &$modules, array $query)
+    protected function sortListModule(array &$modules)
     {
+        $query = $this->data_filter;
+
         if (empty($query['order']) || empty($query['sort'])) {
             return $modules;
         }
@@ -263,23 +275,23 @@ class Module extends BackendController
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('type', 'name', 'version', 'id');
 
-        if (!in_array($query['order'], $allowed_order)//
-                || !in_array($query['sort'], $allowed_sort)) {
+        if (!in_array($query['order'], $allowed_order) || !in_array($query['sort'], $allowed_sort)) {
             return $modules;
         }
 
         uasort($modules, function($a, $b) use ($query) {
 
-            $diff = strcmp($a[$query['sort']], $b[$query['sort']]);
-
-            if ($diff === 0) {
+            if (empty($a[$query['sort']]) || empty($b[$query['sort']])) {
                 return 0;
             }
 
-            if ($query['order'] == 'asc') {
+            $diff = strcmp($a[$query['sort']], $b[$query['sort']]);
+            if ($diff === 0) {
+                return 0;
+            }
+            if ($query['order'] === 'asc') {
                 return $diff > 0;
             }
-
             return $diff < 0;
         });
 
@@ -308,7 +320,7 @@ class Module extends BackendController
     }
 
     /**
-     * Renders the module overview page templates
+     * Render and output the module overview page
      */
     protected function outputListModule()
     {

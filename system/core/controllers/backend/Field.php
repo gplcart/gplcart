@@ -31,7 +31,24 @@ class Field extends BackendController
     protected $data_field = array();
 
     /**
-     * Constructor
+     * Pager limits
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
+     * An array of filter parameters
+     * @var array
+     */
+    protected $data_filter = array();
+
+    /**
+     * A total number items found for the filter conditions
+     * @var integer
+     */
+    protected $data_total;
+
+    /**
      * @param FieldModel $field
      */
     public function __construct(FieldModel $field)
@@ -46,29 +63,43 @@ class Field extends BackendController
      */
     public function listField()
     {
-        $this->actionField();
+        $this->actionListField();
 
         $this->setTitleListField();
         $this->setBreadcrumbListField();
 
-        $query = $this->getFilterQuery();
+        $this->setFilterListField();
+        $this->setTotalListField();
+        $this->setPagerListField();
 
-        $allowed = array('title', 'type', 'widget', 'field_id');
-        $this->setFilter($allowed, $query);
-
-        $total = $this->getTotalField($query);
-        $limit = $this->setPager($total, $query);
-
-        $this->setData('fields', $this->getListField($limit, $query));
+        $this->setData('fields', $this->getListField());
         $this->setData('widget_types', $this->field->getWidgetTypes());
 
         $this->outputListField();
     }
 
     /**
+     * Sets pager on the field overview page
+     */
+    protected function setPagerListField()
+    {
+        $this->data_limit = $this->setPager($this->data_total, $this->data_filter);
+    }
+
+    /**
+     * Sets filter on the field overview page
+     */
+    protected function setFilterListField()
+    {
+        $this->data_filter = $this->getFilterQuery();
+        $allowed = array('title', 'type', 'widget', 'field_id');
+        $this->setFilter($allowed, $this->data_filter);
+    }
+
+    /**
      * Applies an action to the selected fields
      */
-    protected function actionField()
+    protected function actionListField()
     {
         $action = (string) $this->getPosted('action');
 
@@ -92,25 +123,23 @@ class Field extends BackendController
     }
 
     /**
-     * Returns total number of fields for pager
-     * @param array $query
-     * @return integer
+     * Set a total number of fields found for the filter conditions
      */
-    protected function getTotalField(array $query)
+    protected function setTotalListField()
     {
+        $query = $this->data_filter;
         $query['count'] = true;
-        return (int) $this->field->getList($query);
+        $this->data_total = (int) $this->field->getList($query);
     }
 
     /**
      * Returns an array of fields
-     * @param array $limit
-     * @param array $query
      * @return array
      */
-    protected function getListField(array $limit, array $query)
+    protected function getListField()
     {
-        $query['limit'] = $limit;
+        $query = $this->data_filter;
+        $query['limit'] = $this->data_limit;
         return $this->field->getList($query);
     }
 
@@ -159,22 +188,21 @@ class Field extends BackendController
         $this->setData('can_delete', $this->canDeleteField());
         $this->setData('widget_types', $this->field->getWidgetTypes());
 
-        $this->submitField();
+        $this->submitEditField();
         $this->outputEditField();
     }
 
     /**
-     * Saves a submitted field values
-     * @return null
+     * Handles a submitted field data
      */
-    protected function submitField()
+    protected function submitEditField()
     {
         if ($this->isPosted('delete')) {
             $this->deleteField();
             return null;
         }
 
-        if (!$this->isPosted('save') || !$this->validateField()) {
+        if (!$this->isPosted('save') || !$this->validateEditField()) {
             return null;
         }
 
@@ -186,13 +214,12 @@ class Field extends BackendController
     }
 
     /**
-     * Performs validation checks on the given field
+     * Validates an array of submitted field data
      * @return bool
      */
-    protected function validateField()
+    protected function validateEditField()
     {
         $this->setSubmitted('field');
-
         $this->setSubmitted('update', $this->data_field);
         $this->validateComponent('field');
 
@@ -211,23 +238,20 @@ class Field extends BackendController
     }
 
     /**
-     * Returns a field
+     * Set a field data
      * @param integer $field_id
-     * @return array
      */
     protected function setField($field_id)
     {
-        if (!is_numeric($field_id)) {
-            return array();
+        if (is_numeric($field_id)) {
+            $field = $this->field->get($field_id);
+
+            if (empty($field)) {
+                $this->outputHttpStatus(404);
+            }
+
+            $this->data_field = $field;
         }
-
-        $field = $this->field->get($field_id);
-
-        if (empty($field)) {
-            $this->outputHttpStatus(404);
-        }
-
-        return $this->data_field = $field;
     }
 
     /**
@@ -276,7 +300,7 @@ class Field extends BackendController
     }
 
     /**
-     * Sets titles on the field edit form
+     * Sets title on the field edit form
      */
     protected function setTitleEditField()
     {
@@ -311,7 +335,7 @@ class Field extends BackendController
     }
 
     /**
-     * Renders the field edit page
+     * Render and output the field edit page
      */
     protected function outputEditField()
     {

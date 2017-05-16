@@ -58,7 +58,6 @@ class Controller extends BaseController
 
     /**
      * Processes the current job
-     * @return null
      */
     protected function processCurrentJob()
     {

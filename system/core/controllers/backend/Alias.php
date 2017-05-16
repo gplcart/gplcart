@@ -31,7 +31,7 @@ class Alias extends BackendController
     protected $data_filter = array();
 
     /**
-     * Total results forund for the current filter
+     * A total number of results forund for the current filter
      * @var integer
      */
     protected $data_total;
@@ -53,7 +53,7 @@ class Alias extends BackendController
     }
 
     /**
-     * Displays the aliases overview page
+     * Displays the alias overview page
      */
     public function listAlias()
     {
@@ -73,16 +73,14 @@ class Alias extends BackendController
 
     /**
      * Set pager limits
-     * @return array
      */
     protected function setPagerListAlias()
     {
-        return $this->data_limit = $this->setPager($this->data_total, $this->data_filter);
+        $this->data_limit = $this->setPager($this->data_total, $this->data_filter);
     }
 
     /**
      * Sets the current filter parameters
-     * @return array
      */
     protected function setFilterListAlias()
     {
@@ -90,7 +88,6 @@ class Alias extends BackendController
 
         $allowed = array('id_value', 'id_key', 'alias', 'alias_id');
         $this->setFilter($allowed, $this->data_filter);
-        return $this->data_filter;
     }
 
     /**
@@ -120,14 +117,13 @@ class Alias extends BackendController
     }
 
     /**
-     * Set total aliases found depending on the current filter conditions
-     * @return integer
+     * Sets a total number of aliases found for the current filter conditions
      */
     protected function setTotalListAlias()
     {
         $query = $this->data_filter;
         $query['count'] = true;
-        return $this->data_total = (int) $this->alias->getList($query);
+        $this->data_total = (int) $this->alias->getList($query);
     }
 
     /**
@@ -169,7 +165,7 @@ class Alias extends BackendController
     }
 
     /**
-     * Renders the aliases overview page
+     * Render and output the alias overview page
      */
     protected function outputListAlias()
     {
