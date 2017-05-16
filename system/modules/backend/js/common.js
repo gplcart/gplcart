@@ -123,20 +123,9 @@
      * @returns {undefined}
      */
     var setAlert = function (message, id, type = 'info') {
-
         $('body').append(htmlAlert(message, id, type));
-
-        var alert = $('#' + id + '.popup.alert');
-
-        alert.css({
-            'right': '15px',
-            'z-index': 99999,
-            'position': 'absolute',
-            'top': $(window).height() - 70
-        });
-
         setTimeout(function () {
-            alert.remove();
+            $('#' + id + '.popup.alert').remove();
         }, 3000);
     };
 
