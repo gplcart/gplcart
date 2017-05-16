@@ -85,7 +85,6 @@ class Alias extends BackendController
     protected function setFilterListAlias()
     {
         $this->data_filter = $this->getFilterQuery();
-
         $allowed = array('id_value', 'id_key', 'alias', 'alias_id');
         $this->setFilter($allowed, $this->data_filter);
     }

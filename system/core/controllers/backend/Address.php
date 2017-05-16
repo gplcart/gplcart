@@ -80,16 +80,13 @@ class Address extends BackendController
 
     /**
      * Set filter query on the address overview page
-     * @return array
      */
     protected function setFilterListAddress()
     {
-        $query = $this->getFilterQuery();
-
-        $filters = array('city_id', 'address_id',
+        $this->data_filter = $this->getFilterQuery();
+        $allowed = array('city_id', 'address_id',
             'address_1', 'phone', 'user_id', 'user_email', 'full_name', 'postcode', 'city_name');
-
-        $this->setFilter($filters, $query);
+        $this->setFilter($allowed, $this->data_filter);
     }
 
     /**
