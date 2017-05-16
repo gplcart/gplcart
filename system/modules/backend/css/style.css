@@ -90,6 +90,13 @@ h1 {
     border-width: 3px;
 }
 
+.popup.alert {
+    position: fixed;
+    right: 15px;
+    bottom: 0;
+    z-index: 99999;
+}
+
 .no-border {
     border: none !important;
 }
