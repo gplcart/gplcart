@@ -25,7 +25,24 @@ class Backup extends BackendController
     protected $backup;
 
     /**
-     * Constructor
+     * The current filter parameters
+     * @var array
+     */
+    protected $data_filter = array();
+
+    /**
+     * Total number of items found
+     * @var integer
+     */
+    protected $data_total;
+
+    /**
+     * Pager limits
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * @param BackupModel $backup
      */
     public function __construct(BackupModel $backup)
@@ -40,32 +57,51 @@ class Backup extends BackendController
      */
     public function listBackup()
     {
-        $this->downloadBackup();
-        $this->actionBackup();
+        $this->downloadListBackup();
+        $this->actionListBackup();
 
         $this->setTitleListBackup();
         $this->setBreadcrumbListBackup();
 
-        $query = $this->getFilterQuery();
-
-        $filters = array('created', 'name', 'user_id', 'type',
-            'version', 'module_id', 'backup_id');
-
-        $this->setFilter($filters, $query);
-
-        $total = $this->getTotalBackup($query);
-        $limit = $this->setPager($total, $query);
+        $this->setFilterListBackup();
+        $this->setTotalListBackup();
+        $this->setPagerListBackup();
 
         $this->setData('handlers', $this->getHandlersBackup());
-        $this->setData('backups', $this->getListBackup($limit, $query));
+        $this->setData('backups', $this->getListBackup());
+
         $this->outputListBackup();
+    }
+
+    /**
+     * Set pager limits
+     * @return array
+     */
+    protected function setPagerListBackup()
+    {
+        return $this->data_limit = $this->setPager($this->data_total, $this->data_filter);
+    }
+
+    /**
+     * Sets filter parameters
+     * @return array
+     */
+    protected function setFilterListBackup()
+    {
+        $this->data_filter = $this->getFilterQuery();
+
+        $allowed = array('created', 'name', 'user_id', 'type',
+            'version', 'module_id', 'backup_id');
+
+        $this->setFilter($allowed, $this->data_filter);
+        return $this->data_filter;
     }
 
     /**
      * Downloads a backup
      * @return null
      */
-    protected function downloadBackup()
+    protected function downloadListBackup()
     {
         $backup_id = $this->getQuery('download');
 
@@ -85,7 +121,7 @@ class Backup extends BackendController
      * Applies an action to the selected backups
      * @return null
      */
-    protected function actionBackup()
+    protected function actionListBackup()
     {
         $action = (string) $this->getPosted('action');
 
@@ -141,25 +177,24 @@ class Backup extends BackendController
 
     /**
      * Returns an array of backups
-     * @param array $limit
-     * @param array $query
      * @return array
      */
-    protected function getListBackup(array $limit, array $query)
+    protected function getListBackup()
     {
-        $query['limit'] = $limit;
+        $query = $this->data_filter;
+        $query['limit'] = $this->data_limit;
         return $this->backup->getList($query);
     }
 
     /**
-     * Returns total number of backups depending on various conditions
-     * @param array $query
+     * Returns a total number of backups depending on the filter conditions
      * @return integer
      */
-    protected function getTotalBackup(array $query)
+    protected function setTotalListBackup()
     {
+        $query = $this->data_filter;
         $query['count'] = true;
-        return (int) $this->backup->getList($query);
+        return $this->data_total = (int) $this->backup->getList($query);
     }
 
     /**

@@ -31,6 +31,12 @@ class Address extends BackendController
     protected $data_filter = array();
 
     /**
+     * Pager limits
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * @param AddressModel $address
      */
     public function __construct(AddressModel $address)
@@ -45,22 +51,33 @@ class Address extends BackendController
      */
     public function listAddress()
     {
-        $this->actionAddress();
+        $this->actionListAddress();
 
         $this->setTitleListAddress();
         $this->setBreadcrumbListAddress();
 
-        $this->setFilterAddress();
-        $limit = $this->setPager($this->getTotalAddress(), $this->data_filter);
-        $this->setData('addresses', $this->getListAddress($limit));
+        $this->setFilterListAddress();
+        $this->setPagerListAddress();
+
+        $this->setData('addresses', $this->getListAddress());
         $this->outputListAddress();
+    }
+
+    /**
+     * Set pager on the address list page
+     * @return array
+     */
+    protected function setPagerListAddress()
+    {
+        $this->data_limit = $this->setPager($this->getTotalAddress(), $this->data_filter);
+        return $this->data_limit;
     }
 
     /**
      * Set filter query on the address overview page
      * @return array
      */
-    protected function setFilterAddress()
+    protected function setFilterListAddress()
     {
         $query = $this->getFilterQuery();
 
@@ -73,9 +90,8 @@ class Address extends BackendController
 
     /**
      * Applies an action to the selected aliases
-     * @return null
      */
-    protected function actionAddress()
+    protected function actionListAddress()
     {
         $action = (string) $this->getPosted('action');
 
@@ -111,13 +127,12 @@ class Address extends BackendController
 
     /**
      * Returns an array of addresses
-     * @param array $limit
      * @return array
      */
-    protected function getListAddress($limit)
+    protected function getListAddress()
     {
         $query = $this->data_filter;
-        $query['limit'] = $limit;
+        $query['limit'] = $this->data_limit;
         $addresses = (array) $this->address->getList($query);
 
         foreach ($addresses as &$address) {
