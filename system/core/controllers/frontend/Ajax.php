@@ -11,8 +11,6 @@ namespace gplcart\core\controllers\frontend;
 
 use gplcart\core\models\Sku as SkuModel,
     gplcart\core\models\City as CityModel,
-    gplcart\core\models\File as FileModel,
-    gplcart\core\models\Search as SearchModel,
     gplcart\core\models\Rating as RatingModel,
     gplcart\core\models\Collection as CollectionModel,
     gplcart\core\models\CollectionItem as CollectionItemModel;
@@ -23,18 +21,6 @@ use gplcart\core\controllers\frontend\Controller as FrontendController;
  */
 class Ajax extends FrontendController
 {
-
-    /**
-     * Search model instance
-     * @var \gplcart\core\models\Search $search
-     */
-    protected $search;
-
-    /**
-     * File model instance
-     * @var \gplcart\core\models\File $file
-     */
-    protected $file;
 
     /**
      * Rating model instance
@@ -67,26 +53,21 @@ class Ajax extends FrontendController
     protected $collection_item;
 
     /**
-     * Constructor
-     * @param SearchModel $search
-     * @param FileModel $file
      * @param RatingModel $rating
      * @param SkuModel $sku
      * @param CityModel $city
      * @param CollectionModel $collection
      * @param CollectionItemModel $collection_item
      */
-    public function __construct(SearchModel $search, FileModel $file,
-            RatingModel $rating, SkuModel $sku, CityModel $city,
-            CollectionModel $collection, CollectionItemModel $collection_item)
+    public function __construct(RatingModel $rating, SkuModel $sku,
+            CityModel $city, CollectionModel $collection,
+            CollectionItemModel $collection_item)
     {
         parent::__construct();
 
         $this->sku = $sku;
         $this->city = $city;
-        $this->file = $file;
         $this->rating = $rating;
-        $this->search = $search;
         $this->collection = $collection;
         $this->collection_item = $collection_item;
     }
@@ -111,7 +92,7 @@ class Ajax extends FrontendController
     }
 
     /**
-     * Calls an action method
+     * Lookup callback methods
      * @param string $action
      * @param array $args
      * @return array
@@ -142,36 +123,7 @@ class Ajax extends FrontendController
             'limit' => array(0, $this->config('admin_autocomplete_limit', 10))
         );
 
-        $products = (array) $this->product->getList($options);
-        return $this->prepareProductsAjax($products);
-    }
-
-    /**
-     * Prepares an array of products
-     * @param array $products
-     * @return array
-     */
-    protected function prepareProductsAjax(array $products)
-    {
-        if (empty($products)) {
-            return array();
-        }
-
-        $stores = $this->store->getList();
-
-        $prepared = array();
-        foreach ($products as $product) {
-
-            $product['url'] = '';
-            if (isset($stores[$product['store_id']])) {
-                $product['url'] = $this->store->url($stores[$product['store_id']]) . "/product/{$product['product_id']}";
-            }
-
-            $product['price_formatted'] = $this->price->format($product['price'], $product['currency']);
-            $prepared[$product['product_id']] = $product;
-        }
-
-        return $prepared;
+        return $this->getProducts($options);
     }
 
     /**

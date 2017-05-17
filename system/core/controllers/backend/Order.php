@@ -24,6 +24,7 @@ class Order extends BackendController
 {
 
     use \gplcart\core\traits\ControllerOrder;
+    use \gplcart\core\traits\ControllerOrderComponent;
 
     const NOTIFICATION_SENT = 2;
     const NOTIFICATION_ERROR = 1;
@@ -346,13 +347,18 @@ class Order extends BackendController
     }
 
     /**
-     * Sets extra user data
+     * Prepare an array of order data
      * @param array $order
      * @return array
      */
     protected function prepareOrder(array &$order)
     {
-        $this->prepareOrderTrait($this, $order);
+        $this->prepareOrderTotalTrait($order, $this->price);
+        $this->prepareOrderAddressTrait($order, $this->address);
+        $this->prepareOrderStoreTrait($order, $this->store, $this);
+        $this->prepareOrderStatusTrait($order, $this->order, $this);
+        $this->prepareOrderPaymentTrait($order, $this->payment, $this);
+        $this->prepareOrderShippingTrait($order, $this->shipping, $this);
 
         $order['user'] = array();
         if (is_numeric($order['user_id'])) {
@@ -430,9 +436,14 @@ class Order extends BackendController
      */
     protected function setDataPanelComponentsIndexOrder()
     {
-        $templates = 'sale/order/panes/components';
-        $components = $this->prepareOrderComponentsTrait($this, $this->data_order, $templates);
-        $data = array('components' => $components, 'order' => $this->data_order);
+        $this->prepareOrderComponentCartTrait($this->data_order, $this, $this->price);
+        $this->prepareOrderComponentPaymentMethodTrait($this->data_order, $this, $this->price, $this->payment);
+        $this->prepareOrderComponentShippingMethodTrait($this->data_order, $this, $this->price, $this->shipping);
+        $this->prepareOrderComponentPriceRuleTrait($this->data_order, $this, $this->price, $this->pricerule);
+
+        ksort($this->data_order['data']['components']);
+
+        $data = array('components' => $this->data_order['data']['components'], 'order' => $this->data_order);
         $this->setData('pane_components', $this->render('sale/order/panes/components', $data));
     }
 
@@ -479,7 +490,7 @@ class Order extends BackendController
     }
 
     /**
-     * Set filter on the order list page
+     * Set filter on the order overview page
      */
     protected function setFilterListOrder()
     {
@@ -489,7 +500,7 @@ class Order extends BackendController
     }
 
     /**
-     * Sets a total number of orders on the order list page
+     * Sets a total number of orders on the order overview page
      */
     protected function setTotalListOrder()
     {
@@ -500,7 +511,6 @@ class Order extends BackendController
 
     /**
      * Applies an action to the selected orders
-     * @return null
      */
     protected function actionListOrder()
     {
@@ -549,7 +559,7 @@ class Order extends BackendController
     }
 
     /**
-     * Sets titles on the orders overview page
+     * Sets titles on the order overview page
      */
     protected function setTitleListOrder()
     {
@@ -569,7 +579,7 @@ class Order extends BackendController
     }
 
     /**
-     * Renders overview orders page templates
+     * Render and output the order overview page
      */
     protected function outputListOrder()
     {
@@ -589,7 +599,7 @@ class Order extends BackendController
     }
 
     /**
-     * Modifies an array of orders
+     * Prepare an array of orders
      * @param array $orders
      * @return array
      */

@@ -10,10 +10,8 @@
 namespace gplcart\core\controllers\frontend;
 
 use gplcart\core\models\Order as OrderModel,
-    gplcart\core\models\State as StateModel,
     gplcart\core\models\Payment as PaymentModel,
     gplcart\core\models\Address as AddressModel,
-    gplcart\core\models\Country as CountryModel,
     gplcart\core\models\UserRole as UserRoleModel,
     gplcart\core\models\Shipping as ShippingModel,
     gplcart\core\models\PriceRule as PriceRuleModel;
@@ -26,24 +24,13 @@ class Account extends FrontendController
 {
 
     use \gplcart\core\traits\ControllerOrder;
+    use \gplcart\core\traits\ControllerOrderComponent;
 
     /**
      * Address model instance
      * @var \gplcart\core\models\Address $address
      */
     protected $address;
-
-    /**
-     * Country model instance
-     * @var \gplcart\core\models\Country $country
-     */
-    protected $country;
-
-    /**
-     * State model instance
-     * @var \gplcart\core\models\State $state
-     */
-    protected $state;
 
     /**
      * Order model instance
@@ -76,45 +63,39 @@ class Account extends FrontendController
     protected $shipping;
 
     /**
-     * The current user
+     * An array of user data
      * @var array
      */
     protected $data_user = array();
 
     /**
-     * The current order
+     * An array of order data
      * @var array
      */
     protected $data_order = array();
 
     /**
-     * The current address
+     * An array of address data
      * @var array
      */
     protected $data_address = array();
 
     /**
-     * Constructor
      * @param AddressModel $address
-     * @param CountryModel $country
-     * @param StateModel $state
      * @param OrderModel $order
      * @param UserRoleModel $role
      * @param PriceRuleModel $pricerule
      * @param PaymentModel $payment
      * @param ShippingModel $shipping
      */
-    public function __construct(AddressModel $address, CountryModel $country,
-            StateModel $state, OrderModel $order, UserRoleModel $role,
-            PriceRuleModel $pricerule, PaymentModel $payment,
-            ShippingModel $shipping)
+    public function __construct(AddressModel $address, OrderModel $order,
+            UserRoleModel $role, PriceRuleModel $pricerule,
+            PaymentModel $payment, ShippingModel $shipping)
     {
         parent::__construct();
 
         $this->role = $role;
-        $this->state = $state;
         $this->order = $order;
-        $this->country = $country;
         $this->address = $address;
         $this->payment = $payment;
         $this->shipping = $shipping;
@@ -136,41 +117,44 @@ class Account extends FrontendController
 
         $this->setData('user', $this->data_user);
 
-        $this->setDataPaneSummaryAccount();
-        $this->setDataPaneComponentsAccount();
-        $this->setDataPanePaymentAddressAccount();
-        $this->setDataPaneShippingAddressAccount();
+        $this->setDataPanelSummaryOrderAccount();
+        $this->setDataPanelComponentsOrderAccount();
+        $this->setDataPanelPaymentAddressOrderAccount();
+        $this->setDataPanelShippingAddressOrderAccount();
 
         $this->outputOrderAccount();
     }
 
     /**
-     * Sets summary pane on the order overview page
+     * Sets the summary panel on the order overview page
      */
-    protected function setDataPaneSummaryAccount()
+    protected function setDataPanelSummaryOrderAccount()
     {
         $data = array('order' => $this->data_order);
-        $html = $this->render('account/order/panes/summary', $data);
-        $this->setData('pane_summary', $html);
+        $this->setData('pane_summary', $this->render('account/order/panes/summary', $data));
     }
 
     /**
-     * Sets order components pane on the order overview page
+     * Sets the order components panel on the order overview page
      */
-    protected function setDataPaneComponentsAccount()
+    protected function setDataPanelComponentsOrderAccount()
     {
-        $templates = 'account/order/components';
-        $components = $this->prepareOrderComponentsTrait($this, $this->data_order, $templates);
+        $this->prepareOrderComponentCartTrait($this->data_order, $this, $this->price);
+        $this->prepareOrderComponentPaymentMethodTrait($this->data_order, $this, $this->price, $this->payment);
+        $this->prepareOrderComponentShippingMethodTrait($this->data_order, $this, $this->price, $this->shipping);
+        $this->prepareOrderComponentPriceRuleTrait($this->data_order, $this, $this->price, $this->pricerule);
 
-        $data = array('components' => $components, 'order' => $this->data_order);
+        ksort($this->data_order['data']['components']);
+
+        $data = array('components' => $this->data_order['data']['components'], 'order' => $this->data_order);
         $html = $this->render('account/order/panes/components', $data);
         $this->setData('pane_components', $html);
     }
 
     /**
-     * Sets shipping address pane on the order overview page
+     * Sets the shipping address panel on the order overview page
      */
-    protected function setDataPaneShippingAddressAccount()
+    protected function setDataPanelShippingAddressOrderAccount()
     {
         $data = array('order' => $this->data_order);
         $html = $this->render('account/order/panes/shipping_address', $data);
@@ -178,9 +162,9 @@ class Account extends FrontendController
     }
 
     /**
-     * Sets payment address pane on the order overview page
+     * Sets payment address panel on the order overview page
      */
-    protected function setDataPanePaymentAddressAccount()
+    protected function setDataPanelPaymentAddressOrderAccount()
     {
         $data = array('order' => $this->data_order);
         $html = $this->render('account/order/panes/payment_address', $data);
@@ -193,8 +177,7 @@ class Account extends FrontendController
     protected function setTitleOrderAccount()
     {
         $vars = array('@order_id' => $this->data_order['order_id']);
-        $title = $this->text('Order #@order_id', $vars);
-        $this->setTitle($title);
+        $this->setTitle($this->text('Order #@order_id', $vars));
     }
 
     /**
@@ -218,7 +201,7 @@ class Account extends FrontendController
     }
 
     /**
-     * Outputs the order overview page
+     * Render and output the order overview page
      */
     protected function outputOrderAccount()
     {
@@ -226,9 +209,8 @@ class Account extends FrontendController
     }
 
     /**
-     * Sets the current order
+     * Sets an order data
      * @param integer $order_id
-     * @return array
      */
     protected function setOrderAccount($order_id)
     {
@@ -238,11 +220,26 @@ class Account extends FrontendController
             $this->outputHttpStatus(404);
         }
 
-        return $this->data_order = $this->prepareOrderTrait($this, $order);
+        $this->prepareOrderAccount($order);
+        $this->data_order = $order;
     }
 
     /**
-     * Displays the customer account page
+     * Prepare an array of order data
+     * @param array $order
+     */
+    protected function prepareOrderAccount(array &$order)
+    {
+        $this->prepareOrderTotalTrait($order, $this->price);
+        $this->prepareOrderAddressTrait($order, $this->address);
+        $this->prepareOrderStoreTrait($order, $this->store, $this);
+        $this->prepareOrderStatusTrait($order, $this->order, $this);
+        $this->prepareOrderPaymentTrait($order, $this->payment, $this);
+        $this->prepareOrderShippingTrait($order, $this->shipping, $this);
+    }
+
+    /**
+     * Displays the user account page
      * @param integer $user_id
      */
     public function indexAccount($user_id)
@@ -252,71 +249,59 @@ class Account extends FrontendController
         $this->setTitleIndexAccount();
         $this->setBreadcrumbIndexAccount();
 
-        $query = $this->getFilterQuery();
-        $total = $this->getTotalOrderAccount();
-
-        $default_limit = $this->config('account_order_limit', 10);
-        $limit = $this->setPager($total, $query, $default_limit);
+        $this->setFilter();
+        $this->setTotalOrderIndexAccount();
+        $this->setPagerLimit($this->config('account_order_limit', 10));
 
         $this->setData('user', $this->data_user);
-        $this->setData('orders', $this->getListOrderAccount($limit, $query));
+        $this->setData('orders', $this->getListOrderAccount());
 
         $this->outputIndexAccount();
     }
 
     /**
-     * Returns a user
+     * Sets a user data
      * @param integer $user_id
-     * @return array
      */
     protected function setUserAccount($user_id)
     {
-        $user = $this->user->get($user_id);
+        $this->data_user = $this->user->get($user_id);
 
-        if (empty($user)) {
+        if (empty($this->data_user)) {
             $this->outputHttpStatus(404);
         }
 
-        if (empty($user['status']) && !$this->access('user')) {
+        if (empty($this->data_user['status']) && !$this->access('user')) {
             $this->outputHttpStatus(403);
         }
-
-        return $this->data_user = $user;
     }
 
     /**
-     * Returns a number of total orders for the customer
-     * @return integer
+     * Sets a total number of orders for the customer
      */
-    protected function getTotalOrderAccount()
+    protected function setTotalOrderIndexAccount()
     {
-        $options = array(
-            'count' => true,
-            'user_id' => $this->data_user['user_id']
-        );
-
-        return (int) $this->order->getList($options);
+        $options = array('count' => true, 'user_id' => $this->data_user['user_id']);
+        $this->total = (int) $this->order->getList($options);
     }
 
     /**
      * Returns an array of orders for the customer
-     * @param array $limit
-     * @param array $conditions
      * @return array
      */
-    protected function getListOrderAccount(array $limit, array $conditions)
+    protected function getListOrderAccount()
     {
-        $conditions += array(
+        $conditions = array(
             'order' => 'desc',
-            'limit' => $limit,
-            'sort' => 'created'
-        );
+            'sort' => 'created',
+            'limit' => $this->limit
+                ) + $this->query_filter;
 
         $conditions['user_id'] = $this->data_user['user_id'];
         $orders = (array) $this->order->getList($conditions);
 
         foreach ($orders as &$order) {
-            $this->prepareOrderTrait($this, $order);
+            $this->prepareOrderAccount($order);
         }
 
         return $orders;
@@ -382,32 +367,31 @@ class Account extends FrontendController
     }
 
     /**
-     * Saves submitted user account settings
+     * Handles the submitted user account settings
      */
     protected function submitEditAccount()
     {
-        if ($this->isPosted('save') && $this->validateAccount()) {
+        if ($this->isPosted('save') && $this->validateEditAccount()) {
             $this->updateAccount();
         }
     }
 
     /**
-     * Validates a user
+     * Validates a submitted user
      * @return boolean
      */
-    protected function validateAccount()
+    protected function validateEditAccount()
     {
         $this->setSubmitted('user', null, false);
         $this->setSubmitted('update', $this->data_user);
         $this->setSubmitted('user_id', $this->data_user['user_id']);
 
         $this->validateComponent('user');
-
         return !$this->hasErrors();
     }
 
     /**
-     * Updates a user with submitted values
+     * Updates a user
      */
     protected function updateAccount()
     {
@@ -421,7 +405,7 @@ class Account extends FrontendController
     }
 
     /**
-     * Sets breadcrumbs on the account edit form
+     * Sets breadcrumbs on the edit account page
      */
     protected function setBreadcrumbEditAccount()
     {
@@ -449,7 +433,7 @@ class Account extends FrontendController
     }
 
     /**
-     * Renders the edit account page templates
+     * Render and output the edit account page
      */
     protected function outputEditAccount()
     {
@@ -457,7 +441,7 @@ class Account extends FrontendController
     }
 
     /**
-     * Displays the addresses overview page
+     * Displays the address overview page
      * @param integer $user_id
      */
     public function listAddressAccount($user_id)
@@ -494,7 +478,6 @@ class Account extends FrontendController
 
     /**
      * Deletes an address
-     * @return null
      */
     protected function deleteAddressAccount()
     {
@@ -518,7 +501,7 @@ class Account extends FrontendController
     }
 
     /**
-     * Sets breadcrumbs on the address list page
+     * Sets breadcrumbs on the address overview page
      */
     protected function setBreadcrumbListAddressAccount()
     {
@@ -538,7 +521,7 @@ class Account extends FrontendController
     }
 
     /**
-     * Sets titles on the addresses overview page
+     * Sets titles on the address overview page
      */
     protected function setTitleListAddressAccount()
     {
@@ -546,7 +529,7 @@ class Account extends FrontendController
     }
 
     /**
-     * Renders the addresses overview page
+     * Render and output the address overview page
      */
     protected function outputListAddressAccount()
     {

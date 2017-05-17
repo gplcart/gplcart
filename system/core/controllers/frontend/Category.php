@@ -32,13 +32,13 @@ class Category extends FrontendController
     protected $search;
 
     /**
-     * The current category
+     * An array of category data
      * @var array
      */
     protected $data_category = array();
 
     /**
-     * An array of products for the current category
+     * An array of products for the category
      * @var array
      */
     protected $data_products = array();
@@ -50,25 +50,6 @@ class Category extends FrontendController
     protected $data_children = array();
 
     /**
-     * An array of query parameters
-     * @var array
-     */
-    protected $data_query = array();
-
-    /**
-     * The amount of products found on the page
-     * @var integer
-     */
-    protected $data_total;
-
-    /**
-     * The current pager limits
-     * @var array
-     */
-    protected $data_limit;
-
-    /**
-     * Constructor
      * @param SearchModel $search
      * @param CategoryGroupModel $category_group
      */
@@ -90,11 +71,12 @@ class Category extends FrontendController
         $this->setCategory($category_id);
         $this->setTitleIndexCategory();
 
-        $this->setHtmlFilter($this->data_category);
-        $this->setFilterQueryIndexCategory();
-        $this->setTotalProductCategory();
+        $this->setHtmlFilterIndexCategory();
 
+        $this->setFilterIndexCategory();
+        $this->setTotalIndexCategory();
         $this->setPagerIndexCategory();
+
         $this->setListProductCategory();
         $this->setChildrenCategory();
 
@@ -113,28 +95,62 @@ class Category extends FrontendController
     }
 
     /**
-     * Set pager limits
-     * @return array
+     * Sets HTML filter
      */
-    protected function setPagerIndexCategory()
+    protected function setHtmlFilterIndexCategory()
     {
-        $max = $this->settings('catalog_limit', 20);
-        return $this->data_limit = $this->setPager($this->data_total, $this->data_query, $max);
+        $this->setHtmlFilter($this->data_category);
     }
 
     /**
-     * Returns an array of sorting query
-     * @return array
+     * Set pager on the category page
      */
-    protected function setFilterQueryIndexCategory()
+    protected function setPagerIndexCategory()
     {
-        $filter = array(
+        $limit = $this->settings('catalog_limit', 20);
+        $this->limit = $this->setPager($this->total, $this->query_filter, $limit);
+    }
+
+    /**
+     * Sets filter on the category page
+     */
+    protected function setFilterIndexCategory()
+    {
+        $default = array(
             'view' => $this->settings('catalog_view', 'grid'),
             'sort' => $this->settings('catalog_sort', 'price'),
             'order' => $this->settings('catalog_order', 'asc')
         );
 
-        return $this->data_query = $this->getFilterQuery($filter);
+        $this->setFilter(array(), $this->getFilterQuery($default));
+    }
+
+    /**
+     * Sets a total number of products for the category
+     */
+    protected function setTotalIndexCategory()
+    {
+        $options = array(
+            'count' => true,
+            'category_id' => $this->data_category['category_id']
+        );
+
+        $options += $this->query_filter;
+        $this->total = (int) $this->product->getList($options);
+    }
+
+    /**
+     * Sets an array of products for the category
+     */
+    protected function setListProductCategory()
+    {
+        $options = array('placeholder' => true) + $this->query_filter;
+
+        $conditions = array(
+            'limit' => $this->limit,
+            'category_id' => $this->data_category['category_id']) + $this->query_filter;
+
+        $this->data_products = $this->getProducts($conditions, $options);
     }
 
     /**
@@ -144,9 +160,7 @@ class Category extends FrontendController
     {
         $data = $this->data;
         $data['category'] = $this->data_category;
-
-        $html = $this->render('category/content', $data);
-        $this->setRegion('region_content', $html);
+        $this->setRegion('region_content', $this->render('category/content', $data));
     }
 
     /**
@@ -171,8 +185,7 @@ class Category extends FrontendController
             'template' => 'category/menu'
         );
 
-        $menu = $this->renderMenu($options);
-        $this->setRegion('region_left', $menu);
+        $this->setRegion('region_left', $this->renderMenu($options));
     }
 
     /**
@@ -182,10 +195,10 @@ class Category extends FrontendController
     {
         $data = array(
             'query' => $this->query,
-            'total' => $this->data_total,
-            'view' => $this->data_query['view'],
+            'total' => $this->total,
+            'view' => $this->query_filter['view'],
             'quantity' => count($this->data_products),
-            'sort' => "{$this->data_query['sort']}-{$this->data_query['order']}"
+            'sort' => "{$this->query_filter['sort']}-{$this->query_filter['order']}"
         );
 
         $this->setData('navbar', $this->render('category/navbar', $data));
@@ -215,13 +228,11 @@ class Category extends FrontendController
     }
 
     /**
-     * Returns an array of children categories for the given category ID
-     * @return array
+     * Sets an array of children categories for the given category
      */
     protected function setChildrenCategory()
     {
-        $children = $this->category->getChildren($this->data_category['category_id'], $this->data_categories);
-        return $this->data_children = $children;
+        $this->data_children = $this->category->getChildren($this->data_category['category_id'], $this->data_categories);
     }
 
     /**
@@ -249,7 +260,7 @@ class Category extends FrontendController
     }
 
     /**
-     * Renders the category page
+     * Render and output the category page
      */
     protected function outputIndexCategory()
     {
@@ -257,49 +268,16 @@ class Category extends FrontendController
     }
 
     /**
-     * Returns a category
+     * Sets a category data
      * @param integer $category_id
-     * @return array
      */
     protected function setCategory($category_id)
     {
-        $category = $this->category->get($category_id, $this->langcode, $this->store_id);
+        $this->data_category = $this->category->get($category_id, $this->langcode, $this->store_id);
 
-        if (empty($category['status'])) {
+        if (empty($this->data_category['status'])) {
             $this->outputHttpStatus(404);
         }
-
-        return $this->data_category = $category;
-    }
-
-    /**
-     * Returns an array of prepared products
-     * @return array
-     */
-    protected function setListProductCategory()
-    {
-        $options = array('placeholder' => true) + $this->data_query;
-
-        $conditions = array(
-            'limit' => $this->data_limit,
-            'category_id' => $this->data_category['category_id']) + $this->data_query;
-
-        return $this->data_products = $this->getProducts($conditions, $options);
-    }
-
-    /**
-     * Returns total number of products for the category ID
-     * @return integer
-     */
-    protected function setTotalProductCategory()
-    {
-        $options = array(
-            'count' => true,
-            'category_id' => $this->data_category['category_id']
-        );
-
-        $options += $this->data_query;
-        return $this->data_total = (int) $this->product->getList($options);
     }
 
 }

@@ -146,12 +146,24 @@ class Controller
      * @var array
      */
     protected $query = array();
-    
+
     /**
      * An array of filter parameters
      * @var array
      */
     protected $query_filter = array();
+
+    /**
+     * Pager limits
+     * @var array
+     */
+    protected $limit;
+
+    /**
+     * A total number of items found for the filter conditions
+     * @var integer
+     */
+    protected $total;
 
     /**
      * Access for the current route
@@ -2026,7 +2038,7 @@ class Controller
      * @param array $allowed_filters
      * @param array $query
      */
-    public function setFilter(array $allowed_filters, $query = null)
+    public function setFilter(array $allowed_filters = array(), $query = null)
     {
         if (isset($query)) {
             $this->query_filter = $query;
@@ -2112,6 +2124,14 @@ class Controller
 
         $this->data['pager'] = $this->pager->render();
         return $this->pager->getLimit();
+    }
+
+    /**
+     * Set pager limits
+     */
+    protected function setPagerLimit($limit = null)
+    {
+        $this->limit = $this->setPager($this->total, $this->query_filter, $limit);
     }
 
     /**
