@@ -46,7 +46,6 @@ class Report extends BackendController
     protected $shipping;
 
     /**
-     * Constructor
      * @param ReportModel $report
      * @param UserRoleModel $role
      * @param PaymentModel $payment
@@ -76,7 +75,7 @@ class Report extends BackendController
     }
 
     /**
-     * Sets title on the payment methods overview page
+     * Sets title on the payment method overview page
      */
     protected function setTitleListPaymentMethodsReport()
     {
@@ -84,7 +83,7 @@ class Report extends BackendController
     }
 
     /**
-     * Sets breadcrumbs on the payment methods overview page
+     * Sets breadcrumbs on the payment method overview page
      */
     protected function setBreadcrumbListPaymentMethodsReport()
     {
@@ -97,7 +96,7 @@ class Report extends BackendController
     }
 
     /**
-     * Renders templates on the payment methods overview page
+     * Renders templates on the payment method overview page
      */
     protected function outputListPaymentMethodsReport()
     {
@@ -105,7 +104,7 @@ class Report extends BackendController
     }
 
     /**
-     * Displays the shipping methods overview page
+     * Displays the shipping method overview page
      */
     public function listShippingMethodsReport()
     {
@@ -118,7 +117,7 @@ class Report extends BackendController
     }
 
     /**
-     * Sets title on the shipping methods overview page
+     * Sets title on the shipping method overview page
      */
     protected function setTitleListShippingMethodsReport()
     {
@@ -126,7 +125,7 @@ class Report extends BackendController
     }
 
     /**
-     * Sets breadcrumbs on the shipping methods overview page
+     * Sets breadcrumbs on the shipping method overview page
      */
     protected function setBreadcrumbListShippingMethodsReport()
     {
@@ -139,7 +138,7 @@ class Report extends BackendController
     }
 
     /**
-     * Renders templates on the shipping methods overview page
+     * Render and output the shipping method overview page
      */
     protected function outputListShippingMethodsReport()
     {
@@ -147,7 +146,7 @@ class Report extends BackendController
     }
 
     /**
-     * Displays the routes overview page
+     * Displays the route overview page
      */
     public function listRoutesReport()
     {
@@ -159,7 +158,7 @@ class Report extends BackendController
     }
 
     /**
-     * Returns an array of prepared routes 
+     * Returns an array of routes
      */
     protected function getRoutesReport()
     {
@@ -201,7 +200,7 @@ class Report extends BackendController
     }
 
     /**
-     * Sets title on the routes overview page
+     * Sets title on the route overview page
      */
     protected function setTitleListRoutesReport()
     {
@@ -209,7 +208,7 @@ class Report extends BackendController
     }
 
     /**
-     * Sets breadcrumbs on the routes overview page
+     * Sets breadcrumbs on the route overview page
      */
     protected function setBreadcrumbListRoutesReport()
     {
@@ -222,7 +221,7 @@ class Report extends BackendController
     }
 
     /**
-     * Renders templates on the routes overview page
+     * Render and output the route overview page
      */
     protected function outputListRoutesReport()
     {
@@ -230,7 +229,7 @@ class Report extends BackendController
     }
 
     /**
-     * Displays the system events overview page
+     * Displays the event overview page
      */
     public function listEventReport()
     {
@@ -239,19 +238,33 @@ class Report extends BackendController
         $this->setTitleListEventReport();
         $this->setBreadcrumbListEventReport();
 
-        $query = $this->getFilterQuery();
-
-        $filters = array('severity', 'type', 'time', 'text');
-        $this->setFilter($filters, $query);
-
-        $total = $this->getTotalEventReport($query);
-        $limit = $this->setPager($total, $query);
+        $this->setFilterListEventReport();
+        $this->setTotalListEventReport();
+        $this->setPagerLimit();
 
         $this->setData('types', $this->report->getTypes());
         $this->setData('severities', $this->report->getSeverities());
-        $this->setData('records', $this->getListEventReport($limit, $query));
+        $this->setData('records', $this->getListEventReport());
 
         $this->outputListEventReport();
+    }
+
+    /**
+     * Sets filter on the event overview page
+     */
+    protected function setFilterListEventReport()
+    {
+        $this->setFilter($filters, array('severity', 'type', 'time', 'text'));
+    }
+
+    /**
+     * Sets a total number of events found for the filter conditions
+     */
+    protected function setTotalListEventReport()
+    {
+        $query = $this->query_filter;
+        $query['count'] = true;
+        $this->total = (int) $this->report->getList($query);
     }
 
     /**
@@ -266,32 +279,20 @@ class Report extends BackendController
     }
 
     /**
-     * Returns a number of total system events for pager
-     * @param array $query
-     * @return integer
-     */
-    protected function getTotalEventReport(array $query)
-    {
-        $query['count'] = true;
-        return (int) $this->report->getList($query);
-    }
-
-    /**
      * Returns an array of system events
-     * @param array $limit
-     * @param array $query
      * @return array
      */
-    protected function getListEventReport(array $limit, array $query)
+    protected function getListEventReport()
     {
-        $query['limit'] = $limit;
+        $query = $this->query_filter;
+        $query['limit'] = $this->limit;
         $records = (array) $this->report->getList($query);
 
         return $this->prepareListEventReport($records);
     }
 
     /**
-     * Adds an additional data to the event recors
+     * Prepare an array of system events
      * @param array $records
      * @return array
      */
@@ -321,7 +322,7 @@ class Report extends BackendController
     }
 
     /**
-     * Sets titles on the system events overview page
+     * Sets title on the event overview page
      */
     protected function setTitleListEventReport()
     {
@@ -329,7 +330,7 @@ class Report extends BackendController
     }
 
     /**
-     * Sets breadcrumbs on the system events overview page
+     * Sets breadcrumbs on the event overview page
      */
     protected function setBreadcrumbListEventReport()
     {
@@ -342,7 +343,7 @@ class Report extends BackendController
     }
 
     /**
-     * Renders the system events overview page
+     * Render and output the event overview page
      */
     protected function outputListEventReport()
     {
@@ -350,7 +351,7 @@ class Report extends BackendController
     }
 
     /**
-     * Displays the system status page
+     * Displays the status page
      */
     public function listStatusReport()
     {
@@ -363,7 +364,7 @@ class Report extends BackendController
     }
 
     /**
-     * Sets titles on the system status page
+     * Sets title on the status page
      */
     protected function setTitleListStatusReport()
     {
@@ -371,7 +372,7 @@ class Report extends BackendController
     }
 
     /**
-     * Sets breadcrumbs on the system status page
+     * Sets breadcrumbs on the status page
      */
     protected function setBreadcrumbListStatusReport()
     {
@@ -384,7 +385,7 @@ class Report extends BackendController
     }
 
     /**
-     * Renders the system status templates
+     * Render and output the status page
      */
     protected function outputListStatusReport()
     {

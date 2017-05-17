@@ -25,7 +25,7 @@ class Currency extends BackendController
     protected $currency;
 
     /**
-     * The current currency
+     * An array of currency data
      * @var array
      */
     protected $data_currency = array();
@@ -55,7 +55,7 @@ class Currency extends BackendController
     }
 
     /**
-     * Sets title on the currency overview page
+     * Sets titles on the currency overview page
      */
     protected function setTitleListCurrency()
     {
@@ -76,7 +76,7 @@ class Currency extends BackendController
     }
 
     /**
-     * Renders the currency overview page
+     * Render and output the currency overview page
      */
     protected function outputListCurrency()
     {
@@ -124,8 +124,8 @@ class Currency extends BackendController
     }
 
     /**
-     * Validates a currency data
-     * @return bool
+     * Validates a submitted currency data
+     * @return boolean
      */
     protected function validateEditCurrency()
     {
@@ -242,7 +242,7 @@ class Currency extends BackendController
     }
 
     /**
-     * Renders the currency edit page
+     * Render and output the currency edit page
      */
     protected function outputEditCurrency()
     {

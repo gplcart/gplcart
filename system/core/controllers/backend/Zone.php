@@ -25,13 +25,12 @@ class Zone extends BackendController
     protected $zone;
 
     /**
-     * The current zone
+     * An array of zone data
      * @var array
      */
     protected $data_zone = array();
 
     /**
-     * Constructor
      * @param ZoneModel $zone
      */
     public function __construct(ZoneModel $zone)
@@ -42,32 +41,45 @@ class Zone extends BackendController
     }
 
     /**
-     * Returns the zone overview page
+     * Displays the zone overview page
      */
     public function listZone()
     {
-        $this->actionZone();
+        $this->actionListZone();
 
         $this->setTitleListZone();
         $this->setBreadcrumbListZone();
 
-        $query = $this->getFilterQuery();
+        $this->setFilterListZone();
+        $this->setTotalListZone();
+        $this->setPagerLimit();
 
-        $allowed = array('title', 'status');
-        $this->setFilter($allowed, $query);
-
-        $total = $this->getTotalZone($query);
-        $limit = $this->setPager($total, $query);
-
-        $this->setData('zones', $this->getListZone($limit, $query));
+        $this->setData('zones', $this->getListZone());
         $this->outputListZone();
     }
 
     /**
-     * Applies an action to the selected zones
-     * @return null
+     * Sets filter on the zone overview page
      */
-    protected function actionZone()
+    protected function setFilterListZone()
+    {
+        $this->setFilter(array('title', 'status'));
+    }
+
+    /**
+     * Sets a total number of zones found for the filter conditions
+     */
+    public function setTotalListZone()
+    {
+        $query = $this->query_filter;
+        $query['count'] = true;
+        $this->total = (int) $this->zone->getList($query);
+    }
+
+    /**
+     * Applies an action to the selected zones
+     */
+    protected function actionListZone()
     {
         $action = (string) $this->getPosted('action');
 
@@ -104,30 +116,18 @@ class Zone extends BackendController
     }
 
     /**
-     * Returns a number of total zones
-     * @param array $query
-     * @return integer
-     */
-    public function getTotalZone(array $query)
-    {
-        $query['count'] = true;
-        return (int) $this->zone->getList($query);
-    }
-
-    /**
      * Returns an array of zones
-     * @param array $limit
-     * @param array $query
      * @return array
      */
-    protected function getListZone(array $limit, array $query)
+    protected function getListZone()
     {
-        $query['limit'] = $limit;
+        $query = $this->query_filter;
+        $query['limit'] = $this->limit;
         return $this->zone->getList($query);
     }
 
     /**
-     * Sets titles on the zones overview page
+     * Sets title on the zones overview page
      */
     protected function setTitleListZone()
     {
@@ -135,7 +135,7 @@ class Zone extends BackendController
     }
 
     /**
-     * Sets breadcrumbs on the zones overview page
+     * Sets breadcrumbs on the zone overview page
      */
     protected function setBreadcrumbListZone()
     {
@@ -148,7 +148,7 @@ class Zone extends BackendController
     }
 
     /**
-     * Renders the zone overview page
+     * Render and output the zone overview page
      */
     protected function outputListZone()
     {
@@ -169,12 +169,12 @@ class Zone extends BackendController
         $this->setData('zone', $this->data_zone);
         $this->setData('can_delete', $this->canDeleteZone());
 
-        $this->submitZone();
+        $this->submitEditZone();
         $this->outputEditZone();
     }
 
     /**
-     * Wheter the current zone can be deleted
+     * Whether the zone can be deleted
      * @return bool
      */
     protected function canDeleteZone()
@@ -185,37 +185,30 @@ class Zone extends BackendController
     }
 
     /**
-     * Returns a zone
+     * Sets a zone data
      * @param integer $zone_id
-     * @return array
      */
     protected function setZone($zone_id)
     {
-        if (!is_numeric($zone_id)) {
-            return array();
+        if (is_numeric($zone_id)) {
+            $this->data_zone = $this->zone->get($zone_id);
+            if (empty($this->data_zone)) {
+                $this->outputHttpStatus(404);
+            }
         }
-
-        $zone = $this->zone->get($zone_id);
-
-        if (empty($zone)) {
-            $this->outputHttpStatus(404);
-        }
-
-        return $this->data_zone = $zone;
     }
 
     /**
-     * Saves a submitted zone
-     * @return null
+     * Handles a submitted zone data
      */
-    protected function submitZone()
+    protected function submitEditZone()
     {
         if ($this->isPosted('delete')) {
             $this->deleteZone();
             return null;
         }
 
-        if (!$this->isPosted('save') || !$this->validateZone()) {
+        if (!$this->isPosted('save') || !$this->validateEditZone()) {
             return null;
         }
 
@@ -227,17 +220,16 @@ class Zone extends BackendController
     }
 
     /**
-     * Validates a zone
+     * Validates a submitted zone
      * @return bool
      */
-    protected function validateZone()
+    protected function validateEditZone()
     {
         $this->setSubmitted('zone');
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $this->data_zone);
 
         $this->validateComponent('zone');
-
         return !$this->hasErrors();
     }
 
@@ -260,7 +252,7 @@ class Zone extends BackendController
     }
 
     /**
-     * Updates a zone with submitted values
+     * Updates a zone
      */
     protected function updateZone()
     {
@@ -274,7 +266,7 @@ class Zone extends BackendController
     }
 
     /**
-     * Adds a new zone using an array of submitted values
+     * Adds a new zone
      */
     protected function addZone()
     {
@@ -321,7 +313,7 @@ class Zone extends BackendController
     }
 
     /**
-     * Renders the edit zone page
+     * Render and output the edit zone page
      */
     protected function outputEditZone()
     {

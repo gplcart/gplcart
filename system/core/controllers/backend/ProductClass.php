@@ -32,13 +32,12 @@ class ProductClass extends BackendController
     protected $field;
 
     /**
-     * The current product class
+     * An array of product class data
      * @var array
      */
     protected $data_product_class = array();
 
     /**
-     * Constructor
      * @param ProductClassModel $product_class
      * @param FieldModel $field
      */
@@ -52,31 +51,45 @@ class ProductClass extends BackendController
     }
 
     /**
-     * Returns the product classes overview page
+     * Returns the product class overview page
      */
     public function listProductClass()
     {
-        $this->actionProductClass();
+        $this->actionListProductClass();
 
         $this->setTitleListProductClass();
         $this->setBreadcrumbListProductClass();
 
-        $query = $this->getFilterQuery();
+        $this->setFilterListProductClass();
+        $this->setTotalListProductClass();
+        $this->setPagerLimit();
 
-        $allowed = array('title', 'status', 'product_class_id');
-        $this->setFilter($allowed, $query);
-
-        $total = $this->getTotalProductClass($query);
-        $limit = $this->setPager($total, $query);
-
-        $this->setData('classes', $this->getListProductClass($limit, $query));
+        $this->setData('classes', $this->getListProductClass());
         $this->outputListProductClass();
+    }
+
+    /**
+     * Set a total number of product classes
+     */
+    public function setTotalListProductClass()
+    {
+        $query = $this->query_filter;
+        $query['count'] = true;
+        $this->total = (int) $this->product_class->getList($query);
+    }
+
+    /**
+     * Set filter on the product class overview page
+     */
+    protected function setFilterListProductClass()
+    {
+        $this->setFilter(array('title', 'status', 'product_class_id'));
     }
 
     /**
      * Applies an action to the selected product classes
      */
-    protected function actionProductClass()
+    protected function actionListProductClass()
     {
         $action = (string) $this->getPosted('action');
 
@@ -113,30 +126,18 @@ class ProductClass extends BackendController
     }
 
     /**
-     * Returns a number of total product classes
-     * @param array $query
-     * @return integer
-     */
-    public function getTotalProductClass(array $query)
-    {
-        $query['count'] = true;
-        return (int) $this->product_class->getList($query);
-    }
-
-    /**
-     * Returns an array of classes
-     * @param array $limit
-     * @param array $query
+     * Returns an array of product classes
      * @return array
      */
-    protected function getListProductClass(array $limit, array $query)
+    protected function getListProductClass()
     {
-        $query['limit'] = $limit;
+        $query = $this->query_filter;
+        $query['limit'] = $this->limit;
         return (array) $this->product_class->getList($query);
     }
 
     /**
-     * Sets titles on the product classes overview page
+     * Sets titles on the product class overview page
      */
     protected function setTitleListProductClass()
     {
@@ -144,7 +145,7 @@ class ProductClass extends BackendController
     }
 
     /**
-     * Sets breadcrumbs on the product classes overview page
+     * Sets breadcrumbs on the product class overview page
      */
     protected function setBreadcrumbListProductClass()
     {
@@ -157,7 +158,7 @@ class ProductClass extends BackendController
     }
 
     /**
-     * Renders the product class overview page
+     * Render and output the product class overview page
      */
     protected function outputListProductClass()
     {
@@ -165,7 +166,7 @@ class ProductClass extends BackendController
     }
 
     /**
-     * Displays the product class edit page
+     * Displays the edit product class page
      * @param null|integer $product_class_id
      */
     public function editProductClass($product_class_id = null)
@@ -177,43 +178,35 @@ class ProductClass extends BackendController
 
         $this->setData('product_class', $this->data_product_class);
 
-        $this->submitProductClass();
+        $this->submitEditProductClass();
         $this->outputEditProductClass();
     }
 
     /**
-     * Returns a product class
+     * Sets the product class data
      * @param integer $product_class_id
-     * @return array
      */
     protected function setProductClass($product_class_id)
     {
-        if (!is_numeric($product_class_id)) {
-            return array();
+        if (is_numeric($product_class_id)) {
+            $this->data_product_class = $this->product_class->get($product_class_id);
+            if (empty($this->data_product_class)) {
+                $this->outputHttpStatus(404);
+            }
         }
-
-        $product_class = $this->product_class->get($product_class_id);
-
-        if (empty($product_class)) {
-            $this->outputHttpStatus(404);
-        }
-
-        $this->data_product_class = $product_class;
-        return $product_class;
     }
 
     /**
-     * Saves a submitted product class
-     * @return null
+     * Handles a submitted product class
      */
-    protected function submitProductClass()
+    protected function submitEditProductClass()
     {
         if ($this->isPosted('delete')) {
             $this->deleteProductClass();
             return null;
         }
 
-        if (!$this->isPosted('save') || !$this->validateProductClass()) {
+        if (!$this->isPosted('save') || !$this->validateEditProductClass()) {
             return null;
         }
 
@@ -225,18 +218,16 @@ class ProductClass extends BackendController
     }
 
     /**
-     * Validates a products class
+     * Validates a products class data
      * @return bool
      */
-    protected function validateProductClass()
+    protected function validateEditProductClass()
     {
         $this->setSubmitted('product_class');
-
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $this->data_product_class);
 
         $this->validateComponent('product_class');
-
         return !$this->hasErrors();
     }
 
@@ -259,7 +250,7 @@ class ProductClass extends BackendController
     }
 
     /**
-     * Updates a product class with submitted values
+     * Updates a product class
      */
     protected function updateProductClass()
     {
@@ -273,7 +264,7 @@ class ProductClass extends BackendController
     }
 
     /**
-     * Adds a new product class using an array of submitted values
+     * Adds a new product class
      */
     protected function addProductClass()
     {
@@ -286,7 +277,7 @@ class ProductClass extends BackendController
     }
 
     /**
-     * Sets titles on the edit product class page
+     * Sets title on the edit product class page
      */
     protected function setTitleEditProductClass()
     {
@@ -321,7 +312,7 @@ class ProductClass extends BackendController
     }
 
     /**
-     * Renders the product class edit page
+     * Render and output the edit product class page
      */
     protected function outputEditProductClass()
     {
@@ -329,7 +320,7 @@ class ProductClass extends BackendController
     }
 
     /**
-     * Displays fields for a given product class
+     * Displays the field overview page
      * @param integer $product_class_id
      */
     public function fieldsProductClass($product_class_id)
@@ -339,9 +330,7 @@ class ProductClass extends BackendController
         $this->setTitleFieldsProductClass();
         $this->setBreadcrumbFieldsProductClass();
 
-        $fields = $this->getFieldsProductClass($product_class_id);
-
-        $this->setData('fields', $fields);
+        $this->setData('fields', $this->getFieldsProductClass($product_class_id));
         $this->setData('product_class', $this->data_product_class);
 
         $this->submitFieldsProductClass();
@@ -376,7 +365,7 @@ class ProductClass extends BackendController
     }
 
     /**
-     * Saves the product class fields
+     * Handles the submitted product class fields
      */
     protected function submitFieldsProductClass()
     {
@@ -386,7 +375,7 @@ class ProductClass extends BackendController
     }
 
     /**
-     * Updates fields for a product class
+     * Updates fields
      */
     protected function updateFieldsProductClass()
     {
@@ -414,7 +403,7 @@ class ProductClass extends BackendController
     }
 
     /**
-     * Sets titles on the product class fields page
+     * Sets titles on the field overview page
      */
     protected function setTitleFieldsProductClass()
     {
@@ -424,7 +413,7 @@ class ProductClass extends BackendController
     }
 
     /**
-     * Sets breadcrumbs on the product class fields page
+     * Sets breadcrumbs on the field overview page
      */
     protected function setBreadcrumbFieldsProductClass()
     {
@@ -444,7 +433,7 @@ class ProductClass extends BackendController
     }
 
     /**
-     * Renders the product class fields page
+     * Render and output the field overview page
      */
     protected function outputFieldsProductClass()
     {
@@ -452,7 +441,7 @@ class ProductClass extends BackendController
     }
 
     /**
-     * Displays the field add form
+     * Displays the add field page
      * @param integer $product_class_id
      */
     public function editFieldProductClass($product_class_id)
@@ -472,7 +461,7 @@ class ProductClass extends BackendController
     }
 
     /**
-     * Adds fields to the given product class
+     * Adds fields to the product class
      */
     protected function submitEditFieldProductClass()
     {
@@ -507,7 +496,7 @@ class ProductClass extends BackendController
     }
 
     /**
-     * Sets titles on the add product class field page
+     * Sets titles on the add field page
      */
     protected function setTitleEditFieldProductClass()
     {
@@ -517,7 +506,7 @@ class ProductClass extends BackendController
     }
 
     /**
-     * Sets breadcrumbs on the add product class field page
+     * Sets breadcrumbs on the add field page
      */
     protected function setBreadcrumbEditFieldProductClass()
     {
@@ -542,7 +531,7 @@ class ProductClass extends BackendController
     }
 
     /**
-     * Renders the add fields page
+     * Render and output the add field page
      */
     protected function outputEditFieldProductClass()
     {

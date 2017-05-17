@@ -31,24 +31,6 @@ class Collection extends BackendController
     protected $data_collection = array();
 
     /**
-     * An array of filter parameters
-     * @var array
-     */
-    protected $data_filter = array();
-
-    /**
-     * A number of total results found for the filter conditions
-     * @var integer
-     */
-    protected $data_total;
-
-    /**
-     * Pager limits
-     * @var array
-     */
-    protected $data_limit;
-
-    /**
      * @param CollectionModel $collection
      */
     public function __construct(CollectionModel $collection)
@@ -70,7 +52,7 @@ class Collection extends BackendController
 
         $this->setFilterListCollection();
         $this->setTotalListCollection();
-        $this->setPagerListCollection();
+        $this->setPagerLimit();
 
         $this->setData('stores', $this->store->getNames());
         $this->setData('collections', $this->getListCollection());
@@ -80,21 +62,12 @@ class Collection extends BackendController
     }
 
     /**
-     * Set a number of total results found for the filter conditions
-     */
-    protected function setPagerListCollection()
-    {
-        $this->data_limit = $this->setPager($this->data_total, $this->data_filter);
-    }
-
-    /**
      * Set the current filter
      */
     protected function setFilterListCollection()
     {
-        $this->data_filter = $this->getFilterQuery();
         $allowed = array('type', 'store_id', 'status', 'title', 'collection_id');
-        $this->setFilter($allowed, $this->data_filter);
+        $this->setFilter($allowed);
     }
 
     /**
@@ -140,9 +113,9 @@ class Collection extends BackendController
      */
     protected function setTotalListCollection()
     {
-        $query = $this->data_filter;
+        $query = $this->query_filter;
         $query['count'] = true;
-        $this->data_total = (int) $this->collection->getList($query);
+        $this->total = (int) $this->collection->getList($query);
     }
 
     /**
@@ -151,8 +124,8 @@ class Collection extends BackendController
      */
     protected function getListCollection()
     {
-        $query = $this->data_filter;
-        $query['limit'] = $this->data_limit;
+        $query = $this->query_filter;
+        $query['limit'] = $this->limit;
         return (array) $this->collection->getList($query);
     }
 

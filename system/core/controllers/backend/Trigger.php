@@ -38,7 +38,6 @@ class Trigger extends BackendController
     protected $data_trigger = array();
 
     /**
-     * Constructor
      * @param TriggerModel $trigger
      * @param ConditionModel $condition
      */
@@ -55,29 +54,33 @@ class Trigger extends BackendController
      */
     public function listTrigger()
     {
-        $this->actionTrigger();
+        $this->actionListTrigger();
 
         $this->setTitleListTrigger();
         $this->setBreadcrumbListTrigger();
 
-        $query = $this->getFilterQuery();
-
-        $allowed = array('store_id', 'status', 'name');
-        $this->setFilter($allowed, $query);
-
-        $total = $this->getTotalTrigger($query);
-        $limit = $this->setPager($total, $query);
+        $this->setFilterListTrigger();
+        $this->setTotalListTrigger();
+        $this->setPagerLimit();
 
         $this->setData('stores', $this->store->getNames());
-        $this->setData('triggers', $this->getListTrigger($limit, $query));
+        $this->setData('triggers', $this->getListTrigger());
 
         $this->outputListTrigger();
     }
 
     /**
+     * Set filter on the trigger overview page
+     */
+    protected function setFilterListTrigger()
+    {
+        $this->setFilter(array('store_id', 'status', 'name'));
+    }
+
+    /**
      * Applies an action to the selected triggers
      */
-    protected function actionTrigger()
+    protected function actionListTrigger()
     {
         $action = (string) $this->getPosted('action');
 
@@ -113,30 +116,28 @@ class Trigger extends BackendController
     }
 
     /**
-     * Returns total number of triggers
-     * @param array $query
-     * @return integer
+     * Sets a total number of triggers found for the filter conditions
      */
-    protected function getTotalTrigger(array $query)
+    protected function setTotalListTrigger()
     {
+        $query = $this->query_filter;
         $query['count'] = true;
-        return (int) $this->trigger->getList($query);
+        $this->total = (int) $this->trigger->getList($query);
     }
 
     /**
      * Returns an array of triggers
-     * @param array $limit
-     * @param array $query
      * @return array
      */
-    protected function getListTrigger(array $limit, array $query)
+    protected function getListTrigger()
     {
-        $query['limit'] = $limit;
+        $query = $this->query_filter;
+        $query['limit'] = $this->limit;
         return (array) $this->trigger->getList($query);
     }
 
     /**
-     * Sets title on the triggers overview page
+     * Sets title on the trigger overview page
      */
     protected function setTitleListTrigger()
     {
@@ -144,7 +145,7 @@ class Trigger extends BackendController
     }
 
     /**
-     * Sets breadcrumbs on the triggers overview page
+     * Sets breadcrumbs on the trigger overview page
      */
     protected function setBreadcrumbListTrigger()
     {
@@ -157,7 +158,7 @@ class Trigger extends BackendController
     }
 
     /**
-     * Renders the triggers overview page
+     * Render and output the trigger overview page
      */
     protected function outputListTrigger()
     {
@@ -181,7 +182,7 @@ class Trigger extends BackendController
         $this->setData('conditions', $this->getConditionsTrigger());
         $this->setData('operators', $this->getConditionOperatorsTrigger());
 
-        $this->submitTrigger();
+        $this->submitEditTrigger();
 
         $this->setDataEditTrigger();
         $this->outputEditTrigger();
@@ -215,37 +216,30 @@ class Trigger extends BackendController
     }
 
     /**
-     * Returns a trigger
+     * Sets a trigger data
      * @param integer $trigger_id
-     * @return array
      */
     protected function setTrigger($trigger_id)
     {
-        if (!is_numeric($trigger_id)) {
-            return array();
+        if (is_numeric($trigger_id)) {
+            $this->data_trigger = $this->trigger->get($trigger_id);
+            if (empty($this->data_trigger)) {
+                $this->outputHttpStatus(404);
+            }
         }
-
-        $trigger = $this->trigger->get($trigger_id);
-
-        if (empty($trigger)) {
-            $this->outputHttpStatus(404);
-        }
-
-        return $this->data_trigger = $trigger;
     }
 
     /**
-     * Saves an array of submitted trigger data
-     * @return null
+     * Handles a submitted trigger data
      */
-    protected function submitTrigger()
+    protected function submitEditTrigger()
     {
         if ($this->isPosted('delete')) {
             $this->deleteTrigger();
             return null;
         }
 
-        if (!$this->isPosted('save') || !$this->validateTrigger()) {
+        if (!$this->isPosted('save') || !$this->validateEditTrigger()) {
             return null;
         }
 
@@ -260,7 +254,7 @@ class Trigger extends BackendController
      * Validates a submitted trigger
      * @return bool
      */
-    protected function validateTrigger()
+    protected function validateEditTrigger()
     {
         $this->setSubmitted('trigger', null, false);
         $this->setSubmittedBool('status');
@@ -268,7 +262,6 @@ class Trigger extends BackendController
         $this->setSubmitted('update', $this->data_trigger);
 
         $this->validateComponent('trigger');
-
         return !$this->hasErrors();
     }
 
@@ -290,7 +283,7 @@ class Trigger extends BackendController
     }
 
     /**
-     * Updates a trigger with the submitted values
+     * Updates a trigger
      */
     protected function updateTrigger()
     {
@@ -304,7 +297,7 @@ class Trigger extends BackendController
     }
 
     /**
-     * Adds a new trigger using an array of submitted data
+     * Adds a new trigger
      */
     protected function addTrigger()
     {
@@ -323,7 +316,6 @@ class Trigger extends BackendController
 
     /**
      * Converts an array of conditions into a multiline string
-     * @return null
      */
     protected function setDataEditTrigger()
     {
@@ -334,7 +326,6 @@ class Trigger extends BackendController
         }
 
         if (!$this->isError()) {
-            // Do not sort on errors when "weight" is not set
             gplcart_array_sort($conditions);
         }
 
@@ -382,7 +373,7 @@ class Trigger extends BackendController
     }
 
     /**
-     * Renders the edit trigger page
+     * Render and output the edit trigger page
      */
     protected function outputEditTrigger()
     {

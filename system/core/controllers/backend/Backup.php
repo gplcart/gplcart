@@ -25,24 +25,6 @@ class Backup extends BackendController
     protected $backup;
 
     /**
-     * The current filter parameters
-     * @var array
-     */
-    protected $data_filter = array();
-
-    /**
-     * A total number of items found for the filter parameters
-     * @var integer
-     */
-    protected $data_total;
-
-    /**
-     * Pager limits
-     * @var array
-     */
-    protected $data_limit;
-
-    /**
      * @param BackupModel $backup
      */
     public function __construct(BackupModel $backup)
@@ -65,7 +47,7 @@ class Backup extends BackendController
 
         $this->setFilterListBackup();
         $this->setTotalListBackup();
-        $this->setPagerListBackup();
+        $this->setPagerLimit();
 
         $this->setData('handlers', $this->getHandlersBackup());
         $this->setData('backups', $this->getListBackup());
@@ -74,22 +56,13 @@ class Backup extends BackendController
     }
 
     /**
-     * Set pager limits
-     */
-    protected function setPagerListBackup()
-    {
-        $this->data_limit = $this->setPager($this->data_total, $this->data_filter);
-    }
-
-    /**
      * Sets filter parameters
      */
     protected function setFilterListBackup()
     {
-        $this->data_filter = $this->getFilterQuery();
         $allowed = array('created', 'name', 'user_id', 'type',
             'version', 'module_id', 'backup_id');
-        $this->setFilter($allowed, $this->data_filter);
+        $this->setFilter($allowed);
     }
 
     /**
@@ -174,8 +147,8 @@ class Backup extends BackendController
      */
     protected function getListBackup()
     {
-        $query = $this->data_filter;
-        $query['limit'] = $this->data_limit;
+        $query = $this->query_filter;
+        $query['limit'] = $this->limit;
         return $this->backup->getList($query);
     }
 
@@ -184,9 +157,9 @@ class Backup extends BackendController
      */
     protected function setTotalListBackup()
     {
-        $query = $this->data_filter;
+        $query = $this->query_filter;
         $query['count'] = true;
-        $this->data_total = (int) $this->backup->getList($query);
+        $this->total = (int) $this->backup->getList($query);
     }
 
     /**

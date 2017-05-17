@@ -87,7 +87,7 @@ class Library extends BackendController
     }
 
     /**
-     * Renders the library overview page
+     * Render and output the library overview page
      */
     protected function outputListLibrary()
     {

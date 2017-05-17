@@ -73,7 +73,6 @@ class Product extends BackendController
     protected $data_product = array();
 
     /**
-     * Constructor
      * @param ProductModel $product
      * @param ProductClassModel $product_class
      * @param CategoryModel $category
@@ -103,32 +102,46 @@ class Product extends BackendController
      */
     public function listProduct()
     {
-        $this->actionProduct();
+        $this->actionListProduct();
 
         $this->setTitleListProduct();
         $this->setBreadcrumbListProduct();
 
-        $query = $this->getFilterQuery();
-
-        $filters = array('title', 'sku_like', 'price', 'stock', 'status',
-            'store_id', 'product_id', 'currency');
-
-        $this->setFilter($filters, $query);
-
-        $total = $this->getTotalProduct($query);
-        $limit = $this->setPager($total, $query);
+        $this->setFilterListProduct();
+        $this->setTotalListProduct();
+        $this->setPagerLimit();
 
         $this->setData('stores', $this->store->getNames());
-        $this->setData('products', $this->getListProduct($limit, $query));
+        $this->setData('products', $this->getListProduct());
         $this->setData('currencies', $this->currency->getList());
 
         $this->outputListProduct();
     }
 
     /**
-     * Applies an action to products
+     * Set filter on the product overview page
      */
-    protected function actionProduct()
+    protected function setFilterListProduct()
+    {
+        $allowed = array('title', 'sku_like', 'price', 'stock', 'status',
+            'store_id', 'product_id', 'currency');
+        $this->setFilter($allowed);
+    }
+
+    /**
+     * Set a number of total products found for the filter conditions
+     */
+    protected function setTotalListProduct()
+    {
+        $query = $this->query_filter;
+        $query['count'] = true;
+        $this->total = (int) $this->product->getList($query);
+    }
+
+    /**
+     * Applies an action to the selected products
+     */
+    protected function actionListProduct()
     {
         $action = (string) $this->getPosted('action');
 
@@ -163,31 +176,24 @@ class Product extends BackendController
     }
 
     /**
-     * Return a number of total products for pager
-     * @param array $query
-     * @return integer
+     * Returns an array of products
+     * @return array
      */
-    protected function getTotalProduct(array $query)
+    protected function getListProduct()
     {
-        $query['count'] = true;
-        return (int) $this->product->getList($query);
+        $query = $this->query_filter;
+        $query['limit'] = $this->limit;
+        $products = (array) $this->product->getList($query);
+        return empty($products) ? array() : $this->prepareListProduct($products);
     }
 
     /**
-     * Returns an array of products
-     * @param array $limit
-     * @param array $query
+     * Prepare an array of products
+     * @param array $products
      * @return array
      */
-    protected function getListProduct(array $limit, array $query)
+    protected function prepareListProduct(array $products)
     {
-        $query['limit'] = $limit;
-        $products = (array) $this->product->getList($query);
-
-        if (empty($products)) {
-            return array();
-        }
-
         $this->attachEntityUrl($products, 'product');
 
         foreach ($products as &$product) {
@@ -198,7 +204,7 @@ class Product extends BackendController
     }
 
     /**
-     * Sets titles on the product overview page
+     * Sets title on the product overview page
      */
     protected function setTitleListProduct()
     {
@@ -219,7 +225,7 @@ class Product extends BackendController
     }
 
     /**
-     * Renders product overview page templates
+     * Render and output the product overview page
      */
     protected function outputListProduct()
     {
@@ -232,7 +238,7 @@ class Product extends BackendController
      */
     public function editProduct($product_id = null)
     {
-        $this->outputCategoriesProduct();
+        $this->outputCategoriesEditProduct();
 
         $this->setProduct($product_id);
 
@@ -248,13 +254,13 @@ class Product extends BackendController
         $this->setData('default_currency', $this->currency->getDefault());
         $this->setData('subtract_default', $this->config->get('product_subtract', 0));
 
-        $this->submitProduct();
+        $this->submitEditProduct();
 
-        $this->setDataFieldsProduct();
-        $this->setDataAuthorProduct();
-        $this->setDataRelatedProduct();
-        $this->setDataCategoriesProduct();
-        $this->setDataImagesProduct();
+        $this->setDataFieldsEditProduct();
+        $this->setDataAuthorEditProduct();
+        $this->setDataRelatedEditProduct();
+        $this->setDataCategoriesEditProduct();
+        $this->setDataImagesEditProduct();
 
         $this->setJsEditProduct();
         $this->outputEditProduct();
@@ -270,9 +276,9 @@ class Product extends BackendController
     }
 
     /**
-     * Outputs a JSON string containing brand and catalog categories
+     * Output a JSON string containing brand and catalog categories
      */
-    protected function outputCategoriesProduct()
+    protected function outputCategoriesEditProduct()
     {
         $store_id = (int) $this->getQuery('store_id');
 
@@ -283,7 +289,7 @@ class Product extends BackendController
     }
 
     /**
-     * Get list of categories keyed by type
+     * Returns an array of categories keyed by a type
      * @param integer $store_id
      * @return array
      */
@@ -301,27 +307,22 @@ class Product extends BackendController
     }
 
     /**
-     * Returns a product
+     * Set a product data
      * @param integer $product_id
-     * @return array
      */
     protected function setProduct($product_id)
     {
-        if (!is_numeric($product_id)) {
-            return array();
+        if (is_numeric($product_id)) {
+            $product = $this->product->get($product_id);
+            if (empty($product)) {
+                $this->outputHttpStatus(404);
+            }
+            $this->data_product = $this->prepareProduct($product);
         }
-
-        $product = $this->product->get($product_id);
-
-        if (empty($product)) {
-            $this->outputHttpStatus(404);
-        }
-
-        return $this->data_product = $this->prepareProduct($product);
     }
 
     /**
-     * Adds an additional data to the product array data
+     * Prepare an array of product data
      * @param array $product
      * @return array
      */
@@ -334,7 +335,7 @@ class Product extends BackendController
     }
 
     /**
-     * Adds an additional data to product combinations
+     * Prepare an array of product combination data
      * @param array $product
      * @return array
      */
@@ -375,17 +376,16 @@ class Product extends BackendController
     }
 
     /**
-     * Saves a product
-     * @return null
+     * Handles a submitted product
      */
-    protected function submitProduct()
+    protected function submitEditProduct()
     {
         if ($this->isPosted('delete')) {
             $this->deleteProduct();
             return null;
         }
 
-        if (!$this->isPosted('save') || !$this->validateProduct()) {
+        if (!$this->isPosted('save') || !$this->validateEditProduct()) {
             return null;
         }
 
@@ -420,7 +420,7 @@ class Product extends BackendController
      * Validates an array of submitted product data
      * @return bool
      */
-    protected function validateProduct()
+    protected function validateEditProduct()
     {
         $this->setSubmitted('product', null, false);
 
@@ -441,12 +441,11 @@ class Product extends BackendController
         }
 
         $this->validateComponent('product');
-
         return !$this->hasErrors();
     }
 
     /**
-     * Updates a product with submitted values
+     * Updates a product
      */
     protected function updateProduct()
     {
@@ -460,7 +459,7 @@ class Product extends BackendController
     }
 
     /**
-     * Adds a new product using an array of submitted values
+     * Adds a new product
      */
     protected function addProduct()
     {
@@ -472,9 +471,9 @@ class Product extends BackendController
     }
 
     /**
-     * Sets product author data
+     * Sets the product author data
      */
-    protected function setDataAuthorProduct()
+    protected function setDataAuthorEditProduct()
     {
         $user_id = $this->getData('product.user_id');
 
@@ -485,9 +484,9 @@ class Product extends BackendController
     }
 
     /**
-     * Sets products categories data
+     * Sets the product categories data
      */
-    protected function setDataCategoriesProduct()
+    protected function setDataCategoriesEditProduct()
     {
         $store_id = $this->getData('store_id');
         $categories = $this->getListCategoryProduct($store_id);
@@ -497,7 +496,7 @@ class Product extends BackendController
     /**
      * Sets attributes/options product data
      */
-    protected function setDataFieldsProduct()
+    protected function setDataFieldsEditProduct()
     {
         $output_field_form = false;
         $get_product_class_id = $this->getQuery('product_class_id');
@@ -527,7 +526,7 @@ class Product extends BackendController
     /**
      * Sets related products
      */
-    protected function setDataRelatedProduct()
+    protected function setDataRelatedEditProduct()
     {
         $related = $this->getData('product.related');
 
@@ -540,9 +539,8 @@ class Product extends BackendController
 
     /**
      * Sets product attached data
-     * @return null
      */
-    protected function setDataImagesProduct()
+    protected function setDataImagesEditProduct()
     {
         $images = $this->getData('product.images', array());
         $this->attachThumbs($images);
@@ -593,7 +591,7 @@ class Product extends BackendController
     }
 
     /**
-     * Renders product edit page templates
+     * Render and output the product edit page
      */
     protected function outputEditProduct()
     {

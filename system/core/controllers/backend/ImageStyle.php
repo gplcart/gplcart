@@ -25,7 +25,7 @@ class ImageStyle extends BackendController
     protected $file;
 
     /**
-     * The current imagestyle
+     * An array of imagestyle data
      * @var array
      */
     protected $data_imagestyle = array('actions' => array());
@@ -41,7 +41,7 @@ class ImageStyle extends BackendController
     }
 
     /**
-     * Displays the image styles admin overview page
+     * Displays the imagestyle overview page
      */
     public function listImageStyle()
     {
@@ -66,7 +66,7 @@ class ImageStyle extends BackendController
     }
 
     /**
-     * Sets titles on the image style overview page
+     * Sets titles on the imagestyle overview page
      */
     protected function setTitleListImageStyle()
     {
@@ -74,7 +74,7 @@ class ImageStyle extends BackendController
     }
 
     /**
-     * Sets breadcrumbs on the image style overview page
+     * Sets breadcrumbs on the imagestyle overview page
      */
     protected function setBreadcrumbListImageStyle()
     {
@@ -87,7 +87,7 @@ class ImageStyle extends BackendController
     }
 
     /**
-     * Renders the image styles page
+     * Render and output the imagestyle page
      */
     protected function outputListImageStyle()
     {
@@ -95,7 +95,7 @@ class ImageStyle extends BackendController
     }
 
     /**
-     * Displays the image style edit form
+     * Displays the imagestyle edit form
      * @param integer|null $style_id
      */
     public function editImageStyle($style_id = null)
@@ -170,7 +170,7 @@ class ImageStyle extends BackendController
     }
 
     /**
-     * Validates an image style
+     * Validates a submitted image style
      * @return bool
      */
     protected function validateEditImageStyle()
@@ -246,7 +246,7 @@ class ImageStyle extends BackendController
     }
 
     /**
-     * Sets titles on the edit image style page
+     * Sets title on the edit image style page
      */
     protected function setTitleEditImageStyle()
     {

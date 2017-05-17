@@ -18,24 +18,6 @@ class Cart extends BackendController
 {
 
     /**
-     * The current filter query
-     * @var array
-     */
-    protected $data_filter = array();
-
-    /**
-     * A number of results found for the filter conditions
-     * @var integer
-     */
-    protected $data_total;
-
-    /**
-     * Pager limits
-     * @var array
-     */
-    protected $data_limit;
-
-    /**
      * Constructor
      */
     public function __construct()
@@ -55,7 +37,7 @@ class Cart extends BackendController
 
         $this->setFilterListCart();
         $this->setTotalListCart();
-        $this->setPagerListCart();
+        $this->setPagerLimit();
 
         $this->setData('carts', $this->getListCart());
         $this->setData('stores', $this->store->getNames());
@@ -68,9 +50,9 @@ class Cart extends BackendController
      */
     protected function setFilterListCart()
     {
-        $this->data_filter = $this->getFilterQuery();
-        $allowed = array('user_email', 'user_id', 'store_id', 'sku', 'order_id', 'created', 'quantity');
-        $this->setFilter($allowed, $this->data_filter);
+        $allowed = array('user_email', 'user_id', 'store_id', 'sku',
+            'order_id', 'created', 'quantity');
+        $this->setFilter($allowed);
     }
 
     /**
@@ -102,16 +84,8 @@ class Cart extends BackendController
      */
     protected function setTotalListCart()
     {
-        $options = array('count' => true) + $this->data_filter;
-        $this->data_total = (int) $this->cart->getList($options, 'cart_id');
-    }
-
-    /**
-     * Sets pager limits on the cart overview page
-     */
-    protected function setPagerListCart()
-    {
-        $this->data_limit = $this->setPager($this->data_total, $this->data_filter);
+        $options = array('count' => true) + $this->query_filter;
+        $this->total = (int) $this->cart->getList($options, 'cart_id');
     }
 
     /**
@@ -120,7 +94,7 @@ class Cart extends BackendController
      */
     protected function getListCart()
     {
-        $options = array('limit' => $this->data_limit) + $this->data_filter;
+        $options = array('limit' => $this->limit) + $this->query_filter;
         $list = (array) $this->cart->getList($options, 'cart_id');
 
         $this->attachEntityUrl($list, 'product');

@@ -79,7 +79,7 @@ class Dashboard extends BackendController
     }
 
     /**
-     * Displays the admin dashboard page
+     * Displays the dashboard page
      */
     public function indexDashboard()
     {
@@ -90,7 +90,7 @@ class Dashboard extends BackendController
     }
 
     /**
-     * Sets dashboard content data
+     * Sets a dashboard content data
      */
     protected function setDataContentIndexDashboard()
     {
@@ -149,7 +149,7 @@ class Dashboard extends BackendController
     }
 
     /**
-     * Toggles dashboard page from post-installation intro to normal view
+     * Toggles intro view
      */
     protected function toggleIntroIndexDashboard()
     {
@@ -160,7 +160,7 @@ class Dashboard extends BackendController
     }
 
     /**
-     * Returns rendered recent users panel
+     * Returns the rendered recent users panel
      */
     protected function renderPanelUsersDashboard()
     {
@@ -173,7 +173,7 @@ class Dashboard extends BackendController
     }
 
     /**
-     * Returns rendered recent orders panel
+     * Returns the rendered recent orders panel
      */
     protected function renderPanelOrdersDashboard()
     {
@@ -189,7 +189,7 @@ class Dashboard extends BackendController
     }
 
     /**
-     * Returns rendered recent events panel
+     * Returns the rendered recent events panel
      */
     protected function renderPanelEventsDashboard()
     {
@@ -221,7 +221,7 @@ class Dashboard extends BackendController
     }
 
     /**
-     * Returns rendered summary panel
+     * Returns the rendered summary panel
      */
     protected function renderPanelSummaryDashboard()
     {
@@ -238,7 +238,7 @@ class Dashboard extends BackendController
     }
 
     /**
-     * Sets titles on the admin dashboard page
+     * Sets titles on the dashboard page
      */
     protected function setTitleIndexDashboard()
     {
@@ -246,7 +246,7 @@ class Dashboard extends BackendController
     }
 
     /**
-     * Renders the admin dashboard page
+     * Render and output the dashboard page
      */
     protected function outputIndexDashboard()
     {

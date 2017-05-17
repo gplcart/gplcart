@@ -31,24 +31,6 @@ class CategoryGroup extends BackendController
     protected $data_category_group = array();
 
     /**
-     * Pager limits
-     * @var array
-     */
-    protected $data_limit;
-
-    /**
-     * An array of filter parameters
-     * @var array
-     */
-    protected $data_filter = array();
-
-    /**
-     * A number of total results found for the filter conditions
-     * @var array
-     */
-    protected $data_total;
-
-    /**
      * @param CategoryGroupModel $category_group
      */
     public function __construct(CategoryGroupModel $category_group)
@@ -65,10 +47,10 @@ class CategoryGroup extends BackendController
     {
         $this->setTitleListCategoryGroup();
         $this->setBreadcrumbListCategoryGroup();
-        $this->setFilterListCategoryGroup();
 
+        $this->setFilterListCategoryGroup();
         $this->setTotalListCategoryGroup();
-        $this->setPagerListCategoryGroup();
+        $this->setPagerLimit();
 
         $this->setData('stores', $this->store->getNames());
         $this->setData('groups', $this->getListCategoryGroup());
@@ -77,21 +59,12 @@ class CategoryGroup extends BackendController
     }
 
     /**
-     * Sets pager on the category group overview page
-     */
-    protected function setPagerListCategoryGroup()
-    {
-        $this->data_limit = $this->setPager($this->data_total, $this->data_filter);
-    }
-
-    /**
      * Sets the current filter parameters
      */
     protected function setFilterListCategoryGroup()
     {
-        $this->data_filter = $this->getFilterQuery();
         $allowed = array('title', 'store_id', 'type', 'category_group_id');
-        $this->setFilter($allowed, $this->data_filter);
+        $this->setFilter($allowed);
     }
 
     /**
@@ -99,9 +72,9 @@ class CategoryGroup extends BackendController
      */
     protected function setTotalListCategoryGroup()
     {
-        $query = $this->data_filter;
+        $query = $this->query_filter;
         $query['count'] = true;
-        $this->data_total = (int) $this->category_group->getList($query);
+        $this->total = (int) $this->category_group->getList($query);
     }
 
     /**
@@ -110,8 +83,8 @@ class CategoryGroup extends BackendController
      */
     protected function getListCategoryGroup()
     {
-        $query = $this->data_filter;
-        $query['limit'] = $this->data_limit;
+        $query = $this->query_filter;
+        $query['limit'] = $this->limit;
         return $this->category_group->getList($query);
     }
 

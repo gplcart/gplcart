@@ -18,7 +18,7 @@ class Language extends BackendController
 {
 
     /**
-     * The current language
+     * An array of language data
      * @var array
      */
     protected $data_language = array();
@@ -60,7 +60,7 @@ class Language extends BackendController
     }
 
     /**
-     * Returns a language
+     * Set a language data
      * @param string $code
      */
     protected function setLanguage($code)
@@ -74,7 +74,7 @@ class Language extends BackendController
     }
 
     /**
-     * Handles a submitted data
+     * Handles a submitted language data
      */
     protected function submitEditLanguage()
     {
@@ -114,7 +114,7 @@ class Language extends BackendController
 
     /**
      * Validates a language
-     * @return bool
+     * @return boolean
      */
     protected function validateLanguage()
     {
@@ -190,7 +190,7 @@ class Language extends BackendController
     }
 
     /**
-     * Renders the edit language page templates
+     * Render and output the edit language page
      */
     protected function outputEditLanguage()
     {
@@ -212,7 +212,7 @@ class Language extends BackendController
     }
 
     /**
-     * Removes cached translations for the given language
+     * Removes a cached translation
      */
     protected function refreshLanguage()
     {
@@ -226,7 +226,7 @@ class Language extends BackendController
     }
 
     /**
-     * Sets titles on the language overview page
+     * Sets title on the language overview page
      */
     protected function setTitleListLanguage()
     {

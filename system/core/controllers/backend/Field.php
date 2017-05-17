@@ -31,24 +31,6 @@ class Field extends BackendController
     protected $data_field = array();
 
     /**
-     * Pager limits
-     * @var array
-     */
-    protected $data_limit;
-
-    /**
-     * An array of filter parameters
-     * @var array
-     */
-    protected $data_filter = array();
-
-    /**
-     * A total number items found for the filter conditions
-     * @var integer
-     */
-    protected $data_total;
-
-    /**
      * @param FieldModel $field
      */
     public function __construct(FieldModel $field)
@@ -70,7 +52,7 @@ class Field extends BackendController
 
         $this->setFilterListField();
         $this->setTotalListField();
-        $this->setPagerListField();
+        $this->setPagerLimit();
 
         $this->setData('fields', $this->getListField());
         $this->setData('widget_types', $this->field->getWidgetTypes());
@@ -79,21 +61,12 @@ class Field extends BackendController
     }
 
     /**
-     * Sets pager on the field overview page
-     */
-    protected function setPagerListField()
-    {
-        $this->data_limit = $this->setPager($this->data_total, $this->data_filter);
-    }
-
-    /**
      * Sets filter on the field overview page
      */
     protected function setFilterListField()
     {
-        $this->data_filter = $this->getFilterQuery();
         $allowed = array('title', 'type', 'widget', 'field_id');
-        $this->setFilter($allowed, $this->data_filter);
+        $this->setFilter($allowed);
     }
 
     /**
@@ -127,9 +100,9 @@ class Field extends BackendController
      */
     protected function setTotalListField()
     {
-        $query = $this->data_filter;
+        $query = $this->query_filter;
         $query['count'] = true;
-        $this->data_total = (int) $this->field->getList($query);
+        $this->total = (int) $this->field->getList($query);
     }
 
     /**
@@ -138,8 +111,8 @@ class Field extends BackendController
      */
     protected function getListField()
     {
-        $query = $this->data_filter;
-        $query['limit'] = $this->data_limit;
+        $query = $this->query_filter;
+        $query['limit'] = $this->limit;
         return $this->field->getList($query);
     }
 

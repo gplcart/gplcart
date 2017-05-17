@@ -11,6 +11,9 @@ namespace gplcart\core\controllers\backend;
 
 use gplcart\core\controllers\backend\Controller as BackendController;
 
+/**
+ * Handles incoming requests and outputs data related to common store settings
+ */
 class Settings extends BackendController
 {
 
@@ -23,35 +26,22 @@ class Settings extends BackendController
     }
 
     /**
-     * Displays edit settings form
+     * Displays the edit settings page
      */
     public function editSettings()
     {
         $this->setTitleEditSettings();
         $this->setBreadcrumbEditSettings();
 
-        $this->controlAccessEditSettings();
-
         $this->setData('settings', $this->getSettings());
         $this->setData('timezones', gplcart_timezones());
 
-        $this->submitSettings();
-
+        $this->submitEditSettings();
         $this->outputEditSettings();
     }
 
     /**
-     * Controls access to edit settings
-     */
-    protected function controlAccessEditSettings()
-    {
-        if (!$this->isSuperadmin()) {
-            $this->outputHttpStatus(403);
-        }
-    }
-
-    /**
-     * Returns an array of settings with their default values
+     * Returns an array of default settings
      * @return array
      */
     protected function getDefaultSettings()
@@ -72,18 +62,17 @@ class Settings extends BackendController
     {
         $default = $this->getDefaultSettings();
         $saved = $this->config();
-
         return gplcart_array_merge($default, $saved);
     }
 
     /**
      * Saves submitted settings
      */
-    protected function submitSettings()
+    protected function submitEditSettings()
     {
         if ($this->isPosted('delete_cached_assets')) {
             $this->clearCacheAssetsSettings();
-        } else if ($this->isPosted('save') && $this->validateSettings()) {
+        } else if ($this->isPosted('save') && $this->validateEditSettings()) {
             $this->updateSettings();
         }
     }
@@ -92,7 +81,7 @@ class Settings extends BackendController
      * Validates submitted settings
      * @return bool
      */
-    protected function validateSettings()
+    protected function validateEditSettings()
     {
         $this->setSubmitted('settings');
 
@@ -118,15 +107,13 @@ class Settings extends BackendController
     }
 
     /**
-     * Updates common setting with submitted values
+     * Updates settings
      */
     protected function updateSettings()
     {
         $this->controlAccess('settings_edit');
 
-        $submitted = $this->getSubmitted();
-
-        foreach ($submitted as $key => $value) {
+        foreach ($this->getSubmitted() as $key => $value) {
             $this->config->set($key, $value);
         }
 
@@ -135,7 +122,7 @@ class Settings extends BackendController
     }
 
     /**
-     * Sets titles on the settings form page
+     * Sets title on the edit settings page
      */
     protected function setTitleEditSettings()
     {
@@ -143,7 +130,7 @@ class Settings extends BackendController
     }
 
     /**
-     * Sets breadcrumbs on the settings form page
+     * Sets breadcrumbs on the edit settings page
      */
     protected function setBreadcrumbEditSettings()
     {
@@ -156,7 +143,7 @@ class Settings extends BackendController
     }
 
     /**
-     * Renders settings page
+     * Render and output the edit settings page
      */
     protected function outputEditSettings()
     {

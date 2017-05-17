@@ -45,24 +45,6 @@ class Page extends BackendController
     protected $data_page = array();
 
     /**
-     * An array of filter parameters
-     * @var array
-     */
-    protected $data_filter = array();
-
-    /**
-     * Pager limits
-     * @var array
-     */
-    protected $data_limit;
-
-    /**
-     * A total number of items found for the filter conditions
-     * @var integer
-     */
-    protected $data_total;
-
-    /**
      * @param PageModel $page
      * @param CategoryModel $category
      * @param AliasModel $alias
@@ -89,7 +71,7 @@ class Page extends BackendController
 
         $this->setFilterListPage();
         $this->setTotalListPage();
-        $this->setPagerListPage();
+        $this->setPagerLimit();
 
         $this->setData('stores', $this->store->getNames());
         $this->setData('pages', $this->getListPage());
@@ -98,22 +80,13 @@ class Page extends BackendController
     }
 
     /**
-     * Sets pager on the page overview
-     */
-    protected function setPagerListPage()
-    {
-        $this->data_limit = $this->setPager($this->data_total, $this->data_filter);
-    }
-
-    /**
      * Set filter on the page overview
      */
     protected function setFilterListPage()
     {
-        $this->data_filter = $this->getFilterQuery();
         $allowed = array('title', 'store_id', 'page_id',
             'status', 'created', 'email');
-        $this->setFilter($allowed, $this->data_filter);
+        $this->setFilter($allowed);
     }
 
     /**
@@ -172,9 +145,9 @@ class Page extends BackendController
      */
     protected function setTotalListPage()
     {
-        $query = $this->data_filter;
+        $query = $this->query_filter;
         $query['count'] = true;
-        $this->data_total = (int) $this->page->getList($query);
+        $this->total = (int) $this->page->getList($query);
     }
 
     /**
@@ -183,8 +156,8 @@ class Page extends BackendController
      */
     protected function getListPage()
     {
-        $query = $this->data_filter;
-        $query['limit'] = $this->data_limit;
+        $query = $this->query_filter;
+        $query['limit'] = $this->limit;
         $pages = (array) $this->page->getList($query);
 
         $this->attachEntityUrl($pages, 'page');
@@ -250,11 +223,11 @@ class Page extends BackendController
     protected function setPage($page_id)
     {
         if (is_numeric($page_id)) {
-            $this->data_page = $this->page->get($page_id);
-            if (empty($this->data_page)) {
+            $page = $this->page->get($page_id);
+            if (empty($page)) {
                 $this->outputHttpStatus(404);
             }
-            $this->data_page = $this->preparePage($this->data_page);
+            $this->data_page = $this->preparePage($page);
         }
     }
 

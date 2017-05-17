@@ -39,19 +39,18 @@ class State extends BackendController
     protected $zone;
 
     /**
-     * The current country
+     * An array of country data
      * @var array
      */
     protected $data_country = array();
 
     /**
-     * The current state
+     * An array of country state data
      * @var array
      */
     protected $data_state = array();
 
     /**
-     * Constructor
      * @param CountryModel $country
      * @param StateModel $state
      * @param ZoneModel $zone
@@ -67,52 +66,67 @@ class State extends BackendController
     }
 
     /**
-     * Displays the states overview page
+     * Displays the country state overview page
      * @param string $code
      */
     public function listState($code)
     {
         $this->setCountry($code);
 
-        $this->actionState();
+        $this->actionListState();
 
         $this->setTitleListState();
         $this->setBreadcrumbListState();
 
-        $query = $this->getFilterQuery();
-
-        $filters = array('name', 'code', 'status', 'state_id');
-        $this->setFilter($filters, $query);
-
-        $total = $this->getTotalState($code, $query);
-        $limit = $this->setPager($total, $query);
+        $this->setFilterListState();
+        $this->setTotalListState();
+        $this->setPagerLimit();
 
         $this->setData('country', $this->data_country);
-        $this->setData('states', $this->getListState($limit, $query, $code));
+        $this->setData('states', $this->getListState());
 
         $this->outputListState();
     }
 
     /**
-     * Returns a country
+     * Set filter on the country state overview page
+     */
+    protected function setFilterListState()
+    {
+        $this->setFilter(array('name', 'code', 'status', 'state_id'));
+    }
+
+    /**
+     * Sets a country data
      * @param string $code
-     * @return array
      */
     protected function setCountry($code)
     {
-        $country = $this->country->get($code);
+        $this->data_country = $this->country->get($code);
 
-        if (empty($country)) {
+        if (empty($this->data_country)) {
             $this->outputHttpStatus(404);
         }
+    }
 
-        return $this->data_country = $country;
+    /**
+     * Sets a country state data
+     * @param integer $state_id
+     */
+    protected function setState($state_id)
+    {
+        if (is_numeric($state_id)) {
+            $this->data_state = $this->state->get($state_id);
+            if (empty($this->data_state)) {
+                $this->outputHttpStatus(404);
+            }
+        }
     }
 
     /**
      * Applies an action to the selected country states
      */
-    protected function actionState()
+    protected function actionListState()
     {
         $action = (string) $this->getPosted('action');
 
@@ -149,32 +163,26 @@ class State extends BackendController
     }
 
     /**
-     * Returns a total number of states for a given country
-     * @param string $code
-     * @param array $query
-     * @return integer
+     * Set a total number of country states for the country and filter conditions
      */
-    protected function getTotalState($code, array $query)
+    protected function setTotalListState()
     {
-        $options = array('count' => true, 'country' => $code);
-        return (int) $this->state->getList($options + $query);
+        $options = array('count' => true, 'country' => $this->data_country['code']);
+        $this->total = (int) $this->state->getList($options + $this->query_filter);
     }
 
     /**
-     * Returns an array of states for a given country
-     * @param array $limit
-     * @param array $query
-     * @param string $country
+     * Returns an array of country states for the country and filter conditions
      * @return array
      */
-    protected function getListState(array $limit, array $query, $country)
+    protected function getListState()
     {
-        $options = array('limit' => $limit, 'country' => $country);
-        return (array) $this->state->getList($options + $query);
+        $options = array('limit' => $this->limit, 'country' => $this->data_country['code']);
+        return (array) $this->state->getList($options + $this->query_filter);
     }
 
     /**
-     * Sets titles on the states overview page
+     * Sets titles on the country state overview page
      */
     protected function setTitleListState()
     {
@@ -184,7 +192,7 @@ class State extends BackendController
     }
 
     /**
-     * Sets breadcrumbs on the states overview page
+     * Sets breadcrumbs on the country state overview page
      */
     protected function setBreadcrumbListState()
     {
@@ -204,7 +212,7 @@ class State extends BackendController
     }
 
     /**
-     * Renders the state overview page
+     * Render and output the country state overview page
      */
     protected function outputListState()
     {
@@ -212,7 +220,7 @@ class State extends BackendController
     }
 
     /**
-     * Displays the state edit page
+     * Displays the edit country state page
      * @param string $country_code
      * @param integer|null $state_id
      */
@@ -229,8 +237,7 @@ class State extends BackendController
         $this->setData('zones', $this->getZonesState());
         $this->setData('can_delete', $this->canDeleteState());
 
-        $this->submitState();
-
+        $this->submitEditState();
         $this->outputEditState();
     }
 
@@ -244,7 +251,7 @@ class State extends BackendController
     }
 
     /**
-     * Whether the state can be deleted
+     * Whether the country state can be deleted
      * @return boolean
      */
     protected function canDeleteState()
@@ -255,37 +262,16 @@ class State extends BackendController
     }
 
     /**
-     * Returns a state
-     * @param integer $state_id
-     * @return array
+     * Handles a submitted country state data
      */
-    protected function setState($state_id)
-    {
-        if (!is_numeric($state_id)) {
-            return array();
-        }
-
-        $state = $this->state->get($state_id);
-
-        if (empty($state)) {
-            $this->outputHttpStatus(404);
-        }
-
-        return $this->data_state = $state;
-    }
-
-    /**
-     * Saves a state
-     * @return null
-     */
-    protected function submitState()
+    protected function submitEditState()
     {
         if ($this->isPosted('delete')) {
             $this->deleteState();
             return null;
         }
 
-        if (!$this->isPosted('save') || !$this->validateState()) {
+        if (!$this->isPosted('save') || !$this->validateEditState()) {
             return null;
         }
 
@@ -297,10 +283,10 @@ class State extends BackendController
     }
 
     /**
-     * Validates a state
-     * @return bool
+     * Validates a submitted country state data
+     * @return boolean
      */
-    protected function validateState()
+    protected function validateEditState()
     {
         $this->setSubmitted('state');
         $this->setSubmittedBool('status');
@@ -308,12 +294,11 @@ class State extends BackendController
         $this->setSubmitted('country', $this->data_country['code']);
 
         $this->validateComponent('state');
-
         return !$this->hasErrors();
     }
 
     /**
-     * Deletes a state
+     * Deletes a country state
      */
     protected function deleteState()
     {
@@ -333,7 +318,7 @@ class State extends BackendController
     }
 
     /**
-     * Updates a state with submitted values
+     * Updates a country state
      */
     protected function updateState()
     {
@@ -347,7 +332,7 @@ class State extends BackendController
     }
 
     /**
-     * Adds a new state using an array of submitted values
+     * Adds a new country state
      */
     protected function addState()
     {
@@ -361,7 +346,7 @@ class State extends BackendController
     }
 
     /**
-     * Sets titles on the state edit page
+     * Sets titles on the edit country state page
      */
     protected function setTitleEditState()
     {
@@ -377,7 +362,7 @@ class State extends BackendController
     }
 
     /**
-     * Set breadcrumbs on the state edit page
+     * Set breadcrumbs on the edit country state page
      */
     protected function setBreadcrumbEditState()
     {
@@ -402,7 +387,7 @@ class State extends BackendController
     }
 
     /**
-     * Renders the state edit page
+     * Render and output the edit country state page
      */
     protected function outputEditState()
     {

@@ -57,24 +57,6 @@ class FieldValue extends BackendController
     protected $data_field_value = array();
 
     /**
-     * An array of filter data
-     * @var array
-     */
-    protected $data_filter = array();
-
-    /**
-     * A total number of items found for the filter conditions
-     * @var integer
-     */
-    protected $data_total;
-
-    /**
-     * Pager limits
-     * @var array
-     */
-    protected $data_limit;
-
-    /**
      * @param FieldModel $field
      * @param FieldValueModel $field_value
      * @param FileModel $file
@@ -103,7 +85,7 @@ class FieldValue extends BackendController
 
         $this->setFilterListFieldValue();
         $this->setTotalListFieldValue();
-        $this->setPagerListFieldValue();
+        $this->setPagerLimit();
 
         $this->setData('field', $this->data_field);
         $this->setData('values', $this->getListFieldValue());
@@ -112,21 +94,11 @@ class FieldValue extends BackendController
     }
 
     /**
-     * Set pager on the field value overview page
-     */
-    protected function setPagerListFieldValue()
-    {
-        $this->data_limit = $this->setPager($this->data_total, $this->data_filter);
-    }
-
-    /**
      * Set filter on the field value overview page
      */
     protected function setFilterListFieldValue()
     {
-        $this->data_filter = $this->getFilterQuery();
-        $allowed = array('title', 'color', 'weight', 'image', 'field_value_id');
-        $this->setFilter($allowed, $this->data_filter);
+        $this->setFilter(array('title', 'color', 'weight', 'image', 'field_value_id'));
     }
 
     /**
@@ -135,13 +107,11 @@ class FieldValue extends BackendController
      */
     protected function setFieldFieldValue($field_id)
     {
-        $field = $this->field->get($field_id);
+        $this->data_field = $this->field->get($field_id);
 
-        if (empty($field)) {
+        if (empty($this->data_field)) {
             $this->outputHttpStatus(404);
         }
-
-        $this->data_field = $field;
     }
 
     /**
@@ -199,9 +169,9 @@ class FieldValue extends BackendController
     {
         $options = array(
             'count' => true,
-            'field_id' => $this->data_field['field_id']) + $this->data_filter;
+            'field_id' => $this->data_field['field_id']) + $this->query_filter;
 
-        $this->data_total = (int) $this->field_value->getList($options);
+        $this->total = (int) $this->field_value->getList($options);
     }
 
     /**
@@ -211,8 +181,8 @@ class FieldValue extends BackendController
     protected function getListFieldValue()
     {
         $options = array(
-            'limit' => $this->data_limit,
-            'field_id' => $this->data_field['field_id']) + $this->data_filter;
+            'limit' => $this->limit,
+            'field_id' => $this->data_field['field_id']) + $this->query_filter;
 
         $values = (array) $this->field_value->getList($options);
         return $this->prepareFieldValues($values);
@@ -345,11 +315,10 @@ class FieldValue extends BackendController
     protected function setFieldValue($field_value_id)
     {
         if (is_numeric($field_value_id)) {
-            $field_value = $this->field_value->get($field_value_id);
-            if (empty($field_value)) {
+            $this->data_field_value = $this->field_value->get($field_value_id);
+            if (empty($this->data_field_value)) {
                 $this->outputHttpStatus(404);
             }
-            $this->data_field_value = $field_value;
         }
     }
 

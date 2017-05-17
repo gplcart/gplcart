@@ -38,24 +38,6 @@ class Country extends BackendController
     protected $data_country = array();
 
     /**
-     * An array of filter parameters
-     * @var array
-     */
-    protected $data_filter = array();
-
-    /**
-     * A total number of items found for the filter conditions
-     * @var integer
-     */
-    protected $data_total;
-
-    /**
-     * Pager limits
-     * @var array
-     */
-    protected $data_limit;
-
-    /**
      * @param CountryModel $country
      * @param ZoneModel $zone
      */
@@ -76,21 +58,13 @@ class Country extends BackendController
 
         $this->setTitleListCountry();
         $this->setBreadcrumbListCountry();
-        $this->setFilterListCountry();
 
+        $this->setFilterListCountry();
         $this->setTotalListCountry();
-        $this->setPagerListCountry();
+        $this->setPagerLimit();
 
         $this->setData('countries', $this->getListCountry());
         $this->outputListCountry();
-    }
-
-    /**
-     * Set pager on the country overview page
-     */
-    protected function setPagerListCountry()
-    {
-        $this->data_limit = $this->setPager($this->data_total, $this->data_filter);
     }
 
     /**
@@ -98,9 +72,8 @@ class Country extends BackendController
      */
     protected function setFilterListCountry()
     {
-        $this->data_filter = $this->getFilterQuery();
         $allowed = array('name', 'native_name', 'code', 'status', 'weight');
-        $this->setFilter($allowed, $this->data_filter);
+        $this->setFilter($allowed);
     }
 
     /**
@@ -163,9 +136,9 @@ class Country extends BackendController
      */
     protected function setTotalListCountry()
     {
-        $query = $this->data_filter;
+        $query = $this->query_filter;
         $query['count'] = true;
-        $this->data_total = (int) $this->country->getList($query);
+        $this->total = (int) $this->country->getList($query);
     }
 
     /**
@@ -174,8 +147,8 @@ class Country extends BackendController
      */
     protected function getListCountry()
     {
-        $query = $this->data_filter;
-        $query['limit'] = $this->data_limit;
+        $query = $this->query_filter;
+        $query['limit'] = $this->limit;
         return (array) $this->country->getList($query);
     }
 

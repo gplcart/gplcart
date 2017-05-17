@@ -25,24 +25,6 @@ class Alias extends BackendController
     protected $alias;
 
     /**
-     * An array of filter parameters
-     * @var array
-     */
-    protected $data_filter = array();
-
-    /**
-     * A total number of results forund for the current filter
-     * @var integer
-     */
-    protected $data_total;
-
-    /**
-     * Pager limits
-     * @var array
-     */
-    protected $data_limit;
-
-    /**
      * @param AliasModel $alias
      */
     public function __construct(AliasModel $alias)
@@ -61,10 +43,10 @@ class Alias extends BackendController
 
         $this->setTitleListAlias();
         $this->setBreadcrumbListAlias();
-        $this->setFilterListAlias();
 
+        $this->setFilterListAlias();
         $this->setTotalListAlias();
-        $this->setPagerListAlias();
+        $this->setPagerLimit();
 
         $this->setData('id_keys', $this->alias->getIdKeys());
         $this->setData('aliases', $this->getListAlias());
@@ -72,21 +54,12 @@ class Alias extends BackendController
     }
 
     /**
-     * Set pager limits
-     */
-    protected function setPagerListAlias()
-    {
-        $this->data_limit = $this->setPager($this->data_total, $this->data_filter);
-    }
-
-    /**
      * Sets the current filter parameters
      */
     protected function setFilterListAlias()
     {
-        $this->data_filter = $this->getFilterQuery();
         $allowed = array('id_value', 'id_key', 'alias', 'alias_id');
-        $this->setFilter($allowed, $this->data_filter);
+        $this->setFilter($allowed);
     }
 
     /**
@@ -120,9 +93,9 @@ class Alias extends BackendController
      */
     protected function setTotalListAlias()
     {
-        $query = $this->data_filter;
+        $query = $this->query_filter;
         $query['count'] = true;
-        $this->data_total = (int) $this->alias->getList($query);
+        $this->total = (int) $this->alias->getList($query);
     }
 
     /**
@@ -131,8 +104,8 @@ class Alias extends BackendController
      */
     protected function getListAlias()
     {
-        $query = $this->data_filter;
-        $query['limit'] = $this->data_limit;
+        $query = $this->query_filter;
+        $query['limit'] = $this->limit;
         $aliases = (array) $this->alias->getList($query);
 
         foreach ($aliases as &$alias) {

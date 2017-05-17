@@ -25,13 +25,12 @@ class UserRole extends BackendController
     protected $role;
 
     /**
-     * The current user role
+     * An array of user role data
      * @var array
      */
     protected $data_role = array();
 
     /**
-     * Constructor
      * @param UserRoleModel $role
      */
     public function __construct(UserRoleModel $role)
@@ -42,7 +41,7 @@ class UserRole extends BackendController
     }
 
     /**
-     * Displays the role edit form
+     * Displays the user role edit page
      * @param integer|null $role_id
      */
     public function editUserRole($role_id = null)
@@ -55,12 +54,12 @@ class UserRole extends BackendController
         $this->setData('role', $this->data_role);
         $this->setData('permissions', $this->getPermissionsUserRole(true));
 
-        $this->submitUserRole();
+        $this->submitEditUserRole();
         $this->outputEditUserRole();
     }
 
     /**
-     * Returns an array of prepared permissions
+     * Returns an array of permissions
      * @param bool $chunked
      * @return array
      */
@@ -77,37 +76,31 @@ class UserRole extends BackendController
     }
 
     /**
-     * Returns a role
-     * @param integer $role_id
+     * Returns a user role data
+     * @param integer|null $role_id
      * @return array
      */
     protected function setUserRole($role_id)
     {
-        if (!is_numeric($role_id)) {
-            return array();
+        if (is_numeric($role_id)) {
+            $this->data_role = $this->role->get($role_id);
+            if (empty($this->data_role)) {
+                $this->outputHttpStatus(404);
+            }
         }
-
-        $role = $this->role->get($role_id);
-
-        if (empty($role)) {
-            $this->outputHttpStatus(404);
-        }
-
-        return $this->data_role = $role;
     }
 
     /**
-     * Saves a submitted user role
-     * @return null
+     * Handles a submitted user role data
      */
-    protected function submitUserRole()
+    protected function submitEditUserRole()
     {
         if ($this->isPosted('delete')) {
             $this->deleteUserRole();
             return null;
         }
 
-        if (!$this->isPosted('save') || !$this->validateUserRole()) {
+        if (!$this->isPosted('save') || !$this->validateEditUserRole()) {
             return null;
         }
 
@@ -119,13 +112,12 @@ class UserRole extends BackendController
     }
 
     /**
-     * Validates a submitted user role
-     * @return bool
+     * Validates a submitted user role data
+     * @return boolean
      */
-    protected function validateUserRole()
+    protected function validateEditUserRole()
     {
         $this->setSubmitted('role');
-
         $permissions = $this->getSubmitted('permissions');
 
         if (empty($permissions)) {
@@ -136,12 +128,11 @@ class UserRole extends BackendController
         $this->setSubmitted('update', $this->data_role);
 
         $this->validateComponent('user_role');
-
         return !$this->hasErrors();
     }
 
     /**
-     * Deletes a role
+     * Deletes a user role
      */
     protected function deleteUserRole()
     {
@@ -159,7 +150,7 @@ class UserRole extends BackendController
     }
 
     /**
-     * Updates a user role with submitted values
+     * Updates a user role
      */
     protected function updateUserRole()
     {
@@ -173,12 +164,11 @@ class UserRole extends BackendController
     }
 
     /**
-     * Adds a new user role using submitted values
+     * Adds a new user role
      */
     protected function addUserRole()
     {
         $this->controlAccess('user_role_add');
-
         $this->role->add($this->getSubmitted());
 
         $message = $this->text('Role has been added');
@@ -186,7 +176,7 @@ class UserRole extends BackendController
     }
 
     /**
-     * Sets titles on the role edit form
+     * Sets titles on the user role edit page
      */
     protected function setTitleEditUserRole()
     {
@@ -201,7 +191,7 @@ class UserRole extends BackendController
     }
 
     /**
-     * Sets breadcrumbs on the role edit form
+     * Sets breadcrumbs on the user role edit page
      */
     protected function setBreadcrumbEditUserRole()
     {
@@ -221,7 +211,7 @@ class UserRole extends BackendController
     }
 
     /**
-     * Renders the role edit page
+     * Render and output the user role edit page
      */
     protected function outputEditUserRole()
     {
@@ -229,32 +219,45 @@ class UserRole extends BackendController
     }
 
     /**
-     * Displays the roles overview page
+     * Displays the user role overview page
      */
     public function listUserRole()
     {
-        $this->actionUserRole();
+        $this->actionListUserRole();
 
         $this->setTitleListUserRole();
         $this->setBreadcrumbListUserRole();
 
-        $query = $this->getFilterQuery();
+        $this->setFilterListUserRole();
+        $this->setTotalListUserRole();
+        $this->setPagerLimit();
 
-        $filters = array('name', 'role_id', 'status', 'created');
-        $this->setFilter($filters, $query);
-
-        $total = $this->getTotalUserRole($query);
-        $limit = $this->setPager($total, $query);
-
-        $this->setData('roles', $this->getListUserRole($limit, $query));
+        $this->setData('roles', $this->getListUserRole());
         $this->outputListUserRole();
     }
 
     /**
-     * Applies an action to user roles
-     * @return null
+     * Sets filter on the user role overview page
      */
-    protected function actionUserRole()
+    protected function setFilterListUserRole()
+    {
+        $this->setFilter(array('name', 'role_id', 'status', 'created'));
+    }
+
+    /**
+     * Sets a total number of user roles found for the filter conditions
+     */
+    protected function setTotalListUserRole()
+    {
+        $query = $this->query_filter;
+        $query['count'] = true;
+        $this->total = (int) $this->role->getList($query);
+    }
+
+    /**
+     * Applies an action to the selected user roles
+     */
+    protected function actionListUserRole()
     {
         $action = (string) $this->getPosted('action');
 
@@ -289,43 +292,38 @@ class UserRole extends BackendController
     }
 
     /**
-     * Returns total number of user roles
-     * @param array $query
-     * @return integer
+     * Returns an array of user roles
+     * @return array
      */
-    protected function getTotalUserRole(array $query)
+    protected function getListUserRole()
     {
-        $query['count'] = true;
-        return (int) $this->role->getList($query);
+        $query = $this->query_filter;
+        $query['limit'] = $this->limit;
+        $roles = (array) $this->role->getList($query);
+        return $this->prepareListUserRole($roles);
     }
 
     /**
-     * Returns an array of roles
-     * @param array $limit
-     * @param array $query
+     * Prepare an array of user roles
+     * @param array $roles
      * @return array
      */
-    protected function getListUserRole(array $limit, array $query)
+    protected function prepareListUserRole(array $roles)
     {
-        $query['limit'] = $limit;
-        $roles = (array) $this->role->getList($query);
         $permissions = $this->getPermissionsUserRole();
 
         foreach ($roles as &$role) {
-
-            if (empty($role['permissions'])) {
-                continue;
+            if (!empty($role['permissions'])) {
+                $list = array_intersect_key($permissions, array_flip($role['permissions']));
+                $role['permissions_list'] = array_chunk($list, 20);
             }
-
-            $list = array_intersect_key($permissions, array_flip($role['permissions']));
-            $role['permissions_list'] = array_chunk($list, 20);
         }
 
         return $roles;
     }
 
     /**
-     * Sets titles on the roles overview page
+     * Sets title on the user role overview page
      */
     protected function setTitleListUserRole()
     {
@@ -333,7 +331,7 @@ class UserRole extends BackendController
     }
 
     /**
-     * Sets breadcrumbs on the roles overview page
+     * Sets breadcrumbs on the user role overview page
      */
     protected function setBreadcrumbListUserRole()
     {
@@ -346,7 +344,7 @@ class UserRole extends BackendController
     }
 
     /**
-     * Renders the roles overview page
+     * Render and output the user role overview page
      */
     protected function outputListUserRole()
     {

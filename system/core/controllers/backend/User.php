@@ -13,7 +13,7 @@ use gplcart\core\models\UserRole as UserRoleModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
- * Handles incoming requests and outputs data related to user management
+ * Handles incoming requests and outputs data related to users
  */
 class User extends BackendController
 {
@@ -25,13 +25,12 @@ class User extends BackendController
     protected $role;
 
     /**
-     * The current user
+     * A n array of user data
      * @var array
      */
     protected $data_user = array();
 
     /**
-     * Constructor
      * @param UserRoleModel $role
      */
     public function __construct(UserRoleModel $role)
@@ -45,32 +44,46 @@ class User extends BackendController
      */
     public function listUser()
     {
-        $this->actionUser();
+        $this->actionListUser();
 
         $this->setTitleListUser();
         $this->setBreadcrumbListUser();
 
-        $query = $this->getFilterQuery();
-
-        $filters = array('name', 'email', 'role_id', 'store_id',
-            'status', 'created', 'user_id');
-
-        $this->setFilter($filters, $query);
-
-        $total = $this->getTotalUser($query);
-        $limit = $this->setPager($total, $query);
+        $this->setFilterListUser();
+        $this->setTotalListUser();
+        $this->setPagerLimit();
 
         $this->setData('roles', $this->role->getList());
         $this->setData('stores', $this->store->getNames());
-        $this->setData('users', $this->getListUser($limit, $query));
+        $this->setData('users', $this->getListUser());
 
         $this->outputListUser();
     }
 
     /**
-     * Applies an action to users
+     * Set filter on the user overview page
      */
-    protected function actionUser()
+    protected function setFilterListUser()
+    {
+        $allowed = array('name', 'email', 'role_id', 'store_id',
+            'status', 'created', 'user_id');
+        $this->setFilter($allowed);
+    }
+
+    /**
+     * Sets a total number of users found for the filter conditions
+     */
+    protected function setTotalListUser()
+    {
+        $query = $this->query_filter;
+        $query['count'] = true;
+        $this->total = (int) $this->user->getList($query);
+    }
+
+    /**
+     * Applies an action to the selected users
+     */
+    protected function actionListUser()
     {
         $action = (string) $this->getPosted('action');
 
@@ -109,28 +122,26 @@ class User extends BackendController
     }
 
     /**
-     * Returns total number of users
-     * @param array $query
-     * @return integer
+     * Returns an array of users
+     * @return array
      */
-    protected function getTotalUser(array $query)
+    protected function getListUser()
     {
-        $query['count'] = true;
-        return (int) $this->user->getList($query);
+        $query = $this->query_filter;
+        $query['limit'] = $this->limit;
+
+        $users = (array) $this->user->getList($query);
+        return $this->prepareListUser($users);
     }
 
     /**
-     * Returns an array of users
-     * @param array $limit
-     * @param array $query
+     * Prepare an array of users
+     * @param array $users
      * @return array
      */
-    protected function getListUser(array $limit, array $query)
+    protected function prepareListUser(array $users)
     {
-        $query['limit'] = $limit;
-
         $stores = $this->store->getList();
-        $users = (array) $this->user->getList($query);
 
         foreach ($users as &$user) {
             $user['url'] = '';
@@ -143,7 +154,7 @@ class User extends BackendController
     }
 
     /**
-     * Sets titles on the users overview page
+     * Sets title on the user overview page
      */
     protected function setTitleListUser()
     {
@@ -151,7 +162,7 @@ class User extends BackendController
     }
 
     /**
-     * Sets breadcrumbs on the users overview page
+     * Sets breadcrumbs on the user overview page
      */
     protected function setBreadcrumbListUser()
     {
@@ -164,7 +175,7 @@ class User extends BackendController
     }
 
     /**
-     * Renders the users overview page
+     * Render and output the user overview page
      */
     protected function outputListUser()
     {
@@ -187,7 +198,7 @@ class User extends BackendController
         $this->setData('can_delete', $this->canDeleteUser());
         $this->setData('is_superadmin', $this->isSuperadminUser());
 
-        $this->submitUser();
+        $this->submitEditUser();
 
         $this->setTitleEditUser();
         $this->setBreadcrumbEditUser();
@@ -216,23 +227,17 @@ class User extends BackendController
     }
 
     /**
-     * Returns a user
-     * @param integer $user_id
-     * @return array
+     * Sets a user data
+     * @param integer|null $user_id
      */
     protected function setUser($user_id)
     {
-        if (!is_numeric($user_id)) {
-            return array();
+        if (is_numeric($user_id)) {
+            $this->data_user = $this->user->get($user_id);
+            if (empty($this->data_user)) {
+                $this->outputHttpStatus(404);
+            }
         }
-
-        $user = $this->user->get($user_id);
-
-        if (empty($user)) {
-            $this->outputHttpStatus(404);
-        }
-
-        return $this->data_user = $user;
     }
 
     /**
@@ -247,17 +252,16 @@ class User extends BackendController
     }
 
     /**
-     * Saves submitted user data
-     * @return null
+     * Handles a submitted user data
      */
-    protected function submitUser()
+    protected function submitEditUser()
     {
         if ($this->isPosted('delete')) {
             $this->deleteUser();
             return null;
         }
 
-        if (!$this->isPosted('save') || !$this->validateUser()) {
+        if (!$this->isPosted('save') || !$this->validateEditUser()) {
             return null;
         }
 
@@ -269,17 +273,16 @@ class User extends BackendController
     }
 
     /**
-     * Validates submitted user data
+     * Validates a submitted user data
      * @return bool
      */
-    protected function validateUser()
+    protected function validateEditUser()
     {
         $this->setSubmitted('user');
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $this->data_user);
 
         $this->validateComponent('user', array('admin' => $this->access('user_edit')));
-
         return !$this->hasErrors();
     }
 
@@ -302,7 +305,7 @@ class User extends BackendController
     }
 
     /**
-     * Updates a user with submitted values
+     * Updates a user
      */
     protected function updateUser()
     {
@@ -316,7 +319,7 @@ class User extends BackendController
     }
 
     /**
-     * Adds a new user using an array of submitted values
+     * Adds a new user
      */
     protected function addUser()
     {
@@ -328,7 +331,7 @@ class User extends BackendController
     }
 
     /**
-     * Sets titles on the edit account page
+     * Sets title on the edit user page
      */
     protected function setTitleEditUser()
     {
@@ -362,7 +365,7 @@ class User extends BackendController
     }
 
     /**
-     * Renders the edit account page templates
+     * Render and output the edit user page
      */
     protected function outputEditUser()
     {

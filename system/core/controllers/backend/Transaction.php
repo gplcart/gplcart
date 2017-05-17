@@ -14,7 +14,7 @@ use gplcart\core\models\Payment as PaymentModel,
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
- * Handles incoming requests and outputs data related to order payment transactions
+ * Handles incoming requests and outputs data related to order transactions
  */
 class Transaction extends BackendController
 {
@@ -32,7 +32,6 @@ class Transaction extends BackendController
     protected $payment;
 
     /**
-     * Constructor
      * @param TransactionModel $transaction
      * @param PaymentModel $payment
      */
@@ -50,32 +49,46 @@ class Transaction extends BackendController
      */
     public function listTransaction()
     {
-        $this->actionTransaction();
+        $this->actionListTransaction();
 
         $this->setTitleListTransaction();
         $this->setBreadcrumbListTransaction();
 
-        $query = $this->getFilterQuery();
-
-        $filters = array('created', 'order_id', 'payment_method',
-            'gateway_transaction_id');
-
-        $this->setFilter($filters, $query);
-
-        $total = $this->getTotalTransaction($query);
-        $limit = $this->setPager($total, $query);
+        $this->setFilterListTransaction();
+        $this->setTotalListTransaction();
+        $this->setPagerLimit();
 
         $this->setData('payment_methods', $this->payment->getList());
-        $this->setData('transactions', $this->getListTransaction($limit, $query));
+        $this->setData('transactions', $this->getListTransaction());
 
         $this->outputListTransaction();
     }
 
     /**
-     * Applies an action to the selected transactions
-     * @return null
+     * Sets filter on the transaction overview page
      */
-    protected function actionTransaction()
+    protected function setFilterListTransaction()
+    {
+        $allowed = array('created', 'order_id', 'payment_method',
+            'gateway_transaction_id');
+
+        $this->setFilter($allowed);
+    }
+
+    /**
+     * Sets a total transactions found for the given conditions
+     */
+    protected function setTotalListTransaction()
+    {
+        $query = $this->query_filter;
+        $query['count'] = true;
+        $this->total = (int) $this->transaction->getList($query);
+    }
+
+    /**
+     * Applies an action to the selected transactions
+     */
+    protected function actionListTransaction()
     {
         $action = (string) $this->getPosted('action');
 
@@ -100,25 +113,13 @@ class Transaction extends BackendController
     }
 
     /**
-     * Returns total transactions found for the given conditions
-     * @param array $query
-     * @return integer
-     */
-    protected function getTotalTransaction(array $query)
-    {
-        $query['count'] = true;
-        return (int) $this->transaction->getList($query);
-    }
-
-    /**
      * Returns an array of transactions
-     * @param array $limit
-     * @param array $query
      * @return array
      */
-    protected function getListTransaction($limit, array $query)
+    protected function getListTransaction()
     {
-        $query['limit'] = $limit;
+        $query = $this->query_filter;
+        $query['limit'] = $this->limit;
         return (array) $this->transaction->getList($query);
     }
 
@@ -144,7 +145,7 @@ class Transaction extends BackendController
     }
 
     /**
-     * Renders the transaction overview page
+     * Render and output the transaction overview page
      */
     protected function outputListTransaction()
     {

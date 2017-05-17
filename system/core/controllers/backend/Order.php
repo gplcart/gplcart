@@ -72,7 +72,6 @@ class Order extends BackendController
     protected $data_order = array();
 
     /**
-     * Constructor
      * @param OrderModel $order
      * @param AddressModel $address
      * @param PriceModel $price
@@ -98,40 +97,39 @@ class Order extends BackendController
      * Displays the order overview page
      * @param integer $order_id
      */
-    public function viewOrder($order_id)
+    public function indexOrder($order_id)
     {
         $this->setOrder($order_id);
 
-        $this->submitOrder();
+        $this->submitIndexOrder();
 
-        $this->setTitleViewOrder();
-        $this->setBreadcrumbViewOrder();
+        $this->setTitleIndexOrder();
+        $this->setBreadcrumbIndexOrder();
 
         $this->setData('order', $this->data_order);
 
-        $this->setDataPaneLogsOrder();
-        $this->setDataPaneSummaryOrder();
-        $this->setDataPaneCommentOrder();
-        $this->setDataPaneCustomerOrder();
-        $this->setDataPaneComponentsOrder();
-        $this->setDataPanePaymentAddressOrder();
-        $this->setDataPaneShippingAddressOrder();
+        $this->setDataPanelLogsIndexOrder();
+        $this->setDataPanelSummaryIndexOrder();
+        $this->setDataPanelCommentIndexOrder();
+        $this->setDataPanelCustomerIndexOrder();
+        $this->setDataPanelComponentsIndexOrder();
+        $this->setDataPanelPaymentAddressIndexOrder();
+        $this->setDataPanelShippingAddressIndexOrder();
 
-        $this->outputViewOrder();
+        $this->outputIndexOrder();
     }
 
     /**
      * Handles submitted data
-     * @return null
      */
-    protected function submitOrder()
+    protected function submitIndexOrder()
     {
         if ($this->isPosted('delete')) {
             $this->deleteOrder();
             return null;
         }
 
-        if (!$this->validateOrder()) {
+        if (!$this->validateIndexOrder()) {
             return null;
         }
 
@@ -161,7 +159,7 @@ class Order extends BackendController
      * Validates a submitted order
      * @return bool
      */
-    protected function validateOrder()
+    protected function validateIndexOrder()
     {
         $this->setSubmitted('order');
         $this->setSubmitted('update', $this->data_order);
@@ -178,7 +176,6 @@ class Order extends BackendController
         $this->controlAccess('order_edit');
 
         $submitted = $this->getSubmitted();
-
         $order_id = $this->data_order['order_id'];
         $this->order->update($order_id, $submitted);
 
@@ -186,14 +183,22 @@ class Order extends BackendController
 
         $this->logOrder($submitted);
 
-        $messages = array(
+        $messages = $this->getMassagesUpdateOrder();
+        list($severity, $text) = $messages[$submitted['notify']];
+        $this->redirect('', $this->text($text), $severity);
+    }
+
+    /**
+     * Returns an array of messages for updated orders
+     * @return array
+     */
+    protected function getMassagesUpdateOrder()
+    {
+        return array(
             static::NOTIFICATION_DISABLED => array('success', 'Order has been updated'),
             static::NOTIFICATION_ERROR => array('warning', 'Order has been updated, notification has not been sent to customer'),
             static::NOTIFICATION_SENT => array('success', 'Order has been updated, notification has been sent to customer')
         );
-
-        list($severity, $text) = $messages[$submitted['notify']];
-        $this->redirect('', $this->text($text), $severity);
     }
 
     /**
@@ -241,7 +246,7 @@ class Order extends BackendController
     }
 
     /**
-     * Copies an order
+     * Copy an order
      */
     protected function cloneOrder()
     {
@@ -285,7 +290,7 @@ class Order extends BackendController
     /**
      * Renders order overview page templates
      */
-    protected function outputViewOrder()
+    protected function outputIndexOrder()
     {
         $this->output('sale/order/order');
     }
@@ -293,7 +298,7 @@ class Order extends BackendController
     /**
      * Sets titles on the order overview page
      */
-    protected function setTitleViewOrder()
+    protected function setTitleIndexOrder()
     {
         $vars = array('@order_id' => $this->data_order['order_id']);
         $title = $this->text('Order #@order_id', $vars);
@@ -303,7 +308,7 @@ class Order extends BackendController
     /**
      * Sets breadcrumbs on the order overview page
      */
-    protected function setBreadcrumbViewOrder()
+    protected function setBreadcrumbIndexOrder()
     {
         $breadcrumbs = array();
 
@@ -327,18 +332,17 @@ class Order extends BackendController
      */
     protected function setOrder($order_id)
     {
-        if (!is_numeric($order_id)) {
-            return array();
+        if (is_numeric($order_id)) {
+
+            $order = $this->order->get($order_id);
+
+            if (empty($order)) {
+                $this->outputHttpStatus(404);
+            }
+
+            $this->order->setViewed($order);
+            $this->data_order = $this->prepareOrder($order);
         }
-
-        $order = $this->order->get($order_id);
-
-        if (empty($order)) {
-            $this->outputHttpStatus(404);
-        }
-
-        $this->order->setViewed($order);
-        return $this->data_order = $this->prepareOrder($order);
     }
 
     /**
@@ -361,12 +365,15 @@ class Order extends BackendController
         $order['customer'] = $this->text('Anonymous');
         $order['creator_formatted'] = $this->text('Customer');
 
-        if (!empty($order['creator'])) {
-            $order['creator_formatted'] = $this->text('Unknown');
-            $user = $this->user->get($order['creator']);
-            if (isset($user['user_id'])) {
-                $order['creator_formatted'] = "{$user['name']} ({$user['email']})";
-            }
+        if (empty($order['creator'])) {
+            return $order;
+        }
+
+        $order['creator_formatted'] = $this->text('Unknown');
+        $user = $this->user->get($order['creator']);
+
+        if (isset($user['user_id'])) {
+            $order['creator_formatted'] = "{$user['name']} ({$user['email']})";
         }
 
         return $order;
@@ -375,7 +382,7 @@ class Order extends BackendController
     /**
      * Adds order logs pane on the order overview page
      */
-    protected function setDataPaneLogsOrder()
+    protected function setDataPanelLogsIndexOrder()
     {
         $max = $this->config('order_log_limit', 10);
 
@@ -388,57 +395,51 @@ class Order extends BackendController
             'items' => $this->getListLogOrder($limit)
         );
 
-        $html = $this->render('sale/order/panes/log', $data);
-        $this->setData('pane_log', $html);
+        $this->setData('pane_log', $this->render('sale/order/panes/log', $data));
     }
 
     /**
      * Sets summary pane on the order overview page
      */
-    protected function setDataPaneSummaryOrder()
+    protected function setDataPanelSummaryIndexOrder()
     {
         $data = array('order' => $this->data_order, 'statuses' => $this->order->getStatuses());
-        $html = $this->render('sale/order/panes/summary', $data);
-        $this->setData('pane_summary', $html);
+        $this->setData('pane_summary', $this->render('sale/order/panes/summary', $data));
     }
 
     /**
      * Sets order comment pane on the order overview page
      */
-    protected function setDataPaneCommentOrder()
+    protected function setDataPanelCommentIndexOrder()
     {
         $data = array('order' => $this->data_order);
-        $html = $this->render('sale/order/panes/comment', $data);
-        $this->setData('pane_comment', $html);
+        $this->setData('pane_comment', $this->render('sale/order/panes/comment', $data));
     }
 
     /**
      * Sets customer pane on the order overview page
      */
-    protected function setDataPaneCustomerOrder()
+    protected function setDataPanelCustomerIndexOrder()
     {
         $data = array('order' => $this->data_order);
-        $html = $this->render('sale/order/panes/customer', $data);
-        $this->setData('pane_customer', $html);
+        $this->setData('pane_customer', $this->render('sale/order/panes/customer', $data));
     }
 
     /**
      * Sets order components pane on the order overview page
      */
-    protected function setDataPaneComponentsOrder()
+    protected function setDataPanelComponentsIndexOrder()
     {
         $templates = 'sale/order/panes/components';
         $components = $this->prepareOrderComponentsTrait($this, $this->data_order, $templates);
-
         $data = array('components' => $components, 'order' => $this->data_order);
-        $html = $this->render('sale/order/panes/components', $data);
-        $this->setData('pane_components', $html);
+        $this->setData('pane_components', $this->render('sale/order/panes/components', $data));
     }
 
     /**
      * Sets shipping address pane on the order overview page
      */
-    protected function setDataPaneShippingAddressOrder()
+    protected function setDataPanelShippingAddressIndexOrder()
     {
         $data = array('order' => $this->data_order);
         $html = $this->render('sale/order/panes/shipping_address', $data);
@@ -448,7 +449,7 @@ class Order extends BackendController
     /**
      * Sets payment address pane on the order overview page
      */
-    protected function setDataPanePaymentAddressOrder()
+    protected function setDataPanelPaymentAddressIndexOrder()
     {
         $data = array('order' => $this->data_order);
         $html = $this->render('sale/order/panes/payment_address', $data);
@@ -460,7 +461,7 @@ class Order extends BackendController
      */
     public function listOrder()
     {
-        $this->actionOrder();
+        $this->actionListOrder();
 
         $this->setTitleListOrder();
         $this->setBreadcrumbListOrder();
@@ -468,25 +469,40 @@ class Order extends BackendController
         $this->setData('stores', $this->store->getNames());
         $this->setData('statuses', $this->order->getStatuses());
 
-        $query = $this->getFilterQuery();
+        $this->setFilterListOrder();
+        $this->setTotalListOrder();
+        $this->setPagerLimit();
 
-        $allowed = array('store_id', 'order_id', 'status', 'created',
-            'creator', 'user_id', 'total', 'currency');
-
-        $this->setFilter($allowed, $query);
-
-        $total = $this->getTotalOrder($query);
-        $limit = $this->setPager($total, $query);
-        $this->setData('orders', $this->getListOrder($limit, $query));
+        $this->setData('orders', $this->getListOrder());
 
         $this->outputListOrder();
+    }
+
+    /**
+     * Set filter on the order list page
+     */
+    protected function setFilterListOrder()
+    {
+        $allowed = array('store_id', 'order_id', 'status', 'created',
+            'creator', 'user_id', 'total', 'currency');
+        $this->setFilter($allowed);
+    }
+
+    /**
+     * Sets a total number of orders on the order list page
+     */
+    protected function setTotalListOrder()
+    {
+        $query = $this->query_filter;
+        $query['count'] = true;
+        $this->total = (int) $this->order->getList($query);
     }
 
     /**
      * Applies an action to the selected orders
      * @return null
      */
-    protected function actionOrder()
+    protected function actionListOrder()
     {
         $action = (string) $this->getPosted('action');
 
@@ -502,9 +518,9 @@ class Order extends BackendController
 
         foreach ($selected as $id) {
 
-            if ($action === 'status' && $this->access('order_edit')//
-                    && $this->order->update($id, array('status' => $value))) {
-                if ($this->setNotificationOrder($id) == static::NOTIFICATION_ERROR) {
+            if ($action === 'status' && $this->access('order_edit')) {
+                $updated = (bool) $this->order->update($id, array('status' => $value));
+                if ($updated && $this->setNotificationOrder($id) == static::NOTIFICATION_ERROR) {
                     $failed_notifications[] = $id;
                 }
                 $updated++;
@@ -561,25 +577,13 @@ class Order extends BackendController
     }
 
     /**
-     * Returns total number of orders for pages
-     * @param array $query
-     * @return integer
-     */
-    protected function getTotalOrder(array $query)
-    {
-        $query['count'] = true;
-        return (int) $this->order->getList($query);
-    }
-
-    /**
      * Returns an array of orders
-     * @param array $limit
-     * @param array $query
      * @return array
      */
-    protected function getListOrder($limit, array $query)
+    protected function getListOrder()
     {
-        $query['limit'] = $limit;
+        $query = $this->query_filter;
+        $query['limit'] = $this->limit;
         $orders = (array) $this->order->getList($query);
         return $this->prepareListOrder($orders);
     }

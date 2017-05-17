@@ -31,6 +31,18 @@ class Controller extends BaseController
     protected $image;
 
     /**
+     * Pager limits
+     * @var array
+     */
+    protected $limit;
+
+    /**
+     * A total number of items found for the filter conditions
+     * @var integer
+     */
+    protected $total;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -44,6 +56,14 @@ class Controller extends BaseController
 
         $this->hook->fire('construct.controller.backend', $this);
         $this->controlHttpStatus();
+    }
+
+    /**
+     * Set pager limits
+     */
+    protected function setPagerLimit()
+    {
+        $this->limit = $this->setPager($this->total, $this->query_filter);
     }
 
     /**

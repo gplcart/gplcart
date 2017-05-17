@@ -40,24 +40,6 @@ class Module extends BackendController
     protected $data_module = array();
 
     /**
-     * An array of filter parameters
-     * @var array
-     */
-    protected $data_filter = array();
-
-    /**
-     * Pager limits
-     * @var array
-     */
-    protected $data_limit;
-
-    /**
-     * A total number of items found for the current filter
-     * @var integer
-     */
-    protected $data_total;
-
-    /**
      * @param ModuleModel $module
      * @param GraphHelper $graph
      */
@@ -81,18 +63,10 @@ class Module extends BackendController
 
         $this->setFilterListModule();
         $this->setTotalListModule();
-        $this->setPagerListModule();
+        $this->setPagerLimit();
 
         $this->setData('modules', $this->getListModule());
         $this->outputListModule();
-    }
-
-    /**
-     * Set pager on the module overview page
-     */
-    protected function setPagerListModule()
-    {
-        $this->data_limit = $this->setPager($this->data_total, $this->data_filter);
     }
 
     /**
@@ -100,9 +74,7 @@ class Module extends BackendController
      */
     protected function setFilterListModule()
     {
-        $this->data_filter = $this->getFilterQuery();
-        $allowed = array('type', 'name', 'version', 'id');
-        $this->setFilter($allowed, $this->data_filter);
+        $this->setFilter(array('type', 'name', 'version', 'id'));
     }
 
     /**
@@ -217,8 +189,8 @@ class Module extends BackendController
      */
     protected function setTotalListModule()
     {
-        $modules = $this->getListModule($this->data_filter);
-        $this->data_total = count($modules);
+        $modules = $this->getListModule($this->query_filter);
+        $this->total = count($modules);
     }
 
     /**
@@ -228,7 +200,7 @@ class Module extends BackendController
      */
     protected function filterListModule(array &$modules)
     {
-        $query = $this->data_filter;
+        $query = $this->query_filter;
         $allowed = array('type', 'name', 'version', 'id');
         $filter = array_intersect_key($query, array_flip($allowed));
 
@@ -253,8 +225,8 @@ class Module extends BackendController
      */
     protected function limitListModule(array &$modules)
     {
-        if (!empty($this->data_limit)) {
-            list($from, $to) = $this->data_limit;
+        if (!empty($this->limit)) {
+            list($from, $to) = $this->limit;
             $modules = array_slice($modules, $from, $to, true);
         }
     }
@@ -266,7 +238,7 @@ class Module extends BackendController
      */
     protected function sortListModule(array &$modules)
     {
-        $query = $this->data_filter;
+        $query = $this->query_filter;
 
         if (empty($query['order']) || empty($query['sort'])) {
             return $modules;

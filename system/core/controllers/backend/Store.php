@@ -45,12 +45,6 @@ class Store extends BackendController
     protected $data_store = array();
 
     /**
-     * The current filter query
-     * @var array
-     */
-    protected $data_filter = array();
-
-    /**
      * @param ModuleModel $module
      * @param CollectionModel $collection
      * @param CountryModel $country
@@ -70,36 +64,42 @@ class Store extends BackendController
      */
     public function listStore()
     {
-        $this->actionStore();
+        $this->actionListStore();
 
         $this->setTitleListStore();
         $this->setBreadcrumbListStore();
 
-        $limit = $this->setFilterStore();
+        $this->setFilterListStore();
+        $this->setTotalListStore();
+        $this->setPagerLimit();
+
         $this->setData('default_store', $this->store->getDefault());
-        $this->setData('stores', $this->getListStore($limit));
+        $this->setData('stores', $this->getListStore());
         $this->outputListStore();
     }
 
     /**
-     * Set the current filter and return max number of items
-     * @return integer
+     * Set filter on the store overview page
      */
-    protected function setFilterStore()
+    protected function setFilterListStore()
     {
-        $this->data_filter = $this->getFilterQuery();
+        $this->setFilter(array('name', 'domain', 'basepath', 'status'));
+    }
 
-        $allowed = array('name', 'domain', 'basepath', 'status');
-        $this->setFilter($allowed, $this->data_filter);
-
-        return $this->setPager($this->getTotalStore(), $this->data_filter);
+    /**
+     * Sets a total number of stores found for the filter conditions
+     */
+    protected function setTotalListStore()
+    {
+        $query = $this->query_filter;
+        $query['count'] = true;
+        $this->total = (int) $this->store->getList($query);
     }
 
     /**
      * Applies an action to the selected stores
-     * @return null
      */
-    protected function actionStore()
+    protected function actionListStore()
     {
         $action = (string) $this->getPosted('action');
 
@@ -134,30 +134,18 @@ class Store extends BackendController
     }
 
     /**
-     * Returns total number of stores
-     * @return integer
-     */
-    protected function getTotalStore()
-    {
-        $query = $this->data_filter;
-        $query['count'] = true;
-        return (int) $this->store->getList($query);
-    }
-
-    /**
      * Returns an array of stores
-     * @param array $limit
      * @return array
      */
-    protected function getListStore(array $limit)
+    protected function getListStore()
     {
-        $query = $this->data_filter;
-        $query['limit'] = $limit;
+        $query = $this->query_filter;
+        $query['limit'] = $this->limit;
         return $this->store->getList($query);
     }
 
     /**
-     * Sets titles on the stores overview page
+     * Sets titles on the store overview page
      */
     protected function setTitleListStore()
     {
@@ -165,7 +153,7 @@ class Store extends BackendController
     }
 
     /**
-     * Sets breadcrumbs on the stores overview page
+     * Sets breadcrumbs on the store overview page
      */
     protected function setBreadcrumbListStore()
     {
@@ -178,7 +166,7 @@ class Store extends BackendController
     }
 
     /**
-     * Renders the store overview page
+     * Render and output the store overview page
      */
     protected function outputListStore()
     {
@@ -203,7 +191,7 @@ class Store extends BackendController
         $this->setData('countries', $this->getCountriesStore());
         $this->setData('collections', $this->getListCollectionStore());
 
-        $this->submitStore();
+        $this->submitEditStore();
         $this->setDataEditStore();
 
         $this->setJsEditStore();
@@ -242,28 +230,23 @@ class Store extends BackendController
     }
 
     /**
-     * Returns a store
-     * @param integer $store_id
-     * @return array
+     * Sets a store data
+     * @param mixed $store_id
      */
     protected function setStore($store_id)
     {
-        if (!is_numeric($store_id)) {
+        if (is_numeric($store_id)) {
+            $this->data_store = $this->store->get($store_id);
+            if (empty($this->data_store)) {
+                $this->outputHttpStatus(404);
+            }
+        } else {
             $this->data_store = array('data' => $this->store->defaultConfig());
-            return $this->data_store;
         }
-
-        $store = $this->store->get((int) $store_id);
-
-        if (empty($store)) {
-            $this->outputHttpStatus(404);
-        }
-
-        return $this->data_store = $store;
     }
 
     /**
-     * Returns an array of available theme modules excluding bakend theme
+     * Returns an array of available theme modules excluding backend theme
      * @return array
      */
     protected function getListThemeStore()
@@ -274,7 +257,7 @@ class Store extends BackendController
     }
 
     /**
-     * Returns an array of enabled collection for the current store keyed by entity name
+     * Returns an array of enabled collection for the store keyed by an entity name
      * @return array
      */
     protected function getListCollectionStore()
@@ -299,17 +282,16 @@ class Store extends BackendController
     }
 
     /**
-     * Saves a submitted store data
-     * @return null
+     * Handles a submitted store data
      */
-    protected function submitStore()
+    protected function submitEditStore()
     {
         if ($this->isPosted('delete')) {
             $this->deleteStore();
             return null;
         }
 
-        if (!$this->isPosted('save') || !$this->validateStore()) {
+        if (!$this->isPosted('save') || !$this->validateEditStore()) {
             return null;
         }
 
@@ -321,13 +303,12 @@ class Store extends BackendController
     }
 
     /**
-     * Validates a store
+     * Validates a submitted store data
      * @return array
      */
-    protected function validateStore()
+    protected function validateEditStore()
     {
         $this->setSubmitted('store', null, false);
-
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $this->data_store);
         $this->setSubmittedBool('data.anonymous_checkout');
@@ -337,7 +318,6 @@ class Store extends BackendController
         }
 
         $this->validateComponent('store');
-
         return !$this->hasErrors();
     }
 
@@ -374,7 +354,7 @@ class Store extends BackendController
     }
 
     /**
-     * Adds a new store using an array of submitted values
+     * Adds a new store
      */
     protected function addStore()
     {
@@ -386,7 +366,7 @@ class Store extends BackendController
     }
 
     /**
-     * Prepares store data before sending to templates
+     * Prepares a store data
      */
     protected function setDataEditStore()
     {
@@ -452,7 +432,7 @@ class Store extends BackendController
     }
 
     /**
-     * Renders the store edit page templates
+     * Render and output the store edit page
      */
     protected function outputEditStore()
     {

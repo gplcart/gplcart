@@ -46,13 +46,12 @@ class PriceRule extends BackendController
     protected $price;
 
     /**
-     * The current price rule
+     * An array of price rule data
      * @var array
      */
     protected $data_rule = array();
 
     /**
-     * Constructor
      * @param PriceRuleModel $rule
      * @param CurrencyModel $currency
      * @param PriceModel $price
@@ -77,28 +76,42 @@ class PriceRule extends BackendController
         $this->setTitleListPriceRule();
         $this->setBreadcrumbListPriceRule();
 
-        $this->actionPriceRule();
+        $this->actionListPriceRule();
 
-        $query = $this->getFilterQuery();
-
-        $filters = array('name', 'code', 'value',
-            'value_type', 'weight', 'status');
-
-        $this->setFilter($filters, $query);
-
-        $total = $this->getTotalPriceRule($query);
-        $limit = $this->setPager($total, $query);
+        $this->setFilterListPriceRule();
+        $this->setTotalListPriceRule();
+        $this->setPagerLimit();
 
         $this->setData('stores', $this->store->getNames());
-        $this->setData('price_rules', $this->getListPriceRule($limit, $query));
+        $this->setData('price_rules', $this->getListPriceRule());
+
         $this->outputListPriceRule();
     }
 
     /**
-     * Applies an action to the selected price rules
-     * @return null
+     * Sets a total number of results on the price rule overview page
      */
-    protected function actionPriceRule()
+    protected function setTotalListPriceRule()
+    {
+        $query = $this->query_filter;
+        $query['count'] = true;
+        $this->total = (int) $this->rule->getList($query);
+    }
+
+    /**
+     * Set filter on the price rule overview page
+     */
+    protected function setFilterListPriceRule()
+    {
+        $allowed = array('name', 'code', 'value',
+            'value_type', 'weight', 'status');
+        $this->setFilter($allowed);
+    }
+
+    /**
+     * Applies an action to the selected price rules
+     */
+    protected function actionListPriceRule()
     {
         $action = (string) $this->getPosted('action');
 
@@ -133,38 +146,34 @@ class PriceRule extends BackendController
     }
 
     /**
-     * Returns total number of price rules for pager
-     * @param array $query
-     * @return integer
+     * Returns an array of price rules
+     * @return array
      */
-    protected function getTotalPriceRule(array $query)
+    protected function getListPriceRule()
     {
-        $query['count'] = true;
-        return (int) $this->rule->getList($query);
+        $query = $this->query_filter;
+        $query['limit'] = $this->limit;
+        $rules = (array) $this->rule->getList($query);
+        return $this->prepareListPriceRule($rules);
     }
 
     /**
-     * Returns an array of rules
-     * @param array $limit
-     * @param array $query
+     * Prepare an array of price rules
+     * @param array $rules
      * @return array
      */
-    protected function getListPriceRule(array $limit, array $query)
+    protected function prepareListPriceRule($rules)
     {
-        $query['limit'] = $limit;
-        $rules = (array) $this->rule->getList($query);
-
         foreach ($rules as &$rule) {
             if ($rule['value_type'] == 'fixed') {
                 $rule['value'] = $this->price->decimal($rule['value'], $rule['currency']);
             }
         }
-
         return $rules;
     }
 
     /**
-     * Sets titles on the rules overview page
+     * Sets titles on the price rule overview page
      */
     protected function setTitleListPriceRule()
     {
@@ -172,7 +181,7 @@ class PriceRule extends BackendController
     }
 
     /**
-     * Sets breadcrumbs on the rules overview page
+     * Sets breadcrumbs on the price rule overview page
      */
     protected function setBreadcrumbListPriceRule()
     {
@@ -185,7 +194,7 @@ class PriceRule extends BackendController
     }
 
     /**
-     * Renders the rules overview page
+     * Render and output the price rule overview page
      */
     protected function outputListPriceRule()
     {
@@ -194,7 +203,7 @@ class PriceRule extends BackendController
 
     /**
      * Displays the price rule edit form
-     * @param mixed $rule_id
+     * @param null|integer $rule_id
      */
     public function editPriceRule($rule_id = null)
     {
@@ -208,8 +217,7 @@ class PriceRule extends BackendController
         $this->setData('triggers', $this->getTriggersPriceRule());
         $this->setData('currencies', $this->getCurrenciesPriceRule());
 
-        $this->submitPriceRule();
-
+        $this->submitEditPriceRule();
         $this->outputEditPriceRule();
     }
 
@@ -232,23 +240,18 @@ class PriceRule extends BackendController
     }
 
     /**
-     * Returns an array of rule data
-     * @param mixed $rule_id
+     * Returns an array of price rule data
+     * @param null|integer $rule_id
      * @return array
      */
     protected function setPriceRule($rule_id)
     {
-        if (!is_numeric($rule_id)) {
-            return array();
+        if (is_numeric($rule_id)) {
+            $this->data_rule = $this->rule->get($rule_id);
+            if (empty($this->data_rule)) {
+                $this->outputHttpStatus(404);
+            }
         }
-
-        $rule = $this->rule->get($rule_id);
-
-        if (empty($rule)) {
-            $this->outputHttpStatus(404);
-        }
-
-        return $this->data_rule = $this->preparePriceRule($rule);
     }
 
     /**
@@ -261,22 +264,20 @@ class PriceRule extends BackendController
         if ($rule['value_type'] == 'fixed') {
             $rule['value'] = $this->price->decimal($rule['value'], $rule['currency']);
         }
-
         return $rule;
     }
 
     /**
-     * Saves a submitted rule
-     * @return null
+     * Handles a submitted price rule
      */
-    protected function submitPriceRule()
+    protected function submitEditPriceRule()
     {
         if ($this->isPosted('delete')) {
             $this->deletePriceRule();
             return null;
         }
 
-        if (!$this->isPosted('save') || !$this->validatePriceRule()) {
+        if (!$this->isPosted('save') || !$this->validateEditPriceRule()) {
             return null;
         }
 
@@ -288,23 +289,21 @@ class PriceRule extends BackendController
     }
 
     /**
-     * Validates a submitted rule
+     * Validates a submitted price rule
      * @return bool
      */
-    protected function validatePriceRule()
+    protected function validateEditPriceRule()
     {
         $this->setSubmitted('price_rule', null, false);
-
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $this->data_rule);
 
         $this->validateComponent('price_rule');
-
         return !$this->hasErrors();
     }
 
     /**
-     * Deletes a rule
+     * Deletes a price rule
      */
     protected function deletePriceRule()
     {
@@ -317,7 +316,7 @@ class PriceRule extends BackendController
     }
 
     /**
-     * Updates a price rule with submitted values
+     * Updates a price rule
      */
     protected function updatePriceRule()
     {
@@ -345,7 +344,7 @@ class PriceRule extends BackendController
     }
 
     /**
-     * Sets titles on the edit rules page
+     * Sets title on the edit price rule page
      */
     protected function setTitleEditPriceRule()
     {
@@ -360,7 +359,7 @@ class PriceRule extends BackendController
     }
 
     /**
-     * Sets breadcrumbs on the edit rules page
+     * Sets breadcrumbs on the edit price rule page
      */
     protected function setBreadcrumbEditPriceRule()
     {
@@ -380,7 +379,7 @@ class PriceRule extends BackendController
     }
 
     /**
-     * Renders templates for rule edit page
+     * Render and output the edit price rule page
      */
     protected function outputEditPriceRule()
     {

@@ -64,24 +64,6 @@ class City extends BackendController
     protected $data_country = array();
 
     /**
-     * Pager limits
-     * @var array
-     */
-    protected $data_limit;
-
-    /**
-     * An array of filter parameters
-     * @var array
-     */
-    protected $data_filter = array();
-
-    /**
-     * A total number of results found for the current filter conditions
-     * @var integer
-     */
-    protected $data_total;
-
-    /**
      * @param CountryModel $country
      * @param StateModel $state
      * @param CityModel $city
@@ -115,7 +97,7 @@ class City extends BackendController
 
         $this->setFilterListCity();
         $this->setTotalListCity();
-        $this->setPagerListCity();
+        $this->setPagerLimit();
 
         $this->setData('state', $this->data_state);
         $this->setData('country', $this->data_country);
@@ -125,21 +107,11 @@ class City extends BackendController
     }
 
     /**
-     * Set pager on the city overview page
-     */
-    protected function setPagerListCity()
-    {
-        $this->data_limit = $this->setPager($this->data_total, $this->data_filter);
-    }
-
-    /**
      * Set filter on the city overview page
      */
     protected function setFilterListCity()
     {
-        $this->data_filter = $this->getFilterQuery();
-        $allowed = array('city_id', 'name', 'status');
-        $this->setFilter($allowed, $this->data_filter);
+        $this->setFilter(array('city_id', 'name', 'status'));
     }
 
     /**
@@ -213,8 +185,8 @@ class City extends BackendController
         $options = array(
             'count' => true, 'state_id' => $this->data_state['state_id']);
 
-        $options += $this->data_filter;
-        $this->data_total = (int) $this->city->getList($options);
+        $options += $this->query_filter;
+        $this->total = (int) $this->city->getList($options);
     }
 
     /**
@@ -224,9 +196,9 @@ class City extends BackendController
     protected function getListCity()
     {
         $options = array(
-            'limit' => $this->data_limit, 'state_id' => $this->data_state['state_id']);
+            'limit' => $this->limit, 'state_id' => $this->data_state['state_id']);
 
-        $options += $this->data_filter;
+        $options += $this->query_filter;
         return (array) $this->city->getList($options);
     }
 

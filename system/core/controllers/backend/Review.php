@@ -32,13 +32,12 @@ class Review extends BackendController
     protected $product;
 
     /**
-     * The current review
+     * An array of review data
      * @var array
      */
     protected $data_review = array();
 
     /**
-     * Constructor
      * @param ReviewModel $review
      * @param ProductModel $product
      */
@@ -55,30 +54,35 @@ class Review extends BackendController
      */
     public function listReview()
     {
-        $this->actionReview();
+        $this->actionListReview();
 
         $this->setTitleListReview();
         $this->setBreadcrumbListReview();
 
-        $query = $this->getFilterQuery();
+        $this->setFilterListReview();
+        $this->setTotalListReview();
+        $this->setPagerLimit();
 
-        $filters = array('product_id', 'email',
-            'status', 'created', 'text', 'review_id');
-        $this->setFilter($filters, $query);
-
-        $total = $this->getTotalReview($query);
-        $limit = $this->setPager($total, $query);
-
-        $this->setData('reviews', $this->getListReview($limit, $query));
-        $this->setDataListReview($query);
+        $this->setData('reviews', $this->getListReview());
+        $this->setDataListReview();
 
         $this->outputListReview();
     }
 
     /**
+     * Set filter on the reviews overview page
+     */
+    protected function setFilterListReview()
+    {
+        $allowed = array('product_id', 'email',
+            'status', 'created', 'text', 'review_id');
+        $this->setFilter($allowed);
+    }
+
+    /**
      * Applies an action to the selected reviews
      */
-    protected function actionReview()
+    protected function actionListReview()
     {
         $action = (string) $this->getPosted('action');
 
@@ -113,55 +117,57 @@ class Review extends BackendController
     }
 
     /**
-     * Returns a number of total reviews for pager
-     * @param array $query
-     * @return integer
+     * Sets a total number of reviews found for the filter conditions
      */
-    protected function getTotalReview(array $query)
+    protected function setTotalListReview()
     {
+        $query = $this->query_filter;
         $query['count'] = true;
-        return (int) $this->review->getList($query);
+        $this->total = (int) $this->review->getList($query);
     }
 
     /**
      * Returns an array of reviews
-     * @param array $limit
-     * @param array $query
      * @return array
      */
-    protected function getListReview(array $limit, array $query)
+    protected function getListReview()
     {
-        $query['limit'] = $limit;
+        $query = $this->query_filter;
+        $query['limit'] = $this->limit;
         $reviews = (array) $this->review->getList($query);
+        return $this->prepareListReview($reviews);
+    }
 
+    /**
+     * Prepare an array of reviews
+     * @param array $reviews
+     * @return array
+     */
+    protected function prepareListReview(array $reviews)
+    {
         foreach ($reviews as &$review) {
-            $review['product'] = '';
             $product = $this->product->get($review['product_id']);
-            if (!empty($product)) {
-                $review['product'] = $product['title'];
-            }
+            $review['product'] = empty($product) ? '' : $product['title'];
         }
-
         return $reviews;
     }
 
     /**
-     * Modifies template variables on the reviews page
-     * @param array $query
+     * Prepare the template data on the overview reviews page
      */
-    protected function setDataListReview(array $query)
+    protected function setDataListReview()
     {
-        $title = '';
-        if (isset($query['product_id'])) {
-            $product = $this->product->get($query['product_id']);
-            $title = isset($product['title']) ? $product['title'] : '';
+        $product_id = $this->getQuery('product_id');
+
+        if (!empty($product_id)) {
+            $product = $this->product->get($product_id);
         }
 
-        $this->setData('product', $title);
+        $this->setData('product', isset($product['title']) ? $product['title'] : '');
     }
 
     /**
-     * Sets titles on the reviews overview page
+     * Sets title on the reviews overview page
      */
     protected function setTitleListReview()
     {
@@ -182,7 +188,7 @@ class Review extends BackendController
     }
 
     /**
-     * Renders the reviews overview page
+     * Render and output the reviews overview page
      */
     protected function outputListReview()
     {
@@ -190,7 +196,7 @@ class Review extends BackendController
     }
 
     /**
-     * Displays the review add/edit form
+     * Displays the review edit form
      * @param integer|null $review_id
      */
     public function editReview($review_id = null)
@@ -202,44 +208,36 @@ class Review extends BackendController
 
         $this->setData('review', $this->data_review);
 
-        $this->submitReview();
+        $this->submitEditReview();
         $this->setDataEditReview();
-
         $this->outputEditReview();
     }
 
     /**
-     * Returns a review
+     * Set a review data
      * @param integer $review_id
-     * @return array
      */
     protected function setReview($review_id)
     {
-        if (!is_numeric($review_id)) {
-            return array();
+        if (is_numeric($review_id)) {
+            $this->data_review = $this->review->get($review_id);
+            if (empty($this->data_review)) {
+                $this->outputHttpStatus(404);
+            }
         }
-
-        $review = $this->review->get($review_id);
-
-        if (empty($review)) {
-            $this->outputHttpStatus(404);
-        }
-
-        return $this->data_review = $review;
     }
 
     /**
-     * Saves a review
-     * @return null|void
+     * Handles a submitted review
      */
-    protected function submitReview()
+    protected function submitEditReview()
     {
         if ($this->isPosted('delete')) {
             $this->deleteReview();
             return null;
         }
 
-        if (!$this->isPosted('save') || !$this->validateReview()) {
+        if (!$this->isPosted('save') || !$this->validateEditReview()) {
             return null;
         }
 
@@ -254,14 +252,13 @@ class Review extends BackendController
      * Validates a submitted review
      * @return bool
      */
-    protected function validateReview()
+    protected function validateEditReview()
     {
         $this->setSubmitted('review');
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $this->data_review);
 
         $this->validateComponent('review');
-
         return !$this->hasErrors();
     }
 
@@ -278,7 +275,7 @@ class Review extends BackendController
     }
 
     /**
-     * Updates a review with submitted data
+     * Updates a review
      */
     protected function updateReview()
     {
@@ -292,7 +289,7 @@ class Review extends BackendController
     }
 
     /**
-     * Adds a new review using an array of submitted values
+     * Adds a new review
      */
     protected function addReview()
     {
@@ -305,7 +302,7 @@ class Review extends BackendController
     }
 
     /**
-     * Sets an additional data to be passed to templates
+     * Set a template data on the edit review page
      */
     protected function setDataEditReview()
     {
@@ -322,7 +319,7 @@ class Review extends BackendController
     }
 
     /**
-     * Sets titles on the review edit page
+     * Sets title on the edit review page
      */
     protected function setTitleEditReview()
     {
@@ -336,7 +333,7 @@ class Review extends BackendController
     }
 
     /**
-     * Sets breadcrumbs on the review edit page
+     * Sets breadcrumbs on the edit review page
      */
     protected function setBreadcrumbEditReview()
     {
@@ -356,7 +353,7 @@ class Review extends BackendController
     }
 
     /**
-     * Renders the review edit page
+     * Render and output the edit review page
      */
     protected function outputEditReview()
     {

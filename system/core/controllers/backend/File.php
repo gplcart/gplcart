@@ -31,24 +31,6 @@ class File extends BackendController
     protected $data_file = array();
 
     /**
-     * An array of filter parameters
-     * @var array
-     */
-    protected $data_filter = array();
-
-    /**
-     * Pager limits
-     * @var array
-     */
-    protected $data_limit;
-
-    /**
-     * A total number of items found for the filter conditions
-     * @var integer
-     */
-    protected $data_total;
-
-    /**
      * @param FileModel $file
      */
     public function __construct(FileModel $file)
@@ -71,7 +53,7 @@ class File extends BackendController
 
         $this->setFilterListFile();
         $this->setTotalListFile();
-        $this->setPagerListFile();
+        $this->setPagerLimit();
 
         $this->setData('files', $this->getListFile());
         $this->outputListFile();
@@ -82,17 +64,7 @@ class File extends BackendController
      */
     protected function setFilterListFile()
     {
-        $this->data_filter = $this->getFilterQuery();
-        $allowed = array('title', 'mime_type', 'file_id', 'created', 'path');
-        $this->setFilter($allowed, $this->data_filter);
-    }
-
-    /**
-     * Set pager on the file overview page
-     */
-    protected function setPagerListFile()
-    {
-        $this->data_limit = $this->setPager($this->data_total, $this->data_filter);
+        $this->setFilter(array('title', 'mime_type', 'file_id', 'created', 'path'));
     }
 
     /**
@@ -142,9 +114,9 @@ class File extends BackendController
      */
     protected function setTotalListFile()
     {
-        $query = $this->data_filter;
+        $query = $this->query_filter;
         $query['count'] = true;
-        $this->data_total = (int) $this->file->getList($query);
+        $this->total = (int) $this->file->getList($query);
     }
 
     /**
@@ -153,8 +125,8 @@ class File extends BackendController
      */
     protected function getListFile()
     {
-        $query = $this->data_filter;
-        $query['limit'] = $this->data_limit;
+        $query = $this->query_filter;
+        $query['limit'] = $this->limit;
         $files = (array) $this->file->getList($query);
         return $this->prepareListFile($files);
     }
@@ -256,13 +228,10 @@ class File extends BackendController
     protected function setFile($file_id)
     {
         if (is_numeric($file_id)) {
-            $file = $this->file->get($file_id);
-
-            if (empty($file)) {
+            $this->data_file = $this->file->get($file_id);
+            if (empty($this->data_file)) {
                 $this->outputHttpStatus(404);
             }
-
-            $this->data_file = $file;
         }
     }
 
