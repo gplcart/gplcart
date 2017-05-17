@@ -146,6 +146,12 @@ class Controller
      * @var array
      */
     protected $query = array();
+    
+    /**
+     * An array of filter parameters
+     * @var array
+     */
+    protected $query_filter = array();
 
     /**
      * Access for the current route
@@ -2022,33 +2028,31 @@ class Controller
      */
     public function setFilter(array $allowed_filters, $query = null)
     {
-        if (!isset($query)) {
-            $query = $this->getFilterQuery();
+        if (isset($query)) {
+            $this->query_filter = $query;
+        } else {
+            $this->query_filter = $this->getFilterQuery();
         }
 
         $order = (string) $this->request->get('order');
-
         $this->data['filtering'] = false;
 
         foreach ($allowed_filters as $filter) {
 
             $current_filter = $this->request->get($filter, null);
-
             if (isset($current_filter)) {
                 $this->data['filtering'] = true;
             }
 
             $this->data["filter_$filter"] = (string) $current_filter;
-
             $sort = array(
                 'sort' => $filter,
                 'order' => ($order == 'desc') ? 'asc' : 'desc');
-
-            $this->data["sort_$filter"] = $this->url('', $sort + $query);
+            $this->data["sort_$filter"] = $this->url('', $sort + $this->query_filter);
         }
 
-        if (isset($query['sort']) && isset($query['order'])) {
-            $this->data['sort'] = "{$query['sort']}-{$query['order']}";
+        if (isset($this->query_filter['sort']) && isset($this->query_filter['order'])) {
+            $this->data['sort'] = "{$this->query_filter['sort']}-{$this->query_filter['order']}";
         }
     }
 
