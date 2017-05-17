@@ -272,7 +272,7 @@ return array(
     'admin/sale/order/(\d+)' => array(
         'access' => 'order',
         'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\backend\\Order', 'viewOrder')
+            'controller' => array('gplcart\\core\\controllers\\backend\\Order', 'indexOrder')
         )
     ),
     'admin/sale/price' => array(
@@ -517,7 +517,7 @@ return array(
         )
     ),
     'admin/settings/common' => array(
-        'access' => 'settings',
+        'access' => '__superadmin',
         'menu' => array('admin' => 'Common'),
         'handlers' => array(
             'controller' => array('gplcart\\core\\controllers\\backend\\Settings', 'editSettings')
