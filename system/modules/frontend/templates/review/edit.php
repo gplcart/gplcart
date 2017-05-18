@@ -15,7 +15,7 @@
       </div>
       <div class="form-group required<?php echo $this->error('text', ' has-error'); ?>">
         <div class="col-md-12">
-          <textarea class="form-control" name="review[text]"><?php echo isset($review['text']) ? $this->e($review['text']) : ''; ?></textarea>
+          <textarea class="form-control" rows="10" name="review[text]"><?php echo isset($review['text']) ? $this->e($review['text']) : ''; ?></textarea>
           <div class="help-block"><?php echo $this->error('text'); ?></div>
         </div>
       </div>
