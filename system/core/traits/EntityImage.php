@@ -19,19 +19,19 @@ trait EntityImage
 
     /**
      * Adds images to an entity
-     * @param \gplcart\core\models\File $file_model
+     * @param \gplcart\core\models\File $model
      * @param array $data
      * @param string $entity
      * @param null|string $language
      * @return null
      */
-    protected function attachImagesTrait($file_model, array &$data, $entity,
-            $language = null)
+    protected function attachImagesTrait(\gplcart\core\models\File $model,
+            array &$data, $entity, $language = null)
     {
         if (!empty($data)) {
-            $images = $this->getImagesTrait($file_model, $data, "{$entity}_id");
+            $images = $this->getImagesTrait($model, $data, "{$entity}_id");
             foreach ($images as &$image) {
-                $this->attachTranslationTrait($file_model->getDb(), $image, 'file', $language);
+                $this->attachTranslationTrait($model->getDb(), $image, 'file', $language);
             }
             $data['images'] = $images;
         }
@@ -39,12 +39,13 @@ trait EntityImage
 
     /**
      * Returns an array of images for the given entity
-     * @param \gplcart\core\models\File $file
+     * @param \gplcart\core\models\File $model
      * @param array $data
      * @param string $key
      * @return array
      */
-    protected function getImagesTrait($file, array $data, $key)
+    protected function getImagesTrait(\gplcart\core\models\File $model,
+            array $data, $key)
     {
         $options = array(
             'order' => 'asc',
@@ -54,7 +55,7 @@ trait EntityImage
             'id_value' => $data[$key]
         );
 
-        return (array) $file->getList($options);
+        return (array) $model->getList($options);
     }
 
     /**
@@ -64,7 +65,8 @@ trait EntityImage
      * @param string $entity
      * @return array
      */
-    protected function setImagesTrait($model, array &$data, $entity)
+    protected function setImagesTrait(\gplcart\core\models\File $model,
+            array &$data, $entity)
     {
         if (empty($data['images'])) {
             return array();

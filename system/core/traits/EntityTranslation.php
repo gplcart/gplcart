@@ -23,8 +23,8 @@ trait EntityTranslation
      * @param string $language
      * @return null
      */
-    protected function attachTranslationTrait($db, array &$data, $entity,
-            $language)
+    protected function attachTranslationTrait(\gplcart\core\Database $db,
+            array &$data, $entity, $language)
     {
         if (empty($data)) {
             return null;
@@ -49,7 +49,7 @@ trait EntityTranslation
      * @param string $entity
      * @return array
      */
-    public function getTranslationTrait($db, $id, $entity)
+    public function getTranslationTrait(\gplcart\core\Database $db, $id, $entity)
     {
         $sql = "SELECT * FROM {$entity}_translation WHERE {$entity}_id=?";
         return $db->fetchAll($sql, array($id));
@@ -63,8 +63,8 @@ trait EntityTranslation
      * @param boolean $update
      * @return null|bool
      */
-    protected function setTranslationTrait($db, array $data, $entity,
-            $update = true)
+    protected function setTranslationTrait(\gplcart\core\Database $db,
+            array $data, $entity, $update = true)
     {
         if (empty($data['form']) && empty($data['translation'])) {
             return null;
@@ -81,7 +81,7 @@ trait EntityTranslation
         foreach ($data['translation'] as $language => $translation) {
             $this->addTranslationTrait($db, $data["{$entity}_id"], $entity, $language, $translation);
         }
-        
+
         return true;
     }
 
@@ -92,7 +92,8 @@ trait EntityTranslation
      * @param string $entity
      * @param null|string $language
      */
-    public function deleteTranslationTrait($db, $id, $entity, $language = null)
+    public function deleteTranslationTrait(\gplcart\core\Database $db, $id,
+            $entity, $language = null)
     {
         $conditions = array("{$entity}_id" => $id);
 
@@ -111,8 +112,8 @@ trait EntityTranslation
      * @param string $language
      * @param array $translation
      */
-    public function addTranslationTrait($db, $id, $entity, $language,
-            array $translation)
+    public function addTranslationTrait(\gplcart\core\Database $db, $id,
+            $entity, $language, array $translation)
     {
         $translation['language'] = $language;
         $translation["{$entity}_id"] = $id;

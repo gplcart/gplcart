@@ -23,7 +23,8 @@ trait EntityAlias
      * @param boolean $update
      * @return null
      */
-    protected function setAliasTrait($model, array $data, $entity, $update = true)
+    protected function setAliasTrait(\gplcart\core\models\Alias $model,
+            array $data, $entity, $update = true)
     {
         if (empty($data['form']) && empty($data['alias'])) {
             return null;
@@ -32,7 +33,7 @@ trait EntityAlias
         if ($update) {
             $model->delete("{$entity}_id", $data["{$entity}_id"]);
         }
-        
+
         if (empty($data['alias'])) {
             $data['alias'] = $model->generateEntity($data, $entity);
         }
