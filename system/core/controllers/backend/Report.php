@@ -254,7 +254,7 @@ class Report extends BackendController
      */
     protected function setFilterListEventReport()
     {
-        $this->setFilter($filters, array('severity', 'type', 'time', 'text'));
+        $this->setFilter(array('severity', 'type', 'time', 'text'));
     }
 
     /**
