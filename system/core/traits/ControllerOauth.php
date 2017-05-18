@@ -18,16 +18,11 @@ trait ControllerOauth
     /**
      * Returns an array of Oauth login buttons
      * @param \gplcart\core\Controller $controller
+     * @param \gplcart\core\models\Oauth $model
      */
-    protected function getOauthButtonsTrait($controller)
+    protected function getOauthButtonsTrait(\gplcart\core\Controller $controller,
+            \gplcart\core\models\Oauth $model)
     {
-        if (!$controller instanceof \gplcart\core\Controller) {
-            throw new \InvalidArgumentException("Object is not instance of \gplcart\core\Controller");
-        }
-
-        /* @var $model \gplcart\core\models\Oauth */
-        $model = \gplcart\core\Container::get('gplcart\\core\\models\\Oauth');
-
         $options = array('type' => 'login', 'status' => true);
         $providers = $model->getProviders($options);
 
