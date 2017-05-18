@@ -10,10 +10,10 @@
 <?php $first = reset($product['images']); ?>
 <div class="row">
   <?php if(count($product['images']) > 1) { ?>
-  <div class="col-md-4">
+  <div class="col-md-2">
     <div class="row">
       <?php foreach ($product['images'] as $image) { ?>
-      <div class="col-md-4">
+      <div class="col-md-6">
         <a data-gallery="product-images" data-gallery-thumb="<?php echo $this->e($image['thumb']); ?>" class="thumbnail" href="<?php echo $this->e($image['url']); ?>">
           <img class="img-responsive" title="<?php echo $this->e($image['title']); ?>" alt="<?php echo $this->e($image['title']); ?>" src="<?php echo $this->e($image['thumb']); ?>">
         </a>
@@ -22,7 +22,7 @@
     </div>
   </div>
   <?php } ?>
-  <div class="col-md-8">
+  <div class="col-md-10">
     <a data-gallery="product-images" data-gallery-main-image="true" href="<?php echo $this->e($first['url']); ?>">
       <img class="img-responsive" src="<?php echo $this->e($first['thumb']); ?>" alt="<?php echo $this->e($first['title']); ?>" title="<?php echo $this->e($first['title']); ?>">
     </a>
