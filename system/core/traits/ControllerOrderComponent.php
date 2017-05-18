@@ -21,18 +21,19 @@ trait ControllerOrderComponent
      * @param \gplcart\core\Controller $controller
      * @param \gplcart\core\models\Price $price
      */
-    protected function prepareOrderComponentCartTrait(&$order, $controller,
-            $price)
+    protected function prepareOrderComponentCartTrait(&$order,
+            \gplcart\core\Controller $controller,
+            \gplcart\core\models\Price $price)
     {
         if (empty($order['data']['components']['cart'])) {
             return null;
         }
 
-        foreach ($order['data']['components']['cart'] as $sku => $price) {
+        foreach ($order['data']['components']['cart'] as $sku => $value) {
             if ($order['cart'][$sku]['product_store_id'] != $order['store_id']) {
                 $order['cart'][$sku]['product_status'] = 0;
             }
-            $order['cart'][$sku]['price_formatted'] = $price->format($price, $order['currency']);
+            $order['cart'][$sku]['price_formatted'] = $price->format($value, $order['currency']);
         }
 
         $html = $controller->render('sale/order/panes/components/cart', array('order' => $order));
@@ -47,7 +48,9 @@ trait ControllerOrderComponent
      * @param \gplcart\core\models\Shipping $shipping
      */
     protected function prepareOrderComponentShippingMethodTrait(&$order,
-            $controller, $price, $shipping)
+            \gplcart\core\Controller $controller,
+            \gplcart\core\models\Price $price,
+            \gplcart\core\models\Shipping $shipping)
     {
         if (!isset($order['data']['components']['shipping'])) {
             return null;
@@ -78,7 +81,9 @@ trait ControllerOrderComponent
      * @param \gplcart\core\models\Payment $payment
      */
     protected function prepareOrderComponentPaymentMethodTrait(&$order,
-            $controller, $price, $payment)
+            \gplcart\core\Controller $controller,
+            \gplcart\core\models\Price $price,
+            \gplcart\core\models\Payment $payment)
     {
         if (!isset($order['data']['components']['payment'])) {
             return null;
@@ -108,8 +113,10 @@ trait ControllerOrderComponent
      * @param \gplcart\core\models\Price $price
      * @param \gplcart\core\models\PriceRule $pricerule
      */
-    protected function prepareOrderComponentPriceRuleTrait(&$order, $controller,
-            $price, $pricerule)
+    protected function prepareOrderComponentPriceRuleTrait(&$order,
+            \gplcart\core\Controller $controller,
+            \gplcart\core\models\Price $price,
+            \gplcart\core\models\PriceRule $pricerule)
     {
         foreach (array_keys($order['data']['components']) as $type) {
 
