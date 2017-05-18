@@ -9,6 +9,7 @@
 
 namespace gplcart\core\controllers\frontend;
 
+use gplcart\core\models\Oauth as OauthModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
@@ -20,17 +21,25 @@ class User extends FrontendController
     use \gplcart\core\traits\ControllerOauth;
 
     /**
+     * Oauth model instance
+     * @var \gplcart\core\models\Oauth $oauth
+     */
+    protected $oauth;
+
+    /**
      * The current user
      * @var array
      */
     protected $data_user = array();
 
     /**
-     * Constructor
+     * @param OauthModel $oauth
      */
-    public function __construct()
+    public function __construct(OauthModel $oauth)
     {
         parent::__construct();
+
+        $this->oauth = $oauth;
     }
 
     /**
@@ -43,7 +52,7 @@ class User extends FrontendController
         $this->setTitleEditLoginUser();
         $this->setBreadcrumbEditLoginUser();
 
-        $this->setData('oauth_buttons', $this->getOauthButtonsTrait($this));
+        $this->setData('oauth_buttons', $this->getOauthButtonsTrait($this, $this->oauth));
 
         $this->submitLoginUser();
         $this->outputEditLoginUser();

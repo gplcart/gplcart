@@ -41,12 +41,11 @@ class Front extends FrontendController
     }
 
     /**
-     * Adds main content to content region
+     * Adds main content to the content region
      */
     protected function setRegionContentFront()
     {
-        $html = $this->render('front/content', $this->data);
-        $this->setRegion('region_content', $html);
+        $this->setRegion('region_content', $this->render('front/content', $this->data));
     }
 
     /**

@@ -44,7 +44,6 @@ class Review extends FrontendController
     protected $data_product = array();
 
     /**
-     * Constructor
      * @param ReviewModel $review
      * @param RatingModel $rating
      */
@@ -57,7 +56,7 @@ class Review extends FrontendController
     }
 
     /**
-     * Displays the review edit page
+     * Displays the edit review page
      * @param integer $product_id
      * @param integer|null $review_id
      */
@@ -75,14 +74,14 @@ class Review extends FrontendController
         $this->setData('product', $this->data_product);
         $this->setData('can_delete', $this->canDeleteReview());
 
-        $this->submitReview();
+        $this->submitEditReview();
 
-        $this->setDataRatingReview();
+        $this->setDataRatingEditReview();
         $this->outputEditReview();
     }
 
     /**
-     * Controls access to the review
+     * Controls access to the edit review page
      */
     protected function controlAccessEditReview()
     {
@@ -96,9 +95,8 @@ class Review extends FrontendController
     }
 
     /**
-     * Loads a product from the database
+     * Sets a product data
      * @param integer $product_id
-     * @return array
      */
     protected function setProductReview($product_id)
     {
@@ -108,11 +106,11 @@ class Review extends FrontendController
             $this->outputHttpStatus(404);
         }
 
-        return $this->data_product = $product;
+        $this->data_product = $product;
     }
 
     /**
-     * Renders and outputs the review edit page
+     * Render and output the edit review page
      */
     protected function outputEditReview()
     {
@@ -120,32 +118,27 @@ class Review extends FrontendController
     }
 
     /**
-     * Sets titles on the review edit page
+     * Sets titles on the edit review page
      */
     protected function setTitleEditReview()
     {
         $vars = array('%name' => $this->data_product['title']);
-        $text = $this->text('Review of %name', $vars);
-        $this->setTitle($text);
+        $this->setTitle($this->text('Review of %name', $vars));
     }
 
     /**
-     * Sets breadcrumbs on the add/edit review page
+     * Sets breadcrumbs on the edit review page
      */
     protected function setBreadcrumbEditReview()
     {
-        $breadcrumb = array(
-            'url' => $this->url('/'),
-            'text' => $this->text('Shop')
-        );
-
+        $breadcrumb = array('url' => $this->url('/'), 'text' => $this->text('Shop'));
         $this->setBreadcrumb($breadcrumb);
     }
 
     /**
      * Sets rating widget
      */
-    protected function setDataRatingReview()
+    protected function setDataRatingEditReview()
     {
         $options = array(
             'review' => $this->data_review,
@@ -153,15 +146,13 @@ class Review extends FrontendController
             'unvote' => $this->config('rating_unvote', 1)
         );
 
-        $html = $this->render('common/rating/edit', $options);
-        $this->setData('rating', $html);
+        $this->setData('rating', $this->render('common/rating/edit', $options));
     }
 
     /**
-     * Saves a submitted review
-     * @return null
+     * Handles a submitted review
      */
-    protected function submitReview()
+    protected function submitEditReview()
     {
         if ($this->isPosted('delete')) {
             $this->deleteReview();
@@ -170,7 +161,7 @@ class Review extends FrontendController
 
         $this->controlSpam();
 
-        if (!$this->isPosted('save') || !$this->validateReview()) {
+        if (!$this->isPosted('save') || !$this->validateEditReview()) {
             return null;
         }
 
@@ -187,7 +178,7 @@ class Review extends FrontendController
      * Validates an array of submitted review data
      * @return bool
      */
-    protected function validateReview()
+    protected function validateEditReview()
     {
         $this->setSubmitted('review');
         $this->setSubmitted('user_id', $this->uid);
@@ -196,12 +187,11 @@ class Review extends FrontendController
         $this->setSubmitted('status', (int) $this->config('review_status', 1));
 
         $this->validateComponent('review');
-
         return !$this->hasErrors(false);
     }
 
     /**
-     * Saves a submitted rating
+     * Handles a submitted rating
      */
     protected function submitRatingReview()
     {
@@ -217,7 +207,6 @@ class Review extends FrontendController
     protected function validateRatingReview()
     {
         $this->validateComponent('rating');
-
         return !$this->isError();
     }
 
@@ -283,7 +272,6 @@ class Review extends FrontendController
 
     /**
      * Deletes a review
-     * @return null
      */
     protected function deleteReview()
     {
@@ -301,9 +289,8 @@ class Review extends FrontendController
     }
 
     /**
-     * Returns a review
+     * Sets a review data
      * @param mixed $review_id
-     * @return array
      */
     protected function setReview($review_id)
     {
@@ -321,7 +308,7 @@ class Review extends FrontendController
             $this->outputHttpStatus(403);
         }
 
-        return $this->data_review = $this->prepareReview($review);
+        $this->data_review = $this->prepareReview($review);
     }
 
     /**

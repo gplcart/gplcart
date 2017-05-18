@@ -52,7 +52,6 @@ class Compare extends FrontendController
     protected $data_compare = array();
 
     /**
-     * Constructor
      * @param ProductClassModel $product_class
      * @param FieldModel $field
      * @param FieldValueModel $field_value
@@ -102,7 +101,7 @@ class Compare extends FrontendController
     }
 
     /**
-     * Returns an array of products keyed by their class
+     * Returns an array of products keyed by a class ID
      * @param array $products
      * @return array
      */
@@ -164,11 +163,10 @@ class Compare extends FrontendController
     /**
      * Set an array of product IDs to compare
      * @param string $ids
-     * @return array
      */
     protected function setProductCompare($ids)
     {
-        return $this->data_compare = array_filter(array_map('trim', explode(',', $ids)), 'ctype_digit');
+        $this->data_compare = array_filter(array_map('trim', explode(',', $ids)), 'ctype_digit');
     }
 
     /**
@@ -253,7 +251,7 @@ class Compare extends FrontendController
     }
 
     /**
-     * Renders product compare templates
+     * Render and output the product compare page
      */
     protected function outputCompareCompare()
     {

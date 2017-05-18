@@ -25,13 +25,12 @@ class Page extends FrontendController
     protected $page;
 
     /**
-     * The current page
+     * An array of page data
      * @var array
      */
     protected $data_page = array();
 
     /**
-     * Constructor
      * @param PageModel $page
      */
     public function __construct(PageModel $page)
@@ -49,40 +48,47 @@ class Page extends FrontendController
     {
         $this->setPage($page_id);
 
-        $this->setTitlePage();
-        $this->setBreadcrumbPage();
-        $this->setMetaPage();
+        $this->setTitleIndexPage();
+        $this->setBreadcrumbIndexPage();
+        $this->setMetaIndexPage();
 
-        $this->setHtmlFilter($this->data_page);
+        $this->setHtmlFilterIndexPage();
+
         $this->setData('page', $this->data_page);
+        $this->setDataImagesIndexPage();
 
-        $this->setDataImagesPage();
-        $this->setRegionContentPage();
-
-        $this->outputPage();
+        $this->setRegionContentIndexPage();
+        $this->outputIndexPage();
     }
 
     /**
-     * Set meta tags
+     * Sets HTML filter on the page
      */
-    protected function setMetaPage()
+    protected function setHtmlFilterIndexPage()
+    {
+        $this->setHtmlFilter($this->data_page);
+    }
+
+    /**
+     * Set meta tags on the page
+     */
+    protected function setMetaIndexPage()
     {
         $this->setMetaEntity($this->data_page);
     }
 
     /**
-     * Sets main content region
+     * Sets main content region on the page
      */
-    protected function setRegionContentPage()
+    protected function setRegionContentIndexPage()
     {
-        $html = $this->render('page/content', $this->data);
-        $this->setRegion('region_content', $html);
+        $this->setRegion('region_content', $this->render('page/content', $this->data));
     }
 
     /**
-     * Renders the page tempaltes
+     * Render and output the page
      */
-    protected function outputPage()
+    protected function outputIndexPage()
     {
         $this->output();
     }
@@ -90,28 +96,23 @@ class Page extends FrontendController
     /**
      * Sets breadcrumbs on the page
      */
-    protected function setBreadcrumbPage()
+    protected function setBreadcrumbIndexPage()
     {
-        $breadcrumb = array(
-            'url' => $this->url('/'),
-            'text' => $this->text('Home')
-        );
-
+        $breadcrumb = array('url' => $this->url('/'), 'text' => $this->text('Home'));
         $this->setBreadcrumb($breadcrumb);
     }
 
     /**
      * Sets titles on the page
      */
-    protected function setTitlePage()
+    protected function setTitleIndexPage()
     {
         $this->setTitle($this->data_page['title']);
     }
 
     /**
-     * Loads a page from the database
+     * Sets a page data
      * @param integer $page_id
-     * @return array
      */
     protected function setPage($page_id)
     {
@@ -129,13 +130,13 @@ class Page extends FrontendController
             $this->outputHttpStatus(404);
         }
 
-        return $this->data_page = $page;
+        $this->data_page = $page;
     }
 
     /**
      * Sets rendered page images
      */
-    protected function setDataImagesPage()
+    protected function setDataImagesIndexPage()
     {
         $imagestyle = $this->settings('image_style_page', 5);
         $this->attachItemThumb($this->data_page, array('imagestyle' => $imagestyle));

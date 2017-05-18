@@ -9,7 +9,6 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\helpers\Response as ResponseHelper;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
@@ -17,12 +16,6 @@ use gplcart\core\controllers\frontend\Controller as FrontendController;
  */
 class Image extends FrontendController
 {
-
-    /**
-     * Response class instance
-     * @var \gplcart\core\helpers\Response $response
-     */
-    protected $response;
 
     /**
      * A path to the cached image from the current URL
@@ -56,19 +49,16 @@ class Image extends FrontendController
 
     /**
      * Constructor
-     * @param ResponseHelper $response
      */
-    public function __construct(ResponseHelper $response)
+    public function __construct()
     {
         parent::__construct();
-
-        $this->response = $response;
     }
 
     /**
      * Outputs processed images
      */
-    public function cache()
+    public function cacheImage()
     {
         $this->setPathImage();
         $this->setFileImage();
@@ -84,7 +74,7 @@ class Image extends FrontendController
     }
 
     /**
-     * Set full server path to the cached image
+     * Set the full server path to the cached image
      */
     protected function setCacheImage()
     {
@@ -92,7 +82,7 @@ class Image extends FrontendController
     }
 
     /**
-     * Check image the image style directory exists. If not - create it
+     * Check the image style directory
      */
     protected function checkCacheDirectoryImage()
     {

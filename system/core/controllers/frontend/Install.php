@@ -31,7 +31,6 @@ class Install extends FrontendController
     protected $install_language = '';
 
     /**
-     * Constructor
      * @param InstallModel $install
      */
     public function __construct(InstallModel $install)
@@ -45,12 +44,12 @@ class Install extends FrontendController
     /**
      * Dispays the installation page
      */
-    public function install()
+    public function editInstall()
     {
         $this->controlAccessInstall();
 
-        $this->setTitleInstall();
-        $this->submitInstall();
+        $this->setTitleEditInstall();
+        $this->submitEditInstall();
 
         $requirements = $this->getRequirementsInstall();
         $issues = $this->getRequirementErrorsInstall($requirements);
@@ -63,7 +62,7 @@ class Install extends FrontendController
         $this->setData('severity', $this->getSeverityInstall($issues));
         $this->setData('settings.store.language', $this->install_language);
 
-        $this->outputInstall();
+        $this->outputEditInstall();
     }
 
     /**
@@ -79,7 +78,7 @@ class Install extends FrontendController
     }
 
     /**
-     * Controls access to installer
+     * Controls access to the installer
      */
     protected function controlAccessInstall()
     {
@@ -128,9 +127,9 @@ class Install extends FrontendController
     /**
      * Starts installing the system
      */
-    protected function submitInstall()
+    protected function submitEditInstall()
     {
-        if ($this->isPosted('install') && $this->validateInstall()) {
+        if ($this->isPosted('install') && $this->validateEditInstall()) {
             $this->processInstall();
         }
     }
@@ -189,7 +188,7 @@ class Install extends FrontendController
     /**
      * Sets titles on the installation page
      */
-    protected function setTitleInstall()
+    protected function setTitleEditInstall()
     {
         $this->setTitle($this->text('Install GPL Cart'));
     }
@@ -197,7 +196,7 @@ class Install extends FrontendController
     /**
      * Renders installation page
      */
-    protected function outputInstall()
+    protected function outputEditInstall()
     {
         $this->output(array('region_body' => 'install/body'));
     }
@@ -206,7 +205,7 @@ class Install extends FrontendController
      * Validates an array of submitted form values
      * @return bool
      */
-    protected function validateInstall()
+    protected function validateEditInstall()
     {
         $language = array(
             $this->install_language => $this->language->getIso($this->install_language)
@@ -218,7 +217,6 @@ class Install extends FrontendController
         $this->setSubmitted('store.basepath', trim($this->request->base(true), '/'));
 
         $this->validateComponent('install');
-
         return !$this->hasErrors();
     }
 

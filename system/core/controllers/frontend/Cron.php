@@ -25,7 +25,6 @@ class Cron extends FrontendController
     protected $report;
 
     /**
-     * Controller
      * @param ReportModel $report
      */
     public function __construct(ReportModel $report)

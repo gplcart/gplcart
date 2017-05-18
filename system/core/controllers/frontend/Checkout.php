@@ -142,9 +142,8 @@ class Checkout extends FrontendController
      * @var integer
      */
     protected $order_store_id;
-
+    
     /**
-     * Constructor
      * @param CountryModel $country
      * @param StateModel $state
      * @param AddressModel $address
@@ -218,15 +217,14 @@ class Checkout extends FrontendController
             $this->outputHttpStatus(403);
         }
 
-        $user = $this->user->get($user_id);
+        $this->data_user = $this->user->get($user_id);
 
-        if (empty($user['status'])) {
+        if (empty($this->data_user['status'])) {
             $this->outputHttpStatus(404);
         }
 
-        $this->data_user = $user;
         $this->order_user_id = $user_id;
-        $this->order_store_id = $user['store_id'];
+        $this->order_store_id = $this->data_user['store_id'];
     }
 
     /**
@@ -242,7 +240,7 @@ class Checkout extends FrontendController
         $this->controlAccessCheckout();
         $this->setFormDataBeforeCheckout();
 
-        $this->submitCheckout();
+        $this->submitEditCheckout();
 
         $this->setFormDataAfterCheckout();
         $this->setDataFormCheckout();
@@ -483,7 +481,7 @@ class Checkout extends FrontendController
     /**
      * Handles submitted actions
      */
-    protected function submitCheckout()
+    protected function submitEditCheckout()
     {
         $this->setSubmitted('order');
         $this->setAddressFormCheckout();

@@ -31,7 +31,6 @@ class Search extends FrontendController
     protected $data_search = '';
 
     /**
-     * Constructor
      * @param SearchModel $search
      */
     public function __construct(SearchModel $search)

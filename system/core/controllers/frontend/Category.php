@@ -9,8 +9,7 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\Search as SearchModel,
-    gplcart\core\models\CategoryGroup as CategoryGroupModel;
+use gplcart\core\models\CategoryGroup as CategoryGroupModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
@@ -24,12 +23,6 @@ class Category extends FrontendController
      * @var \gplcart\core\models\CategoryGroup $category_group
      */
     protected $category_group;
-
-    /**
-     * Search model instance
-     * @var \gplcart\core\models\Search $search
-     */
-    protected $search;
 
     /**
      * An array of category data
@@ -50,15 +43,12 @@ class Category extends FrontendController
     protected $data_children = array();
 
     /**
-     * @param SearchModel $search
      * @param CategoryGroupModel $category_group
      */
-    public function __construct(SearchModel $search,
-            CategoryGroupModel $category_group)
+    public function __construct(CategoryGroupModel $category_group)
     {
         parent::__construct();
 
-        $this->search = $search;
         $this->category_group = $category_group;
     }
 
@@ -181,8 +171,8 @@ class Category extends FrontendController
     protected function setRegionMenuIndexCategory()
     {
         $options = array(
-            'items' => $this->data_categories,
-            'template' => 'category/menu'
+            'template' => 'category/menu',
+            'items' => $this->data_categories
         );
 
         $this->setRegion('region_left', $this->renderMenu($options));

@@ -32,31 +32,31 @@ class Oauth extends FrontendController
     protected $data_provider;
 
     /**
-     * The current received code from provider
+     * A code received from a provider
      * @var string
      */
     protected $data_code;
 
     /**
-     * The current received state hash from provider
+     * A state hash received from a provider
      * @var type 
      */
     protected $data_state;
 
     /**
-     * The current token data
+     * An array of token data
      * @var array
      */
     protected $data_token;
 
     /**
-     * Processed authorization result
+     * A processed authorization result
      * @var mixed 
      */
     protected $data_result;
 
     /**
-     * URL to redirect to after authorization
+     * A URL to redirect to after authorization
      * @var string
      */
     protected $data_url;
@@ -110,7 +110,6 @@ class Oauth extends FrontendController
             throw new OauthAuthorizationException('Invalid Oauth provider');
         }
 
-        // Be sure that URL domain belongs to our enabled store
         $domain = parse_url($parsed['url'], PHP_URL_HOST);
 
         if (!empty($domain)) {
