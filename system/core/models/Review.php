@@ -38,7 +38,7 @@ class Review extends Model
             return false;
         }
 
-        $data += array('created' => GC_TIME);
+        $data += array('created' => GC_TIME, 'modified' => GC_TIME);
         $data['review_id'] = $this->db->insert('review', $data);
 
         $this->hook->fire('review.add.after', $data);
@@ -174,7 +174,7 @@ class Review extends Model
                 && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
         } else {
-            $sql .= " ORDER BY r.created DESC";
+            $sql .= " ORDER BY r.modified DESC";
         }
 
         if (!empty($data['limit'])) {

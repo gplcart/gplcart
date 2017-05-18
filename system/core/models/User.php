@@ -90,7 +90,7 @@ class User extends Model
             $data['name'] = strtok($data['email'], '@');
         }
 
-        $data['created'] = GC_TIME;
+        $data['created'] = $data['modified'] = GC_TIME;
         $data += array('hash' => gplcart_string_hash($data['password']));
         $data['user_id'] = $this->db->insert('user', $data);
 
@@ -626,7 +626,7 @@ class User extends Model
                 && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
-            $sql .= " ORDER BY created DESC";
+            $sql .= " ORDER BY modified DESC";
         }
 
         if (!empty($data['limit'])) {

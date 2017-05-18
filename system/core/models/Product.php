@@ -136,7 +136,11 @@ class Product extends Model
         }
 
         $data['created'] = GC_TIME;
-        $data += array('currency' => $this->config->get('currency', 'USD'));
+        $data['modified'] = GC_TIME;
+
+        $data += array(
+            'currency' => $this->config->get('currency', 'USD')
+        );
 
         $this->setPrice($data);
 
@@ -613,7 +617,7 @@ class Product extends Model
                 && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
         } else {
-            $sql .= " ORDER BY p.created DESC";
+            $sql .= " ORDER BY p.modified DESC";
         }
 
         if (!empty($data['limit'])) {

@@ -218,7 +218,7 @@ class Order extends Model
                 && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
         } else {
-            $sql .= " ORDER BY o.created DESC";
+            $sql .= " ORDER BY o.modified DESC";
         }
 
         if (!empty($data['limit'])) {
@@ -665,7 +665,7 @@ class Order extends Model
         // In case we're cloning an order
         unset($order['order_id']);
 
-        $order['created'] = GC_TIME;
+        $order['created'] = $data['modified'] = GC_TIME;
         $order += array('status' => $this->getDefaultStatus());
 
         if (empty($order['data']['user'])) {

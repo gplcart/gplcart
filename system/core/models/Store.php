@@ -102,7 +102,7 @@ class Store extends Model
                 && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
-            $sql .= " ORDER BY created ASC";
+            $sql .= " ORDER BY modified DESC";
         }
 
         if (!empty($data['limit'])) {
@@ -261,7 +261,7 @@ class Store extends Model
             return false;
         }
 
-        $data['created'] = GC_TIME;
+        $data['created'] = $data['modified'] = GC_TIME;
         $data['store_id'] = $this->db->insert('store', $data);
 
         $this->hook->fire('store.add.after', $data);

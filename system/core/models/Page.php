@@ -105,6 +105,8 @@ class Page extends Model
         }
 
         $data['created'] = GC_TIME;
+        $data['modified'] = GC_TIME;
+
         $data['page_id'] = $this->db->insert('page', $data);
 
         $this->setTranslationTrait($this->db, $data, 'page', false);
@@ -250,7 +252,7 @@ class Page extends Model
                 && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
         } else {
-            $sql .= " ORDER BY p.created DESC";
+            $sql .= " ORDER BY p.modified DESC";
         }
 
         if (!empty($data['limit'])) {

@@ -279,7 +279,7 @@ class Cart extends Model
                 && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
         } else {
-            $sql .= ' ORDER BY c.created DESC';
+            $sql .= ' ORDER BY c.modified DESC';
         }
     }
 
@@ -412,7 +412,7 @@ class Cart extends Model
             return false;
         }
 
-        $data['created'] = GC_TIME;
+        $data['created'] = $data['modified'] = GC_TIME;
         $data['cart_id'] = $this->db->insert('cart', $data);
 
         Cache::clearMemory();
