@@ -21,7 +21,7 @@ return array(
     'install' => array(
         'internal' => true,
         'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\frontend\\Install', 'install')
+            'controller' => array('gplcart\\core\\controllers\\frontend\\Install', 'editInstall')
         )
     ),
     'ajax' => array(
@@ -55,7 +55,7 @@ return array(
     'files/image/cache/.*' => array(
         'internal' => true,
         'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\frontend\\Image', 'cache')
+            'controller' => array('gplcart\\core\\controllers\\frontend\\Image', 'cacheImage')
         )
     ),
     'page/(\d+)' => array(
