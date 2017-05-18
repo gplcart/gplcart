@@ -69,8 +69,10 @@ $config = array();
 # $config['product_width']                        = 0; // Default product width (dimension)
 # $config['product_image_dirname']                = 'product'; // Default folder for uploaded product images
 # $config['recent_cookie_lifespan']               = 31536000; // Max number of seconds to keeps recently viewed products in cookie
-# $config['recent_limit']                         = 4; // Max number of recently viewed products
-# $config['related_limit']                        = 12; // Max number of related products to show
+# $config['recent_limit']                         = 12; // Max number of recently viewed products
+# $config['related_limit']                        = 12; // Max number of related products
+# $config['recent_pager_limit']                   = 4; // Max number of recently viewed products for pager
+# $config['related_pager_limit']                  = 4; // Max number of related products for pager
 # $config['product_sku_pattern']                  = 'PRODUCT-%i'; // Pattern to generate product SKU
 # $config['product_sku_placeholder']              = array('%i' => 'product_id'); // Replacement rule to generate product SKU
 # $config['product_subtract']                     = 0; // Default state of "Subtract" option

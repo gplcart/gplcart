@@ -114,7 +114,6 @@ class Product extends FrontendController
 
     /**
      * Sets list of reviews related to the product
-     * @return null
      */
     protected function setDataReviewsIndexProduct()
     {
@@ -127,19 +126,19 @@ class Product extends FrontendController
         }
 
         $max = (int) $this->config('review_limit', 5);
-        $limit = $this->setPager($this->data_product['total_reviews'], null, $max);
+        $pager = $this->getPager($this->data_product['total_reviews'], null, $max);
 
         $options = array(
-            'pager' => $this->getPager(),
+            'pager' => $pager,
             'product' => $this->data_product,
-            'reviews' => $this->getReviewsProduct($limit)
+            'reviews' => $this->getReviewsProduct($this->getPagerLimit())
         );
 
-        $this->setData('pane_reviews', $this->render('product/reviews', $options));
+        $this->setData('pane_reviews', $this->render('review/list', $options));
     }
 
     /**
-     * Modifies an array of reviews
+     * Prepare an array of reviews
      * @param array $reviews
      * @return array
      */
@@ -180,6 +179,8 @@ class Product extends FrontendController
             'status' => 1,
             'limit' => $limit,
             'user_status' => 1,
+            'sort' => 'created',
+            'order' => 'desc',
             'product_id' => $this->data_product['product_id']
         );
 
@@ -195,7 +196,6 @@ class Product extends FrontendController
     protected function setDataRatingWidgetIndexProduct()
     {
         $rating = $this->rating->getByProduct($this->data_product['product_id']);
-
         $options = array('rating' => $rating, 'product' => $this->data_product);
         $this->setData('rating', $this->render('common/rating/static', $options));
     }
@@ -214,7 +214,7 @@ class Product extends FrontendController
     }
 
     /**
-     * Renders and displays product page
+     * Render and output the product page
      */
     protected function outputIndexProduct()
     {
@@ -246,10 +246,9 @@ class Product extends FrontendController
     }
 
     /**
-     * Builds an array of breadcrumb items containing all parent categories
+     * Builds an array of breadcrumbs containing all parent categories
      * @param integer $category_id
      * @param array $breadcrumbs
-     * @return null
      */
     protected function buildCategoryBreadcrumbsProduct($category_id,
             array &$breadcrumbs)
@@ -293,20 +292,44 @@ class Product extends FrontendController
     }
 
     /**
-     * Sets block with recent products on the product page
+     * Sets recent products on the product page
      */
     protected function setDataRecentIndexProduct()
     {
-        $options = array('products' => $this->getRecentProduct());
+        $products = $this->getRecentProduct();
+        $total = count($products);
+
+        $max = $this->config('recent_pager_limit', 4);
+        $pager = $this->getPager($total, null, $max, 'rcp');
+        $limit = $this->getPagerLimit();
+
+        if (!empty($limit)) {
+            list($from, $to) = $limit;
+            $products = array_slice($products, $from, $to);
+        }
+
+        $options = array('products' => $products, 'pager' => $pager);
         $this->setData('pane_recent', $this->render('product/recent', $options));
     }
 
     /**
-     * Sets block with related products on the product page
+     * Sets related products on the product page
      */
     protected function setDataRelatedIndexProduct()
     {
-        $options = array('products' => $this->getRelatedProduct());
+        $products = $this->getRelatedProduct();
+        $total = count($products);
+
+        $max = $this->config('related_pager_limit', 4);
+        $pager = $this->getPager($total, null, $max, 'rlp');
+        $limit = $this->getPagerLimit();
+
+        if (!empty($limit)) {
+            list($from, $to) = $limit;
+            $products = array_slice($products, $from, $to);
+        }
+
+        $options = array('products' => $products, 'pager' => $pager);
         $this->setData('pane_related', $this->render('product/related', $options));
     }
 
@@ -320,8 +343,7 @@ class Product extends FrontendController
         );
 
         if (empty($this->data_product['images'])) {
-            $this->data_product['images'][] = array(
-                'thumb' => $this->image->placeholder($options['imagestyle']));
+            $this->data_product['images'][] = array('thumb' => $this->image->placeholder($options['imagestyle']));
         } else {
             $this->attachItemThumb($this->data_product, $options);
         }
@@ -348,9 +370,8 @@ class Product extends FrontendController
     }
 
     /**
-     * Loads a product from the database
+     * Set a product data
      * @param integer $product_id
-     * @return array
      */
     protected function setProduct($product_id)
     {
@@ -368,13 +389,13 @@ class Product extends FrontendController
             $this->outputHttpStatus(403);
         }
 
-        return $this->data_product = $this->prepareProduct($product);
+        $this->data_product = $this->prepareProduct($product);
     }
 
     /**
-     * 
+     * Prepare an array of product data
      * @param array $product
-     * @return type
+     * @return array
      */
     protected function prepareProduct(array $product)
     {
@@ -404,7 +425,7 @@ class Product extends FrontendController
     }
 
     /**
-     * Returns an array of loaded related products
+     * Returns an array of related products
      * @return array
      */
     protected function getRelatedProduct()
@@ -422,7 +443,7 @@ class Product extends FrontendController
     }
 
     /**
-     * Returns an array of loaded recent products
+     * Returns an array of recent products
      * @return array
      */
     protected function getRecentProduct()
@@ -453,7 +474,7 @@ class Product extends FrontendController
     }
 
     /**
-     * Add thumbs to field values
+     * Prepare an array of product fields
      * @param array $product
      * @param array $fields
      */

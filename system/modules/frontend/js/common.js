@@ -283,6 +283,22 @@
     };
 
     /**
+     * Set gallery image modal
+     * @param {String} src
+     * @param {String} id
+     * @returns {undefined}
+     */
+    var setGalleryModal = function (src, id) {
+
+        $('.modal').remove();
+        $('.modal-backdrop').remove();
+        $('body').removeClass('modal-open').removeAttr('style');
+
+        $('body').append(htmlGalleryModal(src, id));
+        $('#' + id).modal('show');
+    };
+
+    /**
      * Fix equal height of items
      * @returns {undefined}
      */
@@ -290,6 +306,28 @@
         if ($.fn.matchHeight) {
             $('[data-equal-height="true"]').matchHeight();
         }
+    };
+
+    /**
+     * Adds hash to pager links inside panels
+     * @returns {undefined}
+     */
+    GplCart.onload.addPagerHash = function () {
+
+        var links, id, href;
+        $('.panel').each(function () {
+            id = $(this).attr('id');
+            if (id) {
+                links = $(this).find('.pagination a');
+                if (links) {
+                    links.each(function () {
+                        href = $(this).attr('href');
+                        href += '#' + id;
+                        $(this).attr('href', href);
+                    });
+                }
+            }
+        });
     };
 
     /**
@@ -657,22 +695,6 @@
 
             return false;
         });
-    };
-
-    /**
-     * Set gallery image modal
-     * @param {String} src
-     * @param {String} id
-     * @returns {undefined}
-     */
-    var setGalleryModal = function (src, id) {
-
-        $('.modal').remove();
-        $('.modal-backdrop').remove();
-        $('body').removeClass('modal-open').removeAttr('style');
-
-        $('body').append(htmlGalleryModal(src, id));
-        $('#' + id).modal('show');
     };
 
     /**
