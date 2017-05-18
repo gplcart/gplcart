@@ -97,13 +97,10 @@ class Settings extends BackendController
      */
     protected function clearCacheAssetsSettings()
     {
-        $deleted = gplcart_file_delete_recursive(GC_COMPRESSED_ASSET_DIR);
+        gplcart_file_delete_recursive(GC_COMPRESSED_ASSET_DIR . "/js");
+        gplcart_file_delete_recursive(GC_COMPRESSED_ASSET_DIR . "/css");
 
-        if ($deleted) {
-            $this->redirect('', $this->text('Cache has been cleared'), 'success');
-        }
-
-        $this->redirect('');
+        $this->redirect('', $this->text('Cache has been cleared'), 'success');
     }
 
     /**
