@@ -9,7 +9,6 @@
 
 namespace gplcart\core;
 
-use Exception;
 use gplcart\core\Config;
 
 /**
@@ -111,7 +110,7 @@ class Logger
         // so we use try catch here
         try {
             return (bool) $this->db->insert('log', $data);
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             return false;
         }
     }
