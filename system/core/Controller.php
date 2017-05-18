@@ -2100,9 +2100,40 @@ class Controller
      * @param integer $total
      * @param null|array $query
      * @param null|integer $limit
-     * @return array Array of SQL limit values
+     * @return array
      */
     public function setPager($total, $query = null, $limit = null)
+    {
+        $this->data['pager'] = $this->getPager($total, $query, $limit);
+        return $this->getPagerLimit();
+    }
+
+    /**
+     * Returns pager limits
+     * @return array
+     */
+    public function getPagerLimit()
+    {
+        return $this->pager->getLimit();
+    }
+
+    /**
+     * Set pager limits
+     */
+    public function setPagerLimit($limit = null)
+    {
+        $this->limit = $this->setPager($this->total, $this->query_filter, $limit);
+    }
+
+    /**
+     * Returns a rendered pager
+     * @param integer $total
+     * @param null|array $query
+     * @param null|integer $limit
+     * @param string $key
+     * @return string
+     */
+    public function getPager($total, $query = null, $limit = null, $key = 'p')
     {
         if (!isset($limit)) {
             $limit = $this->config('admin_list_limit', 20);
@@ -2112,35 +2143,32 @@ class Controller
             $query = $this->getFilterQuery();
         }
 
-        $page = isset($query['p']) ? $query['p'] : 1;
-        $query['p'] = '%num';
-
-        $this->pager->setPage($page)
-                ->setPerPage($limit)
-                ->setTotal($total)
-                ->setUrlPattern('?' . urldecode(http_build_query($query)))
-                ->setPreviousText($this->text('Back'))
-                ->setNextText($this->text('Next'));
-
-        $this->data['pager'] = $this->pager->render();
-        return $this->pager->getLimit();
+        return $this->renderPager($total, $query, $limit, $key);
     }
 
     /**
-     * Set pager limits
-     */
-    protected function setPagerLimit($limit = null)
-    {
-        $this->limit = $this->setPager($this->total, $this->query_filter, $limit);
-    }
-
-    /**
-     * Returns a rendered pager from data array
+     * Returns a rendered pager
+     * @param integer $total
+     * @param array $query
+     * @param integer $limit
+     * @param string $key
      * @return string
      */
-    public function getPager()
+    public function renderPager($total, $query, $limit, $key = 'p')
     {
-        return isset($this->data['pager']) ? $this->data['pager'] : '';
+        $page = 1;
+        if (isset($query[$key])) {
+            $page = (int) $query[$key];
+        }
+
+        $query[$key] = '%num';
+
+        return $this->pager->setPage($page)
+                        ->setPerPage($limit)
+                        ->setTotal($total)
+                        ->setUrlPattern('?' . urldecode(http_build_query($query)))
+                        ->setPreviousText($this->text('Back'))
+                        ->setNextText($this->text('Next'))->render();
     }
 
 }
