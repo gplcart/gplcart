@@ -392,7 +392,8 @@ return array(
     ),
     'product_related' => array(
         'fields' => array(
-            'product_id' => array('type' => 'int', 'length' => 10, 'primary' => true),
+            'product_related_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+            'product_id' => array('type' => 'int', 'length' => 10),
             'related_product_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
         )
     ),
