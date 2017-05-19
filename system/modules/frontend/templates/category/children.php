@@ -6,7 +6,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
-<?php if ($children) { ?>
+<?php if (!empty($children)) { ?>
 <div class="row section">
   <?php foreach ($children as $child) { ?>
   <div class="col-md-2">

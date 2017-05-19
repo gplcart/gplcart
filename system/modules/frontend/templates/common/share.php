@@ -6,9 +6,9 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
-<div class="btn-group btn-group-xs">
+<div class="btn-group">
   <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <i class="fa fa-share-alt"></i> <?php echo $this->text('Share'); ?> <span class="caret"></span>
+    <i class="fa fa-share-alt"></i> <span class="caret"></span>
   </button>
   <ul class="dropdown-menu">
     <li>
@@ -17,7 +17,7 @@
       </a>
     </li>
     <li>
-      <a rel="nofollow" target="_blank" href="<?php echo $this->url('https://plus.google.com/share', array('u' => $url), true); ?>">
+      <a rel="nofollow" target="_blank" href="<?php echo $this->url('https://plus.google.com/share', array('url' => $url), true); ?>">
         <i class="fa fa-google-plus-square"></i> <?php echo $this->text('Google+'); ?>
       </a>
     </li>

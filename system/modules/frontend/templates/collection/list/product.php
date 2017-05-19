@@ -8,7 +8,7 @@
 ?>
 <?php if (!empty($items)) { ?>
 <div class="panel panel-borderless panel-default collection collection-product">
-  <div class="panel-heading"><?php echo $this->e($title); ?></div>
+  <h4 class="panel-title"><?php echo $this->e($title); ?></h4>
   <div class="panel-body">
     <div class="row">
       <?php foreach ($items as $item) { ?>

@@ -12,7 +12,7 @@
       <?php echo $this->text('Showing @num from @total', array('@num' => $quantity, '@total' => $total)); ?>
     </span>
     <form class="navbar-form navbar-right" onchange="$(this).submit();">
-      <select name="sort" class="form-control input-sm">
+      <select name="sort" class="form-control">
         <option value="price-asc"<?php echo $sort === 'price-asc' ? ' selected' : ''; ?>>
           <?php echo $this->text('Low prices first'); ?>
         </option>
@@ -26,7 +26,7 @@
           <?php echo $this->text('Title Z-A'); ?>
         </option>
       </select>
-      <div class="btn-group btn-group-sm" data-toggle="buttons">
+      <div class="btn-group" data-toggle="buttons">
         <label class="btn btn-default<?php echo $view === 'list' ? ' active' : ''; ?>">
           <input type="radio" name="view" value="list"<?php echo $view === 'list' ? ' checked' : ''; ?>>
           <i class="fa fa-th-list"></i>
@@ -46,4 +46,3 @@
     </form>
   </div>
 </nav>
-

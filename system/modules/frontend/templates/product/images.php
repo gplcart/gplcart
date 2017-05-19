@@ -9,12 +9,12 @@
 <?php if (!empty($product['images'])) { ?>
 <?php $first = reset($product['images']); ?>
 <div class="row">
-  <?php if(count($product['images']) > 1) { ?>
+  <?php if (count($product['images']) > 1) { ?>
   <div class="col-md-2">
-    <div class="row">
+    <div class="row product-thumbs">
       <?php foreach ($product['images'] as $image) { ?>
-      <div class="col-md-6">
-        <a data-gallery="product-images" data-gallery-thumb="<?php echo $this->e($image['thumb']); ?>" class="thumbnail" href="<?php echo $this->e($image['url']); ?>">
+      <div class="col-md-12">
+        <a data-gallery="product-images" data-file-id="<?php echo $this->e($image['file_id']); ?>" data-gallery-thumb="<?php echo $this->e($image['thumb']); ?>" class="thumbnail" href="<?php echo $this->e($image['url']); ?>">
           <img class="img-responsive" title="<?php echo $this->e($image['title']); ?>" alt="<?php echo $this->e($image['title']); ?>" src="<?php echo $this->e($image['thumb']); ?>">
         </a>
       </div>

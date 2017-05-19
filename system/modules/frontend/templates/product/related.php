@@ -8,7 +8,7 @@
 ?>
 <?php if(!empty($products)) { ?>
 <div id="panel-related-products" class="panel panel-default panel-borderless related-products">
-  <div class="panel-heading"><?php echo $this->text('Related'); ?></div>
+  <div class="panel-heading"><h4 class="panel-title"><?php echo $this->text('Related'); ?></h4></div>
   <div class="panel-body">
     <div class="row products">
       <?php foreach($products as $product) { ?>

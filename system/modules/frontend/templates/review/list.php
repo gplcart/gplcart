@@ -8,13 +8,8 @@
 ?>
 <?php if (!empty($reviews)) { ?>
 <div id="reviews" class="panel panel-default panel-borderless reviews">
-  <div class="panel-heading clearfix">
-    <?php echo $this->text('Reviews'); ?>
-    <?php if ($this->config('review_editable', 1) && $this->prop('uid')) { ?>
-    <a class="pull-right" rel="nofollow" href="<?php echo $this->url('review/add/' . $product['product_id']); ?>">
-      <?php echo $this->text('Add review'); ?>
-    </a>
-    <?php } ?>
+  <div class="panel-heading">
+    <h4 class="panel-title"><?php echo $this->text('Reviews'); ?></h4>
   </div>
   <div class="panel-body">
     <div class="row">

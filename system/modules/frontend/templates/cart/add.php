@@ -63,8 +63,27 @@
   <?php } ?>
   <?php } ?>
   <p class="selected-combination"></p>
-  <button name="add_to_cart" value="1" data-ajax="true" class="btn btn-success btn-block add-to-cart"<?php echo $product['selected_combination']['cart_access'] ? '' : ' disabled'; ?>>
+  <button name="add_to_cart" value="1" data-ajax="true" class="btn btn-success add-to-cart"<?php echo $product['selected_combination']['cart_access'] ? '' : ' disabled'; ?>>
     <?php echo $this->text('Add to cart'); ?>
   </button>
+  <?php if (empty($product['in_wishlist'])) { ?>
+  <button title="<?php echo $this->text('Add to wishlist'); ?>" class="btn btn-default" data-ajax="true" name="add_to_wishlist" value="1">
+    <i class="fa fa-heart"></i>
+  </button>
+  <?php } else { ?>
+  <a rel="nofollow" title="<?php echo $this->text('Already in wishlist'); ?>" href="<?php echo $this->url('wishlist'); ?>" class="btn btn-default active">
+    <i class="fa fa-heart"></i>
+  </a>
+  <?php } ?>
+  <?php if (empty($product['in_comparison'])) { ?>
+  <button title="<?php echo $this->text('Compare'); ?>" class="btn btn-default" data-ajax="true" name="add_to_compare" value="1">
+    <i class="fa fa-balance-scale"></i>
+  </button>
+  <?php } else { ?>
+  <a rel="nofollow" title="<?php echo $this->text('Already in comparison'); ?>" href="<?php echo $this->url('compare'); ?>" class="btn btn-default active">
+    <i class="fa fa-balance-scale"></i>
+  </a>
+  <?php } ?>
+  <?php echo $share; ?>
   <div class="message"><?php echo $product['selected_combination']['message']; ?></div>
 </form>

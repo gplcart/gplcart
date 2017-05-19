@@ -8,7 +8,7 @@
 ?>
 <?php if(!empty($products)) { ?>
 <div id="panel-recent-products" class="panel panel-default panel-borderless recent-products">
-  <div class="panel-heading"><?php echo $this->text('Recently viewed'); ?></div>
+  <div class="panel-heading"><h4 class="panel-title"><?php echo $this->text('Recently viewed'); ?></h4></div>
   <div class="panel-body">
     <div class="row products">
       <?php foreach($products as $product) { ?>
