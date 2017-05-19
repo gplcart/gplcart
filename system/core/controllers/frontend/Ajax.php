@@ -155,15 +155,8 @@ class Ajax extends FrontendController
 
         $product = $this->product->get($product_id);
         $response = $this->sku->selectCombination($product, $field_value_ids);
-
-        $options = array(
-            'imagestyle' => $this->settings('image_style_product', 5),
-            'path' => empty($response['combination']['path']) ? '' : $response['combination']['path']
-        );
-
         $response += $product;
 
-        $this->attachItemThumb($response, $options);
         $this->attachItemPriceCalculated($response);
         $this->attachItemPriceFormatted($response);
 
