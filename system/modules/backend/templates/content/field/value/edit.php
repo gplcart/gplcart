@@ -54,7 +54,7 @@
           <?php echo $this->text('Color'); ?>
         </label>
         <div class="col-md-3">
-          <input class="form-control" type="color" name="field_value[color]" value="<?php echo empty($field_value['color']) ? '' : $this->escape($field_value['color']); ?>">
+          <input class="form-control" type="color" name="field_value[color]" value="<?php echo empty($field_value['color']) ? '#000000' : $this->escape($field_value['color']); ?>">
           <div class="help-block">
             <?php echo $this->error('color'); ?>
             <div class="text-muted">
