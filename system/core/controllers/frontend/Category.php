@@ -65,20 +65,13 @@ class Category extends FrontendController
 
         $this->setFilterIndexCategory();
         $this->setTotalIndexCategory();
-        $this->setPagerIndexCategory();
+        $this->setPagerLimit($this->settings('catalog_limit', 20));
 
         $this->setListProductCategory();
         $this->setChildrenCategory();
 
-        $this->setDataImagesIndexCategory();
-        $this->setDataProductsIndexCategory();
-        $this->setDataChildrenIndexCategory();
-        $this->setDataNavbarIndexCategory();
-
         $this->setRegionMenuIndexCategory();
         $this->setRegionContentIndexCategory();
-
-        $this->setData('category', $this->data_category);
 
         $this->setMetaIndexCategory();
         $this->outputIndexCategory();
@@ -90,15 +83,6 @@ class Category extends FrontendController
     protected function setHtmlFilterIndexCategory()
     {
         $this->setHtmlFilter($this->data_category);
-    }
-
-    /**
-     * Set pager on the category page
-     */
-    protected function setPagerIndexCategory()
-    {
-        $limit = $this->settings('catalog_limit', 20);
-        $this->limit = $this->setPager($this->total, $this->query_filter, $limit);
     }
 
     /**
@@ -144,16 +128,6 @@ class Category extends FrontendController
     }
 
     /**
-     * Puts main category content into content region
-     */
-    protected function setRegionContentIndexCategory()
-    {
-        $data = $this->data;
-        $data['category'] = $this->data_category;
-        $this->setRegion('region_content', $this->render('category/content', $data));
-    }
-
-    /**
      * Sets meta tags on the category page
      */
     protected function setMetaIndexCategory()
@@ -166,6 +140,22 @@ class Category extends FrontendController
     }
 
     /**
+     * Sets the content region on the categpry page
+     */
+    protected function setRegionContentIndexCategory()
+    {
+        $data = array();
+        $data['category'] = $this->data_category;
+        $data['pager'] = $this->getData('pager');
+        $data['images'] = $this->renderImagesIndexCategory();
+        $data['navbar'] = $this->renderNavbarIndexCategory();
+        $data['products'] = $this->renderProductsIndexCategory();
+        $data['children'] = $this->renderChildrenIndexCategory();
+
+        $this->setRegion('content', $this->render('category/content', $data));
+    }
+
+    /**
      * Sets navigation menu on the category page
      */
     protected function setRegionMenuIndexCategory()
@@ -175,13 +165,13 @@ class Category extends FrontendController
             'items' => $this->data_categories
         );
 
-        $this->setRegion('region_left', $this->renderMenu($options));
+        $this->setRegion('left', $this->renderMenu($options));
     }
 
     /**
-     * Sets rendered category navbar
+     * Render the category navbar
      */
-    protected function setDataNavbarIndexCategory()
+    protected function renderNavbarIndexCategory()
     {
         $data = array(
             'query' => $this->query,
@@ -191,22 +181,21 @@ class Category extends FrontendController
             'sort' => "{$this->query_filter['sort']}-{$this->query_filter['order']}"
         );
 
-        $this->setData('navbar', $this->render('category/navbar', $data));
+        return $this->render('category/navbar', $data);
     }
 
     /**
-     * Sets rendered product list
+     * Renders the category product list
      */
-    protected function setDataProductsIndexCategory()
+    protected function renderProductsIndexCategory()
     {
-        $html = $this->render('product/list', array('products' => $this->data_products));
-        $this->setData('products', $html);
+        return $this->render('product/list', array('products' => $this->data_products));
     }
 
     /**
-     * Sets rendered category images
+     * Render the category images
      */
-    protected function setDataImagesIndexCategory()
+    protected function renderImagesIndexCategory()
     {
         $options = array(
             'imagestyle' => $this->settings('image_style_category', 3));
@@ -214,7 +203,15 @@ class Category extends FrontendController
         $this->attachItemThumb($this->data_category, $options);
 
         $data = array('category' => $this->data_category);
-        $this->setData('images', $this->render('category/images', $data));
+        return $this->render('category/images', $data);
+    }
+
+    /**
+     * Render the children of the category
+     */
+    protected function renderChildrenIndexCategory()
+    {
+        return $this->render('category/children', array('children' => $this->data_children));
     }
 
     /**
@@ -223,15 +220,6 @@ class Category extends FrontendController
     protected function setChildrenCategory()
     {
         $this->data_children = $this->category->getChildren($this->data_category['category_id'], $this->data_categories);
-    }
-
-    /**
-     * Sets rendered category children
-     */
-    protected function setDataChildrenIndexCategory()
-    {
-        $html = $this->render('category/children', array('children' => $this->data_children));
-        $this->setData('children', $html);
     }
 
     /**
