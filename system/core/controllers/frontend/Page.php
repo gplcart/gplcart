@@ -82,7 +82,7 @@ class Page extends FrontendController
      */
     protected function setRegionContentIndexPage()
     {
-        $this->setRegion('region_content', $this->render('page/content', $this->data));
+        $this->setRegion('content', $this->render('page/content', $this->data));
     }
 
     /**

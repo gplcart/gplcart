@@ -45,7 +45,7 @@ class Front extends FrontendController
      */
     protected function setRegionContentFront()
     {
-        $this->setRegion('region_content', $this->render('front/content', $this->data));
+        $this->setRegion('content', $this->render('front/content', $this->data));
     }
 
     /**
