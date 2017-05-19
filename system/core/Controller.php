@@ -627,9 +627,11 @@ class Controller
         if (!isset($key)) {
             return $this->theme_settings;
         }
+
         if (array_key_exists($key, $this->theme_settings)) {
             return $this->theme_settings[$key];
         }
+
         return $default;
     }
 
@@ -644,9 +646,7 @@ class Controller
         if (!isset($filter)) {
             $filter = $this->current_filter;
         }
-        if ($filter === false) {
-            return $string; // Superadmin
-        }
+
         return $this->filter->run($string, $filter);
     }
 
@@ -676,7 +676,7 @@ class Controller
         $summary = '';
         if ($text !== '') {
             $parts = $this->explodeText($text);
-            $summary = trim(reset($parts));
+            $summary = reset($parts);
         }
         if ($summary !== '' && $xss) {
             $summary = $this->filter($summary, $filter);
@@ -1499,8 +1499,8 @@ class Controller
         }
 
         if (trim($content) !== '') {
-            $weight = isset($this->data[$region]) ? count($this->data[$region]) : 0;
-            $this->data[$region][] = array('rendered' => $content, 'weight' => $weight++);
+            $weight = isset($this->data["region_$region"]) ? count($this->data["region_$region"]) : 0;
+            $this->data["region_$region"][] = array('rendered' => $content, 'weight' => $weight++);
         }
     }
 
@@ -1918,20 +1918,11 @@ class Controller
     /**
      * Sets HTML filter globally
      * @param array $data
-     * @return array|boolean
      */
     public function setHtmlFilter($data)
     {
-        if (isset($data['user_id']) && $this->isSuperadmin($data['user_id'])) {
-            $filter_id = $this->config('filter_superadmin');
-            if (empty($filter_id)) {
-                return $this->current_filter = false; // Disable filtering at all
-            }
-            return $this->current_filter = $this->filter->get($filter_id);
-        }
-
         $role_id = isset($data['role_id']) ? $data['role_id'] : 0;
-        return $this->current_filter = $this->filter->getByRole($role_id);
+        $this->current_filter = $this->filter->getByRole($role_id);
     }
 
     /**
@@ -2030,7 +2021,8 @@ class Controller
     protected function explodeText($text)
     {
         $delimiter = $this->config('summary_delimiter', '<!--summary-->');
-        return array_filter(array_map('trim', explode($delimiter, $text, 2)));
+        $parts = array_filter(array_map('trim', explode($delimiter, $text, 2)));
+        return array_pad($parts, 2, '');
     }
 
     /**
@@ -2078,9 +2070,7 @@ class Controller
         $query = $this->query;
 
         foreach ($query as $key => $value) {
-
             settype($value, 'string');
-
             if ($key === 'sort' && strpos($value, '-') !== false) {
                 $parts = explode('-', $value, 2);
                 $query['sort'] = reset($parts);
@@ -2119,6 +2109,7 @@ class Controller
 
     /**
      * Set pager limits
+     * @return string
      */
     public function setPagerLimit($limit = null)
     {
