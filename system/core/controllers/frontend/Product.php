@@ -46,7 +46,7 @@ class Product extends FrontendController
     protected $rating;
 
     /**
-     * The current product
+     * An array of product data
      * @var array
      */
     protected $data_product = array();
@@ -69,7 +69,7 @@ class Product extends FrontendController
     }
 
     /**
-     * Displays a product page
+     * Displays the product page
      * @param integer $product_id
      */
     public function indexProduct($product_id)
@@ -80,20 +80,190 @@ class Product extends FrontendController
         $this->setTitleIndexProduct();
         $this->setBreadcrumbIndexProduct();
 
-        $this->setDataImagesIndexProduct();
-        $this->setDataRecentIndexProduct();
-        $this->setDataReviewsIndexProduct();
-        $this->setDataRelatedIndexProduct();
-        $this->setDataCartFormIndexProduct();
-        $this->setDataRatingWidgetIndexProduct();
-
         $this->setHtmlFilterIndexProduct();
-
-        $this->setData('product', $this->data_product);
-        $this->setData('share', $this->renderShareWidget());
+        $this->setRegionContentIndexProduct();
 
         $this->setJsIndexProduct();
         $this->outputIndexProduct();
+    }
+
+    /**
+     * Set the content region on the product page
+     */
+    protected function setRegionContentIndexProduct()
+    {
+        $this->setRegion('content', $this->renderProductIndexProduct());
+        $this->setRegion('content', $this->renderDescriptionIndexProduct());
+        $this->setRegion('content', $this->renderReviewsIndexProduct());
+        $this->setRegion('content', $this->renderRecentIndexProduct());
+        $this->setRegion('content', $this->renderRelatedIndexProduct());
+    }
+
+    /**
+     * Renders the main product data
+     * @return string
+     */
+    protected function renderProductIndexProduct()
+    {
+        $data = array();
+        $data['product'] = $this->data_product;
+        $data['summary'] = $this->getSummaryProduct();
+        $data['images'] = $this->renderImagesIndexProduct();
+        $data['cart_form'] = $this->renderCartFormIndexProduct();
+        $data['rating'] = $this->renderRatingWidgetIndexProduct();
+
+        return $this->render('product/product', $data);
+    }
+
+    /**
+     * Renders the "Add to cart" form
+     * @return string
+     */
+    protected function renderCartFormIndexProduct()
+    {
+        $data = array(
+            'product' => $this->data_product,
+            'share' => $this->renderShareWidget(),
+            'field_data' => $this->data_product['fields']
+        );
+
+        return $this->render('cart/add', $data);
+    }
+
+    /**
+     * Renders the product images block
+     * @return string
+     */
+    protected function renderImagesIndexProduct()
+    {
+        $options = array(
+            'imagestyle' => $this->settings('image_style_product', 5)
+        );
+
+        if (empty($this->data_product['images'])) {
+            $this->data_product['images'][] = array(
+                'thumb' => $this->image->placeholder($options['imagestyle']));
+        } else {
+            $this->attachItemThumb($this->data_product, $options);
+        }
+
+        return $this->render('product/images', array('product' => $this->data_product));
+    }
+
+    /**
+     * Renders the product rating widget
+     * @return string
+     */
+    protected function renderRatingWidgetIndexProduct()
+    {
+        $rating = $this->rating->getByProduct($this->data_product['product_id']);
+        $data = array('rating' => $rating, 'product' => $this->data_product);
+        return $this->render('common/rating/static', $data);
+    }
+
+    /**
+     * Renders the product description block
+     * @return string
+     */
+    protected function renderDescriptionIndexProduct()
+    {
+        $description = $this->data_product['description'];
+        if (!empty($description)) {
+            $exploded = $this->explodeText($description);
+            $body = end($exploded);
+            if ($body !== '') {
+                $description = $body;
+            }
+        }
+        return $this->render('product/description', array('description' => $description));
+    }
+
+    /**
+     * Renders the product reviews panel
+     * @return string
+     */
+    protected function renderReviewsIndexProduct()
+    {
+        if (!$this->config('review_enabled', 1) || empty($this->data_product['total_reviews'])) {
+            return '';
+        }
+
+        $max = (int) $this->config('review_limit', 5);
+        $pager = $this->getPager($this->data_product['total_reviews'], null, $max);
+
+        $data = array(
+            'pager' => $pager,
+            'product' => $this->data_product,
+            'reviews' => $this->getReviewsProduct($this->getPagerLimit())
+        );
+
+        return $this->render('review/list', $data);
+    }
+
+    /**
+     * Renders the recent products block
+     */
+    protected function renderRecentIndexProduct()
+    {
+        $products = $this->getRecentProduct();
+
+        if (empty($products)) {
+            return '';
+        }
+
+        $total = count($products);
+        $max = $this->config('recent_pager_limit', 4);
+        $pager = $this->getPager($total, null, $max, 'rcp');
+        $limit = $this->getPagerLimit();
+
+        if (!empty($limit)) {
+            list($from, $to) = $limit;
+            $products = array_slice($products, $from, $to);
+        }
+
+        $data = array('products' => $products, 'pager' => $pager);
+        return $this->render('product/recent', $data);
+    }
+
+    /**
+     * Renders the related products block
+     * @return string
+     */
+    protected function renderRelatedIndexProduct()
+    {
+        $products = $this->getRelatedProduct();
+
+        if (empty($products)) {
+            return '';
+        }
+
+        $total = count($products);
+        $max = $this->config('related_pager_limit', 4);
+        $pager = $this->getPager($total, null, $max, 'rlp');
+        $limit = $this->getPagerLimit();
+
+        if (!empty($limit)) {
+            list($from, $to) = $limit;
+            $products = array_slice($products, $from, $to);
+        }
+
+        $data = array('products' => $products, 'pager' => $pager);
+        return $this->render('product/related', $data);
+    }
+
+    /**
+     * Returns the product description summary
+     * @return string
+     */
+    protected function getSummaryProduct()
+    {
+        if (!empty($this->data_product['description'])) {
+            list($summary, $body) = $this->explodeText($this->data_product['description']);
+            if ($body !== '') {
+                return strip_tags($summary);
+            }
+        }
+        return '';
     }
 
     /**
@@ -110,31 +280,6 @@ class Product extends FrontendController
     protected function setMetaIndexProduct()
     {
         $this->setMetaEntity($this->data_product);
-    }
-
-    /**
-     * Sets list of reviews related to the product
-     */
-    protected function setDataReviewsIndexProduct()
-    {
-        if (!$this->config('review_enabled', 1)) {
-            return null;
-        }
-
-        if (empty($this->data_product['total_reviews'])) {
-            return null;
-        }
-
-        $max = (int) $this->config('review_limit', 5);
-        $pager = $this->getPager($this->data_product['total_reviews'], null, $max);
-
-        $options = array(
-            'pager' => $pager,
-            'product' => $this->data_product,
-            'reviews' => $this->getReviewsProduct($this->getPagerLimit())
-        );
-
-        $this->setData('pane_reviews', $this->render('review/list', $options));
     }
 
     /**
@@ -186,39 +331,7 @@ class Product extends FrontendController
 
         $options += $this->query;
         $reviews = (array) $this->review->getList($options);
-
         return $this->prepareReviewsProduct($reviews);
-    }
-
-    /**
-     * Sets rendered rating widget
-     */
-    protected function setDataRatingWidgetIndexProduct()
-    {
-        $rating = $this->rating->getByProduct($this->data_product['product_id']);
-        $options = array('rating' => $rating, 'product' => $this->data_product);
-        $this->setData('rating', $this->render('common/rating/static', $options));
-    }
-
-    /**
-     * Sets rendered "Add to cart form"
-     */
-    protected function setDataCartFormIndexProduct()
-    {
-        $cart = array(
-            'product' => $this->data_product,
-            'field_data' => $this->data_product['fields']
-        );
-
-        $this->setData('cart_form', $this->render('cart/add', $cart));
-    }
-
-    /**
-     * Render and output the product page
-     */
-    protected function outputIndexProduct()
-    {
-        $this->output('product/product');
     }
 
     /**
@@ -292,67 +405,6 @@ class Product extends FrontendController
     }
 
     /**
-     * Sets recent products on the product page
-     */
-    protected function setDataRecentIndexProduct()
-    {
-        $products = $this->getRecentProduct();
-        $total = count($products);
-
-        $max = $this->config('recent_pager_limit', 4);
-        $pager = $this->getPager($total, null, $max, 'rcp');
-        $limit = $this->getPagerLimit();
-
-        if (!empty($limit)) {
-            list($from, $to) = $limit;
-            $products = array_slice($products, $from, $to);
-        }
-
-        $options = array('products' => $products, 'pager' => $pager);
-        $this->setData('pane_recent', $this->render('product/recent', $options));
-    }
-
-    /**
-     * Sets related products on the product page
-     */
-    protected function setDataRelatedIndexProduct()
-    {
-        $products = $this->getRelatedProduct();
-        $total = count($products);
-
-        $max = $this->config('related_pager_limit', 4);
-        $pager = $this->getPager($total, null, $max, 'rlp');
-        $limit = $this->getPagerLimit();
-
-        if (!empty($limit)) {
-            list($from, $to) = $limit;
-            $products = array_slice($products, $from, $to);
-        }
-
-        $options = array('products' => $products, 'pager' => $pager);
-        $this->setData('pane_related', $this->render('product/related', $options));
-    }
-
-    /**
-     * Sets rendered product images
-     */
-    protected function setDataImagesIndexProduct()
-    {
-        $options = array(
-            'imagestyle' => $this->settings('image_style_product', 5)
-        );
-
-        if (empty($this->data_product['images'])) {
-            $this->data_product['images'][] = array('thumb' => $this->image->placeholder($options['imagestyle']));
-        } else {
-            $this->attachItemThumb($this->data_product, $options);
-        }
-
-        $data = array('product' => $this->data_product);
-        $this->setData('images', $this->render('product/images', $data));
-    }
-
-    /**
      * Returns a total number of reviews for this product
      * @param array $product
      * @return integer
@@ -400,20 +452,19 @@ class Product extends FrontendController
     protected function prepareProduct(array $product)
     {
         $field_value_ids = array();
+
         if (!empty($product['default_field_values'])) {
             $field_value_ids = $product['default_field_values'];
         }
 
         $selected = $this->sku->selectCombination($product, $field_value_ids);
-
-        $options = array(
-            'imagestyle' => $this->settings('image_style_product', 5),
-            'path' => empty($selected['combination']['path']) ? '' : $selected['combination']['path']
-        );
-
         $selected += $product;
 
-        $this->attachItemThumb($product, $options);
+        $this->unshiftSelectedImageProduct($selected, $product);
+
+        $this->attachItemInWishlist($product);
+        $this->attachItemInComparison($product);
+
         $this->attachItemPriceCalculated($selected);
         $this->attachItemPriceFormatted($selected);
 
@@ -422,6 +473,29 @@ class Product extends FrontendController
         $product['total_reviews'] = $this->getTotalReviewsProduct($product);
 
         return $product;
+    }
+
+    /**
+     * Put default selected image on the first position
+     * @param array $selected
+     * @param array $product
+     */
+    protected function unshiftSelectedImageProduct(array $selected,
+            array &$product)
+    {
+        if (isset($selected['combination']['file_id']) && isset($product['images'][$selected['combination']['file_id']])) {
+            $image = $product['images'][$selected['combination']['file_id']];
+            unset($product['images'][$selected['combination']['file_id']]);
+            $product['images'] = array($image['file_id'] => $image) + $product['images'];
+        }
+    }
+
+    /**
+     * Render and output the product page
+     */
+    protected function outputIndexProduct()
+    {
+        $this->output();
     }
 
     /**
