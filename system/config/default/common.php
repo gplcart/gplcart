@@ -106,11 +106,12 @@ $config = array();
 # $config['order_complete_message']               = 'Thank you for your order! Order ID: <a href="!url">!order_id</a>, status: !status'; // Default message to show when order is completed by logged in user
 # $config['order_complete_message_anonymous']     = 'Thank you for your order! Order ID: !order_id, status: !status';          // Default message to show when order is completed by anonymous
 # $config['cli_disabled']                         = 0; // Whether comman line support enabled
-# $config['filter_superadmin']                    = 0; // Filter ID for superadmin. Defaults to disabled, i.e raw output
 # $config['field_value_image_dirname']            = 'field_value'; // Default folder for uploaded field value images
 # $config['compress_js']                          = 0; // Whether to aggregate JS files
 # $config['compress_css']                         = 0; // Whether to aggregate and compress CSS files
 # $config['mailer']                               = 'php'; // Mailer
+# $config['filter_allowed_tags']                  = array('a', 'i', 'b', 'em', 'span', 'strong', 'ul', 'ol', 'li'); // Array of allowed tags for default filter
+# $config['filter_allowed_protocols']             = array('http', 'ftp', 'mailto'); // Array of allowed protocols for default filter
 
 /**
  * End of configurable settings

@@ -10,7 +10,7 @@
 namespace gplcart\core\helpers;
 
 /**
- * XSS filter
+ * XSS filter. Based on Drupal's XSS filter
  */
 class Filter
 {
@@ -32,34 +32,26 @@ class Filter
      */
     public function __construct()
     {
-        $this->protocols = array('http', 'ftp', 'mailto');
-        $this->tags = array('a', 'i', 'b', 'em', 'span', 'strong', 'ul', 'ol', 'li');
+        $this->tags = array();
+        $this->protocols = array();
     }
 
     /**
      * Set allowed protocols
      * @param array $protocols
      */
-    public function setProtocols(array $protocols, $rewrite = false)
+    public function setProtocols(array $protocols)
     {
-        if ($rewrite) {
-            $this->protocols = $protocols;
-        } else {
-            $this->protocols = array_unique(array_merge($this->protocols, $protocols));
-        }
+        $this->protocols = $protocols;
     }
 
     /**
      * Set allowed tags
      * @param array $tags
      */
-    public function setTags(array $tags, $rewrite = false)
+    public function setTags(array $tags)
     {
-        if ($rewrite) {
-            $this->tags = $tags;
-        } else {
-            $this->tags = array_unique(array_merge($this->tags, $tags));
-        }
+        $this->tags = $tags;
     }
 
     /**

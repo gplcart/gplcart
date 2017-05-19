@@ -54,6 +54,22 @@ class Filter extends Model
             return (string) $filtered;
         }
 
+        return $this->filter($text);
+    }
+
+    /**
+     * Default system text filter
+     * @param string $text
+     * @return string
+     */
+    public function filter($text)
+    {
+        $tags = $this->config->get('filter_allowed_tags', array('a', 'i', 'b', 'em', 'span', 'strong', 'ul', 'ol', 'li'));
+        $protocols = $this->config->get('filter_allowed_protocols', array('http', 'ftp', 'mailto'));
+
+        $this->filter->setTags($tags);
+        $this->filter->setProtocols($protocols);
+
         return $this->filter->filter($text);
     }
 
