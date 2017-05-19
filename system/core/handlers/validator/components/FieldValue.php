@@ -144,6 +144,15 @@ class FieldValue extends ComponentValidator
             $this->setErrorInvalidValue('color', $this->language->text('Color'));
             return false;
         }
+
+        // Ugly hack!
+        // HTML5 color field cannot have empty value
+        // Default value is #000000
+        // Assuming black is empty
+        if ($color === '#000000') {
+            $this->setSubmitted('color', '');
+        }
+
         return true;
     }
 
