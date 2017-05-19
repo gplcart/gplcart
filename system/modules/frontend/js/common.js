@@ -205,9 +205,7 @@
         var value, values = [], titles = [];
 
         $('[name^="product[options]"]:checked, [name^="product[options]"] option:selected').each(function () {
-
             value = $(this).val();
-
             if (value.length) {
                 values.push(value);
                 titles.push(htmlBtnSelectedOptions($(this).data('field-id'), $(this).data('field-title')));
@@ -435,9 +433,7 @@
      */
     GplCart.onload.updateOption = function () {
 
-        var slider, image, images,
-                selected = getSelectedOptions(),
-                message = $('.add-to-cart .message');
+        var athumb, amain, selected = getSelectedOptions(), message = $('.add-to-cart .message');
 
         setSelectedMessage(selected);
 
@@ -487,16 +483,13 @@
                     }
 
                     if (data.combination.file_id) {
-
-                        /**
-                         slider = $('#' + theme_settings.product_gallery_id);
-                         image = slider.find('img[data-file-id="' + data.combination.file_id + '"]');
-                         
-                         if (image.length && loaded_sliders[theme_settings.product_gallery_id]) {
-                         images = slider.find('img[data-file-id]');
-                         loaded_sliders[theme_settings.product_gallery_id].goToSlide(images.index(image));
-                         }
-                         **/
+                        athumb = $('a[data-file-id="' + data.combination.file_id + '"][data-gallery][data-gallery-thumb]');
+                        if (athumb.length) {
+                            amain = $('[data-gallery="' + athumb.data('gallery') + '"][data-gallery-main-image="true"]');
+                            if (amain.length) {
+                                amain.find('img').attr('src', athumb.find('img').attr('src'));
+                            }
+                        }
                     }
 
                     $(':input[data-field-value-id]').closest('label').removeClass('related');
