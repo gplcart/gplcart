@@ -32,13 +32,13 @@ class Review extends FrontendController
     protected $rating;
 
     /**
-     * The current review
+     * An array of review data
      * @var array
      */
     protected $data_review = array();
 
     /**
-     * The current product
+     * An array of product data
      * @var array
      */
     protected $data_product = array();
@@ -75,8 +75,8 @@ class Review extends FrontendController
         $this->setData('can_delete', $this->canDeleteReview());
 
         $this->submitEditReview();
-
         $this->setDataRatingEditReview();
+
         $this->outputEditReview();
     }
 
@@ -100,13 +100,10 @@ class Review extends FrontendController
      */
     protected function setProductReview($product_id)
     {
-        $product = $this->product->get($product_id);
-
-        if (empty($product['status']) || $product['store_id'] != $this->store_id) {
+        $this->data_product = $this->product->get($product_id);
+        if (empty($this->data_product['status']) || $this->data_product['store_id'] != $this->store_id) {
             $this->outputHttpStatus(404);
         }
-
-        $this->data_product = $product;
     }
 
     /**
@@ -122,8 +119,7 @@ class Review extends FrontendController
      */
     protected function setTitleEditReview()
     {
-        $vars = array('%name' => $this->data_product['title']);
-        $this->setTitle($this->text('Review of %name', $vars));
+        $this->setTitle($this->text('Add review'));
     }
 
     /**
@@ -131,8 +127,19 @@ class Review extends FrontendController
      */
     protected function setBreadcrumbEditReview()
     {
-        $breadcrumb = array('url' => $this->url('/'), 'text' => $this->text('Shop'));
-        $this->setBreadcrumb($breadcrumb);
+        $breadcrumbs = array();
+
+        $breadcrumbs[] = array(
+            'url' => $this->url('/'),
+            'text' => $this->text('Shop')
+        );
+
+        $breadcrumbs[] = array(
+            'url' => $this->url("product/{$this->data_product['product_id']}"),
+            'text' => $this->data_product['title']
+        );
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -141,8 +148,8 @@ class Review extends FrontendController
     protected function setDataRatingEditReview()
     {
         $options = array(
-            'review' => $this->data_review,
             'product' => $this->data_product,
+            'review' => $this->getData('review'),
             'unvote' => $this->config('rating_unvote', 1)
         );
 
@@ -294,21 +301,19 @@ class Review extends FrontendController
      */
     protected function setReview($review_id)
     {
-        if (!is_numeric($review_id)) {
-            return array();
+        if (is_numeric($review_id)) {
+            $review = $this->review->get($review_id);
+
+            if (empty($review)) {
+                $this->outputHttpStatus(404);
+            }
+
+            if ($review['user_id'] != $this->uid) {
+                $this->outputHttpStatus(403);
+            }
+
+            $this->data_review = $this->prepareReview($review);
         }
-
-        $review = $this->review->get($review_id);
-
-        if (empty($review)) {
-            $this->outputHttpStatus(404);
-        }
-
-        if ($review['user_id'] != $this->uid) {
-            $this->outputHttpStatus(403);
-        }
-
-        $this->data_review = $this->prepareReview($review);
     }
 
     /**
