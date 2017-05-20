@@ -653,7 +653,7 @@ class Order extends Model
         // In case we're cloning an order
         unset($order['order_id']);
 
-        $order['created'] = $data['modified'] = GC_TIME;
+        $order['created'] = $order['modified'] = GC_TIME;
         $order += array('status' => $this->getDefaultStatus());
 
         if (empty($order['data']['user'])) {
