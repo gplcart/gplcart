@@ -7,7 +7,7 @@
  */
 ?>
 <?php if (!empty($items) || !empty($order['log'])) { ?>
-<div class="panel panel-default hidden-print">
+<div id="panel-order-logs" class="panel panel-default hidden-print">
   <div class="panel-heading"><?php echo $this->text('Log'); ?></div>
   <div class="panel-body">
     <?php if (!empty($order['log'])) { ?>
