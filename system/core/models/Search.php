@@ -103,7 +103,7 @@ class Search extends Model
     public function index($handler_id, $data)
     {
         $result = null;
-        $this->hook->fire('search.index', $handler_id, $data, $result);
+        $this->hook->fire('search.index', $handler_id, $data, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -127,7 +127,7 @@ class Search extends Model
         }
 
         $result = null;
-        $this->hook->fire('search', $handler_id, $query, $options, $result);
+        $this->hook->fire('search', $handler_id, $query, $options, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -156,7 +156,7 @@ class Search extends Model
         }
 
         $handlers = $this->getDefaultHandlers();
-        $this->hook->fire('search.handlers', $handlers);
+        $this->hook->fire('search.handlers', $handlers, $this);
         return $handlers;
     }
 

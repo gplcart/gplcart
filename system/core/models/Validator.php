@@ -45,7 +45,7 @@ class Validator extends Model
      */
     public function run($handler_id, &$submitted, array $options = array())
     {
-        $this->hook->fire('validator.run.before', $submitted, $options);
+        $this->hook->fire('validator.run.before', $submitted, $options, $this);
 
         $result = null;
         $handlers = $this->getHandlers();
@@ -56,7 +56,7 @@ class Validator extends Model
             $result = call_user_func_array(array($instance, $class[1]), array(&$submitted, $options));
         }
 
-        $this->hook->fire('validator.run.after', $submitted, $options, $result);
+        $this->hook->fire('validator.run.after', $submitted, $options, $result, $this);
 
         if ($result === true) {
             return true;
@@ -82,7 +82,7 @@ class Validator extends Model
         }
 
         $handlers = require GC_CONFIG_VALIDATOR;
-        $this->hook->fire('validator.handlers', $handlers);
+        $this->hook->fire('validator.handlers', $handlers, $this);
         return $handlers;
     }
 

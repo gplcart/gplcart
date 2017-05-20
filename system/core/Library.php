@@ -104,7 +104,7 @@ class Library
         }
 
         $libraries = require GC_CONFIG_LIBRARY;
-        $this->hook->fire('library.list', $libraries);
+        $this->hook->fire('library.list', $libraries, $this);
 
         $libraries = $this->prepareList($libraries);
         $this->cache->set('libraries', $libraries);

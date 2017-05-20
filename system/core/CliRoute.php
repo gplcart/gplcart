@@ -93,7 +93,7 @@ class CliRoute
     public function getList()
     {
         $routes = require GC_CONFIG_CLI_ROUTE;
-        $this->hook->fire('cli.route.list', $routes);
+        $this->hook->fire('cli.route.list', $routes, $this);
         return $routes;
     }
 

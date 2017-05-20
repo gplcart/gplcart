@@ -73,7 +73,7 @@ class Image extends Model
             $handler['name'] = $this->language->text($handler['name']);
         });
 
-        $this->hook->fire('imagestyle.action.handlers', $handlers);
+        $this->hook->fire('imagestyle.action.handlers', $handlers, $this);
         return $handlers;
     }
 
@@ -188,7 +188,7 @@ class Image extends Model
             $imagestyle['default'] = isset($default_imagestyles[$imagestyle_id]);
         }
 
-        $this->hook->fire('imagestyle.list', $imagestyles);
+        $this->hook->fire('imagestyle.list', $imagestyles, $this);
         return $imagestyles;
     }
 
@@ -229,7 +229,7 @@ class Image extends Model
      */
     public function addStyle(array $data)
     {
-        $this->hook->fire('imagestyle.add.before', $data);
+        $this->hook->fire('imagestyle.add.before', $data, $this);
 
         $imagestyles = $this->getStyleList();
         $imagestyle_id = $imagestyles ? (int) max(array_keys($imagestyles)) : 0;
@@ -240,7 +240,7 @@ class Image extends Model
 
         $this->config->set('imagestyles', $imagestyles);
 
-        $this->hook->fire('imagestyle.add.after', $data, $imagestyle_id);
+        $this->hook->fire('imagestyle.add.after', $data, $imagestyle_id, $this);
         return $imagestyle_id;
     }
 
@@ -252,7 +252,7 @@ class Image extends Model
      */
     public function updateStyle($imagestyle_id, array $data)
     {
-        $this->hook->fire('imagestyle.update.before', $imagestyle_id, $data);
+        $this->hook->fire('imagestyle.update.before', $imagestyle_id, $data, $this);
 
         $imagestyles = $this->getStyleList();
 
@@ -265,7 +265,7 @@ class Image extends Model
 
         $this->config->set('imagestyles', $imagestyles);
 
-        $this->hook->fire('imagestyle.update.after', $imagestyle_id, $data);
+        $this->hook->fire('imagestyle.update.after', $imagestyle_id, $data, $this);
         return true;
     }
 
@@ -276,7 +276,7 @@ class Image extends Model
      */
     public function deleteStyle($imagestyle_id)
     {
-        $this->hook->fire('imagestyle.delete.before', $imagestyle_id);
+        $this->hook->fire('imagestyle.delete.before', $imagestyle_id, $this);
 
         $imagestyles = $this->getStyleList();
 
@@ -287,7 +287,7 @@ class Image extends Model
         unset($imagestyles[$imagestyle_id]);
 
         $this->config->set('imagestyles', $imagestyles);
-        $this->hook->fire('imagestyle.delete.after', $imagestyle_id);
+        $this->hook->fire('imagestyle.delete.after', $imagestyle_id, $this);
         return true;
     }
 
@@ -298,7 +298,7 @@ class Image extends Model
      */
     public function clearCache($imagestyle_id = null)
     {
-        $this->hook->fire('imagestyle.clear.cache.before', $imagestyle_id);
+        $this->hook->fire('imagestyle.clear.cache.before', $imagestyle_id, $this);
 
         $directory = GC_IMAGE_CACHE_DIR;
 
@@ -307,7 +307,7 @@ class Image extends Model
         }
 
         $result = gplcart_file_delete_recursive($directory);
-        $this->hook->fire('imagestyle.clear.cache.after', $imagestyle_id, $result);
+        $this->hook->fire('imagestyle.clear.cache.after', $imagestyle_id, $result, $this);
         return $result;
     }
 

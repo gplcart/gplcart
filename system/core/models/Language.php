@@ -113,7 +113,7 @@ class Language extends Model
             $language['weight'] = isset($language['weight']) ? (int) $language['weight'] : 0;
         }
 
-        $this->hook->fire('language.list', $languages);
+        $this->hook->fire('language.list', $languages, $this);
         return $languages;
     }
 
@@ -209,7 +209,7 @@ class Language extends Model
      */
     public function add(array $data)
     {
-        $this->hook->fire('language.add.before', $data);
+        $this->hook->fire('language.add.before', $data, $this);
 
         if (empty($data['code'])) {
             return false;
@@ -234,7 +234,7 @@ class Language extends Model
         $languages[$data['code']] = $values;
         $this->config->set('languages', $languages);
 
-        $this->hook->fire('language.add.after', $data);
+        $this->hook->fire('language.add.after', $data, $this);
         return true;
     }
 
@@ -246,7 +246,7 @@ class Language extends Model
      */
     public function update($code, array $data)
     {
-        $this->hook->fire('language.update.before', $code, $data);
+        $this->hook->fire('language.update.before', $code, $data, $this);
 
         $languages = $this->getAll();
 
@@ -266,7 +266,7 @@ class Language extends Model
         $languages[$code] = $data + $languages[$code];
         $this->config->set('languages', $languages);
 
-        $this->hook->fire('language.update.after', $code, $data);
+        $this->hook->fire('language.update.after', $code, $data, $this);
         return true;
     }
 
@@ -277,7 +277,7 @@ class Language extends Model
      */
     public function delete($code)
     {
-        $this->hook->fire('language.delete.before', $code);
+        $this->hook->fire('language.delete.before', $code, $this);
 
         if (empty($code)) {
             return false;
@@ -291,7 +291,7 @@ class Language extends Model
             $this->config->reset('language');
         }
 
-        $this->hook->fire('language.delete.after', $code, $languages);
+        $this->hook->fire('language.delete.after', $code, $languages, $this);
         return true;
     }
 
@@ -470,7 +470,7 @@ class Language extends Model
     public function translit($string, $language)
     {
         $translit = null;
-        $this->hook->fire('language.translit', $string, $language, $translit);
+        $this->hook->fire('language.translit', $string, $language, $translit, $this);
 
         if (isset($translit)) {
             return $translit;

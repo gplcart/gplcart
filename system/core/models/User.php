@@ -79,7 +79,7 @@ class User extends Model
      */
     public function add(array $data)
     {
-        $this->hook->fire('user.add.before', $data);
+        $this->hook->fire('user.add.before', $data, $this);
 
         if (empty($data)) {
             return false;
@@ -95,7 +95,7 @@ class User extends Model
 
         $this->setAddress($data);
 
-        $this->hook->fire('user.add.after', $data);
+        $this->hook->fire('user.add.after', $data, $this);
         return $data['user_id'];
     }
 
@@ -132,7 +132,7 @@ class User extends Model
      */
     public function update($user_id, array $data)
     {
-        $this->hook->fire('user.update.before', $user_id, $data);
+        $this->hook->fire('user.update.before', $user_id, $data, $this);
 
         if (empty($user_id)) {
             return false;
@@ -155,7 +155,7 @@ class User extends Model
 
         $result = ($updated > 0);
 
-        $this->hook->fire('user.update.after', $user_id, $data, $result);
+        $this->hook->fire('user.update.after', $user_id, $data, $result, $this);
         return (bool) $result;
     }
 
@@ -166,7 +166,7 @@ class User extends Model
      */
     public function delete($user_id)
     {
-        $this->hook->fire('user.delete.before', $user_id);
+        $this->hook->fire('user.delete.before', $user_id, $this);
 
         if (empty($user_id)) {
             return false;
@@ -188,7 +188,7 @@ class User extends Model
             $this->db->delete('rating_user', $conditions);
         }
 
-        $this->hook->fire('user.delete.after', $user_id, $deleted);
+        $this->hook->fire('user.delete.after', $user_id, $deleted, $this);
         return (bool) $deleted;
     }
 
@@ -292,7 +292,7 @@ class User extends Model
             return $user;
         }
 
-        $this->hook->fire('user.get.before', $user_id, $store_id);
+        $this->hook->fire('user.get.before', $user_id, $store_id, $this);
 
         $sql = 'SELECT u.*, r.status AS role_status, r.name AS role_name, r.permissions AS role_permissions'
                 . ' FROM user u'
@@ -309,7 +309,7 @@ class User extends Model
         $options = array('unserialize' => array('data', 'role_permissions'));
         $user = $this->db->fetch($sql, $where, $options);
 
-        $this->hook->fire('user.get.after', $user);
+        $this->hook->fire('user.get.after', $user, $this);
         return $user;
     }
 
@@ -327,7 +327,7 @@ class User extends Model
             'message' => $this->language->text('Failed to log in')
         );
 
-        $this->hook->fire('user.login.before', $data, $check_password, $result);
+        $this->hook->fire('user.login.before', $data, $check_password, $result, $this);
 
         if (empty($data['email'])) {
             return $result;
@@ -366,7 +366,7 @@ class User extends Model
             'redirect' => $redirect,
         );
 
-        $this->hook->fire('user.login.after', $data, $check_password, $result);
+        $this->hook->fire('user.login.after', $data, $check_password, $result, $this);
         return $result;
     }
 
@@ -383,7 +383,7 @@ class User extends Model
             'redirect' => null
         );
 
-        $this->hook->fire('user.register.before', $data, $result);
+        $this->hook->fire('user.register.before', $data, $result, $this);
 
         if (empty($data)) {
             return $result;
@@ -413,7 +413,7 @@ class User extends Model
             $result = $this->login($data);
         }
 
-        $this->hook->fire('user.register.after', $data, $result);
+        $this->hook->fire('user.register.after', $data, $result, $this);
         return $result;
     }
 
@@ -476,7 +476,7 @@ class User extends Model
             'redirect' => '/'
         );
 
-        $this->hook->fire('user.logout.before', $user_id, $result);
+        $this->hook->fire('user.logout.before', $user_id, $result, $this);
 
         if (empty($user_id)) {
             return $result;
@@ -493,7 +493,7 @@ class User extends Model
             'severity' => 'success'
         );
 
-        $this->hook->fire('user.logout.after', $user_id, $result);
+        $this->hook->fire('user.logout.after', $user_id, $result, $this);
         return $result;
     }
 
@@ -510,7 +510,7 @@ class User extends Model
             'redirect' => null
         );
 
-        $this->hook->fire('user.reset.password.before', $data, $result);
+        $this->hook->fire('user.reset.password.before', $data, $result, $this);
 
         if (empty($data['user']['user_id'])) {
             return $result;
@@ -522,7 +522,7 @@ class User extends Model
             $result = $this->resetPasswordStart($data['user']);
         }
 
-        $this->hook->fire('user.reset.password.after', $data, $result);
+        $this->hook->fire('user.reset.password.after', $data, $result, $this);
         return $result;
     }
 
@@ -639,7 +639,7 @@ class User extends Model
         $options = array('index' => 'user_id', 'unserialize' => 'data');
         $list = $this->db->fetchAll($sql, $where, $options);
 
-        $this->hook->fire('user.list', $list);
+        $this->hook->fire('user.list', $list, $this);
         return $list;
     }
 

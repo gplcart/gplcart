@@ -49,7 +49,7 @@ class Payment extends Model
         }
 
         $methods = $this->getDefaultList();
-        $this->hook->fire('payment.methods', $methods);
+        $this->hook->fire('payment.methods', $methods, $this);
 
         $weights = array();
         foreach ($methods as $id => $method) {

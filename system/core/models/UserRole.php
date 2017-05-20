@@ -55,7 +55,7 @@ class UserRole extends Model
 
         asort($permissions);
 
-        $this->hook->fire('user.role.permissions', $permissions);
+        $this->hook->fire('user.role.permissions', $permissions, $this);
         return $permissions;
     }
 
@@ -110,7 +110,7 @@ class UserRole extends Model
 
         $roles = $this->db->fetchAll($sql, $where, $options);
 
-        $this->hook->fire('user.role.list', $roles);
+        $this->hook->fire('user.role.list', $roles, $this);
         return $roles;
     }
 
@@ -121,7 +121,7 @@ class UserRole extends Model
      */
     public function delete($role_id)
     {
-        $this->hook->fire('user.role.delete.before', $role_id);
+        $this->hook->fire('user.role.delete.before', $role_id, $this);
 
         if (empty($role_id)) {
             return false;
@@ -132,7 +132,7 @@ class UserRole extends Model
         }
 
         $result = $this->db->delete('role', array('role_id' => $role_id));
-        $this->hook->fire('user.role.delete.after', $role_id, $result);
+        $this->hook->fire('user.role.delete.after', $role_id, $result, $this);
         return (bool) $result;
     }
 
@@ -155,7 +155,7 @@ class UserRole extends Model
      */
     public function add(array $data)
     {
-        $this->hook->fire('user.role.add.before', $data);
+        $this->hook->fire('user.role.add.before', $data, $this);
 
         if (empty($data)) {
             return false;
@@ -163,7 +163,7 @@ class UserRole extends Model
 
         $data['role_id'] = $this->db->insert('role', $data);
 
-        $this->hook->fire('user.role.add.after', $data);
+        $this->hook->fire('user.role.add.after', $data, $this);
         return $data['role_id'];
     }
 
@@ -175,14 +175,14 @@ class UserRole extends Model
      */
     public function update($role_id, array $data)
     {
-        $this->hook->fire('user.role.update.before', $role_id, $data);
+        $this->hook->fire('user.role.update.before', $role_id, $data, $this);
 
         if (empty($role_id)) {
             return false;
         }
 
         $result = $this->db->update('role', $data, array('role_id' => $role_id));
-        $this->hook->fire('user.role.update.after', $role_id, $data, $result);
+        $this->hook->fire('user.role.update.after', $role_id, $data, $result, $this);
         return (bool) $result;
     }
 
@@ -199,14 +199,14 @@ class UserRole extends Model
             return $role;
         }
 
-        $this->hook->fire('user.role.get.before', $role_id);
+        $this->hook->fire('user.role.get.before', $role_id, $this);
 
         $sql = 'SELECT * FROM role WHERE role_id=?';
         $options = array('unserialize' => 'permissions');
 
         $role = $this->db->fetch($sql, array($role_id), $options);
 
-        $this->hook->fire('user.role.get.after', $role);
+        $this->hook->fire('user.role.get.after', $role, $this);
         return $role;
     }
 

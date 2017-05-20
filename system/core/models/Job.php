@@ -73,7 +73,7 @@ class Job extends Model
      */
     public function get($job_id)
     {
-        $this->hook->fire('job.get.before', $job_id);
+        $this->hook->fire('job.get.before', $job_id, $this);
 
         if (empty($job_id)) {
             return array();
@@ -81,7 +81,7 @@ class Job extends Model
 
         $job = $this->getSession($job_id);
 
-        $this->hook->fire('job.get.after', $job_id, $job);
+        $this->hook->fire('job.get.after', $job_id, $job, $this);
         return $job;
     }
 
@@ -92,7 +92,7 @@ class Job extends Model
      */
     public function set(array $job)
     {
-        $this->hook->fire('job.set.before', $job);
+        $this->hook->fire('job.set.before', $job, $this);
 
         if (empty($job)) {
             return array();
@@ -108,7 +108,7 @@ class Job extends Model
         }
 
         $this->setSession($job);
-        $this->hook->fire('job.set.after', $job, $job['id']);
+        $this->hook->fire('job.set.after', $job, $this);
         return $job;
     }
 
@@ -159,14 +159,14 @@ class Job extends Model
      */
     public function delete($job_id = null)
     {
-        $this->hook->fire('job.delete.before', $job_id);
+        $this->hook->fire('job.delete.before', $job_id, $this);
 
         if ($job_id === false) {
             return false;
         }
 
         $this->session->delete(self::SESSION_KEY . ".$job_id");
-        $this->hook->fire('job.delete.after', $job_id);
+        $this->hook->fire('job.delete.after', $job_id, $this);
         return true;
     }
 
@@ -180,7 +180,7 @@ class Job extends Model
         ini_set('max_execution_time', 0);
         register_shutdown_function(array($this, 'shutdownHandler'), $job);
 
-        $this->hook->fire('job.process.before', $job);
+        $this->hook->fire('job.process.before', $job, $this);
 
         if (empty($job['status'])) {
             return $this->result($job, array('finish' => true));
@@ -218,7 +218,7 @@ class Job extends Model
 
         $response = $this->result($job, $result);
 
-        $this->hook->fire('job.process.after', $job, $result, $response);
+        $this->hook->fire('job.process.after', $job, $result, $response, $this);
         return $response;
     }
 
@@ -368,7 +368,7 @@ class Job extends Model
         }
 
         $handlers = array();
-        $this->hook->fire('job.handlers', $handlers);
+        $this->hook->fire('job.handlers', $handlers, $this);
         return $handlers;
     }
 

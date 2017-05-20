@@ -115,7 +115,7 @@ class Store extends Model
         $options = array('unserialize' => 'data', 'index' => 'store_id');
         $stores = $this->db->fetchAll($sql, $where, $options);
 
-        $this->hook->fire('store.list', $stores);
+        $this->hook->fire('store.list', $stores, $this);
         return $stores;
     }
 
@@ -168,7 +168,7 @@ class Store extends Model
             return $store;
         }
 
-        $this->hook->fire('store.get.before', $store_id);
+        $this->hook->fire('store.get.before', $store_id, $this);
 
         if (is_numeric($store_id)) {
             $store = $this->selectById($store_id);
@@ -180,7 +180,7 @@ class Store extends Model
             $store['data'] += $this->defaultConfig();
         }
 
-        $this->hook->fire('store.get.after', $store);
+        $this->hook->fire('store.get.after', $store, $this);
         return $store;
     }
 
@@ -254,7 +254,7 @@ class Store extends Model
      */
     public function add(array $data)
     {
-        $this->hook->fire('store.add.before', $data);
+        $this->hook->fire('store.add.before', $data, $this);
 
         if (empty($data)) {
             return false;
@@ -263,7 +263,7 @@ class Store extends Model
         $data['created'] = $data['modified'] = GC_TIME;
         $data['store_id'] = $this->db->insert('store', $data);
 
-        $this->hook->fire('store.add.after', $data);
+        $this->hook->fire('store.add.after', $data, $this);
         return $data['store_id'];
     }
 
@@ -301,7 +301,7 @@ class Store extends Model
      */
     public function update($store_id, array $data)
     {
-        $this->hook->fire('store.update.before', $store_id, $data);
+        $this->hook->fire('store.update.before', $store_id, $data, $this);
 
         if (empty($store_id)) {
             return false;
@@ -312,7 +312,7 @@ class Store extends Model
 
         $result = $this->db->update('store', $data, $conditions);
 
-        $this->hook->fire('store.update.after', $store_id, $data, $result);
+        $this->hook->fire('store.update.after', $store_id, $data, $result, $this);
         return (bool) $result;
     }
 
@@ -323,7 +323,7 @@ class Store extends Model
      */
     public function delete($store_id)
     {
-        $this->hook->fire('store.delete.before', $store_id);
+        $this->hook->fire('store.delete.before', $store_id, $this);
 
         if (empty($store_id)) {
             return false;
@@ -336,7 +336,7 @@ class Store extends Model
         $conditions = array('store_id' => $store_id);
         $result = $this->db->delete('store', $conditions);
 
-        $this->hook->fire('store.delete.after', $store_id, $result);
+        $this->hook->fire('store.delete.after', $store_id, $result, $this);
         return (bool) $result;
     }
 

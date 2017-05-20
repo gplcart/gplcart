@@ -32,9 +32,9 @@ class Rating extends Model
      */
     public function getByProduct($product_id)
     {
-        $this->hook->fire('rating.get.before', $product_id);
+        $this->hook->fire('rating.get.before', $product_id, $this);
         $result = $this->db->fetch('SELECT rating, votes FROM rating WHERE product_id=?', array($product_id));
-        $this->hook->fire('rating.get.after', $product_id, $result);
+        $this->hook->fire('rating.get.after', $product_id, $result, $this);
 
         return $result;
     }
@@ -47,7 +47,7 @@ class Rating extends Model
      */
     public function getByUser($product_id, $user_id)
     {
-        $this->hook->fire('rating.get.user.before', $product_id, $user_id);
+        $this->hook->fire('rating.get.user.before', $product_id, $user_id, $this);
 
         $user_ids = (array) $user_id;
         $placeholders = rtrim(str_repeat('?,', count($user_ids)), ',');
@@ -61,7 +61,7 @@ class Rating extends Model
             $ratings = $ratings[$user_id];
         }
 
-        $this->hook->fire('rating.get.user.after', $product_id, $user_id, $ratings);
+        $this->hook->fire('rating.get.user.after', $product_id, $user_id, $ratings, $this);
         return $ratings;
     }
 
@@ -72,7 +72,7 @@ class Rating extends Model
      */
     public function set(array $data)
     {
-        $this->hook->fire('rating.set.before', $data);
+        $this->hook->fire('rating.set.before', $data, $this);
 
         if (empty($data)) {
             return false;
@@ -89,7 +89,7 @@ class Rating extends Model
 
         $result = $this->setBayesian($data['product_id']);
 
-        $this->hook->fire('rating.set.after', $data, $result);
+        $this->hook->fire('rating.set.after', $data, $result, $this);
         return $result;
     }
 
@@ -100,14 +100,14 @@ class Rating extends Model
      */
     protected function addByUser(array $data)
     {
-        $this->hook->fire('rating.add.user.before', $data);
+        $this->hook->fire('rating.add.user.before', $data, $this);
 
         if (empty($data)) {
             return false;
         }
 
         $result = (bool) $this->db->insert('rating_user', $data);
-        $this->hook->fire('rating.add.user.after', $data, $result);
+        $this->hook->fire('rating.add.user.after', $data, $result, $this);
 
         return $result;
     }

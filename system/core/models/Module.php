@@ -131,7 +131,7 @@ class Module extends Model
     {
         $result = $this->canEnable($module_id);
 
-        $this->hook->fire("module.enable.before|$module_id", $result);
+        $this->hook->fire("module.enable.before|$module_id", $result, $this);
 
         if ($result !== true) {
             return $result;
@@ -142,7 +142,7 @@ class Module extends Model
         $this->setOverrideConfig();
         $this->setTranslations($module_id);
 
-        $this->hook->fire("module.enable.after|$module_id", $result);
+        $this->hook->fire("module.enable.after|$module_id", $result, $this);
         return $result;
     }
 
@@ -406,7 +406,7 @@ class Module extends Model
     {
         $result = $this->canDisable($module_id);
 
-        $this->hook->fire("module.disable.before|$module_id", $result);
+        $this->hook->fire("module.disable.before|$module_id", $result, $this);
 
         if ($result !== true) {
             return $result;
@@ -420,7 +420,7 @@ class Module extends Model
 
         $this->setOverrideConfig();
 
-        $this->hook->fire("module.disable.after|$module_id", $result);
+        $this->hook->fire("module.disable.after|$module_id", $result, $this);
         return $result;
     }
 
@@ -502,7 +502,7 @@ class Module extends Model
         Cache::clearMemory();
         $result = $this->canInstall($module_id);
 
-        $this->hook->fire("module.install.before|$module_id", $result);
+        $this->hook->fire("module.install.before|$module_id", $result, $this);
 
         if ($result !== true) {
             // Make sure the troubled module is uninstalled
@@ -515,7 +515,7 @@ class Module extends Model
         $this->setOverrideConfig();
         $this->setTranslations($module_id);
 
-        $this->hook->fire("module.install.after|$module_id", $result);
+        $this->hook->fire("module.install.after|$module_id", $result, $this);
         return $result;
     }
 
@@ -537,7 +537,7 @@ class Module extends Model
     {
         $result = $this->canUninstall($module_id);
 
-        $this->hook->fire("module.uninstall.before|$module_id", $result);
+        $this->hook->fire("module.uninstall.before|$module_id", $result, $this);
 
         if ($result !== true) {
             return $result;
@@ -546,7 +546,7 @@ class Module extends Model
         $this->db->delete('module', array('module_id' => $module_id));
         $this->setOverrideConfig();
 
-        $this->hook->fire("module.uninstall.after|$module_id", $result);
+        $this->hook->fire("module.uninstall.after|$module_id", $result, $this);
         return $result;
     }
 

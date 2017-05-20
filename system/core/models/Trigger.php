@@ -111,7 +111,7 @@ class Trigger extends Model
             $triggers[$trigger['trigger_id']] = $trigger;
         }
 
-        $this->hook->fire('trigger.list', $triggers);
+        $this->hook->fire('trigger.list', $triggers, $this);
         return $triggers;
     }
 
@@ -122,7 +122,7 @@ class Trigger extends Model
      */
     public function add(array $data)
     {
-        $this->hook->fire('trigger.add.before', $data);
+        $this->hook->fire('trigger.add.before', $data, $this);
 
         if (empty($data)) {
             return false;
@@ -130,7 +130,7 @@ class Trigger extends Model
 
         $data['trigger_id'] = $this->db->insert('triggers', $data);
 
-        $this->hook->fire('trigger.add.after', $data);
+        $this->hook->fire('trigger.add.after', $data, $this);
         return $data['trigger_id'];
     }
 
@@ -141,14 +141,14 @@ class Trigger extends Model
      */
     public function get($trigger_id)
     {
-        $this->hook->fire('trigger.get.before', $trigger_id);
+        $this->hook->fire('trigger.get.before', $trigger_id, $this);
 
         $options = array('unserialize' => 'data');
         $sql = 'SELECT * FROM triggers WHERE trigger_id=?';
 
         $trigger = $this->db->fetch($sql, array($trigger_id), $options);
 
-        $this->hook->fire('trigger.get.after', $trigger);
+        $this->hook->fire('trigger.get.after', $trigger, $this);
         return $trigger;
     }
 
@@ -159,7 +159,7 @@ class Trigger extends Model
      */
     public function delete($trigger_id)
     {
-        $this->hook->fire('trigger.delete.before', $trigger_id);
+        $this->hook->fire('trigger.delete.before', $trigger_id, $this);
 
         if (empty($trigger_id)) {
             return false;
@@ -168,7 +168,7 @@ class Trigger extends Model
         $conditions = array('trigger_id' => $trigger_id);
         $result = (bool) $this->db->delete('triggers', $conditions);
 
-        $this->hook->fire('trigger.delete.after', $trigger_id, $result);
+        $this->hook->fire('trigger.delete.after', $trigger_id, $result, $this);
         return (bool) $result;
     }
 
@@ -180,7 +180,7 @@ class Trigger extends Model
      */
     public function update($trigger_id, array $data)
     {
-        $this->hook->fire('trigger.update.before', $trigger_id, $data);
+        $this->hook->fire('trigger.update.before', $trigger_id, $data, $this);
 
         if (empty($trigger_id)) {
             return false;
@@ -189,7 +189,7 @@ class Trigger extends Model
         $conditions = array('trigger_id' => $trigger_id);
         $result = $this->db->update('triggers', $data, $conditions);
 
-        $this->hook->fire('trigger.update.after', $trigger_id, $data, $result);
+        $this->hook->fire('trigger.update.after', $trigger_id, $data, $result, $this);
         return (bool) $result;
     }
 

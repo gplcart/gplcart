@@ -103,7 +103,7 @@ class City extends Model
 
         $cities = $this->db->fetchAll($sql, $where, array('index' => 'city_id'));
 
-        $this->hook->fire('city.list', $cities);
+        $this->hook->fire('city.list', $cities, $this);
         return $cities;
     }
 
@@ -114,7 +114,7 @@ class City extends Model
      */
     public function add(array $data)
     {
-        $this->hook->fire('city.add.before', $data);
+        $this->hook->fire('city.add.before', $data, $this);
 
         if (empty($data)) {
             return false;
@@ -122,7 +122,7 @@ class City extends Model
 
         $city_id = $this->db->insert('city', $data);
 
-        $this->hook->fire('city.add.after', $data, $city_id);
+        $this->hook->fire('city.add.after', $data, $city_id, $this);
         return $city_id;
     }
 
@@ -139,9 +139,9 @@ class City extends Model
             return $city;
         }
 
-        $this->hook->fire('city.get.before', $city_id);
+        $this->hook->fire('city.get.before', $city_id, $this);
         $city = $this->db->fetch('SELECT * FROM city WHERE city_id=?', array($city_id));
-        $this->hook->fire('city.get.after', $city_id, $city);
+        $this->hook->fire('city.get.after', $city_id, $city, $this);
         return $city;
     }
 
@@ -152,7 +152,7 @@ class City extends Model
      */
     public function delete($city_id)
     {
-        $this->hook->fire('city.delete.before', $city_id);
+        $this->hook->fire('city.delete.before', $city_id, $this);
 
         if (empty($city_id)) {
             return false;
@@ -165,7 +165,7 @@ class City extends Model
         $conditions = array('city_id' => (int) $city_id);
         $result = $this->db->delete('city', $conditions);
 
-        $this->hook->fire('city.delete.after', $city_id, $result);
+        $this->hook->fire('city.delete.after', $city_id, $result, $this);
         return (bool) $result;
     }
 
@@ -189,7 +189,7 @@ class City extends Model
      */
     public function update($city_id, array $data)
     {
-        $this->hook->fire('city.update.before', $city_id, $data);
+        $this->hook->fire('city.update.before', $city_id, $data, $this);
 
         if (empty($city_id)) {
             return false;
@@ -198,7 +198,7 @@ class City extends Model
         $conditions = array('city_id' => $city_id);
         $result = $this->db->update('city', $data, $conditions);
 
-        $this->hook->fire('city.update.after', $city_id, $data, $result);
+        $this->hook->fire('city.update.after', $city_id, $data, $result, $this);
         return (bool) $result;
     }
 

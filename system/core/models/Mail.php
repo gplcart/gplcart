@@ -40,7 +40,7 @@ class Mail extends Model
         }
 
         $handlers = require GC_CONFIG_MAIL;
-        $this->hook->fire('mail.handlers', $handlers);
+        $this->hook->fire('mail.handlers', $handlers, $this);
         return $handlers;
     }
 
@@ -55,10 +55,10 @@ class Mail extends Model
     public function send($to, $subject, $message, array $options)
     {
         settype($to, 'array');
-        $this->hook->fire('mail.send.before', $to, $subject, $message, $options);
+        $this->hook->fire('mail.send.before', $to, $subject, $message, $options, $this);
 
         $result = null;
-        $this->hook->fire('mail.send', $to, $subject, $message, $options, $result);
+        $this->hook->fire('mail.send', $to, $subject, $message, $options, $result, $this);
 
         if (isset($result)) {
             return $result;

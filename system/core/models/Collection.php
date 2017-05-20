@@ -94,7 +94,7 @@ class Collection extends Model
         $options = array('index' => 'collection_id');
         $collections = $this->db->fetchAll($sql, $where, $options);
 
-        $this->hook->fire('collection.list', $collections);
+        $this->hook->fire('collection.list', $collections, $this);
         return $collections;
     }
 
@@ -105,7 +105,7 @@ class Collection extends Model
      */
     public function add(array $data)
     {
-        $this->hook->fire('collection.add.before', $data);
+        $this->hook->fire('collection.add.before', $data, $this);
 
         if (empty($data)) {
             return false;
@@ -114,7 +114,7 @@ class Collection extends Model
         $data['collection_id'] = $this->db->insert('collection', $data);
         $this->setTranslationTrait($this->db, $data, 'collection', false);
 
-        $this->hook->fire('collection.add.after', $data);
+        $this->hook->fire('collection.add.after', $data, $this);
         return $data['collection_id'];
     }
 
@@ -126,14 +126,14 @@ class Collection extends Model
      */
     public function get($collection_id, $language = null)
     {
-        $this->hook->fire('collection.get.before', $collection_id);
+        $this->hook->fire('collection.get.before', $collection_id, $this);
 
         $sql = 'SELECT * FROM collection WHERE collection_id=?';
         $collection = $this->db->fetch($sql, array($collection_id));
 
         $this->attachTranslationTrait($this->db, $collection, 'collection', $language);
 
-        $this->hook->fire('collection.get.after', $collection_id, $collection);
+        $this->hook->fire('collection.get.after', $collection_id, $collection, $this);
         return $collection;
     }
 
@@ -144,7 +144,7 @@ class Collection extends Model
      */
     public function delete($collection_id)
     {
-        $this->hook->fire('collection.delete.before', $collection_id);
+        $this->hook->fire('collection.delete.before', $collection_id, $this);
 
         if (empty($collection_id) || !$this->canDelete($collection_id)) {
             return false;
@@ -157,7 +157,7 @@ class Collection extends Model
             $this->db->delete('collection_translation', $conditions);
         }
 
-        $this->hook->fire('collection.delete.after', $collection_id, $result);
+        $this->hook->fire('collection.delete.after', $collection_id, $result, $this);
         return (bool) $result;
     }
 
@@ -184,7 +184,7 @@ class Collection extends Model
      */
     public function update($collection_id, array $data)
     {
-        $this->hook->fire('collection.update.before', $collection_id, $data);
+        $this->hook->fire('collection.update.before', $collection_id, $data, $this);
 
         if (empty($collection_id)) {
             return false;
@@ -199,7 +199,7 @@ class Collection extends Model
         $updated += (int) $this->setTranslationTrait($this->db, $data, 'collection');
         $result = ($updated > 0);
 
-        $this->hook->fire('collection.update.after', $collection_id, $data, $result);
+        $this->hook->fire('collection.update.after', $collection_id, $data, $result, $this);
         return (bool) $result;
     }
 
@@ -221,7 +221,7 @@ class Collection extends Model
             $handler['title'] = $this->language->text($handler['title']);
         });
 
-        $this->hook->fire('collection.handlers', $handlers);
+        $this->hook->fire('collection.handlers', $handlers, $this);
         return $handlers;
     }
 

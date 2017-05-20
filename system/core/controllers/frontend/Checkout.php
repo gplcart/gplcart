@@ -142,7 +142,7 @@ class Checkout extends FrontendController
      * @var integer
      */
     protected $order_store_id;
-    
+
     /**
      * @param CountryModel $country
      * @param StateModel $state
@@ -1007,7 +1007,7 @@ class Checkout extends FrontendController
         $this->setData('complete_templates', $this->getTemplatesCheckout('complete', $this->data_order));
         $this->setData('complete_message', $this->getCompleteMessageCheckout());
 
-        $this->hook->fire('order.complete.page', $order, $this, $this->order);
+        $this->hook->fire('order.complete.page', $order, $this->order, $this);
 
         $this->outputCompleteCheckout();
     }

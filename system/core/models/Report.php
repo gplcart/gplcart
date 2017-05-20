@@ -89,7 +89,7 @@ class Report extends Model
         $options = array('index' => 'log_id', 'unserialize' => 'data');
 
         $list = $this->db->fetchAll($sql, $where, $options);
-        $this->hook->fire('report.list', $list);
+        $this->hook->fire('report.list', $list, $this);
 
         return $list;
     }
@@ -246,10 +246,9 @@ class Report extends Model
             'weight' => 8,
         );
 
-        $this->hook->fire('report.statuses', $statuses);
+        $this->hook->fire('report.statuses', $statuses, $this);
 
         gplcart_array_sort($statuses);
-
         return $statuses;
     }
 
