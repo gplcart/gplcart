@@ -28,7 +28,6 @@ class Field extends Model
     protected $language;
 
     /**
-     * Constructor
      * @param LanguageModel $language
      */
     public function __construct(LanguageModel $language)

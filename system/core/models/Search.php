@@ -102,6 +102,13 @@ class Search extends Model
      */
     public function index($handler_id, $data)
     {
+        $result = null;
+        $this->hook->fire('search.index', $handler_id, $data, $result);
+
+        if (isset($result)) {
+            return $result;
+        }
+
         $handlers = $this->getHandlers();
         return Handler::call($handlers, $handler_id, 'index', array($data));
     }
@@ -117,6 +124,13 @@ class Search extends Model
     {
         if (!isset($options['language'])) {
             $options['language'] = 'und';
+        }
+
+        $result = null;
+        $this->hook->fire('search', $handler_id, $query, $options, $result);
+
+        if (isset($result)) {
+            return $result;
         }
 
         $filtered = $this->filterStopwords($query, $options['language']);
@@ -172,9 +186,9 @@ class Search extends Model
      */
     public function filterStopwords($string, $language)
     {
-        $string = trim(strip_tags($string));
+        $prepared = trim(strip_tags($string));
 
-        if ($string === '') {
+        if ($prepared === '') {
             return '';
         }
 
@@ -186,7 +200,7 @@ class Search extends Model
             $stopwords = array_map('trim', $array);
         }
 
-        return implode(' ', array_diff(explode(' ', $string), $stopwords));
+        return implode(' ', array_diff(explode(' ', $prepared), $stopwords));
     }
 
 }

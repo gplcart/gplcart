@@ -47,7 +47,6 @@ class Install extends Model
     protected $config;
 
     /**
-     * Constructor
      * @param StoreModel $store
      * @param LanguageModel $language
      */
@@ -273,6 +272,10 @@ class Install extends Model
 
         if (empty($this->database)) {
             return $this->language->text('Could not connect to database');
+        }
+
+        if (empty($settings['store']['timezone'])) {
+            $settings['store']['timezone'] = date_default_timezone_get();
         }
 
         $this->config->set('intro', 1);

@@ -12,7 +12,6 @@ namespace gplcart\core\models;
 use gplcart\core\Model,
     gplcart\core\Cache,
     gplcart\core\Handler;
-use gplcart\core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to sending e-mails
@@ -21,19 +20,11 @@ class Mail extends Model
 {
 
     /**
-     * Language model class instance
-     * @var \gplcart\core\models\Language $language
+     * Constructor
      */
-    protected $language;
-
-    /**
-     * @param LanguageModel $language
-     */
-    public function __construct(LanguageModel $language)
+    public function __construct()
     {
         parent::__construct();
-
-        $this->language = $language;
     }
 
     /**
@@ -85,7 +76,7 @@ class Mail extends Model
     public function set($handler_id, array $arguments)
     {
         $handlers = $this->getHandlers();
-        $data = Handler::call($handlers, $handler_id, 'data', array($arguments));
+        $data = Handler::call($handlers, $handler_id, 'data', $arguments);
         return call_user_func_array(array($this, 'send'), $data);
     }
 

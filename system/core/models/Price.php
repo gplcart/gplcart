@@ -13,7 +13,7 @@ use gplcart\core\Model;
 use gplcart\core\models\Currency as CurrencyModel;
 
 /**
- * Manages basic behaviors and data related to currencies
+ * Manages basic behaviors and data related to prices
  */
 class Price extends Model
 {
@@ -36,7 +36,7 @@ class Price extends Model
     }
 
     /**
-     * Formats a price value as a currency string
+     * Format a price
      * @param integer $amount
      * @param string $currency
      * @param bool $decimal

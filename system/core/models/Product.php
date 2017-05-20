@@ -123,7 +123,7 @@ class Product extends Model
     }
 
     /**
-     * Adds a product to the database
+     * Adds a product
      * @param array $data
      * @return boolean|integer
      */
@@ -135,8 +135,7 @@ class Product extends Model
             return false;
         }
 
-        $data['created'] = GC_TIME;
-        $data['modified'] = GC_TIME;
+        $data['created'] = $data['modified'] = GC_TIME;
 
         $data += array(
             'currency' => $this->config->get('currency', 'USD')
@@ -341,7 +340,6 @@ class Product extends Model
     /**
      * Adds fields to the product
      * @param array $product
-     * @return null
      */
     protected function attachFields(array &$product)
     {
@@ -440,7 +438,7 @@ class Product extends Model
     }
 
     /**
-     * Returns true if a product can be deleted
+     * Whether the product can be deleted
      * @param integer $product_id
      * @return boolean
      */
@@ -455,7 +453,7 @@ class Product extends Model
     }
 
     /**
-     * Calculates product price
+     * Calculates the product price
      * @param array $product
      * @return array
      */
@@ -517,7 +515,7 @@ class Product extends Model
     }
 
     /**
-     * Returns an array of products or number of total products
+     * Returns an array of products or counts them
      * @param array $data
      * @return array|integer
      */
@@ -635,7 +633,7 @@ class Product extends Model
     }
 
     /**
-     * Saves a product to the cookie
+     * Saves a product to cookie
      * @param integer $product_id
      * @param integer $limit
      * @param integer $lifespan
@@ -673,8 +671,7 @@ class Product extends Model
 
     /**
      * Reduces an array of recently viewed products
-     * If the limit is set to X and > 0,
-     * it removes all but first X items in the array
+     * If the limit is set to X and > 0 it removes all but first X items in the array
      * @param array $items
      * @param integer $limit
      * @return array

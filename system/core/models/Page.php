@@ -49,7 +49,6 @@ class Page extends Model
     protected $file;
 
     /**
-     * Constructor
      * @param AliasModel $alias
      * @param FileModel $file
      * @param LanguageModel $language
@@ -104,9 +103,7 @@ class Page extends Model
             return false;
         }
 
-        $data['created'] = GC_TIME;
-        $data['modified'] = GC_TIME;
-
+        $data['created'] = $data['modified'] = GC_TIME;
         $data['page_id'] = $this->db->insert('page', $data);
 
         $this->setTranslationTrait($this->db, $data, 'page', false);
@@ -187,7 +184,7 @@ class Page extends Model
     }
 
     /**
-     * Returns an array of pages or total number of pages
+     * Returns an array of pages or counts them
      * @param array $data
      * @return array|integer
      */
@@ -271,14 +268,19 @@ class Page extends Model
     }
 
     /**
-     * Returns a relative to file directory path for uploaded images
+     * Returns a relative/absolute path for uploaded images
+     * @param boolean $absolute
      * @return string
      */
-    public function getImagePath()
+    public function getImagePath($absolute = false)
     {
-        $path = trim(substr(GC_IMAGE_DIR, strlen(GC_FILE_DIR)), '/');
-        $path .= '/' . $this->config->get('page_image_dirname', 'page');
-        return $path;
+        $dirname = $this->config->get('page_image_dirname', 'page');
+
+        if ($absolute) {
+            return GC_IMAGE_DIR . "/$dirname";
+        }
+
+        return trim(substr(GC_IMAGE_DIR, strlen(GC_FILE_DIR)), '/') . "/$dirname";
     }
 
 }

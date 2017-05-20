@@ -26,7 +26,7 @@ class Rating extends Model
     }
 
     /**
-     * Returns an array of rating data for the given product
+     * Returns an array of rating data for a given product
      * @param integer $product_id
      * @return array
      */

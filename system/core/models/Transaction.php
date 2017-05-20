@@ -26,7 +26,7 @@ class Transaction extends Model
     }
 
     /**
-     * Returns an array of transactions
+     * Returns an array of transactions or counts them
      * @param array $data
      * @return array|integer
      */

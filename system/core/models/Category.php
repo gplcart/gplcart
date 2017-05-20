@@ -50,7 +50,6 @@ class Category extends Model
     protected $file;
 
     /**
-     * Constructor
      * @param AliasModel $alias
      * @param FileModel $file
      * @param LanguageModel $language
@@ -466,14 +465,19 @@ class Category extends Model
     }
 
     /**
-     * Returns a relative to file directory path for uploaded images
+     * Returns a relative/absolute path for uploaded images
+     * @param boolean $absolute
      * @return string
      */
-    public function getImagePath()
+    public function getImagePath($absolute = false)
     {
-        $path = trim(substr(GC_IMAGE_DIR, strlen(GC_FILE_DIR)), '/');
-        $path .= '/' . $this->config->get('category_image_dirname', 'category');
-        return $path;
+        $dirname = $this->config->get('category_image_dirname', 'category');
+
+        if ($absolute) {
+            return GC_IMAGE_DIR . "/$dirname";
+        }
+
+        return trim(substr(GC_IMAGE_DIR, strlen(GC_FILE_DIR)), '/') . "/$dirname";
     }
 
 }

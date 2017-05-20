@@ -14,7 +14,7 @@ use gplcart\core\Model,
 use gplcart\core\models\Language as LanguageModel;
 
 /**
- * Manages basic behaviors and data related to shipping
+ * Manages basic behaviors and data related to shipping methods
  */
 class Shipping extends Model
 {
@@ -26,7 +26,6 @@ class Shipping extends Model
     protected $language;
 
     /**
-     * Constructor
      * @param LanguageModel $language
      */
     public function __construct(LanguageModel $language)
@@ -94,18 +93,16 @@ class Shipping extends Model
      */
     protected function getDefaultList()
     {
-        $methods = array();
-
-        $methods['pickup'] = array(
-            'title' => $this->language->text('Pickup'),
-            'description' => $this->language->text('Customer must pick up his items himself at the store'),
-            'template' => array('complete' => ''),
-            'image' => '',
-            'status' => true,
-            'weight' => 0
+        return array(
+            'pickup' => array(
+                'title' => $this->language->text('Pickup'),
+                'description' => $this->language->text('Customer must pick up his items himself at the store'),
+                'template' => array('complete' => ''),
+                'image' => '',
+                'status' => true,
+                'weight' => 0
+            )
         );
-
-        return $methods;
     }
 
 }

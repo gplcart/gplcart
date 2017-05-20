@@ -40,7 +40,6 @@ class Wishlist extends Model
     protected $url;
 
     /**
-     * Constructor
      * @param UserModel $user
      * @param LanguageModel $language
      * @param UrlHelper $url
@@ -94,7 +93,7 @@ class Wishlist extends Model
     }
 
     /**
-     * Adds a product to a wishlist and returns detailed result
+     * Adds a product to a wishlist and returns an array of result data
      * @param array $data
      * @return array
      */
@@ -189,7 +188,7 @@ class Wishlist extends Model
     }
 
     /**
-     * Whether a user can add a product to the wishlist
+     * Whether a user can add a product to wishlist
      * @param integer|string $user_id
      * @param integer $store_id
      * @return boolean
@@ -347,9 +346,7 @@ class Wishlist extends Model
         }
 
         $product_id = $data['product_id'];
-
         unset($data['product_id']);
-
         $items = (array) $this->getList($data);
 
         foreach ($items as $item) {

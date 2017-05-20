@@ -175,7 +175,7 @@ class Backup extends Model
     }
 
     /**
-     * Performs backup operation for a given handler
+     * Performs backup operation for the handler
      * @param string $handler_id
      * @param array $data
      * @return boolean|string Returns TRUE on success or an error message
@@ -187,7 +187,7 @@ class Backup extends Model
     }
 
     /**
-     * Performs restore operation for a given handler
+     * Performs restore operation for the handler
      * @param string $handler_id
      * @param array $data
      * @return boolean|string Returns TRUE on success or an error message

@@ -68,6 +68,11 @@ class Image extends Model
         }
 
         $handlers = require GC_CONFIG_IMAGE_ACTION;
+
+        array_walk($handlers, function(&$handler) {
+            $handler['name'] = $this->language->text($handler['name']);
+        });
+
         $this->hook->fire('imagestyle.action.handlers', $handlers);
         return $handlers;
     }
@@ -336,15 +341,15 @@ class Image extends Model
             return $this->placeholder($imagestyle_id, $absolute);
         }
 
-        $image = trim($image, "/");
-        $file = GC_IMAGE_CACHE_DIR . "/$imagestyle_id/" . preg_replace('/^image\//', '', $image);
+        $trimmed = trim($image, "/");
+        $file = GC_IMAGE_CACHE_DIR . "/$imagestyle_id/" . preg_replace('/^image\//', '', $trimmed);
         $options = file_exists($file) ? array('v' => filemtime($file)) : array('v' => GC_TIME);
 
-        return $this->url->get("files/image/cache/$imagestyle_id/$image", $options, $absolute);
+        return $this->url->get("files/image/cache/$imagestyle_id/$trimmed", $options, $absolute);
     }
 
     /**
-     * Makes a relative to the root directory URL from the server path
+     * Makes a relative to the root directory URL from a server path
      * @param string $path
      * @return string
      */

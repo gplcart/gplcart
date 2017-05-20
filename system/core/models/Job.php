@@ -52,7 +52,6 @@ class Job extends Model
     protected $url;
 
     /**
-     * Constructor
      * @param LanguageModel $language
      * @param SessionHelper $session
      * @param UrlHelper $url

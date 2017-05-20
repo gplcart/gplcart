@@ -27,7 +27,7 @@ class State extends Model
     }
 
     /**
-     * Adds a state
+     * Adds a country state
      * @param array $data
      * @return boolean|integer
      */
@@ -46,7 +46,7 @@ class State extends Model
     }
 
     /**
-     * Loads a state from the database
+     * Loads a country state from the database
      * @param integer $state_id
      * @return array
      */
@@ -68,7 +68,7 @@ class State extends Model
     }
 
     /**
-     * Loads a state by code
+     * Loads a country state by code
      * @param string $code
      * @param string|null $country
      * @return array
@@ -81,7 +81,7 @@ class State extends Model
     }
 
     /**
-     * Returns an array of states or counts them
+     * Returns an array of country states or counts them
      * @param array $data
      * @return array|integer
      */
@@ -140,7 +140,7 @@ class State extends Model
     }
 
     /**
-     * Deletes a state
+     * Deletes a country state
      * @param integer $state_id
      * @return boolean
      */
@@ -168,7 +168,7 @@ class State extends Model
     }
 
     /**
-     * Whether the state can be deleted
+     * Whether the country state can be deleted
      * @param integer $state_id
      * @return boolean
      */
@@ -181,7 +181,7 @@ class State extends Model
     }
 
     /**
-     * Updates a state
+     * Updates a country state
      * @param integer $state_id
      * @param array $data
      * @return boolean

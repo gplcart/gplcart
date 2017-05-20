@@ -14,7 +14,7 @@ use gplcart\core\Cache,
 use gplcart\core\models\Language as LanguageModel;
 
 /**
- * Manages basic behaviors and data related to payment
+ * Manages basic behaviors and data related to payment methods
  */
 class Payment extends Model
 {
@@ -26,7 +26,6 @@ class Payment extends Model
     protected $language;
 
     /**
-     * Constructor
      * @param LanguageModel $language
      */
     public function __construct(LanguageModel $language)
@@ -94,18 +93,16 @@ class Payment extends Model
      */
     protected function getDefaultList()
     {
-        $methods = array();
-
-        $methods['cod'] = array(
-            'title' => $this->language->text('Cash on delivery'),
-            'description' => $this->language->text('Payment for an order is made at the time of delivery'),
-            'template' => array('complete' => ''),
-            'image' => '',
-            'status' => true,
-            'weight' => 0
+        return array(
+            'cod' => array(
+                'title' => $this->language->text('Cash on delivery'),
+                'description' => $this->language->text('Payment for an order is made at the time of delivery'),
+                'template' => array('complete' => ''),
+                'image' => '',
+                'status' => true,
+                'weight' => 0
+            )
         );
-
-        return $methods;
     }
 
 }

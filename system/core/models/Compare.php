@@ -9,8 +9,8 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
-use gplcart\core\Cache;
+use gplcart\core\Model,
+    gplcart\core\Cache;
 use gplcart\core\helpers\Request as RequestHelper;
 use gplcart\core\models\Language as LanguageModel;
 
@@ -33,7 +33,6 @@ class Compare extends Model
     protected $language;
 
     /**
-     * Constructor
      * @param LanguageModel $language
      * @param RequestHelper $request
      */
@@ -65,9 +64,7 @@ class Compare extends Model
         }
 
         array_unshift($product_ids, $product_id);
-
         $this->controlLimit($product_ids);
-
         $result = $this->set($product_ids);
 
         $this->hook->fire('compare.add.after', $product_id, $result);
@@ -75,8 +72,7 @@ class Compare extends Model
     }
 
     /**
-     * Adds a product to comparison and returns
-     * an array of results
+     * Adds a product to comparison and returns an array of results
      * @param array $product
      * @param array $data
      * @return array
@@ -136,9 +132,7 @@ class Compare extends Model
         }
 
         if ($this->delete($product_id)) {
-
             $existing = count($this->getList());
-
             $result = array(
                 'redirect' => '',
                 'severity' => 'success',
@@ -202,7 +196,7 @@ class Compare extends Model
     }
 
     /**
-     * Sets compared products to the cookie
+     * Saves an array of product ID in cookie
      * @param array $product_ids
      * @return boolean
      */

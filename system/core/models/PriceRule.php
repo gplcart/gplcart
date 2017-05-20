@@ -12,8 +12,7 @@ namespace gplcart\core\models;
 use gplcart\core\Model,
     gplcart\core\Cache;
 use gplcart\core\models\Trigger as TriggerModel,
-    gplcart\core\models\Currency as CurrencyModel,
-    gplcart\core\models\Language as LanguageModel;
+    gplcart\core\models\Currency as CurrencyModel;
 
 /**
  * Manages basic behaviors and data related to price rules
@@ -28,31 +27,21 @@ class PriceRule extends Model
     protected $currency;
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
-     */
-    protected $language;
-
-    /**
      * Trigger model instance
      * @var \gplcart\core\models\Trigger $trigger
      */
     protected $trigger;
 
     /**
-     * Constructor
      * @param CurrencyModel $currency
      * @param TriggerModel $trigger
-     * @param LanguageModel $language
      */
-    public function __construct(CurrencyModel $currency, TriggerModel $trigger,
-            LanguageModel $language)
+    public function __construct(CurrencyModel $currency, TriggerModel $trigger)
     {
         parent::__construct();
 
         $this->trigger = $trigger;
         $this->currency = $currency;
-        $this->language = $language;
     }
 
     /**

@@ -40,7 +40,6 @@ class ProductClass extends Model
     protected $field_value;
 
     /**
-     * Constructor
      * @param LanguageModel $language
      * @param FieldModel $field
      * @param FieldValueModel $field_value
@@ -56,7 +55,7 @@ class ProductClass extends Model
     }
 
     /**
-     * Returns an array of product classes
+     * Returns an array of product classes or counts them
      * @param array $data
      * @return array|integer
      */
@@ -203,7 +202,7 @@ class ProductClass extends Model
     }
 
     /**
-     * Adds a field to a product class
+     * Adds a field to the product class
      * @param array $data
      * @return boolean|integer
      */

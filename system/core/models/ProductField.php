@@ -45,7 +45,7 @@ class ProductField extends Model
     }
 
     /**
-     * Deletes product field(s)
+     * Deletes a product field(s)
      * @param string $type
      * @param integer $product_id
      * @return boolean

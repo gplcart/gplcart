@@ -140,9 +140,7 @@ class City extends Model
         }
 
         $this->hook->fire('city.get.before', $city_id);
-
         $city = $this->db->fetch('SELECT * FROM city WHERE city_id=?', array($city_id));
-
         $this->hook->fire('city.get.after', $city_id, $city);
         return $city;
     }
@@ -168,12 +166,11 @@ class City extends Model
         $result = $this->db->delete('city', $conditions);
 
         $this->hook->fire('city.delete.after', $city_id, $result);
-
         return (bool) $result;
     }
 
     /**
-     * Returns true if the city can be deleted
+     * Whether a city can be deleted
      * @param integer $city_id
      * @return boolean
      */

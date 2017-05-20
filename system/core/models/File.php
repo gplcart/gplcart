@@ -204,7 +204,7 @@ class File extends Model
     }
 
     /**
-     * Wheter a file can be deleted
+     * Whether the file can be deleted
      * @param integer $file_id
      * @return boolean
      */
@@ -281,7 +281,7 @@ class File extends Model
     }
 
     /**
-     * Returns a handler by a given name
+     * Returns a handler data
      * @param string $name
      * @return array
      */
@@ -327,7 +327,7 @@ class File extends Model
     }
 
     /**
-     * Returns an array of files
+     * Returns an array of files or counts them
      * @param array $data
      * @return array|integer
      */
@@ -432,7 +432,7 @@ class File extends Model
     }
 
     /**
-     * Creates relative path from full server path
+     * Creates a relative path from a server path
      * @param string $absolute
      * @return string
      */
@@ -442,7 +442,7 @@ class File extends Model
     }
 
     /**
-     * Creates file URL from path
+     * Creates a file URL from a path
      * @param string $path
      * @param bool $absolute
      * @return string
@@ -453,7 +453,7 @@ class File extends Model
     }
 
     /**
-     * Deletes a file from the disk
+     * Deletes a file from disk
      * @param array $file
      * @return boolean
      */
@@ -654,7 +654,7 @@ class File extends Model
     }
 
     /**
-     * Clean up file name
+     * Clean up a file name
      * @param string $filename
      * @return string
      */

@@ -27,7 +27,7 @@ class CollectionItem extends Model
     protected $collection;
 
     /**
-     * Constructor
+     * @param CollectionModel $collection
      */
     public function __construct(CollectionModel $collection)
     {
@@ -37,7 +37,7 @@ class CollectionItem extends Model
     }
 
     /**
-     * Returns an array of collection items depending on various conditions
+     * Returns an array of collection items or counts them
      * @param array $data
      * @return array|integer
      */

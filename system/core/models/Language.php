@@ -44,15 +44,13 @@ class Language extends Model
     protected $language_directory = '';
 
     /**
-     * Path to directory that keeps complied .csv translations
-     * for the current language
+     * Path to directory that keeps complied .csv translations for the current language
      * @var string
      */
     protected $compiled_directory_csv = '';
 
     /**
-     * Path to directory that keeps complied js translations
-     * for the current language
+     * Path to directory that keeps complied js translations for the current language
      * @var string
      */
     protected $compiled_directory_js = '';
@@ -93,8 +91,7 @@ class Language extends Model
     }
 
     /**
-     * Returns an array of all languages
-     * including default and added/updated languages
+     * Returns an array of all languages including default and added/updated languages
      * @return array
      */
     public function getAll()

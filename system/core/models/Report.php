@@ -9,9 +9,7 @@
 
 namespace gplcart\core\models;
 
-use DateTime;
 use gplcart\core\Model;
-use gplcart\core\Cache;
 use gplcart\core\models\Language as LanguageModel;
 
 /**
@@ -21,27 +19,18 @@ class Report extends Model
 {
 
     /**
-     * Cache instance
-     * @var \gplcart\core\Cache $cache
-     */
-    protected $cache;
-
-    /**
      * Language model instance
      * @var \gplcart\core\models\Language $language
      */
     protected $language;
 
     /**
-     * Constructor
      * @param LanguageModel $language
-     * @param Cache $cache
      */
-    public function __construct(LanguageModel $language, Cache $cache)
+    public function __construct(LanguageModel $language)
     {
         parent::__construct();
 
-        $this->cache = $cache;
         $this->language = $language;
     }
 
@@ -111,12 +100,11 @@ class Report extends Model
      */
     public function getTypes()
     {
-        $sql = 'SELECT DISTINCT type FROM log';
-        return $this->db->fetchColumnAll($sql, array());
+        return $this->db->fetchColumnAll('SELECT DISTINCT type FROM log', array());
     }
 
     /**
-     * Returns an array of severities
+     * Returns an array of log severity types
      * @return array
      */
     public function getSeverities()
@@ -129,7 +117,7 @@ class Report extends Model
     }
 
     /**
-     * Returns an array of totals per severity type
+     * Returns an array of total log records per severity type
      * @return array
      */
     public function countSeverity()
@@ -168,7 +156,7 @@ class Report extends Model
      */
     public function deleteExpired($interval)
     {
-        $time = (GC_TIME - (int) $interval);
+        $time = GC_TIME - (int) $interval;
         $this->db->run('DELETE FROM log WHERE time < ?', array($time));
     }
 

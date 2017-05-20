@@ -107,7 +107,7 @@ class Review extends Model
     }
 
     /**
-     * Returns an array of reviews or their total number
+     * Returns an array of reviews or counts them
      * @param array $data
      * @return array|integer
      */
@@ -197,12 +197,10 @@ class Review extends Model
      */
     public function getLimits()
     {
-        $limits = array(
+        return array(
             'min' => $this->config->get('review_min_length', 10),
             'max' => $this->config->get('review_max_length', 1000)
         );
-
-        return $limits;
     }
 
 }

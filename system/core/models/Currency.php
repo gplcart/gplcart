@@ -26,7 +26,6 @@ class Currency extends Model
     protected $request;
 
     /**
-     * Constructor
      * @param RequestHelper $request
      */
     public function __construct(RequestHelper $request)
@@ -95,9 +94,11 @@ class Currency extends Model
         if (!$enabled) {
             return $currencies;
         }
+
         $currencies = array_filter($currencies, function ($currency) {
             return !empty($currency['status']);
         });
+
         return $currencies;
     }
 
@@ -154,7 +155,7 @@ class Currency extends Model
     }
 
     /**
-     * Returns true if the currency can be deleted
+     * Whether the currency can be deleted
      * @param string $code
      * @return boolean
      */
@@ -317,7 +318,7 @@ class Currency extends Model
     }
 
     /**
-     * Returns an array of default currency values
+     * Returns an array of default currency data
      * @return array
      */
     protected function getDefaultData()

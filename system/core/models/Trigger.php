@@ -26,7 +26,7 @@ class Trigger extends Model
     protected $condition;
 
     /**
-     * Constructor
+     * @param ConditionModel $condition
      */
     public function __construct(ConditionModel $condition)
     {
@@ -36,7 +36,7 @@ class Trigger extends Model
     }
 
     /**
-     * Returns an array of triggers
+     * Returns an array of triggers or counts them
      * @param array $data
      * @return array|integer
      */
@@ -135,7 +135,7 @@ class Trigger extends Model
     }
 
     /**
-     * Returns an array of a single trigger
+     * Returns a single trigger
      * @param integer $trigger_id
      * @return array
      */
@@ -153,7 +153,7 @@ class Trigger extends Model
     }
 
     /**
-     * Deletes a trigger from the database
+     * Deletes a trigger
      * @param integer $trigger_id
      * @return boolean
      */
@@ -194,7 +194,7 @@ class Trigger extends Model
     }
 
     /**
-     * Returns an array of fired trigger IDs for the current context
+     * Returns an array of fired trigger IDs for the given context
      * @param array $options
      * @param array $data
      * @return array

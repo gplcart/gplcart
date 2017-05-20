@@ -26,7 +26,6 @@ class Address extends Model
     protected $country;
 
     /**
-     * Constructor
      * @param CountryModel $country
      */
     public function __construct(CountryModel $country)

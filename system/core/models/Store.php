@@ -26,7 +26,6 @@ class Store extends Model
     protected $request;
 
     /**
-     * Constructor
      * @param RequestHelper $request
      */
     public function __construct(RequestHelper $request)
@@ -153,7 +152,7 @@ class Store extends Model
     }
 
     /**
-     * Loads a store from the database
+     * Loads a store
      * @param integer|string $store_id Either store ID or domain
      * @return array
      */
@@ -186,7 +185,7 @@ class Store extends Model
     }
 
     /**
-     * Selects a store from the database by a numeric ID
+     * Selects a store by a numeric ID
      * @param integer $store_id
      * @return array
      */
@@ -199,7 +198,7 @@ class Store extends Model
     }
 
     /**
-     * Selects a store from the database by a domain
+     * Selects a store by a domain
      * @param string $domain
      * @return array
      */
@@ -218,7 +217,7 @@ class Store extends Model
     }
 
     /**
-     * Returns an array of default settings
+     * Returns an array of default store settings
      * @return array
      */
     public function defaultConfig()

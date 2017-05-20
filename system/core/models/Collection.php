@@ -28,8 +28,7 @@ class Collection extends Model
     protected $language;
 
     /**
-     * Collection constructor.
-     * @param Language $language
+     * @param LanguageModel $language
      */
     public function __construct(LanguageModel $language)
     {
@@ -39,7 +38,7 @@ class Collection extends Model
     }
 
     /**
-     * Returns an array of collections depending on various conditions
+     * Returns an array of collections or counts them
      * @param array $data
      * @return array|integer
      */
@@ -113,7 +112,6 @@ class Collection extends Model
         }
 
         $data['collection_id'] = $this->db->insert('collection', $data);
-
         $this->setTranslationTrait($this->db, $data, 'collection', false);
 
         $this->hook->fire('collection.add.after', $data);
@@ -164,7 +162,7 @@ class Collection extends Model
     }
 
     /**
-     * Whether the collection can be deleted
+     * Whether a collection can be deleted
      * @param integer $collection_id
      * @return boolean
      */
@@ -217,53 +215,18 @@ class Collection extends Model
             return $handlers;
         }
 
-        $handlers = array();
+        $handlers = require GC_CONFIG_COLLECTION;
 
-        $handlers['product'] = array(
-            'title' => $this->language->text('Product'),
-            'id_key' => 'product_id',
-            'handlers' => array(
-                'list' => array('gplcart\\core\\models\\Product', 'getList'),
-                'validate' => array('gplcart\\core\\handlers\\validator\\components\\CollectionItem', 'product'),
-            ),
-            'template' => array(
-                'item' => 'product/item/grid',
-                'list' => 'collection/list/product'
-            ),
-        );
-
-        $handlers['file'] = array(
-            'title' => $this->language->text('File'),
-            'id_key' => 'file_id',
-            'handlers' => array(
-                'list' => array('gplcart\\core\\models\\File', 'getList'),
-                'validate' => array('gplcart\\core\\handlers\\validator\\components\\CollectionItem', 'file'),
-            ),
-            'template' => array(
-                'item' => 'collection/item/file',
-                'list' => 'collection/list/file'
-            )
-        );
-
-        $handlers['page'] = array(
-            'title' => $this->language->text('Page'),
-            'id_key' => 'page_id',
-            'handlers' => array(
-                'list' => array('gplcart\\core\\models\\Page', 'getList'),
-                'validate' => array('gplcart\\core\\handlers\\validator\\components\\CollectionItem', 'page'),
-            ),
-            'template' => array(
-                'item' => 'collection/item/page',
-                'list' => 'collection/list/page'
-            )
-        );
+        array_walk($handlers, function(&$handler) {
+            $handler['title'] = $this->language->text($handler['title']);
+        });
 
         $this->hook->fire('collection.handlers', $handlers);
         return $handlers;
     }
 
     /**
-     * Returns an array of collection type names keyed by handler ID
+     * Returns an array of collection type names keyed by a handler ID
      * @return array
      */
     public function getTypes()

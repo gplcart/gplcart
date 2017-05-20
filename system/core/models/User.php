@@ -54,7 +54,6 @@ class User extends Model
     protected $session;
 
     /**
-     * Constructor
      * @param AddressModel $address
      * @param UserRoleModel $role
      * @param MailModel $mail
@@ -223,11 +222,11 @@ class User extends Model
             return ($superadmin_id === (int) $user_id);
         }
 
-        return ($superadmin_id === (int) $this->getSession('user_id'));
+        return $superadmin_id === (int) $this->getSession('user_id');
     }
 
     /**
-     * Whether the user has an access
+     * Whether a user has an access to do something
      * @param string $permission
      * @param mixed $user
      * @return boolean
@@ -419,7 +418,7 @@ class User extends Model
     }
 
     /**
-     * Sends E-mails to various recepients to inform them about the registration
+     * Sends e-mails on registration event
      * @param array $data
      */
     protected function emailRegistration(array $data)
@@ -518,9 +517,9 @@ class User extends Model
         }
 
         if (isset($data['password'])) {
-            $result = $this->setNewPassword($data['user'], $data['password']);
+            $result = $this->resetPasswordFinish($data['user'], $data['password']);
         } else {
-            $result = $this->setResetPassword($data['user']);
+            $result = $this->resetPasswordStart($data['user']);
         }
 
         $this->hook->fire('user.reset.password.after', $data, $result);
@@ -528,11 +527,11 @@ class User extends Model
     }
 
     /**
-     * Sets reset token and sends reset link
+     * Start password reset operation
      * @param array $user
      * @return array
      */
-    protected function setResetPassword(array $user)
+    protected function resetPasswordStart(array $user)
     {
         $lifetime = (int) $this->config->get('user_reset_password_lifespan', 86400);
 
@@ -552,12 +551,12 @@ class User extends Model
     }
 
     /**
-     * Sets a new password
+     * Finish password reset operation
      * @param array $user
      * @param string $password
      * @return array
      */
-    protected function setNewPassword(array $user, $password)
+    protected function resetPasswordFinish(array $user, $password)
     {
         $user['password'] = $password;
         unset($user['data']['reset_password']);
@@ -645,17 +644,15 @@ class User extends Model
     }
 
     /**
-     * Returns allowed min and max password length
+     * Returns min and max allowed password length
      * @return array
      */
     public function getPasswordLength()
     {
-        $data = array(
+        return array(
             'min' => $this->config->get('user_password_min_length', 8),
             'max' => $this->config->get('user_password_max_length', 255)
         );
-
-        return $data;
     }
 
     /**

@@ -15,7 +15,6 @@ use gplcart\core\models\Mail as MailModel,
     gplcart\core\models\Cart as CartModel,
     gplcart\core\models\User as UserModel,
     gplcart\core\models\Price as PriceModel,
-    gplcart\core\models\Product as ProductModel,
     gplcart\core\models\Language as LanguageModel,
     gplcart\core\models\PriceRule as PriceRuleModel;
 use gplcart\core\helpers\Request as RequestHelper,
@@ -64,12 +63,6 @@ class Order extends Model
     protected $price;
 
     /**
-     * Product model instance
-     * @var \gplcart\core\models\Product $product
-     */
-    protected $product;
-
-    /**
      * Request class instance
      * @var \gplcart\core\helpers\Request $request
      */
@@ -85,7 +78,6 @@ class Order extends Model
      * @param UserModel $user
      * @param PriceModel $price
      * @param PriceRuleModel $pricerule
-     * @param ProductModel $product
      * @param CartModel $cart
      * @param LanguageModel $language
      * @param MailModel $mail
@@ -93,9 +85,8 @@ class Order extends Model
      * @param ConvertorHelper $convertor
      */
     public function __construct(UserModel $user, PriceModel $price,
-            PriceRuleModel $pricerule, ProductModel $product, CartModel $cart,
-            LanguageModel $language, MailModel $mail, RequestHelper $request,
-            ConvertorHelper $convertor)
+            PriceRuleModel $pricerule, CartModel $cart, LanguageModel $language,
+            MailModel $mail, RequestHelper $request, ConvertorHelper $convertor)
     {
         parent::__construct();
 
@@ -103,7 +94,6 @@ class Order extends Model
         $this->user = $user;
         $this->cart = $cart;
         $this->price = $price;
-        $this->product = $product;
         $this->request = $request;
         $this->language = $language;
         $this->convertor = $convertor;
@@ -371,7 +361,7 @@ class Order extends Model
     }
 
     /**
-     * Wheter the order ID is already in the history table
+     * Whether the order ID is already in the history table
      * @param array $order
      * @param integer $user_id
      * @return boolean
@@ -454,7 +444,7 @@ class Order extends Model
     }
 
     /**
-     * 
+     * Clone an order
      * @param array $order
      * @param array $cart
      */
@@ -518,7 +508,6 @@ class Order extends Model
     public function setNotificationCreated(array $order)
     {
         $this->mail->set('order_created_admin', array($order));
-
         if (is_numeric($order['user_id']) && !empty($order['user_email'])) {
             return $this->mail->set('order_created_customer', array($order));
         }
@@ -536,7 +525,6 @@ class Order extends Model
         if (is_numeric($order['user_id']) && !empty($order['user_email'])) {
             return $this->mail->set('order_updated_customer', array($order));
         }
-
         return false;
     }
 
@@ -721,7 +709,7 @@ class Order extends Model
     }
 
     /**
-     * Returns an order log
+     * Returns an order log record
      * @param integer $order_log_id
      * @return array
      */
@@ -786,7 +774,7 @@ class Order extends Model
     }
 
     /**
-     * Returns an array of default order status
+     * Returns an array of default order statuses
      * @return array
      */
     protected function getDefaultStatuses()
@@ -805,17 +793,15 @@ class Order extends Model
     }
 
     /**
-     * Returns the current user data to be used in order logs
+     * Returns an array of user data to be saved
      * @return array
      */
     protected function getUserData()
     {
-        $data = array(
+        return array(
             'ip' => $this->request->ip(),
             'agent' => $this->request->agent()
         );
-
-        return $data;
     }
 
     /**
@@ -836,7 +822,7 @@ class Order extends Model
     }
 
     /**
-     * Returns product total volume
+     * Returns a total volume of all products in the order
      * @param array $order
      * @param array $cart
      * @param integer $decimals
@@ -868,7 +854,7 @@ class Order extends Model
     }
 
     /**
-     * Returns order products total weight
+     * Returns a total weight of all products in the order
      * @param array $order
      * @param array $cart
      * @param integer $decimals

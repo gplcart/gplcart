@@ -11,7 +11,7 @@ namespace gplcart\core\models;
 
 use gplcart\core\Model,
     gplcart\core\Cache;
-use gplcart\core\helpers\Session as SessionHelper;
+use gplcart\core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to user roles
@@ -20,24 +20,23 @@ class UserRole extends Model
 {
 
     /**
-     * Session class instance
-     * @var \gplcart\core\helpers\Session $session
+     * Language model instance
+     * @var \gplcart\core\models\Language $language
      */
-    protected $session;
+    protected $language;
 
     /**
-     * Constructor
-     * @param SessionHelper $session
+     * @param LanguageModel $language
      */
-    public function __construct(SessionHelper $session)
+    public function __construct(LanguageModel $language)
     {
         parent::__construct();
 
-        $this->session = $session;
+        $this->language = $language;
     }
 
     /**
-     * Returns an array of all permissions
+     * Returns an array of permissions
      * @return array
      */
     public function getPermissions()
@@ -48,7 +47,14 @@ class UserRole extends Model
             return $permissions;
         }
 
-        $permissions = $this->getDefaultPermissions();
+        $permissions = require GC_CONFIG_PERMISSION;
+
+        array_walk($permissions, function(&$name) {
+            $name = $this->language->text($name);
+        });
+
+        asort($permissions);
+
         $this->hook->fire('user.role.permissions', $permissions);
         return $permissions;
     }
@@ -131,7 +137,7 @@ class UserRole extends Model
     }
 
     /**
-     * Whether the role canbe deleted
+     * Whether the role can be deleted
      * @param integer $role_id
      * @return boolean
      */
@@ -202,17 +208,6 @@ class UserRole extends Model
 
         $this->hook->fire('user.role.get.after', $role);
         return $role;
-    }
-
-    /**
-     * Returns an array of default permissions
-     * @return array
-     */
-    protected function getDefaultPermissions()
-    {
-        $permissions = require GC_CONFIG_PERMISSION;
-        asort($permissions);
-        return $permissions;
     }
 
 }

@@ -26,7 +26,7 @@ class Zone extends Model
     }
 
     /**
-     * Returns a zone
+     * Loads a zone from the database
      * @param integer $zone_id
      * @return array
      */
@@ -38,7 +38,6 @@ class Zone extends Model
         $zone = $this->db->fetch($sql, array($zone_id));
 
         $this->hook->fire('zone.get.after', $zone);
-
         return $zone;
     }
 
@@ -56,9 +55,7 @@ class Zone extends Model
         }
 
         $data['zone_id'] = $this->db->insert('zone', $data);
-
         $this->hook->fire('zone.add.after', $data);
-
         return $data['zone_id'];
     }
 
@@ -77,9 +74,7 @@ class Zone extends Model
         }
 
         $result = $this->db->update('zone', $data, array('zone_id' => $zone_id));
-
         $this->hook->fire('zone.update.after', $zone_id, $data, $result);
-
         return (bool) $result;
     }
 
@@ -97,9 +92,7 @@ class Zone extends Model
         }
 
         $result = (bool) $this->db->delete('zone', array('zone_id' => $zone_id));
-
         $this->hook->fire('zone.delete.after', $zone_id, $result);
-
         return (bool) $result;
     }
 
@@ -118,7 +111,7 @@ class Zone extends Model
     }
 
     /**
-     * Returns an array of zones
+     * Returns an array of zones or counts them
      * @param array $data
      * @return array|integer
      */

@@ -32,7 +32,6 @@ class Alias extends Model
     protected $route;
 
     /**
-     * Constructor
      * @param LanguageModel $language
      * @param Route $route
      */
@@ -119,7 +118,7 @@ class Alias extends Model
     }
 
     /**
-     * Returns an array of aliases
+     * Returns an array of aliases or counts them
      * @param array $data
      * @return array|integer
      */
@@ -190,7 +189,7 @@ class Alias extends Model
     }
 
     /**
-     * Creates an alias using a data
+     * Creates an alias using an array of data
      * @param string $pattern
      * @param array $placeholders
      * @param array $data
@@ -243,7 +242,7 @@ class Alias extends Model
     }
 
     /**
-     * Generates alias for an entity data
+     * Generates an alias for an entity
      * @param array $data
      * @param string $entity
      * @return string
@@ -257,7 +256,7 @@ class Alias extends Model
     }
 
     /**
-     * Whether the alias path exists
+     * Whether the alias path already exists
      * @param string $path
      * @return boolean
      */

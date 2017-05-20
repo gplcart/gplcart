@@ -27,7 +27,6 @@ class Validator extends Model
     protected $language;
 
     /**
-     * Constructor
      * @param LanguageModel $language
      */
     public function __construct(LanguageModel $language)
@@ -83,7 +82,6 @@ class Validator extends Model
         }
 
         $handlers = require GC_CONFIG_VALIDATOR;
-
         $this->hook->fire('validator.handlers', $handlers);
         return $handlers;
     }

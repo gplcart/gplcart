@@ -68,8 +68,7 @@ class Cart extends Model
     protected $request;
 
     /**
-     * Constructor
-     * @param PriceRuleModel $product
+     * @param ProductModel $product
      * @param SkuModel $sku
      * @param CurrencyModel $currency
      * @param UserModel $user
@@ -143,7 +142,7 @@ class Cart extends Model
     }
 
     /**
-     * Prepare cart item
+     * Prepare a cart item
      * @param array $item
      * @param array $data
      * @return boolean
@@ -284,7 +283,7 @@ class Cart extends Model
     }
 
     /**
-     * Returns cart limit(s)
+     * Returns the cart limit(s)
      * @param null|string $item
      * @return array|int
      */
@@ -445,8 +444,8 @@ class Cart extends Model
     }
 
     /**
-     * Returns an array containing total number of products
-     * and number of products per SKU for the given user and store
+     * Returns an array containing a total number of products
+     * and a number of products per SKU for the given user and store
      * @param array $conditions
      * @param null|string $key
      * @return array|integer
@@ -596,7 +595,7 @@ class Cart extends Model
     }
 
     /**
-     * Returns true if the cart item is not associated with an order
+     * Whether a cart item can be deleted
      * @param integer $cart_id
      * @return bool
      */

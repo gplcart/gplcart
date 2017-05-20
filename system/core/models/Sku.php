@@ -13,7 +13,7 @@ use gplcart\core\Model;
 use gplcart\core\models\Language as LanguageModel;
 
 /**
- * Manages basic behaviors and data related to product SKUs
+ * Manages basic behaviors and data related to product SKU
  */
 class Sku extends Model
 {
@@ -25,7 +25,6 @@ class Sku extends Model
     protected $language;
 
     /**
-     * Constructor
      * @param LanguageModel $language
      */
     public function __construct(LanguageModel $language)
@@ -58,7 +57,7 @@ class Sku extends Model
     }
 
     /**
-     * Returns an array of SKUs or counts their total quantity
+     * Returns an array of SKUs or counts them
      * @param array $data
      * @return array|integer
      */
@@ -223,7 +222,7 @@ class Sku extends Model
     }
 
     /**
-     * Creates a field combination id from the field value ids
+     * Creates a field combination id from an array of field value ids
      * @param array $field_value_ids
      * @param null|integer $product_id
      * @return string
@@ -236,7 +235,7 @@ class Sku extends Model
     }
 
     /**
-     * Returns an array of data when selecting sku combinations using field value IDs
+     * Returns an array of data when selecting sku combinations
      * @param array $product
      * @param array $field_value_ids
      * @return array

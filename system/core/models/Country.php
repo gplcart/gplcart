@@ -26,7 +26,6 @@ class Country extends Model
     protected $language;
 
     /**
-     * Constructor
      * @param LanguageModel $language
      */
     public function __construct(LanguageModel $language)
@@ -97,92 +96,10 @@ class Country extends Model
      */
     public function getDefaultFormat()
     {
-        $items = array();
-
-        $items['country'] = array(
-            'name' => $this->language->text('Country'),
-            'required' => 0,
-            'weight' => 0,
-            'status' => 1
-        );
-
-        $items['state_id'] = array(
-            'name' => $this->language->text('State'),
-            'required' => 0,
-            'weight' => 1,
-            'status' => 1
-        );
-
-        $items['city_id'] = array(
-            'name' => $this->language->text('City'),
-            'required' => 1,
-            'weight' => 2,
-            'status' => 1
-        );
-
-        $items['address_1'] = array(
-            'name' => $this->language->text('Address'),
-            'required' => 1,
-            'weight' => 3,
-            'status' => 1
-        );
-
-        $items['address_2'] = array(
-            'name' => $this->language->text('Additional address'),
-            'required' => 0,
-            'weight' => 4,
-            'status' => 0
-        );
-
-        $items['phone'] = array(
-            'name' => $this->language->text('Phone'),
-            'required' => 1,
-            'weight' => 5,
-            'status' => 1
-        );
-
-        $items['postcode'] = array(
-            'name' => $this->language->text('Post code'),
-            'required' => 1,
-            'weight' => 6,
-            'status' => 1
-        );
-
-        $items['first_name'] = array(
-            'name' => $this->language->text('First name'),
-            'required' => 1,
-            'weight' => 7,
-            'status' => 1
-        );
-
-        $items['middle_name'] = array(
-            'name' => $this->language->text('Middle name'),
-            'required' => 1,
-            'weight' => 8,
-            'status' => 1
-        );
-
-        $items['last_name'] = array(
-            'name' => $this->language->text('Last name'),
-            'required' => 1,
-            'weight' => 9,
-            'status' => 1
-        );
-
-        $items['company'] = array(
-            'name' => $this->language->text('Company'),
-            'required' => 0,
-            'weight' => 10,
-            'status' => 0
-        );
-
-        $items['fax'] = array(
-            'name' => $this->language->text('Fax'),
-            'required' => 0,
-            'weight' => 11,
-            'status' => 0
-        );
-
+        $items = require GC_CONFIG_COUNTRY_FORMAT;
+        array_walk($items, function(&$item) {
+            $item['name'] = $this->language->text($item['name']);
+        });
         return $items;
     }
 
@@ -256,7 +173,7 @@ class Country extends Model
     }
 
     /**
-     * Returns true if the country can be deleted
+     * Whether the country can be deleted
      * @param string $code
      * @return boolean
      */
@@ -264,7 +181,6 @@ class Country extends Model
     {
         $sql = 'SELECT address_id FROM address WHERE country=?';
         $result = $this->db->fetchColumn($sql, array($code));
-
         return empty($result);
     }
 
@@ -281,7 +197,6 @@ class Country extends Model
         foreach ($countries as $code => $country) {
             $names[$code] = $country['native_name'];
         }
-
         return $names;
     }
 
@@ -361,8 +276,7 @@ class Country extends Model
     }
 
     /**
-     * Returns an array of country names regarding to ISO 3166-1 alpha-2 standard
-     * or a string with a country name if the code parameter is set
+     * Returns an array of country names or a country name if the code parameter is set
      * @param null|string $code
      * @return array|string
      */

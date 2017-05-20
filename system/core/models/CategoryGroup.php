@@ -27,7 +27,6 @@ class CategoryGroup extends Model
     protected $language;
 
     /**
-     * Constructor
      * @param LanguageModel $language
      */
     public function __construct(LanguageModel $language)
@@ -170,7 +169,7 @@ class CategoryGroup extends Model
     }
 
     /**
-     * Returns true if the category group can be deleted
+     * Whether a category group can be deleted
      * @param integer $category_group_id
      * @return boolean
      */
