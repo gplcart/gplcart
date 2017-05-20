@@ -716,6 +716,28 @@
     };
 
     /**
+     * Adds a hash to pager links inside panels
+     * @returns {undefined}
+     */
+    GplCart.onload.addPagerHash = function () {
+
+        var links, id, href;
+        $('.panel').each(function () {
+            id = $(this).attr('id');
+            if (id) {
+                links = $(this).find('.pagination a');
+                if (links) {
+                    links.each(function () {
+                        href = $(this).attr('href');
+                        href += '#' + id;
+                        $(this).attr('href', href);
+                    });
+                }
+            }
+        });
+    };
+
+    /**
      * Adds autocomplete functionality to the related products input
      * @returns {undefined}
      */
