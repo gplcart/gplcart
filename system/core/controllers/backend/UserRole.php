@@ -66,13 +66,12 @@ class UserRole extends BackendController
     protected function getPermissionsUserRole($chunked = false)
     {
         $permissions = $this->role->getPermissions();
-        $translated = array_map(array($this, 'text'), $permissions);
 
         if ($chunked) {
-            return gplcart_array_split($translated, 4);
+            $permissions = gplcart_array_split($permissions, 4);
         }
 
-        return $translated;
+        return $permissions;
     }
 
     /**

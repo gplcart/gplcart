@@ -18,7 +18,7 @@ use gplcart\core\models\Order as OrderModel,
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
- * Provides data to the view and interprets user actions related to orders
+ * Handles incoming requests and outputs data related to order management
  */
 class Order extends BackendController
 {
@@ -26,8 +26,19 @@ class Order extends BackendController
     use \gplcart\core\traits\ControllerOrder;
     use \gplcart\core\traits\ControllerOrderComponent;
 
+    /**
+     * Code of successfully sent notification
+     */
     const NOTIFICATION_SENT = 2;
+
+    /**
+     * Code of failed notification
+     */
     const NOTIFICATION_ERROR = 1;
+
+    /**
+     * Code of disabled notification
+     */
     const NOTIFICATION_DISABLED = 0;
 
     /**
@@ -67,7 +78,7 @@ class Order extends BackendController
     protected $shipping;
 
     /**
-     * The current order
+     * An array of order data
      * @var array
      */
     protected $data_order = array();
@@ -121,28 +132,31 @@ class Order extends BackendController
     }
 
     /**
-     * Handles submitted data
+     * Handles a submitted order
      */
     protected function submitIndexOrder()
     {
         if ($this->isPosted('delete')) {
             $this->deleteOrder();
-            return null;
-        }
-
-        if (!$this->validateIndexOrder()) {
-            return null;
-        }
-
-        if ($this->isPosted('status')) {
-            $this->updateOrder();
-        } else if ($this->isPosted('clone')) {
+        } else if ($this->isPosted('status') && $this->validateIndexOrder()) {
+            $this->updateStatusOrder();
+        } else if ($this->isPosted('clone') && $this->validateIndexOrder()) {
             $this->cloneOrder();
         }
     }
 
     /**
-     * Deletes the current order
+     * Validates a submitted order
+     * @return bool
+     */
+    protected function validateIndexOrder()
+    {
+        $this->setSubmitted('order');
+        return !$this->isError();
+    }
+
+    /**
+     * Deletes an order
      */
     protected function deleteOrder()
     {
@@ -157,32 +171,18 @@ class Order extends BackendController
     }
 
     /**
-     * Validates a submitted order
-     * @return bool
+     * Update an order status
      */
-    protected function validateIndexOrder()
-    {
-        $this->setSubmitted('order');
-        $this->setSubmitted('update', $this->data_order);
-
-        $this->validateComponent('order');
-        return !$this->isError();
-    }
-
-    /**
-     * Update order status
-     */
-    protected function updateOrder()
+    protected function updateStatusOrder()
     {
         $this->controlAccess('order_edit');
 
-        $submitted = $this->getSubmitted();
         $order_id = $this->data_order['order_id'];
+        $submitted = array('status' => $this->getSubmitted('status'));
         $this->order->update($order_id, $submitted);
 
-        $submitted['notify'] = $this->setNotificationOrder($order_id);
-
-        $this->logOrder($submitted);
+        $submitted['notify'] = $this->setNotificationUpdateOrder($order_id);
+        $this->logUpdateStatusOrder($submitted);
 
         $messages = $this->getMassagesUpdateOrder();
         list($severity, $text) = $messages[$submitted['notify']];
@@ -203,11 +203,11 @@ class Order extends BackendController
     }
 
     /**
-     * Adds order update log message
+     * Log the status updated event
      * @param array $submitted
      * @return boolean
      */
-    protected function logOrder(array $submitted)
+    protected function logUpdateStatusOrder(array $submitted)
     {
         if ($this->data_order['status'] === $submitted['status']) {
             return false;
@@ -231,18 +231,16 @@ class Order extends BackendController
      * @param integer $order_id
      * @return integer
      */
-    protected function setNotificationOrder($order_id)
+    protected function setNotificationUpdateOrder($order_id)
     {
         if (!$this->config('order_update_notify_customer', 1)) {
             return static::NOTIFICATION_DISABLED;
         }
 
         $order = $this->order->get($order_id);
-
         if ($this->order->setNotificationUpdated($order) === true) {
             return static::NOTIFICATION_SENT;
         }
-
         return static::NOTIFICATION_ERROR;
     }
 
@@ -256,13 +254,13 @@ class Order extends BackendController
 
         $update = array('status' => $this->order->getStatusCanceled());
         $this->order->update($this->data_order['order_id'], $update);
-        $this->logOrder($update);
+        $this->logUpdateStatusOrder($update);
 
         $this->redirect("checkout/clone/{$this->data_order['order_id']}");
     }
 
     /**
-     * Returns a total logs found for the order
+     * Returns a total log records found for the order
      * @return integer
      */
     protected function getTotalLogOrder()
@@ -289,7 +287,7 @@ class Order extends BackendController
     }
 
     /**
-     * Renders order overview page templates
+     * Render and output the order overview page
      */
     protected function outputIndexOrder()
     {
@@ -334,13 +332,10 @@ class Order extends BackendController
     protected function setOrder($order_id)
     {
         if (is_numeric($order_id)) {
-
             $order = $this->order->get($order_id);
-
             if (empty($order)) {
                 $this->outputHttpStatus(404);
             }
-
             $this->order->setViewed($order);
             $this->data_order = $this->prepareOrder($order);
         }
@@ -386,12 +381,12 @@ class Order extends BackendController
     }
 
     /**
-     * Adds order logs pane on the order overview page
+     * Adds the order logs panel on the order overview page
      */
     protected function setDataPanelLogsIndexOrder()
     {
         $total = $this->getTotalLogOrder();
-        $max = $this->config('order_log_limit', 10);
+        $max = $this->config('order_log_limit', 5);
 
         $data = array(
             'order' => $this->data_order,
@@ -403,7 +398,7 @@ class Order extends BackendController
     }
 
     /**
-     * Sets summary pane on the order overview page
+     * Adds the summary panel on the order overview page
      */
     protected function setDataPanelSummaryIndexOrder()
     {
@@ -412,7 +407,7 @@ class Order extends BackendController
     }
 
     /**
-     * Sets order comment pane on the order overview page
+     * Adds the order comment panel on the order overview page
      */
     protected function setDataPanelCommentIndexOrder()
     {
@@ -421,7 +416,7 @@ class Order extends BackendController
     }
 
     /**
-     * Sets customer pane on the order overview page
+     * Adds the customer panel on the order overview page
      */
     protected function setDataPanelCustomerIndexOrder()
     {
@@ -430,7 +425,7 @@ class Order extends BackendController
     }
 
     /**
-     * Sets order components pane on the order overview page
+     * Adds the order components panel on the order overview page
      */
     protected function setDataPanelComponentsIndexOrder()
     {
@@ -446,7 +441,7 @@ class Order extends BackendController
     }
 
     /**
-     * Sets shipping address pane on the order overview page
+     * Adds the shipping address panel on the order overview page
      */
     protected function setDataPanelShippingAddressIndexOrder()
     {
@@ -456,7 +451,7 @@ class Order extends BackendController
     }
 
     /**
-     * Sets payment address pane on the order overview page
+     * Adds the payment address panel on the order overview page
      */
     protected function setDataPanelPaymentAddressIndexOrder()
     {
@@ -466,7 +461,7 @@ class Order extends BackendController
     }
 
     /**
-     * Displays the order admin overview page
+     * Displays the order list page
      */
     public function listOrder()
     {
@@ -488,7 +483,7 @@ class Order extends BackendController
     }
 
     /**
-     * Set filter on the order overview page
+     * Set filter on the order list page
      */
     protected function setFilterListOrder()
     {
@@ -498,7 +493,7 @@ class Order extends BackendController
     }
 
     /**
-     * Sets a total number of orders on the order overview page
+     * Sets a total number of orders on the order list page
      */
     protected function setTotalListOrder()
     {
@@ -528,7 +523,7 @@ class Order extends BackendController
 
             if ($action === 'status' && $this->access('order_edit')) {
                 $updated = (bool) $this->order->update($id, array('status' => $value));
-                if ($updated && $this->setNotificationOrder($id) == static::NOTIFICATION_ERROR) {
+                if ($updated && $this->setNotificationUpdateOrder($id) == static::NOTIFICATION_ERROR) {
                     $failed_notifications[] = $id;
                 }
                 $updated++;
@@ -557,7 +552,7 @@ class Order extends BackendController
     }
 
     /**
-     * Sets titles on the order overview page
+     * Sets titles on the order list page
      */
     protected function setTitleListOrder()
     {
@@ -565,7 +560,7 @@ class Order extends BackendController
     }
 
     /**
-     * Sets breadcrumbs on the orders overview page
+     * Sets breadcrumbs on the order list page
      */
     protected function setBreadcrumbListOrder()
     {
@@ -577,7 +572,7 @@ class Order extends BackendController
     }
 
     /**
-     * Render and output the order overview page
+     * Render and output the order list page
      */
     protected function outputListOrder()
     {
