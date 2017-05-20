@@ -821,7 +821,7 @@ class Controller
      * @param bool|string $filter
      * @return mixed
      */
-    public function getPosted($name, $default = null, $filter = true)
+    public function getPosted($name = null, $default = null, $filter = true)
     {
         return $this->request->post($name, $default, $filter);
     }
