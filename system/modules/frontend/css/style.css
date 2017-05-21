@@ -71,10 +71,6 @@ body.checkout .navbar .cart {
     margin: 0;
 }
 
-.panel-body table tr:first-child td {
-    border-top: none !important;
-}
-
 .list.product.item .panel .thumbnail {
     margin-bottom: 0;
     border: none;
@@ -155,17 +151,17 @@ form.search :input {
     border: none !important;
 }
 
-table.compare [class*="col-"] {
-    width: auto;
-    min-width: 10em;
-}
-
-table.compare tbody > tr > td  {
-    border: none;
-}
-
 .table-auto {
     width: auto !important;
+}
+
+table.compare-products td, table.compare-products th {
+    white-space: nowrap;
+    width: 1%;
+}
+
+table.compare-products .thumbnail {
+    border: none;
 }
 
 .table.price-components {
