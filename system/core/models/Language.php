@@ -32,25 +32,25 @@ class Language extends Model
     protected $route;
 
     /**
-     * Current language code
+     * The current language code
      * @var string
      */
     protected $langcode = '';
 
     /**
-     * Directory that holds main translation file for the current language
+     * A directory name that contains main translation file for the current language
      * @var string
      */
     protected $language_directory = '';
 
     /**
-     * Path to directory that keeps complied .csv translations for the current language
+     * A path to the directory that contains complied .csv translations for the current language
      * @var string
      */
     protected $compiled_directory_csv = '';
 
     /**
-     * Path to directory that keeps complied js translations for the current language
+     * A path to the directory that contains complied js translations for the current language
      * @var string
      */
     protected $compiled_directory_js = '';
@@ -91,7 +91,7 @@ class Language extends Model
     }
 
     /**
-     * Returns an array of all languages including default and added/updated languages
+     * Returns an array of all languages including the default and added/updated languages
      * @return array
      */
     public function getAll()
@@ -296,7 +296,7 @@ class Language extends Model
     }
 
     /**
-     * Whether the code is default
+     * Whether the language code is default
      * @param string $code
      * @return bool
      */
@@ -344,7 +344,7 @@ class Language extends Model
     }
 
     /**
-     * Returns translated and formated staring
+     * Returns a translated and formated string
      * @param string $source
      * @param array $args
      * @param array $data
