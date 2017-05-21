@@ -431,11 +431,34 @@ class Controller extends BaseController
      */
     protected function deleteFromCompare()
     {
-        $result = $this->compare->deleteProduct($this->getSubmitted('product_id'));
+        $product_id = $this->getSubmitted('product_id');
+        $result = $this->compare->deleteProduct($product_id);
+
         if ($this->request->isAjax()) {
             $this->response->json($result);
+        } else {
+            $this->controlDeleteFromCompare($result, $product_id);
         }
         $this->redirect($result['redirect'], $result['message'], $result['severity']);
+    }
+
+    /**
+     * Controls redirect after a product has been deleted from comparison
+     * If the result redirect is empty and the current location is "compare/1,2,3"
+     * It removes the deleted product ID (e.g 3) and sets redirect to "compare/1,2"
+     * @param array $result
+     * @param integer $product_id
+     */
+    protected function controlDeleteFromCompare(array &$result, $product_id)
+    {
+        if (empty($result['redirect'])) {
+            $segments = $this->url->segments();
+            if (isset($segments[0]) && $segments[0] === 'compare' && !empty($segments[1])) {
+                $ids = array_filter(array_map('trim', explode(',', $segments[1])), 'ctype_digit');
+                unset($ids[array_search($product_id, $ids)]);
+                $result['redirect'] = $segments[0] . '/' . implode(',', $ids);
+            }
+        }
     }
 
     /**

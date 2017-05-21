@@ -21,6 +21,8 @@ use gplcart\core\controllers\frontend\Controller as FrontendController;
 class Product extends FrontendController
 {
 
+    use \gplcart\core\traits\ControllerProduct;
+
     /**
      * Product class model instance
      * @var \gplcart\core\models\ProductClass $product_class
@@ -94,9 +96,20 @@ class Product extends FrontendController
     {
         $this->setRegion('content', $this->renderProductIndexProduct());
         $this->setRegion('content', $this->renderDescriptionIndexProduct());
+        $this->setRegion('content', $this->renderAttributesIndexProduct());
         $this->setRegion('content', $this->renderReviewsIndexProduct());
         $this->setRegion('content', $this->renderRecentIndexProduct());
         $this->setRegion('content', $this->renderRelatedIndexProduct());
+    }
+
+    /**
+     * Renders the product attributes data
+     * @return string
+     */
+    protected function renderAttributesIndexProduct()
+    {
+        $data = array('product' => $this->data_product);
+        return $this->render('product/attributes', $data);
     }
 
     /**
@@ -121,12 +134,7 @@ class Product extends FrontendController
      */
     protected function renderCartFormIndexProduct()
     {
-        $data = array(
-            'product' => $this->data_product,
-            'share' => $this->renderShareWidget(),
-            'field_data' => $this->data_product['fields']
-        );
-
+        $data = array('product' => $this->data_product, 'share' => $this->renderShareWidget());
         return $this->render('cart/add', $data);
     }
 
@@ -469,9 +477,9 @@ class Product extends FrontendController
         $this->attachItemPriceFormatted($selected);
 
         $product['selected_combination'] = $selected;
-        $product['fields'] = $this->getFieldsProduct($product);
         $product['total_reviews'] = $this->getTotalReviewsProduct($product);
 
+        $this->attachProductFieldsTrait($product, $this->product_class, $this);
         return $product;
     }
 
@@ -534,43 +542,6 @@ class Product extends FrontendController
         }
 
         return $this->getProducts(array('product_id' => $product_ids));
-    }
-
-    /**
-     * Returns an array of product fields
-     * @param array $product
-     * @return array
-     */
-    protected function getFieldsProduct(array $product)
-    {
-        $fields = $this->product_class->getFieldData($product['product_class_id']);
-        return $this->prepareFieldsProduct($product, $fields);
-    }
-
-    /**
-     * Prepare an array of product fields
-     * @param array $product
-     * @param array $fields
-     */
-    protected function prepareFieldsProduct(array $product, array $fields)
-    {
-        if (empty($product['field']['option'])) {
-            return $fields;
-        }
-
-        $imagestyle = $this->settings('image_style_option', 1);
-
-        foreach ($product['field']['option'] as $field_id => $field_values) {
-            foreach ($field_values as $field_value_id) {
-                $options = array(
-                    'imagestyle' => $imagestyle,
-                    'path' => $fields['option'][$field_id]['values'][$field_value_id]['path']
-                );
-                $this->attachItemThumb($fields['option'][$field_id]['values'][$field_value_id], $options);
-            }
-        }
-
-        return $fields;
     }
 
 }
