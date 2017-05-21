@@ -8,7 +8,7 @@
 ?>
 <div class="btn-group">
   <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <i class="fa fa-share-alt"></i> <span class="caret"></span>
+    <i class="fa fa-share-alt"></i>
   </button>
   <ul class="dropdown-menu">
     <li>

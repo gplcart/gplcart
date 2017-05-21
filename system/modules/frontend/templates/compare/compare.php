@@ -7,55 +7,53 @@
  */
 ?>
 <?php if (!empty($products) && count($products) > 1) { ?>
+<?php if (!empty($field_labels)) { ?>
 <div class="row">
-  <?php if (!empty($attribute_fields) || !empty($option_fields)) { ?>
-  <div class="col-md-12 text-right">
+  <div class="col-md-12">
     <label>
       <input type="checkbox" id="compare-difference"> <?php echo $this->text('Show only difference'); ?>
     </label>
   </div>
-  <?php } ?>
 </div>
+<?php } ?>
 <div class="row">
   <div class="col-md-12">
-    <div class="table-responsive">
-      <table class="table compare products">
-        <tr>
-          <td></td>
-          <?php foreach ($products as $product_id => $product) { ?>
-          <td><div class="row products"><?php echo $product['rendered']; ?></div></td>
-          <?php } ?>
-        </tr>
-        <?php if (!empty($attribute_fields)) { ?>
-        <?php foreach ($attribute_fields as $attribute_field_id => $attribute_field_title) { ?>
-        <tr class="togglable">
-          <td class="active"><?php echo $this->e($attribute_field_title); ?></td>
-          <?php foreach ($products as $product) { ?>
-          <?php if (isset($product['attribute_values'][$attribute_field_id])) { ?>
-          <td class="value"><?php echo $this->e($product['attribute_values'][$attribute_field_id]); ?></td>
-          <?php } else { ?>
-          <td class="value"></td>
-          <?php } ?>
-          <?php } ?>
-        </tr>
+    <table class="table compare-products">
+      <tr>
+        <td></td>
+        <?php foreach ($products as $product_id => $product) { ?>
+        <td><div class="row products"><?php echo $product['rendered']; ?></div></td>
+        <?php } ?>
+      </tr>
+      <?php if (!empty($field_labels['attribute'])) { ?>
+      <?php foreach ($field_labels['attribute'] as $field_id => $field_title) { ?>
+      <tr class="togglable">
+        <th class="active" scope="row"><?php echo $this->e($field_title); ?></th>
+        <?php foreach ($products as $product_id => $product) { ?>
+        <?php if (empty($product['field_value_labels']['attribute'][$field_id])) { ?>
+        <td class="value"></td>
+        <?php } else { ?>
+        <td class="value"><?php echo $this->e(implode(', ', $product['field_value_labels']['attribute'][$field_id])); ?></td>
         <?php } ?>
         <?php } ?>
-        <?php if (!empty($option_fields)) { ?>
-        <?php foreach ($option_fields as $option_field_id => $option_field_title) { ?>
-        <tr class="togglable">
-          <td class="active"><?php echo $this->e($option_field_title); ?></td>
-          <?php foreach ($products as $product) { ?>
-          <?php if (isset($product['option_values'][$option_field_id])) { ?>
-          <td class="value"><?php echo $this->e(implode(', ', $product['option_values'][$option_field_id])); ?></td>
-          <?php } else { ?>
-          <td class="value"></td>
-          <?php } ?>
-          <?php } ?>
-        </tr>
+      </tr>
+      <?php } ?>
+      <?php } ?>
+      <?php if (!empty($field_labels['option'])) { ?>
+      <?php foreach ($field_labels['option'] as $field_id => $field_title) { ?>
+      <tr class="togglable">
+        <th class="active" scope="row"><?php echo $this->e($field_title); ?></th>
+        <?php foreach ($products as $product_id => $product) { ?>
+        <?php if (empty($product['field_value_labels']['option'][$field_id])) { ?>
+        <td class="value"></td>
+        <?php } else { ?>
+        <td class="value"><?php echo $this->e(implode(', ', $product['field_value_labels']['option'][$field_id])); ?></td>
         <?php } ?>
         <?php } ?>
-      </table>
-    </div>
+      </tr>
+      <?php } ?>
+      <?php } ?>
+    </table>
   </div>
 </div>
 <?php } else { ?>

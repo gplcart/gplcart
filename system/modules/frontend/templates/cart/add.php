@@ -9,8 +9,8 @@
 <form method="post" class="add-to-cart">
   <input type="hidden" name="token" value="<?php echo $this->prop('token'); ?>">
   <input type="hidden" name="product[product_id]" value="<?php echo $this->e($product['product_id']); ?>">
-  <?php if (!empty($field_data['option'])) { ?>
-  <?php foreach ($field_data['option'] as $field_id => $field) { ?>
+  <?php if (!empty($product['fields']['option'])) { ?>
+  <?php foreach ($product['fields']['option'] as $field_id => $field) { ?>
   <?php if (!empty($product['field']['option'][$field_id])) { ?>
   <div class="form-group field-widget-<?php echo $this->e($field['widget']); ?> field-id-<?php echo $this->e($field_id); ?>">
     <label class="title"><?php echo $this->e($field['title']); ?></label>
