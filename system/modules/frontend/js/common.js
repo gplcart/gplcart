@@ -540,33 +540,29 @@
      */
     GplCart.onload.compareDiff = function () {
 
-        var row, values, count;
+        var row, togglable, values, count;
 
         $('#compare-difference').change(function () {
-
-            if ($(this).not(':checked')) {
-                $('table.compare tr.togglable').show();
-                return;
-            }
-
-            $('table.compare tr.togglable').each(function () {
-
-                row = this;
-                values = $('.value', this).map(function () {
-                    return $(this).text();
-                });
-
-                count = 0;
-                $(values).each(function () {
-                    if (this === values[0]) {
-                        count++;
+            togglable = $('table.compare-products tr.togglable');
+            if ($(this).is(':checked')) {
+                togglable.each(function () {
+                    row = this;
+                    values = $('.value', this).map(function () {
+                        return $(this).text();
+                    });
+                    count = 0;
+                    $(values).each(function () {
+                        if (this === values[0]) {
+                            count++;
+                        }
+                    });
+                    if (values.length > 0 && count === values.length) {
+                        $(row).hide();
                     }
                 });
-
-                if (values.length > 0 && count === values.length) {
-                    $(row).hide();
-                }
-            });
+            } else {
+                togglable.show();
+            }
         });
     };
 
