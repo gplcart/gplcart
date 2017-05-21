@@ -9,9 +9,7 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\Field as FieldModel,
-    gplcart\core\models\FieldValue as FieldValueModel,
-    gplcart\core\models\ProductClass as ProductClassModel,
+use gplcart\core\models\ProductClass as ProductClassModel,
     gplcart\core\models\ProductField as ProductFieldModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 
@@ -20,6 +18,8 @@ use gplcart\core\controllers\frontend\Controller as FrontendController;
  */
 class Compare extends FrontendController
 {
+
+    use \gplcart\core\traits\ControllerProduct;
 
     /**
      * Product class model instance
@@ -34,18 +34,6 @@ class Compare extends FrontendController
     protected $product_field;
 
     /**
-     * Field class instance
-     * @var \gplcart\core\models\Field $field
-     */
-    protected $field;
-
-    /**
-     * Field values instance
-     * @var \gplcart\core\models\FieldValue $field_value
-     */
-    protected $field_value;
-
-    /**
      * An array of product ID to compare
      * @var array
      */
@@ -53,18 +41,13 @@ class Compare extends FrontendController
 
     /**
      * @param ProductClassModel $product_class
-     * @param FieldModel $field
-     * @param FieldValueModel $field_value
      * @param ProductFieldModel $product_field
      */
     public function __construct(ProductClassModel $product_class,
-            FieldModel $field, FieldValueModel $field_value,
             ProductFieldModel $product_field)
     {
         parent::__construct();
 
-        $this->field = $field;
-        $this->field_value = $field_value;
         $this->product_class = $product_class;
         $this->product_field = $product_field;
     }
@@ -77,14 +60,25 @@ class Compare extends FrontendController
         $this->setTitleSelectCompare();
         $this->setBreadcrumbSelectCompare();
 
-        $this->setDataSelectCompare();
+        $this->setRegionContentSelectCompare();
         $this->outputSelectCompare();
     }
 
     /**
-     * Sets products to be compared
+     * Sets the content region on the select to compare page
      */
-    protected function setDataSelectCompare()
+    protected function setRegionContentSelectCompare()
+    {
+        $products = $this->getProductsSelectCompare();
+        $html = $this->render('compare/select', array('products' => $products));
+        $this->setRegion('content', $html);
+    }
+
+    /**
+     * Returns an array of products reindexed by a class ID
+     * @return array
+     */
+    protected function getProductsSelectCompare()
     {
         $conditions = array(
             'product_id' => $this->compare());
@@ -95,17 +89,15 @@ class Compare extends FrontendController
         );
 
         $products = $this->getProducts($conditions, $options);
-        $prepared = $this->prepareProductsCompare($products);
-
-        $this->setData('products', $prepared);
+        return $this->reindexProductsCompare($products);
     }
 
     /**
-     * Returns an array of products keyed by a class ID
+     * Returns an array of products indexed by a class ID
      * @param array $products
      * @return array
      */
-    protected function prepareProductsCompare(array $products)
+    protected function reindexProductsCompare(array $products)
     {
         $prepared = array();
         foreach ($products as $product_id => $product) {
@@ -116,7 +108,7 @@ class Compare extends FrontendController
     }
 
     /**
-     * Sets titles on the select compared products page
+     * Sets titles on the select to compare page
      */
     protected function setTitleSelectCompare()
     {
@@ -124,7 +116,7 @@ class Compare extends FrontendController
     }
 
     /**
-     * Sets breadcrumbs on the select compared products page
+     * Sets breadcrumbs on the select to compare page
      */
     protected function setBreadcrumbSelectCompare()
     {
@@ -137,15 +129,15 @@ class Compare extends FrontendController
     }
 
     /**
-     * Renders the select compared products page
+     * Render and output the select to compare page
      */
     protected function outputSelectCompare()
     {
-        $this->output('compare/select');
+        $this->output();
     }
 
     /**
-     * Displays the product compare page
+     * Displays the product comparison page
      * @param string $ids
      */
     public function compareCompare($ids)
@@ -156,7 +148,7 @@ class Compare extends FrontendController
         $this->setTitleCompareCompare();
         $this->setBreadcrumbCompareCompare();
 
-        $this->setDataCompareCompare();
+        $this->setRegionContentCompareCompare();
         $this->outputCompareCompare();
     }
 
@@ -170,7 +162,7 @@ class Compare extends FrontendController
     }
 
     /**
-     * Controls access to the comparison page
+     * Controls access to the product comparison page
      */
     protected function controlAccessCompareCompare()
     {
@@ -180,9 +172,27 @@ class Compare extends FrontendController
     }
 
     /**
-     * Sets product field data on the product compare page
+     * Sets the content region on the product comparison page
      */
-    protected function setDataCompareCompare()
+    protected function setRegionContentCompareCompare()
+    {
+
+        $products = $this->getProductsCompare();
+        $prepared = $this->prepareProductsCompare($products);
+
+        $data = array(
+            'products' => $prepared,
+            'field_labels' => $this->getFieldLabelsCompare($prepared)
+        );
+
+        $this->setRegion('content', $this->render('compare/compare', $data));
+    }
+
+    /**
+     * Returns an array of products to compare
+     * @return array
+     */
+    protected function getProductsCompare()
     {
         $options = array(
             'buttons' => array(
@@ -193,39 +203,47 @@ class Compare extends FrontendController
         );
 
         $conditions = array('product_id' => $this->data_compare);
-        $products = $this->getProducts($conditions, $options);
+        return $this->getProducts($conditions, $options);
+    }
 
-        if (empty($products)) {
-            return null;
+    /**
+     * Prepare an array of products
+     * @param array $products
+     * @return array
+     */
+    protected function prepareProductsCompare(array $products)
+    {
+        foreach ($products as $product_id => &$product) {
+            $product['field'] = $this->product_field->getList($product_id);
+            $this->attachProductFieldsTrait($product, $this->product_class, $this);
         }
+        return $products;
+    }
 
-        $reindexed = $this->prepareProductsCompare($products);
-        $product_class_id = key($reindexed);
-        $fields = array('option' => array(), 'attribute' => array());
-
-        foreach ($reindexed[$product_class_id] as $product_id => &$product) {
-            $product_fields = $this->product_field->getList($product_id);
-            foreach ($product_fields as $type => $items) {
-
-                $field_list = (array) $this->field->getList(array('field_id' => array_keys($items)));
-                $values_list = (array) $this->field_value->getList(array('field_id' => array_keys($items)));
-
-                foreach ($field_list as $field_id => $field) {
-                    $fields[$type][$field_id] = $field['title'];
-                    foreach ($items[$field_id] as $field_value_id) {
-                        $product["{$type}_values"][$field_id][] = $values_list[$field_value_id]['title'];
-                    }
+    /**
+     * Returns an array of all field labels for the given products
+     * @param array $products
+     * @return array
+     */
+    protected function getFieldLabelsCompare(array $products)
+    {
+        $labels = array();
+        foreach ($products as $product) {
+            if (empty($product['field_value_labels'])) {
+                continue;
+            }
+            foreach ($product['field_value_labels'] as $type => $fields) {
+                foreach (array_keys($fields) as $field_id) {
+                    $labels[$type][$field_id] = $product['fields'][$type][$field_id]['title'];
                 }
             }
         }
 
-        $this->setData('products', $products);
-        $this->setData('option_fields', $fields['option']);
-        $this->setData('attribute_fields', $fields['attribute']);
+        return $labels;
     }
 
     /**
-     * Sets titles on the product compare page
+     * Sets titles on the product comparison page
      */
     protected function setTitleCompareCompare()
     {
@@ -233,7 +251,7 @@ class Compare extends FrontendController
     }
 
     /**
-     * Sets breadcrumbs on the product compare page
+     * Sets breadcrumbs on the product comparison page
      */
     protected function setBreadcrumbCompareCompare()
     {
@@ -245,17 +263,17 @@ class Compare extends FrontendController
 
         $breadcrumbs[] = array(
             'url' => $this->url('compare'),
-            'text' => $this->text('All compared products'));
+            'text' => $this->text('Select products'));
 
         $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
-     * Render and output the product compare page
+     * Render and output the product comparison page
      */
     protected function outputCompareCompare()
     {
-        $this->output('compare/compare');
+        $this->output();
     }
 
 }
