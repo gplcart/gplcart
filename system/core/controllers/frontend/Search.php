@@ -25,10 +25,16 @@ class Search extends FrontendController
     protected $search;
 
     /**
-     * The current search term
+     * The search term
      * @var string
      */
-    protected $data_search = '';
+    protected $data_term = '';
+
+    /**
+     * An array of search results
+     * @var array
+     */
+    protected $data_results = array();
 
     /**
      * @param SearchModel $search
@@ -45,46 +51,56 @@ class Search extends FrontendController
      */
     public function listSearch()
     {
-        $this->setSearch();
+        $this->setTermSearch();
 
         $this->setTitleListSearch();
         $this->setBreadcrumbListSearch();
 
-        $total = $this->getTotalSearch();
-        $max = $this->settings('catalog_limit', 20);
-        $query = $this->getFilterQueryListSearch();
-        $limit = $this->setPager($total, $query, $max);
+        $this->setFilterQueryListSearch();
+        $this->setTotalListSearch();
+        $this->setPagerLimit($this->settings('catalog_limit', 20));
 
-        $products = $this->getResultsSearch($limit, $query);
-
-        $this->setDataResultSearch($products);
-        $this->setDataNavbarSearch($products, $total, $query);
+        $this->setResultsSearch();
+        $this->setRegionContentListSearch();
 
         $this->outputListSearch();
     }
 
     /**
-     * Returns the current search term
-     * @return string
+     * Sets the current search term
      */
-    protected function setSearch()
+    protected function setTermSearch()
     {
-        return $this->data_search = (string) $this->getQuery('q', '');
+        $this->data_term = (string) $this->getQuery('q', '');
     }
 
     /**
-     * Returns an array of parameters used for sorting and filtering
-     * @return array
+     * Sets filter on the search page
      */
-    protected function getFilterQueryListSearch()
+    protected function setFilterQueryListSearch()
     {
-        $filter = array(
+        $default = array(
             'view' => $this->settings('catalog_view', 'grid'),
             'sort' => $this->settings('catalog_sort', 'price'),
             'order' => $this->settings('catalog_order', 'asc')
         );
 
-        return $this->getFilterQuery($filter);
+        $this->setFilter(array(), $this->getFilterQuery($default));
+    }
+
+    /**
+     * Sets a total number of results found for the filter conditions
+     */
+    protected function setTotalListSearch()
+    {
+        $options = array(
+            'status' => 1,
+            'count' => true,
+            'store_id' => $this->store_id,
+            'language' => $this->langcode
+        );
+
+        $this->total = (int) $this->search->search('product', $this->data_term, $options);
     }
 
     /**
@@ -94,19 +110,19 @@ class Search extends FrontendController
     {
         $title = $this->text('Search');
 
-        if ($this->data_search !== '') {
-            $title = $this->text('Search for «@term»', array('@term' => $this->data_search));
+        if ($this->data_term !== '') {
+            $title = $this->text('Search for «@term»', array('@term' => $this->data_term));
         }
 
         $this->setTitle($title);
     }
 
     /**
-     * Renders the search page templates
+     * Render and output the search page
      */
     protected function outputListSearch()
     {
-        $this->output('search/search');
+        $this->output();
     }
 
     /**
@@ -122,76 +138,64 @@ class Search extends FrontendController
     }
 
     /**
-     * Returns a total number of results found
-     * @return integer
+     * Sets an array of search results
      */
-    protected function getTotalSearch()
+    protected function setResultsSearch()
     {
         $options = array(
             'status' => 1,
-            'count' => true,
-            'store_id' => $this->store_id,
-            'language' => $this->langcode
-        );
-
-        return (int) $this->search->search('product', $this->data_search, $options);
-    }
-
-    /**
-     * Returns an array of search results
-     * @param array $limit
-     * @param array $query
-     * @return array
-     */
-    protected function getResultsSearch(array $limit, array $query = array())
-    {
-        $options = array(
-            'status' => 1,
-            'limit' => $limit,
             'entity' => 'product',
+            'limit' => $this->limit,
             'language' => $this->langcode,
             'store_id' => $this->store_id
         );
 
-        $options += $query;
-        $results = $this->search->search('product', $this->data_search, $options);
+        $options += $this->query_filter;
+        $results = $this->search->search('product', $this->data_term, $options);
 
-        if (empty($results)) {
-            return array();
+        if (!empty($results)) {
+            $options['placeholder'] = true;
+            $this->data_results = $this->prepareEntityItems($results, $options);
+        }
+    }
+
+    /**
+     * Set the content region on the search result page
+     */
+    protected function setRegionContentListSearch()
+    {
+        $this->setRegion('content', $this->renderNavbarListSearch());
+        $this->setRegion('content', $this->renderProductsListSearch());
+    }
+
+    /**
+     * Returns rendered results
+     * @return string
+     */
+    protected function renderProductsListSearch()
+    {
+        return $this->render('product/list', array('products' => $this->data_results));
+    }
+
+    /**
+     * Returns rendered navbar
+     * @return string
+     */
+    protected function renderNavbarListSearch()
+    {
+        if (empty($this->data_results)) {
+            return $this->text('No products found. Try another search keyword');
         }
 
-        $options['placeholder'] = true;
-        return $this->prepareEntityItems($results, $options);
-    }
-
-    /**
-     * Sets rendered results
-     * @param array $products
-     */
-    protected function setDataResultSearch(array $products)
-    {
-        $data = array('products' => $products);
-        $html = $this->render('product/list', $data);
-        $this->setData('results', $html);
-    }
-
-    /**
-     * Sets rendered navbar
-     * @param array $products
-     * @param integer $total
-     * @param array $query
-     */
-    protected function setDataNavbarSearch(array $products, $total, array $query)
-    {
         $options = array(
-            'total' => $total,
-            'view' => $query['view'],
-            'quantity' => count($products),
-            'sort' => "{$query['sort']}-{$query['order']}"
+            'total' => $this->total,
+            'query' => $this->query_filter,
+            'view' => $this->query_filter['view'],
+            'quantity' => count($this->data_results),
+            'sort' => "{$this->query_filter['sort']}-{$this->query_filter['order']}"
         );
 
-        $html = $this->render('category/navbar', $options);
-        $this->setData('navbar', $html);
+        return $this->render('category/navbar', $options);
     }
 
 }

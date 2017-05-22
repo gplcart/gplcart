@@ -50,12 +50,9 @@ class Page extends FrontendController
 
         $this->setTitleIndexPage();
         $this->setBreadcrumbIndexPage();
-        $this->setMetaIndexPage();
 
         $this->setHtmlFilterIndexPage();
-
-        $this->setData('page', $this->data_page);
-        $this->setDataImagesIndexPage();
+        $this->setMetaIndexPage();
 
         $this->setRegionContentIndexPage();
         $this->outputIndexPage();
@@ -78,11 +75,26 @@ class Page extends FrontendController
     }
 
     /**
-     * Sets main content region on the page
+     * Sets the main content region
      */
     protected function setRegionContentIndexPage()
     {
-        $this->setRegion('content', $this->render('page/content', $this->data));
+        $data = array(
+            'page' => $this->data_page,
+            'images' => $this->renderImagesIndexPage()
+        );
+
+        $this->setRegion('content', $this->render('page/content', $data));
+    }
+
+    /**
+     * Returns rendered page images
+     */
+    protected function renderImagesIndexPage()
+    {
+        $options = array('imagestyle' => $this->settings('image_style_page', 5));
+        $this->attachItemThumb($this->data_page, $options);
+        return $this->render('page/images', array('page' => $this->data_page));
     }
 
     /**
@@ -131,18 +143,6 @@ class Page extends FrontendController
         }
 
         $this->data_page = $page;
-    }
-
-    /**
-     * Sets rendered page images
-     */
-    protected function setDataImagesIndexPage()
-    {
-        $imagestyle = $this->settings('image_style_page', 5);
-        $this->attachItemThumb($this->data_page, array('imagestyle' => $imagestyle));
-
-        $html = $this->render('page/blocks/images', array('page' => $this->data_page));
-        $this->setData('images', $html);
     }
 
 }
