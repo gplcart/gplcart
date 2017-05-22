@@ -18,7 +18,7 @@ use gplcart\core\models\Language as LanguageModel;
 class CategoryGroup extends Model
 {
 
-    use \gplcart\core\traits\EntityTranslation;
+    use \gplcart\core\traits\TranslationTrait;
 
     /**
      * Language model instance

@@ -12,10 +12,10 @@ namespace gplcart\core\traits;
 /**
  * CRUD methods for entity images
  */
-trait EntityImage
+trait ImageTrait
 {
 
-    use \gplcart\core\traits\EntityTranslation;
+    use \gplcart\core\traits\TranslationTrait;
 
     /**
      * Adds images to an entity

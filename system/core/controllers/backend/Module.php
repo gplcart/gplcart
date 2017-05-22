@@ -19,7 +19,7 @@ use gplcart\core\controllers\backend\Controller as BackendController;
 class Module extends BackendController
 {
 
-    use \gplcart\core\traits\Dependency;
+    use \gplcart\core\traits\DependencyTrait;
 
     /**
      * Module model instance

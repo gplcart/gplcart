@@ -12,7 +12,7 @@ namespace gplcart\core\traits;
 /**
  * CRUD methods for entity URL aliases
  */
-trait EntityAlias
+trait AliasTrait
 {
 
     /**

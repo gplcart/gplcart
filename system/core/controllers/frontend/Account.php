@@ -23,8 +23,8 @@ use gplcart\core\controllers\frontend\Controller as FrontendController;
 class Account extends FrontendController
 {
 
-    use \gplcart\core\traits\ControllerOrder;
-    use \gplcart\core\traits\ControllerOrderComponent;
+    use \gplcart\core\traits\OrderTrait;
+    use \gplcart\core\traits\OrderComponentTrait;
 
     /**
      * Address model instance
@@ -131,7 +131,7 @@ class Account extends FrontendController
     protected function setDataPanelSummaryOrderAccount()
     {
         $data = array('order' => $this->data_order);
-        $this->setData('pane_summary', $this->render('account/order/panes/summary', $data));
+        $this->setData('summary', $this->render('account/order/summary', $data));
     }
 
     /**
@@ -147,8 +147,8 @@ class Account extends FrontendController
         ksort($this->data_order['data']['components']);
 
         $data = array('components' => $this->data_order['data']['components'], 'order' => $this->data_order);
-        $html = $this->render('account/order/panes/components', $data);
-        $this->setData('pane_components', $html);
+        $html = $this->render('account/order/components', $data);
+        $this->setData('components', $html);
     }
 
     /**
@@ -157,8 +157,8 @@ class Account extends FrontendController
     protected function setDataPanelShippingAddressOrderAccount()
     {
         $data = array('order' => $this->data_order);
-        $html = $this->render('account/order/panes/shipping_address', $data);
-        $this->setData('pane_shipping_address', $html);
+        $html = $this->render('account/order/shipping_address', $data);
+        $this->setData('shipping_address', $html);
     }
 
     /**
@@ -167,8 +167,8 @@ class Account extends FrontendController
     protected function setDataPanelPaymentAddressOrderAccount()
     {
         $data = array('order' => $this->data_order);
-        $html = $this->render('account/order/panes/payment_address', $data);
-        $this->setData('pane_payment_address', $html);
+        $html = $this->render('account/order/payment_address', $data);
+        $this->setData('payment_address', $html);
     }
 
     /**
@@ -294,8 +294,7 @@ class Account extends FrontendController
         $conditions = array(
             'order' => 'desc',
             'sort' => 'created',
-            'limit' => $this->limit
-                ) + $this->query_filter;
+            'limit' => $this->limit) + $this->query_filter;
 
         $conditions['user_id'] = $this->data_user['user_id'];
         $orders = (array) $this->order->getList($conditions);

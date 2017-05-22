@@ -19,7 +19,7 @@ use gplcart\core\models\File as FileModel,
 class FieldValue extends Model
 {
 
-    use \gplcart\core\traits\EntityTranslation;
+    use \gplcart\core\traits\TranslationTrait;
 
     /**
      * File model instance

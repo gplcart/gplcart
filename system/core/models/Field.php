@@ -19,7 +19,7 @@ use gplcart\core\models\Language as LanguageModel;
 class Field extends Model
 {
 
-    use \gplcart\core\traits\EntityTranslation;
+    use \gplcart\core\traits\TranslationTrait;
 
     /**
      * Language model instance

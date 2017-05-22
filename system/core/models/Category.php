@@ -22,8 +22,8 @@ use gplcart\core\models\File as FileModel,
 class Category extends Model
 {
 
-    use \gplcart\core\traits\EntityImage,
-        \gplcart\core\traits\EntityAlias;
+    use \gplcart\core\traits\ImageTrait,
+        \gplcart\core\traits\AliasTrait;
 
     /**
      * Category group model instance

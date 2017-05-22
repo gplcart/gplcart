@@ -12,7 +12,7 @@ namespace gplcart\core\traits;
 /**
  * Contains product controller methods
  */
-trait ControllerProduct
+trait ProductTrait
 {
 
     /**

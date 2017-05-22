@@ -20,7 +20,7 @@ use gplcart\core\models\Language as LanguageModel;
 class Module extends Model
 {
 
-    use \gplcart\core\traits\Dependency;
+    use \gplcart\core\traits\DependencyTrait;
 
     /**
      * Language model instance

@@ -12,7 +12,7 @@ namespace gplcart\core\traits;
 /**
  * Contains methods to validate dependencies
  */
-trait Dependency
+trait DependencyTrait
 {
 
     /**

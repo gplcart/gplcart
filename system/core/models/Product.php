@@ -27,8 +27,8 @@ use gplcart\core\helpers\Request as RequestHelper;
 class Product extends Model
 {
 
-    use \gplcart\core\traits\EntityImage,
-        \gplcart\core\traits\EntityAlias;
+    use \gplcart\core\traits\ImageTrait,
+        \gplcart\core\traits\AliasTrait;
 
     /**
      * Cache instance

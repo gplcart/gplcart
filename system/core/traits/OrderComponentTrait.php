@@ -12,7 +12,7 @@ namespace gplcart\core\traits;
 /**
  * Contains controller methods for order components
  */
-trait ControllerOrderComponent
+trait OrderComponentTrait
 {
 
     /**
@@ -36,7 +36,7 @@ trait ControllerOrderComponent
             $order['cart'][$sku]['price_formatted'] = $price->format($value, $order['currency']);
         }
 
-        $html = $controller->render('sale/order/panes/components/cart', array('order' => $order));
+        $html = $controller->render('backend|sale/order/panes/components/cart', array('order' => $order));
         $order['data']['components']['cart']['rendered'] = $html;
     }
 
@@ -69,7 +69,7 @@ trait ControllerOrderComponent
         }
 
         $method['price_formatted'] = $price->format($value, $order['currency']);
-        $html = $controller->render('sale/order/panes/components/method', array('method' => $method));
+        $html = $controller->render('backend|sale/order/panes/components/method', array('method' => $method));
         $order['data']['components']['shipping']['rendered'] = $html;
     }
 
@@ -102,7 +102,7 @@ trait ControllerOrderComponent
         }
 
         $method['price_formatted'] = $price->format($value, $order['currency']);
-        $html = $controller->render('sale/order/panes/components/method', array('method' => $method));
+        $html = $controller->render('backend|sale/order/panes/components/method', array('method' => $method));
         $order['data']['components']['payment']['rendered'] = $html;
     }
 
@@ -132,7 +132,7 @@ trait ControllerOrderComponent
             }
 
             $data = array('rule' => $rule, 'price' => $price->format($value, $rule['currency']));
-            $html = $controller->render('sale/order/panes/components/rule', $data);
+            $html = $controller->render('backend|sale/order/panes/components/rule', $data);
             $order['data']['components'][$type] = array('rendered' => $html, 'price' => $value);
         }
     }

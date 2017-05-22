@@ -12,7 +12,7 @@ namespace gplcart\core\traits;
 /**
  * Contains Oauth controller methods
  */
-trait ControllerOauth
+trait OauthTrait
 {
 
     /**

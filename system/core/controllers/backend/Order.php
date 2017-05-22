@@ -23,8 +23,8 @@ use gplcart\core\controllers\backend\Controller as BackendController;
 class Order extends BackendController
 {
 
-    use \gplcart\core\traits\ControllerOrder;
-    use \gplcart\core\traits\ControllerOrderComponent;
+    use \gplcart\core\traits\OrderTrait;
+    use \gplcart\core\traits\OrderComponentTrait;
 
     /**
      * Code of successfully sent notification

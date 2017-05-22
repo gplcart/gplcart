@@ -18,7 +18,7 @@ use gplcart\core\controllers\frontend\Controller as FrontendController;
 class User extends FrontendController
 {
 
-    use \gplcart\core\traits\ControllerOauth;
+    use \gplcart\core\traits\OauthTrait;
 
     /**
      * Oauth model instance
@@ -109,7 +109,6 @@ class User extends FrontendController
         $this->setSubmitted('user', null, false);
 
         $this->validateComponent('user_login');
-
         return !$this->hasErrors(false);
     }
 

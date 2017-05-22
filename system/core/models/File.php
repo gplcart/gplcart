@@ -22,7 +22,7 @@ use gplcart\core\models\Language as LanguageModel,
 class File extends Model
 {
 
-    use \gplcart\core\traits\EntityTranslation;
+    use \gplcart\core\traits\TranslationTrait;
 
     /**
      * Language model instance
