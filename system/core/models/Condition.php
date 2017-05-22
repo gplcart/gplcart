@@ -27,6 +27,12 @@ class Condition extends Model
     protected $language;
 
     /**
+     * An array of processed conditions and their results
+     * @var array
+     */
+    protected $processed = array();
+
+    /**
      * @param LanguageModel $language
      */
     public function __construct(LanguageModel $language)
@@ -37,38 +43,22 @@ class Condition extends Model
     }
 
     /**
-     * Compares numeric values
-     * @param mixed $a
-     * @param mixed $b
-     * @param string $operator
-     * @return boolean
+     * Sets a condition ID is processed
+     * @param string $condition_id
+     * @param mixed $result
      */
-    public function compare($a, $b, $operator)
+    public function setProcessed($condition_id, $result = true)
     {
-        settype($a, 'array');
-        settype($b, 'array');
+        $this->processed[$condition_id] = $result;
+    }
 
-        if (in_array($operator, array('>=', '<=', '>', '<'))) {
-            $a = reset($a);
-            $b = reset($b);
-        }
-
-        switch ($operator) {
-            case '>=':
-                return ($a >= $b);
-            case '<=':
-                return ($a <= $b);
-            case '>':
-                return ($a > $b);
-            case '<':
-                return ($a < $b);
-            case '=':
-                return count(array_intersect($a, $b)) > 0;
-            case '!=':
-                return count(array_intersect($a, $b)) == 0;
-        }
-
-        return false;
+    /**
+     * Returns an array of processed condition results
+     * @return array
+     */
+    public function getProcessed()
+    {
+        return $this->processed;
     }
 
     /**
@@ -86,7 +76,6 @@ class Condition extends Model
         }
 
         $met = true;
-        $context = array('processed' => array());
         $handlers = $this->getHandlers();
 
         foreach ($trigger['data']['conditions'] as $condition) {
@@ -98,8 +87,8 @@ class Condition extends Model
             $class = $handlers[$condition['id']]['handlers']['process'];
             $instance = Container::get($class);
 
-            $result = call_user_func_array(array($instance, $class[1]), array($condition, $data, &$context));
-            $context['processed'][$condition['id']] = $result;
+            $result = call_user_func_array(array($instance, $class[1]), array($condition, $data, $this));
+            $this->setProcessed($condition['id'], $result);
 
             if ($result !== true) {
                 $met = false;
