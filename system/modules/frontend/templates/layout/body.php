@@ -101,7 +101,7 @@
                 <input type="search" class="form-control" autocomplete="off" name="q" value="<?php echo $this->getQuery('q', ''); ?>" placeholder="<?php echo $this->text('Search'); ?>">
                 <i class="fa fa-spinner fa-spin hidden"></i>
                 <span class="input-group-btn">
-                  <button class="btn btn-default" data-block-if-empty="q" name="search">
+                  <button class="btn btn-default" data-block-if-empty="q">
                     <i class="fa fa-search"></i>
                   </button>
                 </span>

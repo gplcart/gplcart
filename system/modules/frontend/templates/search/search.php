@@ -6,20 +6,13 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
-<div class="panel panel-default">
-  <div class="panel-body">
-    <?php if (empty($results)) { ?>
-    <?php echo $this->text('No products found. Try another search keyword'); ?>
-    <?php } else { ?>
-    <?php echo $navbar; ?>
+<?php if (!empty($results)) { ?>
+<div class="row">
+  <div class="col-md-12">
     <?php echo $results; ?>
     <?php if (!empty($pager)) { ?>
-    <div class="row">
-      <div class="col-md-12 text-right">
-        <?php echo $pager; ?>
-      </div>
-    </div>
-    <?php } ?>
+    <?php echo $pager; ?>
     <?php } ?>
   </div>
 </div>
+<?php } ?>

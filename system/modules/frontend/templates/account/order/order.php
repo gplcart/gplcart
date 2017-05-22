@@ -32,20 +32,20 @@
   </div>
   <div class="col-md-9">
     <div class="row">
-      <div class="<?php echo $pane_payment_address ? 'col-md-4' : 'col-md-6'; ?>">
-        <?php echo $pane_summary; ?>
+      <div class="<?php echo $payment_address ? 'col-md-4' : 'col-md-6'; ?>">
+        <?php echo $summary; ?>
       </div>
-      <div class="<?php echo $pane_payment_address ? 'col-md-4' : 'col-md-6'; ?>">
-        <?php echo $pane_shipping_address; ?>
+      <div class="<?php echo $payment_address ? 'col-md-4' : 'col-md-6'; ?>">
+        <?php echo $shipping_address; ?>
       </div>
-      <?php if ($pane_payment_address) { ?>
+      <?php if ($payment_address) { ?>
       <div class="col-md-4">
-        <?php echo $pane_payment_address; ?>
+        <?php echo $payment_address; ?>
       </div>
       <?php } ?>
     </div>
     <div class="row">
-      <div class="col-md-12"><?php echo $pane_components; ?></div>
+      <div class="col-md-12"><?php echo $components; ?></div>
     </div>
   </div>
 </div>
