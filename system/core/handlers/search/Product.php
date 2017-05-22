@@ -9,11 +9,13 @@
 
 namespace gplcart\core\handlers\search;
 
-use gplcart\core\models\Product as ProductModel;
-use gplcart\core\handlers\search\Base as BaseHandler;
+use gplcart\core\Handler;
+use gplcart\core\models\Search as SearchModel,
+    gplcart\core\models\Product as ProductModel;
 
-class Product extends BaseHandler
+class Product extends Handler
 {
+
     /**
      * Product model instance
      * @var \gplcart\core\models\Product $product
@@ -21,13 +23,20 @@ class Product extends BaseHandler
     protected $product;
 
     /**
-     * Constructor
+     * Search model instance
+     * @var \gplcart\core\models\Search $search
+     */
+    protected $search;
+
+    /**
+     * @param SearchModel $search
      * @param ProductModel $product
      */
-    public function __construct(ProductModel $product)
+    public function __construct(SearchModel $search, ProductModel $product)
     {
         parent::__construct();
 
+        $this->search = $search;
         $this->product = $product;
     }
 
@@ -39,7 +48,6 @@ class Product extends BaseHandler
     public function index($product)
     {
         if (is_numeric($product)) {
-            // Product can be numeric ID when updating
             $product = $this->product->get($product);
         }
 
@@ -95,34 +103,24 @@ class Product extends BaseHandler
         }
 
         if (!empty($data['count'])) {
-            return $this->db->fetchColumn($sql, $where);
+            return $this->config->getDb()->fetchColumn($sql, $where);
         }
 
-        $data['product_id'] = $this->db->fetchColumnAll($sql, $where);
+        $data['product_id'] = $this->config->getDb()->fetchColumnAll($sql, $where);
+
+        unset($data['language']);
         return $this->product->getList($data);
     }
 
     /**
-     * Adds main product data to the search index
+     * Adds the main product data to the search index
      * @param array $product
      * @return boolean
      */
     protected function indexProduct(array $product)
     {
-        $snippet = $this->getSnippet($product, 'und');
+        $snippet = $this->search->getSnippet($product, 'und');
         return $this->search->setIndex($snippet, 'product_id', $product['product_id'], 'und');
-    }
-
-    /**
-     * Returns a text string to be saved in the index table
-     * @param array $product
-     * @param string $language
-     * @return string
-     */
-    protected function getSnippet(array $product, $language)
-    {
-        $snippet = "{$product['title']} {$product['title']} {$product['sku']} {$product['description']}";
-        return $this->search->filterStopwords($snippet, $language);
     }
 
     /**
@@ -139,7 +137,7 @@ class Product extends BaseHandler
         $indexed = 0;
         foreach ($product['translation'] as $language => $translation) {
             $translation += $product;
-            $snippet = $this->getSnippet($translation, $language);
+            $snippet = $this->search->getSnippet($translation, $language);
             $indexed += (int) $this->search->setIndex($snippet, 'product_id', $product['product_id'], $language);
         }
 
