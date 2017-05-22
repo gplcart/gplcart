@@ -15,7 +15,6 @@ class RouteException extends CoreException
 {
 
     /**
-     * Constructor
      * @param string|null $message
      * @param integer $code
      * @param CoreException $previous

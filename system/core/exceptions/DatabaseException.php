@@ -15,13 +15,14 @@ class DatabaseException extends CoreException
 {
 
     /**
-     * Constructor
      * @param string|null $message
      * @param integer $code
      * @param CoreException $previous
      */
-    public function __construct($message = null, $code = 0, CoreException $previous = null)
+    public function __construct($message = null, $code = 0,
+            CoreException $previous = null)
     {
         parent::__construct($message, $code, $previous);
     }
+
 }

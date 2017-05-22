@@ -15,7 +15,6 @@ class OauthAuthorizationException extends AuthorizationException
 {
 
     /**
-     * Constructor
      * @param string|null $message
      * @param integer $code
      * @param CoreException $previous
