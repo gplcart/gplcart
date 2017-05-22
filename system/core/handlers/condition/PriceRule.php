@@ -9,27 +9,20 @@
 
 namespace gplcart\core\handlers\condition;
 
-use gplcart\core\models\Condition as ConditionModel;
+use gplcart\core\handlers\condition\Base as BaseHandler;
 
 /**
  * Provides methods to check price rule conditions
  */
-class PriceRule
+class PriceRule extends BaseHandler
 {
 
     /**
-     * Condition model instance
-     * @var \gplcart\core\models\Condition $condition
-     */
-    protected $condition;
-
-    /**
      * Constructor
-     * @param ConditionModel $condition
      */
-    public function __construct(ConditionModel $condition)
+    public function __construct()
     {
-        $this->condition = $condition;
+        parent::__construct();
     }
 
     /**
@@ -43,7 +36,7 @@ class PriceRule
         if (!isset($data['rule']['used'])) {
             return false;
         }
-        return $this->condition->compare($data['rule']['used'], $condition['value'], $condition['operator']);
+        return $this->compare($data['rule']['used'], $condition['value'], $condition['operator']);
     }
 
 }

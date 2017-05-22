@@ -10,12 +10,12 @@
 namespace gplcart\core\handlers\condition;
 
 use gplcart\core\Route;
-use gplcart\core\models\Condition as ConditionModel;
+use gplcart\core\handlers\condition\Base as BaseHandler;
 
 /**
  * Provides methods to check URL conditions
  */
-class Url
+class Url extends BaseHandler
 {
 
     /**
@@ -25,20 +25,13 @@ class Url
     protected $route;
 
     /**
-     * Condition model instance
-     * @var \gplcart\core\models\Condition $condition
-     */
-    protected $condition;
-
-    /**
-     * Constructor
-     * @param ConditionModel $condition
      * @param Route $route
      */
-    public function __construct(ConditionModel $condition, Route $route)
+    public function __construct(Route $route)
     {
+        parent::__construct();
+
         $this->route = $route;
-        $this->condition = $condition;
     }
 
     /**
@@ -58,7 +51,7 @@ class Url
             $route['pattern'] = '/'; // Fix front page
         }
 
-        return $this->condition->compare($route['pattern'], $condition['value'], $condition['operator']);
+        return $this->compare($route['pattern'], $condition['value'], $condition['operator']);
     }
 
     /**
@@ -81,7 +74,7 @@ class Url
             }
         }
 
-        return ($condition['operator'] === '=') ? $found : !$found;
+        return $condition['operator'] === '=' ? $found : !$found;
     }
 
 }

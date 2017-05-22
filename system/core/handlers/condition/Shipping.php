@@ -9,36 +9,23 @@
 
 namespace gplcart\core\handlers\condition;
 
-use gplcart\core\models\Zone as ZoneModel,
-    gplcart\core\models\City as CityModel,
+use gplcart\core\models\City as CityModel,
     gplcart\core\models\State as StateModel,
     gplcart\core\models\Country as CountryModel,
-    gplcart\core\models\Address as AddressModel,
-    gplcart\core\models\Condition as ConditionModel;
+    gplcart\core\models\Address as AddressModel;
+use gplcart\core\handlers\condition\Base as BaseHandler;
 
 /**
  * Provides methods to check shipping address conditions
  */
-class Shipping
+class Shipping extends BaseHandler
 {
-
-    /**
-     * Condition model instance
-     * @var \gplcart\core\models\Condition $condition
-     */
-    protected $condition;
 
     /**
      * Address model instance
      * @var \gplcart\core\models\Address $address
      */
     protected $address;
-
-    /**
-     * Zone model instance
-     * @var \gplcart\core\models\Zone $zone
-     */
-    protected $zone;
 
     /**
      * City model instance
@@ -59,24 +46,20 @@ class Shipping
     protected $country;
 
     /**
-     * 
-     * @param ConditionModel $condition
      * @param AddressModel $address
-     * @param ZoneModel $zone
      * @param CityModel $city
      * @param StateModel $state
      * @param CountryModel $country
      */
-    public function __construct(ConditionModel $condition,
-            AddressModel $address, ZoneModel $zone, CityModel $city,
+    public function __construct(AddressModel $address, CityModel $city,
             StateModel $state, CountryModel $country)
     {
-        $this->zone = $zone;
+        parent::__construct();
+
         $this->city = $city;
         $this->state = $state;
         $this->country = $country;
         $this->address = $address;
-        $this->condition = $condition;
     }
 
     /**
@@ -87,12 +70,9 @@ class Shipping
      */
     public function zoneId(array $condition, array $data)
     {
-        // Check existing address ID
         if (isset($data['data']['order']['shipping_address'])) {
             return $this->checkZoneIdByAddressId($condition, $data);
         }
-
-        // Check form fields
         return $this->checkZoneIdByAddressData($condition, $data);
     }
 
@@ -107,21 +87,20 @@ class Shipping
         // Check form fields
         if (!empty($data['data']['address']['country'])) {
             $country = $data['data']['address']['country'];
-            return $this->condition->compare($country, $condition['value'], $condition['operator']);
+            return $this->compare($country, $condition['value'], $condition['operator']);
         }
 
         if (empty($data['data']['order']['shipping_address'])) {
             return false;
         }
 
-        // Check existing address ID
         $address = $this->address->get($data['data']['order']['shipping_address']);
 
         if (empty($address['country'])) {
             return false;
         }
 
-        return $this->condition->compare($address['country'], $condition['value'], $condition['operator']);
+        return $this->compare($address['country'], $condition['value'], $condition['operator']);
     }
 
     /**
@@ -135,21 +114,20 @@ class Shipping
         // Check form fields
         if (isset($data['data']['address']['state_id'])) {
             $state_id = $data['data']['address']['state_id'];
-            return $this->condition->compare($state_id, $condition['value'], $condition['operator']);
+            return $this->compare($state_id, $condition['value'], $condition['operator']);
         }
 
         if (!isset($data['data']['order']['shipping_address'])) {
             return false;
         }
 
-        // Check existing address ID
         $address = $this->address->get($data['data']['order']['shipping_address']);
 
         if (empty($address['state_id'])) {
             return false;
         }
 
-        return $this->condition->compare($address['state_id'], $condition['value'], $condition['operator']);
+        return $this->compare($address['state_id'], $condition['value'], $condition['operator']);
     }
 
     /**
@@ -158,7 +136,7 @@ class Shipping
      * @param array $data
      * @return boolean
      */
-    protected function checkZoneIdByAddressId(array $condition, array $data)
+    protected function checkZoneIdByAddressId($condition, $data)
     {
         $address = $this->address->get($data['data']['order']['shipping_address']);
 
@@ -173,7 +151,7 @@ class Shipping
             $ids[] = $address[$field];
         }
 
-        return $this->condition->compare($ids, $condition['value'], $condition['operator']);
+        return $this->compare($ids, $condition['value'], $condition['operator']);
     }
 
     /**
@@ -182,14 +160,14 @@ class Shipping
      * @param array $data
      * @return boolean
      */
-    protected function checkZoneIdByAddressData(array $condition, array $data)
+    protected function checkZoneIdByAddressData($condition, $data)
     {
         if (empty($data['data']['order']['address'])) {
             return false;
         }
 
         $ids = $this->getAddressZoneId($data['data']['order']['address']);
-        return $this->condition->compare($ids, $condition['value'], $condition['operator']);
+        return $this->compare($ids, $condition['value'], $condition['operator']);
     }
 
     /**
@@ -206,7 +184,6 @@ class Shipping
                 continue;
             }
 
-            // TODO: make more elegant
             if ($field === 'city_id') {
                 $data = $this->city->get($address[$field]);
             } else if ($field === 'state_id') {

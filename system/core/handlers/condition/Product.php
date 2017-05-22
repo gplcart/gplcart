@@ -9,36 +9,20 @@
 
 namespace gplcart\core\handlers\condition;
 
-use gplcart\core\models\Product as ProductModel,
-    gplcart\core\models\Condition as ConditionModel;
+use gplcart\core\handlers\condition\Base as BaseHandler;
 
 /**
  * Provides methods to check product conditions
  */
-class Product
+class Product extends BaseHandler
 {
 
     /**
-     * Condition model instance
-     * @var \gplcart\core\models\Condition $condition
-     */
-    protected $condition;
-
-    /**
-     * Product model instance
-     * @var \gplcart\core\models\Product $product
-     */
-    protected $product;
-
-    /**
      * Constructor
-     * @param ConditionModel $condition
-     * @param ProductModel $product
      */
-    public function __construct(ConditionModel $condition, ProductModel $product)
+    public function __construct()
     {
-        $this->product = $product;
-        $this->condition = $condition;
+        parent::__construct();
     }
 
     /**
@@ -52,8 +36,7 @@ class Product
         if (empty($data['product_id'])) {
             return false;
         }
-
-        return $this->condition->compare($data['product_id'], $condition['value'], $condition['operator']);
+        return $this->compare($data['product_id'], $condition['value'], $condition['operator']);
     }
 
     /**
@@ -67,8 +50,7 @@ class Product
         if (empty($data['product_id']) || empty($data['category_id'])) {
             return false;
         }
-
-        return $this->condition->compare($data['category_id'], $condition['value'], $condition['operator']);
+        return $this->compare($data['category_id'], $condition['value'], $condition['operator']);
     }
 
     /**
@@ -82,8 +64,7 @@ class Product
         if (empty(empty($data['product_id']) || $data['brand_category_id'])) {
             return false;
         }
-
-        return $this->condition->compare($data['brand_category_id'], $condition['value'], $condition['operator']);
+        return $this->compare($data['brand_category_id'], $condition['value'], $condition['operator']);
     }
 
 }

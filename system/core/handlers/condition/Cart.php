@@ -10,20 +10,14 @@
 namespace gplcart\core\handlers\condition;
 
 use gplcart\core\models\Price as PriceModel,
-    gplcart\core\models\Currency as CurrencyModel,
-    gplcart\core\models\Condition as ConditionModel;
+    gplcart\core\models\Currency as CurrencyModel;
+use gplcart\core\handlers\condition\Base as BaseHandler;
 
 /**
  * Provides methods to check cart conditions
  */
-class Cart
+class Cart extends BaseHandler
 {
-
-    /**
-     * Condition model instance
-     * @var \gplcart\core\models\Condition $condition
-     */
-    protected $condition;
 
     /**
      * Price model instance
@@ -38,17 +32,15 @@ class Cart
     protected $currency;
 
     /**
-     * Constructor
-     * @param ConditionModel $condition
      * @param PriceModel $price
      * @param CurrencyModel $currency
      */
-    public function __construct(ConditionModel $condition, PriceModel $price,
-            CurrencyModel $currency)
+    public function __construct(PriceModel $price, CurrencyModel $currency)
     {
+        parent::__construct();
+
         $this->price = $price;
         $this->currency = $currency;
-        $this->condition = $condition;
     }
 
     /**
@@ -72,8 +64,7 @@ class Cart
 
         $condition_value[0] = $this->price->amount($condition_value[0], $condition_currency);
         $value = $this->currency->convert($condition_value[0], $condition_currency, $data['cart']['currency']);
-
-        return $this->condition->compare($data['cart']['total'], $value, $condition['operator']);
+        return $this->compare($data['cart']['total'], $value, $condition['operator']);
     }
 
     /**
@@ -93,7 +84,7 @@ class Cart
             $ids[] = $item['product_id'];
         }
 
-        return $this->condition->compare($ids, $condition['value'], $condition['operator']);
+        return $this->compare($ids, $condition['value'], $condition['operator']);
     }
 
     /**
@@ -107,7 +98,7 @@ class Cart
         if (empty($data['cart']['items']) || !in_array($condition['operator'], array('=', '!='))) {
             return false;
         }
-        return $this->condition->compare(array_keys($data['cart']['items']), $condition['value'], $condition['operator']);
+        return $this->compare(array_keys($data['cart']['items']), $condition['value'], $condition['operator']);
     }
 
 }

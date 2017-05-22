@@ -9,27 +9,20 @@
 
 namespace gplcart\core\handlers\condition;
 
-use gplcart\core\models\Condition as ConditionModel;
+use gplcart\core\handlers\condition\Base as BaseHandler;
 
 /**
  * Provides methods to check date/time conditions
  */
-class Date
+class Date extends BaseHandler
 {
 
     /**
-     * Condition model instance
-     * @var \gplcart\core\models\Condition $condition
-     */
-    protected $condition;
-
-    /**
      * Constructor
-     * @param ConditionModel $condition
      */
-    public function __construct(ConditionModel $condition)
+    public function __construct()
     {
-        $this->condition = $condition;
+        parent::__construct();
     }
 
     /**
@@ -45,7 +38,7 @@ class Date
             return false;
         }
 
-        return $this->condition->compare(GC_TIME, $value, $condition['operator']);
+        return $this->compare(GC_TIME, $value, $condition['operator']);
     }
 
 }
