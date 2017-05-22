@@ -2124,8 +2124,13 @@ class Controller
      * @param string $key
      * @return string
      */
-    public function getPager($total, $query = null, $limit = null, $key = 'p')
+    public function getPager($total = null, $query = null, $limit = null,
+            $key = 'p')
     {
+        if (!isset($total)) {
+            $total = (int) $this->total;
+        }
+
         if (!isset($limit)) {
             $limit = $this->config('admin_list_limit', 20);
         }
