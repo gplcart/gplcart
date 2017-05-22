@@ -27,7 +27,6 @@ class Search extends Model
     protected $language;
 
     /**
-     * Constructor
      * @param LanguageModel $language
      */
     public function __construct(LanguageModel $language)
@@ -38,7 +37,7 @@ class Search extends Model
     }
 
     /**
-     * Adds in item to the search index
+     * Adds an item to the search index
      * @param string $text
      * @param string $id_key
      * @param integer $id_value
@@ -110,7 +109,7 @@ class Search extends Model
         }
 
         $handlers = $this->getHandlers();
-        return Handler::call($handlers, $handler_id, 'index', array($data));
+        return Handler::call($handlers, $handler_id, 'index', array($data, $this));
     }
 
     /**
@@ -137,10 +136,33 @@ class Search extends Model
 
         if (!empty($filtered)) {
             $handlers = $this->getHandlers();
-            return Handler::call($handlers, $handler_id, 'search', array($filtered, $options));
+            return Handler::call($handlers, $handler_id, 'search', array($filtered, $options, $this));
         }
 
         return array();
+    }
+
+    /**
+     * Returns a text string to be saved in the index table
+     * @param array $data
+     * @param string $language
+     * @return string
+     */
+    public function getSnippet(array $data, $language)
+    {
+        $parts = array();
+        if (isset($data['title'])) {
+            // Repeat title twice to make it more important
+            $parts = array($data['title'], $data['title']);
+        }
+
+        if (isset($data['description'])) {
+            $parts[] = strip_tags($data['description']);
+        }
+
+        $snippet = $this->filterStopwords(implode(' ', $parts), $language);
+        $this->hook->fire('search.index.snippet', $data, $language, $snippet);
+        return $snippet;
     }
 
     /**
