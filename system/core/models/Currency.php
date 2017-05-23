@@ -20,6 +20,16 @@ class Currency extends Model
 {
 
     /**
+     * URL GET key
+     */
+    const URL_KEY = 'currency';
+
+    /**
+     * Cookie key
+     */
+    const COOKIE_KEY = 'currency';
+
+    /**
      * Request class instance
      * @var \gplcart\core\helpers\Request $request
      */
@@ -235,7 +245,7 @@ class Currency extends Model
     public function setCookie($code)
     {
         $lifespan = $this->config->get('currency_cookie_lifespan', 31536000);
-        $this->request->setCookie('currency', $code, $lifespan);
+        $this->request->setCookie(self::COOKIE_KEY, $code, $lifespan);
     }
 
     /**
@@ -244,7 +254,7 @@ class Currency extends Model
      */
     public function getFromCookie()
     {
-        return (string) $this->request->cookie('currency');
+        return (string) $this->request->cookie(self::COOKIE_KEY);
     }
 
     /**
@@ -253,7 +263,7 @@ class Currency extends Model
      */
     public function getFromUrl()
     {
-        return (string) $this->request->get('currency');
+        return (string) $this->request->get(self::URL_KEY);
     }
 
     /**
