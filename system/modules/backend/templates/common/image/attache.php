@@ -31,7 +31,6 @@
             <?php echo $this->escape($image['path']); ?>
           </div>
         </div>
-        <?php $languages = $this->prop('languages'); ?>
         <?php if (!empty($languages)) { ?>
         <ul class="nav nav-tabs">
           <li class="active">

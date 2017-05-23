@@ -6,6 +6,9 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
+<?php if(!empty($navbar)) { ?>
+<?php echo $navbar; ?>
+<?php } ?>
 <?php if (!empty($results)) { ?>
 <div class="row">
   <div class="col-md-12">

@@ -7,11 +7,13 @@
  */
 ?>
 <div class="row section product-main">
+  <?php if(!empty($images)) { ?>
   <div class="col-md-5 left">
     <div class="row section images">
       <div class="col-md-12"><?php echo $images; ?></div>
     </div>
   </div>
+  <?php } ?>
   <div class="col-md-7 right">
     <div class="product-rating">
       <?php echo $rating; ?>
@@ -47,3 +49,18 @@
     <?php } ?>
   </div>
 </div>
+<?php if(!empty($description)) { ?>
+<?php echo $description; ?>
+<?php } ?>
+<?php if(!empty($attributes)) { ?>
+<?php echo $attributes; ?>
+<?php } ?>
+<?php if(!empty($reviews)) { ?>
+<?php echo $reviews; ?>
+<?php } ?>
+<?php if(!empty($related)) { ?>
+<?php echo $related; ?>
+<?php } ?>
+<?php if(!empty($recent)) { ?>
+<?php echo $recent; ?>
+<?php } ?>

@@ -7,8 +7,8 @@
  */
 ?>
 <?php if (!empty($products) && count($products) > 1) { ?>
-<?php if (!empty($field_labels)) { ?>
-<div class="row">
+<?php if (!empty($fields)) { ?>
+<div class="row hidden-non-js">
   <div class="col-md-12">
     <label>
       <input type="checkbox" id="compare-difference"> <?php echo $this->text('Show only difference'); ?>
@@ -25,8 +25,8 @@
         <td><div class="row products"><?php echo $product['rendered']; ?></div></td>
         <?php } ?>
       </tr>
-      <?php if (!empty($field_labels['attribute'])) { ?>
-      <?php foreach ($field_labels['attribute'] as $field_id => $field_title) { ?>
+      <?php if (!empty($fields['attribute'])) { ?>
+      <?php foreach ($fields['attribute'] as $field_id => $field_title) { ?>
       <tr class="togglable">
         <th class="active" scope="row"><?php echo $this->e($field_title); ?></th>
         <?php foreach ($products as $product_id => $product) { ?>
@@ -39,8 +39,8 @@
       </tr>
       <?php } ?>
       <?php } ?>
-      <?php if (!empty($field_labels['option'])) { ?>
-      <?php foreach ($field_labels['option'] as $field_id => $field_title) { ?>
+      <?php if (!empty($fields['option'])) { ?>
+      <?php foreach ($fields['option'] as $field_id => $field_title) { ?>
       <tr class="togglable">
         <th class="active" scope="row"><?php echo $this->e($field_title); ?></th>
         <?php foreach ($products as $product_id => $product) { ?>

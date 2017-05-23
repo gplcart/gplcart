@@ -9,7 +9,97 @@
 <body<?php echo $this->attributes(array('class' => $body_classes)); ?>>
   <div class="container-fluid wrapper">
     <div class="row">
-      <nav class="navbar navbar-inverse navbar-static-top first">
+      <nav class="navbar navbar-default navbar-static-top first">
+        <div class="container-fluid">
+          
+          <ul class="list-inline pull-left">
+            <li>
+              <a rel="nofollow" href="<?php echo $this->url('page/1'); ?>"><?php echo $this->text('Contact'); ?></a>
+            </li>
+            <li>
+              <a rel="nofollow" href="<?php echo $this->url('page/2'); ?>"><?php echo $this->text('FAQ'); ?></a>
+            </li>
+          </ul>
+          
+          
+          
+          
+            
+            <p class="nav pull-left navbar-text">
+              <?php if ($this->store('data.phone.0')) { ?>
+            <i class="fa fa-phone"></i> <?php echo $this->e($this->store('data.phone.0')); ?>
+            <?php } ?>
+            </p>
+            
+            <?php if(!empty($currencies)) { ?>
+            
+            
+<div class="dropdown pull-left">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+    <?php echo $currency_code; ?> <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu">
+    
+    <?php foreach($currencies as $currency) { ?>
+        <li>
+              <a rel="nofollow" href="<?php echo $this->url('', array('currency' => $currency['code'])); ?>"><?php echo $this->e($currency['code']); ?></a>
+            </li>
+    <?php } ?>
+  </ul>
+</div>
+            <?php } ?>
+            
+            
+            <?php if(!empty($languages)) { ?>
+            
+            
+<div class="dropdown pull-left">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+    <?php echo $langcode; ?> <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu">
+    
+    <?php foreach($languages as $language) { ?>
+        <li>
+              <a rel="nofollow" href="<?php echo $this->urll($language['code']); ?>"><?php echo $this->e($language['native_name']); ?></a>
+            </li>
+    <?php } ?>
+  </ul>
+</div>
+            <?php } ?>
+
+            
+
+            
+            
+            <p class="nav pull-right">
+            <?php if ($this->user('user_id')) { ?>
+                <a href="<?php echo $this->url('account/' . $this->user('user_id')); ?>">
+                  <i class="fa fa-user"></i>
+                </a>
+            
+                    <a href="<?php echo $this->url('logout'); ?>">
+                      <i class="fa fa-sign-out"></i> <?php echo $this->text('Log out'); ?>
+                    </a>
+            <?php } else { ?>
+            
+            <?php echo $this->text('Hello'); ?> <i class="fa fa-user"></i>
+<a rel="nofollow" href="<?php echo $this->url('login'); ?>"><?php echo $this->text('Log in'); ?></a>
+            <?php } ?>
+            </p>
+          
+          
+          
+          
+          
+        </div>
+        
+        
+        
+      </nav>
+    </div>
+
+      <nav class="navbar navbar-default navbar-static-top second">
         <div class="container-fluid">
           <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
@@ -62,39 +152,6 @@
                 </span>
                 <?php } ?>
               </li>
-              <?php if ($this->user('user_id')) { ?>
-              <li class="dropdown account">
-                <a href="<?php echo $this->url('account/' . $this->user('user_id')); ?>" class="dropdown-toggle " data-toggle="dropdown">
-                  <i class="fa fa-user"></i></a>
-                <ul class="dropdown-menu dropdown-menu-right">
-                  <li>
-                    <a href="<?php echo $this->url('account/' . $this->user('user_id')); ?>">
-                      <?php echo $this->text('Orders'); ?>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="<?php echo $this->url('wishlist'); ?>">
-                      <?php echo $this->text('Wishlist'); ?>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="<?php echo $this->url('account/' . $this->user('user_id') . '/address'); ?>">
-                      <?php echo $this->text('Addresses'); ?>
-                    </a>
-                  </li>
-                  <li class="divider"></li>
-                  <li>
-                    <a href="<?php echo $this->url('logout'); ?>">
-                      <i class="fa fa-sign-out"></i> <?php echo $this->text('Log out'); ?>
-                    </a>
-                  </li>
-                </ul>
-              </li>
-              <?php } else { ?>
-              <li>
-                <a rel="nofollow" href="<?php echo $this->url('login'); ?>"><i class="fa fa-user"></i></a>
-              </li>
-              <?php } ?>
             </ul>
             <form class="navbar-form navbar-left search" action="<?php echo $this->url('search'); ?>">
               <div class="input-group">
@@ -107,17 +164,12 @@
                 </span>
               </div>
             </form>
-            <?php if ($this->store('data.phone.0')) { ?>
-            <p class="nav navbar-text">
-            <i class="fa fa-phone-square"></i> <?php echo $this->e($this->store('data.phone.0')); ?></p>
-            <?php } ?>
           </div>
         </div>
       </nav>
-      <nav class="navbar navbar-inverse navbar-static-top second">
+      <nav class="navbar navbar-inverse navbar-static-top third">
         <?php echo $this->menu(); ?>
       </nav>
-    </div>
     <?php if ($breadcrumb) { ?>
         <div class="breadcrumb">
           <ol class="breadcrumb">
