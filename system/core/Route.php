@@ -135,31 +135,29 @@ class Route
 
     /**
      * Sets the current language
-     * @return null
      */
     protected function setLangcode()
     {
-        $lang = $this->request->get('lang');
+        $languages = $this->config->get('languages', array());
 
-        if (isset($lang)) {
-            $this->langcode = $lang;
+        if (empty($languages)) {
             return null;
         }
 
-        $default_langcode = $this->config->get('language', '');
-        $languages = $this->config->get('languages', array());
+        $segments = $this->url->segments(true);
+        $default = $this->config->get('language', '');
 
-        $segments = $this->url->segments();
-
-        if (empty($languages[$segments[0]]['status'])) {
-            $this->langcode = $default_langcode;
-        } else {
+        $this->langcode = $default;
+        if (!empty($languages[$segments[0]]['status'])) {
             $this->langcode = $segments[0];
         }
 
-        if ($this->langcode && ($this->langcode !== $default_langcode)) {
-            $this->request->setBaseSuffix($this->langcode);
+        $suffix = $this->langcode;
+        if ($this->langcode === $default) {
+            $suffix = '';
         }
+
+        $this->request->setLangcode($suffix);
     }
 
     /**
@@ -170,7 +168,7 @@ class Route
     protected function seekControllerAlias()
     {
         if (empty($this->db)) {
-            return; // No database available, exit
+            return null;
         }
 
         $info = $this->getAliasInfo($this->path);
