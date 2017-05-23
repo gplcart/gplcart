@@ -227,12 +227,6 @@ class Controller
     protected $theme_settings = array();
 
     /**
-     * Array of enabled languages
-     * @var array
-     */
-    protected $languages = array();
-
-    /**
      * Submitted form values
      * @var array
      */
@@ -378,7 +372,8 @@ class Controller
 
         $this->setDefaultJsAssets();
         $this->setThemeProperties();
-        $this->setLanguageProperties();
+
+        $this->language->load();
 
         $this->setDefaultData();
         $this->setAccessProperties();
@@ -415,11 +410,28 @@ class Controller
      * @param string $path
      * @param array $query
      * @param boolean $absolute
+     * @param boolean $exclude_langcode
      * @return string
      */
-    public function url($path = '', array $query = array(), $absolute = false)
+    public function url($path = '', array $query = array(), $absolute = false,
+            $exclude_langcode = false)
     {
-        return $this->url->get($path, $query, $absolute);
+        return $this->url->get($path, $query, $absolute, $exclude_langcode);
+    }
+
+    /**
+     * Returns a formatted URL with a language code
+     * @param string $langcode
+     * @param string $path
+     * @param array $query
+     * @return string
+     */
+    public function urll($langcode, $path = '', array $query = array())
+    {
+        if ($langcode === $this->language->getDefault()) {
+            $langcode = '';
+        }
+        return $this->url->language($langcode, $path, $query);
     }
 
     /**
@@ -811,7 +823,7 @@ class Controller
             return isset($value);
         }
 
-        return ($this->request->method() === 'POST');
+        return $this->request->method() === 'POST';
     }
 
     /**
@@ -1117,15 +1129,6 @@ class Controller
 
         $result = gplcart_array_get_value($this->data, $key);
         return isset($result) ? $result : $default;
-    }
-
-    /**
-     * Loads translations, available languages etc
-     */
-    protected function setLanguageProperties()
-    {
-        $this->language->load();
-        $this->languages = $this->language->getList(true);
     }
 
     /**
@@ -1698,10 +1701,7 @@ class Controller
      */
     protected function setDefaultJsSettings()
     {
-        $allowed = array(
-            'token', 'base', 'lang',
-            'lang_region', 'urn', 'uri', 'path', 'query');
-
+        $allowed = array('token', 'base', 'lang', 'urn', 'uri', 'path', 'query');
         $settings = array_intersect_key($this->data, array_flip($allowed));
         $this->setJsSettings('', $settings, 60);
     }
@@ -1776,17 +1776,10 @@ class Controller
         $this->data['base'] = $this->base;
         $this->data['token'] = $this->token;
         $this->data['query'] = $this->query;
-        $this->data['lang'] = empty($this->langcode) ? 'en' : $this->langcode;
-
-        if (!empty($this->langcode) && strpos($this->langcode, '_') === false) {
-            $this->data['lang_region'] = $this->langcode . '-' . strtoupper($this->langcode);
-        } else {
-            $this->data['lang_region'] = $this->langcode;
-        }
-
-        $this->data['languages'] = $this->languages;
         $this->data['captcha'] = $this->renderCaptcha();
         $this->data['messages'] = $this->session->getMessage();
+        $this->data['languages'] = $this->language->getList(true);
+        $this->data['langcode'] = empty($this->langcode) ? 'en' : $this->langcode;
 
         $controller = strtolower(str_replace('\\', '-', $this->current_route['handlers']['controller'][0]));
         $this->data['body_classes'] = array_slice(explode('-', $controller, 3), -1);
@@ -2027,32 +2020,32 @@ class Controller
 
     /**
      * Sets filter variables to the data array
-     * @param array $allowed_filters
+     * @param array $allowed
      * @param array $query
      */
-    public function setFilter(array $allowed_filters = array(), $query = null)
+    public function setFilter(array $allowed = array(), $query = null)
     {
-        if (isset($query)) {
-            $this->query_filter = $query;
-        } else {
-            $this->query_filter = $this->getFilterQuery();
+        if (!isset($query)) {
+            $query = $this->getFilterQuery();
         }
 
-        $order = (string) $this->request->get('order');
+        $this->query_filter = $query;
         $this->data['filtering'] = false;
+        $order = isset($this->query['order']) ? $this->query['order'] : '';
 
-        foreach ($allowed_filters as $filter) {
+        foreach ($allowed as $filter) {
 
-            $current_filter = $this->request->get($filter, null);
-            if (isset($current_filter)) {
+            $this->data["filter_$filter"] = '';
+            if (isset($this->query[$filter])) {
                 $this->data['filtering'] = true;
+                $this->data["filter_$filter"] = (string) $this->query[$filter];
             }
 
-            $this->data["filter_$filter"] = (string) $current_filter;
             $sort = array(
                 'sort' => $filter,
-                'order' => ($order == 'desc') ? 'asc' : 'desc');
-            $this->data["sort_$filter"] = $this->url('', $sort + $this->query_filter);
+                'order' => $order == 'desc' ? 'asc' : 'desc') + $this->query_filter;
+
+            $this->data["sort_$filter"] = $this->url('', $sort);
         }
 
         if (isset($this->query_filter['sort']) && isset($this->query_filter['order'])) {
@@ -2063,18 +2056,19 @@ class Controller
     /**
      * Returns an array of prepared GET values used for filtering and sorting
      * @param array $default
+     * @param array $allowed An array of allowed keys in the GET query
      * @return array
      */
-    public function getFilterQuery(array $default = array())
+    public function getFilterQuery(array $default = array(), $allowed = array())
     {
         $query = $this->query;
 
         foreach ($query as $key => $value) {
             settype($value, 'string');
             if ($key === 'sort' && strpos($value, '-') !== false) {
-                $parts = explode('-', $value, 2);
-                $query['sort'] = reset($parts);
-                $query['order'] = end($parts);
+                list($sort, $order) = explode('-', $value, 2);
+                $query['sort'] = $sort;
+                $query['order'] = $order;
             }
 
             if ($value === 'any') {
@@ -2082,7 +2076,13 @@ class Controller
             }
         }
 
-        return $query + $default;
+        $query += $default;
+
+        if (empty($allowed)) {
+            return $query;
+        }
+
+        return array_intersect_key($query, array_flip($allowed));
     }
 
     /**
@@ -2132,7 +2132,7 @@ class Controller
         }
 
         if (!isset($limit)) {
-            $limit = $this->config('admin_list_limit', 20);
+            $limit = $this->config('list_limit', 20);
         }
 
         if (!isset($query)) {
