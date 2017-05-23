@@ -388,19 +388,9 @@ class Install extends Model
     {
         $pages = array();
 
-        $pages['about.html'] = array(
-            'title' => 'About us',
-            'description' => 'Company information',
-        );
-
         $pages['contact.html'] = array(
             'title' => 'Contact us',
             'description' => 'Contact information',
-        );
-
-        $pages['terms.html'] = array(
-            'title' => 'Terms and conditions',
-            'description' => 'Terms and conditions',
         );
 
         $pages['faq.html'] = array(
