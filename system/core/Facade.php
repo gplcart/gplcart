@@ -112,11 +112,9 @@ class Facade
      */
     protected function routeCli()
     {
-        if ($this->config->get('cli_disabled', 0)) {
-            exit('CLI access has been disabled');
+        if ($this->config->get('cli_status', 1)) {
+            Container::get('gplcart\\core\\CliRoute')->process();
         }
-
-        Container::get('gplcart\\core\\CliRoute')->process();
     }
 
     /**

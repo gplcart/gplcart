@@ -120,7 +120,7 @@ class Ajax extends FrontendController
             'status' => $this->getPosted('status', null),
             'store_id' => $this->getPosted('store_id', null),
             'title' => (string) $this->getPosted('term', ''),
-            'limit' => array(0, $this->config('admin_autocomplete_limit', 10))
+            'limit' => array(0, $this->config('autocomplete_limit', 10))
         );
 
         return $this->getProducts($options);
@@ -139,7 +139,7 @@ class Ajax extends FrontendController
         $options = array(
             'email' => (string) $this->getPosted('term', ''),
             'store_id' => $this->getPosted('store_id', null),
-            'limit' => array(0, $this->config('admin_autocomplete_limit', 10)));
+            'limit' => array(0, $this->config('autocomplete_limit', 10)));
 
         return $this->user->getList($options);
     }
@@ -205,7 +205,7 @@ class Ajax extends FrontendController
             return array('error' => $this->text('No access'));
         }
 
-        $max = $this->config('admin_autocomplete_limit', 10);
+        $max = $this->config('autocomplete_limit', 10);
         $options = array('title' => $term, 'limit' => array(0, $max));
 
         return $this->collection_item->getSuggestions($collection, $options);

@@ -195,7 +195,7 @@ class FieldValue extends BackendController
      */
     protected function prepareFieldValues(array $values)
     {
-        $imagestyle = $this->config('image_style_admin', 2);
+        $imagestyle = $this->config('image_style_ui', 2);
         foreach ($values as &$value) {
             if (!empty($value['path'])) {
                 $value['thumb'] = $this->image->url($imagestyle, $value['path']);
@@ -392,7 +392,7 @@ class FieldValue extends BackendController
         $path = $this->getData('field_value.path');
 
         if (!empty($path)) {
-            $imagestyle = $this->config('image_style_admin', 2);
+            $imagestyle = $this->config('image_style_ui', 2);
             $thumb = $this->image->url($imagestyle, $path);
             $this->setData('field_value.thumb', $thumb);
         }
