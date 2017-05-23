@@ -13,10 +13,9 @@
 $config = array();
 
 # $config['account_order_limit']                  = 10; // Max number of orders per page in accout
-# $config['admin_autocomplete_limit']             = 10; // Max number of autocomplete suggestions for admin
-# $config['image_style_admin']                    = 2; // Image style for admin UI
-# $config['admin_list_limit']                     = 20; // Max number of items for admin UI
-# $config['autocomplete_limit']                   = 10; // Max number of autocomplete suggestions for customers
+# $config['autocomplete_limit']                   = 10; // Max number of autocomplete suggestions
+# $config['image_style_ui']                       = 2; // Image style for admin UI
+# $config['list_limit']                           = 20; // Max number of items for UI
 # $config['dashboard_limit']                      = 10; // Max number of items in dashboard blocks
 # $config['dashboard_columns']                    = 2; // Number of dashboard columns. Must be multiple of 12
 # $config['theme_mobile']                         = 'mobile'; // Default module ID of mobile theme
@@ -105,7 +104,7 @@ $config = array();
 # $config['user_superadmin']                      = 1; // Default database ID for superadmin
 # $config['order_complete_message']               = 'Thank you for your order! Order ID: <a href="!url">!order_id</a>, status: !status'; // Default message to show when order is completed by logged in user
 # $config['order_complete_message_anonymous']     = 'Thank you for your order! Order ID: !order_id, status: !status';          // Default message to show when order is completed by anonymous
-# $config['cli_disabled']                         = 0; // Whether comman line support enabled
+# $config['cli_status']                           = 1; // Enable/disable CLI
 # $config['field_value_image_dirname']            = 'field_value'; // Default folder for uploaded field value images
 # $config['compress_js']                          = 0; // Whether to aggregate JS files
 # $config['compress_css']                         = 0; // Whether to aggregate and compress CSS files
