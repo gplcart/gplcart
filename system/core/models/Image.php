@@ -356,7 +356,7 @@ class Image extends Model
     public function urlFromPath($path)
     {
         $query = array('v' => filemtime(GC_FILE_DIR . "/$path"));
-        return $this->url->get('files/' . gplcart_relative_path($path), $query);
+        return $this->url->get('files/' . gplcart_relative_path($path), $query, false, true);
     }
 
 }
