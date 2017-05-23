@@ -34,10 +34,10 @@ class Compare extends FrontendController
     protected $product_field;
 
     /**
-     * An array of product ID to compare
+     * An array of products to compare
      * @var array
      */
-    protected $data_compare = array();
+    protected $data_products = array();
 
     /**
      * @param ProductClassModel $product_class
@@ -60,18 +60,8 @@ class Compare extends FrontendController
         $this->setTitleSelectCompare();
         $this->setBreadcrumbSelectCompare();
 
-        $this->setRegionContentSelectCompare();
+        $this->setData('products', $this->getProductsSelectCompare());
         $this->outputSelectCompare();
-    }
-
-    /**
-     * Sets the content region on the select to compare page
-     */
-    protected function setRegionContentSelectCompare()
-    {
-        $products = $this->getProductsSelectCompare();
-        $html = $this->render('compare/select', array('products' => $products));
-        $this->setRegion('content', $html);
     }
 
     /**
@@ -133,7 +123,7 @@ class Compare extends FrontendController
      */
     protected function outputSelectCompare()
     {
-        $this->output();
+        $this->output('compare/select');
     }
 
     /**
@@ -148,17 +138,21 @@ class Compare extends FrontendController
         $this->setTitleCompareCompare();
         $this->setBreadcrumbCompareCompare();
 
-        $this->setRegionContentCompareCompare();
+        $this->setData('products', $this->data_products);
+        $this->setData('fields', $this->getFieldsCompare($this->data_products));
+
         $this->outputCompareCompare();
     }
 
     /**
      * Set an array of product IDs to compare
-     * @param string $ids
+     * @param string $string
      */
-    protected function setProductCompare($ids)
+    protected function setProductCompare($string)
     {
-        $this->data_compare = array_filter(array_map('trim', explode(',', $ids)), 'ctype_digit');
+        $ids = array_filter(array_map('trim', explode(',', $string)), 'ctype_digit');
+        $products = $this->getProductsCompare($ids);
+        $this->data_products = $this->prepareProductsCompare($products);
     }
 
     /**
@@ -166,33 +160,17 @@ class Compare extends FrontendController
      */
     protected function controlAccessCompareCompare()
     {
-        if (count($this->data_compare) < 2) {
+        if (count($this->data_products) < 2) {
             $this->redirect('compare');
         }
     }
 
     /**
-     * Sets the content region on the product comparison page
-     */
-    protected function setRegionContentCompareCompare()
-    {
-
-        $products = $this->getProductsCompare();
-        $prepared = $this->prepareProductsCompare($products);
-
-        $data = array(
-            'products' => $prepared,
-            'field_labels' => $this->getFieldLabelsCompare($prepared)
-        );
-
-        $this->setRegion('content', $this->render('compare/compare', $data));
-    }
-
-    /**
      * Returns an array of products to compare
+     * @param array $ids
      * @return array
      */
-    protected function getProductsCompare()
+    protected function getProductsCompare($ids)
     {
         $options = array(
             'buttons' => array(
@@ -202,12 +180,12 @@ class Compare extends FrontendController
             )
         );
 
-        $conditions = array('product_id' => $this->data_compare);
+        $conditions = array('product_id' => $ids);
         return $this->getProducts($conditions, $options);
     }
 
     /**
-     * Prepare an array of products
+     * Prepare an array of products to be compared
      * @param array $products
      * @return array
      */
@@ -221,11 +199,11 @@ class Compare extends FrontendController
     }
 
     /**
-     * Returns an array of all field labels for the given products
+     * Returns an array of all fields for the given products
      * @param array $products
      * @return array
      */
-    protected function getFieldLabelsCompare(array $products)
+    protected function getFieldsCompare(array $products)
     {
         $labels = array();
         foreach ($products as $product) {
@@ -273,7 +251,7 @@ class Compare extends FrontendController
      */
     protected function outputCompareCompare()
     {
-        $this->output();
+        $this->output('compare/compare');
     }
 
 }

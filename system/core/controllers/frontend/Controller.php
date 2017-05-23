@@ -99,6 +99,12 @@ class Controller extends BaseController
 
         $this->setFrontendInstancies();
         $this->setFrontendProperties();
+        
+        $currencies = $this->currency->getList(true);
+        unset($currencies[$this->current_currency]);
+        
+        $this->data['currencies'] = $currencies;
+        $this->data['currency_code'] = $this->current_currency;
 
         $this->submitCart();
         $this->submitCompare();

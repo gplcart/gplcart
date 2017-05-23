@@ -36,16 +36,7 @@ class Front extends FrontendController
         $this->setDataCollectionFront('file');
         $this->setDataCollectionFront('product');
 
-        $this->setRegionContentFront();
         $this->outputIndexFront();
-    }
-
-    /**
-     * Adds main content to the content region
-     */
-    protected function setRegionContentFront()
-    {
-        $this->setRegion('content', $this->render('front/content', $this->data));
     }
 
     /**
@@ -77,7 +68,7 @@ class Front extends FrontendController
      */
     protected function outputIndexFront()
     {
-        $this->output();
+        $this->output('front/content');
     }
 
 }

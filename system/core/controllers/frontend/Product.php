@@ -83,66 +83,61 @@ class Product extends FrontendController
         $this->setBreadcrumbIndexProduct();
 
         $this->setHtmlFilterIndexProduct();
-        $this->setRegionContentIndexProduct();
+
+        $this->setData('product', $this->data_product);
+
+        $this->setDataSummaryIndexProduct();
+        $this->setDataImagesIndexProduct();
+        $this->setDataCartFormIndexProduct();
+        $this->setDataRatingWidgetIndexProduct();
+
+        $this->setDataDescriptionIndexProduct();
+        $this->setDataAttributesIndexProduct();
+        $this->setDataReviewsIndexProduct();
+        $this->setDataRecentIndexProduct();
+        $this->setDataRelatedIndexProduct();
 
         $this->setJsIndexProduct();
         $this->outputIndexProduct();
     }
 
     /**
-     * Set the content region on the product page
+     * Sets the description summary on the product page
      */
-    protected function setRegionContentIndexProduct()
+    protected function setDataSummaryIndexProduct()
     {
-        $this->setRegion('content', $this->renderProductIndexProduct());
-        $this->setRegion('content', $this->renderDescriptionIndexProduct());
-        $this->setRegion('content', $this->renderAttributesIndexProduct());
-        $this->setRegion('content', $this->renderReviewsIndexProduct());
-        $this->setRegion('content', $this->renderRecentIndexProduct());
-        $this->setRegion('content', $this->renderRelatedIndexProduct());
+        $summary = '';
+        if (!empty($this->data_product['description'])) {
+            list($summary, $body) = $this->explodeText($this->data_product['description']);
+            if ($body !== '') {
+                $summary = strip_tags($summary);
+            }
+        }
+        $this->setData('summary', $summary);
     }
 
     /**
-     * Renders the product attributes data
-     * @return string
+     * Sets the "Add to cart" form
      */
-    protected function renderAttributesIndexProduct()
-    {
-        $data = array('product' => $this->data_product);
-        return $this->render('product/attributes', $data);
-    }
-
-    /**
-     * Renders the main product data
-     * @return string
-     */
-    protected function renderProductIndexProduct()
-    {
-        $data = array();
-        $data['product'] = $this->data_product;
-        $data['summary'] = $this->getSummaryProduct();
-        $data['images'] = $this->renderImagesIndexProduct();
-        $data['cart_form'] = $this->renderCartFormIndexProduct();
-        $data['rating'] = $this->renderRatingWidgetIndexProduct();
-
-        return $this->render('product/product', $data);
-    }
-
-    /**
-     * Renders the "Add to cart" form
-     * @return string
-     */
-    protected function renderCartFormIndexProduct()
+    protected function setDataCartFormIndexProduct()
     {
         $data = array('product' => $this->data_product, 'share' => $this->renderShareWidget());
-        return $this->render('cart/add', $data);
+        $this->setData('cart_form', $this->render('cart/add', $data));
     }
 
     /**
-     * Renders the product images block
-     * @return string
+     * Sets attributes the product attributes data
      */
-    protected function renderImagesIndexProduct()
+    protected function setDataAttributesIndexProduct()
+    {
+        $data = array('product' => $this->data_product);
+        $this->setData('attributes', $this->render('product/attributes', $data));
+    }
+
+    /**
+     * Sets the product images on the product page
+     */
+    protected function setDataImagesIndexProduct()
     {
         $options = array(
             'imagestyle' => $this->settings('image_style_product', 5)
@@ -155,25 +150,24 @@ class Product extends FrontendController
             $this->attachItemThumb($this->data_product, $options);
         }
 
-        return $this->render('product/images', array('product' => $this->data_product));
+        $html = $this->render('product/images', array('product' => $this->data_product));
+        $this->setData('images', $html);
     }
 
     /**
-     * Renders the product rating widget
-     * @return string
+     * Sets the product rating widget
      */
-    protected function renderRatingWidgetIndexProduct()
+    protected function setDataRatingWidgetIndexProduct()
     {
         $rating = $this->rating->getByProduct($this->data_product['product_id']);
         $data = array('rating' => $rating, 'product' => $this->data_product);
-        return $this->render('common/rating/static', $data);
+        $this->setData('rating', $this->render('common/rating/static', $data));
     }
 
     /**
-     * Renders the product description block
-     * @return string
+     * Sets the product description
      */
-    protected function renderDescriptionIndexProduct()
+    protected function setDataDescriptionIndexProduct()
     {
         $description = $this->data_product['description'];
         if (!empty($description)) {
@@ -183,14 +177,14 @@ class Product extends FrontendController
                 $description = $body;
             }
         }
-        return $this->render('product/description', array('description' => $description));
+
+        $this->setData('description', $this->render('product/description', array('description' => $description)));
     }
 
     /**
-     * Renders the product reviews panel
-     * @return string
+     * Sets the product reviews
      */
-    protected function renderReviewsIndexProduct()
+    protected function setDataReviewsIndexProduct()
     {
         if (!$this->config('review_enabled', 1) || empty($this->data_product['total_reviews'])) {
             return '';
@@ -205,13 +199,13 @@ class Product extends FrontendController
             'reviews' => $this->getReviewsProduct($this->getPagerLimit())
         );
 
-        return $this->render('review/list', $data);
+        $this->setData('reviews', $this->render('review/list', $data));
     }
 
     /**
-     * Renders the recent products block
+     * Sets the recent products block
      */
-    protected function renderRecentIndexProduct()
+    protected function setDataRecentIndexProduct()
     {
         $products = $this->getRecentProduct();
 
@@ -230,14 +224,13 @@ class Product extends FrontendController
         }
 
         $data = array('products' => $products, 'pager' => $pager);
-        return $this->render('product/recent', $data);
+        $this->setData('recent', $this->render('product/recent', $data));
     }
 
     /**
-     * Renders the related products block
-     * @return string
+     * Sets the related products
      */
-    protected function renderRelatedIndexProduct()
+    protected function setDataRelatedIndexProduct()
     {
         $products = $this->getRelatedProduct();
 
@@ -256,22 +249,7 @@ class Product extends FrontendController
         }
 
         $data = array('products' => $products, 'pager' => $pager);
-        return $this->render('product/related', $data);
-    }
-
-    /**
-     * Returns the product description summary
-     * @return string
-     */
-    protected function getSummaryProduct()
-    {
-        if (!empty($this->data_product['description'])) {
-            list($summary, $body) = $this->explodeText($this->data_product['description']);
-            if ($body !== '') {
-                return strip_tags($summary);
-            }
-        }
-        return '';
+        $this->setData('related', $this->render('product/related', $data));
     }
 
     /**
@@ -405,7 +383,7 @@ class Product extends FrontendController
     }
 
     /**
-     * Sets Javascripts on the product page
+     * Sets JavaScripts on the product page
      */
     protected function setJsIndexProduct()
     {
@@ -413,7 +391,7 @@ class Product extends FrontendController
     }
 
     /**
-     * Returns a total number of reviews for this product
+     * Returns a total number of reviews for the product
      * @param array $product
      * @return integer
      */
@@ -488,8 +466,7 @@ class Product extends FrontendController
      * @param array $selected
      * @param array $product
      */
-    protected function unshiftSelectedImageProduct(array $selected,
-            array &$product)
+    protected function unshiftSelectedImageProduct($selected, &$product)
     {
         if (isset($selected['combination']['file_id']) && isset($product['images'][$selected['combination']['file_id']])) {
             $image = $product['images'][$selected['combination']['file_id']];
@@ -503,7 +480,7 @@ class Product extends FrontendController
      */
     protected function outputIndexProduct()
     {
-        $this->output();
+        $this->output('product/product');
     }
 
     /**

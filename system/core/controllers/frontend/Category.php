@@ -70,11 +70,63 @@ class Category extends FrontendController
         $this->setListProductCategory();
         $this->setChildrenCategory();
 
+        $this->setData('category', $this->data_category);
+
+        $this->setDataImagesIndexCategory();
+        $this->setDataNavbarIndexCategory();
+        $this->setDataProductsIndexCategory();
+        $this->setDataChildrenIndexCategory();
+
         $this->setRegionMenuIndexCategory();
-        $this->setRegionContentIndexCategory();
 
         $this->setMetaIndexCategory();
         $this->outputIndexCategory();
+    }
+
+    /**
+     * Sets the children of the category
+     */
+    protected function setDataChildrenIndexCategory()
+    {
+        $this->setData('children', $this->render('category/children', array('children' => $this->data_children)));
+    }
+
+    /**
+     * Sets the category images
+     */
+    protected function setDataImagesIndexCategory()
+    {
+        $options = array(
+            'imagestyle' => $this->settings('image_style_category', 3));
+
+        $this->attachItemThumb($this->data_category, $options);
+
+        $data = array('category' => $this->data_category);
+        $this->setData('images', $this->render('category/images', $data));
+    }
+
+    /**
+     * Sets the category navbar
+     */
+    protected function setDataNavbarIndexCategory()
+    {
+        $data = array(
+            'query' => $this->query,
+            'total' => $this->total,
+            'view' => $this->query_filter['view'],
+            'quantity' => count($this->data_products),
+            'sort' => "{$this->query_filter['sort']}-{$this->query_filter['order']}"
+        );
+
+        $this->setData('navbar', $this->render('category/navbar', $data));
+    }
+
+    /**
+     * Sets the category product list
+     */
+    protected function setDataProductsIndexCategory()
+    {
+        $this->setData('products', $this->render('product/list', array('products' => $this->data_products)));
     }
 
     /**
@@ -96,7 +148,7 @@ class Category extends FrontendController
             'order' => $this->settings('catalog_order', 'asc')
         );
 
-        $this->setFilter(array(), $this->getFilterQuery($default));
+        $this->setFilter(array(), $this->getFilterQuery($default, array_keys($default)));
     }
 
     /**
@@ -128,7 +180,7 @@ class Category extends FrontendController
     }
 
     /**
-     * Sets meta tags on the category page
+     * Sets the meta tags on the category page
      */
     protected function setMetaIndexCategory()
     {
@@ -140,23 +192,7 @@ class Category extends FrontendController
     }
 
     /**
-     * Sets the content region on the categpry page
-     */
-    protected function setRegionContentIndexCategory()
-    {
-        $data = array();
-        $data['category'] = $this->data_category;
-        $data['pager'] = $this->getData('pager');
-        $data['images'] = $this->renderImagesIndexCategory();
-        $data['navbar'] = $this->renderNavbarIndexCategory();
-        $data['products'] = $this->renderProductsIndexCategory();
-        $data['children'] = $this->renderChildrenIndexCategory();
-
-        $this->setRegion('content', $this->render('category/content', $data));
-    }
-
-    /**
-     * Sets navigation menu on the category page
+     * Sets the navigation menu on the category page
      */
     protected function setRegionMenuIndexCategory()
     {
@@ -166,52 +202,6 @@ class Category extends FrontendController
         );
 
         $this->setRegion('left', $this->renderMenu($options));
-    }
-
-    /**
-     * Render the category navbar
-     */
-    protected function renderNavbarIndexCategory()
-    {
-        $data = array(
-            'query' => $this->query,
-            'total' => $this->total,
-            'view' => $this->query_filter['view'],
-            'quantity' => count($this->data_products),
-            'sort' => "{$this->query_filter['sort']}-{$this->query_filter['order']}"
-        );
-
-        return $this->render('category/navbar', $data);
-    }
-
-    /**
-     * Renders the category product list
-     */
-    protected function renderProductsIndexCategory()
-    {
-        return $this->render('product/list', array('products' => $this->data_products));
-    }
-
-    /**
-     * Render the category images
-     */
-    protected function renderImagesIndexCategory()
-    {
-        $options = array(
-            'imagestyle' => $this->settings('image_style_category', 3));
-
-        $this->attachItemThumb($this->data_category, $options);
-
-        $data = array('category' => $this->data_category);
-        return $this->render('category/images', $data);
-    }
-
-    /**
-     * Render the children of the category
-     */
-    protected function renderChildrenIndexCategory()
-    {
-        return $this->render('category/children', array('children' => $this->data_children));
     }
 
     /**
@@ -242,7 +232,7 @@ class Category extends FrontendController
      */
     protected function outputIndexCategory()
     {
-        $this->output();
+        $this->output('category/content');
     }
 
     /**

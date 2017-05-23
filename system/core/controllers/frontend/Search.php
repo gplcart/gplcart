@@ -47,7 +47,7 @@ class Search extends FrontendController
     }
 
     /**
-     * Displays search results page
+     * Displays the search page
      */
     public function listSearch()
     {
@@ -61,9 +61,41 @@ class Search extends FrontendController
         $this->setPagerLimit($this->settings('catalog_limit', 20));
 
         $this->setResultsSearch();
-        $this->setRegionContentListSearch();
+
+        $this->setDataNavbarListSearch();
+        $this->setDataProductsListSearch();
 
         $this->outputListSearch();
+    }
+
+    /**
+     * Sets results on the search page
+     * @return string
+     */
+    protected function setDataProductsListSearch()
+    {
+        $this->setData('results', $this->render('product/list', array('products' => $this->data_results)));
+    }
+
+    /**
+     * Sets the navbar on the search page
+     * @return string
+     */
+    protected function setDataNavbarListSearch()
+    {
+        if (empty($this->data_results)) {
+            return $this->text('No results found. Try another search keyword');
+        }
+
+        $options = array(
+            'total' => $this->total,
+            'query' => $this->query_filter,
+            'view' => $this->query_filter['view'],
+            'quantity' => count($this->data_results),
+            'sort' => "{$this->query_filter['sort']}-{$this->query_filter['order']}"
+        );
+
+        $this->setData('navbar', $this->render('category/navbar', $options));
     }
 
     /**
@@ -122,7 +154,7 @@ class Search extends FrontendController
      */
     protected function outputListSearch()
     {
-        $this->output();
+        $this->output('search/search');
     }
 
     /**
@@ -157,45 +189,6 @@ class Search extends FrontendController
             $options['placeholder'] = true;
             $this->data_results = $this->prepareEntityItems($results, $options);
         }
-    }
-
-    /**
-     * Set the content region on the search result page
-     */
-    protected function setRegionContentListSearch()
-    {
-        $this->setRegion('content', $this->renderNavbarListSearch());
-        $this->setRegion('content', $this->renderProductsListSearch());
-    }
-
-    /**
-     * Returns rendered results
-     * @return string
-     */
-    protected function renderProductsListSearch()
-    {
-        return $this->render('product/list', array('products' => $this->data_results));
-    }
-
-    /**
-     * Returns rendered navbar
-     * @return string
-     */
-    protected function renderNavbarListSearch()
-    {
-        if (empty($this->data_results)) {
-            return $this->text('No products found. Try another search keyword');
-        }
-
-        $options = array(
-            'total' => $this->total,
-            'query' => $this->query_filter,
-            'view' => $this->query_filter['view'],
-            'quantity' => count($this->data_results),
-            'sort' => "{$this->query_filter['sort']}-{$this->query_filter['order']}"
-        );
-
-        return $this->render('category/navbar', $options);
     }
 
 }

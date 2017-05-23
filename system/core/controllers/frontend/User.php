@@ -203,7 +203,6 @@ class User extends FrontendController
         $this->setSubmitted('store_id', $this->store_id);
 
         $this->validateComponent('user');
-
         return !$this->hasErrors();
     }
 
@@ -338,7 +337,6 @@ class User extends FrontendController
         $this->setSubmitted('user', $this->data_user);
 
         $this->validateComponent('user_reset_password');
-
         return !$this->hasErrors();
     }
 

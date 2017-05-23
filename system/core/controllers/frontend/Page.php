@@ -54,72 +54,24 @@ class Page extends FrontendController
         $this->setHtmlFilterIndexPage();
         $this->setMetaIndexPage();
 
-        $this->setRegionContentIndexPage();
+        $this->setData('page', $this->data_page);
+        $this->setDataImagesIndexPage();
+        $this->setRegionMenuIndexPage();
+
         $this->outputIndexPage();
     }
 
     /**
-     * Sets HTML filter on the page
+     * Sets the navigation menu on the category page
      */
-    protected function setHtmlFilterIndexPage()
+    protected function setRegionMenuIndexPage()
     {
-        $this->setHtmlFilter($this->data_page);
-    }
-
-    /**
-     * Set meta tags on the page
-     */
-    protected function setMetaIndexPage()
-    {
-        $this->setMetaEntity($this->data_page);
-    }
-
-    /**
-     * Sets the main content region
-     */
-    protected function setRegionContentIndexPage()
-    {
-        $data = array(
-            'page' => $this->data_page,
-            'images' => $this->renderImagesIndexPage()
+        $options = array(
+            'template' => 'category/menu',
+            'items' => $this->data_categories
         );
 
-        $this->setRegion('content', $this->render('page/content', $data));
-    }
-
-    /**
-     * Returns rendered page images
-     */
-    protected function renderImagesIndexPage()
-    {
-        $options = array('imagestyle' => $this->settings('image_style_page', 5));
-        $this->attachItemThumb($this->data_page, $options);
-        return $this->render('page/images', array('page' => $this->data_page));
-    }
-
-    /**
-     * Render and output the page
-     */
-    protected function outputIndexPage()
-    {
-        $this->output();
-    }
-
-    /**
-     * Sets breadcrumbs on the page
-     */
-    protected function setBreadcrumbIndexPage()
-    {
-        $breadcrumb = array('url' => $this->url('/'), 'text' => $this->text('Home'));
-        $this->setBreadcrumb($breadcrumb);
-    }
-
-    /**
-     * Sets titles on the page
-     */
-    protected function setTitleIndexPage()
-    {
-        $this->setTitle($this->data_page['title']);
+        $this->setRegion('left', $this->renderMenu($options));
     }
 
     /**
@@ -143,6 +95,57 @@ class Page extends FrontendController
         }
 
         $this->data_page = $page;
+    }
+
+    /**
+     * Sets HTML filter on the page
+     */
+    protected function setHtmlFilterIndexPage()
+    {
+        $this->setHtmlFilter($this->data_page);
+    }
+
+    /**
+     * Set meta tags on the page
+     */
+    protected function setMetaIndexPage()
+    {
+        $this->setMetaEntity($this->data_page);
+    }
+
+    /**
+     * Sets the rendered images on the page
+     */
+    protected function setDataImagesIndexPage()
+    {
+        $options = array('imagestyle' => $this->settings('image_style_page', 5));
+        $this->attachItemThumb($this->data_page, $options);
+        $this->setData('images', $this->render('page/images', array('page' => $this->data_page)));
+    }
+
+    /**
+     * Render and output the page
+     */
+    protected function outputIndexPage()
+    {
+        $this->output('page/content');
+    }
+
+    /**
+     * Sets breadcrumbs on the page
+     */
+    protected function setBreadcrumbIndexPage()
+    {
+        $breadcrumb = array('url' => $this->url('/'), 'text' => $this->text('Home'));
+        $this->setBreadcrumb($breadcrumb);
+    }
+
+    /**
+     * Sets titles on the page
+     */
+    protected function setTitleIndexPage()
+    {
+        $this->setTitle($this->data_page['title']);
     }
 
 }
