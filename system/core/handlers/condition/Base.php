@@ -44,13 +44,13 @@ class Base extends Handler
 
         switch ($operator) {
             case '>=':
-                return ($a >= $b);
+                return $a >= $b;
             case '<=':
-                return ($a <= $b);
+                return $a <= $b;
             case '>':
-                return ($a > $b);
+                return $a > $b;
             case '<':
-                return ($a < $b);
+                return $a < $b;
             case '=':
                 return count(array_intersect($a, $b)) > 0;
             case '!=':
