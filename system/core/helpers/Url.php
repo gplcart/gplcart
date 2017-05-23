@@ -22,7 +22,6 @@ class Url
     protected $request;
 
     /**
-     * Constructor
      * @param Request $request
      */
     public function __construct(Request $request)
@@ -111,6 +110,28 @@ class Url
     }
 
     /**
+     * Returns a URL with appended language code
+     * @param string $code
+     * @param string $path
+     * @param array $options
+     */
+    public function language($code, $path = '', $options = array())
+    {
+        $segments = $this->segments(true, $path);
+        $langcode = $this->request->getLangcode();
+
+        if (isset($segments[0]) && $segments[0] === $langcode) {
+            unset($segments[0]); // Remove the existing language code
+        }
+
+        if (!empty($code)) {
+            array_unshift($segments, $code);
+        }
+
+        return $this->get(implode('/', $segments), $options, false, true);
+    }
+
+    /**
      * Returns true if the path is a public area
      * @return boolean
      */
@@ -126,18 +147,19 @@ class Url
     public function isBackend()
     {
         $segments = $this->segments();
-        return (isset($segments[0]) && $segments[0] === 'admin');
+        return isset($segments[0]) && $segments[0] === 'admin';
     }
 
     /**
      * Returns an array containing all the components of the current path
+     * @param boolean $append_langcode
      * @param string $path
      * @return array
      */
-    public function segments($path = '')
+    public function segments($append_langcode = false, $path = '')
     {
         if (empty($path)) {
-            $path = $this->path();
+            $path = $this->path($append_langcode);
         }
 
         return explode('/', trim($path, '/'));
@@ -145,16 +167,13 @@ class Url
 
     /**
      * Returns an internal path without query
-     * @param string $path
+     * @param boolean $append_langcode
      * @return string
      */
-    public function path($path = '')
+    public function path($append_langcode = false)
     {
-        if (empty($path)) {
-            $path = $this->request->urn();
-        }
-
-        return substr(strtok($path, '?'), strlen($this->request->base()));
+        $urn = $this->request->urn();
+        return substr(strtok($urn, '?'), strlen($this->request->base($append_langcode)));
     }
 
     /**
@@ -164,7 +183,7 @@ class Url
     public function isDashboard()
     {
         $segments = $this->segments();
-        return ((isset($segments[0]) && $segments[0] === 'admin') && empty($segments[1]));
+        return isset($segments[0]) && $segments[0] === 'admin' && empty($segments[1]);
     }
 
     /**
@@ -174,7 +193,7 @@ class Url
     public function isInstall()
     {
         $segments = $this->segments();
-        return (isset($segments[0]) && $segments[0] === 'install');
+        return isset($segments[0]) && $segments[0] === 'install';
     }
 
     /**
@@ -194,7 +213,7 @@ class Url
     public function isAccount()
     {
         $segments = $this->segments();
-        if ((reset($segments) === 'account') && (isset($segments[1]) && is_numeric($segments[1]))) {
+        if (reset($segments) === 'account' && isset($segments[1]) && is_numeric($segments[1])) {
             return (int) $segments[1];
         }
         return false;
