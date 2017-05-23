@@ -21,20 +21,6 @@ class Request
     const COOKIE_PREFIX = 'gplcart_';
 
     /**
-     * 
-     */
-    public function __construct()
-    {
-        // Empty
-    }
-
-    /**
-     * Base path
-     * @var string
-     */
-    protected $base;
-
-    /**
      * Language code from URL
      * @var string
      */
@@ -63,39 +49,47 @@ class Request
 
     /**
      * Returns the current base path
+     * @staticvar array $cache
      * @param boolean $exclude_langcode
-     * @return string
+     * @return array
      */
     public function base($exclude_langcode = false)
     {
-        if (!isset($this->base)) {
-            $base = str_replace(array('\\', ' '), array('/', '%20'), dirname($this->server('SCRIPT_NAME')));
-            $this->base = ($base == "/") ? "/" : $base . "/";
+        static $cache = array();
+        if (isset($cache[$exclude_langcode])) {
+            return $cache[$exclude_langcode];
         }
 
-        $base = $this->base . $this->langcode;
+        $base = str_replace(array('\\', ' '), array('/', '%20'), dirname($this->server('SCRIPT_NAME')));
+        $base = $base === '/' ? '/' : "$base/";
 
-        if ($exclude_langcode && !empty($this->langcode)) {
-            $base = substr($base, 0, -strlen($this->langcode));
+        if (!empty($this->langcode)) {
+            $suffix = $this->langcode . '/';
+            $base .= $suffix;
         }
 
+        if ($exclude_langcode && !empty($suffix)) {
+            $base = substr($base, 0, -strlen($suffix));
+        }
+
+        $cache[$exclude_langcode] = $base;
         return $base;
     }
 
     /**
      * Sets a language code
-     * @param string $code
+     * @param string $langcode
      */
-    public function setBaseSuffix($code)
+    public function setLangcode($langcode)
     {
-        $this->langcode = $code . '/';
+        $this->langcode = $langcode;
     }
 
     /**
      * Returns a language suffix from the URL
      * @return string
      */
-    public function getBaseSuffix()
+    public function getLangcode()
     {
         return $this->langcode;
     }
@@ -142,7 +136,7 @@ class Request
      */
     public function isAjax()
     {
-        return ($this->server('HTTP_X_REQUESTED_WITH') === 'XMLHttpRequest');
+        return $this->server('HTTP_X_REQUESTED_WITH') === 'XMLHttpRequest';
     }
 
     /**
@@ -160,7 +154,7 @@ class Request
      */
     public function isSecure()
     {
-        return ($this->server('HTTPS', 'off') !== 'off');
+        return $this->server('HTTPS', 'off') !== 'off';
     }
 
     /**
