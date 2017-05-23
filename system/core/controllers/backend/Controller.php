@@ -163,7 +163,7 @@ class Controller extends BaseController
      */
     protected function attachThumb(&$item)
     {
-        $imagestyle = $this->config('image_style_admin', 2);
+        $imagestyle = $this->config('image_style_ui', 2);
         $item['thumb'] = $this->image->url($imagestyle, $item['path']);
     }
 
@@ -193,9 +193,12 @@ class Controller extends BaseController
      */
     protected function setDataAttachedImages(array $images, $entity)
     {
-        $data = array('images' => $images, 'name_prefix' => $entity);
-        $html = $this->render('common/image/attache', $data);
-        $this->setData('attached_images', $html);
+        $data = array(
+            'images' => $images,
+            'name_prefix' => $entity,
+            'languages' => $this->language->getList(true));
+
+        $this->setData('attached_images', $this->render('common/image/attache', $data));
     }
 
     /**
