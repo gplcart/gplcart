@@ -169,7 +169,7 @@ class Ajax extends FrontendController
      */
     public function getCartPreviewAjax()
     {
-        $cart = $this->cart();
+        $cart = $this->getCart();
 
         if (empty($cart['items'])) {
             return array();

@@ -99,12 +99,7 @@ class Controller extends BaseController
 
         $this->setFrontendInstancies();
         $this->setFrontendProperties();
-        
-        $currencies = $this->currency->getList(true);
-        unset($currencies[$this->current_currency]);
-        
-        $this->data['currencies'] = $currencies;
-        $this->data['currency_code'] = $this->current_currency;
+        $this->setDefaultDataFrontend();
 
         $this->submitCart();
         $this->submitCompare();
@@ -113,6 +108,30 @@ class Controller extends BaseController
         $this->hook->fire('construct.controller.frontend', $this);
 
         $this->controlHttpStatus();
+    }
+
+    /**
+     * Sets default data for frontend templates
+     */
+    protected function setDefaultDataFrontend()
+    {
+        $currencies = $this->currency->getList(true);
+        unset($currencies[$this->current_currency]);
+
+        $this->data['currencies'] = $currencies;
+        $this->data['wishlist'] = $this->getWishlist();
+        $this->data['comparison'] = $this->getComparison();
+        $this->data['category_menu'] = $this->getCategoryMenu();
+        $this->data['currency_code'] = $this->current_currency;
+        $this->data['store_title'] = $this->store->getTranslation('title', $this->langcode);
+
+        if (!empty($this->current_store['data']['logo'])) {
+            $this->data['store_logo'] = $this->image->urlFromPath($this->current_store['data']['logo']);
+        }
+
+        if (!empty($this->current_store['data']['favicon'])) {
+            $this->data['store_favicon'] = $this->image->urlFromPath($this->current_store['data']['favicon']);
+        }
     }
 
     /**
@@ -137,9 +156,9 @@ class Controller extends BaseController
     protected function setFrontendProperties()
     {
         if (!$this->url->isInstall()) {
+            $this->cart_uid = $this->cart->uid();
             $this->triggered = $this->getFiredTriggers();
             $this->data_categories = $this->getCategories();
-            $this->cart_uid = $this->cart->uid();
             $this->current_currency = (string) $this->currency->get();
         }
     }
@@ -165,59 +184,19 @@ class Controller extends BaseController
     }
 
     /**
-     * Returns the current cart data
-     * @param null|string $key
-     * @return mixed
-     */
-    public function cart($key = null)
-    {
-        if ($key === 'user_id') {
-            return $this->cart_uid;
-        }
-
-        $conditions = array(
-            'user_id' => $this->cart_uid,
-            'store_id' => $this->store_id
-        );
-
-        $cart = $this->cart->getContent($conditions);
-
-        if ($key === 'count_total') {
-            return empty($cart['quantity']) ? 0 : $cart['quantity'];
-        }
-
-        return $cart;
-    }
-
-    /**
-     * Returns an array of recently viewed products
+     * Returns an array of product IDs to compare
      * @return array
      */
-    public function viewed()
+    public function getComparison()
     {
-        $limit = $this->config('recent_limit', 4);
-        return $this->product->getViewed($limit);
+        return $this->compare->getList();
     }
 
     /**
-     * Returns an array of product IDs to compare
-     * @return array|integer
+     * Returns wishlist items for the current user
+     * @return array
      */
-    public function compare($key = null)
-    {
-        $items = $this->compare->getList();
-
-        if ($key === 'count') {
-            return count($items);
-        }
-        return $items;
-    }
-
-    /**
-     * Returns a wishlist data
-     * @return array|integer
-     */
-    public function wishlist($key = null)
+    public function getWishlist()
     {
         $options = array(
             'product_status' => 1,
@@ -225,23 +204,16 @@ class Controller extends BaseController
             'store_id' => $this->store_id
         );
 
-        $result = (array) $this->wishlist->getList($options);
-
-        if ($key === 'count') {
-            return count($result);
-        }
-        return $result;
+        return (array) $this->wishlist->getList($options);
     }
 
     /**
      * Returns rendered main menu
-     * @param array $options
      * @return string
      */
-    public function menu(array $options = array())
+    public function getCategoryMenu()
     {
-        $options += array('items' => $this->data_categories);
-        return $this->renderMenu($options);
+        return $this->renderMenu(array('items' => $this->data_categories));
     }
 
     /**
@@ -309,11 +281,13 @@ class Controller extends BaseController
             return array('redirect' => '', 'severity' => 'success');
         }
 
+        $cart = $this->getCart();
+
         $result = array(
             'redirect' => '',
             'severity' => 'success',
-            'quantity' => $this->cart('count_total'),
-            'message' => $this->text('Cart item has been deleted')
+            'message' => $this->text('Cart item has been deleted'),
+            'quantity' => empty($cart['quantity']) ? 0 : $cart['quantity']
         );
 
         $preview = $this->renderCartPreview();
@@ -359,7 +333,7 @@ class Controller extends BaseController
      */
     protected function renderCartPreview()
     {
-        $cart = $this->cart();
+        $cart = $this->getCart();
 
         if (empty($cart['items'])) {
             return '';
