@@ -100,7 +100,6 @@ class Route
         }
 
         $routes = require GC_CONFIG_ROUTE;
-
         $this->hook->fire('route.list', $routes, $this);
         return $routes;
     }
@@ -147,17 +146,19 @@ class Route
         $segments = $this->url->segments(true);
         $default = $this->config->get('language', '');
 
-        $this->langcode = $default;
-        if (!empty($languages[$segments[0]]['status'])) {
-            $this->langcode = $segments[0];
-        }
+        $found = !empty($languages[$segments[0]]['status']);
+        $this->langcode = $found ? $segments[0] : $default;
+        $is_default = $this->langcode === $default;
 
-        $suffix = $this->langcode;
-        if ($this->langcode === $default) {
-            $suffix = '';
-        }
-
+        $suffix = $is_default ? '' : $this->langcode;
         $this->request->setLangcode($suffix);
+
+        // Redirect to URL without default language code
+        if ($found && $is_default && $this->config->get('redirect_default_langcode', 1)) {
+            unset($segments[0]);
+            $path = $this->request->base(true) . implode('/', $segments);
+            $this->url->redirect($path, $this->request->get(), true);
+        }
     }
 
     /**
