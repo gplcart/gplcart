@@ -120,15 +120,22 @@ class Url
         $segments = $this->segments(true, $path);
         $langcode = $this->request->getLangcode();
 
+        // Remove an existing language code
         if (isset($segments[0]) && $segments[0] === $langcode) {
-            unset($segments[0]); // Remove the existing language code
+            unset($segments[0]);
         }
 
-        if (!empty($code)) {
-            array_unshift($segments, $code);
+        // Prepend language code
+        array_unshift($segments, $code);
+
+        $url = $this->request->base(true);
+        $url .= trim(implode('/', $segments), '/');
+
+        if (!empty($options)) {
+            $url .= '?' . http_build_query($options);
         }
 
-        return $this->get(implode('/', $segments), $options, false, true);
+        return $url;
     }
 
     /**
@@ -187,7 +194,7 @@ class Url
     }
 
     /**
-     * Returns true if the path is /install
+     * Returns true if the path is a /install page
      * @return boolean
      */
     public function isInstall()
@@ -207,7 +214,7 @@ class Url
     }
 
     /**
-     * Returns a user ID from the path if it is /account* path
+     * Returns a user ID from the path if it is a /account* path
      * @return boolean|integer
      */
     public function isAccount()
