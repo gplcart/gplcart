@@ -11,7 +11,15 @@
   <?php foreach ($meta as $tag) { ?>
   <meta<?php echo $this->attributes($tag); ?>>
   <?php } ?>
-  <title><?php echo $this->e($head_title); ?></title>
+  <title>
+    <?php echo $this->e($store_title); ?>
+    <?php if(!empty($head_title)) { ?>
+    | <?php echo $this->e($head_title); ?>
+    <?php } ?>
+  </title>
+  <?php if(!empty($store_favicon)) { ?>
+  <link rel="icon" href="<?php echo $this->e($store_favicon); ?>">
+  <?php } ?>
   <?php foreach ($css as $data) { ?>
   <link href="<?php echo $this->e($data['key']); ?>" rel="stylesheet">
   <?php } ?>

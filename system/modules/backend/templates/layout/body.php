@@ -25,7 +25,9 @@
         <?php } ?>
       </div>
       <div id="navbar" class="navbar-collapse collapse">
-        <?php echo $this->menu(); ?>
+        <?php if(!empty($admin_menu)) { ?>
+        <?php echo $admin_menu; ?>
+        <?php } ?>
         <ul class="nav navbar-nav navbar-right right-links hidden-sm hidden-xs">
           <li class="dropdown">
             <a href="#" class="dropdown-toggle " data-toggle="dropdown">
