@@ -4,8 +4,18 @@ html {
 }
 
 body {
-    margin-bottom: 120px;
+    margin-bottom: 50px;
     background-color: #f7f7f7;
+}
+
+.navbar-brand {
+    padding: 0px;
+}
+
+.navbar-brand > img {
+    height: 100%;
+    padding: 0;
+    width: auto;
 }
 
 body.js .hidden-js {
@@ -24,7 +34,8 @@ body.checkout .navbar .cart {
     position: absolute;
     bottom: 0;
     width: 100%;
-    height: 120px;
+    height: 50px;
+    line-height: 50px;
 }
 
 .footer .container {
@@ -43,7 +54,7 @@ body.checkout .navbar .cart {
 
 .container-fluid.wrapper {
     background-color: #fff;
-    min-height: calc(100vh - 120px);
+    min-height: calc(100vh - 50px);
 }
 
 .panel.panel-borderless {
@@ -96,32 +107,38 @@ body.checkout .navbar .cart {
     display:none;
 }
 
-.navbar.first .fa {
-    font-size: 1.2em;
-}
-
 .navbar {
     margin-bottom: 0;
-    border: none;
+    border: none !important;
+    position: static; /* Fix overlapping dropdowns */
 }
 
 .navbar.first {
-    background-color: #003b64;
-    min-height: 70px !important;
-    padding-top: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    min-height: 20px;
+}
+
+.navbar.first .navbar-text,
+.navbar.first .list-inline {
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 .navbar.second {
-    background-color: #002e4e;
-    z-index: 999;
+    background-color: transparent;
+    min-height: 80px;
+    padding-top: 15px;
+}
+
+.navbar.second .navbar-nav > .open > a,
+.navbar.second .navbar-nav > .open > a:focus,
+.navbar.second .navbar-nav > .open > a:hover {
+    background-color: transparent !important;
 }
 
 .navbar.category {
     margin-bottom: 20px;
-}
-
-.navbar.second .navbar-nav > li > a {
-    color: #fff !important;
 }
 
 .section {
