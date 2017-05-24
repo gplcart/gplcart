@@ -105,25 +105,6 @@
           </div>
         </div>
       </div>
-      <div class="form-group">
-        <label class="col-md-2 control-label"><?php echo $this->text('Live error reporting'); ?></label>
-        <div class="col-md-4">
-          <select  name="settings[error_live_report]" class="form-control">
-            <option value="0"<?php echo ($settings['error_live_report'] == 0) ? ' selected' : ''; ?>>
-            <?php echo $this->text('Disabled'); ?>
-            </option>
-            <option value="1"<?php echo ($settings['error_live_report'] == 1) ? ' selected' : ''; ?>>
-            <?php echo $this->text('Enabled for admin'); ?>
-            </option>
-            <option value="2"<?php echo ($settings['error_live_report'] == 2) ? ' selected' : ''; ?>>
-            <?php echo $this->text('Enabled for everyone'); ?>
-            </option>
-          </select>
-          <div class="help-block">
-            <?php echo $this->text('Inform about current PHP errors on every page. Should be disabled on production'); ?>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
   <div class="panel panel-default">

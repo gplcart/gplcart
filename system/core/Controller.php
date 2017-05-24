@@ -1611,39 +1611,8 @@ class Controller
      */
     protected function setPhpErrors(array &$data)
     {
-        $this->setPhpErrorsLive();
-
         foreach ($this->logger->getPhpErrors() as $message) {
             $data['messages']['warning'][] = $message;
-        }
-    }
-
-    /**
-     * Set up live error reporting
-     * @return null
-     */
-    protected function setPhpErrorsLive()
-    {
-        $access = $this->config('error_live_report', 0);
-
-        if (!$access) {
-            return null; // Disabled
-        }
-
-        if ($this->path('admin/report/events')) {
-            return null; // Don't display on the event reporting page
-        }
-
-        if ($access == 1 && !$this->access('report_events')) {
-            return null; // No  access to see the report
-        }
-
-        $count = $this->logger->countPhpErrors();
-
-        if (!empty($count)) {
-            $options = array('@count' => $count, '@url' => $this->url('admin/report/events'));
-            $message = $this->text('Logged PHP errors: <a href="@url">@count</a>', $options);
-            $this->data['messages']['warning'][] = $message;
         }
     }
 
@@ -1784,7 +1753,22 @@ class Controller
         $controller = strtolower(str_replace('\\', '-', $this->current_route['handlers']['controller'][0]));
         $this->data['body_classes'] = array_slice(explode('-', $controller, 3), -1);
 
+        $this->data['cart'] = $this->getCart();
+
         $this->setDefaultJs();
+    }
+
+    /**
+     * Returns the current cart data
+     * @return array
+     */
+    public function getCart()
+    {
+        $conditions = array(
+            'user_id' => $this->cart_uid,
+            'store_id' => $this->store_id
+        );
+        return $this->cart->getContent($conditions);
     }
 
     /**
