@@ -329,14 +329,6 @@
     };
 
     /**
-     * Deal with W3C validator warnings
-     * @returns {undefined}
-     */
-    GplCart.onload.fixRadio = function () {
-        $('label.btn > input[type="radio"]').attr('autocomplete', 'off');
-    };
-
-    /**
      * Loads cart preview on demand
      * @returns {undefined}
      */
