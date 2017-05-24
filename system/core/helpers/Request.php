@@ -136,7 +136,7 @@ class Request
      */
     public function isAjax()
     {
-        return $this->server('HTTP_X_REQUESTED_WITH') === 'XMLHttpRequest';
+        return strtolower($this->server('HTTP_X_REQUESTED_WITH')) === 'xmlhttprequest';
     }
 
     /**
