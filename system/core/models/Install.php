@@ -393,9 +393,9 @@ class Install extends Model
             'description' => 'Contact information',
         );
 
-        $pages['faq.html'] = array(
-            'title' => 'FAQ',
-            'description' => 'Questions and answers',
+        $pages['help.html'] = array(
+            'title' => 'Help',
+            'description' => 'Help information. Coming soon...',
         );
 
         foreach ($pages as $alias => $data) {
