@@ -41,9 +41,19 @@ class Controller extends BaseController
         $this->image = Container::get('gplcart\\core\\models\\Image');
 
         $this->processCurrentJob();
+        $this->setDefaultDataBackend();
 
         $this->hook->fire('construct.controller.backend', $this);
         $this->controlHttpStatus();
+    }
+
+    /**
+     * Sets default variables for backend templates
+     */
+    protected function setDefaultDataBackend()
+    {
+        $this->data['stores'] = $this->store->getList(array('status' => 1));
+        $this->data['admin_menu'] = $this->getAdminMenu();
     }
 
     /**
@@ -111,7 +121,7 @@ class Controller extends BaseController
      * @param array $options
      * @return string
      */
-    public function menu(array $options = array())
+    public function getAdminMenu(array $options = array())
     {
         $items = array();
         foreach ($this->route->getList() as $path => $route) {
