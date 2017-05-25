@@ -82,7 +82,6 @@ class PriceRule extends BackendController
         $this->setTotalListPriceRule();
         $this->setPagerLimit();
 
-        $this->setData('stores', $this->store->getNames());
         $this->setData('price_rules', $this->getListPriceRule());
 
         $this->outputListPriceRule();
@@ -213,7 +212,6 @@ class PriceRule extends BackendController
         $this->setBreadcrumbEditPriceRule();
 
         $this->setData('price_rule', $this->data_rule);
-        $this->setData('stores', $this->store->getList());
         $this->setData('triggers', $this->getTriggersPriceRule());
         $this->setData('currencies', $this->getCurrenciesPriceRule());
 

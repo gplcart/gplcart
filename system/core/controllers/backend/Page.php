@@ -73,7 +73,6 @@ class Page extends BackendController
         $this->setTotalListPage();
         $this->setPagerLimit();
 
-        $this->setData('stores', $this->store->getNames());
         $this->setData('pages', $this->getListPage());
 
         $this->outputListPage();
@@ -206,7 +205,6 @@ class Page extends BackendController
         $this->setBreadcrumbEditPage();
 
         $this->setData('page', $this->data_page);
-        $this->setData('stores', $this->store->getNames());
 
         $this->submitEditPage();
 

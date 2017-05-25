@@ -111,7 +111,6 @@ class Product extends BackendController
         $this->setTotalListProduct();
         $this->setPagerLimit();
 
-        $this->setData('stores', $this->store->getNames());
         $this->setData('products', $this->getListProduct());
         $this->setData('currencies', $this->currency->getList());
 
@@ -246,7 +245,6 @@ class Product extends BackendController
         $this->setBreadcrumbEditProduct();
 
         $this->setData('product', $this->data_product);
-        $this->setData('stores', $this->store->getNames());
         $this->setData('related', $this->getRelatedProduct());
         $this->setData('classes', $this->getClassesProduct());
         $this->setData('size_units', $this->product->getSizeUnits());

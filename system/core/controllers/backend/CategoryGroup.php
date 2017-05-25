@@ -52,7 +52,6 @@ class CategoryGroup extends BackendController
         $this->setTotalListCategoryGroup();
         $this->setPagerLimit();
 
-        $this->setData('stores', $this->store->getNames());
         $this->setData('groups', $this->getListCategoryGroup());
 
         $this->outputListCategoryGroup();
@@ -128,7 +127,6 @@ class CategoryGroup extends BackendController
         $this->setTitleEditCategoryGroup();
         $this->setBreadcrumbEditCategoryGroup();
 
-        $this->setData('stores', $this->store->getNames());
         $this->setData('types', $this->category_group->getTypes());
         $this->setData('category_group', $this->data_category_group);
         $this->setData('can_delete', $this->canDeleteCategoryGroup());

@@ -40,7 +40,6 @@ class Cart extends BackendController
         $this->setPagerLimit();
 
         $this->setData('carts', $this->getListCart());
-        $this->setData('stores', $this->store->getNames());
 
         $this->outputListCart();
     }

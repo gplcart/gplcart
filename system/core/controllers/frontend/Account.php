@@ -348,8 +348,6 @@ class Account extends FrontendController
         $this->setBreadcrumbEditAccount();
 
         $this->setData('user', $this->data_user);
-        $this->setData('roles', $this->role->getList());
-        $this->setData('stores', $this->store->getNames());
 
         $this->submitEditAccount();
         $this->outputEditAccount();

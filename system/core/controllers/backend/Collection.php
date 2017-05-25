@@ -54,7 +54,6 @@ class Collection extends BackendController
         $this->setTotalListCollection();
         $this->setPagerLimit();
 
-        $this->setData('stores', $this->store->getNames());
         $this->setData('collections', $this->getListCollection());
         $this->setData('handlers', $this->collection->getHandlers());
 
@@ -169,7 +168,6 @@ class Collection extends BackendController
         $this->setTitleEditCollection();
         $this->setBreadcrumbEditCollection();
 
-        $this->setData('stores', $this->store->getNames());
         $this->setData('types', $this->collection->getTypes());
         $this->setData('collection', $this->data_collection);
         $this->setData('can_delete', $this->canDeleteCollection());

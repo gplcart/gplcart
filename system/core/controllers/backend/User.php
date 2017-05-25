@@ -54,7 +54,6 @@ class User extends BackendController
         $this->setPagerLimit();
 
         $this->setData('roles', $this->role->getList());
-        $this->setData('stores', $this->store->getNames());
         $this->setData('users', $this->getListUser());
 
         $this->outputListUser();
@@ -194,7 +193,6 @@ class User extends BackendController
 
         $this->setData('user', $this->data_user);
         $this->setData('roles', $this->role->getList());
-        $this->setData('stores', $this->store->getNames());
         $this->setData('can_delete', $this->canDeleteUser());
         $this->setData('is_superadmin', $this->isSuperadminUser());
 

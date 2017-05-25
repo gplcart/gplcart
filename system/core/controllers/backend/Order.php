@@ -470,7 +470,6 @@ class Order extends BackendController
         $this->setTitleListOrder();
         $this->setBreadcrumbListOrder();
 
-        $this->setData('stores', $this->store->getNames());
         $this->setData('statuses', $this->order->getStatuses());
 
         $this->setFilterListOrder();

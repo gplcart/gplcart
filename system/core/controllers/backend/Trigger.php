@@ -63,7 +63,6 @@ class Trigger extends BackendController
         $this->setTotalListTrigger();
         $this->setPagerLimit();
 
-        $this->setData('stores', $this->store->getNames());
         $this->setData('triggers', $this->getListTrigger());
 
         $this->outputListTrigger();
@@ -177,7 +176,6 @@ class Trigger extends BackendController
         $this->setBreadcrumbEditTrigger();
 
         $this->setData('trigger', $this->data_trigger);
-        $this->setData('stores', $this->store->getNames());
         $this->setData('can_delete', $this->canDeleteTrigger());
         $this->setData('conditions', $this->getConditionsTrigger());
         $this->setData('operators', $this->getConditionOperatorsTrigger());
