@@ -37,8 +37,7 @@ class Controller extends BaseController
     {
         parent::__construct();
 
-        $this->job = Container::get('gplcart\\core\\models\\Job');
-        $this->image = Container::get('gplcart\\core\\models\\Image');
+        $this->setInstancePropertiesBackend();
 
         $this->processCurrentJob();
         $this->setDefaultDataBackend();
@@ -48,22 +47,22 @@ class Controller extends BaseController
     }
 
     /**
+     * Sets class instances
+     */
+    protected function setInstancePropertiesBackend()
+    {
+        $this->job = Container::get('gplcart\\core\\models\\Job');
+        $this->image = Container::get('gplcart\\core\\models\\Image');
+    }
+
+    /**
      * Sets default variables for backend templates
      */
     protected function setDefaultDataBackend()
     {
-        $this->data['stores'] = $this->store->getList(array('status' => 1));
-        $this->data['admin_menu'] = $this->getAdminMenu();
-    }
-
-    /**
-     * Loads the current job from the current URL
-     * @return array
-     */
-    protected function getCurrentJob()
-    {
-        $id = (string) $this->request->get('job_id');
-        return empty($id) ? array() : $this->job->get($id);
+        $this->data['_job'] = $this->renderJob();
+        $this->data['_menu'] = $this->getAdminMenu();
+        $this->data['_stores'] = $this->store->getList(array('status' => 1));
     }
 
     /**
@@ -71,49 +70,43 @@ class Controller extends BaseController
      */
     protected function processCurrentJob()
     {
-        $data = $this->getCurrentJob();
+        $cancel_job_id = $this->request->get('cancel_job');
 
-        if (empty($data['status'])) {
+        if (!empty($cancel_job_id)) {
+            $this->job->delete($cancel_job_id);
             return null;
         }
 
-        $cancel = $this->request->get('cancel_job');
+        $job = $this->job->get($this->request->get('job_id'));
 
-        if (!empty($cancel)) {
-            $this->job->delete($cancel);
+        if (empty($job['status'])) {
             return null;
         }
 
-        $this->setJsSettings('job', $data);
-        $process_job_id = (string) $this->request->get('process_job');
+        $this->setJsSettings('job', $job);
 
-        if ($this->request->isAjax() && $process_job_id == $data['id']) {
-            $this->response->json($this->job->process($data));
+        if ($this->request->get('process_job') === $job['id'] && $this->request->isAjax()) {
+            $this->response->json($this->job->process($job));
         }
     }
 
     /**
      * Returns a rendered job widget
-     * @param array $job
+     * @param array|null $job
      * @return string
      */
-    public function renderJob(array $job)
+    public function renderJob($job = null)
     {
+        if (!isset($job)) {
+            $job = $this->job->get($this->request->get('job_id'));
+        }
+
         if (empty($job['status'])) {
             return '';
         }
 
         $job += array('widget' => 'common/job/widget');
         return $this->render($job['widget'], array('job' => $job));
-    }
-
-    /**
-     * Set the current job
-     */
-    protected function setJob()
-    {
-        $job = $this->getCurrentJob();
-        $this->setData('job', $this->renderJob($job));
     }
 
     /**
@@ -136,13 +129,12 @@ class Controller extends BaseController
 
             $items[$path] = array(
                 'url' => $this->url($path),
-                'depth' => (substr_count($path, '/') - 1),
+                'depth' => substr_count($path, '/') - 1,
                 'text' => $this->text($route['menu']['admin'])
             );
         }
 
         ksort($items);
-
         $options += array('items' => $items);
         return $this->renderMenu($options);
     }
@@ -206,8 +198,8 @@ class Controller extends BaseController
         $data = array(
             'images' => $images,
             'name_prefix' => $entity,
-            'languages' => $this->language->getList(true));
-
+            'languages' => $this->language->getList()
+        );
         $this->setData('attached_images', $this->render('common/image/attache', $data));
     }
 
