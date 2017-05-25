@@ -494,15 +494,6 @@ class Controller
     }
 
     /**
-     * Returns an array of existing stores
-     * @return array
-     */
-    public function stores()
-    {
-        return $this->store->getList();
-    }
-
-    /**
      * Returns a data of the current user
      * @param mixed $item
      * @return mixed
@@ -520,7 +511,7 @@ class Controller
      * Returns an array of attached styles
      * @return array
      */
-    public function css()
+    public function getCss()
     {
         $stylesheets = $this->asset->getCss();
         $this->compressAssets($stylesheets, 'css');
@@ -532,7 +523,7 @@ class Controller
      * @param string $position
      * @return array
      */
-    public function js($position)
+    public function getJs($position)
     {
         $scripts = $this->asset->getJs($position);
         $this->compressAssets($scripts, 'js');
@@ -543,26 +534,26 @@ class Controller
      * Formats a local time/date
      * @param null|integer $timestamp
      * @param bool $full
-     * @param string $timestamp_format
+     * @param string $format
      * @return string
      */
-    public function date($timestamp = null, $full = true, $timestamp_format = '')
+    public function date($timestamp = null, $full = true, $format = '')
     {
         if (empty($timestamp)) {
             $timestamp = GC_TIME;
         }
 
-        if (!empty($timestamp_format)) {
-            $timestamp = \DateTime::createFromFormat($timestamp_format, $timestamp)->getTimestamp();
+        if (!empty($format)) {
+            $timestamp = \DateTime::createFromFormat($format, $timestamp)->getTimestamp();
         }
 
-        $format = $this->config('date_prefix', 'd.m.y');
+        $dateformat = $this->config('date_prefix', 'd.m.y');
 
         if ($full) {
-            $format .= $this->config('date_suffix', ' H:i');
+            $dateformat .= $this->config('date_suffix', ' H:i');
         }
 
-        return date($format, (int) $timestamp);
+        return date($dateformat, (int) $timestamp);
     }
 
     /**
@@ -1428,8 +1419,7 @@ class Controller
         $layout_template = $templates['layout'];
         unset($templates['layout']);
 
-        $body_data = $this->data;
-        $layout_data = $this->data;
+        $body_data = $layout_data = $this->data;
 
         foreach ($templates as $region => $template) {
             if (!in_array($region, array('region_head', 'region_body'))) {
@@ -1599,9 +1589,9 @@ class Controller
         $this->data['page_title'] = $this->ptitle;
         $this->data['breadcrumb'] = $this->breadcrumbs;
 
-        $this->data['css'] = $this->css();
-        $this->data['js_top'] = $this->js('top');
-        $this->data['js_bottom'] = $this->js('bottom');
+        $this->data['css'] = $this->getCss();
+        $this->data['js_top'] = $this->getJs('top');
+        $this->data['js_bottom'] = $this->getJs('bottom');
     }
 
     /**
@@ -1670,7 +1660,7 @@ class Controller
      */
     protected function setDefaultJsSettings()
     {
-        $allowed = array('token', 'base', 'lang', 'urn', 'uri', 'path', 'query');
+        $allowed = array('token', 'base', 'langcode', 'urn', 'uri', 'path', 'query');
         $settings = array_intersect_key($this->data, array_flip($allowed));
         $this->setJsSettings('', $settings, 60);
     }
@@ -1752,7 +1742,6 @@ class Controller
 
         $controller = strtolower(str_replace('\\', '-', $this->current_route['handlers']['controller'][0]));
         $this->data['body_classes'] = array_slice(explode('-', $controller, 3), -1);
-
         $this->data['cart'] = $this->getCart();
 
         $this->setDefaultJs();
