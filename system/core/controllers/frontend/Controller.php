@@ -115,22 +115,21 @@ class Controller extends BaseController
      */
     protected function setDefaultDataFrontend()
     {
-        $currencies = $this->currency->getList(true);
-        unset($currencies[$this->current_currency]);
+        $currencies = $this->currency->getList();
 
-        $this->data['currencies'] = $currencies;
-        $this->data['wishlist'] = $this->getWishlist();
-        $this->data['comparison'] = $this->getComparison();
-        $this->data['category_menu'] = $this->getCategoryMenu();
-        $this->data['currency_code'] = $this->current_currency;
-        $this->data['store_title'] = $this->store->getTranslation('title', $this->langcode);
+        $this->data['_currencies'] = $currencies;
+        $this->data['_wishlist'] = $this->getWishlist();
+        $this->data['_menu'] = $this->getCategoryMenu();
+        $this->data['_comparison'] = $this->getComparison();
+        $this->data['_currency'] = $currencies[$this->current_currency];
+        $this->data['_store_title'] = $this->store->getTranslation('title', $this->langcode);
 
         if (!empty($this->current_store['data']['logo'])) {
-            $this->data['store_logo'] = $this->image->urlFromPath($this->current_store['data']['logo']);
+            $this->data['_store_logo'] = $this->image->urlFromPath($this->current_store['data']['logo']);
         }
 
         if (!empty($this->current_store['data']['favicon'])) {
-            $this->data['store_favicon'] = $this->image->urlFromPath($this->current_store['data']['favicon']);
+            $this->data['_store_favicon'] = $this->image->urlFromPath($this->current_store['data']['favicon']);
         }
     }
 
