@@ -36,22 +36,6 @@ class Store extends Model
     }
 
     /**
-     * Returns an array of store names
-     * @return array
-     */
-    public function getNames()
-    {
-        $stores = (array) $this->getList();
-
-        $names = array();
-        foreach ($stores as $store) {
-            $names[$store['store_id']] = $store['name'];
-        }
-
-        return $names;
-    }
-
-    /**
      * Returns an array of stores or counts them
      * @param array $data
      * @return array|integer
