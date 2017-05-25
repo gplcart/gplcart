@@ -60,11 +60,11 @@
         </label>
         <div class="col-md-4">
           <select name="category_group[store_id]" class="form-control">
-            <?php foreach ($stores as $store_id => $store_name) { ?>
+            <?php foreach ($stores as $store_id => $store) { ?>
             <?php if (isset($category_group['store_id']) && $category_group['store_id'] == $store_id) { ?>
-            <option value="<?php echo $store_id; ?>" selected><?php echo $store_name; ?></option>
+            <option value="<?php echo $store_id; ?>" selected><?php echo $this->e($store['name']); ?></option>
             <?php } else { ?>
-            <option value="<?php echo $store_id; ?>"><?php echo $store_name; ?></option>
+            <option value="<?php echo $store_id; ?>"><?php echo $this->e($store['name']); ?></option>
             <?php } ?>
             <?php } ?>
           </select>

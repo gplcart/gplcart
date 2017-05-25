@@ -87,7 +87,7 @@
           <td class="middle"><?php echo $this->escape($this->truncate($address['phone'], 30)); ?></td>
           <td>
             <a href="#address-id-<?php echo $address_id; ?>" data-address-details="<?php echo $address_id; ?>" data-toggle="collapse">
-              <?php echo mb_strtolower($this->text('Details')); ?>
+              <?php echo $this->lower($this->text('Details')); ?>
             </a>
           </td>
         </tr>

@@ -92,8 +92,8 @@
         <div class="col-md-4">
           <select class="form-control" name="page[store_id]">
             <option value=""><?php echo $this->text('- select -'); ?></option>
-            <?php foreach ($stores as $store_id => $store_name) { ?>
-            <option value="<?php echo $store_id; ?>"<?php echo (isset($page['store_id']) && $page['store_id'] == $store_id) ? ' selected' : ''; ?>><?php echo $this->escape($store_name); ?></option>
+            <?php foreach ($stores as $store_id => $store) { ?>
+            <option value="<?php echo $store_id; ?>"<?php echo isset($page['store_id']) && $page['store_id'] == $store_id ? ' selected' : ''; ?>><?php echo $this->escape($store['name']); ?></option>
             <?php } ?>
           </select>
           <div class="help-block">

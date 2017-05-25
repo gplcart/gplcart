@@ -164,7 +164,7 @@
               <?php if ($this->access('price_rule_edit')) { ?>
               <li>
                 <a href="<?php echo $this->url("admin/sale/price/edit/$rule_id"); ?>">
-                  <?php echo mb_strtolower($this->text('Edit')); ?>
+                  <?php echo $this->lower($this->text('Edit')); ?>
                 </a>
               </li>
               <?php } ?>

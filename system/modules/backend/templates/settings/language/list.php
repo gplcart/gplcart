@@ -33,7 +33,7 @@
           <td class="middle">
             <?php echo $this->escape($language['name']); ?>
             <?php if (!empty($language['default'])) { ?>
-            (<?php echo mb_strtolower($this->text('Default')); ?>)
+            (<?php echo $this->lower($this->text('Default')); ?>)
             <?php } ?>
           </td>
           </td>
@@ -51,12 +51,12 @@
               <?php if ($this->access('language_edit')) { ?>
               <li>
                 <a href="<?php echo $this->url("admin/settings/language/edit/$code"); ?>">
-                  <?php echo mb_strtolower($this->text('Edit')); ?>
+                  <?php echo $this->lower($this->text('Edit')); ?>
                 </a>
               </li>
               <li>
                 <a href="<?php echo $this->url('', array('refresh' => $code)); ?>" onclick="return confirm(GplCart.text('Are you sure?'));">
-                  <?php echo mb_strtolower($this->text('Clear cache')); ?>
+                  <?php echo $this->lower($this->text('Clear cache')); ?>
                 </a>
               </li>
               <?php } ?>

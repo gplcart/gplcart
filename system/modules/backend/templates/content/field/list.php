@@ -99,21 +99,21 @@
               <?php if ($this->access('field_edit')) { ?>
               <li>
                 <a href="<?php echo $this->url("admin/content/field/edit/{$field['field_id']}"); ?>">
-                  <?php echo mb_strtolower($this->text('Edit')); ?>
+                  <?php echo $this->lower($this->text('Edit')); ?>
                 </a>
               </li>
               <?php } ?>
               <?php if ($this->access('field_value')) { ?>
               <li>
                 <a href="<?php echo $this->url("admin/content/field/value/{$field['field_id']}"); ?>">
-                  <?php echo mb_strtolower($this->text('Values')); ?>
+                  <?php echo $this->lower($this->text('Values')); ?>
                 </a>
               </li>
               <?php } ?>
               <?php if ($this->access('field_value_add')) { ?>
               <li>
                 <a href="<?php echo $this->url("admin/content/field/value/{$field['field_id']}/add"); ?>">
-                  <?php echo mb_strtolower($this->text('Add value')); ?>
+                  <?php echo $this->lower($this->text('Add value')); ?>
                 </a>
               </li>
               <?php } ?>

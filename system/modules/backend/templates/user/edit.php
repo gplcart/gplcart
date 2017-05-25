@@ -71,11 +71,11 @@
         <label class="col-md-2 control-label"><?php echo $this->text('Store'); ?></label>
         <div class="col-md-4">
           <select name="user[store_id]" class="form-control">
-            <?php foreach ($stores as $store_id => $store_name) { ?>
+            <?php foreach ($stores as $store_id => $store) { ?>
             <?php if (isset($user['store_id']) && $user['store_id'] == $store_id) { ?>
-            <option value="<?php echo $store_id; ?>" selected><?php echo $this->escape($store_name); ?></option>
+            <option value="<?php echo $store_id; ?>" selected><?php echo $this->escape($store['name']); ?></option>
             <?php } else { ?>
-            <option value="<?php echo $store_id; ?>"><?php echo $this->escape($store_name); ?></option>
+            <option value="<?php echo $store_id; ?>"><?php echo $this->escape($store['name']); ?></option>
             <?php } ?>
             <?php } ?>
           </select>

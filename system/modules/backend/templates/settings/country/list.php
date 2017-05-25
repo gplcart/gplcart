@@ -120,21 +120,21 @@
               <?php if ($this->access('country_edit')) { ?>
               <li>
                 <a href="<?php echo $this->url("admin/settings/country/edit/$code"); ?>">
-                  <?php echo mb_strtolower($this->text('Edit')); ?>
+                  <?php echo $this->lower($this->text('Edit')); ?>
                 </a>
               </li>
               <?php } ?>
               <?php if ($this->access('state')) { ?>
               <li>
                 <a href="<?php echo $this->url("admin/settings/states/$code"); ?>">
-                  <?php echo mb_strtolower($this->text('States')); ?>
+                  <?php echo $this->lower($this->text('States')); ?>
                 </a>
               </li>
               <?php } ?>
               <?php if ($this->access('country_format')) { ?>
               <li>
                 <a href="<?php echo $this->url("admin/settings/country/format/$code"); ?>">
-                  <?php echo mb_strtolower($this->text('Format')); ?>
+                  <?php echo $this->lower($this->text('Format')); ?>
                 </a>
               </li>
               <?php } ?>

@@ -50,13 +50,13 @@
             <ul class="list-inline">
               <li>
                 <a href="<?php echo $this->url('', array('clear' => $id)); ?>" class="clear">
-                  <?php echo mb_strtolower($this->text('Clear cache')); ?>
+                  <?php echo $this->lower($this->text('Clear cache')); ?>
                 </a>
               </li>
               <?php if ($this->access('image_style_edit')) { ?>
               <li>
                 <a href="<?php echo $this->url("admin/settings/imagestyle/edit/$id"); ?>" class="edit">
-                  <?php echo mb_strtolower($this->text('Edit')); ?>
+                  <?php echo $this->lower($this->text('Edit')); ?>
                 </a>
               </li>
               <?php } ?>

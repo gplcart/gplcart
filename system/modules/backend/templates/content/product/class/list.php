@@ -78,14 +78,14 @@
                 <?php if ($this->access('product_class_edit')) { ?>
                 <li>
                   <a href="<?php echo $this->url("admin/content/product-class/edit/{$class['product_class_id']}"); ?>">
-                    <?php echo mb_strtolower($this->text('Edit')); ?>
+                    <?php echo $this->lower($this->text('Edit')); ?>
                   </a>
                 </li>
                 <?php } ?>
                 <?php if ($this->access('product_class_field')) { ?>
                 <li>
                   <a href="<?php echo $this->url("admin/content/product-class/field/{$class['product_class_id']}"); ?>">
-                    <?php echo mb_strtolower($this->text('Fields')); ?>
+                    <?php echo $this->lower($this->text('Fields')); ?>
                   </a>
                 </li>
                 <?php } ?>

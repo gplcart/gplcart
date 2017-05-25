@@ -99,8 +99,8 @@
               <select class="form-control" name="store_id">
                 <option value="any"><?php echo $this->text('Any'); ?></option>
                 <?php foreach ($stores as $store_id => $store) { ?>
-                <option value="<?php echo $store_id; ?>"<?php echo ($filter_store_id == $store_id) ? ' selected' : ''; ?>>
-                <?php echo $this->escape($store); ?>
+                <option value="<?php echo $store_id; ?>"<?php echo $filter_store_id == $store_id ? ' selected' : ''; ?>>
+                <?php echo $this->escape($store['name']); ?>
                 </option>
                 <?php } ?>
               </select>
@@ -164,7 +164,7 @@
             </td>
             <td class="middle">
               <?php if (isset($stores[$user['store_id']])) { ?>
-              <?php echo $this->escape($stores[$user['store_id']]); ?>
+              <?php echo $this->escape($stores[$user['store_id']]['name']); ?>
               <?php } else { ?>
               <span class="text-danger"><?php echo $this->text('Unknown'); ?></span>
               <?php } ?>
@@ -181,13 +181,13 @@
                 <ul class="list-inline">
                   <li>
                     <a href="<?php echo $this->escape($user['url']); ?>">
-                      <?php echo mb_strtolower($this->text('View')); ?>
+                      <?php echo $this->lower($this->text('View')); ?>
                     </a>
                   </li>
                   <?php if ($this->access('user_edit')) { ?>
                   <li>
                     <a href="<?php echo $this->url("admin/user/edit/$id"); ?>">
-                      <?php echo mb_strtolower($this->text('Edit')); ?>
+                      <?php echo $this->lower($this->text('Edit')); ?>
                     </a>
                   </li>
                   <?php } ?>

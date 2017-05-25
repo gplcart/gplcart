@@ -6,22 +6,22 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
-<body class="<?php echo $this->escape(implode(' ', $body_classes)); ?>">
+<body<?php echo $this->attributes(array('class' => $body_classes)); ?>>
   <nav class="navbar navbar-inverse navbar-fixed-top hidden-print">
     <div class="container-fluid">
       <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
           <span class="sr-only"><?php echo $this->text('Toggle navigation'); ?></span>
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <?php if (!$this->url->isDashboard()) { ?>
+        <?php if ($this->path('^admin$')) { ?>
+        <span class="navbar-brand">GPL Cart</span>
+        <?php } else { ?>
         <a class="navbar-brand" href="<?php echo $this->url('admin'); ?>" title="<?php echo $this->text('Dashboard'); ?>">
         GPL Cart
         </a>
-        <?php } else { ?>
-        <span class="navbar-brand">GPL Cart</span>
         <?php } ?>
       </div>
       <div id="navbar" class="navbar-collapse collapse">
@@ -34,9 +34,9 @@
               <i class="fa fa-globe"></i>
             </a>
             <ul class="dropdown-menu dropdown-menu-right">
-              <?php foreach ($this->stores() as $store) { ?>
+              <?php foreach ($stores as $store) { ?>
               <li>
-                <a target="_blank" href="<?php echo $this->escape("{$this->scheme}{$store['domain']}/{$store['basepath']}"); ?>">
+                <a target="_blank" href="<?php echo $this->escape("http://{$store['domain']}/{$store['basepath']}"); ?>">
                   <i class="fa fa-external-link"></i> <?php echo $this->escape($store['name']); ?>
                 </a>
               </li>

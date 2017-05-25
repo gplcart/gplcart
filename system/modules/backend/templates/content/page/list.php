@@ -95,9 +95,9 @@
             <th>
               <select class="form-control" name="store_id">
                 <option value="any"><?php echo $this->text('Any'); ?></option>
-                <?php foreach ($stores as $store_id => $store_name) { ?>
-                <option value="<?php echo $store_id; ?>"<?php echo ($filter_store_id == $store_id) ? ' selected' : ''; ?>>
-                <?php echo $this->escape($store_name); ?>
+                <?php foreach ($stores as $store_id => $store) { ?>
+                <option value="<?php echo $store_id; ?>"<?php echo $filter_store_id == $store_id ? ' selected' : ''; ?>>
+                <?php echo $this->escape($store['name']); ?>
                 </option>
                 <?php } ?>
               </select>
@@ -110,10 +110,10 @@
                 <option value="any">
                 <?php echo $this->text('Any'); ?>
                 </option>
-                <option value="1"<?php echo ($filter_status === '1') ? ' selected' : ''; ?>>
+                <option value="1"<?php echo $filter_status === '1' ? ' selected' : ''; ?>>
                 <?php echo $this->text('Enabled'); ?>
                 </option>
-                <option value="0"<?php echo ($filter_status === '0') ? ' selected' : ''; ?>>
+                <option value="0"<?php echo $filter_status === '0' ? ' selected' : ''; ?>>
                 <?php echo $this->text('Disabled'); ?>
                 </option>
               </select>
@@ -147,7 +147,7 @@
             <td class="middle"><?php echo $this->truncate($this->escape($page['title']), 30); ?></td>
             <td class="middle">
               <?php if (isset($stores[$page['store_id']])) { ?>
-              <?php echo $this->escape($stores[$page['store_id']]); ?>
+              <?php echo $this->escape($stores[$page['store_id']]['name']); ?>
               <?php } else { ?>
               <span class="text-danger"><?php echo $this->text('Unknown'); ?></span>
               <?php } ?>
@@ -167,13 +167,13 @@
               <ul class="list-inline">
                 <li>
                   <a href="<?php echo $this->escape($page['url']); ?>">
-                    <?php echo mb_strtolower($this->text('View')); ?>
+                    <?php echo $this->lower($this->text('View')); ?>
                   </a>
                 </li>
                 <?php if ($this->access('page_edit')) { ?>
                 <li>
                   <a href="<?php echo $this->url("admin/content/page/edit/$id"); ?>">
-                  <?php echo mb_strtolower($this->text('Edit')); ?>
+                  <?php echo $this->lower($this->text('Edit')); ?>
                   </a>
                 </li>
                 <?php } ?>

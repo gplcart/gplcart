@@ -110,14 +110,14 @@
                 <?php if ($this->access('state_edit')) { ?>
                 <li>
                   <a href="<?php echo $this->url("admin/settings/state/edit/{$country['code']}/$state_id"); ?>">
-                    <?php echo mb_strtolower($this->text('Edit')); ?>
+                    <?php echo $this->lower($this->text('Edit')); ?>
                   </a>
                 </li>
                 <?php } ?>
                 <?php if ($this->access('city')) { ?>
                 <li>
                   <a href="<?php echo $this->url("admin/settings/cities/{$country['code']}/$state_id"); ?>">
-                    <?php echo mb_strtolower($this->text('Cities')); ?>
+                    <?php echo $this->lower($this->text('Cities')); ?>
                   </a>
                 </li>
                 <?php } ?>

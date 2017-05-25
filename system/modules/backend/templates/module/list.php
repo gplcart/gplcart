@@ -59,7 +59,7 @@
               <?php if ($this->access('module_disable') && empty($info['lock'])) { ?>
               <li>
                 <a href="<?php echo $this->url(false, array('action' => 'disable', 'module_id' => $module_id)); ?>">
-                  <b><?php echo mb_strtolower($this->text('Disable')); ?></b>
+                  <b><?php echo $this->lower($this->text('Disable')); ?></b>
                 </a>
               </li>
               <?php } ?>
@@ -67,14 +67,14 @@
               <?php if ($this->access('module_enable') && empty($info['lock'])) { ?>
               <li>
                 <a href="<?php echo $this->url(false, array('action' => 'enable', 'module_id' => $module_id)); ?>">
-                  <?php echo mb_strtolower($this->text('Enable')); ?>
+                  <?php echo $this->lower($this->text('Enable')); ?>
                 </a>
               </li>
               <?php } ?>
               <?php if ($this->access('module_uninstall') && empty($info['lock'])) { ?>
               <li>
                 <a href="<?php echo $this->url(false, array('action' => 'uninstall', 'module_id' => $module_id)); ?>">
-                  <?php echo mb_strtolower($this->text('Uninstall')); ?>
+                  <?php echo $this->lower($this->text('Uninstall')); ?>
                 </a>
               </li>
               <?php } ?>
@@ -83,7 +83,7 @@
               <?php if ($this->access('module_install')) { ?>
               <li>
                 <a href="<?php echo $this->url(false, array('action' => 'install', 'module_id' => $module_id)); ?>">
-                  <?php echo mb_strtolower($this->text('Install and enable')); ?>
+                  <?php echo $this->lower($this->text('Install and enable')); ?>
                 </a>
               </li>
               <?php } ?>
@@ -91,7 +91,7 @@
               <?php if (!empty($info['status']) && !empty($info['configure']) && $this->access('module_edit')) { ?>
               <li>
                 <a href="<?php echo $this->url($info['configure']); ?>">
-                  <?php echo mb_strtolower($this->text('Configure')); ?>
+                  <?php echo $this->lower($this->text('Configure')); ?>
                 </a>
               </li>
               <?php } ?>

@@ -100,7 +100,7 @@
               <select class="form-control" name="store_id">
                 <option value=""<?php echo (isset($filter_store_id)) ? '' : ' selected'; ?>><?php echo $this->text('Any'); ?></option>
                 <?php foreach ($stores as $store_id => $store) { ?>
-                <option value="<?php echo $store_id; ?>"<?php echo (isset($filter_store_id) && (int) $filter_store_id === $store_id) ? ' selected' : ''; ?>><?php echo $this->escape($store); ?></option>
+                <option value="<?php echo $store_id; ?>"<?php echo isset($filter_store_id) && (int) $filter_store_id === $store_id ? ' selected' : ''; ?>><?php echo $this->escape($store['name']); ?></option>
                 <?php } ?>
               </select>
             </th>
@@ -155,7 +155,7 @@
             </td>
             <td class="middle">
               <?php if (isset($stores[$order['store_id']])) { ?>
-              <?php echo $this->escape($stores[$order['store_id']]); ?>
+              <?php echo $this->escape($stores[$order['store_id']]['name']); ?>
               <?php } else { ?>
               <span class="text-danger"><?php echo $this->text('Unknown'); ?></span>
               <?php } ?>
@@ -178,7 +178,7 @@
               <ul class="list-inline">
                 <li>
                   <a href="<?php echo $this->url("admin/sale/order/$id"); ?>">
-                    <?php echo mb_strtolower($this->text('View')); ?>
+                    <?php echo $this->lower($this->text('View')); ?>
                   </a>
                 </li>
               </ul>

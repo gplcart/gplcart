@@ -90,7 +90,7 @@
             <ul class="list-inline">
               <?php if($this->access('backup_download')) { ?>
               <a href="<?php echo $this->url('', array('download' => $id)); ?>">
-                <?php echo mb_strtolower($this->text('Download')); ?>
+                <?php echo $this->lower($this->text('Download')); ?>
               </a>
               <?php } ?>
             </ul>

@@ -34,17 +34,17 @@
           </th>
           <th>
             <select class="form-control" name="store_id">
-              <option value=""<?php echo (!$filter_store_id) ? ' selected' : ''; ?>><?php echo $this->text('Any'); ?></option>
-              <?php foreach ($stores as $store_id => $store_name) { ?>
-              <option value="<?php echo $store_id; ?>"<?php echo ($filter_store_id == $store_id) ? ' selected' : ''; ?>><?php echo $this->escape($store_name); ?></option>
+              <option value=""<?php echo $filter_store_id ? '' : ' selected'; ?>><?php echo $this->text('Any'); ?></option>
+              <?php foreach ($stores as $store_id => $store) { ?>
+              <option value="<?php echo $store_id; ?>"<?php echo $filter_store_id == $store_id ? ' selected' : ''; ?>><?php echo $this->escape($store['name']); ?></option>
               <?php } ?>
             </select>
           </th>
           <th>
             <select class="form-control" name="type">
-              <option value=""<?php echo (!$filter_type) ? ' selected' : ''; ?>><?php echo $this->text('Any'); ?></option>
-              <option value="catalog"<?php echo ($filter_type === 'catalog') ? ' selected' : ''; ?>><?php echo $this->text('Catalog'); ?></option>
-              <option value="brand"<?php echo ($filter_type === 'brand') ? ' selected' : ''; ?>><?php echo $this->text('Brand'); ?></option>
+              <option value=""<?php echo $filter_type ? '' : ' selected'; ?>><?php echo $this->text('Any'); ?></option>
+              <option value="catalog"<?php echo $filter_type === 'catalog' ? ' selected' : ''; ?>><?php echo $this->text('Catalog'); ?></option>
+              <option value="brand"<?php echo $filter_type === 'brand' ? ' selected' : ''; ?>><?php echo $this->text('Brand'); ?></option>
             </select>
           </th>
           <th>
@@ -71,7 +71,7 @@
           <td class="middle"><?php echo $id; ?></td>
           <td class="middle"><?php echo $this->escape($group['title']); ?></td>
           <td class="middle">
-            <?php echo isset($stores[$group['store_id']]) ? $this->escape($stores[$group['store_id']]) : $this->text('Unknown'); ?>
+            <?php echo isset($stores[$group['store_id']]) ? $this->escape($stores[$group['store_id']]['name']) : $this->text('Unknown'); ?>
           </td>
           <td class="middle"><?php echo $this->text($group['type'], array(), $this->text('None')); ?>
           </td>
@@ -80,14 +80,14 @@
               <?php if ($this->access('category_group_edit')) { ?>
               <li>
                 <a href="<?php echo $this->url("admin/content/category-group/edit/$id"); ?>">
-                  <?php echo mb_strtolower($this->text('Edit')); ?>
+                  <?php echo $this->lower($this->text('Edit')); ?>
                 </a>
               </li>
               <?php } ?>
               <?php if ($this->access('category')) { ?>
               <li>
                 <a href="<?php echo $this->url("admin/content/category/$id"); ?>">
-                  <?php echo mb_strtolower($this->text('Categories')); ?>
+                  <?php echo $this->lower($this->text('Categories')); ?>
                 </a>
               </li>
               <?php } ?>

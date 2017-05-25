@@ -170,8 +170,8 @@
         <label class="col-md-2 control-label"><?php echo $this->text('Store'); ?></label>
         <div class="col-md-4">
           <select class="form-control" name="product[store_id]">
-            <?php foreach ($stores as $store_id => $store_name) { ?>
-            <option value="<?php echo $store_id; ?>"<?php echo (isset($product['store_id']) && $product['store_id'] == $store_id) ? ' selected' : ''; ?>><?php echo $this->escape($store_name); ?></option>
+            <?php foreach ($stores as $store_id => $store) { ?>
+            <option value="<?php echo $store_id; ?>"<?php echo isset($product['store_id']) && $product['store_id'] == $store_id ? ' selected' : ''; ?>><?php echo $this->escape($store['name']); ?></option>
             <?php } ?>
           </select>
           <div class="help-block">

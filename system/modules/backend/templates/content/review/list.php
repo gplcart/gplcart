@@ -143,7 +143,7 @@
             <td class="middle">
               <?php if ($this->access('review_edit')) { ?>
               <a title="<?php echo $this->text('Edit'); ?>" href="<?php echo $this->url("admin/content/review/edit/$id"); ?>">
-                <?php echo mb_strtolower($this->text('Edit')); ?>
+                <?php echo $this->lower($this->text('Edit')); ?>
               </a>
               <?php } ?>
             </td>

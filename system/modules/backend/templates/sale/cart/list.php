@@ -74,7 +74,7 @@
               <select class="form-control" name="store_id">
                 <option value="any"><?php echo $this->text('Any'); ?></option>
                 <?php foreach ($stores as $store_id => $store) { ?>
-                <option value="<?php echo $store_id; ?>"<?php echo (isset($filter_store_id) && (int) $filter_store_id === $store_id) ? ' selected' : ''; ?>><?php echo $this->escape($store); ?></option>
+                <option value="<?php echo $store_id; ?>"<?php echo isset($filter_store_id) && (int) $filter_store_id === $store_id ? ' selected' : ''; ?>><?php echo $this->escape($store['name']); ?></option>
                 <?php } ?>
               </select>
             </th>
@@ -123,7 +123,7 @@
               <?php if(empty($stores[$cart['store_id']])) { ?>
               <?php echo $this->text('Unknown'); ?>
               <?php } else { ?>
-              <?php echo $this->escape($stores[$cart['store_id']]); ?>
+              <?php echo $this->escape($stores[$cart['store_id']]['name']); ?>
               <?php } ?>
             </td>
             <td class="middle">

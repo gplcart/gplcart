@@ -108,7 +108,7 @@
           <td>
             <?php if ($this->access('user_role_edit')) { ?>
             <a href="<?php echo $this->url("admin/user/role/edit/$role_id"); ?>">
-              <?php echo mb_strtolower($this->text('Edit')); ?>
+              <?php echo $this->lower($this->text('Edit')); ?>
             </a>
             <?php } ?>
           </td>
