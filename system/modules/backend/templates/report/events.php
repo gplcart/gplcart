@@ -6,7 +6,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
-<?php if (!empty($records) || $filtering) { ?>
+<?php if (!empty($records) || $_filtering) { ?>
 <div class="panel panel-default">
   <div class="panel-heading clearfix">
     <div class="btn-toolbar pull-right">
@@ -61,7 +61,7 @@
         </tr>
       </thead>
       <tbody>
-        <?php if ($filtering && empty($records)) { ?>
+        <?php if ($_filtering && empty($records)) { ?>
         <tr>
           <td class="middle" colspan="5">
             <?php echo $this->text('No results'); ?>
@@ -105,8 +105,8 @@
       </tbody>
     </table>
   </div>
-  <?php if (!empty($pager)) { ?>
-  <div class="panel-footer text-right"><?php echo $pager; ?></div>
+  <?php if (!empty($_pager)) { ?>
+  <div class="panel-footer text-right"><?php echo $_pager; ?></div>
   <?php } ?>
 </div>
 <?php } else { ?>

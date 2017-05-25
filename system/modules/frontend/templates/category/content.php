@@ -34,10 +34,10 @@
 <?php echo $navbar; ?>
 <?php } ?>
 <?php echo $products; ?>
-<?php if (!empty($pager)) { ?>
+<?php if (!empty($_pager)) { ?>
 <div class="row">
   <div class="col-md-12 text-right">
-    <?php echo $pager; ?>
+    <?php echo $_pager; ?>
   </div>
 </div>
 <?php } ?>

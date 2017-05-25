@@ -6,7 +6,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
-<body<?php echo $this->attributes(array('class' => $body_classes)); ?>>
+<body<?php echo $this->attributes(array('class' => $_classes)); ?>>
   <div class="container-fluid wrapper">
     <div class="row">
       <nav class="navbar navbar-default navbar-static-top first">
@@ -24,35 +24,37 @@
             <i class="fa fa-phone"></i> <?php echo $this->e($this->store('data.phone.0')); ?>
             <?php } ?>
           </p>
-          <?php if (!empty($currencies)) { ?>
+          <?php if (!empty($_currencies)) { ?>
           <div class="dropdown pull-left navbar-text">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <?php echo $currency_code; ?> <span class="caret"></span>
+              <?php echo $this->e($_currency['name']); ?> <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
-              <?php foreach ($currencies as $currency) { ?>
+              <?php foreach ($_currencies as $currency) { ?>
+              <?php if($_currency['code'] !== $currency['code'] && !empty($currency['status'])) { ?>
               <li>
                 <a rel="nofollow" href="<?php echo $this->url('', array('currency' => $currency['code'])); ?>"><?php echo $this->e($currency['code']); ?></a>
               </li>
               <?php } ?>
+              <?php } ?>
             </ul>
           </div>
           <?php } ?>
-          <?php if (!empty($languages)) { ?>
+          <?php if (array_filter($_languages, function($value) {return !empty($value['status']);})) { ?>
               <div class="dropdown pull-left navbar-text">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                  <?php if (empty($languages[$langcode]['native_name'])) { ?>
+                  <?php if (empty($_languages[$_langcode]['status'])) { ?>
                   <?php echo $this->text('select language'); ?>
                   <?php } else { ?>
-                  <?php echo $this->e($languages[$langcode]['native_name']); ?>
+                  <?php echo $this->e($_languages[$_langcode]['native_name']); ?>
                   <?php } ?>
                   <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
-                  <?php foreach ($languages as $language) { ?>
-                  <?php if ($language['code'] !== $langcode) { ?>
+                  <?php foreach ($_languages as $language) { ?>
+                  <?php if ($language['code'] !== $_langcode && !empty($language['status'])) { ?>
                   <li>
-                    <a href="<?php echo $this->urll($language['code'], '', $query); ?>"><?php echo $this->e($language['native_name']); ?></a>
+                    <a href="<?php echo $this->urll($language['code'], '', $_query); ?>"><?php echo $this->e($language['native_name']); ?></a>
                   </li>
                   <?php } ?>
                   <?php } ?>
@@ -84,21 +86,21 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="<?php echo $this->e($base); ?>">
-            <?php if(empty($store_logo)) { ?>
-            <?php echo $this->e($store_title); ?>
+          <a class="navbar-brand" href="<?php echo $this->e($_base); ?>">
+            <?php if(empty($_store_logo)) { ?>
+            <?php echo $this->e($_store_title); ?>
             <?php } else { ?>
-            <img class="logo" alt="<?php echo $this->e($store_title); ?>" title="<?php echo $this->e($store_title); ?>" src="<?php echo $this->e($store_logo); ?>">
+            <img class="logo" alt="<?php echo $this->e($_store_title); ?>" title="<?php echo $this->e($_store_title); ?>" src="<?php echo $this->e($_store_logo); ?>">
             <?php } ?>
           </a>
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <?php if (!$this->path('checkout')) { ?>
+            <?php if (!$this->path('^checkout$')) { ?>
             <li class="cart">
               <a rel="nofollow" id="cart-link" href="<?php echo $this->url('checkout'); ?>">
-                <?php if (!empty($cart['quantity'])) { ?>
-                <span class="badge" id="cart-quantity"><?php echo $cart['quantity']; ?></span>
+                <?php if (!empty($_cart['quantity'])) { ?>
+                <span class="badge" id="cart-quantity"><?php echo $_cart['quantity']; ?></span>
                 <?php } else { ?>
                 <span class="badge" id="cart-quantity" style="display:none;"></span>
                 <?php } ?>
@@ -108,9 +110,9 @@
             <?php } ?>
             <li class="wishlist">
               <a rel="nofollow" id="wishlist-link" href="<?php echo $this->url('wishlist'); ?>">
-                <?php if (!empty($wishlist)) { ?>
+                <?php if (!empty($_wishlist)) { ?>
                 <span class="badge" id="wishlist-quantity">
-                  <?php echo count($wishlist); ?>
+                  <?php echo count($_wishlist); ?>
                 </span>
                 <i class="fa fa-heart"></i>
                 <?php } else { ?>
@@ -120,10 +122,10 @@
               </a>
             </li>
             <li class="compare">
-              <?php if (!empty($comparison)) { ?>
+              <?php if (!empty($_comparison)) { ?>
               <a rel="nofollow" id="compare-link" href="<?php echo $this->url('compare'); ?>">
                 <span class="badge" id="compare-quantity">
-                  <?php echo count($comparison); ?>
+                  <?php echo count($_comparison); ?>
                 </span>
                 <i class="fa fa-balance-scale"></i>
               </a>
@@ -137,7 +139,7 @@
           </ul>
           <form class="navbar-form navbar-left search" action="<?php echo $this->url('search'); ?>">
             <div class="input-group">
-              <input type="search" class="form-control" autocomplete="off" name="q" value="<?php echo $this->getQuery('q', ''); ?>" placeholder="<?php echo $this->text('Search'); ?>">
+              <input type="search" class="form-control" autocomplete="off" name="q" value="<?php echo isset($_query['q']) && $_query['q'] !== '' ? $_query['q'] : ''; ?>" placeholder="<?php echo $this->text('Search'); ?>">
               <i class="fa fa-spinner fa-spin hidden"></i>
               <span class="input-group-btn">
                 <button class="btn btn-default" data-block-if-empty="q">
@@ -149,23 +151,23 @@
         </div>
       </div>
     </nav>
-    <?php if(!empty($category_menu)) { ?>
+    <?php if(!empty($_menu)) { ?>
     <nav class="navbar navbar-inverse navbar-static-top third">
-      <?php echo $category_menu; ?>
+      <?php echo $_menu; ?>
     </nav>
     <?php } ?>
-    <?php if ($breadcrumb) { ?>
+    <?php if (!empty($_breadcrumbs)) { ?>
     <div class="breadcrumb">
       <ol class="breadcrumb">
-        <?php foreach ($breadcrumb as $item) { ?>
+        <?php foreach ($_breadcrumbs as $item) { ?>
         <?php if (empty($item['url'])) { ?>
         <li><?php echo $this->filter($item['text']); ?></li>
         <?php } else { ?>
         <li><a href="<?php echo $this->e($item['url']); ?>"><?php echo $this->filter($item['text']); ?></a></li>
         <?php } ?>
         <?php } ?>
-        <?php if (!empty($page_title)) { ?>
-        <li><h1><?php echo $this->filter($page_title); ?></h1></li>
+        <?php if (!empty($_page_title)) { ?>
+        <li><h1><?php echo $this->filter($_page_title); ?></h1></li>
         <?php } ?>
       </ol>
     </div>
@@ -196,10 +198,10 @@
       }
       ?>
       <div class="<?php echo $region_content_class; ?>">
-        <?php if (!empty($messages)) { ?>
+        <?php if (!empty($_messages)) { ?>
         <div class="row" id="message">
           <div class="col-md-12">
-            <?php foreach ($messages as $type => $strings) { ?>
+            <?php foreach ($_messages as $type => $strings) { ?>
             <div class="alert alert-<?php echo $this->e($type); ?> alert-dismissible fade in">
               <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">×</span></button>
               <?php foreach ($strings as $string) { ?>

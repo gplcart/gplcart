@@ -8,22 +8,22 @@
  */
 ?>
 <head>
-  <?php foreach ($meta as $tag) { ?>
+  <?php foreach ($_meta_tags as $tag) { ?>
   <meta<?php echo $this->attributes($tag); ?>>
   <?php } ?>
   <title>
-    <?php echo $this->e($store_title); ?>
-    <?php if(!empty($head_title)) { ?>
-    | <?php echo $this->e($head_title); ?>
+    <?php echo $this->e($_store_title); ?>
+    <?php if(!empty($_head_title)) { ?>
+    | <?php echo $this->e($_head_title); ?>
     <?php } ?>
   </title>
-  <?php if(!empty($store_favicon)) { ?>
-  <link rel="icon" href="<?php echo $this->e($store_favicon); ?>">
+  <?php if(!empty($_store_favicon)) { ?>
+  <link rel="icon" href="<?php echo $this->e($_store_favicon); ?>">
   <?php } ?>
-  <?php foreach ($css as $data) { ?>
+  <?php foreach ($_styles as $data) { ?>
   <link href="<?php echo $this->e($data['key']); ?>" rel="stylesheet">
   <?php } ?>
-  <?php foreach ($js_top as $data) { ?>
+  <?php foreach ($_scripts_top as $data) { ?>
   <?php if (!empty($data['text'])) { ?>
   <?php if (!empty($data['asset'])) { ?>
   <?php if (!empty($data['condition'])) { ?>

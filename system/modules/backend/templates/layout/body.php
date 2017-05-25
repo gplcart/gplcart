@@ -6,8 +6,8 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
-<body<?php echo $this->attributes(array('class' => $body_classes)); ?>>
-  <nav class="navbar navbar-inverse navbar-fixed-top hidden-print">
+<body<?php echo $this->attributes(array('class' => $_classes)); ?>>
+  <nav class="navbar navbar-inverse navbar-fixed-top hidden-print admin-menu">
     <div class="container-fluid">
       <div class="navbar-header">
         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
@@ -25,8 +25,8 @@
         <?php } ?>
       </div>
       <div id="navbar" class="navbar-collapse collapse">
-        <?php if(!empty($admin_menu)) { ?>
-        <?php echo $admin_menu; ?>
+        <?php if(!empty($_menu)) { ?>
+        <?php echo $_menu; ?>
         <?php } ?>
         <ul class="nav navbar-nav navbar-right right-links hidden-sm hidden-xs">
           <li class="dropdown">
@@ -34,7 +34,7 @@
               <i class="fa fa-globe"></i>
             </a>
             <ul class="dropdown-menu dropdown-menu-right">
-              <?php foreach ($stores as $store) { ?>
+              <?php foreach ($_stores as $store) { ?>
               <li>
                 <a target="_blank" href="<?php echo $this->escape("http://{$store['domain']}/{$store['basepath']}"); ?>">
                   <i class="fa fa-external-link"></i> <?php echo $this->escape($store['name']); ?>
@@ -61,21 +61,21 @@
       </div>
     </div>
   </nav>
-  <?php if ($page_title || $breadcrumb) { ?>
+  <?php if (!empty($_page_title) || !empty($_breadcrumbs)) { ?>
   <div class="container-fluid content-header hidden-print">
     <div class="row">
       <div class="col-md-12">
-        <?php if (!empty($breadcrumb)) { ?>
+        <?php if (!empty($_breadcrumbs)) { ?>
         <ol class="breadcrumb">
-          <?php foreach ($breadcrumb as $item) { ?>
+          <?php foreach ($_breadcrumbs as $item) { ?>
           <?php if(empty($item['url'])) { ?>
           <li><?php echo $this->filter($item['text']); ?></li>
           <?php } else { ?>
           <li><a href="<?php echo $this->escape($item['url']); ?>"><?php echo $this->filter($item['text']); ?></a></li>
           <?php } ?>
           <?php } ?>
-          <?php if(!empty($page_title)) { ?>
-          <li><?php echo $this->filter($page_title); ?></li>
+          <?php if(!empty($_page_title)) { ?>
+          <li><?php echo $this->filter($_page_title); ?></li>
           <?php } ?>
         </ol>
         <?php } ?>
@@ -89,10 +89,10 @@
         <?php echo $this->text('Your browser seems to have JavaScript disabled. Some functions may not work'); ?>
       </div>
     </noscript>
-    <?php if (!empty($messages)) { ?>
+    <?php if (!empty($_messages)) { ?>
     <div class="row hidden-print" id="message">
       <div class="col-md-12">
-        <?php foreach ($messages as $type => $strings) { ?>
+        <?php foreach ($_messages as $type => $strings) { ?>
         <div class="alert alert-<?php echo $type; ?> alert-dismissible fade in" role="alert">
           <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">×</span>

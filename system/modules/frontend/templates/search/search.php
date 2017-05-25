@@ -13,8 +13,8 @@
 <div class="row">
   <div class="col-md-12">
     <?php echo $results; ?>
-    <?php if (!empty($pager)) { ?>
-    <?php echo $pager; ?>
+    <?php if (!empty($_pager)) { ?>
+    <?php echo $_pager; ?>
     <?php } ?>
   </div>
 </div>

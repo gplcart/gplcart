@@ -6,7 +6,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
-<?php if (!empty($roles) || $filtering) { ?>
+<?php if (!empty($roles) || $_filtering) { ?>
 <div class="panel panel-default">
   <div class="panel-heading clearfix">
     <div class="btn-group pull-left">
@@ -85,7 +85,7 @@
         </tr>
       </thead>
       <tbody>
-        <?php if ($filtering && empty($roles)) { ?>
+        <?php if ($_filtering && empty($roles)) { ?>
         <tr>
           <td colspan="5">
             <?php echo $this->text('No results'); ?>
@@ -117,8 +117,8 @@
       </tbody>
     </table>
   </div>
-  <?php if (!empty($pager)) { ?>
-  <div class="panel-footer"><?php echo $pager; ?></div>
+  <?php if (!empty($_pager)) { ?>
+  <div class="panel-footer"><?php echo $_pager; ?></div>
   <?php } ?>
 </div>
 <?php } else { ?>

@@ -8,7 +8,7 @@
 ?>
 <?php if (!empty($orders)) { ?>
 <form method="post" id="orders" class="form-horizontal">
-  <input type="hidden" name="token" value="<?php echo $token; ?>">
+  <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <div class="panel panel-default">
     <div class="panel-heading clearfix">
         <?php if ($this->access('order_edit') || $this->access('order_delete')) { ?>
@@ -99,7 +99,7 @@
             <th>
               <select class="form-control" name="store_id">
                 <option value=""<?php echo (isset($filter_store_id)) ? '' : ' selected'; ?>><?php echo $this->text('Any'); ?></option>
-                <?php foreach ($stores as $store_id => $store) { ?>
+                <?php foreach ($_stores as $store_id => $store) { ?>
                 <option value="<?php echo $store_id; ?>"<?php echo isset($filter_store_id) && (int) $filter_store_id === $store_id ? ' selected' : ''; ?>><?php echo $this->escape($store['name']); ?></option>
                 <?php } ?>
               </select>
@@ -154,8 +154,8 @@
             <?php } ?>
             </td>
             <td class="middle">
-              <?php if (isset($stores[$order['store_id']])) { ?>
-              <?php echo $this->escape($stores[$order['store_id']]['name']); ?>
+              <?php if (isset($_stores[$order['store_id']])) { ?>
+              <?php echo $this->escape($_stores[$order['store_id']]['name']); ?>
               <?php } else { ?>
               <span class="text-danger"><?php echo $this->text('Unknown'); ?></span>
               <?php } ?>
@@ -188,8 +188,8 @@
         </tbody>
       </table>
     </div>
-    <?php if (!empty($pager)) { ?>
-    <div class="panel-footer text-right"><?php echo $pager; ?></div>
+    <?php if (!empty($_pager)) { ?>
+    <div class="panel-footer text-right"><?php echo $_pager; ?></div>
     <?php } ?>
   </div>
 </form>

@@ -6,7 +6,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
-<?php if (!empty($backups) || $filtering) { ?>
+<?php if (!empty($backups) || $_filtering) { ?>
 <div class="panel panel-default">
   <?php if ($this->access('backup_delete')) { ?>
   <div class="panel-heading clearfix">
@@ -40,7 +40,7 @@
         </tr>
       </thead>
       <tbody>
-        <?php if (empty($backups) && $filtering) { ?>
+        <?php if (empty($backups) && $_filtering) { ?>
         <tr>
           <td colspan="9">
             <?php echo $this->text('No results'); ?>
@@ -101,9 +101,9 @@
       </tbody>
     </table>
   </div>
-  <?php if (!empty($pager)) { ?>
+  <?php if (!empty($_pager)) { ?>
   <div class="panel-footer text-right">
-    <?php echo $pager; ?>
+    <?php echo $_pager; ?>
   </div>
   <?php } ?>
 </div>

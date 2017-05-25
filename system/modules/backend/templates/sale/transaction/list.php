@@ -6,7 +6,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
-<?php if (!empty($transactions) || $filtering) { ?>
+<?php if (!empty($transactions) || $_filtering) { ?>
 <form method="post" class="form-horizontal">
   <input type="hidden" name="token" value="<?php echo $this->prop('token'); ?>">
   <div class="panel panel-default">
@@ -85,7 +85,7 @@
           </tr>
         </thead>
         <tbody>
-          <?php if ($filtering && empty($transactions)) { ?>
+          <?php if ($_filtering && empty($transactions)) { ?>
           <tr>
             <td colspan="6">
               <?php echo $this->text('No results'); ?>
@@ -116,8 +116,8 @@
         </tbody>
       </table>
     </div>
-    <?php if (!empty($pager)) { ?>
-    <div class="panel-footer text-right"><?php echo $pager; ?></div>
+    <?php if (!empty($_pager)) { ?>
+    <div class="panel-footer text-right"><?php echo $_pager; ?></div>
     <?php } ?>
   </div>
 </form>

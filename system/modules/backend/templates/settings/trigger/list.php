@@ -6,9 +6,9 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
-<?php if (!empty($triggers) || $filtering) { ?>
+<?php if (!empty($triggers) || $_filtering) { ?>
 <form method="post" id="triggers" class="form-horizontal">
-  <input type="hidden" name="token" value="<?php echo $token; ?>">
+  <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <div class="panel panel-default">
     <div class="panel-heading clearfix">
       <div class="btn-group pull-left">
@@ -73,7 +73,7 @@
             <th>
               <select class="form-control" name="store_id">
                 <option value="any"><?php echo $this->text('Any'); ?></option>
-                <?php foreach ($stores as $store_id => $store) { ?>
+                <?php foreach ($_stores as $store_id => $store) { ?>
                 <option value="<?php echo $store_id; ?>"<?php echo $filter_store_id == $store_id ? ' selected' : ''; ?>>
                 <?php echo $this->escape($store['name']); ?>
                 </option>
@@ -102,7 +102,7 @@
           </tr>
         </thead>
         <tbody>
-          <?php if ($filtering && empty($triggers)) { ?>
+          <?php if ($_filtering && empty($triggers)) { ?>
           <tr>
             <td colspan="5">
               <?php echo $this->text('No results'); ?>
@@ -117,8 +117,8 @@
             </td>
             <td class="middle"><?php echo $this->escape($trigger['name']); ?></td>
             <td class="middle">
-              <?php if (isset($stores[$trigger['store_id']])) { ?>
-              <?php echo $this->escape($stores[$trigger['store_id']]['name']); ?>
+              <?php if (isset($_stores[$trigger['store_id']])) { ?>
+              <?php echo $this->escape($_stores[$trigger['store_id']]['name']); ?>
               <?php } else { ?>
               <span class="text-danger"><?php echo $this->text('Unknown'); ?></span>
               <?php } ?>
@@ -146,8 +146,8 @@
         </tbody>
       </table>
     </div>
-    <?php if (!empty($pager)) { ?>
-    <div class="panel-footer"><?php echo $pager; ?></div>
+    <?php if (!empty($_pager)) { ?>
+    <div class="panel-footer"><?php echo $_pager; ?></div>
     <?php } ?>
   </div>
 </form>

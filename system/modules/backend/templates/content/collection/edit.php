@@ -30,8 +30,8 @@
           <div class="help-block"><?php echo $this->error('title'); ?></div>
         </div>
       </div>
-      <?php if (!empty($languages)) { ?>
-        <?php foreach ($languages as $code => $language) { ?>
+      <?php if (!empty($_languages)) { ?>
+        <?php foreach ($_languages as $code => $language) { ?>
         <div class="form-group<?php echo $this->error("translation.$code.title", ' has-error'); ?>">
           <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $language['native_name'])); ?></label>
           <div class="col-md-4">
@@ -71,7 +71,7 @@
         </label>
         <div class="col-md-4">
           <select name="collection[store_id]" class="form-control">
-            <?php foreach ($stores as $store_id => $store) { ?>
+            <?php foreach ($_stores as $store_id => $store) { ?>
             <?php if (isset($collection['store_id']) && $collection['store_id'] == $store_id) { ?>
             <option value="<?php echo $store_id; ?>" selected><?php echo $this->escape($store['name']); ?></option>
             <?php } else { ?>

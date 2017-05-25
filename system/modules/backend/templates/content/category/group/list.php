@@ -6,7 +6,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
-<?php if (!empty($groups) || $filtering) { ?>
+<?php if (!empty($groups) || $_filtering) { ?>
 <div class="panel panel-default">
   <div class="panel-heading clearfix">
     <?php if ($this->access('category_group_add')) { ?>
@@ -35,7 +35,7 @@
           <th>
             <select class="form-control" name="store_id">
               <option value=""<?php echo $filter_store_id ? '' : ' selected'; ?>><?php echo $this->text('Any'); ?></option>
-              <?php foreach ($stores as $store_id => $store) { ?>
+              <?php foreach ($_stores as $store_id => $store) { ?>
               <option value="<?php echo $store_id; ?>"<?php echo $filter_store_id == $store_id ? ' selected' : ''; ?>><?php echo $this->escape($store['name']); ?></option>
               <?php } ?>
             </select>
@@ -58,7 +58,7 @@
         </tr>
       </thead>
       <tbody>
-        <?php if (empty($groups) && $filtering) { ?>
+        <?php if (empty($groups) && $_filtering) { ?>
         <tr>
           <td colspan="5">
             <?php echo $this->text('No results'); ?>
@@ -71,7 +71,7 @@
           <td class="middle"><?php echo $id; ?></td>
           <td class="middle"><?php echo $this->escape($group['title']); ?></td>
           <td class="middle">
-            <?php echo isset($stores[$group['store_id']]) ? $this->escape($stores[$group['store_id']]['name']) : $this->text('Unknown'); ?>
+            <?php echo isset($_stores[$group['store_id']]) ? $this->escape($_stores[$group['store_id']]['name']) : $this->text('Unknown'); ?>
           </td>
           <td class="middle"><?php echo $this->text($group['type'], array(), $this->text('None')); ?>
           </td>
@@ -99,8 +99,8 @@
       </tbody>
     </table>  
   </div>
-  <?php if (!empty($pager)) { ?>
-  <div class="panel-footer text-right"><?php echo $pager; ?></div>
+  <?php if (!empty($_pager)) { ?>
+  <div class="panel-footer text-right"><?php echo $_pager; ?></div>
   <?php } ?>
 </div>
 <?php } else { ?>

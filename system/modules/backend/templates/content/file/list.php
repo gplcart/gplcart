@@ -6,9 +6,9 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
-<?php if (!empty($files) || $filtering) { ?>
+<?php if (!empty($files) || $_filtering) { ?>
 <form method="post" id="files" class="form-horizontal">
-  <input type="hidden" name="token" value="<?php echo $token; ?>">
+  <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <div class="panel panel-default">
     <div class="panel-heading clearfix">
       <div class="btn-group pull-left">
@@ -83,7 +83,7 @@
           </tr>
         </thead>
         <tbody>
-          <?php if ($filtering && empty($files)) { ?>
+          <?php if ($_filtering && empty($files)) { ?>
           <tr>
             <td colspan="6">
               <?php echo $this->text('No results'); ?>
@@ -129,8 +129,8 @@
         </tbody>
       </table>
     </div>
-    <?php if (!empty($pager)) { ?>
-    <div class="panel-footer text-right"><?php echo $pager; ?></div>
+    <?php if (!empty($_pager)) { ?>
+    <div class="panel-footer text-right"><?php echo $_pager; ?></div>
     <?php } ?>
   </div>
 </form>

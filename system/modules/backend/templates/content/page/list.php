@@ -6,9 +6,9 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
-<?php if (!empty($pages) || $filtering) { ?>
+<?php if (!empty($pages) || $_filtering) { ?>
 <form method="post" id="pages" class="form-horizontal">
-  <input type="hidden" name="token" value="<?php echo $token; ?>">
+  <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <div class="panel panel-default">
     <div class="panel-heading clearfix">
       <div class="btn-group pull-left">
@@ -95,7 +95,7 @@
             <th>
               <select class="form-control" name="store_id">
                 <option value="any"><?php echo $this->text('Any'); ?></option>
-                <?php foreach ($stores as $store_id => $store) { ?>
+                <?php foreach ($_stores as $store_id => $store) { ?>
                 <option value="<?php echo $store_id; ?>"<?php echo $filter_store_id == $store_id ? ' selected' : ''; ?>>
                 <?php echo $this->escape($store['name']); ?>
                 </option>
@@ -130,7 +130,7 @@
           </tr>
         </thead>
         <tbody>
-          <?php if ($filtering && empty($pages)) { ?>
+          <?php if ($_filtering && empty($pages)) { ?>
           <tr>
             <td colspan="8">
               <?php echo $this->text('No results'); ?>
@@ -146,8 +146,8 @@
             <td class="middle"><?php echo $this->escape($id); ?></td>
             <td class="middle"><?php echo $this->truncate($this->escape($page['title']), 30); ?></td>
             <td class="middle">
-              <?php if (isset($stores[$page['store_id']])) { ?>
-              <?php echo $this->escape($stores[$page['store_id']]['name']); ?>
+              <?php if (isset($_stores[$page['store_id']])) { ?>
+              <?php echo $this->escape($_stores[$page['store_id']]['name']); ?>
               <?php } else { ?>
               <span class="text-danger"><?php echo $this->text('Unknown'); ?></span>
               <?php } ?>
@@ -184,8 +184,8 @@
         </tbody>
       </table>
     </div>
-    <?php if (!empty($pager)) { ?>
-    <div class="panel-footer text-right"><?php echo $pager; ?></div>
+    <?php if (!empty($_pager)) { ?>
+    <div class="panel-footer text-right"><?php echo $_pager; ?></div>
     <?php } ?>
   </div>
 </form>

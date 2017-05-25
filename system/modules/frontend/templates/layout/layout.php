@@ -7,7 +7,7 @@
  */
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo $this->e($langcode); ?>">
+<html lang="<?php echo $this->e($_langcode); ?>">
   <?php echo $region_head; ?>
   <?php echo $region_body; ?>
 </html>

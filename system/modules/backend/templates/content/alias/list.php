@@ -6,9 +6,9 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
-<?php if (!empty($aliases) || $filtering) { ?>
+<?php if (!empty($aliases) || $_filtering) { ?>
 <form method="post" id="aliases">
-  <input type="hidden" name="token" value="<?php echo $token; ?>">
+  <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <div class="panel panel-default">
     <?php if($this->access('alias_delete')) { ?>
     <div class="panel-heading clearfix">
@@ -83,7 +83,7 @@
           </tr>
         </thead>
         <tbody>
-          <?php if ($filtering && empty($aliases)) { ?>
+          <?php if ($_filtering && empty($aliases)) { ?>
           <tr>
             <td colspan="6">
               <?php echo $this->text('No results'); ?>
@@ -114,8 +114,8 @@
         </tbody>
       </table>
     </div>
-    <?php if (!empty($pager)) { ?>
-    <div class="panel-footer text-right"><?php echo $pager; ?></div>
+    <?php if (!empty($_pager)) { ?>
+    <div class="panel-footer text-right"><?php echo $_pager; ?></div>
     <?php } ?>
   </div>
 </form>

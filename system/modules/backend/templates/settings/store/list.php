@@ -102,7 +102,7 @@
         </tr>
       </thead>
       <tbody>
-        <?php if ($filtering && empty($stores)) { ?>
+        <?php if ($_filtering && empty($stores)) { ?>
         <tr>
           <td class="middle" colspan="8">
             <?php echo $this->text('No results'); ?>
@@ -136,7 +136,7 @@
       </tbody>
     </table>
   </div>
-  <?php if (!empty($pager)) { ?>
-  <div class="panel-footer"><?php echo $pager; ?></div>
+  <?php if (!empty($_pager)) { ?>
+  <div class="panel-footer"><?php echo $_pager; ?></div>
   <?php } ?>
 </div>

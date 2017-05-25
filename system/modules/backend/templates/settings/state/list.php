@@ -6,7 +6,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
-<?php if (!empty($states) || $filtering) { ?>
+<?php if (!empty($states) || $_filtering) { ?>
 <div class="panel panel-default">
   <div class="panel-heading clearfix">
     <div class="btn-group pull-left">
@@ -89,7 +89,7 @@
         </tr>
       </thead>
       <tbody>
-        <?php if($filtering && empty($states)) { ?>
+        <?php if($_filtering && empty($states)) { ?>
         <tr><td class="middle" colspan="6"><?php echo $this->text('No results'); ?></td></tr>
         <?php } ?>
         <?php foreach ($states as $state_id => $state) { ?>
@@ -128,9 +128,9 @@
       </tbody>
     </table>
   </div>
-  <?php if(!empty($pager)) { ?>
+  <?php if(!empty($_pager)) { ?>
   <div class="panel-footer">
-    <?php echo $pager; ?>
+    <?php echo $_pager; ?>
   </div>
   <?php } ?>
 </div>

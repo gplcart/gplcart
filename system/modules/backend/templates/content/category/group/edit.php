@@ -20,8 +20,8 @@
           </div>
         </div>
       </div>
-      <?php if (!empty($languages)) { ?>
-      <?php foreach ($languages as $code => $info) { ?>
+      <?php if (!empty($_languages)) { ?>
+      <?php foreach ($_languages as $code => $info) { ?>
       <div class="form-group<?php echo $this->error("translation.$code.title", ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $info['native_name'])); ?></label>
         <div class="col-md-4">
@@ -60,7 +60,7 @@
         </label>
         <div class="col-md-4">
           <select name="category_group[store_id]" class="form-control">
-            <?php foreach ($stores as $store_id => $store) { ?>
+            <?php foreach ($_stores as $store_id => $store) { ?>
             <?php if (isset($category_group['store_id']) && $category_group['store_id'] == $store_id) { ?>
             <option value="<?php echo $store_id; ?>" selected><?php echo $this->e($store['name']); ?></option>
             <?php } else { ?>

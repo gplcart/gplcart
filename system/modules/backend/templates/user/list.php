@@ -7,7 +7,7 @@
  */
 ?>
 <form method="post" id="users" class="form-horizontal">
-  <input type="hidden" name="token" value="<?php echo $token; ?>">
+  <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <div class="panel panel-default">
     <div class="panel-heading clearfix">
       <div class="btn-group pull-left">
@@ -98,7 +98,7 @@
             <th>
               <select class="form-control" name="store_id">
                 <option value="any"><?php echo $this->text('Any'); ?></option>
-                <?php foreach ($stores as $store_id => $store) { ?>
+                <?php foreach ($_stores as $store_id => $store) { ?>
                 <option value="<?php echo $store_id; ?>"<?php echo $filter_store_id == $store_id ? ' selected' : ''; ?>>
                 <?php echo $this->escape($store['name']); ?>
                 </option>
@@ -128,7 +128,7 @@
           </tr>
         </thead>
         <tbody>
-          <?php if ($filtering && empty($users)) { ?>
+          <?php if ($_filtering && empty($users)) { ?>
           <tr>
             <td colspan="9">
               <?php echo $this->text('No results'); ?>
@@ -163,8 +163,8 @@
               <?php } ?>
             </td>
             <td class="middle">
-              <?php if (isset($stores[$user['store_id']])) { ?>
-              <?php echo $this->escape($stores[$user['store_id']]['name']); ?>
+              <?php if (isset($_stores[$user['store_id']])) { ?>
+              <?php echo $this->escape($_stores[$user['store_id']]['name']); ?>
               <?php } else { ?>
               <span class="text-danger"><?php echo $this->text('Unknown'); ?></span>
               <?php } ?>
@@ -225,8 +225,8 @@
         </tbody>
       </table>
     </div>
-    <?php if (!empty($pager)) { ?>
-    <div class="panel-footer"><?php echo $pager; ?></div>
+    <?php if (!empty($_pager)) { ?>
+    <div class="panel-footer"><?php echo $_pager; ?></div>
     <?php } ?>
   </div>
 </form>

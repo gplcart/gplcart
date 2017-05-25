@@ -6,8 +6,8 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
-<?php if (!empty($js_bottom)) { ?>
-<?php foreach ($js_bottom as $data) { ?>
+<?php if (!empty($_scripts_bottom)) { ?>
+<?php foreach ($_scripts_bottom as $data) { ?>
 <?php if (!empty($data['text'])) { ?>
 <?php if (!empty($data['asset'])) { ?>
 <?php if (!empty($data['condition'])) { ?>

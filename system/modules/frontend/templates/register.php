@@ -33,7 +33,7 @@
           </div>
         </div>
       </div>
-      <?php echo $captcha; ?>
+      <?php echo $_captcha; ?>
       <div class="form-group">
         <div class="col-md-1 col-md-offset-2">
           <button class="btn btn-default" name="register" value="1"><?php echo $this->text('Register'); ?></button>

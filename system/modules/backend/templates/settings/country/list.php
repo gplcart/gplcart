@@ -6,7 +6,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
-<?php if (!empty($countries) || $filtering) { ?>
+<?php if (!empty($countries) || $_filtering) { ?>
 <div class="panel panel-default">
   <div class="panel-heading clearfix">
     <div class="btn-group pull-left">
@@ -91,7 +91,7 @@
         </tr>
       </thead>
       <tbody>
-        <?php if ($filtering && empty($countries)) { ?>
+        <?php if ($_filtering && empty($countries)) { ?>
         <tr>
           <td class="middle" colspan="6">
             <?php echo $this->text('No results'); ?>
@@ -145,8 +145,8 @@
       </tbody>
     </table>
   </div>
-  <?php if (!empty($pager)) { ?>
-  <div class="panel-footer"><?php echo $pager; ?></div>
+  <?php if (!empty($_pager)) { ?>
+  <div class="panel-footer"><?php echo $_pager; ?></div>
   <?php } ?>
 </div>
 <?php } else { ?>

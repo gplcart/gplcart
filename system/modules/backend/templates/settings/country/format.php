@@ -7,7 +7,7 @@
  */
 ?>
 <form method="post" id="country-format" class="form-horizontal">
-  <input type="hidden" name="token" value="<?php echo $token; ?>">
+  <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <div class="panel panel-default">
     <?php $access_actions = false; ?>
     <?php if ($this->access('country_format_edit')) { ?>

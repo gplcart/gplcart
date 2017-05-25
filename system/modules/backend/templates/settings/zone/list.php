@@ -89,8 +89,8 @@
       </tbody>
     </table>
   </div>
-  <?php if (!empty($pager)) { ?>
-  <div class="panel panel-footer"><?php echo $pager; ?></div>
+  <?php if (!empty($_pager)) { ?>
+  <div class="panel panel-footer"><?php echo $_pager; ?></div>
   <?php } ?>
 </div>
 <?php } else { ?>

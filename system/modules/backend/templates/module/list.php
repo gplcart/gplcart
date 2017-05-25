@@ -6,10 +6,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
-<?php if (!empty($modules) || $filtering) { ?>
+<?php if (!empty($modules) || $_filtering) { ?>
 <div class="panel panel-default">
   <div class="panel-body table-responsive">
-    <?php if ($filtering && empty($modules)) { ?>
+    <?php if ($_filtering && empty($modules)) { ?>
     <?php echo $this->text('No results'); ?>
     <?php } ?>
     <?php if (!empty($modules)) { ?>
@@ -164,8 +164,8 @@
       </tbody>
     </table>
     <?php } ?>
-    <?php if (!empty($pager)) { ?>
-    <div class="panel-footer"><?php echo $pager; ?></div>
+    <?php if (!empty($_pager)) { ?>
+    <div class="panel-footer"><?php echo $_pager; ?></div>
     <?php } ?>
   </div>
 </div>

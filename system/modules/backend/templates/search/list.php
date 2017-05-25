@@ -19,6 +19,6 @@
 </div>
 <div class="row">
   <div class="col-md-12">
-    <?php echo $pager; ?>
+    <?php echo $_pager; ?>
   </div>
 </div>

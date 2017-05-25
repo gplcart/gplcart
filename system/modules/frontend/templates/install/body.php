@@ -12,11 +12,11 @@
       <div class="row">
         <div class="col-md-12">
           <h1 class="h4"><?php echo $this->text('Welcome to GPL Cart'); ?></h1>
-          <?php if (!empty($languages) && count($languages) > 1) { ?>
+          <?php if (!empty($_languages) && count($_languages) > 1) { ?>
           <div class="select-language clearfix">
             <span class="pull-left"><?php echo $this->text('Select a language'); ?>:&nbsp;&nbsp;</span>
             <ul class="list-inline languages pull-left">
-              <?php foreach ($languages as $code => $name) { ?>
+              <?php foreach ($_languages as $code => $name) { ?>
               <li class="<?php echo $code === $language ? 'active' : ''; ?>">
                 <a href="<?php echo $this->url('', array('lang' => $code)); ?>">
                   <?php echo isset($name[1]) ? $this->e($name[1]) : $this->e($name[0]); ?>
@@ -28,10 +28,10 @@
           <?php } ?>
         </div>
       </div>
-      <?php if (!empty($messages)) { ?>
+      <?php if (!empty($_messages)) { ?>
       <div class="row">
         <div class="col-md-12">
-          <?php foreach ($messages as $type => $strings) { ?>
+          <?php foreach ($_messages as $type => $strings) { ?>
           <div class="alert alert-<?php echo $this->e($type); ?> alert-dismissible fade in">
             <button type="button" class="close" data-dismiss="alert">
               <span aria-hidden="true">&times;</span>

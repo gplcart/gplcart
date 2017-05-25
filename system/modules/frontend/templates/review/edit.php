@@ -19,7 +19,7 @@
           <div class="help-block"><?php echo $this->error('text'); ?></div>
         </div>
       </div>
-      <?php echo $captcha; ?>
+      <?php echo $_captcha; ?>
       <div class="form-group">
         <div class="col-md-2">
           <?php if($can_delete) { ?>

@@ -24,7 +24,7 @@
           <div class="help-block"><?php echo $this->error('password'); ?></div>
         </div>
       </div>
-      <?php echo $captcha; ?>
+      <?php echo $_captcha; ?>
       <div class="form-group">
         <div class="col-md-10 col-md-offset-2">
           <button class="btn btn-default" name="login" value="1"><?php echo $this->text('Log in'); ?></button>

@@ -7,14 +7,14 @@
  */
 ?>
 <head>
-  <?php foreach ($meta as $tag) { ?>
+  <?php foreach ($_meta_tags as $tag) { ?>
   <meta<?php echo $this->attributes($tag); ?>>
   <?php } ?>
-  <title><?php echo $head_title; ?></title>
-  <?php foreach ($css as $data) { ?>
+  <title><?php echo $_head_title; ?></title>
+  <?php foreach ($_styles as $data) { ?>
   <link href="<?php echo $data['key']; ?>" rel="stylesheet">
   <?php } ?>
-  <?php foreach ($js_top as $data) { ?>
+  <?php foreach ($_scripts_top as $data) { ?>
     <?php if (!empty($data['text'])) { ?>
     <script><?php echo $data['asset']; ?></script>
     <?php } else { ?>

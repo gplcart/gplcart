@@ -6,9 +6,9 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
-<?php if (!empty($reviews) || $filtering) { ?>
+<?php if (!empty($reviews) || $_filtering) { ?>
 <form method="post" id="reviews" class="form-horizontal">
-  <input type="hidden" name="token" value="<?php echo $token; ?>">
+  <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <div class="panel panel-default">
     <div class="panel-heading clearfix">
       <div class="btn-group pull-left">
@@ -99,7 +99,7 @@
           </tr>
         </thead>
         <tbody>
-          <?php if ($filtering && empty($reviews)) { ?>
+          <?php if ($_filtering && empty($reviews)) { ?>
           <tr>
             <td colspan="8">
               <?php echo $this->text('No results'); ?>
@@ -155,8 +155,8 @@
         </tbody>
       </table>   
     </div>
-    <?php if (!empty($pager)) { ?>
-    <div class="panel-footer text-right"><?php echo $pager; ?></div>
+    <?php if (!empty($_pager)) { ?>
+    <div class="panel-footer text-right"><?php echo $_pager; ?></div>
     <?php } ?> 
   </div>
 </form>

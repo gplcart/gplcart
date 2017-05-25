@@ -48,7 +48,7 @@
             </label>
             <div class="col-md-9">
               <select name="trigger[store_id]" class="form-control">
-                <?php foreach ($stores as $store_id => $store) { ?>
+                <?php foreach ($_stores as $store_id => $store) { ?>
                 <?php if (isset($trigger['store_id']) && $trigger['store_id'] == $store_id) { ?>
                 <option value="<?php echo $store_id; ?>" selected><?php echo $this->escape($store['name']); ?></option>
                 <?php } else { ?>

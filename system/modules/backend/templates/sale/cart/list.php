@@ -6,9 +6,9 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
-<?php if (!empty($carts) || $filtering) { ?>
+<?php if (!empty($carts) || $_filtering) { ?>
 <form method="post" class="form-horizontal">
-  <input type="hidden" name="token" value="<?php echo $token; ?>">
+  <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <div class="panel panel-default">
     <div class="panel-heading clearfix">
       <?php $access_actions = false; ?>
@@ -73,7 +73,7 @@
             <th>
               <select class="form-control" name="store_id">
                 <option value="any"><?php echo $this->text('Any'); ?></option>
-                <?php foreach ($stores as $store_id => $store) { ?>
+                <?php foreach ($_stores as $store_id => $store) { ?>
                 <option value="<?php echo $store_id; ?>"<?php echo isset($filter_store_id) && (int) $filter_store_id === $store_id ? ' selected' : ''; ?>><?php echo $this->escape($store['name']); ?></option>
                 <?php } ?>
               </select>
@@ -97,7 +97,7 @@
           </tr>
         </thead>
         <tbody>
-          <?php if ($filtering && empty($carts)) { ?>
+          <?php if ($_filtering && empty($carts)) { ?>
           <tr>
             <td class="middle" colspan="8">
               <?php echo $this->text('No results'); ?>
@@ -120,10 +120,10 @@
               <?php } ?>
             </td>
             <td class="middle">
-              <?php if(empty($stores[$cart['store_id']])) { ?>
+              <?php if(empty($_stores[$cart['store_id']])) { ?>
               <?php echo $this->text('Unknown'); ?>
               <?php } else { ?>
-              <?php echo $this->escape($stores[$cart['store_id']]['name']); ?>
+              <?php echo $this->escape($_stores[$cart['store_id']]['name']); ?>
               <?php } ?>
             </td>
             <td class="middle">
@@ -148,8 +148,8 @@
         </tbody>
       </table>
     </div>
-    <?php if (!empty($pager)) { ?>
-    <div class="panel-footer"><?php echo $pager; ?></div>
+    <?php if (!empty($_pager)) { ?>
+    <div class="panel-footer"><?php echo $_pager; ?></div>
     <?php } ?>
   </div>
 </form>
