@@ -111,8 +111,8 @@ class Category extends FrontendController
     protected function setDataNavbarIndexCategory()
     {
         $data = array(
-            'query' => $this->query,
             'total' => $this->total,
+            'query' => $this->query_filter,
             'view' => $this->query_filter['view'],
             'quantity' => count($this->data_products),
             'sort' => "{$this->query_filter['sort']}-{$this->query_filter['order']}"
