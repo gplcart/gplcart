@@ -86,15 +86,15 @@ class Language extends Model
      */
     public function exists($code)
     {
-        $languages = $this->getAll();
+        $languages = $this->getList();
         return isset($languages[$code]);
     }
 
     /**
-     * Returns an array of all languages including the default and added/updated languages
+     * Returns an array of languages
      * @return array
      */
-    public function getAll()
+    public function getList()
     {
         $languages = &Cache::memory(__METHOD__);
 
@@ -114,6 +114,7 @@ class Language extends Model
         }
 
         $this->hook->fire('language.list', $languages, $this);
+        gplcart_array_sort($languages);
         return $languages;
     }
 
@@ -173,32 +174,13 @@ class Language extends Model
     }
 
     /**
-     * Returns a sorted array of available languages
-     * @param boolean $enabled If true disabled languages will be excluded
-     * @return array
-     */
-    public function getList($enabled = false)
-    {
-        $languages = $this->getAll();
-
-        if ($enabled) {
-            $languages = array_filter($languages, function ($language) {
-                return !empty($language['status']);
-            });
-        }
-
-        gplcart_array_sort($languages);
-        return $languages;
-    }
-
-    /**
      * Returns a language
      * @param string $code
      * @return array
      */
     public function get($code)
     {
-        $languages = $this->getAll();
+        $languages = $this->getList();
         return isset($languages[$code]) ? $languages[$code] : array();
     }
 
@@ -224,7 +206,7 @@ class Language extends Model
             'native_name' => empty($data['native_name']) ? $data['code'] : $data['native_name']
         );
 
-        $languages = $this->getAll();
+        $languages = $this->getList();
 
         if (!empty($values['default'])) {
             $values['status'] = true;
@@ -248,7 +230,7 @@ class Language extends Model
     {
         $this->hook->fire('language.update.before', $code, $data, $this);
 
-        $languages = $this->getAll();
+        $languages = $this->getList();
 
         if (empty($languages[$code])) {
             return false;
@@ -283,7 +265,7 @@ class Language extends Model
             return false;
         }
 
-        $languages = $this->getAll();
+        $languages = $this->getList();
         unset($languages[$code]);
         $this->config->set('languages', $languages);
 
