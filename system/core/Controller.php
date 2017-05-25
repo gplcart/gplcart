@@ -1584,14 +1584,14 @@ class Controller
      */
     protected function prepareOutput()
     {
-        $this->data['meta'] = $this->meta;
-        $this->data['head_title'] = $this->title;
-        $this->data['page_title'] = $this->ptitle;
-        $this->data['breadcrumb'] = $this->breadcrumbs;
+        $this->data['_meta_tags'] = $this->meta;
+        $this->data['_head_title'] = $this->title;
+        $this->data['_page_title'] = $this->ptitle;
+        $this->data['_breadcrumbs'] = $this->breadcrumbs;
 
-        $this->data['css'] = $this->getCss();
-        $this->data['js_top'] = $this->getJs('top');
-        $this->data['js_bottom'] = $this->getJs('bottom');
+        $this->data['_styles'] = $this->getCss();
+        $this->data['_scripts_top'] = $this->getJs('top');
+        $this->data['_scripts_bottom'] = $this->getJs('bottom');
     }
 
     /**
@@ -1602,7 +1602,7 @@ class Controller
     protected function setPhpErrors(array &$data)
     {
         foreach ($this->logger->getPhpErrors() as $message) {
-            $data['messages']['warning'][] = $message;
+            $data['_messages']['warning'][] = $message;
         }
     }
 
@@ -1660,8 +1660,15 @@ class Controller
      */
     protected function setDefaultJsSettings()
     {
-        $allowed = array('token', 'base', 'langcode', 'urn', 'uri', 'path', 'query');
-        $settings = array_intersect_key($this->data, array_flip($allowed));
+        $allowed = array('_token', '_base', '_langcode', '_urn', '_uri', '_path');
+
+        $settings = array();
+        foreach ($this->data as $key => $value) {
+            if (in_array($key, $allowed)) {
+                $settings[ltrim($key, '_')] = $value;
+            }
+        }
+
         $this->setJsSettings('', $settings, 60);
     }
 
@@ -1729,20 +1736,20 @@ class Controller
      */
     protected function setDefaultData()
     {
-        $this->data['urn'] = $this->urn;
-        $this->data['uri'] = $this->uri;
-        $this->data['path'] = $this->path;
-        $this->data['base'] = $this->base;
-        $this->data['token'] = $this->token;
-        $this->data['query'] = $this->query;
-        $this->data['captcha'] = $this->renderCaptcha();
-        $this->data['messages'] = $this->session->getMessage();
-        $this->data['languages'] = $this->language->getList(true);
-        $this->data['langcode'] = empty($this->langcode) ? 'en' : $this->langcode;
+        $this->data['_urn'] = $this->urn;
+        $this->data['_uri'] = $this->uri;
+        $this->data['_path'] = $this->path;
+        $this->data['_base'] = $this->base;
+        $this->data['_token'] = $this->token;
+        $this->data['_query'] = $this->query;
+        $this->data['_captcha'] = $this->renderCaptcha();
+        $this->data['_languages'] = $this->language->getList();
+        $this->data['_messages'] = $this->session->getMessage();
+        $this->data['_langcode'] = empty($this->langcode) ? 'en' : $this->langcode;
 
         $controller = strtolower(str_replace('\\', '-', $this->current_route['handlers']['controller'][0]));
-        $this->data['body_classes'] = array_slice(explode('-', $controller, 3), -1);
-        $this->data['cart'] = $this->getCart();
+        $this->data['_classes'] = array_slice(explode('-', $controller, 3), -1);
+        $this->data['_cart'] = $this->getCart();
 
         $this->setDefaultJs();
     }
@@ -1975,7 +1982,7 @@ class Controller
                 $this->session->setMessage($message, $severity);
                 continue;
             }
-            $this->data['messages'][$severity][] = $message;
+            $this->data['_messages'][$severity][] = $message;
         }
     }
 
@@ -2003,7 +2010,7 @@ class Controller
         }
 
         $this->query_filter = $query;
-        $this->data['filtering'] = false;
+        $this->data['_filtering'] = false;
         $order = isset($this->query['order']) ? $this->query['order'] : '';
 
         foreach ($allowed as $filter) {
@@ -2022,7 +2029,7 @@ class Controller
         }
 
         if (isset($this->query_filter['sort']) && isset($this->query_filter['order'])) {
-            $this->data['sort'] = "{$this->query_filter['sort']}-{$this->query_filter['order']}";
+            $this->data['_sort'] = "{$this->query_filter['sort']}-{$this->query_filter['order']}";
         }
     }
 
@@ -2067,7 +2074,7 @@ class Controller
      */
     public function setPager($total, $query = null, $limit = null)
     {
-        $this->data['pager'] = $this->getPager($total, $query, $limit);
+        $this->data['_pager'] = $this->getPager($total, $query, $limit);
         return $this->getPagerLimit();
     }
 
