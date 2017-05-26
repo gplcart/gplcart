@@ -17,7 +17,7 @@
 </div>
 <?php } else { ?>
 <form method="post" class="form-horizontal" id="checkout">
-  <input type="hidden" name="token" value="<?php echo $this->prop('token'); ?>">
+  <input type="hidden" name="token" value="<?php echo $this->getProperty('token'); ?>">
   <noscript>
   <div class="alert alert-warning">
     <?php echo $this->text('Your browser seems to have JavaScript disabled. You should press <button title="@title" class="btn btn-default btn-xs" name="update" value="1"><i class="fa fa-refresh"></i></button> each time you make changes in the form', array('@title' => $this->text('Update'))); ?>
@@ -27,7 +27,7 @@
     <div class="col-md-12">
       <?php if ($login_form) { ?>
       <?php echo $pane_login; ?>
-      <?php } else if (!$this->user('user_id')) { ?>
+      <?php } else if (!$_uid) { ?>
       <div class="form-group">
         <label class="col-md-2 control-label"><?php echo $this->text('Already registered?'); ?></label>
         <div class="col-md-4">

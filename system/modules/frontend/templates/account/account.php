@@ -17,14 +17,14 @@
         <h4 class="list-group-item-heading h5"><?php echo $this->text('Addresses'); ?></h4>
         <p class="list-group-item-text"><?php echo $this->text('View and manage addressbook'); ?></p>
       </a>
-      <?php if ($this->user('user_id') == $user['user_id'] || $this->access('user_edit')) { ?>
+      <?php if ($_uid == $user['user_id'] || $this->access('user_edit')) { ?>
       <a class="list-group-item" href="<?php echo $this->url("account/{$user['user_id']}/edit"); ?>">
         <h4 class="list-group-item-heading h5"><?php echo $this->text('Settings'); ?></h4>
         <p class="list-group-item-text"><?php echo $this->text('Edit account details'); ?></p>
       </a>
       <?php } ?>
     </div>
-    <?php if ($this->user('user_id') == $user['user_id']) { ?>
+    <?php if ($_uid == $user['user_id']) { ?>
     <a class="btn btn-default" href="<?php echo $this->url('logout'); ?>">
       <span class="fa fa-sign-out"></span> <?php echo $this->text('Log out'); ?>
     </a>
@@ -75,7 +75,7 @@
     </div>
     <?php echo $_pager; ?>
     <?php } else { ?>
-    <?php if ($this->user('user_id') == $user['user_id']) { ?>
+    <?php if ($_uid == $user['user_id']) { ?>
     <?php echo $this->text('You have no orders yet. <a href="@href">Shop now</a>', array('@href' => $this->url('/'))); ?>
     <?php } ?>
     <?php } ?>

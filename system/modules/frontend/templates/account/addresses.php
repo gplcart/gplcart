@@ -17,14 +17,14 @@
         <h4 class="list-group-item-heading h5"><?php echo $this->text('Addresses'); ?></h4>
         <p class="list-group-item-text"><?php echo $this->text('View and manage addressbook'); ?></p>
       </a>
-      <?php if ($this->user('user_id') == $user['user_id'] || $this->access('user_edit')) { ?>
+      <?php if ($_uid == $user['user_id'] || $this->access('user_edit')) { ?>
       <a class="list-group-item" href="<?php echo $this->url("account/{$user['user_id']}/edit"); ?>">
         <h4 class="list-group-item-heading h5"><?php echo $this->text('Settings'); ?></h4>
         <p class="list-group-item-text"><?php echo $this->text('Edit account details'); ?></p>
       </a>
       <?php } ?>
     </div>
-    <?php if ($this->user('user_id') == $user['user_id']) { ?>
+    <?php if ($_uid == $user['user_id']) { ?>
     <a class="btn btn-default" href="<?php echo $this->url('logout'); ?>">
       <span class="fa fa-sign-out"></span> <?php echo $this->text('Log out'); ?>
     </a>
@@ -37,7 +37,7 @@
       <div class="col-md-4">
         <div class="panel panel-default address" data-equal-height="true">
           <div class="panel-heading clearfix">
-            <?php if (($this->user('user_id') == $user['user_id'] || $this->access('user_edit')) && empty($address['locked'])) { ?>
+            <?php if (($_uid == $user['user_id'] || $this->access('user_edit')) && empty($address['locked'])) { ?>
             <a class="btn btn-default btn-sm pull-right" onclick="return confirm(GplCart.text('Are you sure?'));" title="<?php echo $this->text('Delete'); ?>" href="<?php echo $this->url('', array('delete' => $address_id)); ?>">
               <i class="fa fa-trash"></i>
             </a>
@@ -62,7 +62,7 @@
     <?php } ?>
     <div class="row">
       <div class="col-md-12">
-        <?php if (empty($addresses) && $this->user('user_id') == $user['user_id']) { ?>
+        <?php if (empty($addresses) && $_uid == $user['user_id']) { ?>
         <p>
           <?php echo $this->text('Currently you have no saved addresses, but they will be added after next <a href="@href">checkout</a>', array('@href' => $this->url('checkout'))); ?>
         </p>

@@ -20,8 +20,8 @@
             </li>
           </ul>
           <p class="nav pull-left navbar-text">
-            <?php if ($this->store('data.phone.0')) { ?>
-            <i class="fa fa-phone"></i> <?php echo $this->e($this->store('data.phone.0')); ?>
+            <?php if (!empty($_store['data']['phone'][0])) { ?>
+            <i class="fa fa-phone"></i> <?php echo $this->e($_store['data']['phone'][0]); ?>
             <?php } ?>
           </p>
           <?php if (!empty($_currencies)) { ?>
@@ -62,8 +62,8 @@
               </div>
           <?php } ?>
           <p class="nav pull-right">
-            <?php if ($this->user('user_id')) { ?>
-            <a href="<?php echo $this->url('account/' . $this->user('user_id')); ?>">
+            <?php if ($_uid) { ?>
+            <a href="<?php echo $this->url("account/$_uid"); ?>">
               <i class="fa fa-user"></i>
             </a>
             <a href="<?php echo $this->url('logout'); ?>">
@@ -230,8 +230,10 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-md-12">
-            <?php echo $this->e($this->store('data.owner')); ?>
-            &copy; 2015 - <?php echo date('Y'); ?> <a href="http://gplcart.com">GPL Cart</a>
+          <?php if(!empty($_store['data']['owner'])) { ?>
+          <?php echo $this->e($_store['data']['owner']); ?>
+          <?php } ?>
+          &copy; 2015 - <?php echo date('Y'); ?> <a href="http://gplcart.com">GPL Cart</a>
         </div>
       </div>
     </div>

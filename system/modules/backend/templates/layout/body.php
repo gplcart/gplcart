@@ -45,11 +45,11 @@
           </li>
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <i class="fa fa-user"></i> <?php echo $this->escape($this->user('name')); ?>
+              <i class="fa fa-user"></i> <?php echo $this->escape($_user['name']); ?>
             </a>
             <ul class="dropdown-menu dropdown-menu-right">
               <li>
-                <a href="<?php echo $this->url("account/{$this->uid}"); ?>"><?php echo $this->text('Account'); ?></a>
+                <a href="<?php echo $this->url("account/$_uid"); ?>"><?php echo $this->text('Account'); ?></a>
               </li>
               <li class="divider"></li>
               <li>
@@ -65,8 +65,8 @@
   <div class="container-fluid content-header hidden-print">
     <div class="row">
       <div class="col-md-12">
-        <?php if (!empty($_breadcrumbs)) { ?>
         <ol class="breadcrumb">
+          <?php if(!empty($_breadcrumbs)) { ?>
           <?php foreach ($_breadcrumbs as $item) { ?>
           <?php if(empty($item['url'])) { ?>
           <li><?php echo $this->filter($item['text']); ?></li>
@@ -74,11 +74,11 @@
           <li><a href="<?php echo $this->escape($item['url']); ?>"><?php echo $this->filter($item['text']); ?></a></li>
           <?php } ?>
           <?php } ?>
+          <?php } ?>
           <?php if(!empty($_page_title)) { ?>
           <li><?php echo $this->filter($_page_title); ?></li>
           <?php } ?>
         </ol>
-        <?php } ?>
       </div>
     </div>
   </div>

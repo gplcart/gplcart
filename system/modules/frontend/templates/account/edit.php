@@ -18,14 +18,14 @@
         <h4 class="list-group-item-heading h5"><?php echo $this->text('Addresses'); ?></h4>
         <p class="list-group-item-text"><?php echo $this->text('View and manage addressbook'); ?></p>
       </a>
-      <?php if ($this->user('user_id') == $user['user_id'] || $this->access('user_edit')) { ?>
+      <?php if ($_uid == $user['user_id'] || $this->access('user_edit')) { ?>
       <a class="list-group-item active disabled" href="<?php echo $this->url("account/{$user['user_id']}/edit"); ?>">
         <h4 class="list-group-item-heading h5"><?php echo $this->text('Settings'); ?></h4>
         <p class="list-group-item-text"><?php echo $this->text('Edit account details'); ?></p>
       </a>
       <?php } ?>
     </div>
-    <?php if ($this->user('user_id') == $user['user_id']) { ?>
+    <?php if ($_uid == $user['user_id']) { ?>
     <a class="btn btn-default" href="<?php echo $this->url('logout'); ?>">
       <span class="fa fa-sign-out"></span> <?php echo $this->text('Log out'); ?>
     </a>
@@ -33,7 +33,7 @@
   </div>
   <div class="col-md-9">
     <form method="post" id="edit-account" class="form-horizontal">
-      <input type="hidden" name="token" value="<?php echo $this->prop('token'); ?>">
+      <input type="hidden" name="token" value="<?php echo $this->getProperty('token'); ?>">
       <div class="form-group required<?php echo $this->error('email', ' has-error'); ?>">
         <label class="col-md-3 control-label"><?php echo $this->text('E-mail'); ?></label>
         <div class="col-md-6">
