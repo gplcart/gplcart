@@ -154,8 +154,7 @@ class Controller extends BaseController
      */
     protected function setFrontendProperties()
     {
-        if (!$this->url->isInstall()) {
-            $this->cart_uid = $this->cart->uid();
+        if (!$this->isInstalling()) {
             $this->triggered = $this->getFiredTriggers();
             $this->data_categories = $this->getCategories();
             $this->current_currency = (string) $this->currency->get();
