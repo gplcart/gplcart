@@ -12,7 +12,7 @@ namespace gplcart\core;
 /**
  * Base controller class
  */
-class Controller
+abstract class Controller
 {
 
     /**
@@ -20,12 +20,6 @@ class Controller
      * @var boolean
      */
     protected $is_installing = false;
-
-    /**
-     * Whether the site in maintenance mode
-     * @var boolean
-     */
-    protected $is_maintenance = false;
 
     /**
      * Whether the current view is backend
@@ -164,12 +158,6 @@ class Controller
      * @var integer
      */
     protected $total;
-
-    /**
-     * Access for the current route
-     * @var string
-     */
-    protected $access = '';
 
     /**
      * Array of template variables
@@ -364,8 +352,7 @@ class Controller
     public function __construct()
     {
         $this->setInstanceProperties();
-
-        $this->token = $this->config->token();
+        $this->setAccessProperties();
 
         $this->setRouteProperties();
         $this->setStoreProperties();
@@ -376,10 +363,25 @@ class Controller
         $this->language->load();
 
         $this->setDefaultData();
-        $this->setAccessProperties();
+        $this->controlCommonAccess();
         $this->controlMaintenanceMode();
 
         $this->hook->fire('construct.controller', $this);
+    }
+
+    /**
+     * Sets user/access properties
+     */
+    protected function setAccessProperties()
+    {
+        $this->token = $this->config->token();
+
+        $this->cart_uid = $this->cart->uid();
+        $this->uid = (int) $this->user->getSession('user_id');
+        
+        if (!empty($this->uid)) {
+            $this->current_user = $this->user->get($this->uid);
+        }
     }
 
     /**
@@ -387,7 +389,7 @@ class Controller
      * @param string $name
      * @return object
      */
-    public function prop($name)
+    public function getProperty($name)
     {
         if (property_exists($this, $name)) {
             return $this->$name;
@@ -484,7 +486,7 @@ class Controller
      * @param mixed $item
      * @return mixed
      */
-    public function store($item = null)
+    public function getStore($item = null)
     {
         if (isset($item)) {
             return gplcart_array_get_value($this->current_store, $item);
@@ -498,7 +500,7 @@ class Controller
      * @param mixed $item
      * @return mixed
      */
-    public function user($item = null)
+    public function getUser($item = null)
     {
         if (isset($item)) {
             return gplcart_array_get_value($this->current_user, $item);
@@ -688,6 +690,20 @@ class Controller
     }
 
     /**
+     * If $path isset - returns TRUE if the path pattern mathes the current URL path
+     * If $path is not set or NULL - returns the current URL path
+     * @param null|string $pattern
+     * @return string|bool
+     */
+    public function path($pattern = null)
+    {
+        if (isset($pattern)) {
+            return preg_match("~$pattern~i", $this->path) === 1;
+        }
+        return $this->path;
+    }
+
+    /**
      * Whether the system is installing
      * @return bool
      */
@@ -703,30 +719,6 @@ class Controller
     public function isBackend()
     {
         return $this->url->isBackend();
-    }
-
-    /**
-     * If $path isset - returns TRUE if the path pattern mathes the current URL path
-     * If $path is not set or NULL - returns the current URL path
-     * @param null|string $pattern
-     * @return string|bool
-     */
-    public function path($pattern = null)
-    {
-        if (isset($pattern)) {
-            return preg_match("~$pattern~i", $this->path) === 1;
-        }
-
-        return $this->path;
-    }
-
-    /**
-     * Returns request remote IP
-     * @return string
-     */
-    public function ip()
-    {
-        return $this->request->ip();
     }
 
     /**
@@ -793,12 +785,10 @@ class Controller
     /**
      * Sets the current HTTP status code
      * @param string $code
-     * @return \gplcart\core\Controller
      */
     public function setHttpStatus($code)
     {
         $this->http_status = $code;
-        return $this;
     }
 
     /**
@@ -907,10 +897,6 @@ class Controller
         $this->is_backend = $this->isBackend();
         $this->is_installing = $this->url->isInstall();
         $this->current_route = $this->route->getCurrent();
-
-        if (isset($this->current_route['access'])) {
-            $this->access = $this->current_route['access'];
-        }
 
         $this->urn = $this->request->urn();
         $this->host = $this->request->host();
@@ -1123,29 +1109,24 @@ class Controller
     }
 
     /**
-     * Sets access to the current page
-     * @return boolean
+     * Controll user access to the current page
      */
-    protected function setAccessProperties()
+    protected function controlCommonAccess()
     {
-        if ($this->is_installing) {
-            return null;
+        if (!$this->is_installing) {
+
+            $this->controlToken(false);
+
+            if (!empty($this->uid)) {
+                $this->controlAccessCredentials();
+            }
+
+            $this->controlCsrf();
+            $this->controlAccessUpload();
+            $this->controlAccessRestrictedArea();
+            $this->controlAccessAdmin();
+            $this->controlAccessAccount();
         }
-
-        $this->controlToken(false);
-
-        $this->uid = (int) $this->user->getSession('user_id');
-
-        if (!empty($this->uid)) {
-            $this->current_user = $this->user->get($this->uid);
-            $this->controlAccessCredentials();
-        }
-
-        $this->controlCsrf();
-        $this->controlAccessUpload();
-        $this->controlAccessRestrictedArea();
-        $this->controlAccessAdmin();
-        $this->controlAccessAccount();
     }
 
     /**
@@ -1170,14 +1151,12 @@ class Controller
 
     /**
      * Controls the current user credentials, such as status, role, password hash...
-     * @return boolean
      */
     protected function controlAccessCredentials()
     {
         if (!isset($this->current_user['hash']) || empty($this->current_user['status'])) {
             $this->session->delete();
             $this->url->redirect('login');
-            return false;
         }
 
         $session_hash = $this->user->getSession('hash');
@@ -1186,16 +1165,12 @@ class Controller
         if (!gplcart_string_equals($this->current_user['hash'], $session_hash)) {
             $this->session->delete();
             $this->url->redirect('login');
-            return false;
         }
 
         if ($this->current_user['role_id'] != $session_role_id) {
             $this->session->delete();
             $this->url->redirect('login');
-            return false;
         }
-
-        return true;
     }
 
     /**
@@ -1221,7 +1196,6 @@ class Controller
 
     /**
      * Prevent Cross-Site Request Forgery (CSRF)
-     * @return null|boolean
      */
     protected function controlCsrf()
     {
@@ -1234,17 +1208,14 @@ class Controller
             return null;
         }
 
-        if (gplcart_string_equals($this->request->post('token'), $this->token)) {
-            return true;
+        if (!gplcart_string_equals($this->request->post('token'), $this->token)) {
+            $this->response->error403();
         }
-
-        $this->response->error403();
-        return false;
     }
 
     /**
      * Controls token in the URL query
-     * @param boolean $required Whether the token must be presented in the URL
+     * @param boolean $required
      */
     protected function controlToken($required = true)
     {
@@ -1261,7 +1232,6 @@ class Controller
 
     /**
      * Controls access to admin pages
-     * @return boolean|null
      */
     protected function controlAccessAdmin()
     {
@@ -1271,16 +1241,12 @@ class Controller
 
         if (empty($this->current_user['role_status']) || !$this->access('admin')) {
             $this->redirect('/', $this->text('No access'), 'warning');
-            return false;
         }
 
         // Check route specific access
-        if (empty($this->access) || $this->access($this->access)) {
-            return true;
+        if (isset($this->current_route['access']) && !$this->access($this->current_route['access'])) {
+            $this->setHttpStatus(403);
         }
-
-        $this->setHttpStatus(403);
-        return false;
     }
 
     /**
@@ -1295,7 +1261,6 @@ class Controller
 
     /**
      * Contols access to account pages
-     * @return boolean|null
      */
     protected function controlAccessAccount()
     {
@@ -1306,20 +1271,17 @@ class Controller
         }
 
         if ($this->uid === $account_id) {
-            return true;
+            return null;
         }
 
         if ($this->isSuperadmin($account_id) && !$this->isSuperadmin()) {
             $this->setHttpStatus(403);
-            return false;
+            return null;
         }
 
-        if ($this->access('user')) {
-            return true;
+        if (!$this->access('user')) {
+            $this->setHttpStatus(403);
         }
-
-        $this->setHttpStatus(403);
-        return false;
     }
 
     /**
@@ -1329,7 +1291,6 @@ class Controller
     {
         if (!$this->is_installing && !$this->is_backend//
                 && empty($this->current_store['status'])) {
-            $this->is_maintenance = true;
             $this->outputMaintenance();
         }
     }
@@ -1463,7 +1424,8 @@ class Controller
      */
     final public function outputHttpStatus($code)
     {
-        $this->setHttpStatus($code)->output();
+        $this->setHttpStatus($code);
+        $this->output();
     }
 
     /**
@@ -1660,7 +1622,7 @@ class Controller
      */
     protected function setDefaultJsSettings()
     {
-        $allowed = array('_token', '_base', '_langcode', '_urn', '_uri', '_path');
+        $allowed = array('_token', '_base', '_langcode', '_urn', '_uri', '_path', '_uid', '_cart_uid');
 
         $settings = array();
         foreach ($this->data as $key => $value) {
@@ -1736,12 +1698,19 @@ class Controller
      */
     protected function setDefaultData()
     {
+        $this->data['_uid'] = $this->uid;
         $this->data['_urn'] = $this->urn;
         $this->data['_uri'] = $this->uri;
         $this->data['_path'] = $this->path;
         $this->data['_base'] = $this->base;
         $this->data['_token'] = $this->token;
         $this->data['_query'] = $this->query;
+        $this->data['_is_front'] = $this->url->isFront();
+        $this->data['_is_admin'] = $this->access('admin');
+        $this->data['_is_superadmin'] = $this->isSuperadmin();
+        $this->data['_cart_uid'] = $this->cart_uid;
+        $this->data['_user'] = $this->current_user;
+        $this->data['_store'] = $this->current_store;
         $this->data['_captcha'] = $this->renderCaptcha();
         $this->data['_languages'] = $this->language->getList();
         $this->data['_messages'] = $this->session->getMessage();
@@ -1823,10 +1792,10 @@ class Controller
      */
     protected function setMetaEntity(array $data)
     {
-        if ($data['meta_title'] !== '') {
+        if (!empty($data['meta_title'])) {
             $this->setTitle($data['meta_title'], false);
         }
-        if ($data['meta_description'] !== '') {
+        if (!empty($data['meta_description'])) {
             $this->setMeta(array('name' => 'description', 'content' => $data['meta_description']));
         }
         $this->setMeta(array('rel' => 'canonical', 'href' => $this->path));
