@@ -13,7 +13,7 @@
       <div class="form-group required<?php echo $this->error('code', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Code'); ?></label>
         <div class="col-md-4">
-          <input name="language[code]" maxlength="2" class="form-control" value="<?php echo isset($language['code']) ? $this->escape($language['code']) : ''; ?>">
+          <input name="language[code]" maxlength="2" class="form-control" value="<?php echo isset($language['code']) ? $this->e($language['code']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error('code'); ?>
             <div class="text-muted">
@@ -25,7 +25,7 @@
       <div class="form-group<?php echo $this->error('name', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Name'); ?></label>
         <div class="col-md-4">
-          <input name="language[name]" class="form-control" maxlength="32" value="<?php echo isset($language['name']) ? $this->escape($language['name']) : ''; ?>">
+          <input name="language[name]" class="form-control" maxlength="32" value="<?php echo isset($language['name']) ? $this->e($language['name']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error('name'); ?>
             <div class="text-muted">
@@ -37,7 +37,7 @@
       <div class="form-group<?php echo $this->error('native_name', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Native name'); ?></label>
         <div class="col-md-4">
-          <input name="language[native_name]" maxlength="50" class="form-control" value="<?php echo isset($language['native_name']) ? $this->escape($language['native_name']) : ''; ?>">
+          <input name="language[native_name]" maxlength="50" class="form-control" value="<?php echo isset($language['native_name']) ? $this->e($language['native_name']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error('native_name'); ?>
             <div class="text-muted">
@@ -83,7 +83,7 @@
       <div class="form-group<?php echo $this->error('weight', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Weight'); ?></label>
         <div class="col-md-4">
-          <input name="language[weight]" maxlength="2" class="form-control" value="<?php echo isset($language['weight']) ? $this->escape($language['weight']) : 0; ?>">
+          <input name="language[weight]" maxlength="2" class="form-control" value="<?php echo isset($language['weight']) ? $this->e($language['weight']) : 0; ?>">
           <div class="help-block">
             <?php echo $this->error('weight'); ?>
             <div class="text-muted">

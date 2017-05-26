@@ -29,7 +29,7 @@
       <div class="form-group required<?php echo $this->error('title', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Name'); ?></label>
         <div class="col-md-4">
-          <input name="product_class[title]" maxlength="255" class="form-control" value="<?php echo isset($product_class['title']) ? $this->escape($product_class['title']) : ''; ?>">
+          <input name="product_class[title]" maxlength="255" class="form-control" value="<?php echo isset($product_class['title']) ? $this->e($product_class['title']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error('title'); ?>
             <div class="text-muted">

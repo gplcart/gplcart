@@ -26,7 +26,7 @@
       <div class="form-group required<?php echo $this->error('title', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Title'); ?></label>
         <div class="col-md-4">
-          <input name="collection[title]" maxlength="255" class="form-control" value="<?php echo isset($collection['title']) ? $this->escape($collection['title']) : ''; ?>">
+          <input name="collection[title]" maxlength="255" class="form-control" value="<?php echo isset($collection['title']) ? $this->e($collection['title']) : ''; ?>">
           <div class="help-block"><?php echo $this->error('title'); ?></div>
         </div>
       </div>
@@ -35,7 +35,7 @@
         <div class="form-group<?php echo $this->error("translation.$code.title", ' has-error'); ?>">
           <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $language['native_name'])); ?></label>
           <div class="col-md-4">
-            <input maxlength="255" name="collection[translation][<?php echo $code; ?>][title]" class="form-control" value="<?php echo (isset($collection['translation'][$code]['title'])) ? $this->escape($collection['translation'][$code]['title']) : ''; ?>">
+            <input maxlength="255" name="collection[translation][<?php echo $code; ?>][title]" class="form-control" value="<?php echo (isset($collection['translation'][$code]['title'])) ? $this->e($collection['translation'][$code]['title']) : ''; ?>">
             <div class="help-block"><?php echo $this->error("translation.$code.title"); ?></div>
           </div>
         </div>
@@ -52,12 +52,12 @@
           <select name="collection[type]" class="form-control">
             <?php foreach($types as $handler_id => $name) { ?>
             <?php if (isset($collection['type']) && $collection['type'] == $handler_id) { ?>
-            <option value="<?php echo $this->escape($handler_id); ?>" selected>
-              <?php echo $this->escape($name); ?>
+            <option value="<?php echo $this->e($handler_id); ?>" selected>
+              <?php echo $this->e($name); ?>
             </option>
             <?php } else { ?>
-            <option value="<?php echo $this->escape($handler_id); ?>">
-              <?php echo $this->escape($name); ?>
+            <option value="<?php echo $this->e($handler_id); ?>">
+              <?php echo $this->e($name); ?>
             </option>
             <?php } ?>
             <?php } ?>
@@ -73,9 +73,9 @@
           <select name="collection[store_id]" class="form-control">
             <?php foreach ($_stores as $store_id => $store) { ?>
             <?php if (isset($collection['store_id']) && $collection['store_id'] == $store_id) { ?>
-            <option value="<?php echo $store_id; ?>" selected><?php echo $this->escape($store['name']); ?></option>
+            <option value="<?php echo $store_id; ?>" selected><?php echo $this->e($store['name']); ?></option>
             <?php } else { ?>
-            <option value="<?php echo $store_id; ?>"><?php echo $this->escape($store['name']); ?></option>
+            <option value="<?php echo $store_id; ?>"><?php echo $this->e($store['name']); ?></option>
             <?php } ?>
             <?php } ?>
           </select>

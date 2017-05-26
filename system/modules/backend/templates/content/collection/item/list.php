@@ -61,10 +61,10 @@
       </thead>
       <tbody>
         <?php foreach ($items as $item) { ?>
-        <tr data-id="<?php echo $this->escape($item['collection_item']['collection_item_id']); ?>">
-          <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $this->escape($item['collection_item']['collection_item_id']); ?>"<?php echo $access_actions ? '' : ' disabled'; ?>></td>
-          <td class="middle"><?php echo $this->truncate($this->escape($item['collection_item']['collection_item_id'])); ?></td>
-          <td class="middle"><?php echo $this->truncate($this->escape($item['title'])); ?></td>
+        <tr data-id="<?php echo $this->e($item['collection_item']['collection_item_id']); ?>">
+          <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $this->e($item['collection_item']['collection_item_id']); ?>"<?php echo $access_actions ? '' : ' disabled'; ?>></td>
+          <td class="middle"><?php echo $this->truncate($this->e($item['collection_item']['collection_item_id'])); ?></td>
+          <td class="middle"><?php echo $this->truncate($this->e($item['title'])); ?></td>
           <td class="middle">
             <?php if (empty($item['collection_item']['status'])) { ?>
             <i class="fa fa-square-o"></i>

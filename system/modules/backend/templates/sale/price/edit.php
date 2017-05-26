@@ -35,7 +35,7 @@
             <option value="0"><?php echo $this->text('None'); ?></option>
             <?php foreach ($triggers as $trigger_id => $trigger) { ?>
             <option value="<?php echo $trigger_id; ?>"<?php echo (isset($price_rule['trigger_id']) && $price_rule['trigger_id'] == $trigger_id) ? ' selected' : ''; ?>>
-            <?php echo $this->escape($trigger['name']); ?>
+            <?php echo $this->e($trigger['name']); ?>
             </option>
             <?php } ?>
           </select>
@@ -48,7 +48,7 @@
       <div class="form-group required<?php echo $this->error('name', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Name'); ?></label>
         <div class="col-md-4">
-          <input maxlength="255" name="price_rule[name]" class="form-control" value="<?php echo isset($price_rule['name']) ? $this->escape($price_rule['name']) : ''; ?>">
+          <input maxlength="255" name="price_rule[name]" class="form-control" value="<?php echo isset($price_rule['name']) ? $this->e($price_rule['name']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error('name'); ?>
             <div class="text-muted">
@@ -60,7 +60,7 @@
       <div class="form-group<?php echo $this->error('code', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Code'); ?></label>
         <div class="col-md-4">
-          <input maxlength="255" name="price_rule[code]" class="form-control" value="<?php echo isset($price_rule['code']) ? $this->escape($price_rule['code']) : ''; ?>">
+          <input maxlength="255" name="price_rule[code]" class="form-control" value="<?php echo isset($price_rule['code']) ? $this->e($price_rule['code']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error('code'); ?>
             <div class="text-muted">
@@ -78,7 +78,7 @@
           <?php echo $this->text('Value'); ?>
         </label>
         <div class="col-md-4">
-          <input maxlength="32" name="price_rule[value]" class="form-control" value="<?php echo isset($price_rule['value']) ? $this->escape($price_rule['value']) : ''; ?>">
+          <input maxlength="32" name="price_rule[value]" class="form-control" value="<?php echo isset($price_rule['value']) ? $this->e($price_rule['value']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error('value'); ?>
             <div class="text-muted">
@@ -104,8 +104,8 @@
         <div class="col-md-4">
           <select name="price_rule[currency]" class="form-control">
             <?php foreach ($currencies as $code => $currency) { ?>
-            <option value="<?php echo $this->escape($code); ?>"<?php echo (isset($price_rule['currency']) && $price_rule['currency'] == $code) ? ' selected' : ''; ?>>
-            <?php echo $this->escape($code); ?>
+            <option value="<?php echo $this->e($code); ?>"<?php echo (isset($price_rule['currency']) && $price_rule['currency'] == $code) ? ' selected' : ''; ?>>
+            <?php echo $this->e($code); ?>
             </option>
             <?php } ?>
           </select>
@@ -117,7 +117,7 @@
       <div class="form-group<?php echo $this->error('weight', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Weight'); ?></label>
         <div class="col-md-4">
-          <input maxlength="2" name="price_rule[weight]" class="form-control" value="<?php echo isset($price_rule['weight']) ? $this->escape($price_rule['weight']) : '0'; ?>">
+          <input maxlength="2" name="price_rule[weight]" class="form-control" value="<?php echo isset($price_rule['weight']) ? $this->e($price_rule['weight']) : '0'; ?>">
           <div class="help-block">
             <?php echo $this->error('weight'); ?>
             <div class="text-muted">

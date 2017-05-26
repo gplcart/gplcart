@@ -22,7 +22,7 @@
     <?php } ?>
   </td>
   <td>
-    <?php echo $this->escape($price); ?>
+    <?php echo $this->e($price); ?>
   </td>
 </tr>
 <?php } ?>

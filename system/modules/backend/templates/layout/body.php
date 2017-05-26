@@ -36,8 +36,8 @@
             <ul class="dropdown-menu dropdown-menu-right">
               <?php foreach ($_stores as $store) { ?>
               <li>
-                <a target="_blank" href="<?php echo $this->escape("http://{$store['domain']}/{$store['basepath']}"); ?>">
-                  <i class="fa fa-external-link"></i> <?php echo $this->escape($store['name']); ?>
+                <a target="_blank" href="<?php echo $this->e("http://{$store['domain']}/{$store['basepath']}"); ?>">
+                  <i class="fa fa-external-link"></i> <?php echo $this->e($store['name']); ?>
                 </a>
               </li>
               <?php } ?>
@@ -45,7 +45,7 @@
           </li>
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <i class="fa fa-user"></i> <?php echo $this->escape($_user['name']); ?>
+              <i class="fa fa-user"></i> <?php echo $this->e($_user['name']); ?>
             </a>
             <ul class="dropdown-menu dropdown-menu-right">
               <li>
@@ -71,7 +71,7 @@
           <?php if(empty($item['url'])) { ?>
           <li><?php echo $this->filter($item['text']); ?></li>
           <?php } else { ?>
-          <li><a href="<?php echo $this->escape($item['url']); ?>"><?php echo $this->filter($item['text']); ?></a></li>
+          <li><a href="<?php echo $this->e($item['url']); ?>"><?php echo $this->filter($item['text']); ?></a></li>
           <?php } ?>
           <?php } ?>
           <?php } ?>

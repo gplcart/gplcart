@@ -32,8 +32,8 @@
   </li>
   <li class="depth-<?php echo $depth; ?><?php echo $depth == 0 ? ' dropdown' : ''; ?>">
     <?php } ?>
-    <a href="<?php echo $this->escape($item['url']); ?>" class="dropdown-toggle"<?php echo $item['depth'] == 0 ? ' data-toggle="dropdown"' : ''; ?>>
-      <?php echo $this->escape($item['text']); ?>
+    <a href="<?php echo $this->e($item['url']); ?>" class="dropdown-toggle"<?php echo $item['depth'] == 0 ? ' data-toggle="dropdown"' : ''; ?>>
+      <?php echo $this->e($item['text']); ?>
     </a>
     <?php $num_at_depth++; ?>
     <?php } ?>

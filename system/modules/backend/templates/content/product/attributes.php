@@ -24,7 +24,7 @@
                 <?php if (!empty($attribute['required'])) { ?>
                 <span class="text-danger">*</span>
                 <?php } ?>
-                <?php echo $this->escape($attribute['title']); ?>
+                <?php echo $this->e($attribute['title']); ?>
               </td>
               <td>
                 <div class="<?php echo $this->error("attribute.$field_id", 'has-error'); ?>">
@@ -34,9 +34,9 @@
                     <?php } ?>
                     <?php foreach ($attribute['values'] as $value) { ?>
                     <?php if (isset($product['field']['attribute'][$field_id]) && in_array($value['field_value_id'], $product['field']['attribute'][$field_id])) { ?>
-                    <option value="<?php echo $value['field_value_id']; ?>" selected><?php echo $this->escape($value['title']); ?></option>
+                    <option value="<?php echo $value['field_value_id']; ?>" selected><?php echo $this->e($value['title']); ?></option>
                     <?php } else { ?>
-                    <option value="<?php echo $value['field_value_id']; ?>"><?php echo $this->escape($value['title']); ?></option>
+                    <option value="<?php echo $value['field_value_id']; ?>"><?php echo $this->e($value['title']); ?></option>
                     <?php } ?>
                     <?php } ?>
                   </select>

@@ -53,7 +53,7 @@
       <div class="form-group<?php echo $this->error('conversion_rate', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Conversion rate'); ?></label>
         <div class="col-md-4">
-          <input name="currency[conversion_rate]" class="form-control" value="<?php echo isset($currency['conversion_rate']) ? $this->escape($currency['conversion_rate']) : 1; ?>">
+          <input name="currency[conversion_rate]" class="form-control" value="<?php echo isset($currency['conversion_rate']) ? $this->e($currency['conversion_rate']) : 1; ?>">
           <div class="help-block">
             <?php echo $this->error('conversion_rate'); ?>
             <div class="text-muted">
@@ -67,7 +67,7 @@
           <?php echo $this->text('Name'); ?>
         </label>
         <div class="col-md-4">
-          <input name="currency[name]" class="form-control" value="<?php echo (isset($currency['name'])) ? $this->escape($currency['name']) : ''; ?>">
+          <input name="currency[name]" class="form-control" value="<?php echo (isset($currency['name'])) ? $this->e($currency['name']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error('name'); ?>
             <div class="text-muted">
@@ -79,7 +79,7 @@
       <div class="required form-group<?php echo $this->error('code', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Code'); ?></label>
         <div class="col-md-4">
-          <input name="currency[code]" class="form-control" value="<?php echo (isset($currency['code'])) ? $this->escape($currency['code']) : ''; ?>">
+          <input name="currency[code]" class="form-control" value="<?php echo (isset($currency['code'])) ? $this->e($currency['code']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error('code'); ?>
             <div class="text-muted">
@@ -91,7 +91,7 @@
       <div class="required form-group<?php echo $this->error('symbol', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Symbol'); ?></label>
         <div class="col-md-4">
-          <input name="currency[symbol]" class="form-control" value="<?php echo (isset($currency['symbol'])) ? $this->escape($currency['symbol']) : ''; ?>">
+          <input name="currency[symbol]" class="form-control" value="<?php echo (isset($currency['symbol'])) ? $this->e($currency['symbol']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error('symbol'); ?>
             <div class="text-muted">
@@ -107,7 +107,7 @@
       <div class="required form-group<?php echo $this->error('numeric_code', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Numeric code'); ?></label>
         <div class="col-md-4">
-          <input name="currency[numeric_code]" class="form-control" value="<?php echo (isset($currency['numeric_code'])) ? $this->escape($currency['numeric_code']) : ''; ?>">
+          <input name="currency[numeric_code]" class="form-control" value="<?php echo (isset($currency['numeric_code'])) ? $this->e($currency['numeric_code']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error('numeric_code'); ?>
             <div class="text-muted">
@@ -119,7 +119,7 @@
       <div class="required form-group<?php echo $this->error('major_unit', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Major unit'); ?></label>
         <div class="col-md-4">
-          <input name="currency[major_unit]" class="form-control" value="<?php echo (isset($currency['major_unit'])) ? $this->escape($currency['major_unit']) : ''; ?>">
+          <input name="currency[major_unit]" class="form-control" value="<?php echo (isset($currency['major_unit'])) ? $this->e($currency['major_unit']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error('major_unit'); ?>
             <div class="text-muted">
@@ -131,7 +131,7 @@
       <div class="required form-group<?php echo $this->error('minor_unit', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Minor unit'); ?></label>
         <div class="col-md-4">
-          <input name="currency[minor_unit]" class="form-control" value="<?php echo (isset($currency['minor_unit'])) ? $this->escape($currency['minor_unit']) : ''; ?>">
+          <input name="currency[minor_unit]" class="form-control" value="<?php echo (isset($currency['minor_unit'])) ? $this->e($currency['minor_unit']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error('minor_unit'); ?>
             <div class="text-muted">
@@ -147,7 +147,7 @@
       <div class="form-group<?php echo $this->error('decimals', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Decimals'); ?></label>
         <div class="col-md-4">
-          <input name="currency[decimals]" class="form-control" value="<?php echo (isset($currency['decimals'])) ? $this->escape($currency['decimals']) : 2; ?>">
+          <input name="currency[decimals]" class="form-control" value="<?php echo (isset($currency['decimals'])) ? $this->e($currency['decimals']) : 2; ?>">
           <div class="help-block">
             <?php echo $this->error('decimals'); ?>
             <div class="text-muted"><?php echo $this->text('A number of decimal points, usually 2'); ?></div>
@@ -157,7 +157,7 @@
       <div class="form-group<?php echo $this->error('rounding_step', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Rounding step'); ?></label>
         <div class="col-md-4">
-          <input name="currency[rounding_step]" class="form-control" value="<?php echo (isset($currency['rounding_step'])) ? $this->escape($currency['rounding_step']) : 0; ?>">
+          <input name="currency[rounding_step]" class="form-control" value="<?php echo (isset($currency['rounding_step'])) ? $this->e($currency['rounding_step']) : 0; ?>">
           <div class="help-block">
             <?php echo $this->error('rounding_step'); ?>
             <div class="text-muted">
@@ -169,7 +169,7 @@
       <div class="form-group">
         <label class="col-md-2 control-label"><?php echo $this->text('Thousands separator'); ?></label>
         <div class="col-md-4">
-          <input name="currency[thousands_separator]" class="form-control" value="<?php echo (isset($currency['thousands_separator'])) ? $this->escape($currency['thousands_separator']) : ','; ?>">
+          <input name="currency[thousands_separator]" class="form-control" value="<?php echo (isset($currency['thousands_separator'])) ? $this->e($currency['thousands_separator']) : ','; ?>">
           <div class="help-block">
             <?php echo $this->text('A character used to separate thousands, e.g comma.'); ?>
           </div>
@@ -178,7 +178,7 @@
       <div class="form-group">
         <label class="col-md-2 control-label"><?php echo $this->text('Decimal separator'); ?></label>
         <div class="col-md-4">
-          <input name="currency[decimal_separator]" class="form-control" value="<?php echo (isset($currency['decimal_separator'])) ? $this->escape($currency['decimal_separator']) : '.'; ?>">
+          <input name="currency[decimal_separator]" class="form-control" value="<?php echo (isset($currency['decimal_separator'])) ? $this->e($currency['decimal_separator']) : '.'; ?>">
           <div class="help-block">
             <?php echo $this->text('A character used to separate decimals, e.g period.'); ?>
           </div>
@@ -187,7 +187,7 @@
       <div class="form-group">
         <label class="col-md-2 control-label"><?php echo $this->text('Template'); ?></label>
         <div class="col-md-4">
-          <input name="currency[template]" class="form-control" value="<?php echo isset($currency['template']) ? $this->escape($currency['template']) : '%symbol%price'; ?>">
+          <input name="currency[template]" class="form-control" value="<?php echo isset($currency['template']) ? $this->e($currency['template']) : '%symbol%price'; ?>">
           <div class="help-block">
             <?php echo $this->text('A template to format prices of the currency. For price value use %price'); ?>
           </div>

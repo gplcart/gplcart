@@ -14,7 +14,7 @@
       <?php foreach ($users as $user) { ?>
       <?php if(!$this->isSuperadmin($user['user_id']) || $this->isSuperadmin()) { ?>
       <li class="list-group-item clearfix">
-        <span class="pull-left"><?php echo $this->truncate($this->escape($user['email']), 30); ?></span>
+        <span class="pull-left"><?php echo $this->truncate($this->e($user['email']), 30); ?></span>
         <span class="pull-right small text-muted"><?php echo $this->date($user['created']); ?></span>
       </li>
       <?php } ?>

@@ -18,7 +18,7 @@
               <?php } ?>
               <tr>
                 <td><b><?php echo $this->text('Grand total'); ?></b></td>
-                <td><b><?php echo $this->escape($order['total_formatted']); ?></b></td>
+                <td><b><?php echo $this->e($order['total_formatted']); ?></b></td>
               </tr>
             </tbody>
           </table>

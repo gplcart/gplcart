@@ -36,7 +36,7 @@
           <?php foreach ($fields as $field_id => $field) { ?>
           <tr>
             <td class="middle">
-              <?php echo $this->escape($field['title']); ?>
+              <?php echo $this->e($field['title']); ?>
               <span class="text-muted">
               <?php if($field['type'] == 'option') { ?>
               (<?php echo $this->text('Option'); ?>)
@@ -53,7 +53,7 @@
               <input type="checkbox" name="fields[<?php echo $field_id; ?>][multiple]" value="1"<?php echo $field['multiple'] ? ' checked' : ''; ?>>
             </td>
             <td class="middle">
-              <i class="fa fa-arrows handle"></i> <span class="weight"><?php echo $this->escape($field['weight']); ?></span>
+              <i class="fa fa-arrows handle"></i> <span class="weight"><?php echo $this->e($field['weight']); ?></span>
             </td>
             <td class="middle">
               <input type="checkbox" name="fields[<?php echo $field_id; ?>][remove]" value="1">

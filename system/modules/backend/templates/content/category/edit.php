@@ -17,7 +17,7 @@
           <?php echo $this->text('Title'); ?>
         </label>
         <div class="col-md-8">
-          <input maxlength="255" name="category[title]" class="form-control" value="<?php echo isset($category['title']) ? $this->escape($category['title']) : ''; ?>">
+          <input maxlength="255" name="category[title]" class="form-control" value="<?php echo isset($category['title']) ? $this->e($category['title']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error('title'); ?>
             <div class="text-muted">
@@ -61,7 +61,7 @@
         <div class="form-group<?php echo $this->error("translation.$code.title", ' has-error'); ?>">
           <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $language['native_name'])); ?></label>
           <div class="col-md-8">
-            <input maxlength="255" name="category[translation][<?php echo $code; ?>][title]" class="form-control" value="<?php echo isset($category['translation'][$code]['title']) ? $this->escape($category['translation'][$code]['title']) : ''; ?>">
+            <input maxlength="255" name="category[translation][<?php echo $code; ?>][title]" class="form-control" value="<?php echo isset($category['translation'][$code]['title']) ? $this->e($category['translation'][$code]['title']) : ''; ?>">
             <div class="help-block"><?php echo $this->error("translation.$code.title"); ?></div>
           </div>
         </div>
@@ -118,7 +118,7 @@
           <select data-live-search="true" name="category[parent_id]" class="form-control selectpicker" id="parent_id">
             <option value="0"><?php echo $this->text('Root'); ?></option>
             <?php foreach ($categories as $category_id => $category_name) { ?>
-            <option value="<?php echo $category_id; ?>"<?php echo ($category_id == $parent_id) ? ' selected' : ''; ?>><?php echo $this->escape($category_name); ?></option>
+            <option value="<?php echo $category_id; ?>"<?php echo ($category_id == $parent_id) ? ' selected' : ''; ?>><?php echo $this->e($category_name); ?></option>
             <?php } ?>
           </select>
           <div class="help-block">
@@ -131,7 +131,7 @@
           <?php echo $this->text('Alias'); ?>
         </label>
         <div class="col-md-6">
-          <input type="text" name="category[alias]" class="form-control" value="<?php echo isset($category['alias']) ? $this->escape($category['alias']) : ''; ?>" placeholder="<?php echo $this->text('Generate automatically'); ?>">
+          <input type="text" name="category[alias]" class="form-control" value="<?php echo isset($category['alias']) ? $this->e($category['alias']) : ''; ?>" placeholder="<?php echo $this->text('Generate automatically'); ?>">
           <div class="help-block">
             <?php echo $this->error('alias'); ?>
             <div class="text-muted">
@@ -158,7 +158,7 @@
           <?php echo $this->text('Meta title'); ?>
         </label>
         <div class="col-md-8">
-          <input maxlength="60" name="category[meta_title]" class="form-control" value="<?php echo isset($category['meta_title']) ? $this->escape($category['meta_title']) : ''; ?>">
+          <input maxlength="60" name="category[meta_title]" class="form-control" value="<?php echo isset($category['meta_title']) ? $this->e($category['meta_title']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error('meta_title'); ?>
             <div class="help-block">
@@ -172,7 +172,7 @@
           <?php echo $this->text('Meta description'); ?>
         </label>
         <div class="col-md-8">
-          <textarea maxlength="160" class="form-control" name="category[meta_description]"><?php echo isset($category['meta_description']) ? $this->escape($category['meta_description']) : ''; ?></textarea>
+          <textarea maxlength="160" class="form-control" name="category[meta_description]"><?php echo isset($category['meta_description']) ? $this->e($category['meta_description']) : ''; ?></textarea>
           <div class="help-block">
             <?php echo $this->text('An optional text to be used in meta description tag. The tag is commonly used on search engine result pages (SERPs) to display preview snippets for a given page. Important for SEO'); ?>
           </div>
@@ -191,14 +191,14 @@
         <div class="form-group<?php echo $this->error("translation.$code.meta_title", ' has-error'); ?>">
           <label class="col-md-2 control-label"><?php echo $this->text('Meta title %language', array('%language' => $language['native_name'])); ?></label>
           <div class="col-md-8">
-            <input maxlength="60" name="category[translation][<?php echo $code; ?>][meta_title]" class="form-control" id="title-<?php echo $code; ?>" value="<?php echo isset($category['translation'][$code]['meta_title']) ? $this->escape($category['translation'][$code]['meta_title']) : ''; ?>">
+            <input maxlength="60" name="category[translation][<?php echo $code; ?>][meta_title]" class="form-control" id="title-<?php echo $code; ?>" value="<?php echo isset($category['translation'][$code]['meta_title']) ? $this->e($category['translation'][$code]['meta_title']) : ''; ?>">
             <div class="help-block"><?php echo $this->error("translation.$code.meta_title"); ?></div>
           </div>
         </div>
         <div class="form-group">
           <label class="col-md-2 control-label"><?php echo $this->text('Meta description %language', array('%language' => $language['native_name'])); ?></label>
           <div class="col-md-8">
-            <textarea maxlength="160" class="form-control" name="category[translation][<?php echo $code; ?>][meta_description]"><?php echo isset($category['translation'][$code]['meta_description']) ? $this->escape($category['translation'][$code]['meta_description']) : ''; ?></textarea>
+            <textarea maxlength="160" class="form-control" name="category[translation][<?php echo $code; ?>][meta_description]"><?php echo isset($category['translation'][$code]['meta_description']) ? $this->e($category['translation'][$code]['meta_description']) : ''; ?></textarea>
           </div>
         </div>
         <?php } ?>

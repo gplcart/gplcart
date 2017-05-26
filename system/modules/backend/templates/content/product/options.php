@@ -63,7 +63,7 @@
                   <select data-field-id="<?php echo $option['field_id']; ?>" data-live-search="true" class="form-control selectpicker" name="product[combination][<?php echo $row; ?>][fields][<?php echo $field_id; ?>]">
                     <option value="" selected disabled><?php echo $this->text('- select -'); ?></option>
                     <?php foreach ($option['values'] as $value) { ?>
-                    <option value="<?php echo $value['field_value_id']; ?>"<?php echo (!empty($combination['fields']) && in_array($value['field_value_id'], $combination['fields'])) ? ' selected' : ''; ?>><?php echo $this->escape($value['title']); ?></option>
+                    <option value="<?php echo $value['field_value_id']; ?>"<?php echo (!empty($combination['fields']) && in_array($value['field_value_id'], $combination['fields'])) ? ' selected' : ''; ?>><?php echo $this->e($value['title']); ?></option>
                     <?php } ?>
                   </select>
                 </div>
@@ -71,12 +71,12 @@
               <?php } ?>
               <td>
                 <div class="sku<?php echo $this->error("combination.$row.sku", ' has-error'); ?>">
-                  <input maxlength="255" class="form-control" name="product[combination][<?php echo $row; ?>][sku]" value="<?php echo isset($combination['sku']) ? $this->escape($combination['sku']) : ''; ?>" placeholder="<?php echo $this->text('Generate automatically'); ?>">
+                  <input maxlength="255" class="form-control" name="product[combination][<?php echo $row; ?>][sku]" value="<?php echo isset($combination['sku']) ? $this->e($combination['sku']) : ''; ?>" placeholder="<?php echo $this->text('Generate automatically'); ?>">
                 </div>
               </td>
               <td>
                 <div class="price<?php echo $this->error("combination.$row.price", ' has-error'); ?>">
-                  <input class="form-control" name="product[combination][<?php echo $row; ?>][price]" value="<?php echo isset($combination['price']) ? $this->escape($combination['price']) : 0; ?>">
+                  <input class="form-control" name="product[combination][<?php echo $row; ?>][price]" value="<?php echo isset($combination['price']) ? $this->e($combination['price']) : 0; ?>">
                 </div>
               </td>
               <td>
@@ -86,14 +86,14 @@
               </td>
               <td>
                 <?php if ($combination['thumb']) { ?>
-                <a href="#" class="btn btn-default select-image"><img style="height:20px;width:20px;" src="<?php echo $this->escape($combination['thumb']); ?>"></a>
-                <input type="hidden" name="product[combination][<?php echo $row; ?>][thumb]" value="<?php echo $this->escape($combination['thumb']); ?>">
+                <a href="#" class="btn btn-default select-image"><img style="height:20px;width:20px;" src="<?php echo $this->e($combination['thumb']); ?>"></a>
+                <input type="hidden" name="product[combination][<?php echo $row; ?>][thumb]" value="<?php echo $this->e($combination['thumb']); ?>">
                 <?php } else { ?>
                 <a href="#" class="btn btn-default select-image"><i class="fa fa-image"></i></a>
                 <input type="hidden" name="product[combination][<?php echo $row; ?>][thumb]" value="">
                 <?php } ?>
                 <input type="hidden" name="product[combination][<?php echo $row; ?>][file_id]" value="<?php echo $combination['file_id']; ?>">
-                <input type="hidden" name="product[combination][<?php echo $row; ?>][path]" value="<?php echo $this->escape($combination['path']); ?>">
+                <input type="hidden" name="product[combination][<?php echo $row; ?>][path]" value="<?php echo $this->e($combination['path']); ?>">
               </td>
               <td>
                 <div class="default">
@@ -119,7 +119,7 @@
                 <select data-field-id="<?php echo $option['field_id']; ?>" data-live-search="true" class="form-control selectpicker">
                   <option value="" selected disabled><?php echo $this->text('- select -'); ?></option>
                   <?php foreach ($option['values'] as $value) { ?>
-                  <option value="<?php echo $value['field_value_id']; ?>"><?php echo $this->escape($value['title']); ?></option>
+                  <option value="<?php echo $value['field_value_id']; ?>"><?php echo $this->e($value['title']); ?></option>
                   <?php } ?>
                 </select>
               </td>

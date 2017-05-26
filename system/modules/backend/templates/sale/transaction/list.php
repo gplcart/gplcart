@@ -64,8 +64,8 @@
               <select name="payment_method" class="form-control">
                 <option value="any"><?php echo $this->text('Any'); ?></option>
                 <?php foreach ($payment_methods as $method_id => $method) { ?>
-                <option value="<?php echo $this->escape($method_id); ?>"<?php echo ($filter_payment_method == $method_id) ? ' selected' : '' ?>>
-                  <?php echo $this->escape($method['title']); ?>
+                <option value="<?php echo $this->e($method_id); ?>"<?php echo ($filter_payment_method == $method_id) ? ' selected' : '' ?>>
+                  <?php echo $this->e($method['title']); ?>
                 </option>
                 <?php } ?>
               </select>
@@ -99,13 +99,13 @@
               <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $transaction_id; ?>">
             </td>
             <td class="middle">
-              <a href="<?php echo $this->url("admin/sale/order/{$transaction['order_id']}"); ?>"><?php echo $this->escape($transaction['order_id']); ?></a>
+              <a href="<?php echo $this->url("admin/sale/order/{$transaction['order_id']}"); ?>"><?php echo $this->e($transaction['order_id']); ?></a>
             </td>
             <td class="middle">
-              <?php echo isset($payment_methods[$transaction['payment_method']]['title']) ? $this->escape($payment_methods[$transaction['payment_method']]['title']) : $this->text('Unknown'); ?>
+              <?php echo isset($payment_methods[$transaction['payment_method']]['title']) ? $this->e($payment_methods[$transaction['payment_method']]['title']) : $this->text('Unknown'); ?>
             </td>
             <td class="middle">
-              <?php echo $this->escape($transaction['gateway_transaction_id']); ?>
+              <?php echo $this->e($transaction['gateway_transaction_id']); ?>
             </td>
             <td class="middle">
               <?php echo $this->date($transaction['created']); ?>

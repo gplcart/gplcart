@@ -80,11 +80,11 @@
         <tr>
           <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $address_id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>></td>
           <td class="middle"><?php echo $address_id; ?></td>
-          <td class="middle"><a href="<?php echo $this->url("account/{$address['user_id']}"); ?>"><?php echo $this->escape($address['user_email']); ?></a></td>
-          <td class="middle"><?php echo $this->escape($this->truncate($address['full_name'], 30)); ?></td>
-          <td class="middle"><?php echo $this->escape($this->truncate($address['address_1'], 30)); ?></td>
-          <td class="middle"><?php echo $this->escape($this->truncate($address['city_name'], 30)); ?></td>
-          <td class="middle"><?php echo $this->escape($this->truncate($address['phone'], 30)); ?></td>
+          <td class="middle"><a href="<?php echo $this->url("account/{$address['user_id']}"); ?>"><?php echo $this->e($address['user_email']); ?></a></td>
+          <td class="middle"><?php echo $this->e($this->truncate($address['full_name'], 30)); ?></td>
+          <td class="middle"><?php echo $this->e($this->truncate($address['address_1'], 30)); ?></td>
+          <td class="middle"><?php echo $this->e($this->truncate($address['city_name'], 30)); ?></td>
+          <td class="middle"><?php echo $this->e($this->truncate($address['phone'], 30)); ?></td>
           <td>
             <a href="#address-id-<?php echo $address_id; ?>" data-address-details="<?php echo $address_id; ?>" data-toggle="collapse">
               <?php echo $this->lower($this->text('Details')); ?>
@@ -98,8 +98,8 @@
                 <table class="table table-condensed">
                   <?php foreach ($address['translated'] as $label => $value) { ?>
                   <tr>
-                    <td><?php echo $this->escape($label); ?></td>
-                    <td><?php echo $this->escape($value); ?></td>
+                    <td><?php echo $this->e($label); ?></td>
+                    <td><?php echo $this->e($value); ?></td>
                   </tr>
                   <?php } ?>
                 </table>

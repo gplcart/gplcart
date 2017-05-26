@@ -29,7 +29,7 @@
       <div class="form-group required<?php echo $this->error('name', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Name'); ?></label>
         <div class="col-md-4">
-          <input type="text" name="state[name]" maxlength="255" class="form-control" value="<?php echo isset($state['name']) ? $this->escape($state['name']) : ''; ?>">
+          <input type="text" name="state[name]" maxlength="255" class="form-control" value="<?php echo isset($state['name']) ? $this->e($state['name']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error('name'); ?>
             <div class="text-muted">
@@ -41,7 +41,7 @@
       <div class="form-group required<?php echo $this->error('code', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Code'); ?></label>
         <div class="col-md-4">
-          <input type="text" name="state[code]" maxlength="255" class="form-control" value="<?php echo isset($state['code']) ? $this->escape($state['code']) : ''; ?>">
+          <input type="text" name="state[code]" maxlength="255" class="form-control" value="<?php echo isset($state['code']) ? $this->e($state['code']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error('code'); ?>
             <div class="text-muted">
@@ -59,9 +59,9 @@
             <option value=""><?php echo $this->text('None'); ?></option>
             <?php foreach ($zones as $zone) { ?>
             <?php if (isset($state['zone_id']) && $state['zone_id'] == $zone['zone_id']) { ?>
-            <option value="<?php echo $zone['zone_id']; ?>" selected><?php echo $this->escape($zone['title']); ?></option>
+            <option value="<?php echo $zone['zone_id']; ?>" selected><?php echo $this->e($zone['title']); ?></option>
             <?php } else { ?>
-            <option value="<?php echo $zone['zone_id']; ?>"><?php echo $this->escape($zone['title']); ?></option>
+            <option value="<?php echo $zone['zone_id']; ?>"><?php echo $this->e($zone['title']); ?></option>
             <?php } ?>
             <?php } ?>
           </select>

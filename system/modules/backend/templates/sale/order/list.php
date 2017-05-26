@@ -20,8 +20,8 @@
               <?php if ($this->access('order_edit')) { ?>
               <?php foreach($statuses as $status_id => $status_name) { ?>
               <li>
-                <a data-action="status" data-action-value="<?php echo $this->escape($status_id); ?>" data-action-confirm="<?php echo $this->text('Are you sure?'); ?>" href="#">
-                  <?php echo $this->text('Status'); ?>: <?php echo $this->escape($status_name); ?>
+                <a data-action="status" data-action-value="<?php echo $this->e($status_id); ?>" data-action-confirm="<?php echo $this->text('Are you sure?'); ?>" href="#">
+                  <?php echo $this->text('Status'); ?>: <?php echo $this->e($status_name); ?>
                 </a>
               </li>
               <?php } ?>
@@ -100,7 +100,7 @@
               <select class="form-control" name="store_id">
                 <option value=""<?php echo (isset($filter_store_id)) ? '' : ' selected'; ?>><?php echo $this->text('Any'); ?></option>
                 <?php foreach ($_stores as $store_id => $store) { ?>
-                <option value="<?php echo $store_id; ?>"<?php echo isset($filter_store_id) && (int) $filter_store_id === $store_id ? ' selected' : ''; ?>><?php echo $this->escape($store['name']); ?></option>
+                <option value="<?php echo $store_id; ?>"<?php echo isset($filter_store_id) && (int) $filter_store_id === $store_id ? ' selected' : ''; ?>><?php echo $this->e($store['name']); ?></option>
                 <?php } ?>
               </select>
             </th>
@@ -138,7 +138,7 @@
             <td class="middle">
             <?php if (is_numeric($order['user_id'])) { ?>
             <?php if ($order['customer_email']) { ?>
-            <?php echo $this->truncate($this->escape("{$order['customer_name']} ({$order['customer_email']})")); ?>
+            <?php echo $this->truncate($this->e("{$order['customer_name']} ({$order['customer_email']})")); ?>
             <?php } else { ?>
             <?php echo $this->text('Unknown'); ?>
             <?php } ?>
@@ -148,26 +148,26 @@
             </td>
             <td class="middle">
             <?php if ($order['creator']) { ?>
-            <?php echo $this->truncate($this->escape($order['creator'])); ?>
+            <?php echo $this->truncate($this->e($order['creator'])); ?>
             <?php } else { ?>
             <?php echo $this->text('Customer'); ?>
             <?php } ?>
             </td>
             <td class="middle">
               <?php if (isset($_stores[$order['store_id']])) { ?>
-              <?php echo $this->escape($_stores[$order['store_id']]['name']); ?>
+              <?php echo $this->e($_stores[$order['store_id']]['name']); ?>
               <?php } else { ?>
               <span class="text-danger"><?php echo $this->text('Unknown'); ?></span>
               <?php } ?>
             </td>
             <td class="middle">
               <?php if (isset($statuses[$order['status']])) { ?>
-              <?php echo $this->escape($statuses[$order['status']]); ?>
+              <?php echo $this->e($statuses[$order['status']]); ?>
               <?php } else { ?>
               <span class="text-danger"><?php echo $this->text('Unknown'); ?></span>
               <?php } ?>
             </td>
-            <td class="middle"><?php echo $this->escape($order['total_formatted']); ?></td>
+            <td class="middle"><?php echo $this->e($order['total_formatted']); ?></td>
             <td class="middle">
                 <?php echo $this->date($order['created']); ?>
               <?php if($order['is_new']) { ?>

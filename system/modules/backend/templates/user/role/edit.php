@@ -31,7 +31,7 @@
       <div class="form-group required<?php echo $this->error('name', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Name'); ?></label>
         <div class="col-md-4">
-          <input maxlength="255" name="role[name]" class="form-control" value="<?php echo isset($role['name']) ? $this->escape($role['name']) : ''; ?>">
+          <input maxlength="255" name="role[name]" class="form-control" value="<?php echo isset($role['name']) ? $this->e($role['name']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error('name'); ?>
             <div class="text-muted">
@@ -43,7 +43,7 @@
       <div class="form-group<?php echo $this->error('redirect', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Redirect'); ?></label>
         <div class="col-md-4">
-          <input maxlength="255" name="role[redirect]" class="form-control" value="<?php echo isset($role['redirect']) ? $this->escape($role['redirect']) : ''; ?>">
+          <input maxlength="255" name="role[redirect]" class="form-control" value="<?php echo isset($role['redirect']) ? $this->e($role['redirect']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error('redirect'); ?>
             <div class="text-muted">
@@ -74,7 +74,7 @@
               <?php } else { ?>
               <input type="checkbox" class="select-all" name="role[permissions][]" value="<?php echo $id; ?>">
               <?php } ?>
-              <?php echo $this->escape($name); ?>
+              <?php echo $this->e($name); ?>
             </label>
           </div>
           <?php } ?>

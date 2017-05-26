@@ -12,7 +12,7 @@
     <table class="table table-condensed">
       <tr>
         <td class="col-md-3"><?php echo $this->text('Order ID'); ?></td>
-        <td class="col-md-9"><?php echo $this->escape($order['order_id']); ?></td>
+        <td class="col-md-9"><?php echo $this->e($order['order_id']); ?></td>
       </tr>
       <tr>
         <td class="middle"><?php echo $this->text('Status'); ?></td>
@@ -22,7 +22,7 @@
             <select class="form-control" name="order[status]">
               <?php foreach ($statuses as $code => $name) { ?>
               <option value="<?php echo $code; ?>"<?php echo $order['status'] == $code ? ' selected' : ''; ?>>
-                <?php echo $this->escape($name); ?>
+                <?php echo $this->e($name); ?>
               </option>
               <?php } ?>
             </select>
@@ -30,19 +30,19 @@
               <button class="btn btn-default hidden-js" name="status" value="1"><?php echo $this->text('Update status'); ?></button>
             </span>
           </div>
-          <span class="visible-print"><?php echo $this->escape($order['status_name']); ?></span>
+          <span class="visible-print"><?php echo $this->e($order['status_name']); ?></span>
           <?php } else { ?>
-          <?php echo $this->escape($order['status_name']); ?>
+          <?php echo $this->e($order['status_name']); ?>
           <?php } ?>
         </td>
       </tr>
       <tr>
         <td><?php echo $this->text('Shipping'); ?></td>
-        <td><?php echo $this->escape($order['shipping_name']); ?></td>
+        <td><?php echo $this->e($order['shipping_name']); ?></td>
       </tr>
       <tr>
         <td><?php echo $this->text('Payment'); ?></td>
-        <td><?php echo $this->escape($order['payment_name']); ?></td>
+        <td><?php echo $this->e($order['payment_name']); ?></td>
       </tr>
       <tr>
         <td><?php echo $this->text('Created'); ?></td>
@@ -57,12 +57,12 @@
       <tr>
         <td><?php echo $this->text('Store'); ?></td>
         <td>
-          <?php echo $this->escape($order['store_name']); ?>
+          <?php echo $this->e($order['store_name']); ?>
         </td>
       </tr>
       <tr>
         <td><?php echo $this->text('Creator'); ?></td>
-        <td><?php echo $this->escape($order['creator_formatted']); ?></td>
+        <td><?php echo $this->e($order['creator_formatted']); ?></td>
       </tr>
       <tr>
         <td><?php echo $this->text('IP'); ?></td>
@@ -70,7 +70,7 @@
           <?php if (empty($order['data']['user']['ip'])) { ?>
           <?php echo $this->text('Unknown'); ?>
           <?php } else { ?>
-          <?php echo $this->escape($order['data']['user']['ip']); ?>
+          <?php echo $this->e($order['data']['user']['ip']); ?>
           <?php } ?>
         </td>
       </tr>
@@ -80,7 +80,7 @@
           <?php if (empty($order['data']['user']['agent'])) { ?>
           <?php echo $this->text('Unknown'); ?>
           <?php } else { ?>
-          <?php echo $this->escape($order['data']['user']['agent']); ?>
+          <?php echo $this->e($order['data']['user']['agent']); ?>
           <?php } ?>
         </td>
       </tr>

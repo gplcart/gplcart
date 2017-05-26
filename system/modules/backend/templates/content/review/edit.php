@@ -43,7 +43,7 @@
       <div class="form-group required<?php echo $this->error('product_id', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Product'); ?></label>
         <div class="col-md-6">
-          <input name="review[product]" data-autocomplete-source="product" class="form-control" value="<?php echo isset($review['product']) ? $this->escape($review['product']) : ''; ?>">
+          <input name="review[product]" data-autocomplete-source="product" class="form-control" value="<?php echo isset($review['product']) ? $this->e($review['product']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error('product_id'); ?>
             <div class="text-muted"><?php echo $this->text('Required. Autocomplete field. Select a product that is related to this review'); ?></div>
@@ -54,7 +54,7 @@
       <div class="form-group required<?php echo $this->error('email', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Email'); ?></label>
         <div class="col-md-6">
-          <input name="review[email]" data-autocomplete-source="user" class="form-control" value="<?php echo isset($review['email']) ? $this->escape($review['email']) : ''; ?>">
+          <input name="review[email]" data-autocomplete-source="user" class="form-control" value="<?php echo isset($review['email']) ? $this->e($review['email']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error('email'); ?>
             <div class="text-muted"><?php echo $this->text('Required. Autocomplete field. Reviewer\'s E-mail'); ?></div>
@@ -68,7 +68,7 @@
       <div class="form-group required<?php echo $this->error('text', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Text'); ?></label>
         <div class="col-md-6">
-          <textarea name="review[text]" rows="4" class="form-control"><?php echo isset($review['text']) ? $this->escape($review['text']) : ''; ?></textarea>
+          <textarea name="review[text]" rows="4" class="form-control"><?php echo isset($review['text']) ? $this->e($review['text']) : ''; ?></textarea>
           <div class="help-block">
             <?php echo $this->error('text'); ?>
             <div class="text-muted"><?php echo $this->text('Required. A text of the review. HTML not allowed'); ?></div>

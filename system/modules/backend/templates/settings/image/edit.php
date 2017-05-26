@@ -31,7 +31,7 @@
           <div class="form-group required<?php echo $this->error('name', ' has-error'); ?>">
             <label class="col-md-2 control-label"><?php echo $this->text('Name'); ?></label>
             <div class="col-md-10">
-              <input name="imagestyle[name]" class="form-control" maxlength="32" value="<?php echo isset($imagestyle['name']) ? $this->escape($imagestyle['name']) : ''; ?>">
+              <input name="imagestyle[name]" class="form-control" maxlength="32" value="<?php echo isset($imagestyle['name']) ? $this->e($imagestyle['name']) : ''; ?>">
               <div class="help-block">
                 <?php echo $this->error('name'); ?>
                 <div class="text-muted">
@@ -43,7 +43,7 @@
           <div class="form-group required<?php echo $this->error('actions', ' has-error'); ?>">
             <label class="col-md-2 control-label"><?php echo $this->text('Actions'); ?></label>
             <div class="col-md-10">
-              <textarea name="imagestyle[actions]" rows="6" class="form-control" placeholder="<?php echo $this->text('Make thumbnail 50X50: thumbnail 50,50'); ?>"><?php echo $this->escape($imagestyle['actions']); ?></textarea>
+              <textarea name="imagestyle[actions]" rows="6" class="form-control" placeholder="<?php echo $this->text('Make thumbnail 50X50: thumbnail 50,50'); ?>"><?php echo $this->e($imagestyle['actions']); ?></textarea>
               <div class="help-block">
                 <?php echo $this->error('actions'); ?>
                 <div class="text-muted">
@@ -99,7 +99,7 @@
             <tbody>
               <?php foreach($action_handlers as $action_id => $handler) { ?>
               <tr>
-                <td class="middle"><?php echo $this->escape($action_id); ?></td>
+                <td class="middle"><?php echo $this->e($action_id); ?></td>
                 <td class="middle"><?php echo $this->text($handler['name']); ?></td>
                 <td class="middle">
                   <?php if(isset($handler['description'])) { ?>

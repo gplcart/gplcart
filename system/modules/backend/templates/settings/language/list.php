@@ -31,14 +31,14 @@
         <?php foreach ($languages as $code => $language) { ?>
         <tr data-code="<?php echo $code; ?>">
           <td class="middle">
-            <?php echo $this->escape($language['name']); ?>
+            <?php echo $this->e($language['name']); ?>
             <?php if (!empty($language['default'])) { ?>
             (<?php echo $this->lower($this->text('Default')); ?>)
             <?php } ?>
           </td>
           </td>
-          <td class="middle"><?php echo $this->escape($language['native_name']); ?></td>
-          <td class="middle"><?php echo $this->escape($code); ?></td>
+          <td class="middle"><?php echo $this->e($language['native_name']); ?></td>
+          <td class="middle"><?php echo $this->e($code); ?></td>
           <td class="middle">
             <?php if (empty($language['status'])) { ?>
             <i class="fa fa-square-o"></i>

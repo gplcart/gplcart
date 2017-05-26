@@ -15,7 +15,7 @@
           <?php echo $this->text('Title'); ?>
         </label>
         <div class="col-md-4">
-          <input maxlength="255" name="field[title]" class="form-control" value="<?php echo (isset($field['title'])) ? $this->escape($field['title']) : ''; ?>">
+          <input maxlength="255" name="field[title]" class="form-control" value="<?php echo (isset($field['title'])) ? $this->e($field['title']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error('title'); ?>
             <div class="text-muted">
@@ -37,7 +37,7 @@
         <div class="form-group<?php echo $this->error("translation.$code.title", ' has-error'); ?>">
           <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $language['name'])); ?></label>
           <div class="col-md-4">
-            <input maxlength="255" name="field[translation][<?php echo $code; ?>][title]" class="form-control" value="<?php echo (isset($field['translation'][$code]['title'])) ? $this->escape($field['translation'][$code]['title']) : ''; ?>">
+            <input maxlength="255" name="field[translation][<?php echo $code; ?>][title]" class="form-control" value="<?php echo (isset($field['translation'][$code]['title'])) ? $this->e($field['translation'][$code]['title']) : ''; ?>">
             <div class="help-block">
               <?php echo $this->error("translation.$code.title"); ?>
               <div class="text-muted">
@@ -60,12 +60,12 @@
           <select name="field[type]" class="form-control">
             <?php foreach($types as $type => $type_name) { ?>
             <?php if (isset($field['type']) && $field['type'] == $type) { ?>
-            <option value="<?php echo $this->escape($type); ?>" selected>
-            <?php echo $this->escape($type_name); ?>
+            <option value="<?php echo $this->e($type); ?>" selected>
+            <?php echo $this->e($type_name); ?>
             </option>
             <?php } else { ?>
-            <option value="<?php echo $this->escape($type); ?>">
-            <?php echo $this->escape($type_name); ?>
+            <option value="<?php echo $this->e($type); ?>">
+            <?php echo $this->e($type_name); ?>
             </option>
             <?php } ?>
             <?php } ?>
@@ -83,7 +83,7 @@
         <div class="col-md-4">
           <select name="field[widget]" class="form-control">
             <?php foreach ($widget_types as $type => $name) { ?>
-            <option value="<?php echo $type; ?>"<?php echo (isset($field['widget']) && $field['widget'] == $type) ? ' selected' : ''; ?>><?php echo $this->escape($name); ?></option>
+            <option value="<?php echo $type; ?>"<?php echo (isset($field['widget']) && $field['widget'] == $type) ? ' selected' : ''; ?>><?php echo $this->e($name); ?></option>
             <?php } ?>
           </select>
           <div class="help-block">
@@ -94,7 +94,7 @@
       <div class="form-group<?php echo $this->error('weight', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Weight'); ?></label>
         <div class="col-md-4">
-          <input name="field[weight]" class="form-control" value="<?php echo isset($field['weight']) ? $this->escape($field['weight']) : 0; ?>">
+          <input name="field[weight]" class="form-control" value="<?php echo isset($field['weight']) ? $this->e($field['weight']) : 0; ?>">
         <div class="help-block">
           <?php echo $this->error('weight'); ?>
           <div class="text-muted">

@@ -97,7 +97,7 @@
         <tr>
           <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $role_id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>></td>
           <td class="middle"><?php echo $role_id; ?></td>
-          <td class="middle"><?php echo $this->escape($role['name']); ?></td>
+          <td class="middle"><?php echo $this->e($role['name']); ?></td>
           <td class="middle">
             <?php if (empty($role['status'])) { ?>
             <i class="fa fa-square-o"></i>

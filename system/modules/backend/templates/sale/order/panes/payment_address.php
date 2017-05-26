@@ -18,8 +18,8 @@
         <table class="table table-condensed">
           <?php foreach ($order['address_translated']['payment'] as $key => $value) { ?>
           <tr>
-            <td><?php echo $this->escape($key); ?></td>
-            <td><?php echo $this->escape($value); ?></td>
+            <td><?php echo $this->e($key); ?></td>
+            <td><?php echo $this->e($value); ?></td>
           </tr>
           <?php } ?>
         </table>

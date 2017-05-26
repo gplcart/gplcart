@@ -95,11 +95,11 @@
           <tr>
             <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>></td>
             <td class="middle"><?php echo $id; ?></td>
-            <td class="middle"><?php echo $this->escape($this->truncate($file['title'], 30)); ?></td>
-            <td class="middle"><?php echo $this->escape($this->truncate($file['mime_type'])); ?></td>
+            <td class="middle"><?php echo $this->e($this->truncate($file['title'], 30)); ?></td>
+            <td class="middle"><?php echo $this->e($this->truncate($file['mime_type'])); ?></td>
             <td class="middle">
               <?php if (!empty($file['url'])) { ?>
-              <?php echo $this->escape($this->truncate($file['path'], 50)); ?>
+              <?php echo $this->e($this->truncate($file['path'], 50)); ?>
               <?php } else { ?>
               <span class="text-danger"><?php echo $this->text('Unknown'); ?></span>
               <?php } ?>

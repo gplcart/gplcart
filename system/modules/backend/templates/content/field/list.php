@@ -66,7 +66,7 @@
               <option value="any"><?php echo $this->text('Any'); ?></option>
               <?php foreach ($widget_types as $type => $name) { ?>
               <option value="<?php echo $type; ?>"<?php echo ($filter_widget == $type) ? ' selected' : ''; ?>>
-              <?php echo $this->escape($name); ?>
+              <?php echo $this->e($name); ?>
               </option>
               <?php } ?>
             </select>
@@ -91,7 +91,7 @@
             <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $field['field_id']; ?>"<?php echo $access_options ? '' : ' disabled'; ?>>
           </td>
           <td class="middle"><?php echo $field['field_id']; ?></td>
-          <td class="middle"><?php echo $this->escape($field['title']); ?></td>
+          <td class="middle"><?php echo $this->e($field['title']); ?></td>
           <td class="middle"><?php echo ($field['type'] == 'attribute') ? $this->text('Attribute') : $this->text('Option'); ?></td>
           <td class="middle"><?php echo isset($widget_types[$field['widget']]) ? $widget_types[$field['widget']] : $this->text('Unknown'); ?></td>
           <td class="middle">

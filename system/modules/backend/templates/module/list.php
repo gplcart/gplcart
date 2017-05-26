@@ -28,17 +28,17 @@
         <?php foreach ($modules as $module_id => $info) { ?>
         <tr class="module-<?php echo $module_id; ?><?php echo empty($info['errors']) ? '' : ' bg-danger'; ?>">
           <td class="middle">
-            <?php echo $this->escape($info['id']); ?>
+            <?php echo $this->e($info['id']); ?>
           </td>
           <td>
             <div class="name">
               <a href="#" onclick="return false;" data-toggle="collapse" data-target="#module-details-<?php echo $module_id; ?>">
-                <?php echo $this->truncate($this->escape($info['name'])); ?>
+                <?php echo $this->truncate($this->e($info['name'])); ?>
               </a>
             </div>
           </td>
           <td class="middle">
-            <?php echo empty($info['version']) ? $this->text('Unknown') : $this->escape($info['version']); ?>
+            <?php echo empty($info['version']) ? $this->text('Unknown') : $this->e($info['version']); ?>
           </td>
           <td class="middle">
             <?php echo $this->text(ucfirst($info['type'])); ?>
@@ -102,7 +102,7 @@
           <td colspan="6">
             <?php if ($info['author']) { ?>
             <div class="author">
-              <b><?php echo $this->text('Author'); ?></b>: <?php echo $this->escape($this->truncate($info['author'], 100)); ?>
+              <b><?php echo $this->text('Author'); ?></b>: <?php echo $this->e($this->truncate($info['author'], 100)); ?>
             </div>
             <?php } ?>
             <?php if ($info['description']) { ?>
@@ -112,12 +112,12 @@
             <?php } ?>
             <?php if (isset($info['weight'])) { ?>
             <div class="weight">
-              <b><?php echo $this->text('Weight'); ?></b>: <?php echo $this->escape($info['weight']); ?>
+              <b><?php echo $this->text('Weight'); ?></b>: <?php echo $this->e($info['weight']); ?>
             </div>
             <?php } ?>
             <?php if (!empty($info['hooks'])) { ?>
             <div class="hooks">
-              <b><?php echo $this->text('Implements hooks'); ?></b>: <?php echo $this->escape($this->truncate(implode(', ', $info['hooks']), 100)); ?>
+              <b><?php echo $this->text('Implements hooks'); ?></b>: <?php echo $this->e($this->truncate(implode(', ', $info['hooks']), 100)); ?>
             </div>
             <?php } ?>
             <?php if (!empty($info['requires'])) { ?>
@@ -126,9 +126,9 @@
               <p>
                 <?php foreach ($info['requires'] as $requires_id => $version) { ?>
                 <?php if (isset($modules[$requires_id]['name'])) { ?>
-                <span class="label label-default"><?php echo $this->text($modules[$requires_id]['name']); ?><?php echo $this->escape($version); ?></span>
+                <span class="label label-default"><?php echo $this->text($modules[$requires_id]['name']); ?><?php echo $this->e($version); ?></span>
                 <?php } else { ?>
-                <span class="label label-danger"><?php echo $this->escape($requires_id); ?> (<?php echo $this->text('invalid'); ?>)</span>
+                <span class="label label-danger"><?php echo $this->e($requires_id); ?> (<?php echo $this->text('invalid'); ?>)</span>
                 <?php } ?>
                 <?php } ?>
               </p>
@@ -142,7 +142,7 @@
                 <?php if (isset($modules[$required_by_id]['name'])) { ?>
                 <span class="label label-default"><?php echo $this->text($modules[$required_by_id]['name']); ?></span>
                 <?php } else { ?>
-                <span class="label label-danger"><?php echo $this->escape($required_by_id); ?> (<?php echo $this->text('invalid'); ?>)</span>
+                <span class="label label-danger"><?php echo $this->e($required_by_id); ?> (<?php echo $this->text('invalid'); ?>)</span>
                 <?php } ?>
                 <?php } ?>
               </p>

@@ -560,19 +560,9 @@ abstract class Controller
      * @param string $string
      * @return string
      */
-    public function escape($string)
-    {
-        return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
-    }
-
-    /**
-     * Shortcut for escape()
-     * @param string $string
-     * @return string
-     */
     public function e($string)
     {
-        return $this->escape($string);
+        return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
     }
 
     /**
@@ -725,7 +715,7 @@ abstract class Controller
      * @param boolean $merge
      * @return string
      */
-    public function render($file, array $data = array(), $merge = false)
+    public function render($file, array $data = array(), $merge = true)
     {
         $template = $this->getTemplateFile($file);
 
@@ -1624,15 +1614,10 @@ abstract class Controller
      */
     protected function setDefaultJsSettings()
     {
-        $allowed = array('_token', '_base', '_langcode', '_urn', '_uri', '_path', '_uid', '_cart_uid');
-
         $settings = array();
-        foreach ($this->data as $key => $value) {
-            if (in_array($key, $allowed)) {
-                $settings[ltrim($key, '_')] = $value;
-            }
+        foreach ($this->getDefaultData() as $key => $value) {
+            $settings[ltrim($key, '_')] = $value;
         }
-
         $this->setJsSettings('', $settings, 60);
     }
 
@@ -1713,8 +1698,6 @@ abstract class Controller
         $data['_query'] = $this->query;
         $data['_scheme'] = $this->scheme;
         $data['_cart_uid'] = $this->cart_uid;
-        $data['_user'] = $this->current_user;
-        $data['_store'] = $this->current_store;
         $data['_is_front'] = $this->url->isFront();
         $data['_is_logged_in'] = !empty($this->uid);
         $data['_is_admin'] = $this->access('admin');
@@ -1735,6 +1718,8 @@ abstract class Controller
         $this->data['_captcha'] = $this->renderCaptcha();
         $this->data['_languages'] = $this->language->getList();
         $this->data['_messages'] = $this->session->getMessage();
+        $this->data['_user'] = $this->current_user;
+        $this->data['_store'] = $this->current_store;
 
         $controller = strtolower(str_replace('\\', '-', $this->current_route['handlers']['controller'][0]));
         $this->data['_classes'] = array_slice(explode('-', $controller, 3), -1);

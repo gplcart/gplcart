@@ -13,7 +13,7 @@
       <div class="required form-group<?php echo $this->error('title', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Title'); ?></label>
         <div class="col-md-4">
-          <input maxlength="255" name="field_value[title]" class="form-control" value="<?php echo (isset($field_value['title'])) ? $this->escape($field_value['title']) : ''; ?>" autofocus>
+          <input maxlength="255" name="field_value[title]" class="form-control" value="<?php echo (isset($field_value['title'])) ? $this->e($field_value['title']) : ''; ?>" autofocus>
           <div class="help-block">
             <?php echo $this->error('title'); ?>
             <div class="text-muted"><?php echo $this->text('Required. The title will be displayed to customers on product pages'); ?></div>
@@ -33,7 +33,7 @@
         <div class="form-group<?php echo $this->error("translation.$code.title", ' has-error'); ?>">
           <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $language['native_name'])); ?></label>
           <div class="col-md-4">
-            <input maxlength="255" name="field_value[translation][<?php echo $code; ?>][title]" class="form-control" value="<?php echo (isset($field_value['translation'][$code]['title'])) ? $this->escape($field_value['translation'][$code]['title']) : ''; ?>">
+            <input maxlength="255" name="field_value[translation][<?php echo $code; ?>][title]" class="form-control" value="<?php echo (isset($field_value['translation'][$code]['title'])) ? $this->e($field_value['translation'][$code]['title']) : ''; ?>">
             <div class="help-block">
               <?php echo $this->error("translation.$code.title"); ?>
               <div class="text-muted">
@@ -54,7 +54,7 @@
           <?php echo $this->text('Color'); ?>
         </label>
         <div class="col-md-3">
-          <input class="form-control" type="color" name="field_value[color]" value="<?php echo empty($field_value['color']) ? '#000000' : $this->escape($field_value['color']); ?>">
+          <input class="form-control" type="color" name="field_value[color]" value="<?php echo empty($field_value['color']) ? '#000000' : $this->e($field_value['color']); ?>">
           <div class="help-block">
             <?php echo $this->error('color'); ?>
             <div class="text-muted">
@@ -93,7 +93,7 @@
           <?php echo $this->text('Weight'); ?>
         </label>
         <div class="col-md-3">
-          <input maxlength="2" name="field_value[weight]" class="form-control" value="<?php echo (isset($field_value['weight'])) ? $this->escape($field_value['weight']) : 0; ?>">
+          <input maxlength="2" name="field_value[weight]" class="form-control" value="<?php echo (isset($field_value['weight'])) ? $this->e($field_value['weight']) : 0; ?>">
           <div class="help-block">
             <?php echo $this->error('weight'); ?>
             <div class="text-muted">

@@ -16,7 +16,7 @@
         <div class="col-md-4">
           <select data-live-search="true" class="form-control selectpicker" name="fields[]" multiple required>
             <?php foreach ($fields as $field_id => $field_title) { ?>
-            <option value="<?php echo $field_id; ?>"><?php echo $this->escape($field_title); ?></option>
+            <option value="<?php echo $field_id; ?>"><?php echo $this->e($field_title); ?></option>
             <?php } ?>
           </select>
           <div class="text-muted">

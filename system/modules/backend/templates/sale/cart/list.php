@@ -74,7 +74,7 @@
               <select class="form-control" name="store_id">
                 <option value="any"><?php echo $this->text('Any'); ?></option>
                 <?php foreach ($_stores as $store_id => $store) { ?>
-                <option value="<?php echo $store_id; ?>"<?php echo isset($filter_store_id) && (int) $filter_store_id === $store_id ? ' selected' : ''; ?>><?php echo $this->escape($store['name']); ?></option>
+                <option value="<?php echo $store_id; ?>"<?php echo isset($filter_store_id) && (int) $filter_store_id === $store_id ? ' selected' : ''; ?>><?php echo $this->e($store['name']); ?></option>
                 <?php } ?>
               </select>
             </th>
@@ -116,31 +116,31 @@
               <?php } else if (!is_numeric($cart['user_id'])) { ?>
               <?php echo $this->text('Anonymous'); ?>
               <?php } else { ?>
-              <a href="<?php echo $this->url("account/{$cart['user_id']}"); ?>"><?php echo $this->escape($cart['user_email']); ?></a>
+              <a href="<?php echo $this->url("account/{$cart['user_id']}"); ?>"><?php echo $this->e($cart['user_email']); ?></a>
               <?php } ?>
             </td>
             <td class="middle">
               <?php if(empty($_stores[$cart['store_id']])) { ?>
               <?php echo $this->text('Unknown'); ?>
               <?php } else { ?>
-              <?php echo $this->escape($_stores[$cart['store_id']]['name']); ?>
+              <?php echo $this->e($_stores[$cart['store_id']]['name']); ?>
               <?php } ?>
             </td>
             <td class="middle">
               <?php if(isset($cart['product_status'])) { ?>
-              <a href="<?php echo $cart['url']; ?>"><?php echo $this->escape($this->truncate($cart['sku'], 30)); ?></a>
+              <a href="<?php echo $cart['url']; ?>"><?php echo $this->e($this->truncate($cart['sku'], 30)); ?></a>
               <?php } else { ?>
-              <?php echo $this->escape($this->truncate($cart['sku'], 30)); ?>
+              <?php echo $this->e($this->truncate($cart['sku'], 30)); ?>
               <?php } ?>
             </td>
             <td class="middle">
               <?php if (empty($cart['order_id'])) { ?>
               <?php echo $this->text('Abandoned / before checkout'); ?>
               <?php } else { ?>
-              <a href="<?php echo $this->url("admin/sale/order/{$cart['order_id']}"); ?>"><?php echo $this->escape($cart['order_id']); ?></a>
+              <a href="<?php echo $this->url("admin/sale/order/{$cart['order_id']}"); ?>"><?php echo $this->e($cart['order_id']); ?></a>
               <?php } ?>
             </td>
-            <td class="middle"><?php echo $this->escape($cart['quantity']); ?></td>
+            <td class="middle"><?php echo $this->e($cart['quantity']); ?></td>
             <td class="middle"><?php echo $this->date($cart['created']); ?></td>
             <td></td>
           </tr>

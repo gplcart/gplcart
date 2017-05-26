@@ -73,13 +73,13 @@
         <tr>
           <td>
             <a href="#" onclick="return false;" data-toggle="collapse" data-target="#message-<?php echo $record['log_id']; ?>">
-              <?php echo $this->escape(strip_tags($record['summary'])); ?>
+              <?php echo $this->e(strip_tags($record['summary'])); ?>
             </a>
           </td>
-          <td><?php echo $this->escape($record['type']); ?></td>
+          <td><?php echo $this->e($record['type']); ?></td>
           <td>
             <span class="label label-<?php echo $record['severity']; ?>">
-              <?php echo $this->escape($record['severity_text']); ?>
+              <?php echo $this->e($record['severity_text']); ?>
             </span>
           </td>
           <td><?php echo $record['time']; ?></td>
@@ -90,13 +90,13 @@
             <ul class="list-unstyled">
               <li><b><?php echo $this->text('Message'); ?></b> : <?php echo $this->filter($record['text']); ?></li>
               <?php if (!empty($record['data']['file'])) { ?>
-              <li><b><?php echo $this->text('File'); ?></b> : <?php echo $this->escape($record['data']['file']); ?></li>
+              <li><b><?php echo $this->text('File'); ?></b> : <?php echo $this->e($record['data']['file']); ?></li>
               <?php } ?>
               <?php if (!empty($record['data']['line'])) { ?>
-              <li><b><?php echo $this->text('Line'); ?></b> : <?php echo $this->escape($record['data']['line']); ?></li>
+              <li><b><?php echo $this->text('Line'); ?></b> : <?php echo $this->e($record['data']['line']); ?></li>
               <?php } ?>
               <?php if (!empty($record['data']['code'])) { ?>
-              <li><b><?php echo $this->text('Code'); ?></b> : <?php echo $this->escape($record['data']['code']); ?></li>
+              <li><b><?php echo $this->text('Code'); ?></b> : <?php echo $this->e($record['data']['code']); ?></li>
               <?php } ?>
             </ul>
           </td>

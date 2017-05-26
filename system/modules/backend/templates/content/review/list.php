@@ -112,12 +112,12 @@
             <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>></td>
             <td class="middle"><?php echo $id; ?></td>
             <td class="middle">
-              <a href="#review-id-<?php echo $id; ?>" data-toggle="collapse"><?php echo $this->truncate($this->escape($review['text']), 30); ?></a>
+              <a href="#review-id-<?php echo $id; ?>" data-toggle="collapse"><?php echo $this->truncate($this->e($review['text']), 30); ?></a>
             </td>
             <td class="middle">
               <?php if ($review['product_id']) { ?>
               <a target="_blank" href="<?php echo $this->url("product/{$review['product_id']}"); ?>">
-                <?php echo $this->truncate($this->escape($review['product']), 30); ?>
+                <?php echo $this->truncate($this->e($review['product']), 30); ?>
               </a>
               <?php } else { ?>
               <span class="text-danger"><?php echo $this->text('Missing'); ?></span>
@@ -125,7 +125,7 @@
             </td> 
             <td class="middle">
             <?php if ($review['email']) { ?>
-            <?php echo $this->escape($review['email']); ?>
+            <?php echo $this->e($review['email']); ?>
             <?php } else { ?>
             <?php echo $this->text('Missing'); ?>
             <?php } ?>
@@ -149,7 +149,7 @@
             </td>
           </tr>
           <tr id="review-id-<?php echo $id; ?>" class="collapse active">
-            <td colspan="8"><?php echo $this->escape($review['text']); ?></td>
+            <td colspan="8"><?php echo $this->e($review['text']); ?></td>
           </tr>
           <?php } ?>
         </tbody>

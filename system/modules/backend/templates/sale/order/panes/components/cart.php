@@ -13,16 +13,16 @@
 <tr>
   <td>
     <?php if(empty($item['product_status'])) { ?>
-    <?php echo $this->escape($item['title']); ?> <span class="text-danger">(<?php echo $this->text('unavailable'); ?>)</span>
+    <?php echo $this->e($item['title']); ?> <span class="text-danger">(<?php echo $this->text('unavailable'); ?>)</span>
     <?php } else { ?>
     <a href="<?php echo $this->url("product/{$item['product_id']}"); ?>">
-      <?php echo $this->escape($item['title']); ?>
+      <?php echo $this->e($item['title']); ?>
     </a>
     <?php } ?>
-    X <?php echo $this->escape($item['quantity']); ?>
+    X <?php echo $this->e($item['quantity']); ?>
   </td>
   <td>
-    <?php echo $this->escape($item['price_formatted']); ?>
+    <?php echo $this->e($item['price_formatted']); ?>
   </td>
 </tr>
 <?php } ?>

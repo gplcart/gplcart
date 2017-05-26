@@ -18,8 +18,8 @@
       <tbody>
         <?php foreach ($routes as $pattern => $route) { ?>
         <tr>
-          <td><?php echo $this->escape($pattern); ?></td>
-          <td><?php echo $this->escape(implode(' + ', $route['permission_name'])); ?></td>
+          <td><?php echo $this->e($pattern); ?></td>
+          <td><?php echo $this->e(implode(' + ', $route['permission_name'])); ?></td>
         </tr>
         <?php } ?>
       </tbody>

@@ -31,7 +31,7 @@
       <div class="form-group required<?php echo $this->error('title', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Name'); ?></label>
         <div class="col-md-4">
-          <input name="zone[title]" maxlength="255" class="form-control" value="<?php echo isset($zone['title']) ? $this->escape($zone['title']) : ''; ?>">
+          <input name="zone[title]" maxlength="255" class="form-control" value="<?php echo isset($zone['title']) ? $this->e($zone['title']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error('title'); ?>
           </div>

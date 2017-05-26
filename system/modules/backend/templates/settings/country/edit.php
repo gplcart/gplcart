@@ -32,9 +32,9 @@
         </label>
         <div class="col-md-4">
           <?php if(empty($code)) { ?>
-          <input maxlength="2" name="country[code]" class="form-control" value="<?php echo isset($country['code']) ? $this->escape($country['code']) : ''; ?>">
+          <input maxlength="2" name="country[code]" class="form-control" value="<?php echo isset($country['code']) ? $this->e($country['code']) : ''; ?>">
           <?php } else if(isset($country['code'])) { ?>
-          <span class="form-control"><?php echo $this->escape($country['code']); ?></span>
+          <span class="form-control"><?php echo $this->e($country['code']); ?></span>
           <?php } ?>
           <div class="help-block">
             <?php echo $this->error('code'); ?>
@@ -47,7 +47,7 @@
       <div class="form-group required<?php echo $this->error('name', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Name'); ?></label>
         <div class="col-md-4">
-          <input maxlength="255" name="country[name]" class="form-control" value="<?php echo isset($country['name']) ? $this->escape($country['name']) : ''; ?>">
+          <input maxlength="255" name="country[name]" class="form-control" value="<?php echo isset($country['name']) ? $this->e($country['name']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error('name'); ?>
             <div class="text-muted">
@@ -59,7 +59,7 @@
       <div class="form-group required<?php echo $this->error('native_name', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Native name'); ?></label>
         <div class="col-md-4">
-          <input maxlength="255" name="country[native_name]" class="form-control" value="<?php echo isset($country['native_name']) ? $this->escape($country['native_name']) : ''; ?>">
+          <input maxlength="255" name="country[native_name]" class="form-control" value="<?php echo isset($country['native_name']) ? $this->e($country['native_name']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error('native_name'); ?>
             <div class="text-muted">
@@ -75,9 +75,9 @@
             <option value="0"><?php echo $this->text('None'); ?></option>
             <?php foreach ($zones as $zone) { ?>
             <?php if (isset($country['zone_id']) && $country['zone_id'] == $zone['zone_id']) { ?>
-            <option value="<?php echo $zone['zone_id']; ?>" selected><?php echo $this->escape($zone['title']); ?></option>
+            <option value="<?php echo $zone['zone_id']; ?>" selected><?php echo $this->e($zone['title']); ?></option>
             <?php } else { ?>
-            <option value="<?php echo $zone['zone_id']; ?>"><?php echo $this->escape($zone['title']); ?></option>
+            <option value="<?php echo $zone['zone_id']; ?>"><?php echo $this->e($zone['title']); ?></option>
             <?php } ?>
             <?php } ?>
           </select>
@@ -92,7 +92,7 @@
       <div class="form-group<?php echo $this->error('weight', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Weight'); ?></label>
         <div class="col-md-4">
-          <input maxlength="2" name="country[weight]" class="form-control" value="<?php echo isset($country['weight']) ? $this->escape($country['weight']) : 0; ?>">
+          <input maxlength="2" name="country[weight]" class="form-control" value="<?php echo isset($country['weight']) ? $this->e($country['weight']) : 0; ?>">
           <div class="help-block">
             <?php echo $this->error('weight'); ?>
             <div class="text-muted">

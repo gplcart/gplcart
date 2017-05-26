@@ -90,7 +90,7 @@
                 <option value="any"><?php echo $this->text('Any'); ?></option>
                 <?php foreach ($roles as $role_id => $role) { ?>
                 <option value="<?php echo $role_id; ?>"<?php echo ($filter_role_id == $role_id) ? ' selected' : ''; ?>>
-                <?php echo $this->escape($role['name']); ?>
+                <?php echo $this->e($role['name']); ?>
                 </option>
                 <?php } ?>
               </select>
@@ -100,7 +100,7 @@
                 <option value="any"><?php echo $this->text('Any'); ?></option>
                 <?php foreach ($_stores as $store_id => $store) { ?>
                 <option value="<?php echo $store_id; ?>"<?php echo $filter_store_id == $store_id ? ' selected' : ''; ?>>
-                <?php echo $this->escape($store['name']); ?>
+                <?php echo $this->e($store['name']); ?>
                 </option>
                 <?php } ?>
               </select>
@@ -147,24 +147,24 @@
             <td class="middle"><?php echo $id; ?></td>
             <td class="middle">
               <?php if(empty($user['data'])) { ?>
-              <?php echo $this->escape($user['name']); ?>
+              <?php echo $this->e($user['name']); ?>
               <?php } else { ?>
               <a href="#" onclick="return false;" data-toggle="collapse" data-target="#user-<?php echo $id; ?>">
-                <?php echo $this->escape($user['name']); ?>
+                <?php echo $this->e($user['name']); ?>
               </a>
               <?php } ?>
             </td>
-            <td class="middle"><?php echo $this->escape($user['email']); ?></td>
+            <td class="middle"><?php echo $this->e($user['email']); ?></td>
             <td class="middle">
               <?php if (isset($roles[$user['role_id']]['name'])) { ?>
-              <?php echo $this->escape($roles[$user['role_id']]['name']); ?>
+              <?php echo $this->e($roles[$user['role_id']]['name']); ?>
               <?php } else { ?>
               <span class="text-danger"><?php echo $this->text('Unknown'); ?></span>
               <?php } ?>
             </td>
             <td class="middle">
               <?php if (isset($_stores[$user['store_id']])) { ?>
-              <?php echo $this->escape($_stores[$user['store_id']]['name']); ?>
+              <?php echo $this->e($_stores[$user['store_id']]['name']); ?>
               <?php } else { ?>
               <span class="text-danger"><?php echo $this->text('Unknown'); ?></span>
               <?php } ?>
@@ -180,7 +180,7 @@
             <td class="middle">
                 <ul class="list-inline">
                   <li>
-                    <a href="<?php echo $this->escape($user['url']); ?>">
+                    <a href="<?php echo $this->e($user['url']); ?>">
                       <?php echo $this->lower($this->text('View')); ?>
                     </a>
                   </li>
@@ -210,7 +210,7 @@
                 <?php if(!empty($user['data']['reset_password']['token']) && $this->access('user_edit')) { ?>
                 <b><?php echo $this->text('Key'); ?>:</b>
                 <a href="<?php echo $this->url('forgot', array('key' => $user['data']['reset_password']['token'], 'user_id' => $id)); ?>">
-                  <?php echo $this->escape($user['data']['reset_password']['token']); ?>
+                  <?php echo $this->e($user['data']['reset_password']['token']); ?>
                 </a>
                 <br>
                 <?php } ?>

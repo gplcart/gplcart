@@ -36,7 +36,7 @@
             <select class="form-control" name="store_id">
               <option value=""<?php echo $filter_store_id ? '' : ' selected'; ?>><?php echo $this->text('Any'); ?></option>
               <?php foreach ($_stores as $store_id => $store) { ?>
-              <option value="<?php echo $store_id; ?>"<?php echo $filter_store_id == $store_id ? ' selected' : ''; ?>><?php echo $this->escape($store['name']); ?></option>
+              <option value="<?php echo $store_id; ?>"<?php echo $filter_store_id == $store_id ? ' selected' : ''; ?>><?php echo $this->e($store['name']); ?></option>
               <?php } ?>
             </select>
           </th>
@@ -69,9 +69,9 @@
         <?php foreach ($groups as $id => $group) { ?>
         <tr>
           <td class="middle"><?php echo $id; ?></td>
-          <td class="middle"><?php echo $this->escape($group['title']); ?></td>
+          <td class="middle"><?php echo $this->e($group['title']); ?></td>
           <td class="middle">
-            <?php echo isset($_stores[$group['store_id']]) ? $this->escape($_stores[$group['store_id']]['name']) : $this->text('Unknown'); ?>
+            <?php echo isset($_stores[$group['store_id']]) ? $this->e($_stores[$group['store_id']]['name']) : $this->text('Unknown'); ?>
           </td>
           <td class="middle"><?php echo $this->text($group['type'], array(), $this->text('None')); ?>
           </td>

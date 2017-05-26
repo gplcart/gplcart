@@ -16,7 +16,7 @@
           <?php echo $this->text('Title'); ?>
         </label>
         <div class="col-md-10">
-          <input name="product[title]" maxlength="255" class="form-control" value="<?php echo isset($product['title']) ? $this->escape($product['title']) : ''; ?>" autofocus>
+          <input name="product[title]" maxlength="255" class="form-control" value="<?php echo isset($product['title']) ? $this->e($product['title']) : ''; ?>" autofocus>
           <div class="help-block">
             <?php echo $this->error('title'); ?>
             <div class="text-muted"><?php echo $this->text('Required. The title will be used on the product page and menu'); ?></div>
@@ -46,7 +46,7 @@
         <div class="form-group<?php echo $this->error("translation.$code.title", ' has-error'); ?>">
           <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $info['native_name'])); ?></label>
           <div class="col-md-10">
-            <input name="product[translation][<?php echo $code; ?>][title]" maxlength="255" class="form-control" value="<?php echo isset($product['translation'][$code]['title']) ? $this->escape($product['translation'][$code]['title']) : ''; ?>">
+            <input name="product[translation][<?php echo $code; ?>][title]" maxlength="255" class="form-control" value="<?php echo isset($product['translation'][$code]['title']) ? $this->e($product['translation'][$code]['title']) : ''; ?>">
             <div class="help-block">
               <?php echo $this->error("translation.$code.title"); ?>
               <div class="text-muted">
@@ -85,9 +85,9 @@
             <option value=""><?php echo $this->text('None'); ?></option>
             <?php foreach ($classes as $class) { ?>
             <?php if (isset($product['product_class_id']) && $product['product_class_id'] == $class['product_class_id']) { ?>
-            <option value="<?php echo $class['product_class_id']; ?>" selected> <?php echo $this->escape($class['title']); ?></option>
+            <option value="<?php echo $class['product_class_id']; ?>" selected> <?php echo $this->e($class['title']); ?></option>
             <?php } else { ?>
-            <option value="<?php echo $class['product_class_id']; ?>"> <?php echo $this->escape($class['title']); ?></option>
+            <option value="<?php echo $class['product_class_id']; ?>"> <?php echo $this->e($class['title']); ?></option>
             <?php } ?>
             <?php } ?>
           </select>
@@ -103,7 +103,7 @@
       <div class="form-group">
         <div class="col-md-offset-2 col-md-4<?php echo $this->error('sku', ' has-error'); ?>">
           <label><?php echo $this->text('SKU'); ?></label>
-          <input name="product[sku]" class="form-control" maxlength="255" value="<?php echo isset($product['sku']) ? $this->escape($product['sku']) : ''; ?>" placeholder="<?php echo $this->text('Generate automatically'); ?>">
+          <input name="product[sku]" class="form-control" maxlength="255" value="<?php echo isset($product['sku']) ? $this->e($product['sku']) : ''; ?>" placeholder="<?php echo $this->text('Generate automatically'); ?>">
           <div class="help-block">
             <?php echo $this->error('sku'); ?>
             <div class="text-muted">
@@ -115,7 +115,7 @@
           <label><?php echo $this->text('Price'); ?></label>
           <div class="input-group">
             <input name="product[price]" class="form-control" value="<?php echo isset($product['price']) ? $product['price'] : 0; ?>">
-            <span class="input-group-addon"><?php echo isset($product['currency']) ? $this->escape($product['currency']) : $this->escape($default_currency); ?></span>
+            <span class="input-group-addon"><?php echo isset($product['currency']) ? $this->e($product['currency']) : $this->e($default_currency); ?></span>
           </div>
           <div class="help-block">
             <?php echo $this->error('price'); ?>
@@ -171,7 +171,7 @@
         <div class="col-md-4">
           <select class="form-control" name="product[store_id]">
             <?php foreach ($_stores as $store_id => $store) { ?>
-            <option value="<?php echo $store_id; ?>"<?php echo isset($product['store_id']) && $product['store_id'] == $store_id ? ' selected' : ''; ?>><?php echo $this->escape($store['name']); ?></option>
+            <option value="<?php echo $store_id; ?>"<?php echo isset($product['store_id']) && $product['store_id'] == $store_id ? ' selected' : ''; ?>><?php echo $this->e($store['name']); ?></option>
             <?php } ?>
           </select>
           <div class="help-block">
@@ -187,9 +187,9 @@
             <?php if (!empty($categories['brand'])) { ?>
             <?php foreach ($categories['brand'] as $id => $name) { ?>
             <?php if (isset($product['brand_category_id']) && $product['brand_category_id'] == $id) { ?>
-            <option value="<?php echo $id; ?>" selected><?php echo $this->escape($name); ?></option>
+            <option value="<?php echo $id; ?>" selected><?php echo $this->e($name); ?></option>
             <?php } else { ?>
-            <option value="<?php echo $id; ?>"><?php echo $this->escape($name); ?></option>
+            <option value="<?php echo $id; ?>"><?php echo $this->e($name); ?></option>
             <?php } ?>
             <?php } ?>
             <?php } ?>
@@ -207,9 +207,9 @@
             <?php if (!empty($categories['catalog'])) { ?>
             <?php foreach ($categories['catalog'] as $id => $name) { ?>
             <?php if (isset($product['category_id']) && $product['category_id'] == $id) { ?>
-            <option value="<?php echo $id; ?>" selected><?php echo $this->escape($name); ?></option>
+            <option value="<?php echo $id; ?>" selected><?php echo $this->e($name); ?></option>
             <?php } else { ?>
-            <option value="<?php echo $id; ?>"><?php echo $this->escape($name); ?></option>
+            <option value="<?php echo $id; ?>"><?php echo $this->e($name); ?></option>
             <?php } ?>
             <?php } ?>
             <?php } ?>
@@ -222,7 +222,7 @@
       <div class="form-group<?php echo $this->error('alias', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Alias'); ?></label>
         <div class="col-md-4">
-          <input name="product[alias]" class="form-control" value="<?php echo isset($product['alias']) ? $this->escape($product['alias']) : ''; ?>" placeholder="<?php echo $this->text('Generate automatically'); ?>">
+          <input name="product[alias]" class="form-control" value="<?php echo isset($product['alias']) ? $this->e($product['alias']) : ''; ?>" placeholder="<?php echo $this->text('Generate automatically'); ?>">
           <div class="help-block">
             <?php echo $this->error('alias'); ?>
             <div class="text-muted">
@@ -262,7 +262,7 @@
               <input type="hidden" name="product[related][]" value="<?php echo $related_product_id; ?>">
               <span class="btn btn-default">
                 <a target="_blank" href="<?php echo $related_product['url']; ?>">
-                <?php echo $this->escape($related_product['title']); ?> (<?php echo $this->escape($related_product_id); ?>)
+                <?php echo $this->e($related_product['title']); ?> (<?php echo $this->e($related_product_id); ?>)
                 </a>
                 <span class="badge"><i class="fa fa-times remove"></i></span>
               </span>
@@ -280,7 +280,7 @@
       <div class="form-group<?php echo $this->error('meta_title', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Meta title'); ?></label>
         <div class="col-md-10">
-          <input name="product[meta_title]" maxlength="60" class="form-control" value="<?php echo isset($product['meta_title']) ? $this->escape($product['meta_title']) : ''; ?>">
+          <input name="product[meta_title]" maxlength="60" class="form-control" value="<?php echo isset($product['meta_title']) ? $this->e($product['meta_title']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error('meta_title'); ?>
             <div class="text-muted">
@@ -292,7 +292,7 @@
       <div class="form-group<?php echo $this->error('meta_description', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Meta description'); ?></label>
         <div class="col-md-10">
-          <textarea class="form-control" rows="3" maxlength="160" name="product[meta_description]"><?php echo isset($product['meta_description']) ? $this->escape($product['meta_description']) : ''; ?></textarea>
+          <textarea class="form-control" rows="3" maxlength="160" name="product[meta_description]"><?php echo isset($product['meta_description']) ? $this->e($product['meta_description']) : ''; ?></textarea>
           <div class="help-block">
             <?php echo $this->error('meta_description'); ?>
             <div class="text-muted">
@@ -314,7 +314,7 @@
         <div class="form-group<?php echo $this->error("translation.$code.meta_title", ' has-error'); ?>">
           <label class="col-md-2 control-label"><?php echo $this->text('Meta title %language', array('%language' => $info['native_name'])); ?></label>
           <div class="col-md-10">
-            <input name="product[translation][<?php echo $code; ?>][meta_title]" maxlength="60" class="form-control" value="<?php echo isset($product['translation'][$code]['meta_title']) ? $this->escape($product['translation'][$code]['meta_title']) : ''; ?>">
+            <input name="product[translation][<?php echo $code; ?>][meta_title]" maxlength="60" class="form-control" value="<?php echo isset($product['translation'][$code]['meta_title']) ? $this->e($product['translation'][$code]['meta_title']) : ''; ?>">
             <div class="help-block">
                <?php echo $this->error("translation.$code.meta_title"); ?>
             </div>
@@ -323,7 +323,7 @@
         <div class="form-group<?php echo $this->error("translation.$code.meta_description", ' has-error'); ?>">
           <label class="col-md-2 control-label"><?php echo $this->text('Meta description %language', array('%language' => $info['native_name'])); ?></label>
           <div class="col-md-10">
-            <textarea class="form-control" rows="3" maxlength="160" name="product[translation][<?php echo $code; ?>][meta_description]"><?php echo isset($product['translation'][$code]['meta_description']) ? $this->escape($product['translation'][$code]['meta_description']) : ''; ?></textarea>
+            <textarea class="form-control" rows="3" maxlength="160" name="product[translation][<?php echo $code; ?>][meta_description]"><?php echo isset($product['translation'][$code]['meta_description']) ? $this->e($product['translation'][$code]['meta_description']) : ''; ?></textarea>
             <div class="help-block">
               <?php echo $this->error("translation.$code.meta_description"); ?>
             </div>
@@ -340,7 +340,7 @@
       <div class="form-group<?php echo $this->error('width', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Width'); ?></label>
         <div class="col-md-4">
-          <input name="product[width]" class="form-control" value="<?php echo isset($product['width']) ? $this->escape($product['width']) : $this->config->get('product_width', 0); ?>">
+          <input name="product[width]" class="form-control" value="<?php echo isset($product['width']) ? $this->e($product['width']) : $this->config->get('product_width', 0); ?>">
           <div class="help-block">
             <?php echo $this->error('width'); ?>
             <div class="text-muted">
@@ -352,7 +352,7 @@
       <div class="form-group<?php echo $this->error('height', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Height'); ?></label>
         <div class="col-md-4">
-          <input name="product[height]" class="form-control" value="<?php echo isset($product['height']) ? $this->escape($product['height']) : $this->config->get('product_height', 0); ?>">
+          <input name="product[height]" class="form-control" value="<?php echo isset($product['height']) ? $this->e($product['height']) : $this->config->get('product_height', 0); ?>">
           <div class="help-block">
             <?php echo $this->error('height'); ?>
             <div class="text-muted">
@@ -364,7 +364,7 @@
       <div class="form-group<?php echo $this->error('length', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Length'); ?></label>
         <div class="col-md-4">
-          <input name="product[length]" class="form-control" value="<?php echo isset($product['length']) ? $this->escape($product['length']) : $this->config->get('product_length', 0); ?>">
+          <input name="product[length]" class="form-control" value="<?php echo isset($product['length']) ? $this->e($product['length']) : $this->config->get('product_length', 0); ?>">
           <div class="help-block">
             <?php echo $this->error('length'); ?>
             <div class="text-muted">
@@ -381,7 +381,7 @@
           <?php $selected_size_unit = isset($product['size_unit']) ? $product['size_unit'] : $this->config('product_size_unit', 'mm'); ?>
           <select name="product[size_unit]" class="form-control">
             <?php foreach($size_units as $unit => $name) { ?>
-            <option value="<?php echo $this->escape($unit); ?>"<?php echo ($selected_size_unit == $unit) ? ' selected' : ''; ?>><?php echo $this->escape($name); ?></option>
+            <option value="<?php echo $this->e($unit); ?>"<?php echo ($selected_size_unit == $unit) ? ' selected' : ''; ?>><?php echo $this->e($name); ?></option>
             <?php } ?>
           </select>
           <div class="help-block">
@@ -395,7 +395,7 @@
       <div class="form-group<?php echo $this->error('weight', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Weight'); ?></label>
         <div class="col-md-4">
-          <input name="product[weight]" class="form-control" value="<?php echo isset($product['weight']) ? $this->escape($product['weight']) : $this->config->get('product_weight', 0); ?>">
+          <input name="product[weight]" class="form-control" value="<?php echo isset($product['weight']) ? $this->e($product['weight']) : $this->config->get('product_weight', 0); ?>">
           <div class="help-block">
             <?php echo $this->error('weight'); ?>
             <div class="text-muted">
@@ -410,7 +410,7 @@
           <?php $selected_weight_unit = isset($product['weight_unit']) ? $product['weight_unit'] : $this->config('product_weight_unit', 'g'); ?>
           <select name="product[weight_unit]" class="form-control">
             <?php foreach($weight_units as $unit => $name) { ?>
-            <option value="<?php echo $this->escape($unit); ?>"<?php echo ($selected_weight_unit == $unit) ? ' selected' : ''; ?>><?php echo $this->escape($name); ?></option>
+            <option value="<?php echo $this->e($unit); ?>"<?php echo ($selected_weight_unit == $unit) ? ' selected' : ''; ?>><?php echo $this->e($name); ?></option>
             <?php } ?>
           </select>
           <div class="help-block">

@@ -97,7 +97,7 @@
         <tr>
           <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $city_id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>></td>
           <td class="middle"><?php echo $city_id; ?></td>
-          <td class="middle"><?php echo $this->escape($city['name']); ?></td>
+          <td class="middle"><?php echo $this->e($city['name']); ?></td>
           <td class="middle">
             <?php if ($city['status']) { ?>
             <i class="fa fa-check-square-o"></i>

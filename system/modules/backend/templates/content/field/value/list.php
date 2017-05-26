@@ -55,24 +55,24 @@
             <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $value['field_value_id']; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>>
           </td>
           <td class="middle field-value-id"><?php echo $value['field_value_id']; ?></td>
-          <td class="middle title"><?php echo $this->truncate($this->escape($value['title'])); ?></td>
+          <td class="middle title"><?php echo $this->truncate($this->e($value['title'])); ?></td>
           <td class="middle image">
             <div class="view thumb">
               <?php if (!empty($value['thumb'])) { ?>
-              <img class="img-rounded" src="<?php echo $this->escape($value['thumb']); ?>">
+              <img class="img-rounded" src="<?php echo $this->e($value['thumb']); ?>">
               <?php } ?>
             </div>
           </td>
           <td class="middle color">
             <?php if ($value['color']) { ?>
-            <div class="btn btn-default" style="background:<?php echo $this->escape($value['color']); ?>;"></div>
+            <div class="btn btn-default" style="background:<?php echo $this->e($value['color']); ?>;"></div>
             <?php } ?>
           </td>
           <td class="middle weight">
             <?php if ($this->access('field_value_edit')) { ?>
             <i class="fa fa-arrows handle"></i>
             <?php } ?>
-            <span class="weight"><?php echo $this->escape($value['weight']); ?></span>
+            <span class="weight"><?php echo $this->e($value['weight']); ?></span>
           </td>
           <?php if ($this->access('field_value_edit')) { ?>
           <td class="middle">

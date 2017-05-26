@@ -31,10 +31,10 @@
       <input type="hidden" name="collection_item[value]" value="<?php echo isset($collection_item['value']) ? $collection_item['value'] : ''; ?>">
       <div class="form-group required<?php echo $this->error('value', ' has-error'); ?>">
         <label class="col-md-2 control-label">
-          <?php echo $this->escape($handler['title']); ?>
+          <?php echo $this->e($handler['title']); ?>
         </label>
         <div class="col-md-6">
-          <input name="collection_item[input]" class="form-control" value="<?php echo isset($collection_item['input']) ? $this->escape($collection_item['input']) : ''; ?>">
+          <input name="collection_item[input]" class="form-control" value="<?php echo isset($collection_item['input']) ? $this->e($collection_item['input']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error('value'); ?>
             <div class="text-muted">
@@ -49,7 +49,7 @@
       <div class="form-group<?php echo $this->error('data.url', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Url'); ?></label>
         <div class="col-md-6">
-          <input name="collection_item[data][url]" class="form-control" value="<?php echo isset($collection_item['data']['url']) ? $this->escape($collection_item['data']['url']) : ''; ?>">
+          <input name="collection_item[data][url]" class="form-control" value="<?php echo isset($collection_item['data']['url']) ? $this->e($collection_item['data']['url']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error('data.url'); ?>
             <div class="text-muted">
@@ -61,7 +61,7 @@
       <div class="form-group required<?php echo $this->error('weight', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Weight'); ?></label>
         <div class="col-md-3">
-          <input name="collection_item[weight]" class="form-control" value="<?php echo isset($collection_item['weight']) ? $this->escape($collection_item['weight']) : $weight; ?>">
+          <input name="collection_item[weight]" class="form-control" value="<?php echo isset($collection_item['weight']) ? $this->e($collection_item['weight']) : $weight; ?>">
           <div class="help-block">
             <?php echo $this->error('weight'); ?>
             <div class="text-muted">

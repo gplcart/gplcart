@@ -34,7 +34,7 @@
           <?php foreach ($format as $name => $item) { ?>
           <?php if (isset($item['name'])) { ?>
           <tr>
-            <td><?php echo $this->escape($item['name']); ?></td>
+            <td><?php echo $this->e($item['name']); ?></td>
             <td class="middle">
               <?php if($name == 'country') { ?>
               <input type="checkbox" name="format[<?php echo $name; ?>][status]" value="1" checked disabled>
@@ -54,7 +54,7 @@
               <?php if($access_actions) { ?>
               <i class="fa fa-arrows handle"></i>
               <?php } ?>
-              <span class="weight"><?php echo $this->escape($item['weight']); ?></span>
+              <span class="weight"><?php echo $this->e($item['weight']); ?></span>
             </td>
           </tr>
           <?php } ?>

@@ -53,11 +53,11 @@
           <td class="middle">
             <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>">
           </td>
-          <td class="middle"><?php echo $this->escape($id); ?></td>
-          <td class="middle"><?php echo $this->escape($backup['name']); ?></td>
+          <td class="middle"><?php echo $this->e($id); ?></td>
+          <td class="middle"><?php echo $this->e($backup['name']); ?></td>
           <td class="middle">
             <?php if (isset($handlers[$backup['type']]['name'])) { ?>
-            <?php echo $this->escape($handlers[$backup['type']]['name']); ?>
+            <?php echo $this->e($handlers[$backup['type']]['name']); ?>
             <?php } else { ?>
             <span class="text-danger"><?php echo $this->text('Unknown'); ?></span>
             <?php } ?>
@@ -66,21 +66,21 @@
             <?php if (empty($backup['version'])) { ?>
             <span class="text-danger"><?php echo $this->text('Unknown'); ?></span>
             <?php } else { ?>
-            <?php echo $this->escape($backup['version']); ?>
+            <?php echo $this->e($backup['version']); ?>
             <?php } ?>
           </td>
           <td class="middle">
             <?php if (empty($backup['module_id'])) { ?>
             <span class="text-danger"><?php echo $this->text('None'); ?></span>
             <?php } else { ?>
-            <?php echo $this->escape($backup['module_id']); ?>
+            <?php echo $this->e($backup['module_id']); ?>
             <?php } ?>
           </td>
           <td class="middle">
             <?php if (empty($backup['user_name'])) { ?>
             <span class="text-danger"><?php echo $this->text('Unknown'); ?></span>
             <?php } else { ?>
-            <?php echo $this->escape($backup['user_name']); ?>
+            <?php echo $this->e($backup['user_name']); ?>
             <?php } ?>
           </td>
           <td class="middle">

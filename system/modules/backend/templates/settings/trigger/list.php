@@ -75,7 +75,7 @@
                 <option value="any"><?php echo $this->text('Any'); ?></option>
                 <?php foreach ($_stores as $store_id => $store) { ?>
                 <option value="<?php echo $store_id; ?>"<?php echo $filter_store_id == $store_id ? ' selected' : ''; ?>>
-                <?php echo $this->escape($store['name']); ?>
+                <?php echo $this->e($store['name']); ?>
                 </option>
                 <?php } ?>
               </select>
@@ -115,10 +115,10 @@
             <td class="middle">
               <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>>
             </td>
-            <td class="middle"><?php echo $this->escape($trigger['name']); ?></td>
+            <td class="middle"><?php echo $this->e($trigger['name']); ?></td>
             <td class="middle">
               <?php if (isset($_stores[$trigger['store_id']])) { ?>
-              <?php echo $this->escape($_stores[$trigger['store_id']]['name']); ?>
+              <?php echo $this->e($_stores[$trigger['store_id']]['name']); ?>
               <?php } else { ?>
               <span class="text-danger"><?php echo $this->text('Unknown'); ?></span>
               <?php } ?>

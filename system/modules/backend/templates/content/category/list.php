@@ -64,7 +64,7 @@
         <tr data-id="<?php echo $category['category_id']; ?>">
           <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $category['category_id']; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>></td>
           <td class="middle"><?php echo $category['category_id']; ?></td>
-          <td class="middle"><?php echo $category['indentation']; ?><a target="_blank" href="<?php echo $this->escape($category['url']); ?>"><?php echo $this->truncate($this->escape($category['title'])); ?></a></td>
+          <td class="middle"><?php echo $category['indentation']; ?><a target="_blank" href="<?php echo $this->e($category['url']); ?>"><?php echo $this->truncate($this->e($category['title'])); ?></a></td>
           <td class="middle">
             <?php if (empty($category['status'])) { ?>
             <i class="fa fa-square-o"></i>
@@ -76,12 +76,12 @@
             <?php if($this->access('category_edit')) { ?>
             <i class="fa fa-arrows handle"></i>
             <?php } ?>
-            <span class="weight"><?php echo $this->escape($category['weight']); ?></span>
+            <span class="weight"><?php echo $this->e($category['weight']); ?></span>
           </td>
           <td class="middle">
               <ul class="list-inline">
                 <li>
-                  <a href="<?php echo $this->escape($category['url']); ?>">
+                  <a href="<?php echo $this->e($category['url']); ?>">
                     <?php echo $this->lower($this->text('View')); ?>
                   </a>
                 </li>

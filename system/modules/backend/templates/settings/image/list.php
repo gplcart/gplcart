@@ -31,7 +31,7 @@
         <?php foreach ($styles as $id => $style) { ?>
         <tr>
           <td class="middle"><?php echo $id; ?></td>
-          <td class="middle"><?php echo $this->escape($style['name']); ?></td>
+          <td class="middle"><?php echo $this->e($style['name']); ?></td>
           <td class="middle">
             <?php if (empty($style['default'])) { ?>
             <i class="fa fa-square-o"></i>

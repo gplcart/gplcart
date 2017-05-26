@@ -17,26 +17,26 @@
             <td><?php echo $this->text('ID'); ?></td>
             <td>
               <a href="<?php echo $this->url("account/{$order['user']['user_id']}/edit"); ?>">
-                <?php echo $this->escape($order['user']['user_id']); ?>
+                <?php echo $this->e($order['user']['user_id']); ?>
               </a>
             </td>
           </tr>
           <tr>
             <td><?php echo $this->text('E-mail'); ?></td>
-            <td><?php echo $this->escape($order['user']['email']); ?></td>
+            <td><?php echo $this->e($order['user']['email']); ?></td>
           </tr>
           <tr>
             <td><?php echo $this->text('Name'); ?></td>
-            <td><?php echo $this->escape($order['user']['name']); ?></td>
+            <td><?php echo $this->e($order['user']['name']); ?></td>
           </tr>
           <tr>
             <td><?php echo $this->text('Role'); ?></td>
             <td>
-              <?php echo $this->escape($order['user']['role_name']); ?>
+              <?php echo $this->e($order['user']['role_name']); ?>
               <?php if (empty($order['user']['role_name'])) { ?>
               <?php echo $this->text('Unknown'); ?>
               <?php } else { ?>
-              <?php echo $this->escape($order['user']['role_name']); ?>
+              <?php echo $this->e($order['user']['role_name']); ?>
               <?php } ?>
             </td>
           </tr>
@@ -58,7 +58,7 @@
             <td><?php echo $this->text('Orders placed'); ?></td>
             <td>
               <a href="<?php echo $this->url('admin/sale/order', array('user_id' => $order['user']['user_id'])); ?>">
-                <?php echo $this->escape($order['user']['total_orders']); ?>
+                <?php echo $this->e($order['user']['total_orders']); ?>
               </a>
             </td>
           </tr>

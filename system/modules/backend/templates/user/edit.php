@@ -13,7 +13,7 @@
       <div class="form-group required<?php echo $this->error('name', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Name'); ?></label>
         <div class="col-md-4">
-          <input name="user[name]" maxlength="255" class="form-control" value="<?php echo isset($user['name']) ? $this->escape($user['name']) : ''; ?>">
+          <input name="user[name]" maxlength="255" class="form-control" value="<?php echo isset($user['name']) ? $this->e($user['name']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error('name'); ?>
             <div class="text-muted"><?php echo $this->text('Required. A unique user name, e.g John Smith'); ?></div>
@@ -23,7 +23,7 @@
       <div class="form-group required<?php echo $this->error('email', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('E-mail'); ?></label>
         <div class="col-md-4">
-          <input name="user[email]" class="form-control" value="<?php echo isset($user['email']) ? $this->escape($user['email']) : ''; ?>">
+          <input name="user[email]" class="form-control" value="<?php echo isset($user['email']) ? $this->e($user['email']) : ''; ?>">
           <div class="help-block"><?php echo $this->error('email'); ?></div>
         </div>
       </div>
@@ -57,9 +57,9 @@
             <?php if (!empty($roles)) { ?>
             <?php foreach ($roles as $role_id => $role) { ?>
             <?php if (isset($user['role_id']) && $user['role_id'] == $role_id) { ?>
-            <option value="<?php echo $role_id; ?>" selected><?php echo $this->escape($role['name']); ?></option>
+            <option value="<?php echo $role_id; ?>" selected><?php echo $this->e($role['name']); ?></option>
             <?php } else { ?>
-            <option value="<?php echo $role_id; ?>"><?php echo $this->escape($role['name']); ?></option>
+            <option value="<?php echo $role_id; ?>"><?php echo $this->e($role['name']); ?></option>
             <?php } ?>
             <?php } ?>
             <?php } ?>
@@ -73,9 +73,9 @@
           <select name="user[store_id]" class="form-control">
             <?php foreach ($_stores as $store_id => $store) { ?>
             <?php if (isset($user['store_id']) && $user['store_id'] == $store_id) { ?>
-            <option value="<?php echo $store_id; ?>" selected><?php echo $this->escape($store['name']); ?></option>
+            <option value="<?php echo $store_id; ?>" selected><?php echo $this->e($store['name']); ?></option>
             <?php } else { ?>
-            <option value="<?php echo $store_id; ?>"><?php echo $this->escape($store['name']); ?></option>
+            <option value="<?php echo $store_id; ?>"><?php echo $this->e($store['name']); ?></option>
             <?php } ?>
             <?php } ?>
           </select>

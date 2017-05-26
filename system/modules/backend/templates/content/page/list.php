@@ -97,7 +97,7 @@
                 <option value="any"><?php echo $this->text('Any'); ?></option>
                 <?php foreach ($_stores as $store_id => $store) { ?>
                 <option value="<?php echo $store_id; ?>"<?php echo $filter_store_id == $store_id ? ' selected' : ''; ?>>
-                <?php echo $this->escape($store['name']); ?>
+                <?php echo $this->e($store['name']); ?>
                 </option>
                 <?php } ?>
               </select>
@@ -143,17 +143,17 @@
             <td class="middle">
               <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>>
             </td>
-            <td class="middle"><?php echo $this->escape($id); ?></td>
-            <td class="middle"><?php echo $this->truncate($this->escape($page['title']), 30); ?></td>
+            <td class="middle"><?php echo $this->e($id); ?></td>
+            <td class="middle"><?php echo $this->truncate($this->e($page['title']), 30); ?></td>
             <td class="middle">
               <?php if (isset($_stores[$page['store_id']])) { ?>
-              <?php echo $this->escape($_stores[$page['store_id']]['name']); ?>
+              <?php echo $this->e($_stores[$page['store_id']]['name']); ?>
               <?php } else { ?>
               <span class="text-danger"><?php echo $this->text('Unknown'); ?></span>
               <?php } ?>
             </td>
             <td class="middle">
-                <?php echo $this->escape($page['email']); ?>
+                <?php echo $this->e($page['email']); ?>
             </td>
             <td class="middle">
               <?php if (empty($page['status'])) { ?>
@@ -166,7 +166,7 @@
             <td class="middle">
               <ul class="list-inline">
                 <li>
-                  <a href="<?php echo $this->escape($page['url']); ?>">
+                  <a href="<?php echo $this->e($page['url']); ?>">
                     <?php echo $this->lower($this->text('View')); ?>
                   </a>
                 </li>

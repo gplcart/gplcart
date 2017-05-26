@@ -31,7 +31,7 @@
       <div class="form-group required<?php echo $this->error('name', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Name'); ?></label>
         <div class="col-md-4">
-          <input maxlength="255" name="city[name]" class="form-control" value="<?php echo isset($city['name']) ? $this->escape($city['name']) : ''; ?>" autofocus>
+          <input maxlength="255" name="city[name]" class="form-control" value="<?php echo isset($city['name']) ? $this->e($city['name']) : ''; ?>" autofocus>
           <div class="help-block">
             <?php echo $this->error('name'); ?>
             <div class="text-muted"><?php echo $this->text('Required. Native name of the city'); ?></div>
@@ -47,9 +47,9 @@
             <option value="0"><?php echo $this->text('None'); ?></option>
             <?php foreach ($zones as $zone) { ?>
             <?php if (isset($city['zone_id']) && $city['zone_id'] == $zone['zone_id']) { ?>
-            <option value="<?php echo $zone['zone_id']; ?>" selected><?php echo $this->escape($zone['title']); ?></option>
+            <option value="<?php echo $zone['zone_id']; ?>" selected><?php echo $this->e($zone['title']); ?></option>
             <?php } else { ?>
-            <option value="<?php echo $zone['zone_id']; ?>"><?php echo $this->escape($zone['title']); ?></option>
+            <option value="<?php echo $zone['zone_id']; ?>"><?php echo $this->e($zone['title']); ?></option>
             <?php } ?>
             <?php } ?>
           </select>

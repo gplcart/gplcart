@@ -12,14 +12,14 @@
   <div class="panel-body">
     <?php if (!empty($order['log'])) { ?>
     <b><?php echo $this->text('Message'); ?>:</b>
-    <p><?php echo $this->escape($order['log']['text']); ?></p>
+    <p><?php echo $this->e($order['log']['text']); ?></p>
     <b><?php echo $this->text('Editor'); ?>:</b>
     <p>
       <?php if (empty($order['log']['user_name'])) { ?>
       <?php echo $this->text('Unknown'); ?>
       <?php } else { ?>
-      <?php echo $this->escape($order['log']['user_name']); ?>
-      (<?php echo $this->escape($order['log']['user_email']); ?>)
+      <?php echo $this->e($order['log']['user_name']); ?>
+      (<?php echo $this->e($order['log']['user_email']); ?>)
       <?php } ?>
     </p>
     <b><?php echo $this->text('Created'); ?>:</b>
@@ -35,7 +35,7 @@
             <span class="text-danger"><?php echo $this->text('Unknown'); ?></span>
             <?php } else { ?>
             <a href="<?php echo $this->url("account/{$item['user_id']}"); ?>">
-              <?php echo $this->escape($item['user_email']); ?>
+              <?php echo $this->e($item['user_email']); ?>
             </a>
             <?php } ?>
           </div>
@@ -50,7 +50,7 @@
             <?php } ?>
             <?php } ?>
           </div>
-          <div class="text"><?php echo $this->escape($item['text']); ?></div>
+          <div class="text"><?php echo $this->e($item['text']); ?></div>
         </td>
       </tr>
       <?php } ?>

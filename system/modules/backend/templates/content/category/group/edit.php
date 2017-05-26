@@ -13,7 +13,7 @@
       <div class="form-group required<?php echo $this->error('title', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Title'); ?></label>
         <div class="col-md-4">
-          <input name="category_group[title]" maxlength="255" class="form-control" value="<?php echo isset($category_group['title']) ? $this->escape($category_group['title']) : ''; ?>" autofocus>
+          <input name="category_group[title]" maxlength="255" class="form-control" value="<?php echo isset($category_group['title']) ? $this->e($category_group['title']) : ''; ?>" autofocus>
           <div class="help-block">
             <?php echo $this->error('title'); ?>
             <div class="text-muted"><?php echo $this->text('Category group name to be shown to administrators and customers'); ?></div>
@@ -25,7 +25,7 @@
       <div class="form-group<?php echo $this->error("translation.$code.title", ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $info['native_name'])); ?></label>
         <div class="col-md-4">
-          <input name="category_group[translation][<?php echo $code; ?>][title]" maxlength="255" class="form-control" value="<?php echo isset($category_group['translation'][$code]['title']) ? $this->escape($category_group['translation'][$code]['title']) : ''; ?>">
+          <input name="category_group[translation][<?php echo $code; ?>][title]" maxlength="255" class="form-control" value="<?php echo isset($category_group['translation'][$code]['title']) ? $this->e($category_group['translation'][$code]['title']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error("translation.$code.title"); ?>
           </div>
@@ -45,7 +45,7 @@
           <select name="category_group[type]" class="form-control">
             <option value=""><?php echo $this->text('None'); ?></option>
             <?php foreach ($types as $type => $name) { ?>
-            <option value="<?php echo $type; ?>"<?php echo (isset($category_group['type']) && $category_group['type'] == $type) ? ' selected' : ''; ?>><?php echo $this->escape($name); ?></option>
+            <option value="<?php echo $type; ?>"<?php echo (isset($category_group['type']) && $category_group['type'] == $type) ? ' selected' : ''; ?>><?php echo $this->e($name); ?></option>
             <?php } ?>
           </select>
           <div class="help-block">

@@ -33,7 +33,7 @@
           <div class="form-group required<?php echo $this->error('name', ' has-error'); ?>">
             <label class="col-md-3 control-label"><?php echo $this->text('Name'); ?></label>
             <div class="col-md-9">
-              <input maxlength="255" name="trigger[name]" class="form-control" value="<?php echo isset($trigger['name']) ? $this->escape($trigger['name']) : ''; ?>">
+              <input maxlength="255" name="trigger[name]" class="form-control" value="<?php echo isset($trigger['name']) ? $this->e($trigger['name']) : ''; ?>">
               <div class="help-block">
                 <?php echo $this->error('name'); ?>
                 <div class="text-muted">
@@ -50,9 +50,9 @@
               <select name="trigger[store_id]" class="form-control">
                 <?php foreach ($_stores as $store_id => $store) { ?>
                 <?php if (isset($trigger['store_id']) && $trigger['store_id'] == $store_id) { ?>
-                <option value="<?php echo $store_id; ?>" selected><?php echo $this->escape($store['name']); ?></option>
+                <option value="<?php echo $store_id; ?>" selected><?php echo $this->e($store['name']); ?></option>
                 <?php } else { ?>
-                <option value="<?php echo $store_id; ?>"><?php echo $this->escape($store['name']); ?></option>
+                <option value="<?php echo $store_id; ?>"><?php echo $this->e($store['name']); ?></option>
                 <?php } ?>
                 <?php } ?>
               </select>
@@ -64,7 +64,7 @@
           <div class="form-group<?php echo $this->error('weight', ' has-error'); ?>">
             <label class="col-md-3 control-label"><?php echo $this->text('Weight'); ?></label>
             <div class="col-md-9">
-              <input maxlength="2" name="trigger[weight]" class="form-control" value="<?php echo isset($trigger['weight']) ? $this->escape($trigger['weight']) : '0'; ?>">
+              <input maxlength="2" name="trigger[weight]" class="form-control" value="<?php echo isset($trigger['weight']) ? $this->e($trigger['weight']) : '0'; ?>">
               <div class="help-block">
                 <?php echo $this->error('weight'); ?>
                 <div class="text-muted">
@@ -80,7 +80,7 @@
           <div class="form-group required<?php echo $this->error('data.conditions', ' has-error'); ?>">
             <label class="col-md-3 control-label"><?php echo $this->text('Conditions'); ?></label>
             <div class="col-md-9">
-              <textarea name="trigger[data][conditions]" rows="6" class="form-control"><?php echo empty($trigger['data']['conditions']) ? '' : $this->escape($trigger['data']['conditions']); ?></textarea>
+              <textarea name="trigger[data][conditions]" rows="6" class="form-control"><?php echo empty($trigger['data']['conditions']) ? '' : $this->e($trigger['data']['conditions']); ?></textarea>
               <div class="help-block">
                 <?php echo $this->error('data.conditions'); ?>
                 <div class="text-muted">
@@ -131,8 +131,8 @@
             <tbody>
               <?php foreach($operators as $key => $name) { ?>
               <tr>
-                <td><?php echo $this->escape($key); ?></td>
-                <td><?php echo $this->escape($name); ?></td>
+                <td><?php echo $this->e($key); ?></td>
+                <td><?php echo $this->e($name); ?></td>
               </tr>
               <?php } ?>
             </tbody>
@@ -154,7 +154,7 @@
               <tr>
                 <td class="middle"><?php echo $id; ?></td>
                 <td>
-                <?php echo $this->escape($info['title']); ?>
+                <?php echo $this->e($info['title']); ?>
                 <?php if (!empty($info['description'])) { ?>
                   <div class="text-muted small"><?php echo $this->filter($info['description']); ?></div>
                 <?php } ?>

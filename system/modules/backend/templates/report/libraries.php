@@ -28,21 +28,21 @@
       <tbody>
         <?php foreach ($libraries as $library_id => $library) { ?>
         <tr class="library<?php echo empty($library['errors']) ? '' : ' bg-danger'; ?>">
-          <td><?php echo $this->escape($library_id); ?></td>
+          <td><?php echo $this->e($library_id); ?></td>
           <td>
-            <a data-toggle="collapse" href="#details-<?php echo $this->escape($library_id); ?>">
+            <a data-toggle="collapse" href="#details-<?php echo $this->e($library_id); ?>">
               <?php echo $this->text($library['name']); ?>
             </a>
           </td>
-          <td><?php echo $this->escape($library['type']); ?></td>
+          <td><?php echo $this->e($library['type']); ?></td>
           <td>
-            <?php echo $this->escape($library['version']); ?>
+            <?php echo $this->e($library['version']); ?>
           </td>
           <td>
             <?php if(empty($library['requires']) && empty($library['required_by'])) { ?>
             <?php echo $this->text('No'); ?>
             <?php } else { ?>
-            <a data-toggle="collapse" href="#details-<?php echo $this->escape($library_id); ?>">
+            <a data-toggle="collapse" href="#details-<?php echo $this->e($library_id); ?>">
               <?php echo $this->text('Yes'); ?>
             </a>
             <?php } ?>
@@ -51,7 +51,7 @@
             <?php if(empty($library['errors'])) { ?>
             <?php echo $this->text('OK'); ?>
             <?php } else { ?>
-            <a data-toggle="collapse" href="#details-<?php echo $this->escape($library_id); ?>">
+            <a data-toggle="collapse" href="#details-<?php echo $this->e($library_id); ?>">
               <?php echo $this->text('Error'); ?>
             </a>
             <?php } ?>
@@ -59,19 +59,19 @@
           <td>
             <ul class="list-inline">
               <?php if (!empty($library['url'])) { ?>
-              <li><a target="_blank" href="<?php echo $this->escape($library['url']); ?>">
+              <li><a target="_blank" href="<?php echo $this->e($library['url']); ?>">
                 <?php echo $this->text('URL'); ?></a>
               </li>
               <?php } ?>
               <?php if (!empty($library['download'])) { ?>
-              <li><a onclick="return confirm(GplCart.text('You are about to download the library from an external site. Continue?'));" href="<?php echo $this->escape($library['download']); ?>">
+              <li><a onclick="return confirm(GplCart.text('You are about to download the library from an external site. Continue?'));" href="<?php echo $this->e($library['download']); ?>">
               <?php echo $this->text('Download'); ?></a>
               </li>
               <?php } ?>
             </ul>
           </td>
         </tr>
-        <tr class="collapse active" id="details-<?php echo $this->escape($library_id); ?>">
+        <tr class="collapse active" id="details-<?php echo $this->e($library_id); ?>">
           <td colspan="7">
             <?php if (!empty($library['description'])) { ?>
             <div class="description">
@@ -90,16 +90,16 @@
             </div>
             <?php } ?>
             <b><?php echo $this->text('Directory'); ?>:</b>
-            <p><?php echo $this->escape($library['basepath']); ?></p>
+            <p><?php echo $this->e($library['basepath']); ?></p>
             <?php if (!empty($library['requires'])) { ?>
             <div class="requires">
               <b><?php echo $this->text('Requires'); ?>:</b>
               <p>
                 <?php foreach ($library['requires'] as $requires_library_id => $version) { ?>
                 <?php if (isset($libraries[$requires_library_id]['name'])) { ?>
-                <span class="label label-default"><?php echo $this->text($libraries[$requires_library_id]['name']); ?><?php echo $this->escape($version); ?></span>
+                <span class="label label-default"><?php echo $this->text($libraries[$requires_library_id]['name']); ?><?php echo $this->e($version); ?></span>
                 <?php } else { ?>
-                <span class="label label-danger"><?php echo $this->escape($requires_library_id); ?> (<?php echo $this->text('invalid'); ?>)</span>
+                <span class="label label-danger"><?php echo $this->e($requires_library_id); ?> (<?php echo $this->text('invalid'); ?>)</span>
                 <?php } ?>
                 <?php } ?>
               </p>
@@ -113,7 +113,7 @@
                 <?php if (isset($libraries[$required_by_library_id]['name'])) { ?>
                 <span class="label label-default"><?php echo $this->text($libraries[$required_by_library_id]['name']); ?></span>
                 <?php } else { ?>
-                <span class="label label-danger"><?php echo $this->escape($required_by_library_id); ?> (<?php echo $this->text('invalid'); ?>)</span>
+                <span class="label label-danger"><?php echo $this->e($required_by_library_id); ?> (<?php echo $this->text('invalid'); ?>)</span>
                 <?php } ?>
                 <?php } ?>
               </p>
@@ -124,7 +124,7 @@
               <b><?php echo $this->text('Files'); ?>:</b>
               <ul class="list-unstyled">
                 <?php foreach($library['files'] as $file) { ?>
-                <li><?php echo $this->escape($file); ?></li>
+                <li><?php echo $this->e($file); ?></li>
                 <?php } ?>
               </ul>
             </div>

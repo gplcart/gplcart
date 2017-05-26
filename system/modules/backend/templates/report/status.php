@@ -10,9 +10,9 @@
   <div class="panel-body table-responsive">
     <table class="table table-condensed report-status">
       <?php foreach ($statuses as $status_id => $status) { ?>
-      <tr class="<?php echo ((empty($status['status']) || is_array($status['status'])) && $status['severity'] !== 'info') ? $this->escape($status['severity']) : ''; ?>">
+      <tr class="<?php echo ((empty($status['status']) || is_array($status['status'])) && $status['severity'] !== 'info') ? $this->e($status['severity']) : ''; ?>">
         <td class="col-md-3">
-          <?php echo $this->escape($status['title']); ?>
+          <?php echo $this->e($status['title']); ?>
           <?php if (!empty($status['description'])) { ?>
           <p class="small"><?php echo $this->filter($status['description']); ?></p>
           <?php } ?>

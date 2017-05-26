@@ -112,7 +112,7 @@
               <select class="form-control" name="currency">
                 <option value="any"><?php echo $this->text('Any'); ?></option>
                 <?php foreach ($currencies as $code => $currency) { ?>
-                    <option value="<?php echo $this->escape($code); ?>"<?php echo (isset($filter_currency) && $filter_currency === $code) ? ' selected' : ''; ?>><?php echo $this->escape($code); ?></option>
+                    <option value="<?php echo $this->e($code); ?>"<?php echo (isset($filter_currency) && $filter_currency === $code) ? ' selected' : ''; ?>><?php echo $this->e($code); ?></option>
                 <?php } ?>
               </select>
             </th>
@@ -123,7 +123,7 @@
               <select class="form-control" name="store_id">
                 <option value="any"><?php echo $this->text('Any'); ?></option>
                 <?php foreach ($_stores as $store_id => $store) { ?>
-                <option value="<?php echo $store_id; ?>"<?php echo isset($filter_store_id) && (int) $filter_store_id === $store_id ? ' selected' : ''; ?>><?php echo $this->escape($store['name']); ?></option>
+                <option value="<?php echo $store_id; ?>"<?php echo isset($filter_store_id) && (int) $filter_store_id === $store_id ? ' selected' : ''; ?>><?php echo $this->e($store['name']); ?></option>
                 <?php } ?>
               </select>
             </th>
@@ -166,25 +166,25 @@
             </td>
             <td class="middle"><?php echo $id; ?></td>
             <td class="middle">
-                <?php echo $this->truncate($this->escape($product['title']), 30); ?>
+                <?php echo $this->truncate($this->e($product['title']), 30); ?>
             </td>
             <td class="middle">
-              <?php echo $this->escape($product['sku']); ?>
+              <?php echo $this->e($product['sku']); ?>
             </td>
             <td class="middle">
-              <?php echo $this->escape($product['price']); ?>
+              <?php echo $this->e($product['price']); ?>
             </td>
             <td class="middle">
-              <?php echo $this->escape($product['currency']); ?>
+              <?php echo $this->e($product['currency']); ?>
             </td>
             <td class="middle">
-              <?php echo $this->escape($product['stock']); ?>
+              <?php echo $this->e($product['stock']); ?>
             </td>
             <td class="middle">
               <?php if(empty($_stores[$product['store_id']])) { ?>
               <?php echo $this->text('Unknown'); ?>
               <?php } else { ?>
-              <?php echo $this->escape($_stores[$product['store_id']]['name']); ?>
+              <?php echo $this->e($_stores[$product['store_id']]['name']); ?>
               <?php } ?>
             </td>
             <td class="middle text-center">

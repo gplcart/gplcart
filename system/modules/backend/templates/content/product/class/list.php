@@ -65,7 +65,7 @@
             <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>>
           </td>
           <td class="middle"><?php echo $id; ?></td>
-          <td class="middle"><?php echo $this->escape($class['title']); ?></td>
+          <td class="middle"><?php echo $this->e($class['title']); ?></td>
           <td class="middle">
             <?php if (empty($class['status'])) { ?>
             <i class="fa fa-square-o"></i>

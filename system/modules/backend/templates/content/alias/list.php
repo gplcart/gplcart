@@ -65,8 +65,8 @@
               <select name="id_key" class="form-control">
                 <option value="any"><?php echo $this->text('Any'); ?></option>
                 <?php foreach ($id_keys as $id_key) { ?>
-                <option value="<?php echo $this->escape($id_key); ?>"<?php echo ($filter_id_key == $id_key) ? ' selected' : '' ?>>
-                <?php echo $this->escape($id_key); ?>
+                <option value="<?php echo $this->e($id_key); ?>"<?php echo ($filter_id_key == $id_key) ? ' selected' : '' ?>>
+                <?php echo $this->e($id_key); ?>
                 </option>
                 <?php } ?>
               </select>
@@ -97,16 +97,16 @@
               <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>">
             </td>
             <td class="middle">
-              <?php echo $this->escape($id); ?>
+              <?php echo $this->e($id); ?>
             </td>
             <td class="middle">
-              <?php echo $this->escape($alias['alias']); ?>
+              <?php echo $this->e($alias['alias']); ?>
             </td>
             <td class="middle">
-              <?php echo $this->escape($alias['entity']); ?>
+              <?php echo $this->e($alias['entity']); ?>
             </td>
             <td class="middle">
-              <?php echo $this->escape($alias['id_value']); ?>
+              <?php echo $this->e($alias['id_value']); ?>
             </td>
             <td></td>
           </tr>

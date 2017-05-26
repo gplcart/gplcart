@@ -104,10 +104,10 @@
           <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $code; ?>"<?php echo $access_options ? '' : ' disabled'; ?>></td>
           <td class="middle">
             <input type="hidden" name="country[<?php echo $code; ?>][weight]" value="<?php echo $country['weight']; ?>">
-            <?php echo $this->escape($country['name']); ?>
+            <?php echo $this->e($country['name']); ?>
           </td>
-          <td class="middle"><?php echo $this->escape($country['native_name']); ?></td>
-          <td class="middle"><?php echo $this->escape($code); ?></td>
+          <td class="middle"><?php echo $this->e($country['native_name']); ?></td>
+          <td class="middle"><?php echo $this->e($code); ?></td>
           <td class="middle">
             <?php if ($country['status']) { ?>
             <i class="fa fa-check-square-o"></i>

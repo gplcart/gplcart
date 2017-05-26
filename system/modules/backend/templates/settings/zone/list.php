@@ -64,8 +64,8 @@
           <td class="middle">
             <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $zone['zone_id']; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>>
           </td>
-          <td class="middle"><?php echo $this->escape($zone['zone_id']); ?></td>
-          <td class="middle"><?php echo $this->escape($zone['title']); ?></td>
+          <td class="middle"><?php echo $this->e($zone['zone_id']); ?></td>
+          <td class="middle"><?php echo $this->e($zone['title']); ?></td>
           <td class="middle">
             <?php if (empty($zone['status'])) { ?>
             <i class="fa fa-square-o"></i>

@@ -61,7 +61,7 @@
           <select  name="settings[timezone]" class="form-control">
             <?php foreach($timezones as $timezone_id => $timezone_name) { ?>
             <option value="<?php echo $timezone_id; ?>"<?php echo ($settings['timezone'] == $timezone_id) ? ' selected' : ''; ?>>
-            <?php echo $this->escape($timezone_name); ?>
+            <?php echo $this->e($timezone_name); ?>
             </option>
             <?php } ?>
           </select>

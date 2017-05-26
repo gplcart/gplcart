@@ -114,9 +114,9 @@
         <tr>
           <td class="middle"><input type="checkbox" name="selected[]" value="<?php echo $store_id; ?>"<?php echo ($access_actions && $store_id != $default_store) ? '' : ' disabled'; ?>></td>
           <td class="middle"><?php echo $store_id; ?></td>
-          <td class="middle"><?php echo $this->escape($store['name']); ?></td>
-          <td class="middle"><?php echo $this->escape($store['domain']); ?></td>
-          <td class="middle">/<?php echo $this->escape($store['basepath']); ?></td>
+          <td class="middle"><?php echo $this->e($store['name']); ?></td>
+          <td class="middle"><?php echo $this->e($store['domain']); ?></td>
+          <td class="middle">/<?php echo $this->e($store['basepath']); ?></td>
           <td class="middle">
             <?php if (empty($store['status'])) { ?>
             <i class="fa fa-square-o"></i>

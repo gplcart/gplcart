@@ -72,9 +72,9 @@
               </option>
               <?php foreach ($handlers as $handler_id => $handler) { ?>
               <?php if ($filter_type === $handler_id) { ?>
-              <option value="<?php echo $this->escape($handler_id); ?>" selected><?php echo $this->escape($handler['title']); ?></option>
+              <option value="<?php echo $this->e($handler_id); ?>" selected><?php echo $this->e($handler['title']); ?></option>
               <?php } else { ?>
-              <option value="<?php echo $this->escape($handler_id); ?>"><?php echo $this->escape($handler['title']); ?></option>
+              <option value="<?php echo $this->e($handler_id); ?>"><?php echo $this->e($handler['title']); ?></option>
               <?php } ?>
               <?php } ?>
             </select>
@@ -83,7 +83,7 @@
             <select class="form-control" name="store_id">
               <option value=""<?php echo (!$filter_store_id) ? ' selected' : ''; ?>><?php echo $this->text('Any'); ?></option>
               <?php foreach ($_stores as $store_id => $store) { ?>
-              <option value="<?php echo $store_id; ?>"<?php echo $filter_store_id == $store_id ? ' selected' : ''; ?>><?php echo $this->escape($store['name']); ?></option>
+              <option value="<?php echo $store_id; ?>"<?php echo $filter_store_id == $store_id ? ' selected' : ''; ?>><?php echo $this->e($store['name']); ?></option>
               <?php } ?>
             </select>
           </th>
@@ -124,18 +124,18 @@
           <td class="middle">
             <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>>
           </td>
-          <td class="middle"><?php echo $this->escape($id); ?></td>
-          <td class="middle"><?php echo $this->escape($collection['title']); ?></td>
+          <td class="middle"><?php echo $this->e($id); ?></td>
+          <td class="middle"><?php echo $this->e($collection['title']); ?></td>
           <td class="middle">
             <?php if (isset($handlers[$collection['type']]['title'])) { ?>
-            <?php echo $this->escape($handlers[$collection['type']]['title']); ?>
+            <?php echo $this->e($handlers[$collection['type']]['title']); ?>
             <?php } else { ?>
             <span class="text-danger"><?php echo $this->text('Unknown'); ?></span>
             <?php } ?>
           </td>
           <td class="middle">
             <?php if (isset($_stores[$collection['store_id']])) { ?>
-            <?php echo $this->escape($_stores[$collection['store_id']]['name']); ?>
+            <?php echo $this->e($_stores[$collection['store_id']]['name']); ?>
             <?php } else { ?>
             <span class="text-danger"><?php echo $this->text('Unknown'); ?></span>
             <?php } ?>

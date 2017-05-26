@@ -14,7 +14,7 @@
       <div class="form-group required<?php echo $this->error('title', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Title'); ?></label>
         <div class="col-md-8">
-          <input maxlength="255" name="page[title]" class="form-control" value="<?php echo (isset($page['title'])) ? $this->escape($page['title']) : ''; ?>" autofocus>
+          <input maxlength="255" name="page[title]" class="form-control" value="<?php echo (isset($page['title'])) ? $this->e($page['title']) : ''; ?>" autofocus>
           <div class="help-block">
             <?php echo $this->error('title'); ?>
             <div class="text-muted"><?php echo $this->text('Required. The title will be used on the page and menu'); ?></div>
@@ -46,7 +46,7 @@
         <div class="form-group<?php echo $this->error("translation.$code.title", ' has-error'); ?>">
           <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $info['native_name'])); ?></label>
           <div class="col-md-6">
-            <input maxlength="255" name="page[translation][<?php echo $code; ?>][title]" class="form-control" value="<?php echo (isset($page['translation'][$code]['title'])) ? $this->escape($page['translation'][$code]['title']) : ''; ?>">
+            <input maxlength="255" name="page[translation][<?php echo $code; ?>][title]" class="form-control" value="<?php echo (isset($page['translation'][$code]['title'])) ? $this->e($page['translation'][$code]['title']) : ''; ?>">
             <div class="help-block">
                <?php echo $this->error("translation.$code.title", ' has-error'); ?>
             </div>
@@ -93,7 +93,7 @@
           <select class="form-control" name="page[store_id]">
             <option value=""><?php echo $this->text('- select -'); ?></option>
             <?php foreach ($_stores as $store_id => $store) { ?>
-            <option value="<?php echo $store_id; ?>"<?php echo isset($page['store_id']) && $page['store_id'] == $store_id ? ' selected' : ''; ?>><?php echo $this->escape($store['name']); ?></option>
+            <option value="<?php echo $store_id; ?>"<?php echo isset($page['store_id']) && $page['store_id'] == $store_id ? ' selected' : ''; ?>><?php echo $this->e($store['name']); ?></option>
             <?php } ?>
           </select>
           <div class="help-block">
@@ -109,7 +109,7 @@
             <?php foreach ($categories as $category_group_name => $options) { ?>
             <optgroup label="<?php echo $category_group_name; ?>">
             <?php foreach ($options as $category_id => $category_name) { ?>
-            <option value="<?php echo $category_id; ?>"<?php echo (isset($page['category_id']) && $page['category_id'] == $category_id) ? ' selected' : ''; ?>><?php echo $this->escape($category_name); ?></option>
+            <option value="<?php echo $category_id; ?>"<?php echo (isset($page['category_id']) && $page['category_id'] == $category_id) ? ' selected' : ''; ?>><?php echo $this->e($category_name); ?></option>
             <?php } ?>
             <?php } ?>
           </select>
@@ -123,7 +123,7 @@
           <?php echo $this->text('Alias'); ?>
         </label>
         <div class="col-md-8">
-          <input name="page[alias]" maxlength="255" class="form-control" value="<?php echo isset($page['alias']) ? $this->escape($page['alias']) : ''; ?>" placeholder="<?php echo $this->text('Generate automatically'); ?>">
+          <input name="page[alias]" maxlength="255" class="form-control" value="<?php echo isset($page['alias']) ? $this->e($page['alias']) : ''; ?>" placeholder="<?php echo $this->text('Generate automatically'); ?>">
           <div class="help-block">
             <?php echo $this->error('alias'); ?>
             <div class="text-muted">
@@ -148,7 +148,7 @@
       <div class="form-group<?php echo $this->error('meta_title', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Meta title'); ?></label>
         <div class="col-md-8">
-          <input maxlength="60" name="page[meta_title]" class="form-control" value="<?php echo (isset($page['meta_title'])) ? $this->escape($page['meta_title']) : ''; ?>">
+          <input maxlength="60" name="page[meta_title]" class="form-control" value="<?php echo (isset($page['meta_title'])) ? $this->e($page['meta_title']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error('meta_title'); ?>
             <div class="help-block">
@@ -160,7 +160,7 @@
       <div class="form-group">
         <label class="col-md-2 control-label"><?php echo $this->text('Meta description'); ?></label>
         <div class="col-md-8">
-          <textarea maxlength="160" class="form-control" name="page[meta_description]"><?php echo (isset($page['meta_description'])) ? $this->escape($page['meta_description']) : ''; ?></textarea>
+          <textarea maxlength="160" class="form-control" name="page[meta_description]"><?php echo (isset($page['meta_description'])) ? $this->e($page['meta_description']) : ''; ?></textarea>
           <div class="help-block">
             <?php echo $this->text('An optional text to be used in meta description tag. The tag is commonly used on search engine result pages (SERPs) to display preview snippets for a given page. Important for SEO'); ?>
           </div>
@@ -179,7 +179,7 @@
         <div class="form-group<?php echo $this->error("translation.$code.meta_title", ' has-error'); ?>">
           <label class="col-md-2 control-label"><?php echo $this->text('Meta title %language', array('%language' => $info['native_name'])); ?></label>
           <div class="col-md-8">
-            <input maxlength="60" name="page[translation][<?php echo $code; ?>][meta_title]" class="form-control" value="<?php echo (isset($page['translation'][$code]['meta_title'])) ? $this->escape($page['translation'][$code]['meta_title']) : ''; ?>">
+            <input maxlength="60" name="page[translation][<?php echo $code; ?>][meta_title]" class="form-control" value="<?php echo (isset($page['translation'][$code]['meta_title'])) ? $this->e($page['translation'][$code]['meta_title']) : ''; ?>">
             <div class="help-block">
                <?php echo $this->error("translation.$code.meta_title"); ?>
             </div>
@@ -188,7 +188,7 @@
         <div class="form-group">
           <label class="col-md-2 control-label"><?php echo $this->text('Meta description %language', array('%language' => $info['native_name'])); ?></label>
           <div class="col-md-8">
-            <textarea maxlength="160" class="form-control" name="page[translation][<?php echo $code; ?>][meta_description]"><?php echo (isset($page['translation'][$code]['meta_description'])) ? $this->escape($page['translation'][$code]['meta_description']) : ''; ?></textarea>
+            <textarea maxlength="160" class="form-control" name="page[translation][<?php echo $code; ?>][meta_description]"><?php echo (isset($page['translation'][$code]['meta_description'])) ? $this->e($page['translation'][$code]['meta_description']) : ''; ?></textarea>
           </div>
         </div>
         <?php } ?>

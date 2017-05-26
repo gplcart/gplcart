@@ -10,7 +10,7 @@
 <div class="panel panel-default">
   <div class="panel-heading"><?php echo $this->text('Order comments'); ?></div>
   <div class="panel-body">
-    <?php echo $this->escape($order['comment']); ?>
+    <?php echo $this->e($order['comment']); ?>
   </div>
 </div>
 <?php } ?>

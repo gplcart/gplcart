@@ -30,7 +30,7 @@
         <ul class="list-unstyled">
           <?php foreach ($items as $event) { ?>
           <li class="list-group-item clearfix">
-            <span class="pull-left"><?php echo $this->truncate($this->escape($event['message']), 70); ?></span>
+            <span class="pull-left"><?php echo $this->truncate($this->e($event['message']), 70); ?></span>
             <span class="pull-right small text-muted"><?php echo $this->date($event['time']); ?></span>
           </li>
           <?php } ?>

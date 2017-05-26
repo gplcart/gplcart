@@ -140,11 +140,11 @@
             <td class="middle">
               <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $rule_id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>>
               <input type="hidden" value="<?php echo $rule_id; ?>" name="price_rule[price_rule_id]">
-              <input type="hidden" value="<?php echo $this->escape($rule['currency']); ?>" name="price_rule[currency]">
+              <input type="hidden" value="<?php echo $this->e($rule['currency']); ?>" name="price_rule[currency]">
             </td>
-            <td class="middle"><?php echo $this->escape($rule['name']); ?></td>
-            <td class="middle"><?php echo $this->escape($rule['code']); ?></td>
-            <td class="middle"><?php echo $this->escape($rule['value']); ?></td>
+            <td class="middle"><?php echo $this->e($rule['name']); ?></td>
+            <td class="middle"><?php echo $this->e($rule['code']); ?></td>
+            <td class="middle"><?php echo $this->e($rule['value']); ?></td>
             <td class="middle">
               <?php if ($rule['value_type'] == 'percent') { ?>
               <?php echo $this->text('Percent'); ?>

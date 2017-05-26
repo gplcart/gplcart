@@ -12,7 +12,7 @@
 </tr>
 <?php } else { ?>
 <tr class="active">
-  <td colspan="2"><?php echo $this->escape($method['cart']['type']); ?></td>
+  <td colspan="2"><?php echo $this->e($method['cart']['type']); ?></td>
 </tr>
 <tr>
   <td>
@@ -26,7 +26,7 @@
     <?php } ?>
   </td>
   <td>
-    <?php echo $this->escape($method['price_formatted']); ?>
+    <?php echo $this->e($method['price_formatted']); ?>
   </td>
 </tr>
 <?php } ?>

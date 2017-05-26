@@ -21,10 +21,10 @@
       <tbody>
         <?php foreach ($methods as $id => $method) { ?>
         <tr>
-          <td><?php echo $this->escape($id); ?></td>
-          <td><?php echo $this->escape($method['title']); ?></td>
-          <td><?php echo empty($method['description']) ? '' : $this->escape($method['description']); ?></td>
-          <td><?php echo empty($method['module']) ? $this->text('Unknown') : $this->escape($method['module']); ?></td>
+          <td><?php echo $this->e($id); ?></td>
+          <td><?php echo $this->e($method['title']); ?></td>
+          <td><?php echo empty($method['description']) ? '' : $this->e($method['description']); ?></td>
+          <td><?php echo empty($method['module']) ? $this->text('Unknown') : $this->e($method['module']); ?></td>
           <td><?php echo empty($method['status']) ? $this->text('Disabled') : $this->text('Enabled'); ?></td>
         </tr>
         <?php } ?>
