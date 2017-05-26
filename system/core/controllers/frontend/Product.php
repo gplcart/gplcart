@@ -122,7 +122,7 @@ class Product extends FrontendController
     protected function setDataCartFormIndexProduct()
     {
         $data = array('product' => $this->data_product, 'share' => $this->renderShareWidget());
-        $this->setData('cart_form', $this->render('cart/add', $data));
+        $this->setData('cart_form', $this->render('cart/add', $data, true));
     }
 
     /**
@@ -199,7 +199,7 @@ class Product extends FrontendController
             'reviews' => $this->getReviewsProduct($this->getPagerLimit())
         );
 
-        $this->setData('reviews', $this->render('review/list', $data));
+        $this->setData('reviews', $this->render('review/list', $data, true));
     }
 
     /**

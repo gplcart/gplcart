@@ -179,7 +179,7 @@ class Ajax extends FrontendController
         $limit = $this->config('cart_preview_limit', 5);
 
         $data = array('cart' => $content, 'limit' => $limit);
-        return array('preview' => $this->render('cart/preview', $data));
+        return array('preview' => $this->render('cart/preview', $data, true));
     }
 
     /**

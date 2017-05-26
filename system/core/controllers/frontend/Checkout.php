@@ -327,7 +327,7 @@ class Checkout extends FrontendController
     protected function controlAccessCheckout()
     {
         if (empty($this->data_cart['items'])) {
-            $form = $this->render('checkout/form', array('admin' => $this->admin));
+            $form = $this->render('checkout/form', array('admin' => $this->admin), true);
             $this->setData('checkout_form', $form);
             $this->output('checkout/checkout');
         }
@@ -975,7 +975,7 @@ class Checkout extends FrontendController
      */
     protected function setDataFormCheckout()
     {
-        $form = $this->render('checkout/form', $this->data_form);
+        $form = $this->render('checkout/form', $this->data_form, true);
 
         if ($this->request->isAjax()) {
             $this->response->html($form);

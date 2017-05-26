@@ -342,7 +342,7 @@ class Controller extends BaseController
             'limit' => $this->config('cart_preview_limit', 5)
         );
 
-        return $this->render('cart/preview', $options);
+        return $this->render('cart/preview', $options, true);
     }
 
     /**
@@ -586,7 +586,7 @@ class Controller extends BaseController
             'collection_id' => $item['collection_item']['collection_id']
         );
 
-        return $this->render($item['collection_handler']['template']['list'], $data);
+        return $this->render($item['collection_handler']['template']['list'], $data, true);
     }
 
     /**
@@ -787,7 +787,7 @@ class Controller extends BaseController
     protected function attachItemRendered(&$item, $data, $options)
     {
         if (isset($options['template_item'])) {
-            $item['rendered'] = $this->render($options['template_item'], $data);
+            $item['rendered'] = $this->render($options['template_item'], $data, true);
         }
     }
 
