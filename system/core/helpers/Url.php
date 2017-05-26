@@ -214,13 +214,23 @@ class Url
     }
 
     /**
-     * Returns a user ID from the path if it is a /account* path
-     * @return boolean|integer
+     * Whether the path belongs to an account URL
+     * @return boolean
      */
     public function isAccount()
     {
+        $id = $this->getAccountId();
+        return is_integer($id);
+    }
+
+    /**
+     * Returns a user ID from the path
+     * @return boolean|integer
+     */
+    public function getAccountId()
+    {
         $segments = $this->segments();
-        if (reset($segments) === 'account' && isset($segments[1]) && is_numeric($segments[1])) {
+        if (reset($segments) === 'account' && isset($segments[1]) && ctype_digit($segments[1])) {
             return (int) $segments[1];
         }
         return false;
