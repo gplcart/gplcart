@@ -105,7 +105,7 @@ class Controller extends BaseController
             return '';
         }
 
-        $job += array('widget' => 'common/job/widget');
+        $job += array('widget' => 'common/job');
         return $this->render($job['widget'], array('job' => $job));
     }
 
@@ -194,7 +194,7 @@ class Controller extends BaseController
             'name_prefix' => $entity,
             'languages' => $this->language->getList()
         );
-        $this->setData('attached_images', $this->render('common/image/attache', $data));
+        $this->setData('attached_images', $this->render('common/image', $data));
     }
 
     /**
