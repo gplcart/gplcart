@@ -37,10 +37,10 @@ class Controller extends BaseController
     {
         parent::__construct();
 
-        $this->setInstancePropertiesBackend();
+        $this->setBackendInstanceProperties();
 
         $this->processCurrentJob();
-        $this->setDefaultDataBackend();
+        $this->setBackendDefaultData();
 
         $this->hook->fire('construct.controller.backend', $this);
         $this->controlHttpStatus();
@@ -49,7 +49,7 @@ class Controller extends BaseController
     /**
      * Sets class instances
      */
-    protected function setInstancePropertiesBackend()
+    protected function setBackendInstanceProperties()
     {
         $this->job = Container::get('gplcart\\core\\models\\Job');
         $this->image = Container::get('gplcart\\core\\models\\Image');
@@ -58,10 +58,10 @@ class Controller extends BaseController
     /**
      * Sets default variables for backend templates
      */
-    protected function setDefaultDataBackend()
+    protected function setBackendDefaultData()
     {
         $this->data['_job'] = $this->renderJob();
-        $this->data['_menu'] = $this->getAdminMenu();
+        $this->data['_menu'] = $this->renderAdminMenu();
         $this->data['_stores'] = $this->store->getList(array('status' => 1));
     }
 
@@ -91,7 +91,7 @@ class Controller extends BaseController
     }
 
     /**
-     * Returns a rendered job widget
+     * Returns the rendered job widget
      * @param array|null $job
      * @return string
      */
@@ -110,42 +110,36 @@ class Controller extends BaseController
     }
 
     /**
-     * Returns rendered admin menu
+     * Returns the rendered admin menu
      * @param array $options
      * @return string
      */
-    public function getAdminMenu(array $options = array())
+    public function renderAdminMenu($parent = 'admin', array $options = array())
     {
+        if (!$this->access('admin')) {
+            return '';
+        }
+
         $items = array();
         foreach ($this->route->getList() as $path => $route) {
 
-            if (strpos($path, 'admin/') !== 0 || empty($route['menu']['admin'])) {
+            if (strpos($path, "$parent/") !== 0 || empty($route['menu']['admin'])) {
                 continue;
             }
-
             if (isset($route['access']) && !$this->access($route['access'])) {
                 continue;
             }
 
             $items[$path] = array(
                 'url' => $this->url($path),
-                'depth' => substr_count($path, '/') - 1,
-                'text' => $this->text($route['menu']['admin'])
+                'text' => $this->text($route['menu']['admin']),
+                'depth' => substr_count(substr($path, strlen("$parent/")), '/'),
             );
         }
 
         ksort($items);
         $options += array('items' => $items);
         return $this->renderMenu($options);
-    }
-
-    /**
-     * Displays parent admin menu items
-     * @todo Output real content
-     */
-    public function adminSections()
-    {
-        $this->redirect('admin');
     }
 
     /**
