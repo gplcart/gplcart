@@ -165,8 +165,9 @@ return array(
     ),
     'admin/content' => array(
         'menu' => array('admin' => 'Content'),
+        'arguments' => array('admin/content'),
         'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\backend\\Controller', 'adminSections')
+            'controller' => array('gplcart\\core\\controllers\\backend\\Section', 'listSection')
         )
     ),
     'admin/content/product' => array(
@@ -252,14 +253,16 @@ return array(
     ),
     'admin/tool' => array(
         'menu' => array('admin' => 'Tools'),
+        'arguments' => array('admin/tool'),
         'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\backend\\Controller', 'adminSections')
+            'controller' => array('gplcart\\core\\controllers\\backend\\Section', 'listSection')
         )
     ),
     'admin/sale' => array(
         'menu' => array('admin' => 'Sales'),
+        'arguments' => array('admin/sale'),
         'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\backend\\Controller', 'adminSections')
+            'controller' => array('gplcart\\core\\controllers\\backend\\Section', 'listSection')
         )
     ),
     'admin/sale/order' => array(
@@ -404,8 +407,9 @@ return array(
     ),
     'admin/user' => array(
         'menu' => array('admin' => 'Users'),
+        'arguments' => array('admin/user'),
         'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\backend\\Controller', 'adminSections')
+            'controller' => array('gplcart\\core\\controllers\\backend\\Section', 'listSection')
         )
     ),
     'admin/user/list' => array(
@@ -499,8 +503,9 @@ return array(
     ),
     'admin/module' => array(
         'menu' => array('admin' => 'Modules'),
+        'arguments' => array('admin/module'),
         'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\backend\\Controller', 'adminSections')
+            'controller' => array('gplcart\\core\\controllers\\backend\\Section', 'listSection')
         )
     ),
     'admin/module/list' => array(
@@ -512,8 +517,9 @@ return array(
     ),
     'admin/settings' => array(
         'menu' => array('admin' => 'Settings'),
+        'arguments' => array('admin/settings'),
         'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\backend\\Controller', 'adminSections')
+            'controller' => array('gplcart\\core\\controllers\\backend\\Section', 'listSection')
         )
     ),
     'admin/settings/common' => array(
@@ -707,8 +713,9 @@ return array(
     'admin/report' => array(
         'access' => 'report',
         'menu' => array('admin' => 'Reports'),
+        'arguments' => array('admin/report'),
         'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\backend\\Controller', 'adminSections')
+            'controller' => array('gplcart\\core\\controllers\\backend\\Section', 'listSection')
         )
     ),
     'admin/report/events' => array(
