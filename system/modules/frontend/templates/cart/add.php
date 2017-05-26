@@ -7,7 +7,7 @@
  */
 ?>
 <form method="post" class="add-to-cart">
-  <input type="hidden" name="token" value="<?php echo $this->prop('token'); ?>">
+  <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <input type="hidden" name="product[product_id]" value="<?php echo $this->e($product['product_id']); ?>">
   <?php if (!empty($product['fields']['option'])) { ?>
   <?php foreach ($product['fields']['option'] as $field_id => $field) { ?>

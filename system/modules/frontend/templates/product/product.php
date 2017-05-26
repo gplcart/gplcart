@@ -20,7 +20,7 @@
       <?php if (!empty($product['total_reviews'])) { ?>
       <a href="#reviews"><?php echo $this->text('@num reviews', array('@num' => $product['total_reviews'])); ?></a>
       <?php } ?>
-      <?php if ($this->config('review_editable', 1) && $this->prop('uid')) { ?>
+      <?php if ($this->config('review_editable', 1) && $_is_logged_in) { ?>
       <?php if (empty($product['total_reviews'])) { ?>
       <a rel="nofollow" href="<?php echo $this->url('review/add/' . $product['product_id']); ?>">
         <?php echo $this->text('Be first to review this product'); ?>

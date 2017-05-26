@@ -16,7 +16,7 @@
     <div class="col-md-12 pre-scrollable">
       <?php foreach ($cart['items'] as $item) { ?>
       <form method="post" class="form-horizontal">
-        <input type="hidden" name="token" value="<?php echo $this->prop('token'); ?>">
+        <input type="hidden" name="token" value="<?php echo $_token; ?>">
         <input type="hidden" name="cart[cart_id]" value="<?php echo $this->e($item['cart_id']); ?>">
         <div class="media cart-item">
           <div class="media-left image col-md-2">

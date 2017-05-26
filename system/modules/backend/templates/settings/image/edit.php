@@ -7,7 +7,7 @@
  */
 ?>
 <form method="post" id="edit-imagestyle" class="form-horizontal">
-  <input type="hidden" name="token" value="<?php echo $this->prop('token'); ?>">
+  <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <div class="row">
     <div class="col-md-6">
       <div class="panel panel-default">

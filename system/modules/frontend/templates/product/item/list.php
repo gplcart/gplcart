@@ -40,7 +40,7 @@
           <div class="row">
             <div class="col-md-12 text-right">
               <form method="post" class="form-horizontal product-action">
-                <input type="hidden" name="token" value="<?php echo $this->prop('token'); ?>">
+                <input type="hidden" name="token" value="<?php echo $_token; ?>">
                 <input type="hidden" name="product[product_id]" value="<?php echo $this->e($product['product_id']); ?>">
                 <?php if (in_array('wishlist_remove', $buttons)) { ?>
                 <button title="<?php echo $this->text('Remove'); ?>" class="btn btn-default" data-ajax="true" name="remove_from_wishlist" value="1">

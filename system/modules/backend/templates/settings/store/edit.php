@@ -7,7 +7,7 @@
  */
 ?>
 <form method="post" enctype="multipart/form-data" id="edit-store" class="form-horizontal">
-  <input type="hidden" name="token" value="<?php echo $this->prop('token'); ?>">
+  <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <div class="panel panel-default">
     <div class="panel-heading"><?php echo $this->text('Data'); ?></div>
     <div class="panel-body">

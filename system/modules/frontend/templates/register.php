@@ -9,7 +9,7 @@
 <div class="panel panel-body">
   <div class="panel-body">
     <form method="post" class="register form-horizontal">
-      <input type="hidden" name="token" value="<?php echo $this->prop('token'); ?>">
+      <input type="hidden" name="token" value="<?php echo $_token; ?>">
       <div class="form-group<?php echo $this->error('name', ' has-error'); ?>">
         <label class="control-label col-md-2"><?php echo $this->text('Name'); ?></label>
         <div class="col-md-4">

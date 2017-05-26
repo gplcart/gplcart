@@ -9,7 +9,7 @@
 <div class="panel panel-default">
   <div class="panel-body">
     <form method="post" id="login" class="login form-horizontal">
-      <input type="hidden" name="token" value="<?php echo $this->prop('token'); ?>">
+      <input type="hidden" name="token" value="<?php echo $_token; ?>">
       <div class="form-group<?php echo $this->error('email', ' has-error'); ?>">
         <label class="control-label col-md-2"><?php echo $this->text('E-mail'); ?></label>
         <div class="col-md-4">

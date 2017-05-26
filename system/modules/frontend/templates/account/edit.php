@@ -33,7 +33,7 @@
   </div>
   <div class="col-md-9">
     <form method="post" id="edit-account" class="form-horizontal">
-      <input type="hidden" name="token" value="<?php echo $this->getProperty('token'); ?>">
+      <input type="hidden" name="token" value="<?php echo $_token; ?>">
       <div class="form-group required<?php echo $this->error('email', ' has-error'); ?>">
         <label class="col-md-3 control-label"><?php echo $this->text('E-mail'); ?></label>
         <div class="col-md-6">

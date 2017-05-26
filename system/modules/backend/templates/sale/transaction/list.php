@@ -8,7 +8,7 @@
 ?>
 <?php if (!empty($transactions) || $_filtering) { ?>
 <form method="post" class="form-horizontal">
-  <input type="hidden" name="token" value="<?php echo $this->prop('token'); ?>">
+  <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <div class="panel panel-default">
     <div class="panel-heading clearfix">
       <?php if ($this->access('transaction_delete')) { ?>

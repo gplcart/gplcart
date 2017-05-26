@@ -9,7 +9,7 @@
 <div class="row">
   <div class="col-md-6">
     <form method="post" class="form-horizontal">
-      <input type="hidden" name="token" value="<?php echo $this->prop('token'); ?>">
+      <input type="hidden" name="token" value="<?php echo $_token; ?>">
       <div class="form-group">
         <div class="col-md-12"><?php echo $rating; ?></div>
       </div>

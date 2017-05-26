@@ -7,7 +7,7 @@
  */
 ?>
 <form method="post" id="edit-review" class="form-horizontal">
-  <input type="hidden" name="token" value="<?php echo $this->prop('token'); ?>">
+  <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <div class="panel panel-default">
     <div class="panel-body">
       <div class="form-group">

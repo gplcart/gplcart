@@ -7,7 +7,7 @@
  */
 ?>
 <form method="post" class="module-settings frontend-settings form-horizontal">
-  <input type="hidden" name="token" value="<?php echo $this->prop('token'); ?>">
+  <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <div class="panel panel-default">
     <div class="panel-heading"><?php echo $this->text('Options'); ?></div>
     <div class="panel-body">

@@ -7,7 +7,7 @@
  */
 ?>
 <form class="form-horizontal" method="post">
-  <input type="hidden" name="token" value="<?php echo $this->prop('token'); ?>">
+  <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <div class="row">
     <div class="col-md-6">
     <?php echo $pane_summary; ?>
