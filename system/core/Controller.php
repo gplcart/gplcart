@@ -375,10 +375,9 @@ abstract class Controller
     protected function setAccessProperties()
     {
         $this->token = $this->config->token();
-
         $this->cart_uid = $this->cart->uid();
         $this->uid = (int) $this->user->getSession('user_id');
-        
+
         if (!empty($this->uid)) {
             $this->current_user = $this->user->get($this->uid);
         }
@@ -462,7 +461,7 @@ abstract class Controller
     /**
      * Returns a value on a error
      * @param string|array $key
-     * @param mixed $has_error A value to be returned when error(s) found
+     * @param mixed $has_error A value to be returned when a error(s) found
      * @param mixed $no_error A value to be returned when no error(s) found
      * @return mixed
      */
@@ -491,7 +490,6 @@ abstract class Controller
         if (isset($item)) {
             return gplcart_array_get_value($this->current_store, $item);
         }
-
         return $this->current_store;
     }
 
@@ -505,12 +503,11 @@ abstract class Controller
         if (isset($item)) {
             return gplcart_array_get_value($this->current_user, $item);
         }
-
         return $this->current_user;
     }
 
     /**
-     * Returns an array of attached styles
+     * Returns an array of CSS styles
      * @return array
      */
     public function getCss()
@@ -521,7 +518,7 @@ abstract class Controller
     }
 
     /**
-     * Returns an array of attached scripts
+     * Returns an array of JS scripts
      * @param string $position
      * @return array
      */
@@ -589,7 +586,7 @@ abstract class Controller
     }
 
     /**
-     * Returns truncated string with specified width
+     * Returns a truncated string
      * @param string $string
      * @param integer $length
      * @param string $trimmarker
@@ -725,17 +722,21 @@ abstract class Controller
      * Renders a template
      * @param string $file
      * @param array $data
-     * @param boolean $fullpath
+     * @param boolean $merge
      * @return string
      */
-    public function render($file, array $data = array(), $fullpath = false)
+    public function render($file, array $data = array(), $merge = false)
     {
-        $template = $this->getTemplateFile($file, $fullpath);
+        $template = $this->getTemplateFile($file);
+
+        if ($merge) {
+            $data = array_merge($data, $this->getDefaultData());
+        }
 
         $this->hook->fire('template', $template, $data, $this);
 
         if ($file === 'layout/body') {
-            $this->setPhpErrors($data);
+            $this->setPhpErrors($data); // @todo: remove
         }
 
         $rendered = null;
@@ -758,14 +759,16 @@ abstract class Controller
     /**
      * Returns a full path to a module template WITHOUT extension
      * @param string $file
-     * @param boolean $fullpath
      * @return string
      */
-    protected function getTemplateFile($file, $fullpath)
+    protected function getTemplateFile($file)
     {
         $module = $this->theme;
-        if (strpos($file, '|') !== false) {
-            $fullpath = false;
+
+        $fullpath = false;
+        if (strpos($file, '|') === false) {
+            $fullpath = strpos($file, GC_ROOT_DIR) === 0;
+        } else {
             list($module, $file) = explode('|', $file, 2);
         }
 
@@ -1113,7 +1116,7 @@ abstract class Controller
      */
     protected function controlCommonAccess()
     {
-        if (!$this->is_installing) {
+        if (!$this->isInstalling()) {
 
             $this->controlToken(false);
 
@@ -1160,14 +1163,14 @@ abstract class Controller
         }
 
         $session_hash = $this->user->getSession('hash');
-        $session_role_id = $this->user->getSession('role_id');
+        $session_role_id = (int) $this->user->getSession('role_id');
 
         if (!gplcart_string_equals($this->current_user['hash'], $session_hash)) {
             $this->session->delete();
             $this->url->redirect('login');
         }
 
-        if ($this->current_user['role_id'] != $session_role_id) {
+        if ((int) $this->current_user['role_id'] !== $session_role_id) {
             $this->session->delete();
             $this->url->redirect('login');
         }
@@ -1189,7 +1192,7 @@ abstract class Controller
      */
     protected function controlAccessRestrictedArea()
     {
-        if (($this->is_backend || (bool) $this->url->isAccount()) && empty($this->uid)) {
+        if (($this->is_backend || $this->url->isAccount()) && empty($this->uid)) {
             $this->url->redirect('login', array('target' => $this->path));
         }
     }
@@ -1264,13 +1267,9 @@ abstract class Controller
      */
     protected function controlAccessAccount()
     {
-        $account_id = $this->url->isAccount();
+        $account_id = $this->url->getAccountId();
 
-        if (empty($account_id)) {
-            return null;
-        }
-
-        if ($this->uid === $account_id) {
+        if ($account_id === false || $this->uid === $account_id) {
             return null;
         }
 
@@ -1450,10 +1449,10 @@ abstract class Controller
             $data = $item ? reset($item) : array();
             $content = $this->render($template, $data);
         } else {
-            $content = $item;
+            $content = trim($item);
         }
 
-        if (trim($content) !== '') {
+        if ($content !== '') {
             $weight = isset($this->data["region_$region"]) ? count($this->data["region_$region"]) : 0;
             $this->data["region_$region"][] = array('rendered' => $content, 'weight' => $weight++);
         }
@@ -1577,6 +1576,9 @@ abstract class Controller
     public function renderTemplate($template, array $data)
     {
         extract($data, EXTR_SKIP);
+
+        unset($data); // Kill duplicate
+
         ob_start();
         include $template;
         return ob_get_clean();
@@ -1694,31 +1696,48 @@ abstract class Controller
     }
 
     /**
+     * Returns superglobal template variables
+     * @return array
+     */
+    protected function getDefaultData()
+    {
+        $data = array();
+
+        $data['_uid'] = $this->uid;
+        $data['_urn'] = $this->urn;
+        $data['_uri'] = $this->uri;
+        $data['_path'] = $this->path;
+        $data['_base'] = $this->base;
+        $data['_host'] = $this->host;
+        $data['_token'] = $this->token;
+        $data['_query'] = $this->query;
+        $data['_scheme'] = $this->scheme;
+        $data['_cart_uid'] = $this->cart_uid;
+        $data['_user'] = $this->current_user;
+        $data['_store'] = $this->current_store;
+        $data['_is_front'] = $this->url->isFront();
+        $data['_is_logged_in'] = !empty($this->uid);
+        $data['_is_admin'] = $this->access('admin');
+        $data['_is_superadmin'] = $this->isSuperadmin();
+        $data['_langcode'] = empty($this->langcode) ? 'en' : $this->langcode;
+
+        return $data;
+    }
+
+    /**
      * Sets default template variables
      */
     protected function setDefaultData()
     {
-        $this->data['_uid'] = $this->uid;
-        $this->data['_urn'] = $this->urn;
-        $this->data['_uri'] = $this->uri;
-        $this->data['_path'] = $this->path;
-        $this->data['_base'] = $this->base;
-        $this->data['_token'] = $this->token;
-        $this->data['_query'] = $this->query;
-        $this->data['_is_front'] = $this->url->isFront();
-        $this->data['_is_admin'] = $this->access('admin');
-        $this->data['_is_superadmin'] = $this->isSuperadmin();
-        $this->data['_cart_uid'] = $this->cart_uid;
-        $this->data['_user'] = $this->current_user;
-        $this->data['_store'] = $this->current_store;
+        $this->data = $this->getDefaultData();
+
+        $this->data['_cart'] = $this->getCart();
         $this->data['_captcha'] = $this->renderCaptcha();
         $this->data['_languages'] = $this->language->getList();
         $this->data['_messages'] = $this->session->getMessage();
-        $this->data['_langcode'] = empty($this->langcode) ? 'en' : $this->langcode;
 
         $controller = strtolower(str_replace('\\', '-', $this->current_route['handlers']['controller'][0]));
         $this->data['_classes'] = array_slice(explode('-', $controller, 3), -1);
-        $this->data['_cart'] = $this->getCart();
 
         $this->setDefaultJs();
     }
