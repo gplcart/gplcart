@@ -44,7 +44,7 @@ class Front extends FrontendController
      */
     protected function setDataCollectionFront($type)
     {
-        $collection_id = $this->store("data.collection_$type");
+        $collection_id = $this->getStore("data.collection_$type");
 
         if (!empty($collection_id)) {
             $options = array('imagestyle' => $this->settings("image_style_collection_$type"));
@@ -59,7 +59,7 @@ class Front extends FrontendController
      */
     protected function setTitleIndexFront()
     {
-        $title = $this->store('data.title');
+        $title = $this->getStore('data.title');
         $this->setTitle($title, false);
     }
 
