@@ -21,7 +21,7 @@
               <div class="rating"><?php echo $review['rating_formatted']; ?></div>
               <b class="name"><?php echo $this->e($review['name']); ?></b>
               <span class="text-muted small"><?php echo $this->date($review['created']); ?></span>
-              <?php if ($review['user_id'] == $this->prop('uid') && $this->config('review_editable', 1)) { ?>
+              <?php if ($review['user_id'] == $_uid && $this->config('review_editable', 1)) { ?>
               <a href="<?php echo $this->url("review/edit/{$product['product_id']}/{$review['review_id']}"); ?>">
                 <?php echo $this->lower($this->text('Edit')); ?>
               </a>
@@ -36,7 +36,7 @@
     <div class="row">
       <div class="col-md-6"><?php echo $pager; ?></div>
       <div class="col-md-6 text-right">
-        <?php if ($this->config('review_editable', 1) && $this->prop('uid')) { ?>
+        <?php if ($this->config('review_editable', 1) && $_is_logged_in) { ?>
         <a class="pull-right" rel="nofollow" href="<?php echo $this->url('review/add/' . $product['product_id']); ?>">
           <?php echo $this->text('Add review'); ?>
         </a>
