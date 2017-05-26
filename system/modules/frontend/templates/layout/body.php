@@ -62,16 +62,19 @@
               </div>
           <?php } ?>
           <p class="nav pull-right">
-            <?php if ($_uid) { ?>
+            <?php if ($_is_logged_in) { ?>
             <a href="<?php echo $this->url("account/$_uid"); ?>">
-              <i class="fa fa-user"></i>
+              <?php echo $this->e($_user['name']); ?>
             </a>
+            <i class="fa fa-user"></i>
             <a href="<?php echo $this->url('logout'); ?>">
               <?php echo $this->text('Log out'); ?>
             </a>
             <?php } else { ?>
             <?php echo $this->text('Hello'); ?> <i class="fa fa-user"></i>
-            <a rel="nofollow" href="<?php echo $this->url('login'); ?>"><?php echo $this->text('Log in'); ?></a>
+            <a rel="nofollow" href="<?php echo $this->url('login'); ?>">
+            <?php echo $this->text('Log in'); ?>
+            </a>
             <?php } ?>
           </p>
         </div>
