@@ -102,8 +102,8 @@ class Dashboard extends BackendController
         $this->setData('dashboard', $splitted);
 
         if ($this->config('intro', false) && $this->isSuperadmin()) {
-            $this->setData('intro', $this->render('dashboard/intro', array(
-                        'items' => $this->getIntroItemsDashboard())));
+            $items = $this->getIntroItemsDashboard();
+            $this->setData('intro', $this->render('dashboard/intro', array('items' => $items)));
         }
     }
 
