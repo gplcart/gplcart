@@ -977,7 +977,7 @@ class Checkout extends FrontendController
     {
         $form = $this->render('checkout/form', $this->data_form, true);
 
-        if ($this->request->isAjax()) {
+        if ($this->isAjax()) {
             $this->response->html($form);
         }
 

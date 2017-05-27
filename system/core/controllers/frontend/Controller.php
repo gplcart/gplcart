@@ -248,7 +248,7 @@ class Controller extends BaseController
             $result['message'] = implode('<br>', gplcart_array_flatten($errors));
         }
 
-        if ($this->request->isAjax()) {
+        if ($this->isAjax()) {
             if ($result['severity'] === 'success') {
                 $result += array('modal' => $this->renderCartPreview());
             }
@@ -295,7 +295,7 @@ class Controller extends BaseController
             $result['quantity'] = 0;
         }
 
-        if ($this->request->isAjax()) {
+        if ($this->isAjax()) {
             $result['modal'] = $preview;
             $this->response->json($result);
         }
@@ -397,7 +397,7 @@ class Controller extends BaseController
             $result['message'] = implode('<br>', gplcart_array_flatten($errors));
         }
 
-        if ($this->request->isAjax()) {
+        if ($this->isAjax()) {
             $this->response->json($result);
         }
 
@@ -412,7 +412,7 @@ class Controller extends BaseController
         $product_id = $this->getSubmitted('product_id');
         $result = $this->compare->deleteProduct($product_id);
 
-        if ($this->request->isAjax()) {
+        if ($this->isAjax()) {
             $this->response->json($result);
         } else {
             $this->controlDeleteFromCompare($result, $product_id);
@@ -493,7 +493,7 @@ class Controller extends BaseController
             $result['message'] = implode('<br>', gplcart_array_flatten($errors));
         }
 
-        if ($this->request->isAjax()) {
+        if ($this->isAjax()) {
             $this->response->json($result);
         }
         $this->redirect($result['redirect'], $result['message'], $result['severity']);
@@ -512,7 +512,7 @@ class Controller extends BaseController
 
         $result = $this->wishlist->deleteProduct($condititons);
 
-        if ($this->request->isAjax()) {
+        if ($this->isAjax()) {
             $this->response->json($result);
         }
 

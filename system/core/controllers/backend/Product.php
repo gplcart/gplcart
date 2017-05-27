@@ -280,7 +280,7 @@ class Product extends BackendController
     {
         $store_id = (int) $this->getQuery('store_id');
 
-        if (!empty($store_id) && $this->request->isAjax()) {
+        if (!empty($store_id) && $this->isAjax()) {
             $response = $this->getListCategoryProduct($store_id);
             $this->response->json($response);
         }

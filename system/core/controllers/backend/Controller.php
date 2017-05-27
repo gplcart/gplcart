@@ -85,7 +85,7 @@ class Controller extends BaseController
 
         $this->setJsSettings('job', $job);
 
-        if ($this->request->get('process_job') === $job['id'] && $this->request->isAjax()) {
+        if ($this->request->get('process_job') === $job['id'] && $this->isAjax()) {
             $this->response->json($this->job->process($job));
         }
     }

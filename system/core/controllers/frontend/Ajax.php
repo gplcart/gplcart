@@ -77,7 +77,7 @@ class Ajax extends FrontendController
      */
     public function responseAjax()
     {
-        if (!$this->request->isAjax()) {
+        if (!$this->isAjax()) {
             $this->response->error403();
         }
 
