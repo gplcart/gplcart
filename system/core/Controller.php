@@ -22,10 +22,22 @@ abstract class Controller
     protected $is_installing = false;
 
     /**
+     * Whether the site in maintenance mode
+     * @var boolean
+     */
+    protected $is_maintenance = false;
+
+    /**
      * Whether the current view is backend
      * @var boolean
      */
     protected $is_backend;
+
+    /**
+     * Whether the current request is AJAX
+     * @var boolean
+     */
+    protected $is_ajax;
 
     /**
      * Weight of JS settings
@@ -370,6 +382,14 @@ abstract class Controller
     }
 
     /**
+     * Destructor
+     */
+    public function __destruct()
+    {
+        $this->hook->fire('destruct.controller', $this);
+    }
+
+    /**
      * Sets user/access properties
      */
     protected function setAccessProperties()
@@ -709,6 +729,15 @@ abstract class Controller
     }
 
     /**
+     * Whether the site in maintenance mode
+     * @return boolean
+     */
+    public function isMaintenance()
+    {
+        return $this->is_maintenance;
+    }
+
+    /**
      * Renders a template
      * @param string $file
      * @param array $data
@@ -894,6 +923,7 @@ abstract class Controller
         $this->urn = $this->request->urn();
         $this->host = $this->request->host();
         $this->scheme = $this->request->scheme();
+        $this->is_ajax = $this->request->isAjax();
 
         $this->path = $this->url->path();
         $this->base = $this->request->base();
@@ -968,6 +998,15 @@ abstract class Controller
     public function isCurrentTheme($name)
     {
         return $this->theme === $name;
+    }
+
+    /**
+     * Whether the current request is AJAX
+     * @return boolean
+     */
+    public function isAjax()
+    {
+        return $this->is_ajax;
     }
 
     /**
@@ -1280,6 +1319,7 @@ abstract class Controller
     {
         if (!$this->is_installing && !$this->is_backend//
                 && empty($this->current_store['status'])) {
+            $this->is_maintenance = true;
             $this->outputMaintenance();
         }
     }
