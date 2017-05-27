@@ -129,9 +129,9 @@ function gplcart_absolute_path($file)
  */
 function gplcart_relative_path($absolute)
 {
-    $prefix = GC_ROOT_DIR . '/';
+    $prefix = GC_ROOT_DIR;
     if (substr($absolute, 0, strlen($prefix)) == $prefix) {
-        return trim(substr($absolute, strlen($prefix)), '/');
+        return ltrim(substr($absolute, strlen($prefix)), '/\\');
     }
     return $absolute;
 }
