@@ -88,14 +88,6 @@ class Facade
     }
 
     /**
-     * Destructor
-     */
-    public function __destruct()
-    {
-        $this->hook->fire('destruct', $this);
-    }
-
-    /**
      * Routes incoming requests
      */
     public function route()
