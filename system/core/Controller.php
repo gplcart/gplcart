@@ -329,12 +329,6 @@ abstract class Controller
     protected $hook;
 
     /**
-     * Logger class instance
-     * @var \gplcart\core\Logger $logger
-     */
-    protected $logger;
-
-    /**
      * Filter model instance
      * @var \gplcart\core\models\Filter $filter
      */
@@ -754,10 +748,6 @@ abstract class Controller
 
         $this->hook->fire('template', $template, $data, $this);
 
-        if ($file === 'layout/body') {
-            $this->setPhpErrors($data); // @todo: remove
-        }
-
         $rendered = null;
         $this->hook->fire('template.render', $template, $data, $rendered, $this);
 
@@ -907,7 +897,6 @@ abstract class Controller
         $this->hook = Container::get('gplcart\\core\\Hook');
         $this->route = Container::get('gplcart\\core\\Route');
         $this->config = Container::get('gplcart\\core\\Config');
-        $this->logger = Container::get('gplcart\\core\\Logger');
         $this->library = Container::get('gplcart\\core\\Library');
     }
 
@@ -938,7 +927,6 @@ abstract class Controller
     protected function setStoreProperties()
     {
         $this->current_store = $this->store->current();
-
         if (isset($this->current_store['store_id'])) {
             $this->store_id = $this->current_store['store_id'];
         }
@@ -1379,7 +1367,6 @@ abstract class Controller
         }
 
         if (!empty($this->http_status)) {
-
             $title = (string) $this->response->statuses($this->http_status);
             $this->setTitle($title, false);
             $templates = "common/status/{$this->http_status}";
@@ -1401,26 +1388,25 @@ abstract class Controller
             $templates = array('region_content' => $templates);
         }
 
-        $this->hook->fire('template.output', $this->data, $this);
-
         $this->prepareOutput();
 
         $templates += $this->templates;
-        $layout_template = $templates['layout'];
+        $layout = $templates['layout'];
         unset($templates['layout']);
 
-        $body_data = $layout_data = $this->data;
-
+        $body = $data = $this->data;
         foreach ($templates as $region => $template) {
             if (!in_array($region, array('region_head', 'region_body'))) {
-                $body_data[$region] = $this->renderRegion($region, $template);
+                $body[$region] = $this->renderRegion($region, $template);
             }
         }
 
-        $layout_data['region_head'] = $this->render($templates['region_head'], $this->data);
-        $layout_data['region_body'] = $this->render($templates['region_body'], $body_data);
+        $data['region_head'] = $this->render($templates['region_head'], $this->data);
+        $data['region_body'] = $this->render($templates['region_body'], $body);
 
-        return $this->render($layout_template, $layout_data);
+        $html = $this->render($layout, $data, false);
+        $this->hook->fire('template.output', $html, $this);
+        return $html;
     }
 
     /**
@@ -1583,18 +1569,6 @@ abstract class Controller
         $this->data['_styles'] = $this->getCss();
         $this->data['_scripts_top'] = $this->getJs('top');
         $this->data['_scripts_bottom'] = $this->getJs('bottom');
-    }
-
-    /**
-     * Sets php errors recorded by logger
-     * @param $data
-     * @return null
-     */
-    protected function setPhpErrors(array &$data)
-    {
-        foreach ($this->logger->getPhpErrors() as $message) {
-            $data['_messages']['warning'][] = $message;
-        }
     }
 
     /**
