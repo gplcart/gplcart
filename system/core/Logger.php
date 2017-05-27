@@ -21,7 +21,7 @@ class Logger
      * Collected PHP errors
      * @var array
      */
-    protected $php_errors = array();
+    protected $errors = array();
 
     /**
      * Database instance
@@ -36,7 +36,6 @@ class Logger
     protected $config;
 
     /**
-     * Constructor
      * @param Config $config
      */
     public function __construct(Config $config)
@@ -75,12 +74,10 @@ class Logger
         }
 
         $message = '';
-
         if (is_string($data)) {
             $message = $data;
         } elseif (isset($data['message'])) {
             $message = $data['message'];
-            unset($data['message']);
         }
 
         $values = array(
@@ -116,17 +113,33 @@ class Logger
     }
 
     /**
-     * Counts all PHP errors
-     * @return integer
+     * Returns an array of logged PHP errors in the database
+     * @param integer|null $limit
+     * @return array
      */
-    public function countPhpErrors()
+    public function selectPhpErrors($limit = null)
     {
-        if (empty($this->db)) {
-            return 0;
+        $results = array();
+
+        $sql = "SELECT * FROM log WHERE type LIKE ? ORDER BY time DESC";
+
+        if (isset($limit)) {
+            settype($limit, 'integer');
+            $sql .= " LIMIT 0,$limit";
         }
 
-        $sql = "SELECT COUNT(*) FROM log WHERE type LIKE ?";
-        return (int) $this->db->fetchColumn($sql, array('php_%'));
+        try {
+            $results = $this->db->fetchAll($sql, array('php_%'), array('unserialize' => 'data'));
+        } catch (\Exception $ex) {
+            return array();
+        }
+
+        $list = array();
+        foreach ($results as $result) {
+            $list[] = $result['data'];
+        }
+
+        return $list;
     }
 
     /**
@@ -147,12 +160,12 @@ class Logger
 
         $key = md5(json_encode($error));
 
-        if (isset($this->php_errors[$key])) {
+        if (isset($this->errors[$key])) {
             return null; // Don't log the same error again
         }
 
         $this->log('php_error', $error, 'warning', false);
-        $this->php_errors[$key] = $this->getFormattedError($error);
+        $this->errors[$key] = $error;
     }
 
     /**
@@ -194,7 +207,6 @@ class Logger
     {
         $error = $this->getExceptionMessageArray($exception);
         $this->log('php_exception', $error, 'danger', false);
-
         echo $this->getFormattedError($error, 'PHP Exception');
     }
 
@@ -241,11 +253,20 @@ class Logger
 
     /**
      * Returns an array of collected PHP errors
+     * @param boolean $format
      * @return array
      */
-    public function getPhpErrors()
+    public function getPhpErrors($format = true)
     {
-        return $this->php_errors;
+        if (!$format) {
+            return $this->errors;
+        }
+
+        $formatted = array();
+        foreach ($this->errors as $error) {
+            $formatted[] = $this->getFormattedError($error);
+        }
+        return $formatted;
     }
 
 }
