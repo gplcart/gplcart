@@ -118,7 +118,7 @@
           <select data-live-search="true" name="category[parent_id]" class="form-control selectpicker" id="parent_id">
             <option value="0"><?php echo $this->text('Root'); ?></option>
             <?php foreach ($categories as $category_id => $category_name) { ?>
-            <option value="<?php echo $category_id; ?>"<?php echo ($category_id == $parent_id) ? ' selected' : ''; ?>><?php echo $this->e($category_name); ?></option>
+            <option value="<?php echo $category_id; ?>"<?php echo $category_id == $parent_id ? ' selected' : ''; ?>><?php echo $this->e($category_name); ?></option>
             <?php } ?>
           </select>
           <div class="help-block">

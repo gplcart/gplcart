@@ -11,7 +11,7 @@
     <div class="row">
       <div class="col-md-6">
         <p class="text-muted small">
-          &copy; <?php echo (date('Y') == 2015) ? date('Y') : '2015 - ' . date('Y'); ?>
+          &copy; <?php echo date('Y') == 2015 ? date('Y') : '2015 - ' . date('Y'); ?>
           <a href="http://gplcart.com">GPL Cart</a> v<?php echo GC_VERSION; ?>
         </p>	  
       </div>
@@ -23,7 +23,7 @@
 <?php if (!empty($info['text'])) { ?>
 <script><?php echo $info['asset']; ?></script>
 <?php } else { ?>
-<script src="<?php echo $key; ?>"></script>
+<script src="<?php echo $this->e($key); ?>"></script>
 <?php } ?>
 <?php } ?>
 <?php } ?>

@@ -95,23 +95,23 @@
                 <option value="">
                 <?php echo $this->text('Any'); ?>
                 </option>
-                <option value="percent"<?php echo ($filter_value_type == 'percent') ? ' selected' : ''; ?>>
+                <option value="percent"<?php echo $filter_value_type === 'percent' ? ' selected' : ''; ?>>
                 <?php echo $this->text('Percent'); ?>
                 </option>
-                <option value="fixed"<?php echo ($filter_value_type == 'fixed') ? ' selected' : ''; ?>>
+                <option value="fixed"<?php echo $filter_value_type === 'fixed' ? ' selected' : ''; ?>>
                 <?php echo $this->text('Fixed'); ?>
                 </option>
               </select>
             </th>
             <th class="text-center">
               <select class="form-control" name="status">
-                <option value="any"<?php echo ($filter_status === 'any') ? ' selected' : ''; ?>>
+                <option value="any"<?php echo $filter_status === 'any' ? ' selected' : ''; ?>>
                 <?php echo $this->text('Any'); ?>
                 </option>
-                <option value="1"<?php echo ($filter_status === '1') ? ' selected' : ''; ?>>
+                <option value="1"<?php echo $filter_status === '1' ? ' selected' : ''; ?>>
                 <?php echo $this->text('Enabled'); ?>
                 </option>
-                <option value="0"<?php echo ($filter_status === '0') ? ' selected' : ''; ?>>
+                <option value="0"<?php echo $filter_status === '0' ? ' selected' : ''; ?>>
                 <?php echo $this->text('Disabled'); ?>
                 </option>
               </select>
@@ -146,7 +146,7 @@
             <td class="middle"><?php echo $this->e($rule['code']); ?></td>
             <td class="middle"><?php echo $this->e($rule['value']); ?></td>
             <td class="middle">
-              <?php if ($rule['value_type'] == 'percent') { ?>
+              <?php if ($rule['value_type'] === 'percent') { ?>
               <?php echo $this->text('Percent'); ?>
               <?php } else { ?>
               <?php echo $this->text('Fixed'); ?>
@@ -174,10 +174,10 @@
           <?php } ?>
         </tbody>
       </table>
+      <?php if(!empty($_pager)) { ?>
+      <?php echo $_pager; ?>
+      <?php } ?>
     </div>
-    <?php if (!empty($_pager)) { ?>
-    <div class="panel-footer"><?php echo $_pager; ?></div>
-    <?php } ?>
   </div>
 </form>
 <?php } else { ?>

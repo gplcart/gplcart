@@ -64,7 +64,7 @@
               <select name="payment_method" class="form-control">
                 <option value="any"><?php echo $this->text('Any'); ?></option>
                 <?php foreach ($payment_methods as $method_id => $method) { ?>
-                <option value="<?php echo $this->e($method_id); ?>"<?php echo ($filter_payment_method == $method_id) ? ' selected' : '' ?>>
+                <option value="<?php echo $this->e($method_id); ?>"<?php echo $filter_payment_method == $method_id ? ' selected' : '' ?>>
                   <?php echo $this->e($method['title']); ?>
                 </option>
                 <?php } ?>
@@ -115,10 +115,10 @@
           <?php } ?>
         </tbody>
       </table>
+      <?php if(!empty($_pager)) { ?>
+      <?php echo $_pager; ?>
+      <?php } ?>
     </div>
-    <?php if (!empty($_pager)) { ?>
-    <div class="panel-footer text-right"><?php echo $_pager; ?></div>
-    <?php } ?>
   </div>
 </form>
 <?php } else { ?>

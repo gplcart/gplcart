@@ -38,7 +38,7 @@
           </li>
           <?php } ?>
         </ul>
-        <?php } ?> 
+        <?php } ?>
       </div>
       <?php if ($this->access('review_add')) { ?>
       <div class="btn-toolbar pull-right">
@@ -46,9 +46,9 @@
           <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
         </a>
       </div>
-      <?php } ?>   
+      <?php } ?>
     </div>
-    <div class="panel-body table-responsive"> 
+    <div class="panel-body table-responsive">
       <table class="table table-condensed reviews">
         <thead>
           <tr>
@@ -79,10 +79,10 @@
                 <option value="any">
                 <?php echo $this->text('Any'); ?>
                 </option>
-                <option value="1"<?php echo ($filter_status === '1') ? ' selected' : ''; ?>>
+                <option value="1"<?php echo $filter_status === '1' ? ' selected' : ''; ?>>
                 <?php echo $this->text('Enabled'); ?>
                 </option>
-                <option value="0"<?php echo ($filter_status === '0') ? ' selected' : ''; ?>>
+                <option value="0"<?php echo $filter_status === '0' ? ' selected' : ''; ?>>
                 <?php echo $this->text('Disabled'); ?>
                 </option>
               </select>
@@ -115,16 +115,16 @@
               <a href="#review-id-<?php echo $id; ?>" data-toggle="collapse"><?php echo $this->truncate($this->e($review['text']), 30); ?></a>
             </td>
             <td class="middle">
-              <?php if ($review['product_id']) { ?>
+              <?php if (!empty($review['product_id'])) { ?>
               <a target="_blank" href="<?php echo $this->url("product/{$review['product_id']}"); ?>">
                 <?php echo $this->truncate($this->e($review['product']), 30); ?>
               </a>
               <?php } else { ?>
               <span class="text-danger"><?php echo $this->text('Missing'); ?></span>
               <?php } ?>
-            </td> 
+            </td>
             <td class="middle">
-            <?php if ($review['email']) { ?>
+            <?php if (!empty($review['email'])) { ?>
             <?php echo $this->e($review['email']); ?>
             <?php } else { ?>
             <?php echo $this->text('Missing'); ?>
@@ -153,11 +153,11 @@
           </tr>
           <?php } ?>
         </tbody>
-      </table>   
+      </table>
+      <?php if(!empty($_pager)) { ?>
+      <?php echo $_pager; ?>
+      <?php } ?>
     </div>
-    <?php if (!empty($_pager)) { ?>
-    <div class="panel-footer text-right"><?php echo $_pager; ?></div>
-    <?php } ?> 
   </div>
 </form>
 <?php } else { ?>

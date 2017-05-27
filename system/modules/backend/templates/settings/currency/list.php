@@ -37,8 +37,8 @@
           <td class="middle"><?php echo $this->e($code); ?></td>
           <td class="middle"><?php echo $this->e($currency['symbol']); ?></td>
           <td class="middle"><?php echo $this->e($currency['conversion_rate']); ?></td>
-          <td class="middle"><?php echo($default_currency == $code) ? '<i class="fa fa-check-square-o"></i>' : '<i class="fa fa-square-o"></i>'; ?></td>
-          <td class="middle"><?php echo (!empty($currency['status']) || $default_currency == $code) ? '<i class="fa fa-check-square-o"></i>' : '<i class="fa fa-square-o"></i>'; ?></td>
+          <td class="middle"><?php echo $default_currency == $code ? '<i class="fa fa-check-square-o"></i>' : '<i class="fa fa-square-o"></i>'; ?></td>
+          <td class="middle"><?php echo !empty($currency['status']) || $default_currency == $code ? '<i class="fa fa-check-square-o"></i>' : '<i class="fa fa-square-o"></i>'; ?></td>
           <td class="middle"><?php echo empty($currency['modified']) ? '--' : $this->date($currency['modified']); ?></td>
           <td class="middle">
             <?php if ($this->access('currency_edit')) { ?>

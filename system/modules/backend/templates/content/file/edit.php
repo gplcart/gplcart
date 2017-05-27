@@ -13,7 +13,7 @@
       <div class="form-group<?php echo $this->error('title', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Title'); ?></label>
         <div class="col-md-4">
-          <input maxlength="255" name="file[title]" class="form-control" value="<?php echo (isset($file['title'])) ? $this->e($file['title']) : ''; ?>" autofocus>
+          <input maxlength="255" name="file[title]" class="form-control" value="<?php echo isset($file['title']) ? $this->e($file['title']) : ''; ?>" autofocus>
           <div class="help-block">
             <?php echo $this->error('title', ''); ?>
             <div class="text-muted"><?php echo $this->text('A short description of the file'); ?></div>
@@ -23,7 +23,7 @@
       <div class="form-group<?php echo $this->error('description', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Description'); ?></label>
         <div class="col-md-4">
-          <textarea name="file[description]" class="form-control"><?php echo (isset($file['description'])) ? $this->e($file['description']) : ''; ?></textarea>
+          <textarea name="file[description]" class="form-control"><?php echo isset($file['description']) ? $this->e($file['description']) : ''; ?></textarea>
           <div class="help-block">
             <?php echo $this->error('description'); ?>
             <div class="text-muted"><?php echo $this->text('An optional detailed description of the file'); ?></div>
@@ -82,7 +82,7 @@
           <?php echo $this->text('Weight'); ?>
         </label>
         <div class="col-md-3">
-          <input maxlength="2" name="file[weight]" class="form-control" value="<?php echo (isset($file['weight'])) ? $this->e($file['weight']) : 0; ?>">
+          <input maxlength="2" name="file[weight]" class="form-control" value="<?php echo isset($file['weight']) ? $this->e($file['weight']) : 0; ?>">
           <div class="help-block">
             <?php echo $this->error('weight'); ?>
             <div class="text-muted">

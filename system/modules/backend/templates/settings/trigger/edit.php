@@ -154,10 +154,10 @@
               <tr>
                 <td class="middle"><?php echo $id; ?></td>
                 <td>
-                <?php echo $this->e($info['title']); ?>
-                <?php if (!empty($info['description'])) { ?>
+                  <?php echo $this->e($info['title']); ?>
+                  <?php if (!empty($info['description'])) { ?>
                   <div class="text-muted small"><?php echo $this->filter($info['description']); ?></div>
-                <?php } ?>
+                  <?php } ?>
                 </td>
               </tr>
               <?php } ?>

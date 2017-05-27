@@ -70,10 +70,10 @@
           <th class="middle">
             <select class="form-control" name="status">
               <option value="any"><?php echo $this->text('Any'); ?></option>
-              <option value="1"<?php echo ($filter_status === '1') ? ' selected' : ''; ?>>
+              <option value="1"<?php echo $filter_status === '1' ? ' selected' : ''; ?>>
               <?php echo $this->text('Enabled'); ?>
               </option>
-              <option value="0"<?php echo ($filter_status === '0') ? ' selected' : ''; ?>>
+              <option value="0"<?php echo $filter_status === '0' ? ' selected' : ''; ?>>
               <?php echo $this->text('Disabled'); ?>
               </option>
             </select>
@@ -99,40 +99,38 @@
           <td class="middle"><?php echo $this->e($state['name']); ?></td>
           <td class="middle"><?php echo $this->e($state['code']); ?></td>
           <td class="middle">
-            <?php if ($state['status']) { ?>
-            <i class="fa fa-check-square-o"></i>
-            <?php } else { ?>
+            <?php if (empty($state['status'])) { ?>
             <i class="fa fa-square-o"></i>
+            <?php } else { ?>
+            <i class="fa fa-check-square-o"></i>
             <?php } ?>
           </td>
           <td class="middle">
-              <ul class="list-inline">
-                <?php if ($this->access('state_edit')) { ?>
-                <li>
-                  <a href="<?php echo $this->url("admin/settings/state/edit/{$country['code']}/$state_id"); ?>">
-                    <?php echo $this->lower($this->text('Edit')); ?>
-                  </a>
-                </li>
-                <?php } ?>
-                <?php if ($this->access('city')) { ?>
-                <li>
-                  <a href="<?php echo $this->url("admin/settings/cities/{$country['code']}/$state_id"); ?>">
-                    <?php echo $this->lower($this->text('Cities')); ?>
-                  </a>
-                </li>
-                <?php } ?>
-              </ul>
+            <ul class="list-inline">
+              <?php if ($this->access('state_edit')) { ?>
+              <li>
+                <a href="<?php echo $this->url("admin/settings/state/edit/{$country['code']}/$state_id"); ?>">
+                  <?php echo $this->lower($this->text('Edit')); ?>
+                </a>
+              </li>
+              <?php } ?>
+              <?php if ($this->access('city')) { ?>
+              <li>
+                <a href="<?php echo $this->url("admin/settings/cities/{$country['code']}/$state_id"); ?>">
+                  <?php echo $this->lower($this->text('Cities')); ?>
+                </a>
+              </li>
+              <?php } ?>
+            </ul>
           </td>
         </tr>
         <?php } ?>
       </tbody>
     </table>
-  </div>
-  <?php if(!empty($_pager)) { ?>
-  <div class="panel-footer">
+    <?php if(!empty($_pager)) { ?>
     <?php echo $_pager; ?>
+    <?php } ?>
   </div>
-  <?php } ?>
 </div>
 <?php } else { ?>
 <div class="row empty">

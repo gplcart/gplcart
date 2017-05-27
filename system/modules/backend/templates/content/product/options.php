@@ -63,7 +63,7 @@
                   <select data-field-id="<?php echo $option['field_id']; ?>" data-live-search="true" class="form-control selectpicker" name="product[combination][<?php echo $row; ?>][fields][<?php echo $field_id; ?>]">
                     <option value="" selected disabled><?php echo $this->text('- select -'); ?></option>
                     <?php foreach ($option['values'] as $value) { ?>
-                    <option value="<?php echo $value['field_value_id']; ?>"<?php echo (!empty($combination['fields']) && in_array($value['field_value_id'], $combination['fields'])) ? ' selected' : ''; ?>><?php echo $this->e($value['title']); ?></option>
+                    <option value="<?php echo $value['field_value_id']; ?>"<?php echo !empty($combination['fields']) && in_array($value['field_value_id'], $combination['fields']) ? ' selected' : ''; ?>><?php echo $this->e($value['title']); ?></option>
                     <?php } ?>
                   </select>
                 </div>
@@ -85,7 +85,7 @@
                 </div>
               </td>
               <td>
-                <?php if ($combination['thumb']) { ?>
+                <?php if (!empty($combination['thumb'])) { ?>
                 <a href="#" class="btn btn-default select-image"><img style="height:20px;width:20px;" src="<?php echo $this->e($combination['thumb']); ?>"></a>
                 <input type="hidden" name="product[combination][<?php echo $row; ?>][thumb]" value="<?php echo $this->e($combination['thumb']); ?>">
                 <?php } else { ?>

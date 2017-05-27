@@ -112,7 +112,7 @@
               <select class="form-control" name="currency">
                 <option value="any"><?php echo $this->text('Any'); ?></option>
                 <?php foreach ($currencies as $code => $currency) { ?>
-                    <option value="<?php echo $this->e($code); ?>"<?php echo (isset($filter_currency) && $filter_currency === $code) ? ' selected' : ''; ?>><?php echo $this->e($code); ?></option>
+                    <option value="<?php echo $this->e($code); ?>"<?php echo isset($filter_currency) && $filter_currency === $code ? ' selected' : ''; ?>><?php echo $this->e($code); ?></option>
                 <?php } ?>
               </select>
             </th>
@@ -123,7 +123,7 @@
               <select class="form-control" name="store_id">
                 <option value="any"><?php echo $this->text('Any'); ?></option>
                 <?php foreach ($_stores as $store_id => $store) { ?>
-                <option value="<?php echo $store_id; ?>"<?php echo isset($filter_store_id) && (int) $filter_store_id === $store_id ? ' selected' : ''; ?>><?php echo $this->e($store['name']); ?></option>
+                <option value="<?php echo $store_id; ?>"<?php echo isset($filter_store_id) && $filter_store_id == $store_id ? ' selected' : ''; ?>><?php echo $this->e($store['name']); ?></option>
                 <?php } ?>
               </select>
             </th>
@@ -132,10 +132,10 @@
                 <option value="any">
                 <?php echo $this->text('Any'); ?>
                 </option>
-                <option value="1"<?php echo ($filter_status === '1') ? ' selected' : ''; ?>>
+                <option value="1"<?php echo $filter_status === '1' ? ' selected' : ''; ?>>
                 <?php echo $this->text('Enabled'); ?>
                 </option>
-                <option value="0"<?php echo ($filter_status === '0') ? ' selected' : ''; ?>>
+                <option value="0"<?php echo $filter_status === '0' ? ' selected' : ''; ?>>
                 <?php echo $this->text('Disabled'); ?>
                 </option>
               </select>
@@ -195,30 +195,30 @@
               <?php } ?>
             </td>
             <td class="middle">
-                <ul class="list-inline">
-                  <li>
-                    <a href="<?php echo $product['url']; ?>">
-                      <?php echo $this->lower($this->text('View')); ?>
-                    </a>
-                  </li>
-                  <?php if ($this->access('product_edit')) { ?>
-                  <li>
-                    <a href="<?php echo $this->url("admin/content/product/edit/$id"); ?>">
-                      <?php echo $this->lower($this->text('Edit')); ?>
-                    </a>
-                  </li>
-                  <?php } ?>
-                </ul>
+              <ul class="list-inline">
+                <li>
+                  <a href="<?php echo $product['url']; ?>">
+                    <?php echo $this->lower($this->text('View')); ?>
+                  </a>
+                </li>
+                <?php if ($this->access('product_edit')) { ?>
+                <li>
+                  <a href="<?php echo $this->url("admin/content/product/edit/$id"); ?>">
+                    <?php echo $this->lower($this->text('Edit')); ?>
+                  </a>
+                </li>
+                <?php } ?>
+              </ul>
             </td>
           </tr>
           <?php } ?>
           <?php } ?>
         </tbody>
       </table>
+      <?php if(!empty($_pager)) { ?>
+      <?php echo $_pager; ?>
+      <?php } ?>
     </div>
-    <?php if (!empty($_pager)) { ?>
-    <div class="panel-footer text-right"><?php echo $_pager; ?></div>
-    <?php } ?>
   </div>
 </form>
 <?php } else { ?>

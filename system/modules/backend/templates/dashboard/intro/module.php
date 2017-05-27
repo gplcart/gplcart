@@ -12,5 +12,5 @@
       <?php echo $this->text('Modules'); ?>
     </a>
   </h4>
-  <p><?php echo $this->text('Extend your store by installing new modules and themes'); ?></p>
+  <p><?php echo $this->text('Extend your store by installing extra modules and themes'); ?></p>
 </div>

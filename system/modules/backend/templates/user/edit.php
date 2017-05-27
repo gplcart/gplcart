@@ -16,7 +16,7 @@
           <input name="user[name]" maxlength="255" class="form-control" value="<?php echo isset($user['name']) ? $this->e($user['name']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error('name'); ?>
-            <div class="text-muted"><?php echo $this->text('Required. A unique user name, e.g John Smith'); ?></div>
+            <div class="text-muted"><?php echo $this->text('Required. A user name, e.g John Smith'); ?></div>
           </div>
         </div>
       </div>
@@ -24,7 +24,20 @@
         <label class="col-md-2 control-label"><?php echo $this->text('E-mail'); ?></label>
         <div class="col-md-4">
           <input name="user[email]" class="form-control" value="<?php echo isset($user['email']) ? $this->e($user['email']) : ''; ?>">
-          <div class="help-block"><?php echo $this->error('email'); ?></div>
+          <div class="help-block">
+            <?php echo $this->error('email'); ?>
+            <div class="text-muted"><?php echo $this->text('Required. A unique E-mail for this user'); ?></div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group required<?php echo $this->error('password', ' has-error'); ?>">
+        <label class="col-md-2 control-label"><?php echo $this->text('Password'); ?></label>
+        <div class="col-md-4">
+          <input name="user[password]" class="form-control" value="<?php echo isset($user['password']) ? $user['password'] : ''; ?>">
+          <div class="help-block">
+            <?php echo $this->error('password'); ?>
+            <div class="text-muted"><?php echo $this->text('Required. A password to log in this user'); ?></div>
+          </div>
         </div>
       </div>
     </div>
@@ -36,8 +49,8 @@
         <label class="col-md-2 control-label"><?php echo $this->text('Status'); ?></label>
         <div class="col-md-4">
           <div class="btn-group" data-toggle="buttons">
-            <label class="btn btn-default<?php echo!empty($user['status']) ? ' active' : ''; ?>">
-              <input name="user[status]" type="radio" autocomplete="off" value="1"<?php echo!empty($user['status']) ? ' checked' : ''; ?>>
+            <label class="btn btn-default<?php echo empty($user['status']) ? '' : ' active'; ?>">
+              <input name="user[status]" type="radio" autocomplete="off" value="1"<?php echo empty($user['status']) ? '' : ' checked'; ?>>
               <?php echo $this->text('Enabled'); ?>
             </label>
             <label class="btn btn-default<?php echo empty($user['status']) ? ' active' : ''; ?>">
@@ -80,24 +93,6 @@
             <?php } ?>
           </select>
           <div class="help-block"><?php echo $this->text('Associate this user with a certain store'); ?></div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="panel panel-default">
-    <div class="panel-body">
-      <div class="form-group<?php echo $this->error('password', ' has-error'); ?>">
-        <label class="col-md-2 control-label"><?php echo $this->text('Password'); ?></label>
-        <div class="col-md-4">
-          <div class="input-group">
-            <input name="user[password]" class="form-control" value="<?php echo isset($user['password']) ? $user['password'] : ''; ?>">
-            <span class="input-group-btn">
-              <button class="btn btn-default" type="button" onclick="$(this).closest('.input-group').find('input').val(GplCart.randomString());">
-                <i class="fa fa-magic"></i>
-              </button>
-            </span>
-          </div>
-          <div class="help-block"><?php echo $this->error('password'); ?></div>
         </div>
       </div>
     </div>

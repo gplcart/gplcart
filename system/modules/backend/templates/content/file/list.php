@@ -128,10 +128,8 @@
           <?php } ?>
         </tbody>
       </table>
+      <?php echo $_pager; ?>
     </div>
-    <?php if (!empty($_pager)) { ?>
-    <div class="panel-footer text-right"><?php echo $_pager; ?></div>
-    <?php } ?>
   </div>
 </form>
 <?php } else { ?>

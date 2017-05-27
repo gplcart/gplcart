@@ -11,7 +11,7 @@
   <div class="panel-heading clearfix">
     <div class="btn-group pull-left">
       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-         <span class="caret"></span>
+       <span class="caret"></span>
       </button>
       <?php $access_actions = false; ?>
       <?php if ($this->access('product_class_edit') || $this->access('product_class_delete')) { ?>
@@ -39,13 +39,13 @@
       </ul>
       <?php } ?>
     </div>
-    <?php if ($this->access('product_class_add')) { ?>    
+    <?php if ($this->access('product_class_add')) { ?>
     <div class="btn-group pull-right">
       <a class="btn btn-default" href="<?php echo $this->url('admin/content/product-class/add'); ?>">
         <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
       </a>
     </div>
-    <?php } ?>  
+    <?php } ?>
   </div>
   <div class="panel-body table-responsive">
     <table class="table table-condensed product-classes">
@@ -74,31 +74,31 @@
             <?php } ?>
           </td>
           <td class="middle">
-              <ul class="list-inline">
-                <?php if ($this->access('product_class_edit')) { ?>
-                <li>
-                  <a href="<?php echo $this->url("admin/content/product-class/edit/{$class['product_class_id']}"); ?>">
-                    <?php echo $this->lower($this->text('Edit')); ?>
-                  </a>
-                </li>
-                <?php } ?>
-                <?php if ($this->access('product_class_field')) { ?>
-                <li>
-                  <a href="<?php echo $this->url("admin/content/product-class/field/{$class['product_class_id']}"); ?>">
-                    <?php echo $this->lower($this->text('Fields')); ?>
-                  </a>
-                </li>
-                <?php } ?>
-              </ul>
+            <ul class="list-inline">
+              <?php if ($this->access('product_class_edit')) { ?>
+              <li>
+                <a href="<?php echo $this->url("admin/content/product-class/edit/{$class['product_class_id']}"); ?>">
+                  <?php echo $this->lower($this->text('Edit')); ?>
+                </a>
+              </li>
+              <?php } ?>
+              <?php if ($this->access('product_class_field')) { ?>
+              <li>
+                <a href="<?php echo $this->url("admin/content/product-class/field/{$class['product_class_id']}"); ?>">
+                  <?php echo $this->lower($this->text('Fields')); ?>
+                </a>
+              </li>
+              <?php } ?>
+            </ul>
           </td>
         </tr>
         <?php } ?>
       </tbody>
     </table>
+    <?php if(!empty($_pager)) { ?>
+    <?php echo $_pager; ?>
+    <?php } ?>
   </div>
-  <?php if (!empty($_pager)) { ?>
-  <div class="panel panel-footer"><?php echo $_pager; ?></div>
-  <?php } ?>
 </div>
 <?php } else { ?>
 <div class="row">

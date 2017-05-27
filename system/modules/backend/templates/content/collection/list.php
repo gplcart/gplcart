@@ -81,7 +81,7 @@
           </th>
           <th>
             <select class="form-control" name="store_id">
-              <option value=""<?php echo (!$filter_store_id) ? ' selected' : ''; ?>><?php echo $this->text('Any'); ?></option>
+              <option value=""<?php echo $filter_store_id ? '' : ' selected'; ?>><?php echo $this->text('Any'); ?></option>
               <?php foreach ($_stores as $store_id => $store) { ?>
               <option value="<?php echo $store_id; ?>"<?php echo $filter_store_id == $store_id ? ' selected' : ''; ?>><?php echo $this->e($store['name']); ?></option>
               <?php } ?>
@@ -92,10 +92,10 @@
               <option value="any">
               <?php echo $this->text('Any'); ?>
               </option>
-              <option value="1"<?php echo ($filter_status === '1') ? ' selected' : ''; ?>>
+              <option value="1"<?php echo $filter_status === '1' ? ' selected' : ''; ?>>
               <?php echo $this->text('Enabled'); ?>
               </option>
-              <option value="0"<?php echo ($filter_status === '0') ? ' selected' : ''; ?>>
+              <option value="0"<?php echo $filter_status === '0' ? ' selected' : ''; ?>>
               <?php echo $this->text('Disabled'); ?>
               </option>
             </select>
@@ -170,12 +170,8 @@
         <?php } ?>
       </tbody>
     </table>
-  </div>
-  <?php if (!empty($_pager)) { ?>
-  <div class="panel-footer text-right">
     <?php echo $_pager; ?>
   </div>
-  <?php } ?>
 </div>
 <?php } else { ?>
 <div class="row">

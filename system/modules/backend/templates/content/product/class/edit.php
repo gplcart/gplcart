@@ -14,8 +14,8 @@
         <label class="col-md-2 control-label"><?php echo $this->text('Status'); ?></label>
         <div class="col-md-4">
           <div class="btn-group" data-toggle="buttons">
-            <label class="btn btn-default<?php echo!empty($product_class['status']) ? ' active' : ''; ?>">
-              <input name="product_class[status]" type="radio" autocomplete="off" value="1"<?php echo!empty($product_class['status']) ? ' checked' : ''; ?>><?php echo $this->text('Enabled'); ?>
+            <label class="btn btn-default<?php echo empty($product_class['status']) ? '' : ' active'; ?>">
+              <input name="product_class[status]" type="radio" autocomplete="off" value="1"<?php echo empty($product_class['status']) ? '' : ' checked'; ?>><?php echo $this->text('Enabled'); ?>
             </label>
             <label class="btn btn-default<?php echo empty($product_class['status']) ? ' active' : ''; ?>">
               <input name="product_class[status]" type="radio" autocomplete="off" value="0"<?php echo empty($product_class['status']) ? ' checked' : ''; ?>><?php echo $this->text('Disabled'); ?>

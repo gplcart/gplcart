@@ -100,12 +100,12 @@
         </tr>
         <tr class="collapse active" id="module-details-<?php echo $module_id; ?>">
           <td colspan="6">
-            <?php if ($info['author']) { ?>
+            <?php if (!empty($info['author'])) { ?>
             <div class="author">
               <b><?php echo $this->text('Author'); ?></b>: <?php echo $this->e($this->truncate($info['author'], 100)); ?>
             </div>
             <?php } ?>
-            <?php if ($info['description']) { ?>
+            <?php if (!empty($info['description'])) { ?>
             <div class="description">
               <b><?php echo $this->text('Description'); ?></b>: <?php echo $this->filter($this->truncate($info['description'], 100)); ?>
             </div>
@@ -163,9 +163,9 @@
         <?php } ?>
       </tbody>
     </table>
+    <?php if(!empty($_pager)) { ?>
+    <?php echo $_pager; ?>
     <?php } ?>
-    <?php if (!empty($_pager)) { ?>
-    <div class="panel-footer"><?php echo $_pager; ?></div>
     <?php } ?>
   </div>
 </div>

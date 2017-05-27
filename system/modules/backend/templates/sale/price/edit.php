@@ -34,7 +34,7 @@
           <select name="price_rule[trigger_id]" class="form-control">
             <option value="0"><?php echo $this->text('None'); ?></option>
             <?php foreach ($triggers as $trigger_id => $trigger) { ?>
-            <option value="<?php echo $trigger_id; ?>"<?php echo (isset($price_rule['trigger_id']) && $price_rule['trigger_id'] == $trigger_id) ? ' selected' : ''; ?>>
+            <option value="<?php echo $trigger_id; ?>"<?php echo isset($price_rule['trigger_id']) && $price_rule['trigger_id'] == $trigger_id ? ' selected' : ''; ?>>
             <?php echo $this->e($trigger['name']); ?>
             </option>
             <?php } ?>
@@ -91,8 +91,8 @@
         <label class="col-md-2 control-label"><?php echo $this->text('Value type'); ?></label>
         <div class="col-md-4">
           <select name="price_rule[value_type]" class="form-control">
-            <option value="percent"<?php echo (isset($price_rule['value_type']) && $price_rule['value_type'] == 'percent') ? ' selected' : ''; ?>><?php echo $this->text('Percent'); ?></option>
-            <option value="fixed"<?php echo (isset($price_rule['value_type']) && $price_rule['value_type'] == 'fixed') ? ' selected' : ''; ?>><?php echo $this->text('Fixed'); ?></option>
+            <option value="percent"<?php echo isset($price_rule['value_type']) && $price_rule['value_type'] == 'percent' ? ' selected' : ''; ?>><?php echo $this->text('Percent'); ?></option>
+            <option value="fixed"<?php echo isset($price_rule['value_type']) && $price_rule['value_type'] == 'fixed' ? ' selected' : ''; ?>><?php echo $this->text('Fixed'); ?></option>
           </select>
           <div class="help-block">
             <?php echo $this->text('Select how to add/subtract the price rule value. I.e for discount 10% use "Percent"'); ?>
@@ -104,7 +104,7 @@
         <div class="col-md-4">
           <select name="price_rule[currency]" class="form-control">
             <?php foreach ($currencies as $code => $currency) { ?>
-            <option value="<?php echo $this->e($code); ?>"<?php echo (isset($price_rule['currency']) && $price_rule['currency'] == $code) ? ' selected' : ''; ?>>
+            <option value="<?php echo $this->e($code); ?>"<?php echo isset($price_rule['currency']) && $price_rule['currency'] == $code ? ' selected' : ''; ?>>
             <?php echo $this->e($code); ?>
             </option>
             <?php } ?>

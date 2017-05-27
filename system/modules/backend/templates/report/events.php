@@ -10,7 +10,7 @@
 <div class="panel panel-default">
   <div class="panel-heading clearfix">
     <div class="btn-toolbar pull-right">
-      <a class="btn btn-default" href="<?php echo $this->url(false, array('clear' => true)); ?>">
+      <a class="btn btn-default" href="<?php echo $this->url('', array('clear' => true)); ?>">
         <?php echo $this->text('Clear'); ?>
       </a>
     </div>
@@ -33,7 +33,7 @@
             <select name="type" class="form-control">
               <option value="any"><?php echo $this->text('Any'); ?></option>
               <?php foreach ($types as $type) { ?>
-              <option value="<?php echo $type; ?>"<?php echo ($type == $filter_type) ? ' selected' : ''; ?>>
+              <option value="<?php echo $type; ?>"<?php echo $type == $filter_type ? ' selected' : ''; ?>>
               <?php echo $type; ?>
               </option>
               <?php } ?>
@@ -43,7 +43,7 @@
             <select name="severity" class="form-control">
               <option value="any"><?php echo $this->text('Any'); ?></option>
               <?php foreach ($severities as $severity => $severity_name) { ?>
-              <option value="<?php echo $severity; ?>"<?php echo ($severity == $filter_severity) ? ' selected' : ''; ?>>
+              <option value="<?php echo $severity; ?>"<?php echo $severity == $filter_severity ? ' selected' : ''; ?>>
               <?php echo $severity_name; ?>
               </option>
               <?php } ?>
@@ -104,10 +104,10 @@
         <?php } ?>
       </tbody>
     </table>
+    <?php if(!empty($_pager)) { ?>
+    <?php echo $_pager; ?>
+    <?php } ?>
   </div>
-  <?php if (!empty($_pager)) { ?>
-  <div class="panel-footer text-right"><?php echo $_pager; ?></div>
-  <?php } ?>
 </div>
 <?php } else { ?>
 <div class="row">

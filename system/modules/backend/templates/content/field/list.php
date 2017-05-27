@@ -53,10 +53,10 @@
           <th class="middle">
             <select class="form-control" name="type">
               <option value="any"><?php echo $this->text('Any'); ?></option>
-              <option value="option"<?php echo ($filter_type == 'option') ? ' selected' : ''; ?>>
+              <option value="option"<?php echo $filter_type === 'option' ? ' selected' : ''; ?>>
               <?php echo $this->text('Option'); ?>
               </option>
-              <option value="attribute"<?php echo ($filter_type == 'attribute') ? ' selected' : ''; ?>>
+              <option value="attribute"<?php echo $filter_type === 'attribute' ? ' selected' : ''; ?>>
               <?php echo $this->text('Attribute'); ?>
               </option>
             </select>
@@ -65,7 +65,7 @@
             <select class="form-control" name="widget">
               <option value="any"><?php echo $this->text('Any'); ?></option>
               <?php foreach ($widget_types as $type => $name) { ?>
-              <option value="<?php echo $type; ?>"<?php echo ($filter_widget == $type) ? ' selected' : ''; ?>>
+              <option value="<?php echo $type; ?>"<?php echo $filter_widget == $type ? ' selected' : ''; ?>>
               <?php echo $this->e($name); ?>
               </option>
               <?php } ?>
@@ -92,7 +92,7 @@
           </td>
           <td class="middle"><?php echo $field['field_id']; ?></td>
           <td class="middle"><?php echo $this->e($field['title']); ?></td>
-          <td class="middle"><?php echo ($field['type'] == 'attribute') ? $this->text('Attribute') : $this->text('Option'); ?></td>
+          <td class="middle"><?php echo $field['type'] == 'attribute' ? $this->text('Attribute') : $this->text('Option'); ?></td>
           <td class="middle"><?php echo isset($widget_types[$field['widget']]) ? $widget_types[$field['widget']] : $this->text('Unknown'); ?></td>
           <td class="middle">
             <ul class="list-inline">
@@ -123,10 +123,10 @@
         <?php } ?>
       </tbody>
     </table>
+    <?php if(!empty($_pager)) { ?>
+    <?php echo $_pager; ?>
+    <?php } ?>
   </div>
-  <?php if (!empty($_pager)) { ?>
-  <div class="panel-footer"><?php echo $_pager; ?></div>
-  <?php } ?>
 </div>
 <?php } else { ?>
 <div class="row">

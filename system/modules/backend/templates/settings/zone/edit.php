@@ -12,7 +12,7 @@
     <div class="panel-body">
       <div class="form-group">
         <label class="col-md-2 control-label">
-            <?php echo $this->text('Status'); ?>
+          <?php echo $this->text('Status'); ?>
         </label>
         <div class="col-md-4">
           <div class="btn-group" data-toggle="buttons">

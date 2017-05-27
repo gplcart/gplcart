@@ -110,10 +110,10 @@
         <?php } ?>
       </tbody>
     </table>
+    <?php if(!empty($_pager)) { ?>
+    <?php echo $_pager; ?>
+    <?php } ?>
   </div>
-  <?php if (!empty($_pager)) { ?>
-    <div class="panel-footer"><?php echo $_pager; ?></div>
-  <?php } ?>
 </div>
 <?php } else { ?>
 <div class="row">

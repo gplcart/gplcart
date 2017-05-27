@@ -98,17 +98,17 @@
             </th>
             <th>
               <select class="form-control" name="store_id">
-                <option value=""<?php echo (isset($filter_store_id)) ? '' : ' selected'; ?>><?php echo $this->text('Any'); ?></option>
+                <option value=""<?php echo isset($filter_store_id) ? '' : ' selected'; ?>><?php echo $this->text('Any'); ?></option>
                 <?php foreach ($_stores as $store_id => $store) { ?>
-                <option value="<?php echo $store_id; ?>"<?php echo isset($filter_store_id) && (int) $filter_store_id === $store_id ? ' selected' : ''; ?>><?php echo $this->e($store['name']); ?></option>
+                <option value="<?php echo $store_id; ?>"<?php echo isset($filter_store_id) && $filter_store_id == $store_id ? ' selected' : ''; ?>><?php echo $this->e($store['name']); ?></option>
                 <?php } ?>
               </select>
             </th>
             <th>
               <select name="status" class="form-control">
-                <option value=""<?php echo (isset($filter_status)) ? '' : ' selected'; ?>><?php echo $this->text('Any'); ?></option>
+                <option value=""<?php echo isset($filter_status) ? '' : ' selected'; ?>><?php echo $this->text('Any'); ?></option>
                 <?php foreach ($statuses as $status) { ?>
-                <option value="<?php echo $status; ?>"<?php echo (isset($filter_status) && $filter_status === $status) ? ' selected' : ''; ?>><?php echo $this->text($status, array(), $status); ?></option>
+                <option value="<?php echo $status; ?>"<?php echo isset($filter_status) && $filter_status == $status ? ' selected' : ''; ?>><?php echo $this->text($status, array(), $status); ?></option>
                 <?php } ?>
               </select>
             </th>
@@ -169,7 +169,7 @@
             </td>
             <td class="middle"><?php echo $this->e($order['total_formatted']); ?></td>
             <td class="middle">
-                <?php echo $this->date($order['created']); ?>
+              <?php echo $this->date($order['created']); ?>
               <?php if($order['is_new']) { ?>
               <span class="label label-danger"><?php echo $this->text('new'); ?></span>
               <?php } ?>
@@ -187,10 +187,10 @@
           <?php } ?>
         </tbody>
       </table>
+      <?php if(!empty($_pager)) { ?>
+      <?php echo $_pager; ?>
+      <?php } ?>
     </div>
-    <?php if (!empty($_pager)) { ?>
-    <div class="panel-footer text-right"><?php echo $_pager; ?></div>
-    <?php } ?>
   </div>
 </form>
 <?php } else { ?>

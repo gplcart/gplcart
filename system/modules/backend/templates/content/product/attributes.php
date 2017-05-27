@@ -29,7 +29,7 @@
               <td>
                 <div class="<?php echo $this->error("attribute.$field_id", 'has-error'); ?>">
                   <select title="<?php echo $this->text('- select -'); ?>" data-live-search="true" class="form-control selectpicker" name="product[field][attribute][<?php echo $field_id; ?>][]"<?php echo $attribute['multiple'] ? ' multiple' : ''; ?>>
-                    <?php if (!$attribute['multiple']) { ?>
+                    <?php if (empty($attribute['multiple'])) { ?>
                     <option value="" selected disabled><?php echo $this->text('- select -'); ?></option>
                     <?php } ?>
                     <?php foreach ($attribute['values'] as $value) { ?>

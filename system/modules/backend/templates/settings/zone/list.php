@@ -74,24 +74,24 @@
             <?php } ?>
           </td>
           <td class="middle">
-              <ul class="list-inline">
-                <?php if ($this->access('zone_edit')) { ?>
-                <li>
-                  <a href="<?php echo $this->url("admin/settings/zone/edit/{$zone['zone_id']}"); ?>">
-                    <?php echo $this->lower($this->text('Edit')); ?>
-                  </a>
-                </li>
-                <?php } ?>
-              </ul>
+            <ul class="list-inline">
+              <?php if ($this->access('zone_edit')) { ?>
+              <li>
+                <a href="<?php echo $this->url("admin/settings/zone/edit/{$zone['zone_id']}"); ?>">
+                  <?php echo $this->lower($this->text('Edit')); ?>
+                </a>
+              </li>
+              <?php } ?>
+            </ul>
           </td>
         </tr>
         <?php } ?>
       </tbody>
     </table>
+    <?php if(!empty($_pager)) { ?>
+    <?php echo $_pager; ?>
+    <?php } ?>
   </div>
-  <?php if (!empty($_pager)) { ?>
-  <div class="panel panel-footer"><?php echo $_pager; ?></div>
-  <?php } ?>
 </div>
 <?php } else { ?>
 <div class="row">

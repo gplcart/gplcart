@@ -7,14 +7,14 @@
  */
 ?>
 <div class="panel panel-default">
-    <?php if ($this->access('image_style_add')) { ?>
-      <div class="panel-heading clearfix">
-        <div class="btn-toolbar pull-right">
-          <a href="<?php echo $this->url("admin/settings/imagestyle/add"); ?>" class="btn btn-default add">
-            <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
-          </a>
-        </div>
-      </div>
+  <?php if ($this->access('image_style_add')) { ?>
+  <div class="panel-heading clearfix">
+    <div class="btn-toolbar pull-right">
+      <a href="<?php echo $this->url("admin/settings/imagestyle/add"); ?>" class="btn btn-default add">
+        <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
+      </a>
+    </div>
+  </div>
   <?php } ?>
   <div class="panel-body table-responsive">
     <table class="table table-condensed image-styles">

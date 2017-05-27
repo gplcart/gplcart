@@ -66,10 +66,10 @@
           <th class="middle">
             <select class="form-control" name="status">
               <option value="any"><?php echo $this->text('Any'); ?></option>
-              <option value="1"<?php echo ($filter_status === '1') ? ' selected' : ''; ?>>
+              <option value="1"<?php echo $filter_status === '1' ? ' selected' : ''; ?>>
                 <?php echo $this->text('Enabled'); ?>
               </option>
-              <option value="0"<?php echo ($filter_status === '0') ? ' selected' : ''; ?>>
+              <option value="0"<?php echo $filter_status === '0' ? ' selected' : ''; ?>>
                 <?php echo $this->text('Disabled'); ?>
               </option>
             </select>
@@ -99,10 +99,10 @@
           <td class="middle"><?php echo $city_id; ?></td>
           <td class="middle"><?php echo $this->e($city['name']); ?></td>
           <td class="middle">
-            <?php if ($city['status']) { ?>
-            <i class="fa fa-check-square-o"></i>
-            <?php } else { ?>
+            <?php if (empty($city['status'])) { ?>
             <i class="fa fa-square-o"></i>
+            <?php } else { ?>
+            <i class="fa fa-check-square-o"></i>
             <?php } ?>
           </td>
           <td class="middle">
@@ -116,10 +116,10 @@
         <?php } ?>
       </tbody>
     </table>
+    <?php if(!empty($_pager)) { ?>
+    <?php echo $_pager; ?>
+    <?php } ?>
   </div>
-  <?php if (!empty($_pager)) { ?>
-  <div class="col-md-12"><?php echo $_pager; ?></div>
-  <?php } ?>
 </div>
 <?php } else { ?>
 <div class="row empty">

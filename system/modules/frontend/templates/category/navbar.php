@@ -28,11 +28,11 @@
       </select>
       <div class="btn-group" data-toggle="buttons">
         <label class="btn btn-default<?php echo $view === 'list' ? ' active' : ''; ?>">
-          <input type="radio" name="view" value="list"<?php echo $view === 'list' ? ' checked' : ''; ?>>
+          <input type="radio" name="view" autocomplete="off" value="list"<?php echo $view === 'list' ? ' checked' : ''; ?>>
           <i class="fa fa-th-list"></i>
         </label>
         <label class="btn btn-default<?php echo $view === 'grid' ? ' active' : ''; ?>">
-          <input type="radio" name="view" value="grid"<?php echo $view === 'grid' ? ' active' : ''; ?>>
+          <input type="radio" name="view" autocomplete="off" value="grid"<?php echo $view === 'grid' ? ' active' : ''; ?>>
           <i class="fa fa-th-large"></i>
         </label>
       </div>
