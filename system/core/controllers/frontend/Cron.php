@@ -9,6 +9,7 @@
 
 namespace gplcart\core\controllers\frontend;
 
+use gplcart\core\Logger;
 use gplcart\core\models\Report as ReportModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 
@@ -25,11 +26,20 @@ class Cron extends FrontendController
     protected $report;
 
     /**
-     * @param ReportModel $report
+     * Logger class instance
+     * @var \gplcart\core\Logger $logger
      */
-    public function __construct(ReportModel $report)
+    protected $logger;
+
+    /**
+     * @param ReportModel $report
+     * @param Logger $logger
+     */
+    public function __construct(ReportModel $report, Logger $logger)
     {
         parent::__construct();
+
+        $this->logger = $logger;
         $this->report = $report;
     }
 
