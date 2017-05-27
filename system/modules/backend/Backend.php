@@ -34,10 +34,8 @@ class Backend extends Module
         if ($controller->isCurrentTheme('backend')) {
 
             $controller->setJs('system/modules/backend/js/common.js');
-
             $libraries = array('font_awesome', 'jquery_ui', 'bootstrap_select');
             $controller->addAssetLibrary($libraries);
-
             $controller->setCss('system/modules/backend/css/style.css');
 
             $controller->setMeta(array('charset' => 'utf-8'));

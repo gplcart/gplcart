@@ -59,7 +59,6 @@ class Facade
     protected $logger;
 
     /**
-     * Constructor
      * @param Route $route
      * @param Config $config
      * @param Hook $hook
