@@ -49,11 +49,15 @@ class Mail extends Model
      * @param string|array $to
      * @param string $subject
      * @param string $message
-     * @param array $options
+     * @param array|string $options
      * @return mixed
      */
-    public function send($to, $subject, $message, array $options)
+    public function send($to, $subject, $message, $options)
     {
+        if (!is_array($options)) {
+            $options = array('from' => (string) $options);
+        }
+
         settype($to, 'array');
         $this->hook->fire('mail.send.before', $to, $subject, $message, $options, $this);
 
