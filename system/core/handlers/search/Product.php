@@ -108,6 +108,10 @@ class Product extends Handler
 
         $data['product_id'] = $this->config->getDb()->fetchColumnAll($sql, $where);
 
+        if (empty($data['product_id'])) {
+            return array();
+        }
+
         unset($data['language']);
         return $this->product->getList($data);
     }
