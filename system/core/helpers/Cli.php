@@ -32,12 +32,9 @@ class Cli
         for ($i = 0, $j = count($argv); $i < $j; $i++) {
 
             $key = null;
-
             $arg = $argv[$i];
             if (substr($arg, 0, 2) === '--') {
-
                 $pos = strpos($arg, '=');
-
                 if ($pos === false) {
                     $key = substr($arg, 2);
                     if ($i + 1 < $j && $argv[$i + 1][0] !== '-') {
@@ -58,27 +55,22 @@ class Cli
             }
 
             if (substr($arg, 0, 1) === '-') {
-
                 if (substr($arg, 2, 1) === '=') {
                     $key = substr($arg, 1, 1);
                     $value = substr($arg, 3);
                     $out[$key] = $value;
                     continue;
                 }
-
                 $chars = str_split(substr($arg, 1));
-
                 foreach ($chars as $char) {
                     $key = $char;
                     $value = isset($out[$key]) ? $out[$key] : true;
                     $out[$key] = $value;
                 }
-
                 if ($i + 1 < $j && $argv[$i + 1][0] !== '-') {
                     $out[$key] = $argv[$i + 1];
                     $i++;
                 }
-
                 continue;
             }
 
@@ -90,9 +82,9 @@ class Cli
     }
 
     /**
-     * Outputs a message
+     * Output a message
      * @param string $text
-     * @return \gplcart\core\helpers\Cli
+     * @return $this
      */
     public function out($text)
     {
@@ -101,9 +93,9 @@ class Cli
     }
 
     /**
-     * Outputs a single line with prepended new line
+     * Output a single line with prepended new line
      * @param string $text
-     * @return \gplcart\core\helpers\Cli
+     * @return $this
      */
     public function line($text = '')
     {
@@ -113,7 +105,7 @@ class Cli
     }
 
     /**
-     * Outputs an error message
+     * Output an error message
      * @param string $text
      */
     public function error($text)
@@ -209,7 +201,6 @@ class Cli
 
         $lowercase = str_ireplace($default, strtoupper($default), strtolower($choice));
         $choices = trim(implode('/', preg_split('//', $lowercase)), '/');
-
         $line = $this->prompt(sprintf('%s [%s]', $question, $choices), $default, '');
 
         if (stripos($choice, $line) !== false) {
