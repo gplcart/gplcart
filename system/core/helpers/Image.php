@@ -18,12 +18,6 @@ class Image
 {
 
     /**
-     * Default mage quality
-     * @var int
-     */
-    const QUALITY = 100;
-
-    /**
      * Image resource
      * @var resource
      */
@@ -227,12 +221,8 @@ class Image
      * @return $this
      * @throws InvalidArgumentException
      */
-    public function save($filename = '', $quality = null, $format = '')
+    public function save($filename = '', $quality = 100, $format = '')
     {
-        if (empty($quality)) {
-            $quality = static::QUALITY;
-        }
-
         if (empty($filename)) {
             $filename = $this->filename;
         }
