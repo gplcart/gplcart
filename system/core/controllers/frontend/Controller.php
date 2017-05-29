@@ -117,6 +117,8 @@ class Controller extends BaseController
     {
         $currencies = $this->currency->getList();
 
+        $this->data['_cart'] = $this->getCart();
+        $this->data['_captcha'] = $this->renderCaptcha();
         $this->data['_currencies'] = $currencies;
         $this->data['_wishlist'] = $this->getWishlist();
         $this->data['_menu'] = $this->getCategoryMenu();
@@ -766,6 +768,10 @@ class Controller extends BaseController
      */
     protected function attachItemRenderedProduct(&$product, $options)
     {
+        if (empty($options['template_item'])) {
+            return null;
+        }
+
         $options += array(
             'buttons' => array(
                 'cart_add', 'wishlist_add', 'compare_add'));
@@ -786,7 +792,7 @@ class Controller extends BaseController
      */
     protected function attachItemRendered(&$item, $data, $options)
     {
-        if (isset($options['template_item'])) {
+        if (!empty($options['template_item'])) {
             $item['rendered'] = $this->render($options['template_item'], $data, true);
         }
     }
@@ -856,11 +862,7 @@ class Controller extends BaseController
      */
     public function renderShareWidget(array $options = array())
     {
-        $options += array(
-            'title' => $this->ptitle,
-            'url' => $this->url('', array(), true)
-        );
-
+        $options += array('url' => $this->url('', array(), true));
         return $this->render('common/share', $options);
     }
 
