@@ -22,7 +22,7 @@
       </a>
     </li>
     <li>
-      <a rel="nofollow" target="_blank" href="<?php echo $this->url('https://twitter.com/share', array('url' => $url, 'text' => $title), true); ?>">
+      <a rel="nofollow" target="_blank" href="<?php echo $this->url('https://twitter.com/share', array('url' => $url), true); ?>">
         <i class="fa fa-twitter-square"></i> <?php echo $this->text('Twitter'); ?>
       </a>
     </li>
