@@ -1,5 +1,5 @@
 /* global GplCart */
-var GplCart = GplCart || {settings: {}, translations: {}, onload: {}};
+var GplCart = GplCart || {settings: {}, translations: {}, onload: {}, modules: {}};
 
 (function ($, GplCart) {
 
