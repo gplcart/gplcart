@@ -1,12 +1,3 @@
-body {
-    background-color: #f7f7f7;
-}
-
-.container-fluid {
-    background-color: #fff;
-    min-height: 100vh;
-}
-
 table.requirements {
     margin-bottom: 20px;
 }
@@ -15,4 +6,8 @@ table.requirements {
 span.required:before {
     content: "* ";
     color: red;
+}
+
+.select-language {
+    margin-bottom: 20px;
 }

@@ -8,11 +8,14 @@ body {
     background-color: #f7f7f7;
 }
 
-.navbar-brand {
-    padding: 0px;
+.navbar-logo {
+    float: left;
+    height: 50px;
+    padding: 0 15px 0 0;
+    margin-left: -15px;
 }
 
-.navbar-brand > img {
+.navbar-logo > img {
     height: 100%;
     padding: 0;
     width: auto;
@@ -151,11 +154,6 @@ body.checkout .navbar .cart {
 
 form.search .input-group {
     width: 600px;
-}
-
-form.search :input {
-    border: none;
-    background-color: #002e4e !important;
 }
 
 .form-group.required .control-label:before, span.required:before {

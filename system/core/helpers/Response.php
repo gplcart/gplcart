@@ -10,7 +10,7 @@
 namespace gplcart\core\helpers;
 
 /**
- * Provides methods to output a data to the user
+ * Provides methods to output a data
  */
 class Response
 {
