@@ -184,14 +184,14 @@ class Asset
             'condition' => '',
             'version' => 'v',
             'text' => false,
-            'aggregate' => ($type != 'external')
+            'aggregate' => $type !== 'external'
         );
 
         if (!in_array($data['type'], array('css', 'js'))) {
             $data['text'] = true;
         }
 
-        if ($type != 'external' && $type != $data['type']) {
+        if ($type !== 'external' && $type != $data['type']) {
             $data['text'] = true;
         }
 
@@ -203,7 +203,7 @@ class Asset
         if (strpos($data['asset'], GC_ROOT_DIR) === 0) {
             $data['file'] = $data['asset'];
             $data['asset'] = gplcart_relative_path($data['asset']);
-        } else if ($type != 'external') {
+        } else if ($type !== 'external') {
             $data['file'] = gplcart_absolute_path($data['asset']);
         }
 
@@ -211,7 +211,7 @@ class Asset
             return array();
         }
 
-        $data['key'] = $type == 'external' ? $data['asset'] : $this->request->base(true) . $data['asset'];
+        $data['key'] = $type === 'external' ? $data['asset'] : $this->request->base(true) . $data['asset'];
 
         if (!empty($data['version']) && isset($data['file'])) {
             $data['key'] .= "?{$data['version']}=" . filemtime($data['file']);
