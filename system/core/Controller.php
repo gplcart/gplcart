@@ -52,30 +52,6 @@ abstract class Controller
     protected $http_status;
 
     /**
-     * Page meta title
-     * @var string
-     */
-    protected $title = '';
-
-    /**
-     * Page header title
-     * @var string
-     */
-    protected $ptitle = '';
-
-    /**
-     * Array of meta tags
-     * @var array
-     */
-    protected $meta = array();
-
-    /**
-     * Array of breadcrumbs
-     * @var array
-     */
-    protected $breadcrumbs = array();
-
-    /**
      * Current theme name
      * @var string
      */
@@ -358,9 +334,9 @@ abstract class Controller
     public function __construct()
     {
         $this->setInstanceProperties();
-        $this->setAccessProperties();
 
         $this->setRouteProperties();
+        $this->setAccessProperties();
         $this->setStoreProperties();
 
         $this->setDefaultJsAssets();
@@ -384,17 +360,89 @@ abstract class Controller
     }
 
     /**
+     * Sets instance properties
+     */
+    protected function setInstanceProperties()
+    {
+        $this->cart = Container::get('gplcart\\core\\models\\Cart');
+        $this->user = Container::get('gplcart\\core\\models\\User');
+        $this->store = Container::get('gplcart\\core\\models\\Store');
+        $this->language = Container::get('gplcart\\core\\models\\Language');
+        $this->validator = Container::get('gplcart\\core\\models\\Validator');
+        $this->filter = Container::get('gplcart\\core\\models\\Filter');
+
+        $this->url = Container::get('gplcart\\core\\helpers\\Url');
+        $this->request = Container::get('gplcart\\core\\helpers\\Request');
+        $this->response = Container::get('gplcart\\core\\helpers\\Response');
+        $this->asset = Container::get('gplcart\\core\\helpers\\Asset');
+        $this->session = Container::get('gplcart\\core\\helpers\\Session');
+        $this->pager = Container::get('gplcart\\core\\helpers\\Pager');
+        $this->compressor = Container::get('gplcart\\core\\helpers\\Compressor');
+
+        $this->hook = Container::get('gplcart\\core\\Hook');
+        $this->route = Container::get('gplcart\\core\\Route');
+        $this->config = Container::get('gplcart\\core\\Config');
+        $this->library = Container::get('gplcart\\core\\Library');
+    }
+
+    /**
+     * Sets the current route data
+     */
+    protected function setRouteProperties()
+    {
+        $this->is_backend = $this->isBackend();
+        $this->is_installing = $this->url->isInstall();
+        $this->current_route = $this->route->getCurrent();
+
+        $this->urn = $this->request->urn();
+        $this->host = $this->request->host();
+        $this->scheme = $this->request->scheme();
+        $this->is_ajax = $this->request->isAjax();
+
+        $this->path = $this->url->path();
+        $this->base = $this->request->base();
+        $this->query = (array) $this->getQuery();
+        $this->langcode = $this->route->getLangcode();
+        $this->uri = $this->scheme . $this->host . $this->urn;
+    }
+
+    /**
      * Sets user/access properties
      */
     protected function setAccessProperties()
     {
         $this->token = $this->config->token();
-        $this->cart_uid = $this->cart->uid();
-        $this->uid = (int) $this->user->getSession('user_id');
 
-        if (!empty($this->uid)) {
-            $this->current_user = $this->user->get($this->uid);
+        if (!$this->isInstalling()) {
+            $this->cart_uid = $this->cart->uid();
+            $this->uid = (int) $this->user->getSession('user_id');
+            if (!empty($this->uid)) {
+                $this->current_user = $this->user->get($this->uid);
+            }
         }
+    }
+
+    /**
+     * Sets the current store data
+     */
+    protected function setStoreProperties()
+    {
+        $this->current_store = $this->store->current();
+        if (isset($this->current_store['store_id'])) {
+            $this->store_id = $this->current_store['store_id'];
+        }
+    }
+
+    /**
+     * Sets global system JS files
+     */
+    protected function setDefaultJsAssets()
+    {
+        $this->addAssetLibrary('jquery');
+        $this->setJs('files/assets/system/js/common.js');
+
+        $this->addAssetLibrary('bootstrap');
+        $this->addAssetLibrary(array('html5shiv', 'respond'), array('aggregate' => false, 'condition' => 'if lt IE 9'));
     }
 
     /**
@@ -758,7 +806,7 @@ abstract class Controller
         $template .= '.php';
 
         if (is_file($template)) {
-            $rendered = $this->renderTemplate($template, $data);
+            $rendered = $this->renderPhpTemplate($template, $data);
             return trim($rendered);
         }
 
@@ -872,64 +920,6 @@ abstract class Controller
     public function isError($key = null)
     {
         return $this->error($key, true, false);
-    }
-
-    /**
-     * Sets instance properties
-     */
-    protected function setInstanceProperties()
-    {
-        $this->cart = Container::get('gplcart\\core\\models\\Cart');
-        $this->user = Container::get('gplcart\\core\\models\\User');
-        $this->store = Container::get('gplcart\\core\\models\\Store');
-        $this->language = Container::get('gplcart\\core\\models\\Language');
-        $this->validator = Container::get('gplcart\\core\\models\\Validator');
-        $this->filter = Container::get('gplcart\\core\\models\\Filter');
-
-        $this->url = Container::get('gplcart\\core\\helpers\\Url');
-        $this->request = Container::get('gplcart\\core\\helpers\\Request');
-        $this->response = Container::get('gplcart\\core\\helpers\\Response');
-        $this->asset = Container::get('gplcart\\core\\helpers\\Asset');
-        $this->session = Container::get('gplcart\\core\\helpers\\Session');
-        $this->pager = Container::get('gplcart\\core\\helpers\\Pager');
-        $this->compressor = Container::get('gplcart\\core\\helpers\\Compressor');
-
-        $this->hook = Container::get('gplcart\\core\\Hook');
-        $this->route = Container::get('gplcart\\core\\Route');
-        $this->config = Container::get('gplcart\\core\\Config');
-        $this->library = Container::get('gplcart\\core\\Library');
-    }
-
-    /**
-     * Sets the current route data
-     */
-    protected function setRouteProperties()
-    {
-        $this->is_backend = $this->isBackend();
-        $this->is_installing = $this->url->isInstall();
-        $this->current_route = $this->route->getCurrent();
-
-        $this->urn = $this->request->urn();
-        $this->host = $this->request->host();
-        $this->scheme = $this->request->scheme();
-        $this->is_ajax = $this->request->isAjax();
-
-        $this->path = $this->url->path();
-        $this->base = $this->request->base();
-        $this->query = (array) $this->getQuery();
-        $this->langcode = $this->route->getLangcode();
-        $this->uri = $this->scheme . $this->host . $this->urn;
-    }
-
-    /**
-     * Sets the current store data
-     */
-    protected function setStoreProperties()
-    {
-        $this->current_store = $this->store->current();
-        if (isset($this->current_store['store_id'])) {
-            $this->store_id = $this->current_store['store_id'];
-        }
     }
 
     /**
@@ -1334,7 +1324,6 @@ abstract class Controller
         if ($message !== '') {
             $this->setMessage($message, $severity, true);
         }
-
         $this->url->redirect($url);
     }
 
@@ -1342,17 +1331,23 @@ abstract class Controller
      * Sets page <title> tag
      * @param string $title
      * @param boolean $both
-     * @return string
      */
     public function setTitle($title, $both = true)
     {
-        $this->title = strip_tags($title);
-
-        if ($both && $this->ptitle === '') {
-            return $this->setPageTitle($title);
+        $this->data['_head_title'] = strip_tags($title);
+        if ($both && !isset($this->data['_page_title'])) {
+            $this->setPageTitle($title);
         }
+    }
 
-        return $this->title;
+    /**
+     * Sets page titles (H tag)
+     * @param string $title
+     * @return string
+     */
+    public function setPageTitle($title)
+    {
+        $this->data['_page_title'] = $title;
     }
 
     /**
@@ -1366,15 +1361,36 @@ abstract class Controller
             $templates = $this->templates;
         }
 
+        $this->prepareDataOutput();
+        $this->prepareOutput($templates, $options);
+
+        $html = $this->renderOutput($templates);
+        $this->response->html($html, $options);
+    }
+
+    /**
+     * Prepare output
+     * @param mixed $templates
+     * @param array $options
+     */
+    protected function prepareOutput(&$templates, array &$options)
+    {
         if (!empty($this->http_status)) {
             $title = (string) $this->response->statuses($this->http_status);
             $this->setTitle($title, false);
             $templates = "common/status/{$this->http_status}";
             $options['headers'] = $this->http_status;
         }
+    }
 
-        $html = $this->renderOutput($templates);
-        $this->response->html($html, $options);
+    /**
+     * Prepare template data variables before output
+     */
+    protected function prepareDataOutput()
+    {
+        $this->data['_styles'] = $this->getCss();
+        $this->data['_scripts_top'] = $this->getJs('top');
+        $this->data['_scripts_bottom'] = $this->getJs('bottom');
     }
 
     /**
@@ -1387,8 +1403,6 @@ abstract class Controller
         if (is_string($templates)) {
             $templates = array('region_content' => $templates);
         }
-
-        $this->prepareOutput();
 
         $templates += $this->templates;
         $layout = $templates['layout'];
@@ -1482,13 +1496,13 @@ abstract class Controller
     {
         return array(
             'layout' => 'layout/layout',
+            'region_top' => 'layout/top',
             'region_head' => 'layout/head',
             'region_body' => 'layout/body',
             'region_left' => 'layout/left',
             'region_right' => 'layout/right',
-            'region_content' => 'layout/content',
-            'region_top' => 'layout/top',
             'region_bottom' => 'layout/bottom',
+            'region_content' => 'layout/content'
         );
     }
 
@@ -1508,10 +1522,6 @@ abstract class Controller
 
         $group = 0;
         $groups = $results = array();
-
-        // Split assets by groups
-        // "text" assets (e.g JS settings) and those who have "aggregate=>false"
-        // are excluded from aggregation
         foreach ($assets as $key => $asset) {
 
             $exclude = (isset($asset['aggregate']) && empty($asset['aggregate']));
@@ -1557,27 +1567,12 @@ abstract class Controller
     }
 
     /**
-     * Modifies data variables before passing them to templates
-     */
-    protected function prepareOutput()
-    {
-        $this->data['_meta_tags'] = $this->meta;
-        $this->data['_head_title'] = $this->title;
-        $this->data['_page_title'] = $this->ptitle;
-        $this->data['_breadcrumbs'] = $this->breadcrumbs;
-
-        $this->data['_styles'] = $this->getCss();
-        $this->data['_scripts_top'] = $this->getJs('top');
-        $this->data['_scripts_bottom'] = $this->getJs('bottom');
-    }
-
-    /**
      * Renders PHP templates
      * @param string $template
      * @param array $data
      * @return string
      */
-    public function renderTemplate($template, array $data)
+    public function renderPhpTemplate($template, array $data)
     {
         extract($data, EXTR_SKIP);
 
@@ -1594,7 +1589,6 @@ abstract class Controller
     protected function setDefaultJs()
     {
         $this->setDefaultJsSettings();
-        $this->setDefaultJsCron();
         $this->setDefaultJsTranslation();
         $this->setDefaultJsStore();
     }
@@ -1604,23 +1598,9 @@ abstract class Controller
      */
     protected function setDefaultJsStore()
     {
-        if (!empty($this->current_store['data']['js'])//
-                && !$this->is_backend //
-                && empty($this->current_route['internal'])) {
+        if (!empty($this->current_store['data']['js']) && !$this->isBackend() && empty($this->current_route['internal'])) {
             $this->setJs($this->current_store['data']['js'], array('position' => 'bottom', 'aggregate' => false));
         }
-    }
-
-    /**
-     * Sets global system JS files
-     */
-    protected function setDefaultJsAssets()
-    {
-        $this->addAssetLibrary('jquery');
-        $this->setJs('files/assets/system/js/common.js');
-
-        $this->addAssetLibrary('bootstrap');
-        $this->addAssetLibrary(array('html5shiv', 'respond'), array('aggregate' => false, 'condition' => 'if lt IE 9'));
     }
 
     /**
@@ -1633,26 +1613,6 @@ abstract class Controller
             $settings[ltrim($key, '_')] = $value;
         }
         $this->setJsSettings('', $settings, 60);
-    }
-
-    /**
-     * Adds JS code to call cron URL
-     */
-    protected function setDefaultJsCron()
-    {
-        if (!$this->is_backend || $this->is_installing) {
-            return null;
-        }
-
-        $key = $this->config('cron_key', '');
-        $last_run = (int) $this->config('cron_last_run', 0);
-        $interval = (int) $this->config('cron_interval', 86400);
-
-        if (!empty($interval) && (GC_TIME - $last_run) > $interval) {
-            $url = $this->url('cron', array('key' => $key));
-            $js = "\$(function(){\$.get('$url', function(data){});});";
-            $this->setJs($js, array('position' => 'bottom'));
-        }
     }
 
     /**
@@ -1726,14 +1686,18 @@ abstract class Controller
      */
     protected function setDefaultData()
     {
-        $this->data = $this->getDefaultData();
+        $this->data = array_merge($this->data, $this->getDefaultData());
 
-        $this->data['_cart'] = $this->getCart();
-        $this->data['_captcha'] = $this->renderCaptcha();
-        $this->data['_languages'] = $this->language->getList();
-        $this->data['_messages'] = $this->session->getMessage();
+        $languages = $this->language->getList();
+        $enabled_languages = array_filter($languages, function($value) {
+            return !empty($value['status']);
+        });
+
+        $this->data['_languages'] = $languages;
         $this->data['_user'] = $this->current_user;
         $this->data['_store'] = $this->current_store;
+        $this->data['_messages'] = $this->session->getMessage();
+        $this->data['_has_enabled_languages'] = !empty($enabled_languages);
 
         $controller = strtolower(str_replace('\\', '-', $this->current_route['handlers']['controller'][0]));
         $this->data['_classes'] = array_slice(explode('-', $controller, 3), -1);
@@ -1751,6 +1715,7 @@ abstract class Controller
             'user_id' => $this->cart_uid,
             'store_id' => $this->store_id
         );
+
         return $this->cart->getContent($conditions);
     }
 
@@ -1794,14 +1759,31 @@ abstract class Controller
     }
 
     /**
-     * Sets a meta tag to on the page
+     * Sets a meta tag on the page
      * @param array $content
      * @return array
      */
     public function setMeta($content)
     {
-        $this->meta[] = $content;
-        return $this->meta;
+        $key = '_meta_tags';
+        if (!isset($this->data[$key])) {
+            $this->data[$key] = array();
+        }
+        $this->data[$key][] = $content;
+    }
+
+    /**
+     * Sets a single page breadcrumb
+     * @param array $breadcrumb
+     * @return array
+     */
+    public function setBreadcrumb(array $breadcrumb)
+    {
+        $key = '_breadcrumbs';
+        if (!isset($this->data[$key])) {
+            $this->data[$key] = array();
+        }
+        $this->data[$key][] = $breadcrumb;
     }
 
     /**
@@ -1843,17 +1825,6 @@ abstract class Controller
     }
 
     /**
-     * Sets a single page breadcrumb
-     * @param array $breadcrumb
-     * @return array
-     */
-    public function setBreadcrumb(array $breadcrumb)
-    {
-        $this->breadcrumbs[] = $breadcrumb;
-        return $this->breadcrumbs;
-    }
-
-    /**
      * Sets an array of page breadcrumbs
      * @param array $breadcrumbs
      */
@@ -1862,17 +1833,6 @@ abstract class Controller
         foreach ($breadcrumbs as $breadcrumb) {
             $this->setBreadcrumb($breadcrumb);
         }
-    }
-
-    /**
-     * Sets page titles (H tag)
-     * @param string $title
-     * @return string
-     */
-    public function setPageTitle($title)
-    {
-        $this->ptitle = $title;
-        return $this->ptitle;
     }
 
     /**
