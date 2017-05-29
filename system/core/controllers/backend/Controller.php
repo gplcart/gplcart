@@ -38,8 +38,9 @@ class Controller extends BaseController
         parent::__construct();
 
         $this->setBackendInstanceProperties();
-
         $this->processCurrentJob();
+
+        $this->setJsCron();
         $this->setBackendDefaultData();
 
         $this->hook->fire('construct.controller.backend', $this);
@@ -63,6 +64,22 @@ class Controller extends BaseController
         $this->data['_job'] = $this->renderJob();
         $this->data['_menu'] = $this->renderAdminMenu();
         $this->data['_stores'] = $this->store->getList(array('status' => 1));
+    }
+
+    /**
+     * Adds JS code to call cron URL
+     */
+    protected function setJsCron()
+    {
+        $key = $this->config('cron_key', '');
+        $last_run = (int) $this->config('cron_last_run', 0);
+        $interval = (int) $this->config('cron_interval', 86400);
+
+        if (!empty($interval) && (GC_TIME - $last_run) > $interval) {
+            $url = $this->url('cron', array('key' => $key));
+            $js = "\$(function(){\$.get('$url', function(data){});});";
+            $this->setJs($js, array('position' => 'bottom'));
+        }
     }
 
     /**
