@@ -41,17 +41,94 @@ class Install extends CliController
     }
 
     /**
-     * Processes installation
+     * Performs one-step "fast" installation
      */
-    public function storeInstall()
+    public function fastInstall()
+    {
+        $this->controlAccessInstall();
+
+        $this->validateFastInstall();
+        $this->processInstall();
+        $this->output();
+    }
+
+    /**
+     * Validates fast installation
+     */
+    protected function validateFastInstall()
+    {
+        $mapping = $this->getMappingInstall();
+        $default = $this->getDefaultInstall();
+
+        $this->setSubmittedMapped($mapping, null, $default);
+        $this->validateComponent('install');
+        $this->outputErrors(null, true);
+    }
+
+    /**
+     * Returns an array of mapping data used to determine references
+     * between CLI options and real data passed to validator
+     * @return array
+     */
+    protected function getMappingInstall()
+    {
+        return array(
+            'db-name' => 'database.name',
+            'db-user' => 'database.user',
+            'db-password' => 'database.password',
+            'db-type' => 'database.type',
+            'db-port' => 'database.port',
+            'db-host' => 'database.host',
+            'user-email' => 'user.email',
+            'user-password' => 'user.password',
+            'store-host' => 'store.host',
+            'store-title' => 'store.title',
+            'store-basepath' => 'store.basepath',
+            'store-timezone' => 'store.timezone',
+            'installer' => 'installer'
+        );
+    }
+
+    /**
+     * Returns an array of default submitted values
+     * @return array
+     */
+    protected function getDefaultInstall()
+    {
+        $data = array();
+        $data['database']['port'] = 3306;
+        $data['database']['user'] = 'root';
+        $data['database']['type'] = 'mysql';
+        $data['database']['host'] = 'localhost';
+        $data['database']['password'] = '';
+        $data['store']['basepath'] = '';
+        $data['store']['title'] = 'GPL Cart';
+        $data['store']['host'] = $this->getHostInstall();
+        $data['store']['timezone'] = date_default_timezone_get();
+
+        return $data;
+    }
+
+    /**
+     * Performs step-by-step installation
+     */
+    public function wizardInstall()
+    {
+        $this->controlAccessInstall();
+
+        $this->validateWizardInstall();
+        $this->processInstall();
+        $this->output();
+    }
+
+    /**
+     * Controls access to installation process
+     */
+    protected function controlAccessInstall()
     {
         if ($this->config->exists()) {
             $this->outputErrors($this->text('System already installed'), true);
         }
-
-        $this->validateInstall();
-        $this->processInstall();
-        $this->output();
     }
 
     /**
@@ -92,17 +169,15 @@ class Install extends CliController
     /**
      * Display simple installation wizard and validates user input
      */
-    protected function validateInstall()
+    protected function validateWizardInstall()
     {
         $this->validateInputLanguageInstall();
         $this->validateRequirementsInstall();
         $this->validateInputTitleInstall();
-
         $this->validateInputEmailInstall();
         $this->validateInputPasswordInstall();
         $this->validateInputBasepathInstall();
         $this->validateInputDbInstall();
-
         $this->validateInputInstall();
     }
 
@@ -116,8 +191,7 @@ class Install extends CliController
         );
 
         $this->setSubmitted('store.language', $language);
-        $host = GC_WIN ? gethostbyname(gethostname()) : gethostname();
-        $this->setSubmitted('store.host', $host);
+        $this->setSubmitted('store.host', $this->getHostInstall());
         $this->setSubmitted('store.timezone', date_default_timezone_get());
 
         $this->validateComponent('install');
@@ -128,6 +202,15 @@ class Install extends CliController
         }
 
         $this->outputErrors(null, true);
+    }
+
+    /**
+     * Returns the current host
+     * @return string
+     */
+    protected function getHostInstall()
+    {
+        return GC_WIN ? gethostbyname(gethostname()) : gethostname();
     }
 
     /**
@@ -287,7 +370,6 @@ class Install extends CliController
     protected function validateInputDbTypeInstall()
     {
         $drivers = \PDO::getAvailableDrivers();
-
         $input = $this->menu($drivers, 'mysql', $this->text('Database type (enter a number)'));
         if (!$this->isValidInput($input, 'database.type', 'install')) {
             $this->outputErrors();
