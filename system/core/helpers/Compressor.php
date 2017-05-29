@@ -35,7 +35,6 @@ class Compressor
     protected $optimize;
 
     /**
-     * Constructor
      * @param Request $request
      */
     public function __construct(Request $request)
@@ -44,7 +43,7 @@ class Compressor
     }
 
     /**
-     * Aggregates an array of scripts into one compressed file
+     * Aggregate an array of scripts into one compressed file
      * @param array $files
      * @param string $directory
      * @return string
@@ -75,7 +74,7 @@ class Compressor
     }
 
     /**
-     * Aggregates an array of stylesheets into one compressed file
+     * Aggregate an array of stylesheets into one compressed file
      * @param array $files
      * @param string $directory
      * @return string
@@ -318,8 +317,7 @@ class Compressor
             return false;
         }
 
-        $result = file_put_contents("$directory/$filename", $data);
-        return ($result !== false);
+        return file_put_contents("$directory/$filename", $data) !== false;
     }
 
 }
