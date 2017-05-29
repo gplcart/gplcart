@@ -83,10 +83,6 @@ class Search extends FrontendController
      */
     protected function setDataNavbarListSearch()
     {
-        if (empty($this->data_results)) {
-            return $this->text('No results found. Try another search keyword');
-        }
-
         $options = array(
             'total' => $this->total,
             'query' => $this->query_filter,
