@@ -18,13 +18,11 @@ class Exception extends BaseException
 {
 
     /**
-     * Constructor
      * @param mixed $message
      * @param integer $code
-     * @param Base $previous
+     * @param mixed $previous
      */
-    public function __construct($message = null, $code = 0,
-            BaseException $previous = null)
+    public function __construct($message = null, $code = 0, $previous = null)
     {
         parent::__construct($message, $code, $previous);
     }
