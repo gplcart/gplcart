@@ -11,19 +11,17 @@
     <form method="post" class="form-horizontal">
       <div class="row">
         <div class="col-md-12">
-          <h1 class="h4"><?php echo $this->text('Welcome to GPL Cart'); ?></h1>
+          <h1 class="h3"><?php echo $this->text('Welcome to GPL Cart'); ?></h1>
           <?php if (!empty($_languages) && count($_languages) > 1) { ?>
           <div class="select-language clearfix">
             <span class="pull-left"><?php echo $this->text('Select a language'); ?>:&nbsp;&nbsp;</span>
-            <ul class="list-inline languages pull-left">
-              <?php foreach ($_languages as $code => $name) { ?>
-              <li class="<?php echo $code === $language ? 'active' : ''; ?>">
-                <a href="<?php echo $this->url('', array('lang' => $code)); ?>">
-                  <?php echo isset($name[1]) ? $this->e($name[1]) : $this->e($name[0]); ?>
+            <div class="btn-toolbar">
+              <?php foreach ($_languages as $code => $data) { ?>
+                <a class="btn btn-default btn-xs<?php echo $code === $language ? ' active' : ''; ?>" href="<?php echo $this->url('', array('lang' => $code)); ?>">
+                  <?php echo $this->e($data['native_name']); ?>
                 </a>
-              </li>
               <?php } ?>
-            </ul>
+            </div>
           </div>
           <?php } ?>
         </div>
@@ -48,6 +46,7 @@
         <?php if ($severity !== 'danger') { ?>
         <div class="col-md-8">
           <div class="panel panel-default">
+            <div class="panel-heading"><?php echo $this->text('Database'); ?></div>
             <div class="panel-body">
               <?php if ($this->error('database.connect', true)) { ?>
               <div class="alert alert-warning alert-dismissible">
@@ -124,6 +123,7 @@
             </div>
           </div>
           <div class="panel panel-default">
+            <div class="panel-heading"><?php echo $this->text('Site'); ?></div>
             <div class="panel-body">
               <div class="required form-group<?php echo $this->error('user.email', ' has-error'); ?>">
                 <label class="col-md-3 control-label"><?php echo $this->text('E-mail'); ?></label>
@@ -177,6 +177,7 @@
         <?php } ?>
         <div class="<?php echo $severity === 'danger' ? 'col-md-12' : 'col-md-4'; ?>">
           <div class="panel panel-default">
+            <div class="panel-heading"><?php echo $this->text('Requirements'); ?></div>
             <div class="panel-body">
               <table class="table-condensed requirements">
                 <tbody>
@@ -186,15 +187,14 @@
                     <td><?php echo $this->text($info['message']); ?></td>
                     <td>
                       <?php if ($info['status']) { ?>
-                      <i class="fa fa-check-square-o"></i>
+                      <?php echo $this->text('OK'); ?>
                       <?php } else { ?>
-                      <i class="fa fa-square-o"></i>
                       <?php if ($info['severity'] === 'warning') { ?>
-                      <i class="fa fa-exclamation-triangle" title="<?php echo $this->text('Non-critical issue'); ?>"></i>
+                      <?php echo $this->text('Non-critical issue'); ?>
                       <?php } else if ($info['severity'] === 'danger') { ?>
-                      <i class="fa fa-exclamation-triangle" title="<?php echo $this->text('Critical issue'); ?>"></i>
+                      <?php echo $this->text('Critical issue'); ?>
                       <?php } else { ?>
-                      <i class="fa fa-exclamation-triangle"></i>
+                      <?php echo $this->text('Error'); ?>
                       <?php } ?>
                       <?php } ?>
                     </td>

@@ -6,6 +6,9 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
+<?php if (empty($collection_file) && empty($collection_product) && empty($collection_page)) { ?>
+<div class="empty"><?php echo $this->text('Content coming soon...'); ?></div>
+<?php } else { ?>
 <?php if (!empty($collection_file)) { ?>
 <?php echo $collection_file; ?>
 <?php } ?>
@@ -14,4 +17,5 @@
 <?php } ?>
 <?php if (!empty($collection_page)) { ?>
 <?php echo $collection_page; ?>
+<?php } ?>
 <?php } ?>

@@ -6,8 +6,8 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
-<div class="panel panel-body">
-  <div class="panel-body">
+<div class="row">
+  <div class="col-md-12">
     <form method="post" class="register form-horizontal">
       <input type="hidden" name="token" value="<?php echo $_token; ?>">
       <div class="form-group<?php echo $this->error('name', ' has-error'); ?>">
@@ -33,12 +33,16 @@
           </div>
         </div>
       </div>
+      <?php if(!empty($_captcha)) { ?>
       <?php echo $_captcha; ?>
+      <?php } ?>
       <div class="form-group">
-        <div class="col-md-1 col-md-offset-2">
+        <div class="col-md-10 col-md-offset-2">
           <button class="btn btn-default" name="register" value="1"><?php echo $this->text('Register'); ?></button>
         </div>
-        <div class="col-md-3 text-right">
+      </div>
+      <div class="form-group">
+        <div class="col-md-10 col-md-offset-2">
           <ul class="list-inline">
             <li><a href="<?php echo $this->url('login'); ?>"><?php echo $this->text('Login'); ?></a></li>
             <li><a href="<?php echo $this->url('forgot'); ?>"><?php echo $this->text('Forgot password'); ?></a></li>

@@ -24,7 +24,7 @@
             <i class="fa fa-phone"></i> <?php echo $this->e($_store['data']['phone'][0]); ?>
             <?php } ?>
           </p>
-          <?php if (!empty($_currencies)) { ?>
+          <?php if (count($_currencies) > 1) { ?>
           <div class="dropdown pull-left navbar-text">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <?php echo $this->e($_currency['name']); ?> <span class="caret"></span>
@@ -40,7 +40,7 @@
             </ul>
           </div>
           <?php } ?>
-          <?php if (array_filter($_languages, function($value) {return !empty($value['status']);})) { ?>
+          <?php if ($_has_enabled_languages) { ?>
               <div class="dropdown pull-left navbar-text">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                   <?php if (empty($_languages[$_langcode]['status'])) { ?>
@@ -89,54 +89,52 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
+          <?php if(empty($_store_logo)) { ?>
           <a class="navbar-brand" href="<?php echo $this->e($_base); ?>">
-            <?php if(empty($_store_logo)) { ?>
-            <?php echo $this->e($_store_title); ?>
-            <?php } else { ?>
-            <img class="logo" alt="<?php echo $this->e($_store_title); ?>" title="<?php echo $this->e($_store_title); ?>" src="<?php echo $this->e($_store_logo); ?>">
-            <?php } ?>
+          <?php echo $this->e($_store_title); ?>
           </a>
+          <?php } else { ?>
+          <a class="navbar-logo" href="<?php echo $this->e($_base); ?>">
+            <img class="logo" alt="<?php echo $this->e($_store_title); ?>" title="<?php echo $this->e($_store_title); ?>" src="<?php echo $this->e($_store_logo); ?>">
+          </a>
+          <?php } ?>
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
             <?php if (!$this->path('^checkout$')) { ?>
             <li class="cart">
               <a rel="nofollow" id="cart-link" href="<?php echo $this->url('checkout'); ?>">
-                <?php if (!empty($_cart['quantity'])) { ?>
-                <span class="badge" id="cart-quantity"><?php echo $_cart['quantity']; ?></span>
-                <?php } else { ?>
-                <span class="badge" id="cart-quantity" style="display:none;"></span>
-                <?php } ?>
+                <span class="badge" id="cart-quantity"><?php echo empty($_cart['quantity']) ? 0 : $_cart['quantity']; ?></span>
                 <i class="fa fa-shopping-cart"></i>
               </a>
             </li>
             <?php } ?>
             <li class="wishlist">
+              <?php if (empty($_wishlist)) { ?>
+              <span class="navbar-text">
+                <span class="badge" id="wishlist-quantity">0</span>
+                <i class="fa fa-heart"></i>
+              </span>
+              <?php } else { ?>
               <a rel="nofollow" id="wishlist-link" href="<?php echo $this->url('wishlist'); ?>">
-                <?php if (!empty($_wishlist)) { ?>
-                <span class="badge" id="wishlist-quantity">
-                  <?php echo count($_wishlist); ?>
-                </span>
+                <span class="badge" id="wishlist-quantity"><?php echo count($_wishlist); ?></span>
                 <i class="fa fa-heart"></i>
-                <?php } else { ?>
-                <span class="badge" id="wishlist-quantity"></span>
-                <i class="fa fa-heart"></i>
-                <?php } ?>
               </a>
+              <?php } ?>
             </li>
             <li class="compare">
-              <?php if (!empty($_comparison)) { ?>
+              <?php if (empty($_comparison)) { ?>
+              <span class="navbar-text">
+                <span class="badge" id="compare-quantity">0</span>
+                <i class="fa fa-balance-scale"></i>
+              </span>
+              <?php } else { ?>
               <a rel="nofollow" id="compare-link" href="<?php echo $this->url('compare'); ?>">
                 <span class="badge" id="compare-quantity">
                   <?php echo count($_comparison); ?>
                 </span>
                 <i class="fa fa-balance-scale"></i>
               </a>
-              <?php } else { ?>
-              <span class="navbar-text">
-                <span class="badge" id="compare-quantity" style="display:none;"></span>
-                <i class="fa fa-balance-scale"></i>
-              </span>
               <?php } ?>
             </li>
           </ul>
@@ -154,11 +152,11 @@
         </div>
       </div>
     </nav>
-    <?php if(!empty($_menu)) { ?>
     <nav class="navbar navbar-inverse navbar-static-top third">
+      <?php if(!empty($_menu)) { ?>
       <?php echo $_menu; ?>
+      <?php } ?>
     </nav>
-    <?php } ?>
     <?php if (!empty($_breadcrumbs)) { ?>
     <div class="breadcrumb">
       <ol class="breadcrumb">

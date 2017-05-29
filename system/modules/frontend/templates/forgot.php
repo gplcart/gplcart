@@ -6,8 +6,8 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
-<div class="panel panel-default">
-  <div class="panel-body">
+<div class="row">
+  <div class="col-md-12">
     <form method="post" class="forgot form-horizontal">
       <input type="hidden" name="token" value="<?php echo $_token; ?>">
       <?php if (empty($forgetful_user)) { ?>
@@ -27,9 +27,11 @@
         </div>
       </div>
       <?php } ?>
+      <?php if(!empty($_captcha)) { ?>
       <?php echo $_captcha; ?>
+      <?php } ?>
       <div class="form-group">
-        <div class="col-md-2 col-md-offset-2">
+        <div class="col-md-10 col-md-offset-2">
           <button class="btn btn-default" name="reset" value="1">
           <?php if (empty($forgetful_user)) { ?>
           <?php echo $this->text('Reset password'); ?>
@@ -38,7 +40,9 @@
           <?php } ?>
           </button>
         </div>
-        <div class="col-md-2 text-right">
+      </div>
+      <div class="form-group">
+        <div class="col-md-10 col-md-offset-2">
           <ul class="list-inline">
             <li><a href="<?php echo $this->url('login'); ?>"><?php echo $this->text('Login'); ?></a></li>
             <li><a href="<?php echo $this->url('register'); ?>"><?php echo $this->text('Register'); ?></a></li>

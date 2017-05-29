@@ -12,9 +12,12 @@
   <meta<?php echo $this->attributes($tag); ?>>
   <?php } ?>
   <title>
+    <?php if(!empty($_store_title)) { ?>
     <?php echo $this->e($_store_title); ?>
-    <?php if(!empty($_head_title)) { ?>
-    | <?php echo $this->e($_head_title); ?>
+    <?php } ?>
+    <?php if(!empty($_head_title) && $_head_title !== $_store_title) { ?>
+    <?php if(!empty($_store_title)) { ?>|<?php } ?>
+    <?php echo $this->e($_head_title); ?>
     <?php } ?>
   </title>
   <?php if(!empty($_store_favicon)) { ?>

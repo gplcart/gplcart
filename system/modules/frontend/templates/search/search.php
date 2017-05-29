@@ -6,10 +6,12 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
+<?php if (empty($results)) { ?>
+<?php echo $this->text('No results found. Try another search keyword'); ?>
+<?php } else { ?>
 <?php if(!empty($navbar)) { ?>
 <?php echo $navbar; ?>
 <?php } ?>
-<?php if (!empty($results)) { ?>
 <div class="row">
   <div class="col-md-12">
     <?php echo $results; ?>
