@@ -349,8 +349,8 @@
                         setModal(data.preview, 'cart-preview', GplCart.text('Cart'));
                     }
                 },
-                error: function () {
-                    alert(GplCart.text('An error occurred'));
+                error: function (xhr) {
+                    console.warn(xhr.responseText);
                 }
             });
 
@@ -410,8 +410,8 @@
                         submitRemoveFromWishlist(action, data, button);
                     }
                 },
-                error: function () {
-                    alert(GplCart.text('An error occurred'));
+                error: function (xhr) {
+                    console.warn(xhr.responseText);
                 }
             });
 
@@ -455,7 +455,7 @@
                 success: function (data) {
 
                     if (typeof data !== 'object') {
-                        alert(GplCart.text('An error occurred'));
+                        console.warn('Response in not object');
                         return false;
                     }
 
@@ -496,8 +496,8 @@
 
                     $('[name="add_to_cart"]').prop('disabled', !data.cart_access);
                 },
-                error: function () {
-                    alert(GplCart.text('An error occurred'));
+                error: function (xhr) {
+                    console.warn(xhr.responseText);
                 },
                 beforeSend: function () {
                     $('[data-field-id]').prop('disabled', true);
