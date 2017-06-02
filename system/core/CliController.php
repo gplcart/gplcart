@@ -148,8 +148,21 @@ class CliController
     protected function setRouteProperties()
     {
         $this->current_route = $this->route->get();
-        $this->arguments = $this->getArguments();
         $this->command = $this->current_route['command'];
+        $this->arguments = gplcart_array_trim($this->current_route['arguments'], true);
+    }
+
+    /**
+     * Returns a property
+     * @param string $name
+     * @return object
+     */
+    public function getProperty($name)
+    {
+        if (property_exists($this, $name)) {
+            return $this->$name;
+        }
+        throw new \InvalidArgumentException("Property $name does not exist");
     }
 
     /**
@@ -211,12 +224,11 @@ class CliController
 
     /**
      * Returns an array of filtered arguments
-     * @param bool $filter
      * @return array
      */
-    public function getArguments($filter = true)
+    public function getArguments()
     {
-        return gplcart_array_trim($this->current_route['arguments'], $filter);
+        return $this->arguments;
     }
 
     /**
@@ -228,6 +240,15 @@ class CliController
     public function getArgument($key, $default = null)
     {
         return isset($this->arguments[$key]) ? $this->arguments[$key] : $default;
+    }
+
+    /**
+     * Returns the cli command
+     * @return string
+     */
+    public function getCommand()
+    {
+        return $this->command;
     }
 
     /**
