@@ -36,9 +36,6 @@
             <input maxlength="255" name="field_value[translation][<?php echo $code; ?>][title]" class="form-control" value="<?php echo (isset($field_value['translation'][$code]['title'])) ? $this->e($field_value['translation'][$code]['title']) : ''; ?>">
             <div class="help-block">
               <?php echo $this->error("translation.$code.title"); ?>
-              <div class="text-muted">
-              <?php echo $this->text('An optional translation for language %name', array('%name' => $language['name'])); ?>
-              </div>
             </div>
           </div>
         </div>

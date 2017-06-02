@@ -13,7 +13,7 @@
     <div class="panel-body">
       <div class="form-group required<?php echo $this->error('title', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Title'); ?></label>
-        <div class="col-md-8">
+        <div class="col-md-10">
           <input maxlength="255" name="page[title]" class="form-control" value="<?php echo (isset($page['title'])) ? $this->e($page['title']) : ''; ?>" autofocus>
           <div class="help-block">
             <?php echo $this->error('title'); ?>
@@ -23,7 +23,7 @@
       </div>
       <div class="form-group required<?php echo $this->error('description', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Text'); ?></label>
-        <div class="col-md-8">
+        <div class="col-md-10">
           <textarea class="form-control" rows="10" data-wysiwyg="true" name="page[description]"><?php echo (isset($page['description'])) ? $this->filter($page['description']) : ''; ?></textarea>
           <div class="help-block">
             <?php echo $this->error('description'); ?>
@@ -45,7 +45,7 @@
         <?php foreach ($_languages as $code => $info) { ?>
         <div class="form-group<?php echo $this->error("translation.$code.title", ' has-error'); ?>">
           <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $info['native_name'])); ?></label>
-          <div class="col-md-6">
+          <div class="col-md-10">
             <input maxlength="255" name="page[translation][<?php echo $code; ?>][title]" class="form-control" value="<?php echo (isset($page['translation'][$code]['title'])) ? $this->e($page['translation'][$code]['title']) : ''; ?>">
             <div class="help-block">
                <?php echo $this->error("translation.$code.title", ' has-error'); ?>
@@ -54,7 +54,7 @@
         </div>
         <div class="form-group<?php echo $this->error("translation.$code.description", ' has-error'); ?>">
           <label class="col-md-2 control-label"><?php echo $this->text('Description %language', array('%language' => $info['native_name'])); ?></label>
-          <div class="col-md-6">
+          <div class="col-md-10">
             <textarea class="form-control" rows="10" data-wysiwyg="true" name="page[translation][<?php echo $code; ?>][description]"><?php echo (isset($page['translation'][$code]['description'])) ? $this->filter($page['translation'][$code]['description']) : ''; ?></textarea>
             <div class="help-block">
                <?php echo $this->error("translation.$code.description"); ?>
@@ -147,7 +147,7 @@
     <div class="panel-body">
       <div class="form-group<?php echo $this->error('meta_title', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Meta title'); ?></label>
-        <div class="col-md-8">
+        <div class="col-md-10">
           <input maxlength="60" name="page[meta_title]" class="form-control" value="<?php echo (isset($page['meta_title'])) ? $this->e($page['meta_title']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error('meta_title'); ?>
@@ -159,7 +159,7 @@
       </div>
       <div class="form-group">
         <label class="col-md-2 control-label"><?php echo $this->text('Meta description'); ?></label>
-        <div class="col-md-8">
+        <div class="col-md-10">
           <textarea maxlength="160" class="form-control" name="page[meta_description]"><?php echo (isset($page['meta_description'])) ? $this->e($page['meta_description']) : ''; ?></textarea>
           <div class="help-block">
             <?php echo $this->text('An optional text to be used in meta description tag. The tag is commonly used on search engine result pages (SERPs) to display preview snippets for a given page. Important for SEO'); ?>
@@ -178,7 +178,7 @@
         <?php foreach ($_languages as $code => $info) { ?>
         <div class="form-group<?php echo $this->error("translation.$code.meta_title", ' has-error'); ?>">
           <label class="col-md-2 control-label"><?php echo $this->text('Meta title %language', array('%language' => $info['native_name'])); ?></label>
-          <div class="col-md-8">
+          <div class="col-md-10">
             <input maxlength="60" name="page[translation][<?php echo $code; ?>][meta_title]" class="form-control" value="<?php echo (isset($page['translation'][$code]['meta_title'])) ? $this->e($page['translation'][$code]['meta_title']) : ''; ?>">
             <div class="help-block">
                <?php echo $this->error("translation.$code.meta_title"); ?>
@@ -187,7 +187,7 @@
         </div>
         <div class="form-group">
           <label class="col-md-2 control-label"><?php echo $this->text('Meta description %language', array('%language' => $info['native_name'])); ?></label>
-          <div class="col-md-8">
+          <div class="col-md-10">
             <textarea maxlength="160" class="form-control" name="page[translation][<?php echo $code; ?>][meta_description]"><?php echo (isset($page['translation'][$code]['meta_description'])) ? $this->e($page['translation'][$code]['meta_description']) : ''; ?></textarea>
           </div>
         </div>

@@ -21,17 +21,26 @@
         </div>
       </div>
       <?php if (!empty($_languages)) { ?>
-      <?php foreach ($_languages as $code => $info) { ?>
-      <div class="form-group<?php echo $this->error("translation.$code.title", ' has-error'); ?>">
-        <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $info['native_name'])); ?></label>
-        <div class="col-md-4">
-          <input name="category_group[translation][<?php echo $code; ?>][title]" maxlength="255" class="form-control" value="<?php echo isset($category_group['translation'][$code]['title']) ? $this->e($category_group['translation'][$code]['title']) : ''; ?>">
-          <div class="help-block">
-            <?php echo $this->error("translation.$code.title"); ?>
-          </div>
+      <div class="form-group">
+        <div class="col-md-10 col-md-offset-2">
+          <a data-toggle="collapse" href="#translations">
+            <?php echo $this->text('Translations'); ?> <span class="caret"></span>
+          </a>
         </div>
       </div>
-      <?php } ?>
+      <div id="translations" class="collapse translations<?php echo $this->error(null, ' in'); ?>">
+        <?php foreach ($_languages as $code => $info) { ?>
+        <div class="form-group<?php echo $this->error("translation.$code.title", ' has-error'); ?>">
+          <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $info['native_name'])); ?></label>
+          <div class="col-md-4">
+            <input name="category_group[translation][<?php echo $code; ?>][title]" maxlength="255" class="form-control" value="<?php echo isset($category_group['translation'][$code]['title']) ? $this->e($category_group['translation'][$code]['title']) : ''; ?>">
+            <div class="help-block">
+              <?php echo $this->error("translation.$code.title"); ?>
+            </div>
+          </div>
+        </div>
+        <?php } ?>
+      </div>
       <?php } ?>
     </div>
   </div>

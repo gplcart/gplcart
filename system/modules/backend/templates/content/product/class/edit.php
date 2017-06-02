@@ -33,7 +33,7 @@
           <div class="help-block">
             <?php echo $this->error('title'); ?>
             <div class="text-muted">
-              <?php echo $this->text('Required. Name of the product class for administrators'); ?>
+              <?php echo $this->text('Required. The name of product class for administrators'); ?>
             </div>
           </div>
         </div>

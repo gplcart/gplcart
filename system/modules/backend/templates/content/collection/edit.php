@@ -31,6 +31,14 @@
         </div>
       </div>
       <?php if (!empty($_languages)) { ?>
+      <div class="form-group">
+        <div class="col-md-10 col-md-offset-2">
+          <a data-toggle="collapse" href="#translations">
+            <?php echo $this->text('Translations'); ?> <span class="caret"></span>
+          </a>
+        </div>
+      </div>
+      <div id="translations" class="collapse translations<?php echo $this->error(null, ' in'); ?>">
         <?php foreach ($_languages as $code => $language) { ?>
         <div class="form-group<?php echo $this->error("translation.$code.title", ' has-error'); ?>">
           <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $language['native_name'])); ?></label>
@@ -40,7 +48,9 @@
           </div>
         </div>
         <?php } ?>
+      </div>
       <?php } ?>
+      </div>
     </div>
   </div>
   <div class="panel panel-default">

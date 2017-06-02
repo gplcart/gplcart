@@ -36,24 +36,9 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
-  <div class="panel panel-default">
-    <div class="panel-body">
-      <div class="form-group required<?php echo $this->error('product_id', ' has-error'); ?>">
-        <label class="col-md-2 control-label"><?php echo $this->text('Product'); ?></label>
-        <div class="col-md-6">
-          <input name="review[product]" data-autocomplete-source="product" class="form-control" value="<?php echo isset($review['product']) ? $this->e($review['product']) : ''; ?>">
-          <div class="help-block">
-            <?php echo $this->error('product_id'); ?>
-            <div class="text-muted"><?php echo $this->text('Required. Autocomplete field. Select a product that is related to this review'); ?></div>
-          </div>
-        </div>
-      </div>
-      <input type="hidden" data-autocomplete-target="product" name="review[product_id]" value="<?php echo isset($review['product_id']) ? $review['product_id'] : ''; ?>">
       <div class="form-group required<?php echo $this->error('email', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Email'); ?></label>
-        <div class="col-md-6">
+        <div class="col-md-4">
           <input name="review[email]" data-autocomplete-source="user" class="form-control" value="<?php echo isset($review['email']) ? $this->e($review['email']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error('email'); ?>
@@ -61,14 +46,25 @@
           </div>
         </div>
       </div>
+      <div class="form-group required<?php echo $this->error('product_id', ' has-error'); ?>">
+        <label class="col-md-2 control-label"><?php echo $this->text('Product'); ?></label>
+        <div class="col-md-10">
+          <input name="review[product]" data-autocomplete-source="product" class="form-control" value="<?php echo isset($review['product']) ? $this->e($review['product']) : ''; ?>">
+          <div class="help-block">
+            <?php echo $this->error('product_id'); ?>
+            <div class="text-muted"><?php echo $this->text('Required. Autocomplete field. Select a product that is related to this review'); ?></div>
+          </div>
+        </div>
+        <input type="hidden" data-autocomplete-target="product" name="review[product_id]" value="<?php echo isset($review['product_id']) ? $review['product_id'] : ''; ?>">
+      </div>
     </div>
   </div>
   <div class="panel panel-default">
     <div class="panel-body">
       <div class="form-group required<?php echo $this->error('text', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Text'); ?></label>
-        <div class="col-md-6">
-          <textarea name="review[text]" rows="4" class="form-control"><?php echo isset($review['text']) ? $this->e($review['text']) : ''; ?></textarea>
+        <div class="col-md-10">
+          <textarea name="review[text]" rows="8" class="form-control"><?php echo isset($review['text']) ? $this->e($review['text']) : ''; ?></textarea>
           <div class="help-block">
             <?php echo $this->error('text'); ?>
             <div class="text-muted"><?php echo $this->text('Required. A text of the review. HTML not allowed'); ?></div>
