@@ -34,7 +34,6 @@ trait DependencyTrait
      * @param array $items
      * @param array $item
      * @param bool $enabled
-     * @return null
      */
     protected function validateDependencyTrait($items, &$item, $enabled = false)
     {

@@ -23,7 +23,6 @@ trait ImageTrait
      * @param array $data
      * @param string $entity
      * @param null|string $language
-     * @return null
      */
     protected function attachImagesTrait(\gplcart\core\models\File $model,
             array &$data, $entity, $language = null)

@@ -21,7 +21,6 @@ trait AliasTrait
      * @param array $data
      * @param string $entity
      * @param boolean $update
-     * @return null
      */
     protected function setAliasTrait(\gplcart\core\models\Alias $model,
             array $data, $entity, $update = true)
