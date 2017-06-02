@@ -7,10 +7,10 @@
  */
 ?>
 <?php if (!empty($items)) { ?>
-<ul class="list-unstyled menu">
+<ul class="list-group menu">
   <?php foreach ($items as $item) { ?>
   <?php if ($item['depth'] <= $depth) { ?>
-  <li class="depth-<?php echo $this->e($item['depth']); ?><?php echo empty($item['active']) ? '' : ' active'; ?>">
+  <li class="list-group-item depth-<?php echo $this->e($item['depth']); ?><?php echo empty($item['active']) ? '' : ' active'; ?>">
     <?php echo $this->e($item['indentation']); ?>
     <?php if (empty($item['active'])) { ?>
     <a title="<?php echo $this->e($item['title']); ?>" href="<?php echo $this->e($item['url_query']); ?>"><?php echo $this->e($item['title']); ?></a>

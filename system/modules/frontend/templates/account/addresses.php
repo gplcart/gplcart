@@ -64,7 +64,7 @@
       <div class="col-md-12">
         <?php if (empty($addresses) && $_uid == $user['user_id']) { ?>
         <p>
-          <?php echo $this->text('Currently you have no saved addresses, but they will be added after next <a href="@href">checkout</a>', array('@href' => $this->url('checkout'))); ?>
+          <?php echo $this->text('You have no saved addresses yet'); ?>
         </p>
         <?php } ?>
       </div>

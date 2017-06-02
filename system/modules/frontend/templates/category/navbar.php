@@ -9,7 +9,7 @@
 <nav class="navbar category navbar-default">
   <div class="container-fluid">
     <span class="navbar-text navbar-left">
-      <?php echo $this->text('Showing @num from @total', array('@num' => $quantity, '@total' => $total)); ?>
+      <?php echo $this->text('Showing @num of @total', array('@num' => $quantity, '@total' => $total)); ?>
     </span>
     <form class="navbar-form navbar-right" onchange="$(this).submit();">
       <select name="sort" class="form-control">

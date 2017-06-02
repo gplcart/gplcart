@@ -41,25 +41,25 @@
           </div>
           <?php } ?>
           <?php if ($_has_enabled_languages) { ?>
-              <div class="dropdown pull-left navbar-text">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                  <?php if (empty($_languages[$_langcode]['status'])) { ?>
-                  <?php echo $this->text('select language'); ?>
-                  <?php } else { ?>
-                  <?php echo $this->e($_languages[$_langcode]['native_name']); ?>
-                  <?php } ?>
-                  <span class="caret"></span>
-                </a>
-                <ul class="dropdown-menu">
-                  <?php foreach ($_languages as $language) { ?>
-                  <?php if ($language['code'] !== $_langcode && !empty($language['status'])) { ?>
-                  <li>
-                    <a href="<?php echo $this->urll($language['code'], '', $_query); ?>"><?php echo $this->e($language['native_name']); ?></a>
-                  </li>
-                  <?php } ?>
-                  <?php } ?>
-                </ul>
-              </div>
+          <div class="dropdown pull-left navbar-text">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <?php if (empty($_languages[$_langcode]['status'])) { ?>
+              <?php echo $this->text('select language'); ?>
+              <?php } else { ?>
+              <?php echo $this->e($_languages[$_langcode]['native_name']); ?>
+              <?php } ?>
+              <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+              <?php foreach ($_languages as $language) { ?>
+              <?php if ($language['code'] !== $_langcode && !empty($language['status'])) { ?>
+              <li>
+                <a href="<?php echo $this->urll($language['code'], '', $_query); ?>"><?php echo $this->e($language['native_name']); ?></a>
+              </li>
+              <?php } ?>
+              <?php } ?>
+            </ul>
+          </div>
           <?php } ?>
           <p class="nav pull-right">
             <?php if ($_is_logged_in) { ?>
@@ -83,12 +83,6 @@
     <nav class="navbar navbar-default navbar-static-top second">
       <div class="container-fluid">
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only"><?php echo $this->text('Toggle navigation'); ?></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
           <?php if(empty($_store_logo)) { ?>
           <a class="navbar-brand" href="<?php echo $this->e($_base); ?>">
           <?php echo $this->e($_store_title); ?>
@@ -99,62 +93,80 @@
           </a>
           <?php } ?>
         </div>
-        <div class="navbar-collapse collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <?php if (!$this->path('^checkout$')) { ?>
-            <li class="cart">
-              <a rel="nofollow" id="cart-link" href="<?php echo $this->url('checkout'); ?>">
-                <span class="badge" id="cart-quantity"><?php echo empty($_cart['quantity']) ? 0 : $_cart['quantity']; ?></span>
-                <i class="fa fa-shopping-cart"></i>
-              </a>
-            </li>
-            <?php } ?>
-            <li class="wishlist">
-              <?php if (empty($_wishlist)) { ?>
-              <span class="navbar-text">
-                <span class="badge" id="wishlist-quantity">0</span>
-                <i class="fa fa-heart"></i>
+        <ul class="nav navbar-nav navbar-right">
+          <?php if (!$this->path('^checkout$')) { ?>
+          <li class="cart">
+            <p class="navbar-btn">
+            <a rel="nofollow" class="btn btn-default btn-block" id="cart-link" href="<?php echo $this->url('checkout'); ?>">
+              <span class="badge" id="cart-quantity"><?php echo empty($_cart['quantity']) ? 0 : $_cart['quantity']; ?></span>
+              <i class="fa fa-shopping-cart"></i>
+            </a>
+            </p>
+          </li>
+          <?php } ?>
+          <li class="wishlist">
+            <?php if (empty($_wishlist)) { ?>
+            <p class="navbar-btn">
+              <span class="btn btn-default btn-block">
+              <span class="badge" id="wishlist-quantity">0</span>
+              <i class="fa fa-heart"></i>
               </span>
-              <?php } else { ?>
-              <a rel="nofollow" id="wishlist-link" href="<?php echo $this->url('wishlist'); ?>">
+            </p>
+            <?php } else { ?>
+            <p class="navbar-btn">
+              <a rel="nofollow" id="wishlist-link" class="btn btn-default btn-block" href="<?php echo $this->url('wishlist'); ?>">
                 <span class="badge" id="wishlist-quantity"><?php echo count($_wishlist); ?></span>
                 <i class="fa fa-heart"></i>
               </a>
-              <?php } ?>
-            </li>
-            <li class="compare">
-              <?php if (empty($_comparison)) { ?>
-              <span class="navbar-text">
+            </p>
+            <?php } ?>
+          </li>
+          <li class="compare">
+            <?php if (empty($_comparison)) { ?>
+            <p class="navbar-btn">
+              <span class="btn btn-default btn-block">
                 <span class="badge" id="compare-quantity">0</span>
                 <i class="fa fa-balance-scale"></i>
               </span>
-              <?php } else { ?>
-              <a rel="nofollow" id="compare-link" href="<?php echo $this->url('compare'); ?>">
+            </p>
+            <?php } else { ?>
+            <p class="navbar-btn">
+              <a rel="nofollow" class="btn btn-default btn-block" id="compare-link" href="<?php echo $this->url('compare'); ?>">
                 <span class="badge" id="compare-quantity">
                   <?php echo count($_comparison); ?>
                 </span>
                 <i class="fa fa-balance-scale"></i>
               </a>
-              <?php } ?>
-            </li>
-          </ul>
-          <form class="navbar-form navbar-left search" action="<?php echo $this->url('search'); ?>">
-            <div class="input-group">
-              <input type="search" class="form-control" autocomplete="off" name="q" value="<?php echo isset($_query['q']) && $_query['q'] !== '' ? $_query['q'] : ''; ?>" placeholder="<?php echo $this->text('Search'); ?>">
-              <i class="fa fa-spinner fa-spin hidden"></i>
-              <span class="input-group-btn">
-                <button class="btn btn-default" data-block-if-empty="q">
-                  <i class="fa fa-search"></i>
-                </button>
-              </span>
-            </div>
-          </form>
-        </div>
+            </p>
+            <?php } ?>
+          </li>
+        </ul>
+        <form class="navbar-form navbar-left search" action="<?php echo $this->url('search'); ?>">
+          <div class="input-group">
+            <input type="search" class="form-control" autocomplete="off" name="q" value="<?php echo isset($_query['q']) && $_query['q'] !== '' ? $_query['q'] : ''; ?>" placeholder="<?php echo $this->text('Search'); ?>">
+            <span class="input-group-btn">
+              <button class="btn btn-default" data-block-if-empty="q">
+                <i class="fa fa-search"></i>
+              </button>
+            </span>
+          </div>
+        </form>
       </div>
     </nav>
     <nav class="navbar navbar-inverse navbar-static-top third">
       <?php if(!empty($_menu)) { ?>
-      <?php echo $_menu; ?>
+        <div class="navbar-header">
+          <p class="navbar-text navbar-hidden-label visible-xs-inline-block"><?php echo $this->text('Categories'); ?></p>
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-third">
+            <span class="sr-only"><?php echo $this->text('Toggle navigation'); ?></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div>
+        <div class="navbar-collapse collapse" id="navbar-collapse-third">
+          <?php echo $_menu; ?>
+        </div>
       <?php } ?>
     </nav>
     <?php if (!empty($_breadcrumbs)) { ?>

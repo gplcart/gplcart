@@ -6,7 +6,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
-<div class="grid product item col-md-3 col-sm-4 col-xs-6">
+<div class="grid product item col-md-3 col-sm-4 col-xs-12">
   <div class="thumbnail">
     <?php if (!empty($product['thumb'])) { ?>
     <a href="<?php echo empty($product['url']) ? $this->url("product/{$product['product_id']}") : $this->e($product['url']); ?>">
