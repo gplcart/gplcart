@@ -390,19 +390,19 @@ abstract class Controller
      */
     protected function setRouteProperties()
     {
-        $this->is_backend = $this->isBackend();
+        $this->path = $this->url->path();
+        $this->is_backend = $this->url->isBackend();
         $this->is_installing = $this->url->isInstall();
+
+        $this->langcode = $this->route->getLangcode();
         $this->current_route = $this->route->getCurrent();
 
         $this->urn = $this->request->urn();
+        $this->base = $this->request->base();
         $this->host = $this->request->host();
         $this->scheme = $this->request->scheme();
         $this->is_ajax = $this->request->isAjax();
-
-        $this->path = $this->url->path();
-        $this->base = $this->request->base();
-        $this->query = (array) $this->getQuery();
-        $this->langcode = $this->route->getLangcode();
+        $this->query = (array) $this->request->get();
         $this->uri = $this->scheme . $this->host . $this->urn;
     }
 
@@ -767,7 +767,7 @@ abstract class Controller
      */
     public function isBackend()
     {
-        return $this->url->isBackend();
+        return $this->is_backend;
     }
 
     /**
