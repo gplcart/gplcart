@@ -9,11 +9,11 @@
 error_reporting(E_ALL);
 
 require 'constants.php';
-require 'functions/common.php';
-require 'functions/setup.php';
-require 'functions/string.php';
-require 'functions/array.php';
-require 'functions/file.php';
+require 'core/functions/common.php';
+require 'core/functions/setup.php';
+require 'core/functions/string.php';
+require 'core/functions/array.php';
+require 'core/functions/file.php';
 
 gplcart_setup_requirements();
 
