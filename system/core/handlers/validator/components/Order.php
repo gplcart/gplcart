@@ -60,7 +60,6 @@ class Order extends ComponentValidator
     protected $transaction;
 
     /**
-     * Constructor
      * @param OrderModel $order
      * @param PaymentModel $payment
      * @param ShippingModel $shipping

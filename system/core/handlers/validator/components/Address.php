@@ -46,7 +46,6 @@ class Address extends ComponentValidator
     protected $address;
 
     /**
-     * Constructor
      * @param CountryModel $country
      * @param StateModel $state
      * @param AddressModel $address
