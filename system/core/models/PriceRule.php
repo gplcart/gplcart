@@ -67,19 +67,19 @@ class PriceRule extends Model
         $where = array();
 
         if (!empty($data['price_rule_id'])) {
-            $ids = (array) $data['price_rule_id'];
-            $placeholders = rtrim(str_repeat('?, ', count($ids)), ', ');
-            $sql .= ' WHERE price_rule_id IN(' . $placeholders . ')';
-            $where = array_merge($where, $ids);
+            settype($data['price_rule_id'], 'array');
+            $placeholders = rtrim(str_repeat('?,', count($data['price_rule_id'])), ',');
+            $sql .= " WHERE price_rule_id IN($placeholders)";
+            $where = array_merge($where, $data['price_rule_id']);
         } else {
             $sql .= ' WHERE price_rule_id > 0';
         }
 
         if (!empty($data['trigger_id'])) {
-            $ids = (array) $data['trigger_id'];
-            $placeholders = rtrim(str_repeat('?,', count($ids)), ',');
-            $sql .= ' AND trigger_id IN(' . $placeholders . ')';
-            $where = array_merge($where, $ids);
+            settype($data['trigger_id'], 'array');
+            $placeholders = rtrim(str_repeat('?,', count($data['trigger_id'])), ',');
+            $sql .= " AND trigger_id IN($placeholders)";
+            $where = array_merge($where, $data['trigger_id']);
         }
 
         if (isset($data['name'])) {
@@ -116,7 +116,8 @@ class PriceRule extends Model
         $sorts = array('price_rule_id', 'name', 'code',
             'value', 'value_type', 'weight', 'status', 'currency', 'trigger_id');
 
-        if ((isset($data['sort']) && in_array($data['sort'], $sorts)) && (isset($data['order']) && in_array($data['order'], $orders, true))) {
+        if ((isset($data['sort']) && in_array($data['sort'], $sorts))//
+                && (isset($data['order']) && in_array($data['order'], $orders, true))) {
             $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
             $sql .= ' ORDER BY weight ASC';

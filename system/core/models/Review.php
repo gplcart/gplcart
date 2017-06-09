@@ -96,11 +96,12 @@ class Review extends Model
             return false;
         }
 
-        $ids = (array) $review_id;
-        $placeholders = rtrim(str_repeat('?,', count($ids)), ',');
+        settype($review_id, 'array');
 
+        $placeholders = rtrim(str_repeat('?,', count($review_id)), ',');
         $sql = "DELETE FROM review WHERE review_id IN($placeholders)";
-        $result = (bool) $this->db->run($sql, $ids)->rowCount();
+
+        $result = (bool) $this->db->run($sql, $review_id)->rowCount();
 
         $this->hook->fire('review.delete.after', $review_id, $result, $this);
         return (bool) $result;

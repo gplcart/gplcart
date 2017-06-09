@@ -123,7 +123,9 @@ class Field extends Model
         $where = array($language);
 
         if (!empty($data['field_id'])) {
-            $sql .= ' AND f.field_id IN(' . rtrim(str_repeat('?, ', count($data['field_id'])), ', ') . ')';
+            settype($data['field_id'], 'array');
+            $placeholders = rtrim(str_repeat('?,', count($data['field_id'])), ',');
+            $sql .= " AND f.field_id IN($placeholders)";
             $where = array_merge($where, $data['field_id']);
         }
 

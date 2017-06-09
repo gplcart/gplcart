@@ -284,11 +284,10 @@ class Wishlist extends Model
         $where = array();
 
         if (!empty($data['product_id'])) {
-            $values = (array) $data['product_id'];
-            $placeholders = rtrim(str_repeat('?,', count($values)), ',');
-
-            $sql .= ' AND w.product_id IN(' . $placeholders . ')';
-            $where = array_merge($where, $values);
+            settype($data['product_id'], 'array');
+            $placeholders = rtrim(str_repeat('?,', count($data['product_id'])), ',');
+            $sql .= " AND w.product_id IN($placeholders)";
+            $where = array_merge($where, $data['product_id']);
         }
 
         if (isset($data['user_id'])) {

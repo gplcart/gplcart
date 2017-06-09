@@ -9,8 +9,8 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Route;
-use gplcart\core\Model;
+use gplcart\core\Route,
+    gplcart\core\Model;
 use gplcart\core\models\Language as LanguageModel;
 
 /**
@@ -150,9 +150,10 @@ class Alias extends Model
         }
 
         if (!empty($data['id_value'])) {
-            $placeholders = rtrim(str_repeat('?, ', count((array) $data['id_value'])), ', ');
+            settype($data['id_value'], 'array');
+            $placeholders = rtrim(str_repeat('?,', count($data['id_value'])), ',');
             $sql .= " AND id_value IN($placeholders)";
-            $where = array_merge($where, (array) $data['id_value']);
+            $where = array_merge($where, $data['id_value']);
         }
 
         $allowed_order = array('asc', 'desc');

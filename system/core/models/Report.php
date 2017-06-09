@@ -57,10 +57,10 @@ class Report extends Model
         }
 
         if (isset($data['type'])) {
-            $types = (array) $data['type'];
-            $placeholders = rtrim(str_repeat('?, ', count($types)), ', ');
-            $sql .= ' AND type IN(' . $placeholders . ')';
-            $where = array_merge($where, $types);
+            settype($data['type'], 'array');
+            $placeholders = rtrim(str_repeat('?,', count($data['type'])), ',');
+            $sql .= " AND type IN($placeholders)";
+            $where = array_merge($where, $data['type']);
         }
 
         if (isset($data['text'])) {
@@ -143,8 +143,8 @@ class Report extends Model
             return (bool) $this->db->query('DELETE FROM log');
         }
 
-        $placeholders = rtrim(str_repeat('?, ', count($error_types)), ', ');
-        $sql = 'DELETE FROM log WHERE log_id IN(' . $placeholders . ')';
+        $placeholders = rtrim(str_repeat('?,', count($error_types)), ',');
+        $sql = "DELETE FROM log WHERE log_id IN($placeholders)";
 
         $this->db->run($sql);
         return true;

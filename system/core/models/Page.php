@@ -205,10 +205,10 @@ class Page extends Model
                 . ' LEFT JOIN user u ON(p.user_id = u.user_id)';
 
         if (!empty($data['page_id'])) {
-            $ids = (array) $data['page_id'];
-            $placeholders = rtrim(str_repeat('?,', count($ids)), ',');
-            $sql .= ' WHERE p.page_id IN(' . $placeholders . ')';
-            $where = array_merge($where, $ids);
+            settype($data['page_id'], 'array');
+            $placeholders = rtrim(str_repeat('?,', count($data['page_id'])), ',');
+            $sql .= " WHERE p.page_id IN($placeholders)";
+            $where = array_merge($where, $data['page_id']);
         } else {
             $sql .= ' WHERE p.page_id > 0';
         }

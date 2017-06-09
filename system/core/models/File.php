@@ -353,10 +353,10 @@ class File extends Model
                 . ' LEFT JOIN file_translation ft ON(ft.file_id = f.file_id AND ft.language=?)';
 
         if (!empty($data['file_id'])) {
-            $ids = (array) $data['file_id'];
-            $placeholders = rtrim(str_repeat('?,', count($ids)), ',');
-            $sql .= ' WHERE f.file_id IN(' . $placeholders . ')';
-            $params = array_merge($params, $ids);
+            settype($data['file_id'], 'array');
+            $placeholders = rtrim(str_repeat('?,', count($data['file_id'])), ',');
+            $sql .= " WHERE f.file_id IN($placeholders)";
+            $params = array_merge($params, $data['file_id']);
         } else {
             $sql .= ' WHERE f.file_id > 0';
         }
@@ -379,10 +379,10 @@ class File extends Model
         }
 
         if (!empty($data['id_value'])) {
-            $id_values = (array) $data['id_value'];
-            $placeholders = rtrim(str_repeat('?,', count($id_values)), ',');
+            settype($data['id_value'], 'array');
+            $placeholders = rtrim(str_repeat('?,', count($data['id_value'])), ',');
             $sql .= " AND f.id_value IN($placeholders)";
-            $params = array_merge($params, $id_values);
+            $params = array_merge($params, $data['id_value']);
         }
 
         if (isset($data['language'])) {

@@ -538,10 +538,10 @@ class Product extends Model
         $where = array($language, 'product_id');
 
         if (!empty($data['product_id'])) {
-            $product_ids = (array) $data['product_id'];
-            $placeholders = rtrim(str_repeat('?, ', count($product_ids)), ', ');
-            $sql .= ' WHERE p.product_id IN(' . $placeholders . ')';
-            $where = array_merge($where, $product_ids);
+            settype($data['product_id'], 'array');
+            $placeholders = rtrim(str_repeat('?,', count($data['product_id'])), ',');
+            $sql .= " WHERE p.product_id IN($placeholders)";
+            $where = array_merge($where, $data['product_id']);
         } else {
             $sql .= ' WHERE p.product_id > 0';
         }

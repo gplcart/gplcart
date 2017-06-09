@@ -74,10 +74,10 @@ class FieldValue extends Model
         }
 
         if (!empty($data['field_id'])) {
-            $field_ids = (array) $data['field_id'];
-            $placeholders = rtrim(str_repeat('?, ', count($field_ids)), ', ');
+            settype($data['field_id'], 'array');
+            $placeholders = rtrim(str_repeat('?,', count($data['field_id'])), ',');
             $sql .= " AND fv.field_id IN($placeholders)";
-            $where = array_merge($where, $field_ids);
+            $where = array_merge($where, $data['field_id']);
         }
 
         $allowed_order = array('asc', 'desc');
