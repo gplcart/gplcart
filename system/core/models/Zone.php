@@ -33,10 +33,7 @@ class Zone extends Model
     public function get($zone_id)
     {
         $this->hook->fire('zone.get.before', $zone_id, $this);
-
-        $sql = 'SELECT * FROM zone WHERE zone_id=?';
-        $zone = $this->db->fetch($sql, array($zone_id));
-
+        $zone = $this->db->fetch('SELECT * FROM zone WHERE zone_id=?', array($zone_id));
         $this->hook->fire('zone.get.after', $zone, $this);
         return $zone;
     }

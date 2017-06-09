@@ -96,7 +96,8 @@ class CategoryGroup extends Model
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('type', 'store_id', 'title', 'category_group_id');
 
-        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort)) && (isset($data['order']) && in_array($data['order'], $allowed_order))
+        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort))//
+                && (isset($data['order']) && in_array($data['order'], $allowed_order))
         ) {
             $sql .= " ORDER BY cg.{$data['sort']} {$data['order']}";
         } else {

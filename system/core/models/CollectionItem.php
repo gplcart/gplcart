@@ -149,10 +149,7 @@ class CollectionItem extends Model
     {
         $this->hook->fire('collection.item.get.before', $id, $this);
 
-        $sql = 'SELECT *'
-                . ' FROM collection_item'
-                . ' WHERE collection_item_id=?';
-
+        $sql = 'SELECT * FROM collection_item WHERE collection_item_id=?';
         $result = $this->db->fetch($sql, array($id));
 
         $this->hook->fire('collection.item.get.after', $id, $result, $this);

@@ -263,13 +263,11 @@ class Address extends Model
                 continue; // No countries defined in the system
             }
 
-            // Remove addresses with disabled countries
             if ($address['country'] !== '' && $address['country_status'] == 0) {
                 unset($list[$address_id]);
                 continue;
             }
 
-            // Remove addresses with disabled states
             if (!empty($address['state_id']) && $address['state_status'] == 0) {
                 unset($list[$address_id]);
                 continue;

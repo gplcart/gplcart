@@ -145,7 +145,7 @@ class Cart extends Model
      * Prepare a cart item
      * @param array $item
      * @param array $data
-     * @return boolean
+     * @return array
      */
     protected function prepareItem(array $item, array $data)
     {
@@ -170,7 +170,7 @@ class Cart extends Model
     }
 
     /**
-     * Returns an array of cart items
+     * Returns an array of cart items or counts them
      * @param array $data
      * @param string $index
      * @return array|integer
@@ -283,9 +283,9 @@ class Cart extends Model
     }
 
     /**
-     * Returns the cart limit(s)
+     * Returns the cart limits
      * @param null|string $item
-     * @return array|int
+     * @return array|integer
      */
     public function getLimits($item = null)
     {
@@ -401,7 +401,7 @@ class Cart extends Model
     /**
      * Adds a cart record to the database
      * @param array $data
-     * @return boolean
+     * @return integer|boolean
      */
     public function add(array $data)
     {
@@ -478,7 +478,6 @@ class Cart extends Model
         $this->hook->fire('cart.get.before', $cart_id);
         $cart = $this->db->fetch('SELECT * FROM cart WHERE cart_id=?', array($cart_id));
         $this->hook->fire('cart.get.after', $cart_id, $cart, $this);
-
         return $cart;
     }
 
@@ -597,7 +596,7 @@ class Cart extends Model
     /**
      * Whether a cart item can be deleted
      * @param integer $cart_id
-     * @return bool
+     * @return boolean
      */
     public function canDelete($cart_id)
     {
@@ -607,7 +606,7 @@ class Cart extends Model
     }
 
     /**
-     * Deletes a cart from the cookie
+     * Deletes a cart user id from cookie
      * @return boolean
      */
     public function deleteCookie()

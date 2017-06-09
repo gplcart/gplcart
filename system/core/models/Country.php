@@ -247,8 +247,7 @@ class Country extends Model
         $allowed_sort = array('name', 'native_name', 'code', 'status', 'weight');
 
         if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)//
-                && isset($data['order'])//
-                && in_array($data['order'], $allowed_order)) {
+                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
             $sql .= ' ORDER BY weight ASC';

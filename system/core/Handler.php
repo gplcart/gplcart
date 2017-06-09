@@ -68,13 +68,11 @@ class Handler
             if (empty($handlers[$handler_id]['handlers'][$name])) {
                 return false;
             }
-
             $handler = $handlers[$handler_id]['handlers'][$name];
         } else {
             if (empty($handlers['handlers'][$name])) {
                 return false;
             }
-
             $handler = $handlers['handlers'][$name];
         }
 
