@@ -18,7 +18,7 @@ class Config
 {
 
     /**
-     * PDO instance
+     * Database class instance
      * @var \gplcart\core\Database $db
      */
     protected $db;
@@ -30,13 +30,13 @@ class Config
     protected $key;
 
     /**
-     * Config array from config.php
+     * Config array
      * @var array
      */
     protected $config = array();
 
     /**
-     * Whether config.php exists
+     * Whether the config file exists
      * @var boolean
      */
     protected $exists = false;
@@ -50,7 +50,7 @@ class Config
     }
 
     /**
-     * Returns a setting value
+     * Returns a config value
      * @param string $key
      * @param mixed $default
      * @return mixed
@@ -69,7 +69,7 @@ class Config
     }
 
     /**
-     * Returns a module setting value
+     * Returns a module config value
      * @param string $module_id
      * @param string $key
      * @param mixed $default
@@ -92,24 +92,20 @@ class Config
     }
 
     /**
-     * Sets a setting in the database
+     * Saves a config value in the database
      * @param string $key
      * @param mixed $value
      * @return boolean
      */
     public function set($key, $value)
     {
-        if (empty($key) || !isset($value)) {
-            return false;
-        }
-
-        if (empty($this->db)) {
+        if (empty($this->db) || empty($key) || !isset($value)) {
             return false;
         }
 
         $this->reset($key);
-        $serialized = 0;
 
+        $serialized = 0;
         if (is_array($value)) {
             $value = serialize($value);
             $serialized = 1;
@@ -122,25 +118,23 @@ class Config
             'serialized' => $serialized
         );
 
-
         $this->db->insert('settings', $values);
         return true;
     }
 
     /**
-     * Deletes a setting from the database
+     * Deletes a config value from the database
      * @param string $key
      * @return boolean
      */
     public function reset($key)
     {
-        $result = $this->db->delete('settings', array('id' => $key));
-        return (bool) $result;
+        return (bool) $this->db->delete('settings', array('id' => $key));
     }
 
     /**
-     * Returns PDO instance
-     * @return object
+     * Returns the database class instance
+     * @return \gplcart\core\Database
      */
     public function getDb()
     {
@@ -148,16 +142,7 @@ class Config
     }
 
     /**
-     * Sets database instance
-     * @param object $db
-     */
-    public function setDb($db)
-    {
-        $this->db = $db;
-    }
-
-    /**
-     * Returns true if config.php exists i.e the system is installed
+     * Whether the config file exists
      * @return boolean
      */
     public function exists()
@@ -166,7 +151,7 @@ class Config
     }
 
     /**
-     * Whether a given token is valid
+     * Whether the given token is valid
      * @param string $token
      * @return boolean
      */
@@ -214,7 +199,6 @@ class Config
                 continue;
             }
 
-            // Parse module.json
             $info = $this->getModuleInfo($module_id);
 
             if (empty($info['core'])) {
@@ -229,13 +213,11 @@ class Config
                 unset($installed[$module_id]['status']);
             }
 
-            // Replace default settings with settings saved in the database
             if (isset($installed[$module_id])) {
                 $info['installed'] = true;
                 $info = array_replace_recursive($info, $installed[$module_id]);
             }
 
-            // Instantiate main class only for enabled modules
             if (!empty($info['status'])) {
                 $instance = $this->getModuleInstance($module_id);
                 if ($instance instanceof \gplcart\core\Module) {
@@ -283,7 +265,7 @@ class Config
     }
 
     /**
-     * Returns module class instance
+     * Returns the module class instance
      * @param string $module_id
      * @return null|object
      */
@@ -296,12 +278,11 @@ class Config
         } catch (\ReflectionException $exc) {
             return null;
         }
-
         return $instance;
     }
 
     /**
-     * Returns namespaced module class
+     * Returns a namespaced class for the given module id
      * @param string $module_id
      * @return string
      */
@@ -312,7 +293,7 @@ class Config
     }
 
     /**
-     * Creates a module class name from a module ID
+     * Creates a module class name from the module ID
      * @param string $module_id
      * @return string
      */
@@ -433,7 +414,7 @@ class Config
     public function getModuleHooks($class)
     {
         return array_filter(get_class_methods($class), function ($method) {
-            return (0 === strpos($method, 'hook'));
+            return strpos($method, 'hook') === 0;
         });
     }
 
@@ -460,7 +441,7 @@ class Config
     }
 
     /**
-     * Whether the module locked
+     * Whether the module is locked
      * @param string $module_id
      * @return boolean
      */
@@ -477,7 +458,7 @@ class Config
      */
     public function validModuleId($id)
     {
-        return (bool) preg_match('/^[a-z][a-z0-9_]+$/', $id);
+        return preg_match('/^[a-z][a-z0-9_]+$/', $id) === 1;
     }
 
 }
