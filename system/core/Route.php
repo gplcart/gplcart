@@ -62,13 +62,12 @@ class Route
     protected $route;
 
     /**
-     * PDO instance
+     * Database class instance
      * @var \gplcart\core\Database $db
      */
     protected $db;
 
     /**
-     * Constructor
      * @param UrlHelper $url
      * @param RequestHelper $request
      * @param Config $config
@@ -109,9 +108,9 @@ class Route
      */
     public function process()
     {
-        $this->seekControllerAlias();
-        $this->seekControllerRoute();
-        $this->callControllerNotFound();
+        $this->seekAlias();
+        $this->seekRoute();
+        $this->outputNotFound();
     }
 
     /**
@@ -163,59 +162,49 @@ class Route
 
     /**
      * Finds an alias by the path
-     * @return null
-     * @todo Do refactoring
      */
-    protected function seekControllerAlias()
+    protected function seekAlias()
     {
+        // We need database set up to find aliases
         if (empty($this->db)) {
             return null;
         }
 
-        $info = $this->getAliasInfo($this->path);
+        // Assuming we're on some/path.html
+        // First check if the path stored in the database as an entity alias
+        $info = $this->getAliasByPath($this->path);
 
-        if (isset($info['id_key'])) {
-
-            // Entity name: product, page, category etc...
-            $entityname = str_replace('_id', '', $info['id_key']);
-
-            foreach ($this->getList() as $pattern => $route) {
-
-                if (empty($route['arguments'])) {
-                    $route['arguments'] = array();
-                }
-
-                if (!isset($route['alias'][0])) {
-                    continue; // This route doesn't support aliases
-                }
-
-                $pattern_segments = explode('/', $pattern);
-
-                if ($pattern_segments[$route['alias'][0]] !== $entityname) {
-                    continue; // Entity name not matching, try the next route
-                }
-
-                $route['arguments'] += array($info['id_value']);
-                $this->route = $route + array('pattern' => $pattern);
-
-                Handler::call($route, null, 'controller', $route['arguments']);
-                throw new RouteException('An error occurred while processing the route');
-            }
+        if (!isset($info['id_key'])) {
+            // This path not found in the database. Then assume it's an entity path, e.g product/1 or category/1
+            // Try to find an alias for the entity and redirect to it
+            $this->seekEntityAlias();
+            return null;
         }
 
-        // Failed to found the matching controller above
-        // The current path can be a system path like product/1
-        // so now we'll try to find an appropriate alias in the database and redirect to it
-        $this->redirectToAlias();
+        // Figure out which route is associated with the alias
+        // Get entity name by removing "_id" suffix from the end of the entity key
+        $entity = substr($info['id_key'], 0, -3);
+
+        foreach ($this->getList() as $pattern => $route) {
+
+            if (!isset($route['alias'][0])) {
+                continue;
+            }
+
+            $segments = explode('/', $pattern);
+            if ($segments[$route['alias'][0]] === $entity) {
+                $this->callController($pattern, $route, array($info['id_value']));
+                return null;
+            }
+        }
     }
 
     /**
-     * Finds an alias by the route pattern
-     * and redirects to it
+     * Finds an alias by a route pattern and redirects to it
      */
-    protected function redirectToAlias()
+    protected function seekEntityAlias()
     {
-        $path_segments = $this->url->segments();
+        $segments = $this->url->segments();
 
         foreach ($this->getList() as $pattern => $route) {
 
@@ -223,11 +212,11 @@ class Route
                 continue;
             }
 
-            if (!isset($path_segments[$route['alias'][0]])) {
+            if (!isset($segments[$route['alias'][0]])) {
                 continue;
             }
 
-            if (!isset($path_segments[$route['alias'][1]])) {
+            if (!isset($segments[$route['alias'][1]])) {
                 continue;
             }
 
@@ -237,66 +226,17 @@ class Route
                 continue;
             }
 
-            if ($pattern_segments[$route['alias'][0]] !== $path_segments[$route['alias'][0]]) {
+            if ($pattern_segments[$route['alias'][0]] !== $segments[$route['alias'][0]]) {
                 continue;
             }
 
-            $alias = $this->getAliasById($path_segments, $route);
+            $value = $segments[$route['alias'][1]];
+            $key = $segments[$route['alias'][0]] . '_id';
 
-            if (empty($alias)) {
-                continue;
-            }
+            $alias = $this->getAliasByEntity($key, $value);
 
-            $this->url->redirect($alias);
-        }
-    }
-
-    /**
-     * Selects an alias using entity key ID and numeric value
-     * @param array $segments
-     * @param array $route
-     * @return string
-     */
-    protected function getAliasById(array $segments, array $route)
-    {
-        $sql = 'SELECT alias'
-                . ' FROM alias'
-                . ' WHERE id_key=? AND id_value=?';
-
-        $conditions = array(
-            $segments[$route['alias'][0]] . '_id',
-            $segments[$route['alias'][1]]
-        );
-
-        return (string) $this->db->fetchColumn($sql, $conditions);
-    }
-
-    /**
-     * Returns alias info (keys) using the current URL path
-     * @param string $alias
-     * @return array|boolean
-     */
-    protected function getAliasInfo($alias)
-    {
-        $sql = 'SELECT id_key, id_value FROM alias WHERE alias=?';
-        return $this->db->fetch($sql, array($alias));
-    }
-
-    /**
-     * Find an appropriate controller for the current URL
-     */
-    protected function seekControllerRoute()
-    {
-        foreach ($this->getList() as $pattern => $route) {
-
-            $pattern = trim($pattern, '/');
-            $route += array('arguments' => array());
-
-            $arguments = gplcart_parse_pattern($this->path, $pattern);
-            if ($arguments !== false) {
-                $route['arguments'] += $arguments;
-                $this->callControllerRoute($pattern, $route);
-                break; // Not really needed, but...
+            if ($alias !== '') {
+                $this->url->redirect($alias);
             }
         }
     }
@@ -305,25 +245,66 @@ class Route
      * Call a route controller
      * @param string $pattern
      * @param array $route
+     * @param array $arguments
      * @throws RouteException
      */
-    protected function callControllerRoute($pattern, $route)
+    protected function callController($pattern, $route, $arguments = array())
     {
-        $this->route = $route + array('pattern' => $pattern);
+        $route += array('arguments' => array(), 'pattern' => $pattern);
+        $route['arguments'] += $arguments;
+
         $handler = Handler::get($route, null, 'controller');
 
-        if (!$handler[0] instanceof \gplcart\core\Controller) {
+        if (empty($handler[0]) || !$handler[0] instanceof \gplcart\core\Controller) {
             throw new RouteException('Controller must be instance of \gplcart\core\Controller');
         }
 
-        call_user_func_array($handler, $route['arguments']); // We should stop here
+        $this->route = $route;
+        call_user_func_array($handler, $this->route['arguments']); // We should stop here
         throw new RouteException('An error occurred while processing the route');
+    }
+
+    /**
+     * Selects an alias using entity key and value
+     * @param string $key
+     * @param integer $value
+     * @return string
+     */
+    protected function getAliasByEntity($key, $value)
+    {
+        $sql = 'SELECT alias FROM alias WHERE id_key=? AND id_value=?';
+        return (string) $this->db->fetchColumn($sql, array($key, $value));
+    }
+
+    /**
+     * Returns an array of alias info using the current URL path
+     * @param string $path
+     * @return array
+     */
+    protected function getAliasByPath($path)
+    {
+        return $this->db->fetch('SELECT id_key, id_value FROM alias WHERE alias=?', array($path));
+    }
+
+    /**
+     * Find an appropriate controller for the current URL
+     */
+    protected function seekRoute()
+    {
+        foreach ($this->getList() as $pattern => $route) {
+            $pattern = trim($pattern, '/');
+            $arguments = gplcart_parse_pattern($this->path, $pattern);
+            if (is_array($arguments)) {
+                $this->callController($pattern, $route, $arguments);
+                break;
+            }
+        }
     }
 
     /**
      * Displays 404 Not Found Page
      */
-    protected function callControllerNotFound()
+    protected function outputNotFound()
     {
         $section = $this->url->isBackend() ? 'backend' : 'frontend';
 
