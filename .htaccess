@@ -1,105 +1,85 @@
-# Protect files and directories from direct access
+# Prevent direct access to files
 <FilesMatch "\.(htaccess|htpasswd|ini|fla|psd|log|sh|c|twig|exe|cache)$">
     Order Allow,Deny
     Deny from all
 </FilesMatch>
 
-# Block access to directories without a default document.
+# Prevent directory listing
 Options -Indexes
 
-# Set the default handler.
+# Set default index handlers
 DirectoryIndex index.php index.html index.htm
 
-# Prevent Apache from adding a trailing footer line containing
-# information about the server to the server-generated documents
+# Disable server signatures
 ServerSignature Off
 
-# Add correct encoding for SVGZ.
-AddType image/svg+xml svg svgz
-AddEncoding gzip svgz
+# Remove E-tag
+FileETag None
 
-<IfModule mod_rewrite.c>
-    # Enable rewrite
-    RewriteEngine On
+# Enable rewriting
+RewriteEngine On
 
-    # Set "protossl" to "s" if we were accessed via https://. 
-    # It makes sure that you don't bounce between http and https.
-    RewriteRule ^ - [E=protossl]
-    RewriteCond %{HTTPS} on
-    RewriteRule ^ - [E=protossl:s]
+# Make sure Authorization HTTP header is available
+RewriteRule ^ - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
-    # Make sure Authorization HTTP header is available to PHP
-    RewriteRule ^ - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+# Redirect from http://.www to http://
+RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+RewriteRule ^ http%{ENV:protossl}://%1%{REQUEST_URI} [L,R=301]
 
-    # Redirect from http://.www to http://
-    RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
-    RewriteRule ^ http%{ENV:protossl}://%1%{REQUEST_URI} [L,R=301]
+# Prevent direct access to .php files
+RewriteCond %{THE_REQUEST} ^.+?\ [^?]+\.php[?\ ]
+RewriteRule \.php$ - [F]
 
-    # Restrict php files direct access
-    RewriteCond %{THE_REQUEST} ^.+?\ [^?]+\.php[?\ ]
-    RewriteRule \.php$ - [F]
+# Protect hidden directories whose names begin with a period, e.g .git
+RewriteRule "(^|/)\." - [F]
 
-    # Protect hidden directories whose names begin with a period, e.g .git
-    RewriteRule "(^|/)\." - [F]
+# Prevent direct access to system files, except module asset folders
+RewriteRule ^system/\w+/\w+/(js|css|image|vendor)/ - [L]
+RewriteRule ^system/ - [F]
 
-    # Block direct access to system files, except module asset folders
-    RewriteRule ^system/\w+/\w+/(js|css|image|vendor)/ - [L]
-    RewriteRule ^system/ - [F]
+# Prevent direct access to vendor files, except asset folders
+RewriteRule ^vendor/\w+/\w+/asset/ - [L]
+RewriteRule ^vendor/ - [F]
 
-    # Block direct access to vendor files, except asset folders
-    RewriteRule ^vendor/\w+/\w+/asset/ - [L]
-    RewriteRule ^vendor/ - [F]
+# Prevent access to private directories
+RewriteRule ^cache/ - [F]
+RewriteRule ^tests/ - [F]
+RewriteRule ^files/private/ - [F]
 
-    # Restrict access to directories
-    RewriteRule ^cache/ - [F]
-    RewriteRule ^tests/ - [F]
-    RewriteRule ^files/private/ - [F]
-    
-    # Pass all requests (except public files) to index.php
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^ index.php [L]
-
-    # Rules to correctly serve gzip compressed CSS and JS files
-    <IfModule mod_headers.c>
-        # Serve gzip compressed CSS files if they exist and the client accepts gzip.
-        RewriteCond %{HTTP:Accept-encoding} gzip
-        RewriteCond %{REQUEST_FILENAME}\.gz -s
-        RewriteRule ^(.*)\.css $1\.css\.gz [QSA]
-
-        # Serve gzip compressed JS files if they exist and the client accepts gzip.
-        RewriteCond %{HTTP:Accept-encoding} gzip
-        RewriteCond %{REQUEST_FILENAME}\.gz -s
-        RewriteRule ^(.*)\.js $1\.js\.gz [QSA]
-
-        # Serve correct content types, and prevent mod_deflate double gzip.
-        RewriteRule \.css\.gz$ - [T=text/css,E=no-gzip:1]
-        RewriteRule \.js\.gz$ - [T=text/javascript,E=no-gzip:1]
-
-        <FilesMatch "(\.js\.gz|\.css\.gz)$">
-          # Serve correct encoding type.
-          Header set Content-Encoding gzip
-          # Force proxies to cache gzipped & non-gzipped css/js files separately.
-          Header append Vary Accept-Encoding
-        </FilesMatch>
-    </IfModule>
-</IfModule>
+# Pass all requests (except public files) to index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [L]
 
 <IfModule mod_headers.c>
-    # Prevent some browsers from MIME-sniffing the response
-    Header set X-Content-Type-Options "nosniff"
 
-    # Remove the X-Powered-By response header that is set by some frameworks and server-side languages
-    # and its value contains information about them
+    # Serve gzip compressed CSS files if they exist and the client accepts gzip.
+    RewriteCond %{HTTP:Accept-encoding} gzip
+    RewriteCond %{REQUEST_FILENAME}\.gz -s
+    RewriteRule ^(.*)\.css $1\.css\.gz [QSA]
+
+    # Serve gzip compressed JS files if they exist and the client accepts gzip.
+    RewriteCond %{HTTP:Accept-encoding} gzip
+    RewriteCond %{REQUEST_FILENAME}\.gz -s
+    RewriteRule ^(.*)\.js $1\.js\.gz [QSA]
+
+    # Serve correct content types, and prevent mod_deflate double gzip.
+    RewriteRule \.css\.gz$ - [T=text/css,E=no-gzip:1]
+    RewriteRule \.js\.gz$ - [T=text/javascript,E=no-gzip:1]
+
+    Header set X-Content-Type-Options "nosniff"
     Header unset X-Powered-By
-    
-    # Remove ETag header
     Header unset ETag
-    
+
+    <FilesMatch "(\.js\.gz|\.css\.gz)$">
+      # Serve correct encoding type.
+      Header set Content-Encoding gzip
+      # Force proxies to cache gzipped & non-gzipped css/js files separately.
+      Header append Vary Accept-Encoding
+    </FilesMatch>
+
     # Cache static files for 1 year
     <FilesMatch "\.(ico|pdf|flv|jpg|jpeg|png|gif|js|css|swf)$">
         Header set Cache-Control "public, max-age=31536000"
     </FilesMatch>
 </IfModule>
-
-FileETag None
