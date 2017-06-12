@@ -599,7 +599,9 @@ class Product extends Model
         }
 
         if (empty($data['count'])) {
-            $sql .= ' GROUP BY p.product_id';
+            $sql .= ' GROUP BY p.product_id,'
+                    // Additional group by to prevent errors wnen sql_mode=only_full_group_by
+                    . 'a.alias, pt.title, ps.sku, ps.price, ps.stock, ps.file_id';
         }
 
         $allowed_order = array('asc', 'desc');

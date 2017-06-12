@@ -404,6 +404,9 @@ class File extends Model
             $sql .= ' AND f.file_type = ?';
             $params[] = $data['file_type'];
         }
+        
+        // This is to prevent errors wnen sql_mode=only_full_group_by
+        $sql .= ' GROUP BY f.file_id, ft.title';
 
         $allowed_order = array('asc', 'desc');
 
