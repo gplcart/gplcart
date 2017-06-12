@@ -19,17 +19,8 @@ body.js .hidden-js {
     padding-bottom:20px;
 }
 
-.navbar-fixed-top {
-    background-color: #002e4e;
-    border: none;
-}
-
-.navbar-fixed-top .navbar-nav > li > a {
+.navbar-inverse.navbar-fixed-top .navbar-nav > li > a {
     color: #fff;
-}
-
-.note-editable {
-    border: 1px solid #ccc;
 }
 
 pre {
@@ -111,7 +102,7 @@ h1 {
 
 .scroll {
     max-height: 20em;
-    overflow-y:scroll;
+    overflow-y:auto;
 }
 
 .tab-content {
@@ -128,24 +119,12 @@ h1 {
     background-color: #fff;
 }
 
-.panel-footer {
-    background-color: #fff;
-}
-
-.panel-footer .pagination {
-    margin:0;
-}
-
 .panel-body table tr:first-child td {
     border: none !important;
 }
 
 .note-group-select-from-files {
     display: none;
-}
-
-td .list-inline {
-    margin: 0;
 }
 
 .table > thead > tr > th {
@@ -160,7 +139,6 @@ td .list-inline {
     width: 100%;
 }
 
-/* Center modal */
 .modal-dialog {
     margin-top: 0;
     margin-bottom: 0;
@@ -189,7 +167,6 @@ td .list-inline {
     -webkit-transform: translate(0, 0);
     transform: translate(0, 0);
 }
-/* End center modal */
 
 .middle {
     vertical-align:middle !important;
@@ -209,6 +186,10 @@ tr.ui-sortable-helper {
     background-color: #fff;
 }
 
+td .list-inline {
+    margin: 0;
+}
+
 td div.view img {
     height:30px;
     width:30px;
@@ -218,13 +199,8 @@ td div.view div {
     width:30px;
 }
 
-.image-info {
-    word-wrap: break-word;
-}
-
-.modules .name {
-    padding-left: .5em;
-    padding-top: .5em;
+.table th {
+    white-space: nowrap;
 }
 
 .ui-sortable-handle {
@@ -251,110 +227,27 @@ td.required:before {
     color:red;
 }
 
-form.form-errors .panel-collapse:not(a),
-form.form-errors .panel-collapse:not(a) .collapse,
-form.form-errors .collapse.more {
-    display: block !important;
-}
-
-form.form-errors .panel-heading a[data-toggle="collapse"] {
-    pointer-events: none !important;
-}
-
-.category-tree .panel-heading {
-    padding:5px;
-    background-color: transparent;
-    border: none;
-}
-
-.category-tree .panel-heading .title {
-    padding-top: 6px;
-}
-
-.category-tree .panel {
-    margin-bottom:5px;
-}
-
-.category-tree li {
-    list-style:none !important;
-}
-
-ul.ui-autocomplete.ui-menu{
-    width:50% !important;
-}
-
-ul.ui-autocomplete.ui-menu li a:hover {
-    color: #fff !important;
-}
-
 .ui-menu .ui-menu-item:hover {
     background-color: #0088cc !important;
     background-image: none !important;
     color: #fff !important;
 }
 
-.ui-menu .ui-menu-item {
-    background-image: none !important;
-    background-color: #fff !important;
-    padding-top: 0 !important;
-
-}
-
-.ui-autocomplete-loading {
-    background: #dff0d8 !important;
-}
-
-.ui-widget {
-    font-size: 1em !important;
-}
-
 .ui-autocomplete {
-    position: absolute;
-    z-index: 1000;
-    display: none;
-    min-width: 300px;
-    _width: 300px;
-    padding: 4px 0;
-    margin: 2px 0 0 0;
-    list-style: none;
+    overflow: hidden;
     background-color: #ffffff;
-    border-color: #ccc;
-    border-color: rgba(0, 0, 0, 0.2);
-    border-style: solid;
-    border-width: 1px;
+    border: 1px solid #ccc;
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
     -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
     -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-    -webkit-background-clip: padding-box;
-    -moz-background-clip: padding;
-    background-clip: padding-box;
-    *border-right-width: 2px;
-    *border-bottom-width: 2px;
 }
 
-.ui-autocomplete .ui-menu-item > a.ui-corner-all {
-    display: block;
-    padding: 3px 15px;
-    clear: both;
-    font-weight: normal;
-    line-height: 14px;
-    color: #555555;
-    white-space: nowrap;
-}
-
-.ui-autocomplete .ui-menu-item > a.ui-corner-all.ui-state-hover,
-.ui-autocomplete .ui-menu-item > a.ui-corner-all.ui-state-active,
-.ui-autocomplete .ui-menu-item > a.ui-corner-all.ui-state-focus {
-    color: #ffffff;
-    text-decoration: none;
-    background-color: #0088cc;
-    border-radius: 0px;
-    -webkit-border-radius: 0px;
-    -moz-border-radius: 0px;
-    background-image: none;
+.ui-autocomplete .ui-menu-item-wrapper {
+    background: transparent;
+    border: none;
 }
 
 .address-book:not(.active) .panel-body {
@@ -372,45 +265,6 @@ ul.ui-autocomplete.ui-menu li a:hover {
     appearance:none;
     -moz-appearance:none;
     -webkit-appearance:none;
-}
-
-body.admin .summary .thumbnail {
-    padding: 10px;
-}
-
-body.admin .summary .thumbnail .pull-left {
-    padding-top: 5px;
-}
-
-body.admin .panel-heading .event-severity {
-    margin-left: 1em;
-}
-
-.tag {
-    margin-bottom: 5px;
-    margin-right: 5px;
-    display: block;
-}
-
-.product-search-suggestion img {
-    height: 30px;
-}
-
-.product-search-suggestion .price,
-.product-search-suggestion .title {
-    display: block;
-}
-
-
-.products [name$="[stock]"],
-.products [name="stock"],
-.products [name$="[price]"],
-.products [name="price"] {
-    width: 60px;
-}
-
-.navbar-nav.goto {
-    margin: 0 !important;
 }
 
 /* Fix dropdown overflow in responsive tables */
