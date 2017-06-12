@@ -314,11 +314,10 @@ class CliController
         if (!empty($this->errors)) {
             $this->error(implode("\n", gplcart_array_flatten($this->errors)));
             $this->errors = array();
+            $this->line();
             if ($abort) {
                 $this->abort(1);
             }
-
-            $this->line();
         }
     }
 
@@ -327,8 +326,14 @@ class CliController
      */
     public function output()
     {
-        $this->setError('php_errors', $this->logger->getPhpErrors());
+        $errors = $this->logger->getPhpErrors();
+
+        if (!empty($errors)) {
+            $this->setError('php_errors', $errors);
+        }
+
         $this->outputErrors(null, true);
+        $this->abort();
     }
 
     /**
