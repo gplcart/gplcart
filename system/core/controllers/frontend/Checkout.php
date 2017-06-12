@@ -412,7 +412,6 @@ class Checkout extends FrontendController
 
     /**
      * Prepares form data before passing to templates
-     * @return null
      */
     protected function setFormDataAfterCheckout()
     {
@@ -534,7 +533,6 @@ class Checkout extends FrontendController
 
     /**
      * Saves a submitted address
-     * @return null
      */
     protected function submitAddAddressCheckout()
     {
@@ -752,17 +750,12 @@ class Checkout extends FrontendController
             return null;
         }
 
-        $order_errors = $this->validateOrderCheckout();
-
+        $errors = array();
         foreach (array('payment', 'shipping') as $type) {
             $address_errors = $this->validateAddressCheckout($type);
 
             if (!empty($address_errors)) {
-                $order_errors = gplcart_array_merge($order_errors, $address_errors);
-            }
-
-            if ($this->{"{$type}_address_form"}) {
-                unset($order_errors["{$type}_address"]);
+                $errors = gplcart_array_merge($errors, $address_errors);
             }
 
             if (empty($address_errors)) {
@@ -770,10 +763,13 @@ class Checkout extends FrontendController
             }
         }
 
-        if (empty($order_errors)) {
+        $order_errors = $this->validateOrderCheckout();
+        $errors = gplcart_array_merge($errors, $order_errors);
+
+        if (empty($errors)) {
             $this->addOrderCheckout();
         } else {
-            $this->setError(null, $order_errors);
+            $this->setError(null, $errors);
         }
     }
 
@@ -788,7 +784,6 @@ class Checkout extends FrontendController
             $this->setSubmitted("address.{$type}.user_id", $this->order_user_id);
             return $this->validateComponent('address', array('parents' => "address.$type"));
         }
-
         return array();
     }
 
