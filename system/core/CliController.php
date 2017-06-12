@@ -315,7 +315,7 @@ class CliController
             $this->error(implode("\n", gplcart_array_flatten($this->errors)));
             $this->errors = array();
             if ($abort) {
-                $this->abort();
+                $this->abort(1);
             }
 
             $this->line();
