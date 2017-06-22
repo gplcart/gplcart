@@ -1640,7 +1640,9 @@ abstract class Controller
      */
     public function setJsSettings($key, array $data, $weight = null)
     {
-        $json = json_encode($data);
+        // Add flags to escape JSON output
+        // Without it <script> tags can be inserted via GET query which has filtered values but not keys
+        $json = json_encode($data, JSON_HEX_QUOT|JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS);
         $var = rtrim("GplCart.settings.$key", '.');
 
         // Track weight of JS settings to keep them together

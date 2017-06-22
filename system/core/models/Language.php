@@ -418,10 +418,12 @@ class Language extends Model
      */
     protected function addStringJs($string, array $data, $filename)
     {
-        $jsfile = "{$this->compiled_directory_js}/$filename.js";
-        $json = 'GplCart.translations[' . json_encode($string) . ']=' . json_encode($data) . ';' . PHP_EOL;
+        $file = "{$this->compiled_directory_js}/$filename.js";
 
-        return (bool) file_put_contents($jsfile, $json, FILE_APPEND);
+        $key = json_encode($string, JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS);
+        $translation = json_encode($data, JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS);
+
+        return (bool) file_put_contents($file, "GplCart.translations[$key]=$translation;\n", FILE_APPEND);
     }
 
     /**
