@@ -409,6 +409,8 @@ class User extends Model
             'severity' => 'success',
             'message' => $this->language->text('Your account has been created'));
 
+        $this->session->regenerate(true);
+
         if (!empty($data['login']) && !empty($data['status'])) {
             $result = $this->login($data);
         }
@@ -521,6 +523,8 @@ class User extends Model
         } else {
             $result = $this->resetPasswordStart($data['user']);
         }
+
+        $this->session->regenerate(true);
 
         $this->hook->fire('user.reset.password.after', $data, $result, $this);
         return $result;
