@@ -23,6 +23,15 @@ class Session
      */
     public function __construct()
     {
+        $this->start();
+    }
+
+    /**
+     * Init a new session
+     * @throws AuthorizationException
+     */
+    public function start()
+    {
         if (!GC_CLI && !$this->started() && !session_start()) {
             throw new AuthorizationException('Failed to start the session');
         }
@@ -32,7 +41,7 @@ class Session
      * Returns the current session status
      * @return bool
      */
-    protected function started()
+    public function started()
     {
         return session_status() === PHP_SESSION_ACTIVE;
     }
@@ -43,13 +52,7 @@ class Session
      */
     public function regenerate($delete_old_session)
     {
-        $success = true;
-
-        if ($this->started()) {
-            $success = session_regenerate_id($delete_old_session);
-        }
-
-        if (!$success) {
+        if (!session_regenerate_id($delete_old_session)) {
             throw new AuthorizationException('Failed to regenerate the current session');
         }
     }
