@@ -8,16 +8,12 @@
  */
 
 /**
- * Checks critical requirements
+ * Checks critical system requirements
  */
 function gplcart_setup_requirements()
 {
     if (version_compare(PHP_VERSION, '5.4.0') < 0) {
         exit('Your PHP installation is too old. GPL Cart requires at least PHP 5.4.0');
-    }
-
-    if (ini_get('session.auto_start')) {
-        exit('"session.auto_start" must be set to 0 in your PHP settings');
     }
 
     if (!function_exists('mb_internal_encoding')) {
@@ -27,34 +23,29 @@ function gplcart_setup_requirements()
 
 /**
  * Check and fix if needed some importan server vars
- * @return null
  */
-function gplcart_setup_server()
+function gplcart_setup_server_vars()
 {
     if (GC_CLI) {
         return null;
     }
 
-    if (!isset($_SERVER['HTTP_REFERER'])) {
-        $_SERVER ['HTTP_REFERER'] = '';
-    }
-
-    if (!isset($_SERVER['SERVER_PROTOCOL']) || ($_SERVER['SERVER_PROTOCOL'] !== 'HTTP/1.0'//
-            && $_SERVER['SERVER_PROTOCOL'] !== 'HTTP/1.1')) {
+    if (!isset($_SERVER['SERVER_PROTOCOL']) || !in_array($_SERVER['SERVER_PROTOCOL'], array('HTTP/1.0', 'HTTP/1.1'), true)) {
         $_SERVER['SERVER_PROTOCOL'] = 'HTTP/1.0';
     }
 
+    if (!isset($_SERVER['REQUEST_URI'])) {
+        $_SERVER['REQUEST_URI'] = substr($_SERVER['PHP_SELF'], 1);
+        if (isset($_SERVER['QUERY_STRING'])) {
+            $_SERVER['REQUEST_URI'] .= '?' . $_SERVER['QUERY_STRING'];
+        }
+    }
+
     if (!isset($_SERVER['HTTP_HOST'])) {
-        $_SERVER['HTTP_HOST'] = '';
-        return null;
+        $_SERVER['HTTP_HOST'] = getenv('HTTP_HOST');
     }
 
     $_SERVER['HTTP_HOST'] = strtolower($_SERVER['HTTP_HOST']);
-
-    if (!gplcart_valid_host($_SERVER['HTTP_HOST'])) {
-        header("{$_SERVER['SERVER_PROTOCOL']} 400 Bad Request");
-        exit;
-    }
 }
 
 /**
@@ -112,7 +103,7 @@ function gplcart_setup_autoload()
 
         // Remove "gplcart/" from the path
         $path = substr($path, 8);
-        $file = (strpos($path, 'tests') === 0) ? GC_ROOT_DIR : GC_SYSTEM_DIR;
+        $file = strpos($path, 'tests') === 0 ? GC_ROOT_DIR : GC_SYSTEM_DIR;
         $file .= "/$path.php";
 
         if (file_exists($file)) {
