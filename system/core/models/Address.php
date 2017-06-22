@@ -164,7 +164,10 @@ class Address extends Model
         $replacements = array();
         $this->setGetListSqlConditions($replacements, $sql, $data);
         $this->setGetListSqlSort($sql, $data);
-        $this->setSqlLimit($sql, $data);
+
+        if (!empty($data['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        }
 
         return array($sql, $replacements);
     }

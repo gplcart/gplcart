@@ -76,17 +76,4 @@ abstract class Model
         throw new \InvalidArgumentException("Property $name does not exist");
     }
 
-    /**
-     * Append LIMIT clause to a SQL string
-     * @param string $sql
-     * @param array $data
-     * @todo Remove
-     */
-    protected function setSqlLimit(&$sql, array $data)
-    {
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
-        }
-    }
-
 }
