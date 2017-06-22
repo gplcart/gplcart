@@ -21,5 +21,5 @@ mb_language('uni');
 mb_internal_encoding('UTF-8');
 
 gplcart_setup_ini();
-gplcart_setup_server();
+gplcart_setup_server_vars();
 gplcart_setup_autoload();
