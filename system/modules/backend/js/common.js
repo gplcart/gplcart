@@ -5,6 +5,8 @@
 
     var image_container = '.image-container';
 
+    $.ajaxSetup({data: {token: GplCart.settings.token}});
+
     /**
      * Returns html for modal
      * @param {String} content
@@ -167,7 +169,6 @@
                     url: GplCart.settings.urn,
                     data: {
                         selected: selected,
-                        token: GplCart.settings.token,
                         action: $(this).data('action'),
                         value: $(this).data('action-value')
                     },
@@ -282,11 +283,7 @@
                     });
 
                     $.ajax({
-                        data: {
-                            action: 'weight',
-                            selected: weight,
-                            token: GplCart.settings.token
-                        },
+                        data: {action: 'weight', selected: weight},
                         type: 'POST',
                         url: GplCart.settings.urn,
                         success: function (data) {
@@ -359,11 +356,7 @@
                 url: GplCart.settings.urn,
                 method: 'POST',
                 dataType: 'json',
-                data: {
-                    action: 'categories',
-                    token: GplCart.settings.token,
-                    store_id: $(this).find('option:selected').val()
-                },
+                data: {action: 'categories', store_id: $(this).find('option:selected').val()},
                 beforeSend: function () {
                     store.prop('disabled', true);
                     category.prop('disabled', true);
@@ -753,7 +746,6 @@
                         status: 1,
                         term: request.term,
                         action: 'getProductsAjax',
-                        token: GplCart.settings.token,
                         store_id: $('select[name$="[store_id]"] option:selected').val()
                     };
                     $.post(GplCart.settings.base + 'ajax', params, function (data) {
@@ -796,7 +788,6 @@
             source: function (request, response) {
                 params = {
                     term: request.term,
-                    token: GplCart.settings.token,
                     action: 'getCollectionItemAjax',
                     collection_id: GplCart.settings.collection.collection_id
                 };
@@ -834,11 +825,7 @@
             input.autocomplete({
                 minLength: 2,
                 source: function (request, response) {
-                    params = {
-                        term: request.term,
-                        action: 'getUsersAjax',
-                        token: GplCart.settings.token
-                    };
+                    params = {term: request.term, action: 'getUsersAjax'};
                     $.post(GplCart.settings.base + 'ajax', params, function (data) {
                         response($.map(data, function (value, key) {
                             return {
@@ -872,15 +859,8 @@
             input.autocomplete({
                 minLength: 2,
                 source: function (request, response) {
-
-                    params = {
-                        term: request.term,
-                        action: 'getProductsAjax',
-                        token: GplCart.settings.token
-                    };
-
+                    params = {term: request.term, action: 'getProductsAjax'};
                     $.post(GplCart.settings.base + 'ajax', params, function (data) {
-
                         response($.map(data, function (value, key) {
                             return {
                                 value: value.product_id,

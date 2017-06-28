@@ -5,6 +5,8 @@
 
     var selected_option_values = [];
 
+    $.ajaxSetup({data: {token: GplCart.settings.token}});
+
     /**
      * Returns HTML of modal pop-up
      * @param {String} content
@@ -261,8 +263,7 @@
                 params = {
                     action: 'searchCityAjax',
                     country: country.val(),
-                    state_id: state_id.val(),
-                    token: GplCart.settings.token
+                    state_id: state_id.val()
                 };
 
                 $.post(GplCart.settings.base + 'ajax', params, function (data) {
@@ -340,10 +341,7 @@
                 type: 'POST',
                 url: GplCart.settings.base + 'ajax',
                 dataType: 'json',
-                data: {
-                    action: 'getCartPreviewAjax',
-                    token: GplCart.settings.token
-                },
+                data: {action: 'getCartPreviewAjax'},
                 success: function (data) {
                     if (typeof data === 'object' && data.preview) {
                         setModal(data.preview, 'cart-preview', GplCart.text('Cart'));
@@ -445,7 +443,6 @@
             $.ajax({
                 data: {
                     values: selected.values,
-                    token: GplCart.settings.token,
                     action: 'switchProductOptionsAjax',
                     product_id: GplCart.settings.product.product_id
                 },
