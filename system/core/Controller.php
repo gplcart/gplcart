@@ -334,9 +334,11 @@ abstract class Controller
     public function __construct()
     {
         $this->setInstanceProperties();
-
         $this->setRouteProperties();
-        $this->setAccessProperties();
+
+        $this->token = $this->config->token();
+
+        $this->setUserProperties();
         $this->setStoreProperties();
 
         $this->setDefaultJsAssets();
@@ -409,16 +411,18 @@ abstract class Controller
     /**
      * Sets user/access properties
      */
-    protected function setAccessProperties()
+    protected function setUserProperties()
     {
-        $this->token = $this->config->token();
-
         if (!$this->isInstalling()) {
             $this->cart_uid = $this->cart->uid();
             $this->uid = (int) $this->user->getSession('user_id');
             if (!empty($this->uid)) {
                 $this->current_user = $this->user->get($this->uid);
             }
+        }
+
+        if (!empty($this->current_user['timezone'])) {
+            date_default_timezone_set($this->current_user['timezone']);
         }
     }
 
@@ -634,7 +638,7 @@ abstract class Controller
      */
     public function json($data)
     {
-        return htmlspecialchars(json_encode($data), ENT_QUOTES, 'UTF-8');
+        return htmlspecialchars(gplcart_json_encode($data), ENT_QUOTES, 'UTF-8');
     }
 
     /**
@@ -1640,9 +1644,7 @@ abstract class Controller
      */
     public function setJsSettings($key, array $data, $weight = null)
     {
-        // Add flags to escape JSON output
-        // Without it <script> tags can be inserted via GET query which has filtered values but not keys
-        $json = json_encode($data, JSON_HEX_QUOT|JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS);
+        $json = gplcart_json_encode($data);
         $var = rtrim("GplCart.settings.$key", '.');
 
         // Track weight of JS settings to keep them together
