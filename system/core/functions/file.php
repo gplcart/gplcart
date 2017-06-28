@@ -88,27 +88,13 @@ function gplcart_file_scan_recursive($directory, &$results = array())
 }
 
 /**
- * Returns a file mime type
- * @param string $file
- * @return string
- */
-function gplcart_file_mime($file)
-{
-    $finfo = finfo_open(FILEINFO_MIME_TYPE);
-    $mimetype = finfo_file($finfo, $file);
-    finfo_close($finfo);
-
-    return $mimetype;
-}
-
-/**
  * Returns a unique file path using a base path
  * @param string $file
  * @return string
  */
 function gplcart_file_unique($file)
 {
-    if (!file_exists($file)) { // use file_exists to check dirs and files
+    if (!file_exists($file)) {
         return $file;
     }
 

@@ -22,7 +22,7 @@ class FileType
      */
     public function image($file)
     {
-        return is_array(getimagesize($file));
+        return strpos(mime_content_type($file), 'image/') === 0;
     }
 
     /**
@@ -32,8 +32,7 @@ class FileType
      */
     public function csv($file)
     {
-        $mimetype = gplcart_file_mime($file);
-        return strtok($mimetype, '/') === 'text';
+        return strpos(mime_content_type($file), 'text/') === 0;
     }
 
     /**
@@ -44,7 +43,12 @@ class FileType
     public function zip($file)
     {
         $zip = zip_open($file);
-        return is_resource($zip);
+
+        if (is_resource($zip)) {
+            zip_close($zip);
+            return true;
+        }
+        return false;
     }
 
     /**
