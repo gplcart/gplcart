@@ -494,6 +494,7 @@ return array(
             'store_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
             'email' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
             'name' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+            'timezone' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
             'hash' => array('type' => 'text', 'not_null' => true),
             'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
         )
