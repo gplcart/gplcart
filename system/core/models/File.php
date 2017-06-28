@@ -103,7 +103,7 @@ class File extends Model
         }
 
         if (empty($data['mime_type'])) {
-            $data['mime_type'] = gplcart_file_mime(GC_FILE_DIR . "/{$data['path']}");
+            $data['mime_type'] = mime_content_type(GC_FILE_DIR . "/{$data['path']}");
         }
 
         if (empty($data['file_type'])) {
@@ -153,11 +153,8 @@ class File extends Model
     public function get($file_id, $language = null)
     {
         $this->hook->fire('file.get.before', $file_id, $this);
-
         $file = $this->db->fetch('SELECT * FROM file WHERE file_id=?', array($file_id));
-
         $this->attachTranslationTrait($this->db, $file, 'file', $language);
-
         $this->hook->fire('file.get.after', $file, $this);
         return $file;
     }
@@ -404,7 +401,7 @@ class File extends Model
             $sql .= ' AND f.file_type = ?';
             $params[] = $data['file_type'];
         }
-        
+
         // This is to prevent errors wnen sql_mode=only_full_group_by
         $sql .= ' GROUP BY f.file_id, ft.title';
 
@@ -535,6 +532,39 @@ class File extends Model
     }
 
     /**
+     * Multiple file upload
+     * @param array $files
+     * @param null|string|false $handler
+     * @param string $path
+     * @param bool $relative
+     * @return array
+     */
+    public function uploadMultiple($files, $handler, $path, $relative = true)
+    {
+        if (empty($files['name']) || (count($files['name']) == 1 && empty($files['name'][0]))) {
+            return array();
+        }
+
+        $converted = array();
+        foreach ($files as $key => $all) {
+            foreach ($all as $i => $val) {
+                $converted[$i][$key] = $val;
+            }
+        }
+
+        $return = array();
+        foreach ($converted as $key => $file) {
+            $result = $this->upload($file, $handler, $path);
+            if ($result === true) {
+                $return[$key]['transferred'] = $this->getTransferred($relative);
+            } else {
+                $return[$key]['errors'] = (string) $result;
+            }
+        }
+        return $return;
+    }
+
+    /**
      * Downloads a file from a remote URL
      * @param string $url
      * @param null|false|string $handler
@@ -589,7 +619,7 @@ class File extends Model
             return false;
         }
 
-        $file = tempnam(sys_get_temp_dir(), 'DWN');
+        $file = tempnam(ini_get('upload_tmp_dir'), 'DWN');
         $fh = fopen($file, "w");
         fwrite($fh, $content);
         fclose($fh);
