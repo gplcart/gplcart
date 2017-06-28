@@ -278,7 +278,6 @@ class Component extends BaseValidator
                         unset($image['translation'][$lang][$field]);
                         continue;
                     }
-
                     $value = mb_strimwidth($value, 0, 255, '');
                 }
 
@@ -301,33 +300,18 @@ class Component extends BaseValidator
     protected function validateUploadImagesComponent($entity)
     {
         $files = $this->request->file('files');
-
-        // Bulk upload never empty, so check the $_FILES structure
-        if (empty($files['name']) || (count($files['name']) == 1 && empty($files['name'][0]))) {
-            return null;
-        }
+        $directory = $this->config->get("{$entity}_image_dirname", $entity);
+        $results = $this->file->uploadMultiple($files, 'image', "image/upload/$directory");
 
         $errors = 0;
-        $path = 'image/upload/' . $this->config->get("{$entity}_image_dirname", $entity);
-
-        // Convert submitted data
-        $converted = array();
-        foreach ($files as $key => $all) {
-            foreach ($all as $i => $val) {
-                $converted[$i][$key] = $val;
+        foreach ($results as $key => $result) {
+            if (empty($result['error'])) {
+                $this->setSubmitted("images.$key.path", $result['transferred']);
+            } else {
+                $errors++;
+                $this->setError('images', $result['error']);
             }
         }
-
-        foreach ($converted as $key => $file) {
-            $result = $this->file->upload($file, 'image', $path);
-            if ($result === true) {
-                $this->setSubmitted("images.$key.path", $this->file->getTransferred(true));
-                continue;
-            }
-            $errors++;
-            $this->setError('images', (string) $result);
-        }
-
         return empty($errors);
     }
 
