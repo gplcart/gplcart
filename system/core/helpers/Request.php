@@ -16,11 +16,6 @@ class Request
 {
 
     /**
-     * Cookie prefix
-     */
-    const COOKIE_PREFIX = 'gplcart_';
-
-    /**
      * Language code from URL
      * @var string
      */
@@ -185,6 +180,15 @@ class Request
     }
 
     /**
+     * Returns request language
+     * @return string
+     */
+    public function language()
+    {
+        return substr($this->server('HTTP_ACCEPT_LANGUAGE'), 0, 2);
+    }
+
+    /**
      * Returns a data from the POST request
      * @param string $name
      * @param mixed $default
@@ -207,7 +211,6 @@ class Request
             $result = gplcart_array_get_value($post, $name);
             return isset($result) ? $result : $default;
         }
-
         return $post;
     }
 
@@ -230,7 +233,6 @@ class Request
             $result = gplcart_array_get_value($request, $name);
             return isset($result) ? $result : $default;
         }
-
         return $request;
     }
 
@@ -252,9 +254,8 @@ class Request
         gplcart_array_trim($cookie, $filter);
 
         if (isset($name)) {
-            return isset($cookie[self::COOKIE_PREFIX . $name]) ? $cookie[self::COOKIE_PREFIX . $name] : $default;
+            return isset($cookie[$name]) ? $cookie[$name] : $default;
         }
-
         return $cookie;
     }
 
@@ -267,36 +268,28 @@ class Request
      */
     public function setCookie($name, $value, $lifespan = 31536000)
     {
-        return setcookie(self::COOKIE_PREFIX . $name, $value, GC_TIME + $lifespan, '/');
+        return setcookie($name, $value, GC_TIME + $lifespan, '/');
     }
 
     /**
      * Deletes a cookie
      * @param string $name
-     * @param bool $check_prefix
      * @return boolean
      */
-    public function deleteCookie($name = null, $check_prefix = true)
+    public function deleteCookie($name = null)
     {
-        if (!isset($name)) {
-            foreach (array_keys($_COOKIE) as $key) {
-                if (strpos($key, self::COOKIE_PREFIX) === 0) {
-                    $this->deleteCookie($key, false);
-                }
+        if (isset($name)) {
+            if (isset($_COOKIE[$name])) {
+                unset($_COOKIE[$name]);
+                return setcookie($name, '', GC_TIME - 3600, '/');
             }
-            return true;
+            return false;
         }
 
-        if ($check_prefix) {
-            $name = self::COOKIE_PREFIX . $name;
+        foreach (array_keys($_COOKIE) as $key) {
+            $this->deleteCookie($key);
         }
-
-        if (isset($_COOKIE[$name])) {
-            unset($_COOKIE[$name]);
-            return setcookie($name, '', GC_TIME - 3600, '/');
-        }
-
-        return false;
+        return true;
     }
 
     /**
@@ -320,7 +313,6 @@ class Request
             $result = gplcart_array_get_value($get, $name);
             return isset($result) ? $result : $default;
         }
-
         return $get;
     }
 
@@ -337,7 +329,6 @@ class Request
         if (isset($name)) {
             return !empty($files[$name]['name']) ? $files[$name] : $default;
         }
-
         return $files;
     }
 
