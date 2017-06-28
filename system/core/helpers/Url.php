@@ -100,8 +100,6 @@ class Url
             $url = "$scheme$host$url";
         }
 
-        $url = rtrim($url, '/');
-
         if (!empty($options)) {
             $url .= '?' . http_build_query($options);
         }
