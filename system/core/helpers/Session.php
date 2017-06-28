@@ -19,7 +19,6 @@ class Session
 
     /**
      * Constructor
-     * @throws AuthorizationException
      */
     public function __construct()
     {
@@ -90,27 +89,19 @@ class Session
         if (isset($_SESSION)) {
             $value = gplcart_array_get_value($_SESSION, $key);
         }
-
-        if (isset($value)) {
-            return $value;
-        }
-
-        return $default;
+        return isset($value) ? $value : $default;
     }
 
     /**
      * Saves/updates a data in the session
      * @param string|array $key
      * @param mixed $value
-     * @return boolean
      */
     public function set($key, $value = null)
     {
         if (isset($_SESSION)) {
             gplcart_array_set_value($_SESSION, $key, $value);
-            return true;
         }
-        return false;
     }
 
     /**
@@ -129,7 +120,6 @@ class Session
             if (!session_destroy()) {
                 throw new AuthorizationException('Failed to delete the session');
             }
-
             return true;
         }
 
@@ -153,20 +143,6 @@ class Session
         $message = $this->get($key, array());
         $this->delete($key);
         return $message;
-    }
-
-    /**
-     * Sets/gets the session token
-     * @param mixed $value
-     * @return mixed
-     */
-    public function token($value = null)
-    {
-        if (isset($value)) {
-            return $this->set('token', $value);
-        }
-
-        return $this->get('token');
     }
 
 }
