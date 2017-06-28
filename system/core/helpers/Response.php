@@ -125,7 +125,8 @@ class Response
         $this->addOptionalHeaders($options);
         $this->sendHeaders();
 
-        exit(json_encode($data));
+        echo gplcart_json_encode($data);
+        exit;
     }
 
     /**
@@ -153,7 +154,8 @@ class Response
         $this->addOptionalHeaders($options);
         $this->sendHeaders();
 
-        exit($html);
+        echo $html;
+        exit;
     }
 
     /**
@@ -221,8 +223,8 @@ class Response
             exit;
         }
 
-        $text = $this->getMessageError403();
-        exit($text);
+        echo $this->getMessageError403();
+        exit;
     }
 
     /**
@@ -237,8 +239,8 @@ class Response
             exit;
         }
 
-        $text = $this->getMessageError404();
-        exit($text);
+        echo $this->getMessageError404();
+        exit;
     }
 
     /**

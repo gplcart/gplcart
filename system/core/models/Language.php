@@ -420,9 +420,8 @@ class Language extends Model
     {
         $file = "{$this->compiled_directory_js}/$filename.js";
 
-        $key = json_encode($string, JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS);
-        $translation = json_encode($data, JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS);
-
+        $key = gplcart_json_encode($string);
+        $translation = gplcart_json_encode($data);
         return (bool) file_put_contents($file, "GplCart.translations[$key]=$translation;\n", FILE_APPEND);
     }
 
