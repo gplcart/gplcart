@@ -30,6 +30,16 @@ function gplcart_to_bytes($value)
 }
 
 /**
+ * Returns XSS-safe JSON string
+ * @param mixed $data
+ * @return string
+ */
+function gplcart_json_encode($data)
+{
+    return json_encode($data, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
+}
+
+/**
  * Validates a domain name, e.g domain.com
  * @param string $domain
  * @return boolean
