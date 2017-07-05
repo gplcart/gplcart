@@ -1129,8 +1129,6 @@ abstract class Controller
     {
         if (!$this->isInstalling()) {
 
-            $this->controlToken(false);
-
             if (!empty($this->uid)) {
                 $this->controlAccessCredentials();
             }
@@ -1229,17 +1227,17 @@ abstract class Controller
 
     /**
      * Controls token in the URL query
-     * @param boolean $required
+     * @param null|string $key
      */
-    protected function controlToken($required = true)
+    protected function controlToken($key = null)
     {
-        $token = $this->request->get('token', null);
-
-        if ($required && !$this->config->tokenValid($token)) {
-            $this->response->error403();
+        if (isset($key)) {
+            $control = isset($this->query[$key]);
+        } else {
+            $control = !empty($this->query);
         }
 
-        if (isset($token) && !$this->config->tokenValid($token)) {
+        if ($control && (empty($this->query['token']) || !$this->config->tokenValid($this->query['token']))) {
             $this->response->error403();
         }
     }
