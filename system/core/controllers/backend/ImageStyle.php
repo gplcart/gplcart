@@ -59,7 +59,10 @@ class ImageStyle extends BackendController
      */
     protected function clearCacheImageStyle()
     {
-        $style_id = (string) $this->getQuery('clear');
+        $key = 'clear';
+        $this->controlToken($key);
+
+        $style_id = (string) $this->getQuery($key);
         if (!empty($style_id) && $this->image->clearCache($style_id)) {
             $this->redirect('', $this->text('Cache has been cleared'), 'success');
         }

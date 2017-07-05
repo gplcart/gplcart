@@ -56,6 +56,7 @@ class Module extends BackendController
      */
     public function listModule()
     {
+        $this->controlToken('action');
         $this->actionListModule();
 
         $this->setTitleListModule();

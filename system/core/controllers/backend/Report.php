@@ -272,7 +272,10 @@ class Report extends BackendController
      */
     protected function clearEventReport()
     {
-        if ($this->isQuery('clear')) {
+        $key = 'clear';
+        $this->controlToken($key);
+
+        if ($this->isQuery($key)) {
             $this->report->clear();
             $this->redirect('admin/report/events');
         }

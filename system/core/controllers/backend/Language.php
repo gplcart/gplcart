@@ -216,7 +216,10 @@ class Language extends BackendController
      */
     protected function refreshLanguage()
     {
-        $code = (string) $this->getQuery('refresh');
+        $key = 'refresh';
+        $this->controlToken($key);
+
+        $code = (string) $this->getQuery($key);
 
         if (!empty($code)) {
             $this->controlAccess('language_edit');
