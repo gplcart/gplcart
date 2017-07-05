@@ -19,12 +19,23 @@ FileETag None
 # Enable rewriting
 RewriteEngine On
 
-# Make sure Authorization HTTP header is available
-RewriteRule ^ - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+# Set "protossl" to "s" if we were accessed via https://
+RewriteRule ^ - [E=protossl]
+RewriteCond %{HTTPS} on
+RewriteRule ^ - [E=protossl:s]
 
-# Redirect from http://.www to http://
-RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
-RewriteRule ^ http%{ENV:protossl}://%1%{REQUEST_URI} [L,R=301]
+# To redirect from http://domain.com to http://www.domain.com uncomment the following:
+# RewriteCond %{HTTP_HOST} .
+# RewriteCond %{HTTP_HOST} !^www\. [NC]
+# RewriteRule ^ http%{ENV:protossl}://www.%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+#
+# To redirect from http://www.domain.com to http://domain.com uncomment the following:
+# RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+# RewriteRule ^ http%{ENV:protossl}://%1%{REQUEST_URI} [L,R=301]
+
+# If your site installed at http://domain.com/subdirectory
+# and the rewriting rules are not working properly uncomment and modify the following:
+# RewriteBase /subdirectory
 
 # Prevent direct access to .php files
 RewriteCond %{THE_REQUEST} ^.+?\ [^?]+\.php[?\ ]
