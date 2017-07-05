@@ -59,6 +59,7 @@ class Address extends BackendController
     {
         $allowed = array('city_id', 'address_id', 'address_1', 'phone',
             'user_id', 'user_email', 'full_name', 'postcode', 'city_name');
+
         $this->setFilter($allowed);
     }
 
@@ -68,12 +69,11 @@ class Address extends BackendController
     protected function actionListAddress()
     {
         $action = (string) $this->getPosted('action');
+        $selected = (array) $this->getPosted('selected', array());
 
         if (empty($action)) {
             return null;
         }
-
-        $selected = (array) $this->getPosted('selected', array());
 
         $deleted = 0;
         foreach ($selected as $id) {
@@ -83,7 +83,7 @@ class Address extends BackendController
         }
 
         if ($deleted > 0) {
-            $message = $this->text('Deleted %num addresses', array('%num' => $deleted));
+            $message = $this->text('Deleted %num items', array('%num' => $deleted));
             $this->setMessage($message, 'success', true);
         }
     }

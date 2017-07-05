@@ -145,14 +145,13 @@ class City extends BackendController
      */
     protected function actionListCity()
     {
+        $value = (string) $this->getPosted('value');
         $action = (string) $this->getPosted('action');
+        $selected = (array) $this->getPosted('selected', array());
 
         if (empty($action)) {
             return null;
         }
-
-        $value = (int) $this->getPosted('value');
-        $selected = (array) $this->getPosted('selected', array());
 
         $deleted = $updated = 0;
         foreach ($selected as $id) {
@@ -167,12 +166,12 @@ class City extends BackendController
         }
 
         if ($updated > 0) {
-            $message = $this->text('Cities have been updated');
+            $message = $this->text('Updated %num items', array('%num' => $updated));
             $this->setMessage($message, 'success', true);
         }
 
         if ($deleted > 0) {
-            $message = $this->text('Cities have been deleted');
+            $message = $this->text('Deleted %num items', array('%num' => $deleted));
             $this->setMessage($message, 'success', true);
         }
     }
@@ -183,7 +182,8 @@ class City extends BackendController
     protected function setTotalListCity()
     {
         $options = array(
-            'count' => true, 'state_id' => $this->data_state['state_id']);
+            'count' => true,
+            'state_id' => $this->data_state['state_id']);
 
         $options += $this->query_filter;
         $this->total = (int) $this->city->getList($options);
@@ -196,7 +196,8 @@ class City extends BackendController
     protected function getListCity()
     {
         $options = array(
-            'limit' => $this->limit, 'state_id' => $this->data_state['state_id']);
+            'limit' => $this->limit,
+            'state_id' => $this->data_state['state_id']);
 
         $options += $this->query_filter;
         return (array) $this->city->getList($options);

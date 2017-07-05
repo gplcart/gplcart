@@ -75,12 +75,11 @@ class Field extends BackendController
     protected function actionListField()
     {
         $action = (string) $this->getPosted('action');
+        $selected = (array) $this->getPosted('selected', array());
 
         if (empty($action)) {
             return null;
         }
-
-        $selected = (array) $this->getPosted('selected', array());
 
         $deleted = 0;
         foreach ($selected as $field_id) {
@@ -90,7 +89,7 @@ class Field extends BackendController
         }
 
         if ($deleted > 0) {
-            $message = $this->text('Fields have been deleted');
+            $message = $this->text('Deleted %num items', array('%num' => $deleted));
             $this->setMessage($message, 'success', true);
         }
     }
@@ -194,6 +193,7 @@ class Field extends BackendController
     {
         $this->setSubmitted('field');
         $this->setSubmitted('update', $this->data_field);
+
         $this->validateComponent('field');
 
         return !$this->hasErrors();

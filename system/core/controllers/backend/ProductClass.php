@@ -91,36 +91,33 @@ class ProductClass extends BackendController
      */
     protected function actionListProductClass()
     {
+        $value = (string) $this->getPosted('value');
         $action = (string) $this->getPosted('action');
+        $selected = (array) $this->getPosted('selected', array());
 
         if (empty($action)) {
             return null;
         }
 
-        $value = (int) $this->getPosted('value');
-        $selected = (array) $this->getPosted('selected', array());
-
         $updated = $deleted = 0;
         foreach ($selected as $id) {
 
-            if ($action == 'status' && $this->access('product_class_edit')) {
+            if ($action === 'status' && $this->access('product_class_edit')) {
                 $updated += (int) $this->product_class->update($id, array('status' => $value));
             }
 
-            if ($action == 'delete' && $this->access('product_class_delete')) {
+            if ($action === 'delete' && $this->access('product_class_delete')) {
                 $deleted += (int) $this->product_class->delete($id);
             }
         }
 
         if ($updated > 0) {
-            $vars = array('%num' => $updated);
-            $message = $this->text('Updated %num product classes', $vars);
+            $message = $this->text('Updated %num items', array('%num' => $updated));
             $this->setMessage($message, 'success', true);
         }
 
         if ($deleted > 0) {
-            $vars = array('%num' => $deleted);
-            $message = $this->text('Deleted %num product classes', $vars);
+            $message = $this->text('Deleted %num items', array('%num' => $deleted));
             $this->setMessage($message, 'success', true);
         }
     }
@@ -228,6 +225,7 @@ class ProductClass extends BackendController
         $this->setSubmitted('update', $this->data_product_class);
 
         $this->validateComponent('product_class');
+
         return !$this->hasErrors();
     }
 

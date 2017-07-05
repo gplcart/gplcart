@@ -185,6 +185,7 @@ class ImageStyle extends BackendController
         $this->setSubmitted('update', $this->data_imagestyle);
 
         $this->validateComponent('image_style');
+
         return !$this->hasErrors();
     }
 

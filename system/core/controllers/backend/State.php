@@ -72,7 +72,6 @@ class State extends BackendController
     public function listState($code)
     {
         $this->setCountry($code);
-
         $this->actionListState();
 
         $this->setTitleListState();
@@ -128,14 +127,13 @@ class State extends BackendController
      */
     protected function actionListState()
     {
+        $value = (string) $this->getPosted('value');
         $action = (string) $this->getPosted('action');
+        $selected = (array) $this->getPosted('selected', array());
 
         if (empty($action)) {
             return null;
         }
-
-        $value = (int) $this->getPosted('value');
-        $selected = (array) $this->getPosted('selected', array());
 
         $deleted = $updated = 0;
         foreach ($selected as $id) {
@@ -150,14 +148,12 @@ class State extends BackendController
         }
 
         if ($updated > 0) {
-            $vars = array('%num' => $updated);
-            $text = $this->text('Updated %num country states', $vars);
+            $text = $this->text('Updated %num items', array('%num' => $updated));
             $this->setMessage($text, 'success', true);
         }
 
         if ($deleted > 0) {
-            $vars = array('%num' => $deleted);
-            $text = $this->text('Deleted %num country states', $vars);
+            $text = $this->text('Deleted %num items', array('%num' => $deleted));
             $this->setMessage($text, 'success', true);
         }
     }
@@ -294,6 +290,7 @@ class State extends BackendController
         $this->setSubmitted('country', $this->data_country['code']);
 
         $this->validateComponent('state');
+
         return !$this->hasErrors();
     }
 

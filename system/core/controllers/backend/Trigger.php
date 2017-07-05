@@ -81,14 +81,13 @@ class Trigger extends BackendController
      */
     protected function actionListTrigger()
     {
+        $value = (string) $this->getPosted('value');
         $action = (string) $this->getPosted('action');
+        $selected = (array) $this->getPosted('selected', array());
 
         if (empty($action)) {
             return null;
         }
-
-        $value = (int) $this->getPosted('value');
-        $selected = (array) $this->getPosted('selected', array());
 
         $deleted = $updated = 0;
 
@@ -104,12 +103,12 @@ class Trigger extends BackendController
         }
 
         if ($updated > 0) {
-            $message = $this->text('Triggers have been updated');
+            $message = $this->text('Updated %num items', array('%num' => $updated));
             $this->setMessage($message, 'success', true);
         }
 
         if ($deleted > 0) {
-            $message = $this->text('Triggers have been deleted');
+            $message = $this->text('Deleted %num items', array('%num' => $deleted));
             $this->setMessage($message, 'success', true);
         }
     }
@@ -132,6 +131,7 @@ class Trigger extends BackendController
     {
         $query = $this->query_filter;
         $query['limit'] = $this->limit;
+
         return (array) $this->trigger->getList($query);
     }
 
@@ -260,6 +260,7 @@ class Trigger extends BackendController
         $this->setSubmitted('update', $this->data_trigger);
 
         $this->validateComponent('trigger');
+
         return !$this->hasErrors();
     }
 

@@ -76,6 +76,7 @@ class Review extends BackendController
     {
         $allowed = array('product_id', 'email',
             'status', 'created', 'text', 'review_id');
+
         $this->setFilter($allowed);
     }
 
@@ -84,14 +85,13 @@ class Review extends BackendController
      */
     protected function actionListReview()
     {
+        $value = (string) $this->getPosted('value');
         $action = (string) $this->getPosted('action');
+        $selected = (array) $this->getPosted('selected', array());
 
         if (empty($action)) {
             return null;
         }
-
-        $value = (int) $this->getPosted('value');
-        $selected = (array) $this->getPosted('selected', array());
 
         $updated = $deleted = 0;
         foreach ($selected as $review_id) {
@@ -106,12 +106,12 @@ class Review extends BackendController
         }
 
         if ($updated > 0) {
-            $message = $this->text('Updated %num reviews', array('%num' => $updated));
+            $message = $this->text('Updated %num items', array('%num' => $updated));
             $this->setMessage($message, 'success', true);
         }
 
         if ($deleted > 1) {
-            $message = $this->text('Deleted %num reviews', array('%num' => $deleted));
+            $message = $this->text('Deleted %num items', array('%num' => $deleted));
             $this->setMessage($message, 'success', true);
         }
     }
@@ -149,6 +149,7 @@ class Review extends BackendController
             $product = $this->product->get($review['product_id']);
             $review['product'] = empty($product) ? '' : $product['title'];
         }
+
         return $reviews;
     }
 
@@ -259,6 +260,7 @@ class Review extends BackendController
         $this->setSubmitted('update', $this->data_review);
 
         $this->validateComponent('review');
+
         return !$this->hasErrors();
     }
 

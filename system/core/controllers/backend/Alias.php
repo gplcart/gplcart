@@ -68,12 +68,11 @@ class Alias extends BackendController
     protected function actionListAlias()
     {
         $action = (string) $this->getPosted('action');
+        $selected = (array) $this->getPosted('selected', array());
 
         if (empty($action)) {
             return null;
         }
-
-        $selected = (array) $this->getPosted('selected', array());
 
         $deleted = 0;
         foreach ($selected as $id) {
@@ -83,7 +82,7 @@ class Alias extends BackendController
         }
 
         if ($deleted > 0) {
-            $message = $this->text('Deleted %num aliases', array('%num' => $deleted));
+            $message = $this->text('Deleted %num items', array('%num' => $deleted));
             $this->setMessage($message, 'success', true);
         }
     }

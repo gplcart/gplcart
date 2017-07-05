@@ -269,6 +269,7 @@ class Order extends BackendController
             'count' => true,
             'order_id' => $this->data_order['order_id']
         );
+
         return (int) $this->order->getLogList($options);
     }
 
@@ -283,6 +284,7 @@ class Order extends BackendController
             'limit' => $limit,
             'order_id' => $this->data_order['order_id']
         );
+
         return (array) $this->order->getLogList($options);
     }
 
@@ -507,13 +509,12 @@ class Order extends BackendController
     protected function actionListOrder()
     {
         $action = (string) $this->getPosted('action');
+        $value = (string) $this->getPosted('value');
+        $selected = (array) $this->getPosted('selected', array());
 
         if (empty($action)) {
             return null;
         }
-
-        $value = (string) $this->getPosted('value');
-        $selected = (array) $this->getPosted('selected', array());
 
         $deleted = $updated = 0;
         $failed_notifications = array();
@@ -534,7 +535,7 @@ class Order extends BackendController
         }
 
         if ($updated > 0) {
-            $message = $this->text('Orders have been updated');
+            $message = $this->text('Updated %num items', array('%num' => $updated));
             $this->setMessage($message, 'success', true);
         }
 
@@ -545,7 +546,7 @@ class Order extends BackendController
         }
 
         if ($deleted > 0) {
-            $message = $this->text('Orders have been deleted');
+            $message = $this->text('Deleted %num items', array('%num' => $deleted));
             $this->setMessage($message, 'success', true);
         }
     }

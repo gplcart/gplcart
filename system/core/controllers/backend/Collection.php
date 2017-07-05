@@ -74,14 +74,13 @@ class Collection extends BackendController
      */
     protected function actionListCollection()
     {
+        $value = (string) $this->getPosted('value');
         $action = (string) $this->getPosted('action');
+        $selected = (array) $this->getPosted('selected', array());
 
         if (empty($action)) {
             return null;
         }
-
-        $value = (int) $this->getPosted('value');
-        $selected = (array) $this->getPosted('selected', array());
 
         $deleted = $updated = 0;
 
@@ -97,12 +96,12 @@ class Collection extends BackendController
         }
 
         if ($updated > 0) {
-            $message = $this->text('Collections have been updated');
+            $message = $this->text('Updated %num items', array('%num' => $updated));
             $this->setMessage($message, 'success', true);
         }
 
         if ($deleted > 0) {
-            $message = $this->text('Collections have been deleted');
+            $message = $this->text('Deleted %num items', array('%num' => $deleted));
             $this->setMessage($message, 'success', true);
         }
     }
@@ -208,6 +207,7 @@ class Collection extends BackendController
         $this->setSubmitted('update', $this->data_collection);
 
         $this->validateComponent('collection');
+
         return !$this->hasErrors();
     }
 

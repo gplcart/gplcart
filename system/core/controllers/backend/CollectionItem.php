@@ -87,14 +87,13 @@ class CollectionItem extends BackendController
      */
     protected function actionListCollectionItem()
     {
+        $value = (string) $this->getPosted('value');
         $action = (string) $this->getPosted('action');
+        $selected = (array) $this->getPosted('selected', array());
 
         if (empty($action)) {
             return null;
         }
-
-        $value = (int) $this->getPosted('value');
-        $selected = (array) $this->getPosted('selected', array());
 
         if ($action === 'weight' && $this->access('collection_item_edit')) {
             $this->updateWeightCollectionItem($selected);
@@ -114,12 +113,12 @@ class CollectionItem extends BackendController
         }
 
         if ($updated > 0) {
-            $message = $this->text('Collection items have been updated');
+            $message = $this->text('Updated %num items', array('%num' => $updated));
             $this->setMessage($message, 'success', true);
         }
 
         if ($deleted > 0) {
-            $message = $this->text('Collection items have been deleted');
+            $message = $this->text('Deleted %num items', array('%num' => $deleted));
             $this->setMessage($message, 'success', true);
         }
     }
@@ -134,9 +133,7 @@ class CollectionItem extends BackendController
             $this->collection_item->update($id, array('weight' => $weight));
         }
 
-        $response = array(
-            'success' => $this->text('Items have been reordered'));
-
+        $response = array('success' => $this->text('Items have been reordered'));
         $this->response->json($response);
     }
 
@@ -250,6 +247,7 @@ class CollectionItem extends BackendController
         $this->setSubmitted('collection_id', $this->data_collection['collection_id']);
 
         $this->validateComponent('collection_item');
+
         return !$this->hasErrors();
     }
 

@@ -124,6 +124,7 @@ class Product extends BackendController
     {
         $allowed = array('title', 'sku_like', 'price', 'stock', 'status',
             'store_id', 'product_id', 'currency');
+
         $this->setFilter($allowed);
     }
 
@@ -142,34 +143,33 @@ class Product extends BackendController
      */
     protected function actionListProduct()
     {
+        $value = (string) $this->getPosted('value');
         $action = (string) $this->getPosted('action');
+        $selected = (array) $this->getPosted('selected', array());
 
         if (empty($action)) {
             return null;
         }
 
-        $value = (int) $this->getPosted('value');
-        $selected = (array) $this->getPosted('selected', array());
-
         $deleted = $updated = 0;
         foreach ($selected as $id) {
 
-            if ($action == 'status' && $this->access('product_edit')) {
+            if ($action === 'status' && $this->access('product_edit')) {
                 $updated += (int) $this->product->update($id, array('status' => $value));
             }
 
-            if ($action == 'delete' && $this->access('product_delete')) {
+            if ($action === 'delete' && $this->access('product_delete')) {
                 $deleted += (int) $this->product->delete($id);
             }
         }
 
         if ($updated > 0) {
-            $message = $this->text('Updated %num products', array('%num' => $updated));
+            $message = $this->text('Updated %num items', array('%num' => $updated));
             $this->setMessage($message, 'success', true);
         }
 
         if ($deleted > 0) {
-            $message = $this->text('Deleted %num products', array('%num' => $deleted));
+            $message = $this->text('Deleted %num items', array('%num' => $deleted));
             $this->setMessage($message, 'success', true);
         }
     }

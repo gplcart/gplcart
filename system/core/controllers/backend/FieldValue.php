@@ -120,12 +120,11 @@ class FieldValue extends BackendController
     protected function actionListFieldValue()
     {
         $action = (string) $this->getPosted('action');
+        $selected = (array) $this->getPosted('selected', array());
 
         if (empty($action)) {
             return null;
         }
-
-        $selected = (array) $this->getPosted('selected', array());
 
         if ($action === 'weight' && $this->access('field_value_edit')) {
             $this->updateWeightFieldValue($selected);
@@ -140,8 +139,7 @@ class FieldValue extends BackendController
         }
 
         if ($deleted > 0) {
-            $options = array('@num' => $deleted);
-            $message = $this->text('Deleted @num field values', $options);
+            $message = $this->text('Deleted %num items', array('%num' => $deleted));
             $this->setMessage($message, 'success', true);
         }
     }
@@ -156,9 +154,7 @@ class FieldValue extends BackendController
             $this->field_value->update($field_value_id, array('weight' => $weight));
         }
 
-        $response = array(
-            'success' => $this->text('Items have been reordered'));
-
+        $response = array('success' => $this->text('Items have been reordered'));
         $this->response->json($response);
     }
 
@@ -305,6 +301,7 @@ class FieldValue extends BackendController
         $this->setSubmitted('field_id', $this->data_field['field_id']);
 
         $this->validateComponent('field_value');
+
         return !$this->hasErrors();
     }
 

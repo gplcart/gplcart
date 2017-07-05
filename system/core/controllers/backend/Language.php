@@ -83,14 +83,12 @@ class Language extends BackendController
             return null;
         }
 
-        if (!$this->isPosted('save') || !$this->validateLanguage()) {
-            return null;
-        }
-
-        if (isset($this->data_language['code'])) {
-            $this->updateLanguage();
-        } else {
-            $this->addLanguage();
+        if ($this->isPosted('save') && $this->validateLanguage()) {
+            if (isset($this->data_language['code'])) {
+                $this->updateLanguage();
+            } else {
+                $this->addLanguage();
+            }
         }
     }
 
@@ -124,6 +122,7 @@ class Language extends BackendController
         $this->setSubmitted('update', $this->data_language);
 
         $this->validateComponent('language');
+
         return !$this->hasErrors();
     }
 

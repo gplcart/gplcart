@@ -93,14 +93,13 @@ class Page extends BackendController
      */
     protected function actionPage()
     {
+        $value = (string) $this->getPosted('value');
         $action = (string) $this->getPosted('action');
+        $selected = (array) $this->getPosted('selected', array());
 
         if (empty($action)) {
             return null;
         }
-
-        $value = (int) $this->getPosted('value');
-        $selected = (array) $this->getPosted('selected', array());
 
         if ($action === 'categories') {
             $this->outputCategoriesPage();
@@ -119,11 +118,13 @@ class Page extends BackendController
         }
 
         if ($updated > 0) {
-            $this->setMessage($this->text('Pages have been updated'), 'success', true);
+            $message = $this->text('Updated %num items', array('%num' => $updated));
+            $this->setMessage($message, 'success', true);
         }
 
         if ($deleted > 0) {
-            $this->setMessage($this->text('Pages have been deleted'), 'success', true);
+            $message = $this->text('Deleted %num items', array('%num' => $deleted));
+            $this->setMessage($message, 'success', true);
         }
     }
 
@@ -281,6 +282,7 @@ class Page extends BackendController
         }
 
         $this->validateComponent('page');
+
         return !$this->hasErrors();
     }
 

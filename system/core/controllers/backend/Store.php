@@ -101,34 +101,33 @@ class Store extends BackendController
      */
     protected function actionListStore()
     {
+        $value = (string) $this->getPosted('value');
         $action = (string) $this->getPosted('action');
+        $selected = (array) $this->getPosted('selected', array());
 
         if (empty($action)) {
             return null;
         }
 
-        $value = (int) $this->getPosted('value');
-        $selected = (array) $this->getPosted('selected', array());
-
         $updated = $deleted = 0;
         foreach ($selected as $id) {
 
-            if ($action == 'status' && $this->access('store_edit')) {
+            if ($action === 'status' && $this->access('store_edit')) {
                 $updated += (int) $this->store->update($id, array('status' => (int) $value));
             }
 
-            if ($action == 'delete' && $this->access('store_delete') && !$this->store->isDefault($id)) {
+            if ($action === 'delete' && $this->access('store_delete') && !$this->store->isDefault($id)) {
                 $deleted += (int) $this->store->delete($id);
             }
         }
 
         if ($updated > 0) {
-            $message = $this->text('Stores have been updated');
+            $message = $this->text('Updated %num items', array('%num' => $updated));
             $this->setMessage($message, 'success', true);
         }
 
         if ($deleted > 0) {
-            $message = $this->text('Stores have been deleted');
+            $message = $this->text('Deleted %num items', array('%num' => $deleted));
             $this->setMessage($message, 'success', true);
         }
     }
@@ -253,6 +252,7 @@ class Store extends BackendController
     {
         $themes = $this->module->getByType('theme', true);
         unset($themes[$this->theme_backend]);
+
         return $themes;
     }
 
@@ -318,6 +318,7 @@ class Store extends BackendController
         }
 
         $this->validateComponent('store');
+
         return !$this->hasErrors();
     }
 
@@ -377,7 +378,6 @@ class Store extends BackendController
             }
         }
 
-        // Convert arrays to multiline strings
         foreach (array('email', 'phone', 'fax', 'map') as $field) {
             $value = $this->getData("store.data.$field");
             if (isset($value)) {

@@ -127,6 +127,7 @@ class UserRole extends BackendController
         $this->setSubmitted('update', $this->data_role);
 
         $this->validateComponent('user_role');
+
         return !$this->hasErrors();
     }
 
@@ -258,34 +259,33 @@ class UserRole extends BackendController
      */
     protected function actionListUserRole()
     {
+        $value = (string) $this->getPosted('value');
         $action = (string) $this->getPosted('action');
+        $selected = (array) $this->getPosted('selected', array());
 
         if (empty($action)) {
             return null;
         }
 
-        $value = (int) $this->getPosted('value');
-        $selected = (array) $this->getPosted('selected', array());
-
         $deleted = $updated = 0;
         foreach ($selected as $role_id) {
 
-            if ($action == 'status' && $this->access('user_role_edit')) {
+            if ($action === 'status' && $this->access('user_role_edit')) {
                 $updated += (int) $this->role->update($role_id, array('status' => $value));
             }
 
-            if ($action == 'delete' && $this->access('user_role_delete')) {
+            if ($action === 'delete' && $this->access('user_role_delete')) {
                 $deleted += (int) $this->role->delete($role_id);
             }
         }
 
         if ($updated > 0) {
-            $text = $this->text('Updated %num user roles', array('%num' => $updated));
+            $text = $this->text('Updated %num items', array('%num' => $updated));
             $this->setMessage($text, 'success', true);
         }
 
         if ($deleted > 0) {
-            $text = $this->text('Deleted %num user roles', array('%num' => $deleted));
+            $text = $this->text('Deleted %num items', array('%num' => $deleted));
             $this->setMessage($text, 'success', true);
         }
     }
@@ -298,6 +298,7 @@ class UserRole extends BackendController
     {
         $query = $this->query_filter;
         $query['limit'] = $this->limit;
+
         $roles = (array) $this->role->getList($query);
         return $this->prepareListUserRole($roles);
     }

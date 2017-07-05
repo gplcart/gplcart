@@ -81,14 +81,13 @@ class Country extends BackendController
      */
     protected function actionListCountry()
     {
+        $value = (string) $this->getPosted('value');
         $action = (string) $this->getPosted('action');
+        $selected = (array) $this->getPosted('selected', array());
 
         if (empty($action)) {
             return null;
         }
-
-        $value = (int) $this->getPosted('value');
-        $selected = (array) $this->getPosted('selected', array());
 
         if ($action === 'weight' && $this->access('country_edit')) {
             return $this->updateWeightCountry($selected);
@@ -107,12 +106,12 @@ class Country extends BackendController
         }
 
         if ($updated > 0) {
-            $message = $this->text('Countries have been updated');
+            $message = $this->text('Updated %num items', array('%num' => $updated));
             $this->setMessage($message, 'success', true);
         }
 
         if ($deleted > 0) {
-            $message = $this->text('Countries have been deleted');
+            $message = $this->text('Deleted %num items', array('%num' => $deleted));
             $this->setMessage($message, 'success', true);
         }
     }
@@ -267,6 +266,7 @@ class Country extends BackendController
         $this->setSubmitted('update', $this->data_country);
 
         $this->validateComponent('country');
+
         return !$this->hasErrors();
     }
 
@@ -394,7 +394,6 @@ class Country extends BackendController
     {
         $format = $this->getSubmitted();
 
-        // Fix checkboxes, enable required fields
         foreach ($format as $id => &$item) {
 
             $item['status'] = isset($item['status']);

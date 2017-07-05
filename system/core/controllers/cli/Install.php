@@ -142,7 +142,6 @@ class Install extends CliController
         // If a connection error has occurred before the database remains uninitialized
         $this->install->connect($settings['database']);
 
-        // Perform full installation
         $result = $this->install->full($settings);
 
         $message = '';

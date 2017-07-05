@@ -104,6 +104,7 @@ class PriceRule extends BackendController
     {
         $allowed = array('name', 'code', 'value',
             'value_type', 'weight', 'status');
+
         $this->setFilter($allowed);
     }
 
@@ -112,14 +113,13 @@ class PriceRule extends BackendController
      */
     protected function actionListPriceRule()
     {
+        $value = (string) $this->getPosted('value');
         $action = (string) $this->getPosted('action');
+        $selected = (array) $this->getPosted('selected', array());
 
         if (empty($action)) {
             return null;
         }
-
-        $value = (int) $this->getPosted('value');
-        $selected = (array) $this->getPosted('selected', array());
 
         $deleted = $updated = 0;
         foreach ($selected as $rule_id) {
@@ -134,12 +134,12 @@ class PriceRule extends BackendController
         }
 
         if ($updated > 0) {
-            $message = $this->text('Updated %num price rules', array('%num' => $updated));
+            $message = $this->text('Updated %num items', array('%num' => $updated));
             $this->setMessage($message, 'success', true);
         }
 
         if ($deleted > 0) {
-            $message = $this->text('Deleted %num price rules', array('%num' => $deleted));
+            $message = $this->text('Deleted %num items', array('%num' => $deleted));
             $this->setMessage($message, 'success', true);
         }
     }
@@ -164,7 +164,7 @@ class PriceRule extends BackendController
     protected function prepareListPriceRule($rules)
     {
         foreach ($rules as &$rule) {
-            if ($rule['value_type'] == 'fixed') {
+            if ($rule['value_type'] === 'fixed') {
                 $rule['value'] = $this->price->decimal($rule['value'], $rule['currency']);
             }
         }
@@ -262,6 +262,7 @@ class PriceRule extends BackendController
         if ($rule['value_type'] == 'fixed') {
             $rule['value'] = $this->price->decimal($rule['value'], $rule['currency']);
         }
+
         return $rule;
     }
 
@@ -297,6 +298,7 @@ class PriceRule extends BackendController
         $this->setSubmitted('update', $this->data_rule);
 
         $this->validateComponent('price_rule');
+
         return !$this->hasErrors();
     }
 

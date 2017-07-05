@@ -87,12 +87,11 @@ class File extends BackendController
     protected function actionListFile()
     {
         $action = (string) $this->getPosted('action');
+        $selected = (array) $this->getPosted('selected', array());
 
         if (empty($action)) {
             return null;
         }
-
-        $selected = (array) $this->getPosted('selected', array());
 
         $deleted_disk = $deleted_database = 0;
 
@@ -139,7 +138,6 @@ class File extends BackendController
     protected function prepareListFile(array $files)
     {
         foreach ($files as &$file) {
-            // Prevent php errors for invalid/empty paths
             $path = strval(str_replace("\0", "", $file['path']));
             $file['url'] = '';
             if ($path && file_exists(GC_FILE_DIR . '/' . $path)) {
@@ -283,6 +281,7 @@ class File extends BackendController
         $this->setSubmitted('update', $this->data_file);
 
         $this->validateComponent('file');
+
         return !$this->hasErrors();
     }
 

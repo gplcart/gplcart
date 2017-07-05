@@ -81,36 +81,33 @@ class Zone extends BackendController
      */
     protected function actionListZone()
     {
+        $value = (string) $this->getPosted('value');
         $action = (string) $this->getPosted('action');
+        $selected = (array) $this->getPosted('selected', array());
 
         if (empty($action)) {
             return null;
         }
 
-        $value = (int) $this->getPosted('value');
-        $selected = (array) $this->getPosted('selected', array());
-
         $updated = $deleted = 0;
         foreach ($selected as $id) {
 
-            if ($action == 'status' && $this->access('zone_edit')) {
+            if ($action === 'status' && $this->access('zone_edit')) {
                 $updated += (int) $this->zone->update($id, array('status' => $value));
             }
 
-            if ($action == 'delete' && $this->access('zone_delete')) {
+            if ($action === 'delete' && $this->access('zone_delete')) {
                 $deleted += (int) $this->zone->delete($id);
             }
         }
 
         if ($updated > 0) {
-            $vars = array('%num' => $updated);
-            $message = $this->text('Updated %num zones', $vars);
+            $message = $this->text('Updated %num items', array('%num' => $updated));
             $this->setMessage($message, 'success', true);
         }
 
         if ($deleted > 0) {
-            $vars = array('%num' => $deleted);
-            $message = $this->text('Deleted %num zones', $vars);
+            $message = $this->text('Deleted %num items', array('%num' => $deleted));
             $this->setMessage($message, 'success', true);
         }
     }
@@ -123,6 +120,7 @@ class Zone extends BackendController
     {
         $query = $this->query_filter;
         $query['limit'] = $this->limit;
+
         return $this->zone->getList($query);
     }
 
@@ -230,6 +228,7 @@ class Zone extends BackendController
         $this->setSubmitted('update', $this->data_zone);
 
         $this->validateComponent('zone');
+
         return !$this->hasErrors();
     }
 

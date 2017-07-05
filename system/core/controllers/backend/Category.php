@@ -102,14 +102,13 @@ class Category extends BackendController
      */
     protected function actionListCategory()
     {
+        $value = (string) $this->getPosted('value');
         $action = (string) $this->getPosted('action');
+        $categories = (array) $this->getPosted('selected', array());
 
         if (empty($action)) {
             return null;
         }
-
-        $value = (int) $this->getPosted('value');
-        $categories = (array) $this->getPosted('selected', array());
 
         if ($action === 'weight' && $this->access('category_edit')) {
             return $this->updateWeightCategory($categories);
@@ -128,12 +127,12 @@ class Category extends BackendController
         }
 
         if ($updated > 0) {
-            $message = $this->text('Categories have been updated');
+            $message = $this->text('Updated %num items', array('%num' => $updated));
             $this->setMessage($message, 'success', true);
         }
 
         if ($deleted > 0) {
-            $message = $this->text('Categories have been deleted');
+            $message = $this->text('Deleted %num items', array('%num' => $deleted));
             $this->setMessage($message, 'success', true);
         }
     }
@@ -158,10 +157,9 @@ class Category extends BackendController
      */
     protected function getListCategory()
     {
-        $options = array(
-            'category_group_id' => $this->data_category_group['category_group_id']);
-
+        $options = array('category_group_id' => $this->data_category_group['category_group_id']);
         $categories = $this->category->getTree($options);
+
         return $this->prepareListCategory($categories);
     }
 
@@ -177,6 +175,7 @@ class Category extends BackendController
         foreach ($categories as &$category) {
             $category['indentation'] = str_repeat('— ', $category['depth']);
         }
+
         return $categories;
     }
 
@@ -329,6 +328,7 @@ class Category extends BackendController
         }
 
         $this->validateComponent('category');
+
         return !$this->hasErrors();
     }
 

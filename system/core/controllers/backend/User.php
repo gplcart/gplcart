@@ -66,6 +66,7 @@ class User extends BackendController
     {
         $allowed = array('name', 'email', 'role_id', 'store_id',
             'status', 'created', 'user_id');
+
         $this->setFilter($allowed);
     }
 
@@ -84,38 +85,37 @@ class User extends BackendController
      */
     protected function actionListUser()
     {
+        $value = (string) $this->getPosted('value');
         $action = (string) $this->getPosted('action');
+        $selected = (array) $this->getPosted('selected', array());
 
         if (empty($action)) {
             return null;
         }
 
-        $value = (int) $this->getPosted('value');
-        $selected = (array) $this->getPosted('selected', array());
-
         $deleted = $updated = 0;
         foreach ($selected as $uid) {
 
             if ($this->isSuperadmin($uid)) {
-                continue; // Exclude super admin
+                continue;
             }
 
-            if ($action == 'status' && $this->access('user_edit')) {
+            if ($action === 'status' && $this->access('user_edit')) {
                 $updated += (int) $this->user->update($uid, array('status' => $value));
             }
 
-            if ($action == 'delete' && $this->access('user_delete')) {
+            if ($action === 'delete' && $this->access('user_delete')) {
                 $deleted += (int) $this->user->delete($uid);
             }
         }
 
         if ($updated > 0) {
-            $text = $this->text('Updated %num users', array('%num' => $updated));
+            $text = $this->text('Updated %num items', array('%num' => $updated));
             $this->setMessage($text, 'success', true);
         }
 
         if ($deleted > 0) {
-            $text = $this->text('Deleted %num users', array('%num' => $deleted));
+            $text = $this->text('Deleted %num items', array('%num' => $deleted));
             $this->setMessage($text, 'success', true);
         }
     }
@@ -281,6 +281,7 @@ class User extends BackendController
         $this->setSubmitted('update', $this->data_user);
 
         $this->validateComponent('user', array('admin' => $this->access('user_edit')));
+
         return !$this->hasErrors();
     }
 
