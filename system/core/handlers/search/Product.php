@@ -59,7 +59,7 @@ class Product extends Handler
         $indexed += (int) $this->indexProduct($product);
         $indexed += (int) $this->indexProductTranslations($product);
 
-        return ($indexed > 0);
+        return $indexed > 0;
     }
 
     /**
@@ -145,7 +145,7 @@ class Product extends Handler
             $indexed += (int) $this->search->setIndex($snippet, 'product_id', $product['product_id'], $language);
         }
 
-        return ($indexed > 0);
+        return $indexed > 0;
     }
 
 }
