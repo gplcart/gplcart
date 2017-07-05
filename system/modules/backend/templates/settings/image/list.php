@@ -49,7 +49,7 @@
           <td class="col-md-2 middle">
             <ul class="list-inline">
               <li>
-                <a href="<?php echo $this->url('', array('clear' => $id)); ?>" class="clear">
+                <a href="<?php echo $this->url('', array('clear' => $id, 'token' => $_token)); ?>" class="clear">
                   <?php echo $this->lower($this->text('Clear cache')); ?>
                 </a>
               </li>

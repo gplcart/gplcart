@@ -58,7 +58,7 @@
               <?php if ($info['status']) { ?>
               <?php if ($this->access('module_disable') && empty($info['lock'])) { ?>
               <li>
-                <a href="<?php echo $this->url(false, array('action' => 'disable', 'module_id' => $module_id)); ?>">
+                <a href="<?php echo $this->url(false, array('action' => 'disable', 'module_id' => $module_id, 'token' => $_token)); ?>">
                   <b><?php echo $this->lower($this->text('Disable')); ?></b>
                 </a>
               </li>
@@ -66,14 +66,14 @@
               <?php } else { ?>
               <?php if ($this->access('module_enable') && empty($info['lock'])) { ?>
               <li>
-                <a href="<?php echo $this->url(false, array('action' => 'enable', 'module_id' => $module_id)); ?>">
+                <a href="<?php echo $this->url(false, array('action' => 'enable', 'module_id' => $module_id, 'token' => $_token)); ?>">
                   <?php echo $this->lower($this->text('Enable')); ?>
                 </a>
               </li>
               <?php } ?>
               <?php if ($this->access('module_uninstall') && empty($info['lock'])) { ?>
               <li>
-                <a href="<?php echo $this->url(false, array('action' => 'uninstall', 'module_id' => $module_id)); ?>">
+                <a href="<?php echo $this->url(false, array('action' => 'uninstall', 'module_id' => $module_id, 'token' => $_token)); ?>">
                   <?php echo $this->lower($this->text('Uninstall')); ?>
                 </a>
               </li>
@@ -82,7 +82,7 @@
               <?php } else { ?>
               <?php if ($this->access('module_install')) { ?>
               <li>
-                <a href="<?php echo $this->url(false, array('action' => 'install', 'module_id' => $module_id)); ?>">
+                <a href="<?php echo $this->url(false, array('action' => 'install', 'module_id' => $module_id, 'token' => $_token)); ?>">
                   <?php echo $this->lower($this->text('Install and enable')); ?>
                 </a>
               </li>

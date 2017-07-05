@@ -60,7 +60,7 @@
                 </a>
               </li>
               <li>
-                <a href="<?php echo $this->url('', array('refresh' => $code)); ?>" onclick="return confirm(GplCart.text('Are you sure?'));">
+                <a href="<?php echo $this->url('', array('refresh' => $code, 'token' => $_token)); ?>" onclick="return confirm(GplCart.text('Are you sure?'));">
                   <?php echo $this->lower($this->text('Clear cache')); ?>
                 </a>
               </li>

@@ -8,7 +8,7 @@
 ?>
 <div class="panel panel-default">
   <div class="panel-heading text-right">
-    <a class="btn btn-default" href="<?php echo $this->url('', array('refresh' => 1)); ?>" onclick="return confirm(GplCart.text('Are you sure?'));" class="refresh">
+    <a class="btn btn-default" href="<?php echo $this->url('', array('refresh' => 1, 'token' => $_token)); ?>" onclick="return confirm(GplCart.text('Are you sure?'));" class="refresh">
       <?php echo $this->text('Clear cache'); ?>
     </a>
   </div>
