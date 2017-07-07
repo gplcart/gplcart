@@ -38,7 +38,7 @@
         <div class="panel panel-default address" data-equal-height="true">
           <div class="panel-heading clearfix">
             <?php if (($_uid == $user['user_id'] || $this->access('user_edit')) && empty($address['locked'])) { ?>
-            <a class="btn btn-default btn-sm pull-right" onclick="return confirm(GplCart.text('Are you sure?'));" title="<?php echo $this->text('Delete'); ?>" href="<?php echo $this->url('', array('delete' => $address_id)); ?>">
+            <a class="btn btn-default btn-sm pull-right" onclick="return confirm(GplCart.text('Are you sure?'));" title="<?php echo $this->text('Delete'); ?>" href="<?php echo $this->url('', array('delete' => $address_id, 'token' => $_token)); ?>">
               <i class="fa fa-trash"></i>
             </a>
             <?php } else { ?>
