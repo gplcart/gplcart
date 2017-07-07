@@ -139,7 +139,6 @@ class User extends Model
         }
 
         $data['modified'] = GC_TIME;
-        $data += array('user_id' => $user_id);
 
         if (!empty($data['password'])) {
             $data['hash'] = gplcart_string_hash($data['password']);
@@ -149,11 +148,11 @@ class User extends Model
             $data['status'] = 1;
         }
 
-        $options = array('user_id' => $user_id);
-        $updated = $this->db->update('user', $data, $options);
-        $updated += (int) $this->setAddress($data);
+        $updated = $this->db->update('user', $data, array('user_id' => $user_id));
 
-        $result = ($updated > 0);
+        $data['user_id'] = $user_id;
+        $updated += (int) $this->setAddress($data);
+        $result = $updated > 0;
 
         $this->hook->fire('user.update.after', $user_id, $data, $result, $this);
         return (bool) $result;
@@ -236,9 +235,11 @@ class User extends Model
         if ($this->isSuperadmin($user)) {
             return true;
         }
+
         if ($permission === '__superadmin') {
             return false;
         }
+
         $permissions = $this->getPermissions($user);
         return in_array($permission, $permissions);
     }
@@ -389,10 +390,12 @@ class User extends Model
             return $result;
         }
 
-        $data += array(
-            'login' => $this->config->get('user_registration_login', true),
-            'status' => $this->config->get('user_registration_status', true)
-        );
+        // Extra security. Remove all but allowed keys
+        $allowed = array('name', 'email', 'password', 'store_id');
+        $data = array_intersect_key($data, array_flip($allowed));
+
+        $data['login'] = $this->config->get('user_registration_login', true);
+        $data['status'] = $this->config->get('user_registration_status', true);
 
         $data['user_id'] = $this->add($data);
 

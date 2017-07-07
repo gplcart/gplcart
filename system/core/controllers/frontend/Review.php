@@ -188,12 +188,16 @@ class Review extends FrontendController
     protected function validateEditReview()
     {
         $this->setSubmitted('review');
+
+        $this->filterSubmitted(array('text', 'rating'));
+
         $this->setSubmitted('user_id', $this->uid);
         $this->setSubmitted('update', $this->data_review);
         $this->setSubmitted('product_id', $this->data_product['product_id']);
         $this->setSubmitted('status', (int) $this->config('review_status', 1));
 
         $this->validateComponent('review');
+
         return !$this->hasErrors(false);
     }
 
@@ -251,8 +255,7 @@ class Review extends FrontendController
      */
     protected function addReview()
     {
-        $submitted = $this->getSubmitted();
-        $added = $this->review->add($submitted);
+        $added = $this->review->add($this->getSubmitted());
 
         if (empty($added)) {
             $message = $this->text('Review has not been added');

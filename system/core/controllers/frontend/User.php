@@ -90,8 +90,7 @@ class User extends FrontendController
      */
     protected function loginUser()
     {
-        $data = $this->getSubmitted();
-        $result = $this->user->login($data);
+        $result = $this->user->login($this->getSubmitted());
 
         if (empty($result['user'])) {
             $this->setMessage($result['message'], $result['severity']);
@@ -107,6 +106,7 @@ class User extends FrontendController
     protected function validateLoginUser()
     {
         $this->setSubmitted('user', null, false);
+        $this->filterSubmitted(array('email', 'password'));
 
         $this->validateComponent('user_login');
         return !$this->hasErrors(false);
@@ -127,7 +127,8 @@ class User extends FrontendController
     {
         $breadcrumb = array(
             'text' => $this->text('Home'),
-            'url' => $this->url('/'));
+            'url' => $this->url('/')
+        );
 
         $this->setBreadcrumb($breadcrumb);
     }
@@ -188,8 +189,7 @@ class User extends FrontendController
      */
     protected function registerUser()
     {
-        $submitted = $this->getSubmitted();
-        $result = $this->user->register($submitted);
+        $result = $this->user->register($this->getSubmitted());
         $this->redirect($result['redirect'], $result['message'], $result['severity']);
     }
 
@@ -199,10 +199,13 @@ class User extends FrontendController
      */
     protected function validateRegisterUser()
     {
-        $this->setSubmitted('user', null, 'raw');
+        $this->setSubmitted('user', null, false);
+        $this->filterSubmitted(array('email', 'password', 'name'));
+
         $this->setSubmitted('store_id', $this->store_id);
 
         $this->validateComponent('user');
+
         return !$this->hasErrors();
     }
 
@@ -322,8 +325,7 @@ class User extends FrontendController
      */
     protected function resetPasswordUser()
     {
-        $submitted = $this->getSubmitted();
-        $result = $this->user->resetPassword($submitted);
+        $result = $this->user->resetPassword($this->getSubmitted());
         $this->redirect($result['redirect'], $result['message'], $result['severity']);
     }
 
@@ -333,10 +335,12 @@ class User extends FrontendController
      */
     protected function validateResetPasswordUser()
     {
-        $this->setSubmitted('user', null, 'raw');
-        $this->setSubmitted('user', $this->data_user);
+        $this->setSubmitted('user', null, false);
+        $this->filterSubmitted(array('email', 'password'));
 
+        $this->setSubmitted('user', $this->data_user);
         $this->validateComponent('user_reset_password');
+
         return !$this->hasErrors();
     }
 
@@ -355,7 +359,8 @@ class User extends FrontendController
     {
         $breadcrumb = array(
             'text' => $this->text('Home'),
-            'url' => $this->url('/'));
+            'url' => $this->url('/')
+        );
 
         $this->setBreadcrumb($breadcrumb);
     }

@@ -221,6 +221,9 @@ class Controller extends BaseController
      */
     protected function submitCart()
     {
+        $this->setSubmitted('product');
+        $this->filterSubmitted(array('product_id'));
+
         if ($this->isPosted('add_to_cart')) {
             $this->validateAddToCart();
             $this->addToCart();
@@ -264,7 +267,6 @@ class Controller extends BaseController
      */
     protected function validateAddToCart()
     {
-        $this->setSubmitted('product');
         $this->setSubmitted('user_id', $this->cart_uid);
         $this->setSubmitted('store_id', $this->store_id);
         $this->setSubmitted('quantity', $this->getSubmitted('quantity', 1));
@@ -370,6 +372,7 @@ class Controller extends BaseController
     protected function submitCompare()
     {
         $this->setSubmitted('product');
+        $this->filterSubmitted(array('product_id'));
 
         if ($this->isPosted('remove_from_compare')) {
             $this->deleteFromCompare();
@@ -455,6 +458,7 @@ class Controller extends BaseController
     protected function submitWishlist()
     {
         $this->setSubmitted('product');
+        $this->filterSubmitted(array('product_id'));
 
         if ($this->isPosted('remove_from_wishlist')) {
             $this->deleteFromWishlist();
@@ -489,8 +493,7 @@ class Controller extends BaseController
         );
 
         if (empty($errors)) {
-            $submitted = $this->getSubmitted();
-            $result = $this->wishlist->addProduct($submitted);
+            $result = $this->wishlist->addProduct($this->getSubmitted());
         } else {
             $result['message'] = implode('<br>', gplcart_array_flatten($errors));
         }

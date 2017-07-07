@@ -380,10 +380,14 @@ class Account extends FrontendController
     protected function validateEditAccount()
     {
         $this->setSubmitted('user', null, false);
+
+        $this->filterSubmitted(array('name', 'email', 'password', 'password_old'));
+
         $this->setSubmitted('update', $this->data_user);
         $this->setSubmitted('user_id', $this->data_user['user_id']);
 
         $this->validateComponent('user');
+
         return !$this->hasErrors();
     }
 
@@ -393,12 +397,8 @@ class Account extends FrontendController
     protected function updateAccount()
     {
         $this->controlAccessEditAccount();
-
-        $values = $this->getSubmitted();
-        $this->user->update($this->data_user['user_id'], $values);
-
-        $message = $this->text('Account has been updated');
-        $this->redirect('', $message, 'success');
+        $this->user->update($this->data_user['user_id'], $this->getSubmitted());
+        $this->redirect('', $this->text('Account has been updated'), 'success');
     }
 
     /**
@@ -448,7 +448,7 @@ class Account extends FrontendController
         $this->setTitleListAddressAccount();
         $this->setBreadcrumbListAddressAccount();
 
-        $this->deleteAddressAccount();
+        $this->actionAddressAccount();
 
         $this->setData('user', $this->data_user);
         $this->setData('addresses', $this->getListAddressAccount());
@@ -476,9 +476,11 @@ class Account extends FrontendController
     /**
      * Deletes an address
      */
-    protected function deleteAddressAccount()
+    protected function actionAddressAccount()
     {
-        $address_id = (int) $this->getQuery('delete');
+        $key = 'delete';
+        $this->controlToken($key);
+        $address_id = (int) $this->getQuery($key);
 
         if (empty($address_id)) {
             return null;
