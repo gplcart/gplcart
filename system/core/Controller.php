@@ -1067,6 +1067,14 @@ abstract class Controller
     }
 
     /**
+     * @param array $allowed
+     */
+    protected function filterSubmitted(array $allowed)
+    {
+        $this->submitted = array_intersect_key($this->submitted, array_flip($allowed));
+    }
+
+    /**
      * Converts a submitted value to boolean
      * If no value is set, it becomes FALSE
      * @param string|array $key
