@@ -38,7 +38,7 @@ class Install extends Controller
         parent::__construct();
 
         $this->install = $install;
-        $this->install_language = $this->getQuery('lang', 'en');
+        $this->install_language = (string) $this->getQuery('lang', 'en');
     }
 
     /**

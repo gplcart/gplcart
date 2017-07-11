@@ -502,7 +502,7 @@ class Product extends BackendController
 
         if (isset($get_product_class_id)) {
             $output_field_form = true;
-            $product_class_id = $get_product_class_id;
+            $product_class_id = (int) $get_product_class_id;
         }
 
         $data = array(

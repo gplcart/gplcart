@@ -87,14 +87,15 @@ class Controller extends BaseController
      */
     protected function processCurrentJob()
     {
-        $cancel_job_id = $this->request->get('cancel_job');
+        $cancel_job_id = (string) $this->getQuery('cancel_job');
 
         if (!empty($cancel_job_id)) {
             $this->job->delete($cancel_job_id);
             return null;
         }
 
-        $job = $this->job->get($this->request->get('job_id'));
+        $job_id = (string) $this->getQuery('job_id');
+        $job = $this->job->get($job_id);
 
         if (empty($job['status'])) {
             return null;
@@ -102,7 +103,7 @@ class Controller extends BaseController
 
         $this->setJsSettings('job', $job);
 
-        if ($this->request->get('process_job') === $job['id'] && $this->isAjax()) {
+        if ($this->getQuery('process_job') === $job['id'] && $this->isAjax()) {
             $this->response->json($this->job->process($job));
         }
     }
@@ -115,7 +116,8 @@ class Controller extends BaseController
     public function renderJob($job = null)
     {
         if (!isset($job)) {
-            $job = $this->job->get($this->request->get('job_id'));
+            $job_id = $this->getQuery('job_id');
+            $job = $this->job->get($job_id);
         }
 
         if (empty($job['status'])) {

@@ -70,7 +70,7 @@ class Backup extends BackendController
      */
     protected function downloadListBackup()
     {
-        $backup_id = $this->getQuery('download');
+        $backup_id = (int) $this->getQuery('download');
 
         if (empty($backup_id)) {
             return null;
