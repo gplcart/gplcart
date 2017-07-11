@@ -104,25 +104,10 @@ class Store extends Model
     }
 
     /**
-     * Returns the current store ID
-     * @return integer|null
-     */
-    public function id()
-    {
-        $current = $this->current();
-
-        if (isset($current['store_id'])) {
-            return (int) $current['store_id'];
-        }
-
-        return null;
-    }
-
-    /**
      * Returns the current store
      * @return array
      */
-    public function current()
+    public function getCurrent()
     {
         $domain = $this->request->host();
         $basepath = trim($this->request->base(true), '/');
@@ -258,7 +243,7 @@ class Store extends Model
      */
     public function isDefault($store_id)
     {
-        return ((int) $store_id === (int) $this->getDefault());
+        return $store_id == $this->getDefault();
     }
 
     /**
@@ -377,7 +362,7 @@ class Store extends Model
     public function config($item = null, $store = null)
     {
         if (empty($store)) {
-            $store = $this->current();
+            $store = $this->getCurrent();
         } elseif (!is_array($store)) {
             $store = $this->get((string) $store);
         }
