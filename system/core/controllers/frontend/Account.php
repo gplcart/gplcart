@@ -484,7 +484,7 @@ class Account extends FrontendController
     {
         $key = 'delete';
         $this->controlToken($key);
-        $address_id = (int) $this->getQuery($key);
+        $address_id = $this->getQuery($key, '', 'string');
 
         if (empty($address_id)) {
             return null;

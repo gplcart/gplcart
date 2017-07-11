@@ -81,7 +81,7 @@ class Ajax extends FrontendController
             $this->response->error403();
         }
 
-        $action = (string) $this->getPosted('action');
+        $action = $this->getPosted('action', '', true, 'string');
 
         if (empty($action)) {
             $this->response->json(array('error' => $this->text('Missing handler')));
@@ -117,9 +117,9 @@ class Ajax extends FrontendController
         }
 
         $options = array(
-            'status' => $this->getPosted('status', null),
-            'store_id' => $this->getPosted('store_id', null),
-            'title' => (string) $this->getPosted('term', ''),
+            'status' => $this->getPosted('status', null, true, 'integer'),
+            'store_id' => $this->getPosted('store_id', null, true, 'integer'),
+            'title' => $this->getPosted('term', '', true, 'string'),
             'limit' => array(0, $this->config('autocomplete_limit', 10))
         );
 
@@ -137,8 +137,8 @@ class Ajax extends FrontendController
         }
 
         $options = array(
-            'email' => (string) $this->getPosted('term', ''),
-            'store_id' => $this->getPosted('store_id', null),
+            'email' => $this->getPosted('term', '', true, 'string'),
+            'store_id' => $this->getPosted('store_id', null, true, 'integer'),
             'limit' => array(0, $this->config('autocomplete_limit', 10)));
 
         return $this->user->getList($options);
@@ -150,8 +150,12 @@ class Ajax extends FrontendController
      */
     public function switchProductOptionsAjax()
     {
-        $product_id = (int) $this->getPosted('product_id');
-        $field_value_ids = (array) $this->getPosted('values');
+        $product_id = $this->getPosted('product_id', null, true, 'integer');
+        $field_value_ids = $this->getPosted('values', array(), true, 'array');
+        
+        if(empty($product_id)){
+            return array();
+        }
 
         $product = $this->product->get($product_id);
         $response = $this->sku->selectCombination($product, $field_value_ids);
@@ -188,8 +192,8 @@ class Ajax extends FrontendController
      */
     public function getCollectionItemAjax()
     {
-        $term = (string) $this->getPosted('term');
-        $collection_id = (int) $this->getPosted('collection_id');
+        $term = $this->getPosted('term', '', true, 'string');
+        $collection_id = $this->getPosted('collection_id', null, true, 'integer');
 
         if (empty($term) || empty($collection_id)) {
             return array('error' => $this->text('An error occurred'));
@@ -217,8 +221,8 @@ class Ajax extends FrontendController
      */
     public function rateAjax()
     {
-        $stars = (int) $this->getPosted('stars', 0);
-        $product_id = (int) $this->getPosted('product_id');
+        $stars = $this->getPosted('stars', 0, true, 'integer');
+        $product_id = $this->getPosted('product_id', null, true, 'integer');
 
         if (empty($product_id) || empty($this->uid)) {
             return array('error' => $this->text('No access'));
@@ -245,8 +249,8 @@ class Ajax extends FrontendController
      */
     public function searchCityAjax()
     {
-        $country = (string) $this->getPosted('country', '');
-        $state_id = (string) $this->getPosted('state_id', '');
+        $country = $this->getPosted('country', '', true, 'string');
+        $state_id = $this->getPosted('state_id', '', true, 'string');
 
         if (empty($country) || empty($state_id)) {
             return array();

@@ -93,9 +93,9 @@ class Page extends BackendController
      */
     protected function actionPage()
     {
-        $value = (string) $this->getPosted('value');
-        $action = (string) $this->getPosted('action');
-        $selected = (array) $this->getPosted('selected', array());
+        $value = $this->getPosted('value', '', true, 'string');
+        $action = $this->getPosted('action', '', true, 'string');
+        $selected = $this->getPosted('selected', array(), true, 'array');
 
         if (empty($action)) {
             return null;
@@ -134,7 +134,7 @@ class Page extends BackendController
     protected function outputCategoriesPage()
     {
         $default = $this->store->getDefault();
-        $store_id = (int) $this->getPosted('store_id', $default);
+        $store_id = $this->getPosted('store_id', $default, true, 'integer');
 
         $categories = $this->category->getOptionListByStore($store_id);
         $this->response->json($categories);

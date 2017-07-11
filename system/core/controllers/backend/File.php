@@ -72,7 +72,7 @@ class File extends BackendController
      */
     protected function downloadFile()
     {
-        $file_id = (int) $this->getQuery('download');
+        $file_id = $this->getQuery('download', '', 'string');
 
         if (!empty($file_id)) {
             $file = $this->file->get($file_id);
@@ -86,8 +86,8 @@ class File extends BackendController
      */
     protected function actionListFile()
     {
-        $action = (string) $this->getPosted('action');
-        $selected = (array) $this->getPosted('selected', array());
+        $action = $this->getPosted('action', '', true, 'string');
+        $selected = $this->getPosted('selected', array(), true, 'array');
 
         if (empty($action)) {
             return null;

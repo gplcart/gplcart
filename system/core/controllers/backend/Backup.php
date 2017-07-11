@@ -70,7 +70,7 @@ class Backup extends BackendController
      */
     protected function downloadListBackup()
     {
-        $backup_id = (int) $this->getQuery('download');
+        $backup_id = $this->getQuery('download', '', 'string');
 
         if (empty($backup_id)) {
             return null;
@@ -89,8 +89,8 @@ class Backup extends BackendController
      */
     protected function actionListBackup()
     {
-        $action = (string) $this->getPosted('action');
-        $selected = (array) $this->getPosted('selected', array());
+        $action = $this->getPosted('action', '', true, 'string');
+        $selected = $this->getPosted('selected', array(), true, 'array');
 
         if (empty($action)) {
             return null;

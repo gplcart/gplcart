@@ -508,9 +508,9 @@ class Order extends BackendController
      */
     protected function actionListOrder()
     {
-        $action = (string) $this->getPosted('action');
-        $value = (string) $this->getPosted('value');
-        $selected = (array) $this->getPosted('selected', array());
+        $value = $this->getPosted('value', '', true, 'string');
+        $action = $this->getPosted('action', '', true, 'string');
+        $selected = $this->getPosted('selected', array(), true, 'array');
 
         if (empty($action)) {
             return null;

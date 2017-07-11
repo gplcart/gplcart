@@ -143,9 +143,9 @@ class Product extends BackendController
      */
     protected function actionListProduct()
     {
-        $value = (string) $this->getPosted('value');
-        $action = (string) $this->getPosted('action');
-        $selected = (array) $this->getPosted('selected', array());
+        $value = $this->getPosted('value', '', true, 'string');
+        $action = $this->getPosted('action', '', true, 'string');
+        $selected = $this->getPosted('selected', array(), true, 'array');
 
         if (empty($action)) {
             return null;
@@ -278,7 +278,7 @@ class Product extends BackendController
      */
     protected function outputCategoriesEditProduct()
     {
-        $store_id = (int) $this->getQuery('store_id');
+        $store_id = $this->getQuery('store_id', '', 'string');
 
         if (!empty($store_id) && $this->isAjax()) {
             $response = $this->getListCategoryProduct($store_id);

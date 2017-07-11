@@ -145,9 +145,9 @@ class City extends BackendController
      */
     protected function actionListCity()
     {
-        $value = (string) $this->getPosted('value');
-        $action = (string) $this->getPosted('action');
-        $selected = (array) $this->getPosted('selected', array());
+        $value = $this->getPosted('value', '', true, 'string');
+        $action = $this->getPosted('action', '', true, 'string');
+        $selected = $this->getPosted('selected', array(), true, 'array');
 
         if (empty($action)) {
             return null;

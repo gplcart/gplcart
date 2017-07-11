@@ -51,6 +51,7 @@ class Request
     public function base($exclude_langcode = false)
     {
         static $cache = array();
+
         if (isset($cache[$exclude_langcode])) {
             return $cache[$exclude_langcode];
         }
@@ -193,11 +194,13 @@ class Request
      * @param string $name
      * @param mixed $default
      * @param bool|string $filter
+     * @param null|string $type
      * @return mixed
      */
-    public function post($name = null, $default = null, $filter = true)
+    public function post($name = null, $default = null, $filter = true,
+            $type = null)
     {
-        $post = filter_input_array(INPUT_POST);
+        $post = $_POST;
 
         if (empty($post)) {
             $post = array();
@@ -209,32 +212,38 @@ class Request
 
         if (isset($name)) {
             $result = gplcart_array_get($post, $name);
-            return isset($result) ? $result : $default;
+            $return = isset($result) ? $result : $default;
+        } else {
+            $return = $post;
         }
-        return $post;
+
+        return $this->setType($return, $type, $default);
     }
 
     /**
      * Returns a data from COOKIE
      * @param string $name
      * @param mixed $default
-     * @param bool $filter
+     * @param null|string $type
      * @return mixed
      */
-    public function cookie($name = null, $default = null, $filter = true)
+    public function cookie($name = null, $default = null, $type = null)
     {
-        $cookie = filter_input_array(INPUT_COOKIE);
+        $cookie = $_COOKIE;
 
         if (empty($cookie)) {
             $cookie = array();
         }
 
-        gplcart_array_trim($cookie, $filter);
+        gplcart_array_trim($cookie, true);
 
         if (isset($name)) {
-            return isset($cookie[$name]) ? $cookie[$name] : $default;
+            $return = isset($cookie[$name]) ? $cookie[$name] : $default;
+        } else {
+            $return = $cookie;
         }
-        return $cookie;
+
+        return $this->setType($return, $type, $default);
     }
 
     /**
@@ -274,24 +283,27 @@ class Request
      * Returns a data from the GET request
      * @param string $name
      * @param mixed $default
-     * @param bool $filter
+     * @param null|string $type
      * @return mixed
      */
-    public function get($name = null, $default = null, $filter = true)
+    public function get($name = null, $default = null, $type = null)
     {
-        $get = filter_input_array(INPUT_GET);
+        $get = $_GET;
 
         if (empty($get)) {
             $get = array();
         }
 
-        gplcart_array_trim($get, $filter);
+        gplcart_array_trim($get, true);
 
         if (isset($name)) {
             $result = gplcart_array_get($get, $name);
-            return isset($result) ? $result : $default;
+            $return = isset($result) ? $result : $default;
+        } else {
+            $return = $get;
         }
-        return $get;
+
+        return $this->setType($return, $type, $default);
     }
 
     /**
@@ -308,6 +320,30 @@ class Request
             return !empty($files[$name]['name']) ? $files[$name] : $default;
         }
         return $files;
+    }
+
+    /**
+     * Type casting
+     * @param mixed $value
+     * @param null|string $type
+     * @param mixed $default
+     * @return mixed
+     */
+    protected function setType($value, $type, $default)
+    {
+        if (!isset($type)) {
+            return $value;
+        }
+
+        if (is_array($value) && $type === 'string') {
+            return $default;
+        }
+
+        if (settype($value, $type)) {
+            return $value;
+        }
+
+        return $default;
     }
 
 }

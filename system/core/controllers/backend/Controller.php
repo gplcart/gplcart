@@ -87,14 +87,14 @@ class Controller extends BaseController
      */
     protected function processCurrentJob()
     {
-        $cancel_job_id = (string) $this->getQuery('cancel_job');
+        $cancel_job_id = $this->getQuery('cancel_job', '', 'string');
 
         if (!empty($cancel_job_id)) {
             $this->job->delete($cancel_job_id);
             return null;
         }
 
-        $job_id = (string) $this->getQuery('job_id');
+        $job_id = $this->getQuery('job_id', '', 'string');
         $job = $this->job->get($job_id);
 
         if (empty($job['status'])) {
@@ -116,7 +116,7 @@ class Controller extends BaseController
     public function renderJob($job = null)
     {
         if (!isset($job)) {
-            $job_id = $this->getQuery('job_id');
+            $job_id = $this->getQuery('job_id', '', 'string');
             $job = $this->job->get($job_id);
         }
 
@@ -223,7 +223,7 @@ class Controller extends BaseController
      */
     protected function deleteImages(array $data, $entity)
     {
-        $file_ids = $this->request->post('delete_images', array());
+        $file_ids = $this->request->post('delete_images', array(), true, 'array');
 
         if (empty($file_ids) || empty($data["{$entity}_id"])) {
             return null;

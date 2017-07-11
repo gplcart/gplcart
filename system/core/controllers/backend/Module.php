@@ -83,8 +83,8 @@ class Module extends BackendController
      */
     protected function actionListModule()
     {
-        $action = (string) $this->getQuery('action');
-        $module_id = (string) $this->getQuery('module_id');
+        $action = $this->getQuery('action', '', 'string');
+        $module_id = $this->getQuery('module_id', '', 'string');
 
         if (!empty($action) && !empty($module_id)) {
             $this->setModule($module_id);

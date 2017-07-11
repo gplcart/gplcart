@@ -102,9 +102,9 @@ class Category extends BackendController
      */
     protected function actionListCategory()
     {
-        $value = (string) $this->getPosted('value');
-        $action = (string) $this->getPosted('action');
-        $categories = (array) $this->getPosted('selected', array());
+        $value = $this->getPosted('value', '', true, 'string');
+        $action = $this->getPosted('action', '', true, 'string');
+        $categories = $this->getPosted('selected', array(), true, 'array');
 
         if (empty($action)) {
             return null;
@@ -233,7 +233,7 @@ class Category extends BackendController
         $this->setData('category', $this->data_category);
         $this->setData('can_delete', $this->canDeleteCategory());
         $this->setData('category_group', $this->data_category_group);
-        $this->setData('parent_id', (int) $this->getQuery('parent_id'));
+        $this->setData('parent_id', $this->getQuery('parent_id', '', 'string'));
         $this->setData('categories', $this->getOptionsCategory($category_group_id));
 
         $this->submitEditCategory();

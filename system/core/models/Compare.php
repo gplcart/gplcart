@@ -171,7 +171,7 @@ class Compare extends Model
         }
 
         $items = array();
-        $cookie = (string) $this->request->cookie('comparison');
+        $cookie = $this->request->cookie('comparison', '', 'string');
 
         if (empty($cookie)) {
             return $items;

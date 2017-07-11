@@ -87,8 +87,8 @@ class Oauth extends FrontendController
      */
     protected function setReceivedDataOauth()
     {
-        $this->data_code = (string) $this->getQuery('code');
-        $this->data_state = (string) $this->getQuery('state');
+        $this->data_code = $this->getQuery('code', '', 'string');
+        $this->data_state = $this->getQuery('state', '', 'string');
 
         if (empty($this->data_code) || empty($this->data_state)) {
             $this->outputHttpStatus(403);

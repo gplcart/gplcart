@@ -665,7 +665,7 @@ class Product extends Model
      */
     public function getViewed($limit = null)
     {
-        $cookie = $this->request->cookie('viewed_products', '');
+        $cookie = $this->request->cookie('viewed_products', '', 'string');
         $products = array_filter(explode('|', $cookie), 'is_numeric');
         $this->controlViewedLimit($products, $limit);
         return $products;

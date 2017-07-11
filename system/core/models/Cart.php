@@ -357,22 +357,22 @@ class Cart extends Model
      */
     public function uid()
     {
-        $user_id = (int) $this->user->getSession('user_id');
+        $session_user_id = $this->user->getSession('user_id');
 
-        if (!empty($user_id)) {
-            return (string) $user_id;
+        if (!empty($session_user_id)) {
+            return (string) $session_user_id;
         }
 
         $cookie_name = $this->config->get('user_cookie_name', 'user_id');
-        $user_id = $this->request->cookie($cookie_name);
+        $cookie_user_id = $this->request->cookie($cookie_name, '', 'string');
 
-        if (!empty($user_id)) {
-            return (string) $user_id;
+        if (!empty($cookie_user_id)) {
+            return $cookie_user_id;
         }
 
         $user_id = '_' . gplcart_string_random(6); // Add prefix to prevent from being "numeric"
         $this->request->setCookie($cookie_name, $user_id, $this->config->get('cart_cookie_lifespan', 31536000));
-        return (string) $user_id;
+        return $user_id;
     }
 
     /**

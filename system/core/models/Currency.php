@@ -254,7 +254,7 @@ class Currency extends Model
      */
     public function getFromCookie()
     {
-        return (string) $this->request->cookie(self::COOKIE_KEY);
+        return $this->request->cookie(self::COOKIE_KEY, '', 'string');
     }
 
     /**
@@ -263,7 +263,7 @@ class Currency extends Model
      */
     public function getFromUrl()
     {
-        return (string) $this->request->get(self::URL_KEY);
+        return $this->request->get(self::URL_KEY, '', 'string');
     }
 
     /**

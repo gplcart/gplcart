@@ -99,7 +99,7 @@ class Search extends FrontendController
      */
     protected function setTermSearch()
     {
-        $this->data_term = (string) $this->getQuery('q', '');
+        $this->data_term = $this->getQuery('q', '', 'string');
     }
 
     /**
