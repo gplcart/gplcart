@@ -76,14 +76,11 @@ function gplcart_absolute_url($url)
  */
 function gplcart_parse_pattern($string, $pattern)
 {
-    $pattern = '/^' . str_replace('/', '\/', $pattern) . '$/';
-
     $params = array();
-    if (preg_match($pattern, $string, $params)) {
+    if (preg_match("~^$pattern$~i", $string, $params) === 1) {
         array_shift($params);
         return array_values($params);
     }
-
     return false;
 }
 
