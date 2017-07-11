@@ -208,32 +208,10 @@ class Request
         }
 
         if (isset($name)) {
-            $result = gplcart_array_get_value($post, $name);
+            $result = gplcart_array_get($post, $name);
             return isset($result) ? $result : $default;
         }
         return $post;
-    }
-
-    /**
-     * Returns a data from the $_REQUEST superglobal
-     * @param string $name
-     * @param mixed $default
-     * @param bool $filter
-     * @return mixed
-     */
-    public function request($name = null, $default = null, $filter = true)
-    {
-        $request = empty($_REQUEST) ? array() : $_REQUEST;
-
-        if ($filter !== 'raw') {
-            gplcart_array_trim($request, $filter);
-        }
-
-        if (isset($name)) {
-            $result = gplcart_array_get_value($request, $name);
-            return isset($result) ? $result : $default;
-        }
-        return $request;
     }
 
     /**
@@ -310,7 +288,7 @@ class Request
         gplcart_array_trim($get, $filter);
 
         if (isset($name)) {
-            $result = gplcart_array_get_value($get, $name);
+            $result = gplcart_array_get($get, $name);
             return isset($result) ? $result : $default;
         }
         return $get;
