@@ -404,8 +404,8 @@ abstract class Controller
         $this->host = $this->request->host();
         $this->scheme = $this->request->scheme();
         $this->is_ajax = $this->request->isAjax();
-        $this->query = (array) $this->request->get();
         $this->uri = $this->scheme . $this->host . $this->urn;
+        $this->query = $this->request->get(null, array(), 'array');
     }
 
     /**
@@ -431,7 +431,7 @@ abstract class Controller
      */
     protected function setStoreProperties()
     {
-        $this->current_store = $this->store->current();
+        $this->current_store = $this->store->getCurrent();
         if (isset($this->current_store['store_id'])) {
             $this->store_id = $this->current_store['store_id'];
         }
@@ -876,11 +876,13 @@ abstract class Controller
      * @param string $name
      * @param mixed $default
      * @param bool|string $filter
+     * @param null|string $type
      * @return mixed
      */
-    public function getPosted($name = null, $default = null, $filter = true)
+    public function getPosted($name = null, $default = null, $filter = true,
+            $type = null)
     {
-        return $this->request->post($name, $default, $filter);
+        return $this->request->post($name, $default, $filter, $type);
     }
 
     /**
@@ -898,11 +900,12 @@ abstract class Controller
      * Returns a GET query
      * @param string|null $key
      * @param mixed $default
+     * @param string $type
      * @return mixed
      */
-    public function getQuery($key = null, $default = null)
+    public function getQuery($key = null, $default = null, $type = null)
     {
-        return $this->request->get($key, $default);
+        return $this->request->get($key, $default, $type);
     }
 
     /**
@@ -1043,13 +1046,13 @@ abstract class Controller
     public function setSubmitted($key = null, $value = null, $filter = true)
     {
         if (!isset($key)) {
-            $this->submitted = (array) $this->request->post(null, array(), $filter);
+            $this->submitted = $this->request->post(null, array(), $filter, 'array');
             return $this->submitted;
         }
 
         if (!isset($value) && empty($this->submitted)) {
             $this->form_source = (string) $key;
-            $this->submitted = (array) $this->request->post($key, array(), $filter);
+            $this->submitted = $this->request->post($key, array(), $filter, 'array');
             return $this->submitted;
         }
 
@@ -1164,7 +1167,7 @@ abstract class Controller
      */
     public function controlSpam()
     {
-        if ($this->request->post('url', '') !== '') {
+        if ($this->request->post('url', '', true, 'string') !== '') {
             $this->response->error403(false);
         }
     }
@@ -1228,7 +1231,7 @@ abstract class Controller
             return null;
         }
 
-        if (!gplcart_string_equals($this->request->post('token'), $this->token)) {
+        if (!gplcart_string_equals($this->request->post('token', '', false, 'string'), $this->token)) {
             $this->response->error403();
         }
     }
@@ -1966,13 +1969,13 @@ abstract class Controller
             $query = $this->getFilterQuery();
         }
 
-        $this->query_filter = $query;
         $this->data['_filtering'] = false;
         $order = isset($this->query['order']) ? $this->query['order'] : '';
 
         foreach ($allowed as $filter) {
 
             $this->data["filter_$filter"] = '';
+
             if (isset($this->query[$filter])) {
                 $this->data['filtering'] = true;
                 $this->data["filter_$filter"] = (string) $this->query[$filter];
@@ -1980,10 +1983,13 @@ abstract class Controller
 
             $sort = array(
                 'sort' => $filter,
-                'order' => $order == 'desc' ? 'asc' : 'desc') + $this->query_filter;
+                'order' => $order == 'desc' ? 'asc' : 'desc') + $query;
 
             $this->data["sort_$filter"] = $this->url('', $sort);
         }
+
+        // Filter out arrays to prevent PHP errors
+        $this->query_filter = array_filter($query, 'is_string');
 
         if (isset($this->query_filter['sort']) && isset($this->query_filter['order'])) {
             $this->data['_sort'] = "{$this->query_filter['sort']}-{$this->query_filter['order']}";
@@ -2001,7 +2007,11 @@ abstract class Controller
         $query = $this->query;
 
         foreach ($query as $key => $value) {
-            settype($value, 'string');
+
+            if (!is_string($value)) {
+                continue;
+            }
+
             if ($key === 'sort' && strpos($value, '-') !== false) {
                 list($sort, $order) = explode('-', $value, 2);
                 $query['sort'] = $sort;
