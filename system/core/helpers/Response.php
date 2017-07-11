@@ -23,19 +23,16 @@ class Response
 
     /**
      * Sends headers
-     * @return boolean
      */
     protected function sendHeaders()
     {
-        if (headers_sent()) {
-            $this->headers = array();
-            return false;
+        if (!headers_sent()) {
+            foreach ($this->headers as $header) {
+                header($header, true);
+            }
         }
 
-        foreach ($this->headers as $header) {
-            header($header, true);
-        }
-        return true;
+        $this->headers = array();
     }
 
     /**
@@ -166,25 +163,36 @@ class Response
      */
     public function download($file, $filename = '', $options = array())
     {
-        if (is_file($file)) {
+        $readfile = empty($options['text']);
 
-            if ($filename === '') {
-                $filename = basename($file);
-            }
-
-            $this->addHeader('Content-Description', 'File Transfer');
-            $this->addHeader('Content-Type', 'application/octet-stream');
-            $this->addHeader('Content-Disposition', 'attachment; filename=' . $filename);
-            $this->addHeader('Expires', 0);
-            $this->addHeader('Cache-Control', 'must-revalidate');
-            $this->addHeader('Pragma', 'public');
-            $this->addHeader('Content-Length', filesize($file));
-
-            $this->addOptionalHeaders($options);
-            $this->sendHeaders();
-            readfile($file);
-            exit;
+        if ($readfile && !is_file($file)) {
+            return null;
         }
+
+        if ($readfile && empty($filename)) {
+            $filename = basename($file);
+        }
+
+        $size = $readfile ? filesize($file) : strlen($file);
+
+        $this->addHeader('Expires', 0);
+        $this->addHeader('Pragma', 'public');
+        $this->addHeader('Content-Length', $size);
+        $this->addHeader('Cache-Control', 'must-revalidate');
+        $this->addHeader('Content-Description', 'File Transfer');
+        $this->addHeader('Content-Type', 'application/octet-stream');
+        $this->addHeader('Content-Disposition', 'attachment; filename=' . $filename);
+
+        $this->addOptionalHeaders($options);
+        $this->sendHeaders();
+
+        if ($readfile) {
+            readfile($file);
+        } else {
+            echo $file;
+        }
+
+        exit;
     }
 
     /**
@@ -197,10 +205,6 @@ class Response
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $mimetype = finfo_file($finfo, $file);
         finfo_close($finfo);
-
-        if (empty($mimetype)) {
-            $this->error404(false);
-        }
 
         $this->addHeader('Content-type', $mimetype);
         $this->addHeader('Content-Length', filesize($file));
@@ -219,11 +223,10 @@ class Response
     {
         $this->addHeader(403)->sendHeaders();
 
-        if (!$message) {
-            exit;
+        if ($message) {
+            echo $this->getMessageError403();
         }
 
-        echo $this->getMessageError403();
         exit;
     }
 
@@ -235,11 +238,10 @@ class Response
     {
         $this->addHeader(404)->sendHeaders();
 
-        if (!$message) {
-            exit;
+        if ($message) {
+            echo $this->getMessageError404();
         }
 
-        echo $this->getMessageError404();
         exit;
     }
 
@@ -258,9 +260,7 @@ class Response
         $text .= '<p>You do not have permission to retrieve the URL or link you requested<p>';
         $text .= '</body>';
         $text .= '</html>';
-        // IE hack. Content length must not be shorter than 512 chars
         $text .= str_repeat(' ', 512);
-
         return $text;
     }
 
@@ -279,9 +279,7 @@ class Response
         $text .= '<p>Page you requested cannot be found.<p>';
         $text .= '</body>';
         $text .= '</html>';
-        // IE hack. Content length must not be shorter than 512 chars
         $text .= str_repeat(' ', 512);
-
         return $text;
     }
 
