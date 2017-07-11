@@ -534,7 +534,7 @@ abstract class Controller
     public function error($key = null, $has_error = null, $no_error = '')
     {
         if (isset($key)) {
-            $result = gplcart_array_get_value($this->errors, $key);
+            $result = gplcart_array_get($this->errors, $key);
         } else {
             $result = empty($this->errors) ? null : $this->errors;
         }
@@ -554,7 +554,7 @@ abstract class Controller
     public function getStore($item = null)
     {
         if (isset($item)) {
-            return gplcart_array_get_value($this->current_store, $item);
+            return gplcart_array_get($this->current_store, $item);
         }
         return $this->current_store;
     }
@@ -567,7 +567,7 @@ abstract class Controller
     public function getUser($item = null)
     {
         if (isset($item)) {
-            return gplcart_array_get_value($this->current_user, $item);
+            return gplcart_array_get($this->current_user, $item);
         }
         return $this->current_user;
     }
@@ -998,7 +998,7 @@ abstract class Controller
      */
     public function setData($key, $value)
     {
-        gplcart_array_set_value($this->data, $key, $value);
+        gplcart_array_set($this->data, $key, $value);
     }
 
     /**
@@ -1007,7 +1007,7 @@ abstract class Controller
      */
     public function unsetData($key)
     {
-        gplcart_array_unset_value($this->data, $key);
+        gplcart_array_unset($this->data, $key);
     }
 
     /**
@@ -1018,7 +1018,7 @@ abstract class Controller
     public function setError($key, $value)
     {
         if (isset($key)) {
-            gplcart_array_set_value($this->errors, $key, $value);
+            gplcart_array_set($this->errors, $key, $value);
         } else {
             $this->errors = (array) $value;
         }
@@ -1030,7 +1030,7 @@ abstract class Controller
      */
     public function unsetError($key)
     {
-        gplcart_array_unset_value($this->errors, $key);
+        gplcart_array_unset($this->errors, $key);
     }
 
     /**
@@ -1053,7 +1053,7 @@ abstract class Controller
             return $this->submitted;
         }
 
-        gplcart_array_set_value($this->submitted, $key, $value);
+        gplcart_array_set($this->submitted, $key, $value);
         return $this->submitted;
     }
 
@@ -1063,7 +1063,7 @@ abstract class Controller
      */
     public function unsetSubmitted($key)
     {
-        gplcart_array_unset_value($this->submitted, $key);
+        gplcart_array_unset($this->submitted, $key);
     }
 
     /**
@@ -1107,7 +1107,7 @@ abstract class Controller
     public function getSubmitted($key = null, $default = null)
     {
         if (isset($key)) {
-            $result = gplcart_array_get_value($this->submitted, $key);
+            $result = gplcart_array_get($this->submitted, $key);
             return isset($result) ? $result : $default;
         }
 
@@ -1126,7 +1126,7 @@ abstract class Controller
             return $this->data;
         }
 
-        $result = gplcart_array_get_value($this->data, $key);
+        $result = gplcart_array_get($this->data, $key);
         return isset($result) ? $result : $default;
     }
 
@@ -1164,7 +1164,7 @@ abstract class Controller
      */
     public function controlSpam()
     {
-        if ($this->request->request('url', '') !== '') {
+        if ($this->request->post('url', '') !== '') {
             $this->response->error403(false);
         }
     }

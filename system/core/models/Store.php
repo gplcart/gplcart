@@ -390,7 +390,7 @@ class Store extends Model
             return $store['data'];
         }
 
-        return gplcart_array_get_value($store['data'], $item);
+        return gplcart_array_get($store['data'], $item);
     }
 
     /**

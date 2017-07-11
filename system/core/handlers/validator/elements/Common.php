@@ -33,7 +33,7 @@ class Common extends ElementValidator
      */
     public function required(array $submitted, array $options)
     {
-        $value = gplcart_array_get_value($submitted, $options['field']);
+        $value = gplcart_array_get($submitted, $options['field']);
 
         if (empty($value)) {
             return $this->setErrorRequired($options['field'], $options['label']);
@@ -49,7 +49,7 @@ class Common extends ElementValidator
      */
     public function numeric(array $submitted, array $options)
     {
-        $value = gplcart_array_get_value($submitted, $options['field']);
+        $value = gplcart_array_get($submitted, $options['field']);
 
         if (is_numeric($value)) {
             return true;
@@ -65,7 +65,7 @@ class Common extends ElementValidator
      */
     public function length(array $submitted, array $options)
     {
-        $value = gplcart_array_get_value($submitted, $options['field']);
+        $value = gplcart_array_get($submitted, $options['field']);
         $length = mb_strlen($value);
 
         list($min, $max) = $options['arguments'] + array(1, 255);
@@ -84,7 +84,7 @@ class Common extends ElementValidator
      */
     public function regexp(array $submitted, array $options)
     {
-        $value = gplcart_array_get_value($submitted, $options['field']);
+        $value = gplcart_array_get($submitted, $options['field']);
         if (empty($options['arguments']) || preg_match(reset($options['arguments']), $value) !== 1) {
             return $this->setErrorInvalidValue($options['field'], $options['label']);
         }
@@ -100,7 +100,7 @@ class Common extends ElementValidator
      */
     public function dateformat(array $submitted, array $options)
     {
-        $value = gplcart_array_get_value($submitted, $options['field']);
+        $value = gplcart_array_get($submitted, $options['field']);
         if (strtotime($value) === false) {
             return $this->setErrorInvalidValue($options['field'], $options['label']);
         }
@@ -115,7 +115,7 @@ class Common extends ElementValidator
      */
     public function json(array $submitted, array $options)
     {
-        $value = gplcart_array_get_value($submitted, $options['field']);
+        $value = gplcart_array_get($submitted, $options['field']);
         if (json_decode($value) === null) {
             return $this->setErrorInvalidValue($options['field'], $options['label']);
         }

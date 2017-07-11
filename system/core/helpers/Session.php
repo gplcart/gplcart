@@ -87,7 +87,7 @@ class Session
     public function get($key, $default = null)
     {
         if (isset($_SESSION)) {
-            $value = gplcart_array_get_value($_SESSION, $key);
+            $value = gplcart_array_get($_SESSION, $key);
         }
         return isset($value) ? $value : $default;
     }
@@ -100,7 +100,7 @@ class Session
     public function set($key, $value = null)
     {
         if (isset($_SESSION)) {
-            gplcart_array_set_value($_SESSION, $key, $value);
+            gplcart_array_set($_SESSION, $key, $value);
         }
     }
 
@@ -123,7 +123,7 @@ class Session
             return true;
         }
 
-        gplcart_array_unset_value($_SESSION, $key);
+        gplcart_array_unset($_SESSION, $key);
         return true;
     }
 

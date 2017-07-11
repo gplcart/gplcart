@@ -69,7 +69,7 @@ class Base extends Handler
             return $this->submitted;
         }
 
-        return gplcart_array_get_value($this->submitted, $parents);
+        return gplcart_array_get($this->submitted, $parents);
     }
 
     /**
@@ -79,7 +79,7 @@ class Base extends Handler
     public function setSubmitted($key, $value)
     {
         $parents = $this->getParents($key);
-        gplcart_array_set_value($this->submitted, $parents, $value);
+        gplcart_array_set($this->submitted, $parents, $value);
     }
 
     /**
@@ -89,7 +89,7 @@ class Base extends Handler
     public function unsetSubmitted($key)
     {
         $parents = $this->getParents($key);
-        gplcart_array_unset_value($this->submitted, $parents);
+        gplcart_array_unset($this->submitted, $parents);
     }
 
     /**
@@ -163,7 +163,7 @@ class Base extends Handler
     protected function setError($key, $error)
     {
         $parents = $this->getParents($key);
-        gplcart_array_set_value($this->errors, $parents, $error);
+        gplcart_array_set($this->errors, $parents, $error);
         return $this->errors;
     }
 
@@ -194,7 +194,7 @@ class Base extends Handler
         }
 
         $parents = $this->getParents($key);
-        return gplcart_array_get_value($this->errors, $parents);
+        return gplcart_array_get($this->errors, $parents);
     }
 
     /**

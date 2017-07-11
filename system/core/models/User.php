@@ -90,7 +90,7 @@ class User extends Model
         }
 
         $data['created'] = $data['modified'] = GC_TIME;
-        $data += array('hash' => gplcart_string_hash($data['password']));
+        $data['hash'] = gplcart_string_hash($data['password']);
         $data['user_id'] = $this->db->insert('user', $data);
 
         $this->setAddress($data);
@@ -464,7 +464,7 @@ class User extends Model
             return $user;
         }
 
-        return gplcart_array_get_value($user, $key);
+        return gplcart_array_get($user, $key);
     }
 
     /**

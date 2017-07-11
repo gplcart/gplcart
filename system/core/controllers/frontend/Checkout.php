@@ -654,7 +654,7 @@ class Checkout extends FrontendController
         $flatten = gplcart_array_flatten($message);
         $string = implode('<br>', array_unique($flatten));
 
-        gplcart_array_set_value($this->data_form['messages'], $key, $string);
+        gplcart_array_set($this->data_form['messages'], $key, $string);
     }
 
     /**

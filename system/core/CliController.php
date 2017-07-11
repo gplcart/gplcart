@@ -200,7 +200,7 @@ class CliController
     public function setSubmitted($key, $data)
     {
         if (isset($key)) {
-            gplcart_array_set_value($this->submitted, $key, $data);
+            gplcart_array_set($this->submitted, $key, $data);
             return $this->submitted;
         }
 
@@ -216,7 +216,7 @@ class CliController
     public function getSubmitted($key = null, $default = null)
     {
         if (isset($key)) {
-            $value = gplcart_array_get_value($this->submitted, $key);
+            $value = gplcart_array_get($this->submitted, $key);
             return isset($value) ? $value : $default;
         }
         return $this->submitted;
@@ -281,7 +281,7 @@ class CliController
     public function setError($key, $error)
     {
         if (isset($key)) {
-            gplcart_array_set_value($this->errors, $key, $error);
+            gplcart_array_set($this->errors, $key, $error);
             return $this->errors;
         }
         return $this->errors = (array) $error;
@@ -295,7 +295,7 @@ class CliController
     public function getError($key = null)
     {
         if (isset($key)) {
-            return gplcart_array_get_value($this->errors, $key);
+            return gplcart_array_get($this->errors, $key);
         }
         return $this->errors;
     }
@@ -408,7 +408,7 @@ class CliController
         $mapped = array();
         foreach ($arguments as $key => $value) {
             if (isset($map[$key]) && is_string($map[$key])) {
-                gplcart_array_set_value($mapped, $map[$key], $value);
+                gplcart_array_set($mapped, $map[$key], $value);
             }
         }
 

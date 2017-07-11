@@ -70,7 +70,7 @@ function gplcart_array_merge(array &$array1, array &$array2)
  * @param string $glue
  * @return mixed
  */
-function gplcart_array_get_value(array &$array, $parents, $glue = '.')
+function gplcart_array_get(array &$array, $parents, $glue = '.')
 {
     if (!is_array($parents)) {
         $parents = explode($glue, $parents);
@@ -95,7 +95,7 @@ function gplcart_array_get_value(array &$array, $parents, $glue = '.')
  * @param mixed $value
  * @param string $glue
  */
-function gplcart_array_set_value(array &$array, $parents, $value, $glue = '.')
+function gplcart_array_set(array &$array, $parents, $value, $glue = '.')
 {
     if (!is_array($parents)) {
         $parents = explode($glue, (string) $parents);
@@ -120,7 +120,7 @@ function gplcart_array_set_value(array &$array, $parents, $value, $glue = '.')
  * @param array|string $parents
  * @param string $glue
  */
-function gplcart_array_unset_value(&$array, $parents, $glue = '.')
+function gplcart_array_unset(&$array, $parents, $glue = '.')
 {
     if (!is_array($parents)) {
         $parents = explode($glue, $parents);
@@ -131,7 +131,7 @@ function gplcart_array_unset_value(&$array, $parents, $glue = '.')
     if (empty($parents)) {
         unset($array[$key]);
     } else {
-        gplcart_array_unset_value($array[$key], $parents);
+        gplcart_array_unset($array[$key], $parents);
     }
 }
 
