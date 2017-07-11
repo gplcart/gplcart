@@ -281,7 +281,11 @@ class Account extends FrontendController
      */
     protected function setTotalOrderIndexAccount()
     {
-        $options = array('count' => true, 'user_id' => $this->data_user['user_id']);
+        $options = array(
+            'count' => true,
+            'user_id' => $this->data_user['user_id']
+        );
+        
         $this->total = (int) $this->order->getList($options);
     }
 

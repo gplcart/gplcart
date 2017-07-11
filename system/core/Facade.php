@@ -69,7 +69,6 @@ class Facade
     public function __construct(Route $route, Config $config, Hook $hook,
             Logger $logger, UrlHelper $url, SessionHelper $session)
     {
-
         $this->url = $url;
         $this->hook = $hook;
         $this->route = $route;

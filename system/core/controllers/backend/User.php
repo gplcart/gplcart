@@ -309,12 +309,8 @@ class User extends BackendController
     protected function updateUser()
     {
         $this->controlAccess('user_edit');
-
-        $values = $this->getSubmitted();
-        $this->user->update($this->data_user['user_id'], $values);
-
-        $message = $this->text('User has been updated');
-        $this->redirect('admin/user/list', $message, 'success');
+        $this->user->update($this->data_user['user_id'], $this->getSubmitted());
+        $this->redirect('admin/user/list', $this->text('User has been updated'), 'success');
     }
 
     /**
