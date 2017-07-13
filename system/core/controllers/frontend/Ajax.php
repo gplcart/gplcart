@@ -152,8 +152,8 @@ class Ajax extends FrontendController
     {
         $product_id = $this->getPosted('product_id', null, true, 'integer');
         $field_value_ids = $this->getPosted('values', array(), true, 'array');
-        
-        if(empty($product_id)){
+
+        if (empty($product_id)) {
             return array();
         }
 
@@ -228,10 +228,17 @@ class Ajax extends FrontendController
             return array('error' => $this->text('No access'));
         }
 
+        $product = $this->product->get($product_id);
+
+        if (empty($product['status'])) {
+            return array('error' => $this->text('An error occurred'));
+        }
+
         $options = array(
             'rating' => $stars,
             'user_id' => $this->uid,
-            'product_id' => $product_id
+            'product_id' => $product_id,
+            'store_id' => $product['store_id']
         );
 
         $added = $this->rating->set($options);
