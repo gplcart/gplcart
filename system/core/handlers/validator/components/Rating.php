@@ -88,6 +88,9 @@ class Rating extends ComponentValidator
             $this->setErrorUnavailable($field, $label);
             return false;
         }
+
+        // We need the store id later
+        $this->setSubmitted('store_id', $product['store_id']);
         return true;
     }
 
