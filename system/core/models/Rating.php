@@ -87,7 +87,7 @@ class Rating extends Model
 
         $this->addByUser($data);
 
-        $result = $this->setBayesian($data['product_id']);
+        $result = $this->setBayesian($data);
 
         $this->hook->fire('rating.set.after', $data, $result, $this);
         return $result;
@@ -102,8 +102,8 @@ class Rating extends Model
     {
         $this->hook->fire('rating.add.user.before', $data, $this);
 
-        if (empty($data)) {
-            return false;
+        if (empty($data['rating'])) {
+            return false; // Do not add rating 0 (unvote)
         }
 
         $result = (bool) $this->db->insert('rating_user', $data);
@@ -114,19 +114,24 @@ class Rating extends Model
 
     /**
      * Sets bayesian rating and votes for the given product
-     * @param integer $product_id
+     * @param array $data
      * @return array
      */
-    protected function setBayesian($product_id)
+    protected function setBayesian(array $data)
     {
-        $rating = $this->getBayesian($product_id);
+        $rating = $this->getBayesian($data);
+
+        if (empty($rating)) {
+            $this->db->delete('rating', array('product_id' => $data['product_id']));
+            return array();
+        }
 
         $sql = 'INSERT INTO rating'
                 . ' SET rating=:rating, votes=:votes, product_id=:product_id'
                 . ' ON DUPLICATE KEY UPDATE rating=:rating, votes=:votes';
 
         $params = array(
-            'product_id' => $product_id,
+            'product_id' => $data['product_id'],
             'votes' => $rating['this_num_votes'],
             'rating' => $rating['bayesian_rating']
         );
@@ -137,26 +142,24 @@ class Rating extends Model
 
     /**
      * Returns an array of rating data for the given product including the bayesian rating
-     * @param integer $product_id
+     * @param array $data
      * @return array
      */
-    protected function getBayesian($product_id)
+    protected function getBayesian(array $data)
     {
-        $sql = 'SELECT *,'
-                . ' ROUND((((result.avg_num_votes * result.avg_rating)'
-                . ' + (result.this_num_votes * result.this_rating))'
-                . ' / (result.avg_num_votes + result.this_num_votes)), 1) AS bayesian_rating'
-                . ' FROM (SELECT product_id,'
-                . ' (SELECT COUNT(product_id) FROM rating_user)'
-                . ' / (SELECT COUNT(DISTINCT product_id) FROM rating_user) AS avg_num_votes,'
-                . ' (SELECT AVG(rating) FROM rating_user) AS avg_rating,'
-                . ' COUNT(product_id) as this_num_votes,'
-                . ' AVG(rating) AS this_rating'
-                . ' FROM rating_user'
-                . ' WHERE product_id=?'
-                . ' GROUP BY product_id) AS result;';
+        $sql = "SELECT *,";
+        $sql .= "@total_votes:= (SELECT COUNT(rating_user_id) FROM rating_user) AS total_votes,";
+        $sql .= "@total_items:= (SELECT COUNT(product_id) FROM product WHERE status > 0 AND store_id=:sid) AS total_items,";
+        $sql .= "@avg_num_votes:= (@total_votes / @total_items) AS avg_num_votes,";
+        $sql .= "@avg_rating:= (SELECT AVG(rating) FROM rating_user) AS avg_rating,";
+        $sql .= "@this_num_votes:= (SELECT COUNT(rating_user_id) FROM rating_user WHERE product_id=:pid) AS this_num_votes,";
+        $sql .= "@this_rating:= (SELECT AVG(rating) FROM rating_user WHERE product_id=:pid) AS this_rating,";
 
-        return $this->db->fetch($sql, array($product_id));
+        // Calculate
+        $sql .= "((@avg_num_votes * @avg_rating) + (@this_num_votes * @this_rating) ) / (@avg_num_votes + @this_num_votes) AS bayesian_rating";
+        $sql .= " FROM rating_user";
+
+        return $this->db->fetch($sql, array('pid' => $data['product_id'], 'sid' => $data['store_id']));
     }
 
 }
