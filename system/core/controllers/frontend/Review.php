@@ -255,7 +255,8 @@ class Review extends FrontendController
      */
     protected function addReview()
     {
-        $added = $this->review->add($this->getSubmitted());
+        $submitted = $this->getSubmitted();
+        $added = $this->review->add($submitted);
 
         if (empty($added)) {
             $message = $this->text('Review has not been added');

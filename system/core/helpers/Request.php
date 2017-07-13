@@ -191,7 +191,7 @@ class Request
 
     /**
      * Returns a data from the POST request
-     * @param string $name
+     * @param string|array $name
      * @param mixed $default
      * @param bool|string $filter
      * @param null|string $type

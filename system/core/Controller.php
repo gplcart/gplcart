@@ -405,7 +405,7 @@ abstract class Controller
         $this->scheme = $this->request->scheme();
         $this->is_ajax = $this->request->isAjax();
         $this->uri = $this->scheme . $this->host . $this->urn;
-        $this->query = $this->request->get(null, array(), 'array');
+        $this->query = (array) $this->request->get(null, array(), 'array');
     }
 
     /**
@@ -432,6 +432,7 @@ abstract class Controller
     protected function setStoreProperties()
     {
         $this->current_store = $this->store->getCurrent();
+
         if (isset($this->current_store['store_id'])) {
             $this->store_id = $this->current_store['store_id'];
         }
@@ -618,7 +619,7 @@ abstract class Controller
             $dateformat .= $this->config('date_suffix', ' H:i');
         }
 
-        return date($dateformat, (int) $timestamp);
+        return date($dateformat, $timestamp);
     }
 
     /**
@@ -1046,13 +1047,13 @@ abstract class Controller
     public function setSubmitted($key = null, $value = null, $filter = true)
     {
         if (!isset($key)) {
-            $this->submitted = $this->request->post(null, array(), $filter, 'array');
+            $this->submitted = (array) $this->request->post(null, array(), $filter, 'array');
             return $this->submitted;
         }
 
         if (!isset($value) && empty($this->submitted)) {
             $this->form_source = (string) $key;
-            $this->submitted = $this->request->post($key, array(), $filter, 'array');
+            $this->submitted = (array) $this->request->post($key, array(), $filter, 'array');
             return $this->submitted;
         }
 
@@ -1702,6 +1703,7 @@ abstract class Controller
         $this->data = array_merge($this->data, $this->getDefaultData());
 
         $languages = $this->language->getList();
+
         $enabled_languages = array_filter($languages, function($value) {
             return !empty($value['status']);
         });
