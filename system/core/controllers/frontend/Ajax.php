@@ -11,7 +11,6 @@ namespace gplcart\core\controllers\frontend;
 
 use gplcart\core\models\Sku as SkuModel,
     gplcart\core\models\City as CityModel,
-    gplcart\core\models\Rating as RatingModel,
     gplcart\core\models\Collection as CollectionModel,
     gplcart\core\models\CollectionItem as CollectionItemModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
@@ -21,12 +20,6 @@ use gplcart\core\controllers\frontend\Controller as FrontendController;
  */
 class Ajax extends FrontendController
 {
-
-    /**
-     * Rating model instance
-     * @var \gplcart\core\models\Rating $rating
-     */
-    protected $rating;
 
     /**
      * Sku model instance
@@ -53,21 +46,18 @@ class Ajax extends FrontendController
     protected $collection_item;
 
     /**
-     * @param RatingModel $rating
      * @param SkuModel $sku
      * @param CityModel $city
      * @param CollectionModel $collection
      * @param CollectionItemModel $collection_item
      */
-    public function __construct(RatingModel $rating, SkuModel $sku,
-            CityModel $city, CollectionModel $collection,
-            CollectionItemModel $collection_item)
+    public function __construct(SkuModel $sku, CityModel $city,
+            CollectionModel $collection, CollectionItemModel $collection_item)
     {
         parent::__construct();
 
         $this->sku = $sku;
         $this->city = $city;
-        $this->rating = $rating;
         $this->collection = $collection;
         $this->collection_item = $collection_item;
     }
@@ -213,41 +203,6 @@ class Ajax extends FrontendController
         $options = array('title' => $term, 'limit' => array(0, $max));
 
         return $this->collection_item->getSuggestions($collection, $options);
-    }
-
-    /**
-     * Rates a product
-     * @return array
-     */
-    public function rateAjax()
-    {
-        $stars = $this->getPosted('stars', 0, true, 'integer');
-        $product_id = $this->getPosted('product_id', null, true, 'integer');
-
-        if (empty($product_id) || empty($this->uid)) {
-            return array('error' => $this->text('No access'));
-        }
-
-        $product = $this->product->get($product_id);
-
-        if (empty($product['status'])) {
-            return array('error' => $this->text('An error occurred'));
-        }
-
-        $options = array(
-            'rating' => $stars,
-            'user_id' => $this->uid,
-            'product_id' => $product_id,
-            'store_id' => $product['store_id']
-        );
-
-        $added = $this->rating->set($options);
-
-        if ($added) {
-            return array('success' => 1);
-        }
-
-        return array('error' => $this->text('An error occurred'));
     }
 
     /**
