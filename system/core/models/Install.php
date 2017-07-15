@@ -168,9 +168,9 @@ class Install extends Model
         );
 
         $requirements['files']['system_directory'] = array(
-            'status' => is_writable(GC_SYSTEM_DIR),
+            'status' => is_writable(GC_CONFIG_DIR . '/runtime'),
             'severity' => 'danger',
-            'message' => $this->language->text('@file exists and writable', array('@file' => '/system'))
+            'message' => $this->language->text('@file exists and writable', array('@file' => '/system/config/runtime'))
         );
 
         $requirements['files']['cache_directory'] = array(
@@ -247,15 +247,17 @@ class Install extends Model
             return false;
         }
 
-        $config .= '$config[\'database\'] = ' . var_export($settings['database'], true) . ';' . PHP_EOL . PHP_EOL;
-        $config .= 'return $config;' . PHP_EOL;
+        $config .= '$config[\'database\'] = ' . var_export($settings['database'], true) . ';';
+        $config .= PHP_EOL . PHP_EOL;
+        $config .= 'return $config;';
+        $config .= PHP_EOL;
 
-        if (!file_put_contents(GC_CONFIG_COMMON, $config)) {
-            return false;
+        if (file_put_contents(GC_CONFIG_COMMON, $config)) {
+            chmod(GC_CONFIG_COMMON, 0444);
+            return true;
         }
 
-        chmod(GC_CONFIG_COMMON, 0444);
-        return true;
+        return false;
     }
 
     /**
