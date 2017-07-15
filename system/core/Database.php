@@ -321,7 +321,7 @@ class Database extends PDO
             unset($values[$field]); // Remove autoincremented fields
         }
 
-        if (0 === strpos($scheme['fields'][$field]['type'], 'int')) {
+        if (strpos($scheme['fields'][$field]['type'], 'int') === 0) {
             $value = intval($value); // Make value integer
         }
 
@@ -444,6 +444,7 @@ class Database extends PDO
     protected function getSqlCreateTable($table, array $data)
     {
         $fields = $this->getSqlFields($data['fields']);
+
         $engine = isset($data['engine']) ? $data['engine'] : 'InnoDB';
         $collate = isset($data['collate']) ? $data['collate'] : 'utf8_general_ci';
 
