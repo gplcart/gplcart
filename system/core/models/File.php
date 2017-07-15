@@ -645,7 +645,7 @@ class File extends Model
             $directory = $pathinfo['dirname'];
         }
 
-        if (!file_exists($directory) && !mkdir($directory, 0644, true)) {
+        if (!file_exists($directory) && !mkdir($directory, 0775, true)) {
             unlink($temp);
             $this->error = $this->language->text('Unable to create @name', array('@name' => $directory));
             return false;
@@ -661,7 +661,7 @@ class File extends Model
             return $this->error;
         }
 
-        $this->chmod($destination);
+        chmod($destination, 0644);
         $this->transferred = $destination;
         return true;
     }
@@ -820,19 +820,6 @@ class File extends Model
     public function getError()
     {
         return $this->error;
-    }
-
-    /**
-     * Set directory permissions depending on public/private access
-     * @param string $file
-     * @return boolean
-     */
-    protected function chmod($file)
-    {
-        if (strpos($file, GC_PRIVATE_DIR) === 0) {
-            return chmod($file, 0640);
-        }
-        return chmod($file, 0644);
     }
 
 }
