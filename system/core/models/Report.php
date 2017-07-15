@@ -241,8 +241,8 @@ class Report extends Model
             'title' => $this->language->text('Filesystem is protected'),
             'description' => '',
             'severity' => 'danger',
-            'status' => ($filesystem === true) ? $this->language->text('Yes') : $this->language->text('No'),
-            'details' => ($filesystem === true) ? array() : $filesystem,
+            'status' => $filesystem === true ? $this->language->text('Yes') : $this->language->text('No'),
+            'details' => $filesystem === true ? array() : $filesystem,
             'weight' => 8,
         );
 
@@ -259,8 +259,7 @@ class Report extends Model
     public function checkFilesystem()
     {
         $results = array(
-            $this->checkPermissions(GC_CONFIG_COMMON),
-            $this->checkPermissions(GC_CONFIG_DATABASE)
+            $this->checkPermissions(GC_CONFIG_COMMON)
         );
 
         if (file_exists(GC_CONFIG_OVERRIDE)) {
@@ -268,12 +267,7 @@ class Report extends Model
         }
 
         $filtered = array_filter($results, 'is_string');
-
-        if (empty($filtered)) {
-            return true;
-        }
-
-        return $filtered;
+        return empty($filtered) ? true : $filtered;
     }
 
     /**
@@ -284,7 +278,7 @@ class Report extends Model
      */
     protected function checkPermissions($file, $permissions = '0444')
     {
-        if (substr(sprintf('%o', fileperms($file)), -4) === (string) $permissions) {
+        if (substr(sprintf('%o', fileperms($file)), -4) === $permissions) {
             return true;
         }
 
