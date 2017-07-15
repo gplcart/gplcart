@@ -74,7 +74,7 @@ class Rating extends Model
     {
         $this->hook->fire('rating.set.before', $data, $this);
 
-        if (empty($data)) {
+        if (empty($data['rating'])) {
             return false;
         }
 
@@ -121,7 +121,7 @@ class Rating extends Model
     {
         $rating = $this->getBayesian($data);
 
-        if (empty($rating)) {
+        if (empty($rating['bayesian_rating'])) {
             $this->db->delete('rating', array('product_id' => $data['product_id']));
             return array();
         }
