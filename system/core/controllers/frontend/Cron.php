@@ -88,12 +88,8 @@ class Cron extends FrontendController
      */
     protected function deleteExpiredHistoryCron()
     {
-        $lifespan = (int) $this->config('history_lifespan', 2628000);
-        $ago = (GC_TIME - $lifespan);
-
-        /* @var $database \gplcart\core\Database */
-        $database = $this->config->getDb();
-        $database->run('DELETE FROM history WHERE time < ?', array($ago));
+        $ago = GC_TIME - (int) $this->config('history_lifespan', 2628000);
+        $this->config->getDb()->run('DELETE FROM history WHERE time < ?', array($ago));
     }
 
     /**
