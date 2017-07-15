@@ -86,7 +86,7 @@ class Image extends FrontendController
      */
     protected function checkCacheDirectoryImage()
     {
-        if (!is_dir($this->data_imagestyle_directory) && !mkdir($this->data_imagestyle_directory, 0755, true)) {
+        if (!is_dir($this->data_imagestyle_directory) && !mkdir($this->data_imagestyle_directory, 0775, true)) {
             $this->response->error404(false);
         }
     }

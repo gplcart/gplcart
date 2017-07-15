@@ -165,11 +165,11 @@ class Language extends Model
         $this->compiled_directory_js = GC_LOCALE_JS_DIR . "/{$this->langcode}";
 
         if (!file_exists($this->compiled_directory_csv)) {
-            mkdir($this->compiled_directory_csv, 0755, true);
+            mkdir($this->compiled_directory_csv, 0775, true);
         }
 
         if (!file_exists($this->compiled_directory_js)) {
-            mkdir($this->compiled_directory_js, 0755, true);
+            mkdir($this->compiled_directory_js, 0775, true);
         }
     }
 

@@ -634,17 +634,13 @@ class Module extends Model
         foreach ($files as $file) {
 
             $info = pathinfo($file);
-
-            // Define the language code by the filename
-            // and get expected directory for the language
             $destination = GC_LOCALE_DIR . "/{$info['filename']}";
 
             // If it does't exist, try to create it
-            if (!file_exists($destination) && !mkdir($destination, 0644, true)) {
+            if (!file_exists($destination) && !mkdir($destination, 0775, true)) {
                 continue;
             }
 
-            // Try to copy
             $destination .= "/{$module_id}_{$info['basename']}";
             $copied += (int) copy($file, $destination);
         }

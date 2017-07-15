@@ -313,7 +313,7 @@ class Compressor
     protected function write($directory, $filename, $data)
     {
         // Try to create the directory if it doesn't exist
-        if (!file_exists($directory) && !mkdir($directory, 0755, true)) {
+        if (!file_exists($directory) && !mkdir($directory, 0775, true)) {
             return false;
         }
 
