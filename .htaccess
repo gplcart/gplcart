@@ -16,51 +16,54 @@ ServerSignature Off
 # Remove E-tag
 FileETag None
 
-# Enable rewriting
-RewriteEngine On
+<IfModule mod_rewrite.c>
 
-# Set "protossl" to "s" if we were accessed via https://
-RewriteRule ^ - [E=protossl]
-RewriteCond %{HTTPS} on
-RewriteRule ^ - [E=protossl:s]
+    # Enable rewriting
+    RewriteEngine On
 
-# To redirect from http://domain.com to http://www.domain.com uncomment the following:
-# RewriteCond %{HTTP_HOST} .
-# RewriteCond %{HTTP_HOST} !^www\. [NC]
-# RewriteRule ^ http%{ENV:protossl}://www.%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-#
-# To redirect from http://www.domain.com to http://domain.com uncomment the following:
-# RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
-# RewriteRule ^ http%{ENV:protossl}://%1%{REQUEST_URI} [L,R=301]
+    # Set "protossl" to "s" if we were accessed via https://
+    RewriteRule ^ - [E=protossl]
+    RewriteCond %{HTTPS} on
+    RewriteRule ^ - [E=protossl:s]
 
-# If your site installed at http://domain.com/subdirectory
-# and the rewriting rules are not working properly uncomment and modify the following:
-# RewriteBase /subdirectory
+    # To redirect from http://domain.com to http://www.domain.com uncomment the following:
+    # RewriteCond %{HTTP_HOST} .
+    # RewriteCond %{HTTP_HOST} !^www\. [NC]
+    # RewriteRule ^ http%{ENV:protossl}://www.%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+    #
+    # To redirect from http://www.domain.com to http://domain.com uncomment the following:
+    # RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+    # RewriteRule ^ http%{ENV:protossl}://%1%{REQUEST_URI} [L,R=301]
 
-# Prevent direct access to .php files
-RewriteCond %{THE_REQUEST} ^.+?\ [^?]+\.php[?\ ]
-RewriteRule \.php$ - [F]
+    # If your site installed at http://domain.com/subdirectory
+    # and the rewriting rules are not working properly uncomment and modify the following:
+    # RewriteBase /subdirectory
 
-# Protect hidden directories whose names begin with a period, e.g .git
-RewriteRule "(^|/)\." - [F]
+    # Prevent direct access to .php files
+    RewriteCond %{THE_REQUEST} ^.+?\ [^?]+\.php[?\ ]
+    RewriteRule \.php$ - [F]
 
-# Prevent direct access to system files, except module asset folders
-RewriteRule ^system/\w+/\w+/(js|css|image|vendor)/ - [L]
-RewriteRule ^system/ - [F]
+    # Protect hidden directories whose names begin with a period, e.g .git
+    RewriteRule "(^|/)\." - [F]
 
-# Prevent direct access to vendor files, except asset folders
-RewriteRule ^vendor/\w+/\w+/asset/ - [L]
-RewriteRule ^vendor/ - [F]
+    # Prevent direct access to system files, except module asset folders
+    RewriteRule ^system/\w+/\w+/(js|css|image|vendor)/ - [L]
+    RewriteRule ^system/ - [F]
 
-# Prevent access to private directories
-RewriteRule ^cache/ - [F]
-RewriteRule ^tests/ - [F]
-RewriteRule ^files/private/ - [F]
+    # Prevent direct access to vendor files, except asset folders
+    RewriteRule ^vendor/\w+/\w+/asset/ - [L]
+    RewriteRule ^vendor/ - [F]
 
-# Pass all requests (except public files) to index.php
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^ index.php [L]
+    # Prevent access to private directories
+    RewriteRule ^cache/ - [F]
+    RewriteRule ^tests/ - [F]
+    RewriteRule ^files/private/ - [F]
+
+    # Pass all requests (except public files) to index.php
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.php [L]
+</IfModule>
 
 <IfModule mod_headers.c>
 
@@ -89,8 +92,8 @@ RewriteRule ^ index.php [L]
       Header append Vary Accept-Encoding
     </FilesMatch>
 
-    # Cache static files for 1 year
     <FilesMatch "\.(ico|pdf|flv|jpg|jpeg|png|gif|js|css|swf)$">
+        # Cache static files for 1 year
         Header set Cache-Control "public, max-age=31536000"
     </FilesMatch>
 </IfModule>
