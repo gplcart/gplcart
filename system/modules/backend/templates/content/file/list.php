@@ -135,7 +135,7 @@
 <?php } else { ?>
 <div class="rows">
   <div class="col-md-12">
-    <?php echo $this->text('You have no recorded files yet'); ?>
+    <?php echo $this->text('There are no items yet'); ?>
     <?php if ($this->access('file_add') && $this->access('file_upload')) { ?>
     <a class="btn btn-default" href="<?php echo $this->url('admin/content/file/add'); ?>">
       <?php echo $this->text('Add'); ?>

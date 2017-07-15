@@ -152,7 +152,7 @@
 <?php } else { ?>
 <div class="row empty">
   <div class="col-md-12">
-    <?php echo $this->text('You have no countries yet'); ?>
+    <?php echo $this->text('There are no items yet'); ?>
     <?php if ($this->access('country_add')) { ?>
     <a class="btn btn-default add" href="<?php echo $this->url('admin/settings/country/add'); ?>">
       <?php echo $this->text('Add'); ?>

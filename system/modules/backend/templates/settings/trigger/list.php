@@ -154,7 +154,7 @@
 <?php } else { ?>
 <div class="row">
   <div class="col-md-12">
-    <?php echo $this->text('You have no triggers'); ?>
+    <?php echo $this->text('There are no items yet'); ?>
     <?php if ($this->access('trigger_add')) { ?>
     <a class="btn btn-default" href="<?php echo $this->url('admin/settings/trigger/add'); ?>">
       <?php echo $this->text('Add'); ?>

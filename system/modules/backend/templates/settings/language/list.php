@@ -6,11 +6,19 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
+<?php if(empty($languages)) { ?>
+<?php echo $this->text('There are no items yet'); ?>
+<?php if ($this->access('language_add')) { ?>
+<a class="btn btn-default" href="<?php echo $this->url("admin/settings/language/add"); ?>">
+  <?php echo $this->text('Add'); ?>
+</a>
+<?php } ?>
+<?php } else { ?>
 <div class="panel panel-default">
   <?php if ($this->access('language_add')) { ?>
   <div class="panel-heading clearfix">
     <div class="btn-toolbar pull-right">
-      <a class="btn btn-default add" href="<?php echo $this->url("admin/settings/language/add"); ?>">
+      <a class="btn btn-default" href="<?php echo $this->url("admin/settings/language/add"); ?>">
         <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
       </a>
     </div>
@@ -73,3 +81,4 @@
     </table>
   </div>
 </div>
+<?php } ?>

@@ -120,7 +120,7 @@
 <?php } else { ?>
 <div class="row">
   <div class="col-md-12">
-    <?php echo $this->text('You have no aliases yet'); ?>
+    <?php echo $this->text('There are no items yet'); ?>
   </div>
 </div>
 <?php } ?>
