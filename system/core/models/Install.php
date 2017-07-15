@@ -357,7 +357,7 @@ class Install extends Model
 
         $code = key($settings['store']['language']);
 
-        if ($code == 'en') {
+        if ($code === 'en') {
             return false;
         }
 
