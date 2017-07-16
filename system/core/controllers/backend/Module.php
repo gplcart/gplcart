@@ -67,6 +67,8 @@ class Module extends BackendController
         $this->setPagerLimit();
 
         $this->setData('modules', $this->getListModule());
+        $this->setData('available_modules', $this->module->getList());
+
         $this->outputListModule();
     }
 
@@ -141,6 +143,7 @@ class Module extends BackendController
     protected function startActionModule($action)
     {
         $this->controlAccess("module_$action");
+
         $id = $this->data_module['id'];
 
         // Don't call methods like $this->module->{$action}
@@ -166,6 +169,7 @@ class Module extends BackendController
     protected function getListModule()
     {
         $modules = $this->module->getList();
+
         $this->checkDependenciesListModule($modules);
 
         $this->sortListModule($modules);
@@ -190,8 +194,7 @@ class Module extends BackendController
      */
     protected function setTotalListModule()
     {
-        $modules = $this->getListModule($this->query_filter);
-        $this->total = count($modules);
+        $this->total = count($this->module->getList());
     }
 
     /**
