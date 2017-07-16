@@ -124,26 +124,15 @@ class Hook
     public function fire($hook, &$a = null, &$b = null, &$c = null, &$d = null,
             &$e = null)
     {
-        // Check if the hook must be fired for a certain module ID
-        // which is provided in the hook name in format <hook name>|<module ID>
         if (strpos($hook, '|') !== false) {
             list($hook, $module_id) = explode('|', $hook, 2);
         }
 
         $method = $this->getMethod($hook);
 
-        // If a module ID is set we must be sure that the hook
-        // is registered even if the module is disabled 
         if (isset($module_id)) {
-
-            // Get all modules, including disabled ones
-            $modules = $this->config->getModules();
-            if (empty($modules[$module_id]['class'])) {
-                return false;
-            }
-
-            $this->call($modules[$module_id]['class'], $method, $a, $b, $c, $d, $e);
-            return true;
+            $namespace = $this->config->getModuleClassNamespace($module_id);
+            return $this->call($namespace, $method, $a, $b, $c, $d, $e);
         }
 
         if (empty($this->hooks[$method])) {
@@ -175,7 +164,7 @@ class Hook
             $instance = Container::get(array($namespace, $method));
             $instance->{$method}($a, $b, $c, $d, $e);
             $this->setCalled($method, $namespace);
-        } catch (\ReflectionException $exc) {
+        } catch (\Exception $exc) {
             return false;
         }
 
