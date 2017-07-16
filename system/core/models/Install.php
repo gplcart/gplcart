@@ -155,12 +155,6 @@ class Install extends Model
             'message' => $this->language->text('@name extension installed', array('@name' => 'Ctype'))
         );
 
-        $requirements['extensions']['zip'] = array(
-            'status' => class_exists('ZipArchive'),
-            'severity' => 'danger',
-            'message' => $this->language->text('@name extension installed', array('@name' => 'ZIP'))
-        );
-
         $requirements['php']['allow_url_fopen'] = array(
             'status' => !ini_get('allow_url_fopen'),
             'severity' => 'warning',

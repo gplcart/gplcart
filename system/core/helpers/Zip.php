@@ -9,14 +9,31 @@
 
 namespace gplcart\core\helpers;
 
-use ZipArchive;
 use InvalidArgumentException;
 
 /**
- * Extends ZipArchive class
+ * Contains methods to work with zipped files
  */
-class Zip extends ZipArchive
+class Zip
 {
+
+    /**
+     * ZipArchive instance
+     * @var \ZipArchive $zip
+     */
+    protected $zip;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        if (!class_exists('ZipArchive')) {
+            throw new InvalidArgumentException('Class ZipArchive does not exist');
+        }
+
+        $this->zip = new \ZipArchive;
+    }
 
     /**
      * Sets a file path
@@ -25,9 +42,10 @@ class Zip extends ZipArchive
      */
     public function set($path, $create = true)
     {
-        $flag = $create ? parent::CREATE : null;
+        $zip = $this->zip;
+        $flag = $create ? $zip::CREATE : null;
 
-        if ($this->open($path, $flag) !== true) {
+        if ($this->zip->open($path, $flag) !== true) {
             throw new InvalidArgumentException("Cannot open ZIP file $path");
         }
 
@@ -40,7 +58,7 @@ class Zip extends ZipArchive
      */
     public function add($file)
     {
-        return $this->addFile($file);
+        return $this->zip->addFile($file);
     }
 
     /**
@@ -70,14 +88,12 @@ class Zip extends ZipArchive
 
             $prefix = $wrapper === '' ? '' : $wrapper . DIRECTORY_SEPARATOR;
             $relative = $prefix . substr($file, strlen($source) + 1);
-            $added += (int) $this->addFile($file, $relative);
+            $added += (int) $this->zip->addFile($file, $relative);
         }
 
-        if (count($files) == $added) {
-            return $this->close();
-        }
-
-        return false;
+        $result = count($files) == $added;
+        $this->zip->close();
+        return $result;
     }
 
     /**
@@ -87,7 +103,7 @@ class Zip extends ZipArchive
      */
     public function remove($file)
     {
-        return $this->deleteName($file);
+        return $this->zip->deleteName($file);
     }
 
     /**
@@ -99,10 +115,10 @@ class Zip extends ZipArchive
     public function extract($path, $files = array())
     {
         if (empty($files)) {
-            return $this->extractTo($path);
+            return $this->zip->extractTo($path);
         }
 
-        return $this->extractTo($path, $files);
+        return $this->zip->extractTo($path, $files);
     }
 
     /**
@@ -112,10 +128,19 @@ class Zip extends ZipArchive
     public function getList()
     {
         $files = array();
-        for ($i = 0; $i < $this->numFiles; $i++) {
-            $files[] = $this->getNameIndex($i);
+        for ($i = 0; $i < $this->zip->numFiles; $i++) {
+            $files[] = $this->zip->getNameIndex($i);
         }
         return $files;
+    }
+
+    /**
+     * Returns original ZipArchive class instance
+     * @return \ZipArchive
+     */
+    public function getInstance()
+    {
+        return $this->zip;
     }
 
 }

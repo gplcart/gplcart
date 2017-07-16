@@ -16,7 +16,6 @@ Also you'll need the following extension enabled:
 - OpenSSL
 - Mb string
 - Mod Rewrite
-- ZipArchive
 
 ## Installation ##
 

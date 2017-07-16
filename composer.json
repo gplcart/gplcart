@@ -22,7 +22,6 @@
         "ext-pdo": "*",
         "ext-curl": "*",
         "ext-fileinfo": "*",
-        "ext-zip": "*",
         "ext-openssl": "*",
         "ext-spl": "*"
     },
