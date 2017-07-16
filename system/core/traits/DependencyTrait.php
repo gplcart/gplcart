@@ -62,7 +62,14 @@ trait DependencyTrait
 
             list($operator, $number) = $components;
 
-            if (!version_compare($items[$id]['version'], $number, $operator)) {
+            if ($operator === '=' && strpos($number, 'x') !== false) {
+                // Check versions like 1.x
+                $allowed = version_compare($items[$id]['version'], $number);
+            } else {
+                $allowed = version_compare($items[$id]['version'], $number, $operator);
+            }
+
+            if (!$allowed) {
                 $item['errors'][] = array('Requires incompatible version of @name', array('@name' => $id));
             }
         }
