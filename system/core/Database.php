@@ -26,6 +26,12 @@ class Database extends PDO
     protected $logs = array();
 
     /**
+     * An array of database scheme
+     * @var array
+     */
+    protected $scheme = array();
+
+    /**
      * @param array $config
      * @throws DatabaseException
      */
@@ -262,23 +268,33 @@ class Database extends PDO
 
     /**
      * Returns an array of database scheme
-     * @param null $table
-     * @return array|mixed
-     * @throws DatabaseException
+     * @staticvar array $scheme
+     * @param string|null $table
+     * @return array
      */
     public function getScheme($table = null)
     {
-        $data = require GC_CONFIG_DATABASE;
+        static $scheme = array();
 
-        if (empty($data)) {
-            throw new DatabaseException('Failed to load database scheme');
+        if (empty($scheme)) {
+            $default = require GC_CONFIG_DATABASE;
+            $scheme = array_merge($this->scheme, $default);
         }
 
         if (isset($table)) {
-            return empty($data[$table]) ? array() : $data[$table];
+            return empty($scheme[$table]) ? array() : $scheme[$table];
         }
 
-        return $data;
+        return $scheme;
+    }
+
+    /**
+     * Add an array of database scheme data
+     * @param array $data
+     */
+    public function addScheme(array $data)
+    {
+        $this->scheme = array_merge($data, $this->scheme);
     }
 
     /**
@@ -318,19 +334,19 @@ class Database extends PDO
     protected function filterValue($scheme, &$values, $field, &$value)
     {
         if (!empty($scheme['fields'][$field]['auto_increment'])) {
-            unset($values[$field]); // Remove autoincremented fields
+            unset($values[$field]);
         }
 
         if (strpos($scheme['fields'][$field]['type'], 'int') === 0) {
-            $value = intval($value); // Make value integer
+            $value = intval($value);
         }
 
         if ($scheme['fields'][$field]['type'] === 'float') {
-            $value = floatval($value); // Make value float
+            $value = floatval($value);
         }
 
         if (!empty($scheme['fields'][$field]['serialize']) && is_array($value)) {
-            $value = serialize($value); // Serialize arrays
+            $value = serialize($value);
         }
     }
 
@@ -410,6 +426,27 @@ class Database extends PDO
     }
 
     /**
+     * Drop a table
+     * @param string $table
+     */
+    public function deleteTable($table)
+    {
+        // $this->quote() causes error 
+        $this->query("DROP TABLE IF EXISTS $table");
+    }
+
+    /**
+     * Check if a table already exists
+     * @param string $table
+     * @return bool
+     */
+    public function tableExists($table)
+    {
+        $result = $this->query("SHOW TABLES LIKE " . $this->quote($table));
+        return $result->rowCount() > 0;
+    }
+
+    /**
      * Creates tables using an array of scheme data
      * @param array $tables
      * @return bool
@@ -432,7 +469,7 @@ class Database extends PDO
             }
         }
 
-        return ($imported == count($tables));
+        return $imported == count($tables);
     }
 
     /**
@@ -490,7 +527,6 @@ class Database extends PDO
 
             $sql[] = $name . ' ' . trim($string);
         }
-
 
         return implode(',', $sql);
     }
