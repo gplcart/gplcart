@@ -415,7 +415,7 @@ abstract class Controller
     {
         if (!$this->isInstalling()) {
             $this->cart_uid = $this->cart->uid();
-            $this->uid = (int) $this->user->getSession('user_id');
+            $this->uid = (int) $this->user->getId();
             if (!empty($this->uid)) {
                 $this->current_user = $this->user->get($this->uid);
             }
@@ -1183,15 +1183,15 @@ abstract class Controller
             $this->url->redirect('login');
         }
 
+        $session_role_id = $this->user->getRoleId();
         $session_hash = $this->user->getSession('hash');
-        $session_role_id = (int) $this->user->getSession('role_id');
 
         if (!gplcart_string_equals($this->current_user['hash'], $session_hash)) {
             $this->session->delete();
             $this->url->redirect('login');
         }
 
-        if ((int) $this->current_user['role_id'] !== $session_role_id) {
+        if ($this->current_user['role_id'] != $session_role_id) {
             $this->session->delete();
             $this->url->redirect('login');
         }

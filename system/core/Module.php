@@ -30,12 +30,19 @@ abstract class Module
     protected $config;
 
     /**
+     * Database class instance
+     * @var \gplcart\core\Database $db
+     */
+    protected $db;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
         $this->hook = Container::get('gplcart\\core\\Hook');
         $this->config = Container::get('gplcart\\core\\Config');
+        $this->db = $this->config->getDb();
     }
 
     /**

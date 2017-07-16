@@ -73,7 +73,7 @@
               <?php } ?>
               <?php if ($this->access('module_uninstall') && empty($info['lock'])) { ?>
               <li>
-                <a href="<?php echo $this->url(false, array('action' => 'uninstall', 'module_id' => $module_id, 'token' => $_token)); ?>">
+                <a onclick="return confirm(GplCart.text('Are you sure? This action may permanently delete some data managed by this module'))" href="<?php echo $this->url(false, array('action' => 'uninstall', 'module_id' => $module_id, 'token' => $_token)); ?>">
                   <?php echo $this->lower($this->text('Uninstall')); ?>
                 </a>
               </li>
@@ -125,8 +125,8 @@
               <b><?php echo $this->text('Requires'); ?>:</b>
               <p>
                 <?php foreach ($info['requires'] as $requires_id => $version) { ?>
-                <?php if (isset($modules[$requires_id]['name'])) { ?>
-                <span class="label label-default"><?php echo $this->text($modules[$requires_id]['name']); ?><?php echo $this->e($version); ?></span>
+                <?php if (isset($available_modules[$requires_id]['name'])) { ?>
+                <span class="label label-default"><?php echo $this->text($available_modules[$requires_id]['name']); ?> <?php echo $this->e($version); ?></span>
                 <?php } else { ?>
                 <span class="label label-danger"><?php echo $this->e($requires_id); ?> (<?php echo $this->text('invalid'); ?>)</span>
                 <?php } ?>
@@ -139,8 +139,8 @@
               <b><?php echo $this->text('Required by'); ?>:</b>
               <p>
                 <?php foreach ($info['required_by'] as $required_by_id => $version) { ?>
-                <?php if (isset($modules[$required_by_id]['name'])) { ?>
-                <span class="label label-default"><?php echo $this->text($modules[$required_by_id]['name']); ?></span>
+                <?php if (isset($available_modules[$required_by_id]['name'])) { ?>
+                <span class="label label-default"><?php echo $this->text($available_modules[$required_by_id]['name']); ?> <?php echo $this->e($version); ?></span>
                 <?php } else { ?>
                 <span class="label label-danger"><?php echo $this->e($required_by_id); ?> (<?php echo $this->text('invalid'); ?>)</span>
                 <?php } ?>

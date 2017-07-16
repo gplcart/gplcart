@@ -180,14 +180,16 @@ class Config
 
     /**
      * Returns an array of all available modules
+     * @param boolean $cache
      * @return array
      */
-    public function getModules()
+    public function getModules($cache = true)
     {
-        $modules = &Cache::memory(__METHOD__);
-
-        if (isset($modules)) {
-            return $modules;
+        if ($cache) {
+            $modules = &Cache::memory(__METHOD__);
+            if (isset($modules)) {
+                return $modules;
+            }
         }
 
         $installed = $this->getInstalledModules();

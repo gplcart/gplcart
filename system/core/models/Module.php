@@ -500,12 +500,12 @@ class Module extends Model
     public function install($module_id, $status = true)
     {
         Cache::clearMemory();
+
         $result = $this->canInstall($module_id);
 
         $this->hook->fire("module.install.before|$module_id", $result, $this);
 
         if ($result !== true) {
-            // Make sure the troubled module is uninstalled
             $this->db->delete('module', array('module_id' => $module_id));
             return $result;
         }
@@ -636,7 +636,6 @@ class Module extends Model
             $info = pathinfo($file);
             $destination = GC_LOCALE_DIR . "/{$info['filename']}";
 
-            // If it does't exist, try to create it
             if (!file_exists($destination) && !mkdir($destination, 0775, true)) {
                 continue;
             }

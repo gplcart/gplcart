@@ -357,7 +357,7 @@ class Cart extends Model
      */
     public function uid()
     {
-        $session_user_id = $this->user->getSession('user_id');
+        $session_user_id = $this->user->getId();
 
         if (!empty($session_user_id)) {
             return (string) $session_user_id;

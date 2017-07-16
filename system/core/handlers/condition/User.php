@@ -44,7 +44,7 @@ class User extends BaseHandler
         static $user_id = null;
 
         if ($user_id === null) {
-            $user_id = (int) $this->user->getSession('user_id');
+            $user_id = (int) $this->user->getId();
         }
 
         return $this->compare($user_id, $condition['value'], $condition['operator']);
@@ -60,7 +60,7 @@ class User extends BaseHandler
         static $role_id = null;
 
         if ($role_id === null) {
-            $role_id = (int) $this->user->getSession('role_id');
+            $role_id = $this->user->getRoleId();
         }
 
         return $this->compare($role_id, $condition['value'], $condition['operator']);

@@ -215,13 +215,31 @@ class User extends Model
      */
     public function isSuperadmin($user_id = null)
     {
-        $superadmin_id = (int) $this->config->get('user_superadmin', 1);
+        $superadmin_id = $this->config->get('user_superadmin', 1);
 
         if (isset($user_id)) {
-            return ($superadmin_id === (int) $user_id);
+            return $superadmin_id == $user_id;
         }
 
-        return $superadmin_id === (int) $this->getSession('user_id');
+        return $superadmin_id == $this->getId();
+    }
+
+    /**
+     * Returns the current user ID from the session
+     * @return integer
+     */
+    public function getId()
+    {
+        return (int) $this->getSession('user_id');
+    }
+
+    /**
+     * Returns the current user role ID from the session
+     * @return integer
+     */
+    public function getRoleId()
+    {
+        return (int) $this->getSession('role_id');
     }
 
     /**
@@ -252,7 +270,7 @@ class User extends Model
     public function getPermissions($user = null)
     {
         if (!isset($user)) {
-            $user = $this->getSession('user_id');
+            $user = $this->getId();
         }
 
         if (is_numeric($user)) {
@@ -460,11 +478,11 @@ class User extends Model
     {
         $user = $this->session->get('user', array());
 
-        if (!isset($key)) {
-            return $user;
+        if (isset($key)) {
+            return gplcart_array_get($user, $key);
         }
 
-        return gplcart_array_get($user, $key);
+        return $user;
     }
 
     /**
@@ -473,7 +491,7 @@ class User extends Model
      */
     public function logout()
     {
-        $user_id = (int) $this->getSession('user_id');
+        $user_id = $this->getId();
 
         $result = array(
             'message' => '',
