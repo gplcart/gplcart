@@ -74,16 +74,6 @@ return array(
             'validate' => array('gplcart\\core\\handlers\\validator\\components\\Address', 'address')
         )
     ),
-    'backup' => array(
-        'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Backup', 'backup')
-        )
-    ),
-    'backup_restore' => array(
-        'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Backup', 'restore')
-        )
-    ),
     'currency' => array(
         'handlers' => array(
             'validate' => array('gplcart\\core\\handlers\\validator\\components\\Currency', 'currency')

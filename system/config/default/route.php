@@ -739,13 +739,6 @@ return array(
             'controller' => array('gplcart\\core\\controllers\\backend\\Library', 'listLibrary')
         )
     ),
-    'admin/report/backup' => array(
-        'access' => 'backup',
-        'menu' => array('admin' => 'Backups'),
-        'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\backend\\Backup', 'listBackup')
-        )
-    ),
     'admin/report/route' => array(
         'access' => 'report',
         'menu' => array('admin' => 'Routes'),
