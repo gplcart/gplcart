@@ -685,7 +685,7 @@ return array(
             'controller' => array('gplcart\\core\\controllers\\backend\\Store', 'editStore')
         )
     ),
-    'admin/settings/store/(\d+)/edit' => array(
+    'admin/settings/store/edit/(\d+)' => array(
         'access' => 'store_edit',
         'handlers' => array(
             'controller' => array('gplcart\\core\\controllers\\backend\\Store', 'editStore')
