@@ -60,6 +60,11 @@
               </a>
             </th>
             <th>
+              <a href="<?php echo $sort_trigger_name; ?>">
+                <?php echo $this->text('Trigger'); ?> <i class="fa fa-sort"></i>
+              </a>
+            </th>
+            <th>
               <a href="<?php echo $sort_code; ?>">
                 <?php echo $this->text('Code'); ?> <i class="fa fa-sort"></i>
               </a>
@@ -79,12 +84,20 @@
                 <?php echo $this->text('Status'); ?> <i class="fa fa-sort"></i>
               </a>
             </th>
+            <th>
+              <a href="<?php echo $sort_store_id; ?>">
+                <?php echo $this->text('Store'); ?> <i class="fa fa-sort"></i>
+              </a>
+            </th>
             <th></th>
           </tr>
           <tr class="filters active">
             <th></th>
             <th>
               <input class="form-control" name="name" value="<?php echo $filter_name; ?>" placeholder="<?php echo $this->text('Any'); ?>">
+            </th>
+            <th>
+              <input class="form-control" name="trigger_name" value="<?php echo $filter_trigger_name; ?>" placeholder="<?php echo $this->text('Any'); ?>">
             </th>
             <th><input class="form-control" name="code" value="<?php echo $filter_code; ?>" placeholder="<?php echo $this->text('Any'); ?>"></th>
             <th>
@@ -116,6 +129,7 @@
                 </option>
               </select>
             </th>
+            <th></th>
             <th>
               <button type="button" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
                 <i class="fa fa-refresh"></i>
@@ -129,7 +143,7 @@
         <tbody>
           <?php if ($_filtering && empty($price_rules)) { ?>
            <tr>
-             <td class="middle" colspan="8">
+             <td class="middle" colspan="10">
                <?php echo $this->text('No results'); ?>
                <a href="#" class="clear-filter"><?php echo $this->text('Reset'); ?></a>
              </td>
@@ -143,6 +157,7 @@
               <input type="hidden" value="<?php echo $this->e($rule['currency']); ?>" name="price_rule[currency]">
             </td>
             <td class="middle"><?php echo $this->e($rule['name']); ?></td>
+            <td class="middle"><?php echo $this->e($rule['trigger_name']); ?></td>
             <td class="middle"><?php echo $this->e($rule['code']); ?></td>
             <td class="middle"><?php echo $this->e($rule['value']); ?></td>
             <td class="middle">
@@ -159,6 +174,7 @@
               <i class="fa fa-check-square-o"></i>
               <?php } ?>
             </td>
+            <td class="middle"><?php echo empty($stores[$rule['store_id']]) ? $this->text('Unknown') : $this->e($stores[$rule['store_id']]['name']); ?></td>
             <td>
             <ul class="list-inline">
               <?php if ($this->access('price_rule_edit')) { ?>
