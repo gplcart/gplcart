@@ -177,26 +177,6 @@ class Cart extends Model
      */
     public function getList(array $data = array(), $index = 'sku')
     {
-        list($sql, $replacements) = $this->getListSql($data);
-
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $replacements);
-        }
-
-        $options = array('unserialize' => 'data', 'index' => $index);
-        $list = $this->db->fetchAll($sql, $replacements, $options);
-
-        $this->hook->fire('cart.list', $list, $this);
-        return $list;
-    }
-
-    /**
-     * Returns an array containing SQL and its replacement values for getList() method
-     * @param array $data
-     * @return array
-     */
-    protected function getListSql(array $data)
-    {
         $sql = 'SELECT c.*, COALESCE(NULLIF(pt.title, ""), p.title) AS title,'
                 . ' p.status AS product_status, p.store_id AS product_store_id,'
                 . ' u.email AS user_email';
@@ -211,26 +191,8 @@ class Cart extends Model
                 . ' LEFT JOIN user u ON(c.user_id = u.user_id)'
                 . ' WHERE cart_id > 0';
 
-        $replacements = array($this->language->current());
+        $where = array($this->language->current());
 
-        $this->setGetListSqlConditions($replacements, $sql, $data);
-        $this->setGetListSqlSort($sql, $data);
-
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
-        }
-
-        return array($sql, $replacements);
-    }
-
-    /**
-     * Set SQL query conditions for getList() method
-     * @param array $where
-     * @param string $sql
-     * @param array $data
-     */
-    protected function setGetListSqlConditions(&$where, &$sql, array $data)
-    {
         if (isset($data['user_id'])) {
             $sql .= ' AND c.user_id=?';
             $where[] = $data['user_id'];
@@ -255,15 +217,7 @@ class Cart extends Model
             $sql .= ' AND c.sku LIKE ?';
             $where[] = "%{$data['sku']}%";
         }
-    }
 
-    /**
-     * Set SQL query sort and order clauses for getList() method
-     * @param string $sql
-     * @param array $data
-     */
-    protected function setGetListSqlSort(&$sql, array $data)
-    {
         $allowed_order = array('asc', 'desc');
 
         $allowed_sort = array(
@@ -283,6 +237,20 @@ class Cart extends Model
         } else {
             $sql .= ' ORDER BY c.modified DESC';
         }
+
+        if (!empty($data['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        }
+
+        if (!empty($data['count'])) {
+            return (int) $this->db->fetchColumn($sql, $where);
+        }
+
+        $options = array('unserialize' => 'data', 'index' => $index);
+        $list = $this->db->fetchAll($sql, $where, $options);
+
+        $this->hook->fire('cart.list', $list, $this);
+        return $list;
     }
 
     /**
@@ -296,6 +264,7 @@ class Cart extends Model
             'sku' => (int) $this->config->get('cart_sku_limit', 10),
             'item' => (int) $this->config->get('cart_item_limit', 20)
         );
+
         return isset($item) ? $limits[$item] : $limits;
     }
 
@@ -321,7 +290,7 @@ class Cart extends Model
 
         $data += array(
             'quantity' => 1,
-            'user_id' => $this->uid(),
+            'user_id' => $this->getUid(),
             'store_id' => $product['store_id'],
             'product_id' => $product['product_id']
         );
@@ -355,7 +324,7 @@ class Cart extends Model
      * Returns a cart user ID
      * @return string
      */
-    public function uid()
+    public function getUid()
     {
         $session_user_id = $this->user->getId();
 

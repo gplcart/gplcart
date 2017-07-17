@@ -414,7 +414,7 @@ abstract class Controller
     protected function setUserProperties()
     {
         if (!$this->isInstalling()) {
-            $this->cart_uid = $this->cart->uid();
+            $this->cart_uid = $this->cart->getUid();
             $this->uid = (int) $this->user->getId();
             if (!empty($this->uid)) {
                 $this->current_user = $this->user->get($this->uid);
@@ -877,11 +877,10 @@ abstract class Controller
      * @param string $name
      * @param mixed $default
      * @param bool|string $filter
-     * @param null|string $type
+     * @param string $type
      * @return mixed
      */
-    public function getPosted($name = null, $default = null, $filter = true,
-            $type = null)
+    public function getPosted($name, $default, $filter, $type)
     {
         return $this->request->post($name, $default, $filter, $type);
     }
@@ -1979,7 +1978,7 @@ abstract class Controller
             $this->data["filter_$filter"] = '';
 
             if (isset($this->query[$filter])) {
-                $this->data['filtering'] = true;
+                $this->data['_filtering'] = true;
                 $this->data["filter_$filter"] = (string) $this->query[$filter];
             }
 
