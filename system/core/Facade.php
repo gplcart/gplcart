@@ -11,8 +11,7 @@ namespace gplcart\core;
 
 use gplcart\core\Hook,
     gplcart\core\Route,
-    gplcart\core\Config,
-    gplcart\core\Logger;
+    gplcart\core\Config;
 use gplcart\core\helpers\Url as UrlHelper,
     gplcart\core\helpers\Session as SessionHelper;
 
@@ -53,33 +52,20 @@ class Facade
     protected $hook;
 
     /**
-     * Logger class instance
-     * @var \gplcart\core\Logger $logger
-     */
-    protected $logger;
-
-    /**
-     * @param Route $route
      * @param Config $config
+     * @param Route $route
      * @param Hook $hook
-     * @param Logger $logger
      * @param UrlHelper $url
      * @param SessionHelper $session
      */
-    public function __construct(Route $route, Config $config, Hook $hook,
-            Logger $logger, UrlHelper $url, SessionHelper $session)
+    public function __construct(Config $config, Route $route, Hook $hook,
+            UrlHelper $url, SessionHelper $session)
     {
         $this->url = $url;
         $this->hook = $hook;
         $this->route = $route;
         $this->config = $config;
-        $this->logger = $logger;
         $this->session = $session;
-
-        date_default_timezone_set($this->config->get('timezone', 'Europe/London'));
-
-        $this->setErrorReportingLevel();
-        $this->setErrorHandlers();
 
         $this->hook->registerAll();
         $this->hook->fire('construct', $this);
@@ -128,38 +114,6 @@ class Facade
         return (!$this->config->exists() // No config/common.php exists
                 || $this->session->get('install.processing')) // Installation in progress
                 && !$this->url->isInstall(); // and not on /install page
-    }
-
-    /**
-     * Sets system error level
-     */
-    protected function setErrorReportingLevel()
-    {
-        $level = $this->config->get('error_level', 2);
-
-        switch ($level) {
-            case 0:
-                // Disable errors at all
-                error_reporting(0);
-                break;
-            case 1:
-                // Show only important errors
-                error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
-                break;
-            case 2:
-                // Show all errors
-                error_reporting(E_ALL);
-        }
-    }
-
-    /**
-     * Registers error handlers
-     */
-    protected function setErrorHandlers()
-    {
-        register_shutdown_function(array($this->logger, 'shutdownHandler'));
-        set_exception_handler(array($this->logger, 'exceptionHandler'));
-        set_error_handler(array($this->logger, 'errorHandler'), error_reporting());
     }
 
 }

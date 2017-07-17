@@ -47,6 +47,40 @@ class Config
     public function __construct()
     {
         $this->init();
+
+        date_default_timezone_set($this->get('timezone', 'Europe/London'));
+
+        $this->setErrorReportingLevel();
+        $this->setErrorHandlers();
+    }
+
+    /**
+     * Sets system error level
+     */
+    protected function setErrorReportingLevel()
+    {
+        $level = $this->get('error_level', 2);
+
+        if ($level == 0) {
+            error_reporting(0);
+        } else if ($level == 1) {
+            error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
+        } else if ($level == 2) {
+            error_reporting(E_ALL);
+        }
+    }
+
+    /**
+     * Registers error handlers
+     */
+    protected function setErrorHandlers()
+    {
+        $logger = Container::get('gplcart\\core\\Logger');
+        $logger->setDb($this->db);
+
+        register_shutdown_function(array($logger, 'shutdownHandler'));
+        set_exception_handler(array($logger, 'exceptionHandler'));
+        set_error_handler(array($logger, 'errorHandler'), error_reporting());
     }
 
     /**
