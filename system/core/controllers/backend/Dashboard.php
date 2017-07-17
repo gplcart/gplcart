@@ -13,7 +13,9 @@ use gplcart\core\models\Order as OrderModel,
     gplcart\core\models\Price as PriceModel,
     gplcart\core\models\Report as ReportModel,
     gplcart\core\models\Review as ReviewModel,
-    gplcart\core\models\Product as ProductModel;
+    gplcart\core\models\Product as ProductModel,
+    gplcart\core\models\PriceRule as PriceRuleModel,
+    gplcart\core\models\Transaction as TransactionModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -47,6 +49,18 @@ class Dashboard extends BackendController
     protected $report;
 
     /**
+     * Transaction model instance
+     * @var \gplcart\core\models\Transaction $transaction
+     */
+    protected $transaction;
+
+    /**
+     * Price rule model instance
+     * @var \gplcart\core\models\PriceRule $pricerule
+     */
+    protected $pricerule;
+
+    /**
      * Max items to be shown in the dashboard panels
      * @var integer
      */
@@ -64,10 +78,12 @@ class Dashboard extends BackendController
      * @param OrderModel $order
      * @param ReportModel $report
      * @param ReviewModel $review
+     * @param TransactionModel $transaction
+     * @param PriceRuleModel $pricerule
      */
     public function __construct(ProductModel $product, PriceModel $price,
-            OrderModel $order, ReportModel $report, ReviewModel $review
-    )
+            OrderModel $order, ReportModel $report, ReviewModel $review,
+            TransactionModel $transaction, PriceRuleModel $pricerule)
     {
         parent::__construct();
 
@@ -76,6 +92,8 @@ class Dashboard extends BackendController
         $this->report = $report;
         $this->review = $review;
         $this->product = $product;
+        $this->pricerule = $pricerule;
+        $this->transaction = $transaction;
     }
 
     /**
@@ -141,10 +159,15 @@ class Dashboard extends BackendController
     protected function getDefaultPanelsDashboard()
     {
         $panels = array();
-        $panels['user'] = array('rendered' => $this->renderPanelUsersDashboard());
-        $panels['order'] = array('rendered' => $this->renderPanelOrdersDashboard());
-        $panels['event'] = array('rendered' => $this->renderPanelEventsDashboard());
-        $panels['summary'] = array('rendered' => $this->renderPanelSummaryDashboard());
+        $panels['summary'] = array('rendered' => $this->renderPanelSummaryDashboard(), 'weight' => 1);
+        $panels['order'] = array('rendered' => $this->renderPanelOrdersDashboard(), 'weight' => 2);
+        $panels['transaction'] = array('rendered' => $this->renderPanelTransactionDashboard(), 'weight' => 3);
+        $panels['pricerule'] = array('rendered' => $this->renderPanelPriceRuleDashboard(), 'weight' => 4);
+        $panels['cart'] = array('rendered' => $this->renderPanelCartDashboard(), 'weight' => 5);
+        $panels['user'] = array('rendered' => $this->renderPanelUsersDashboard(), 'weight' => 6);
+        $panels['review'] = array('rendered' => $this->renderPanelReviewsDashboard(), 'weight' => 7);
+        $panels['event'] = array('rendered' => $this->renderPanelEventsDashboard(), 'weight' => 8);
+
         return $panels;
     }
 
@@ -161,67 +184,76 @@ class Dashboard extends BackendController
 
     /**
      * Returns the rendered recent users panel
+     * @return string
      */
     protected function renderPanelUsersDashboard()
     {
         $options = array(
+            'sort' => 'created',
+            'order' => 'desc',
             'limit' => array(0, $this->config('dashboard_limit', 10))
         );
 
-        $users = $this->user->getList($options);
-        return $this->render('dashboard/panels/users', array('users' => $users));
+        $items = $this->user->getList($options);
+        return $this->render('dashboard/panels/users', array('items' => $items));
     }
 
     /**
      * Returns the rendered recent orders panel
+     * @return string
      */
     protected function renderPanelOrdersDashboard()
     {
-        $options = array('limit' => array(0, $this->config('dashboard_limit', 10)));
-        $orders = $this->order->getList($options);
+        $options = array(
+            'sort' => 'created',
+            'order' => 'desc',
+            'limit' => array(0, $this->config('dashboard_limit', 10)));
 
-        array_walk($orders, function (&$order) {
-            $order['is_new'] = $this->order->isNew($order);
-            $order['total_formatted'] = $this->price->format($order['total'], $order['currency']);
+        $items = $this->order->getList($options);
+
+        array_walk($items, function (&$item) {
+            $item['is_new'] = $this->order->isNew($item);
+            $item['total_formatted'] = $this->price->format($item['total'], $item['currency']);
         });
 
-        return $this->render('dashboard/panels/orders', array('orders' => $orders));
+        return $this->render('dashboard/panels/orders', array('items' => $items));
     }
 
     /**
      * Returns the rendered recent events panel
+     * @return string
      */
     protected function renderPanelEventsDashboard()
     {
-        $events = array();
-        $severities = $this->report->getSeverities();
-
-        foreach (array_keys($severities) as $severity) {
+        $items = array();
+        foreach (array_keys($this->report->getSeverities()) as $severity) {
 
             $options = array(
                 'severity' => $severity,
                 'limit' => array(0, $this->config('dashboard_limit', 10))
             );
 
-            $items = (array) $this->report->getList($options);
+            $events = (array) $this->report->getList($options);
 
-            foreach ($items as &$item) {
-                $variables = empty($item['data']['variables']) ? array() : (array) $item['data']['variables'];
-                $message = empty($item['translatable']) ? $item['text'] : $this->text($item['text'], $variables);
-                $item['message'] = strip_tags($message);
-            }
-
-            if (empty($items)) {
+            if (empty($events)) {
                 continue;
             }
 
-            $events[$severity] = $items;
+            foreach ($events as &$event) {
+                $variables = empty($event['data']['variables']) ? array() : (array) $event['data']['variables'];
+                $message = empty($event['translatable']) ? $event['text'] : $this->text($event['text'], $variables);
+                $event['message'] = strip_tags($message);
+            }
+
+            $items[$severity] = $events;
         }
-        return $this->render('dashboard/panels/events', array('events' => $events));
+
+        return $this->render('dashboard/panels/events', array('items' => $items));
     }
 
     /**
      * Returns the rendered summary panel
+     * @return string
      */
     protected function renderPanelSummaryDashboard()
     {
@@ -235,6 +267,79 @@ class Dashboard extends BackendController
         );
 
         return $this->render('dashboard/panels/summary', $data);
+    }
+
+    /**
+     * Returns the rendered cart items panel
+     * @return string
+     */
+    protected function renderPanelCartDashboard()
+    {
+        $options = array(
+            'sort' => 'created',
+            'order' => 'desc',
+            'limit' => array(0, $this->config('dashboard_limit', 10)));
+
+        $items = $this->cart->getList($options);
+        return $this->render('dashboard/panels/cart', array('items' => $items));
+    }
+
+    /**
+     * Returns the rendered transactions panel
+     * @return string
+     */
+    protected function renderPanelTransactionDashboard()
+    {
+        $options = array(
+            'sort' => 'created',
+            'order' => 'desc',
+            'limit' => array(0, $this->config('dashboard_limit', 10)));
+
+        $items = $this->transaction->getList($options);
+
+        array_walk($items, function (&$item) {
+            $item['total_formatted'] = $this->price->format($item['total'], $item['currency']);
+        });
+
+        return $this->render('dashboard/panels/transactions', array('items' => $items));
+    }
+
+    /**
+     * Returns the rendered price rules panel
+     * @return string
+     */
+    protected function renderPanelPriceRuleDashboard()
+    {
+        $options = array(
+            'status' => 1,
+            'trigger_status' => 1,
+            'sort' => 'created',
+            'order' => 'desc',
+            'limit' => array(0, $this->config('dashboard_limit', 10)));
+
+        $items = $this->pricerule->getList($options);
+
+        array_walk($items, function (&$item) {
+            $item['value_formatted'] = $this->price->format($item['value'], $item['currency']);
+        });
+
+        return $this->render('dashboard/panels/pricerules', array('items' => $items));
+    }
+
+    /**
+     * Returns the rendered reviews panel
+     * @return string
+     */
+    protected function renderPanelReviewsDashboard()
+    {
+
+        $options = array(
+            'sort' => 'created',
+            'order' => 'desc',
+            'limit' => array(0, $this->config('dashboard_limit', 10)));
+
+        $items = $this->review->getList($options);
+        return $this->render('dashboard/panels/reviews', array('items' => $items));
     }
 
     /**
