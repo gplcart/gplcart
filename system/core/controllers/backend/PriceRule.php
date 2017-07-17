@@ -82,6 +82,7 @@ class PriceRule extends BackendController
         $this->setTotalListPriceRule();
         $this->setPagerLimit();
 
+        $this->setData('stores', $this->store->getList());
         $this->setData('price_rules', $this->getListPriceRule());
 
         $this->outputListPriceRule();
@@ -103,7 +104,7 @@ class PriceRule extends BackendController
     protected function setFilterListPriceRule()
     {
         $allowed = array('name', 'code', 'value',
-            'value_type', 'weight', 'status');
+            'value_type', 'weight', 'status', 'store_id', 'trigger_name');
 
         $this->setFilter($allowed);
     }

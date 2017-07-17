@@ -51,76 +51,106 @@ class PriceRule extends Model
      */
     public function getList(array $data = array())
     {
-        $price_rules = &Cache::memory(array(__METHOD__ => $data));
+        $list = &Cache::memory(array(__METHOD__ => $data));
 
-        if (isset($price_rules)) {
-            return $price_rules;
+        if (isset($list)) {
+            return $list;
         }
 
-        $sql = 'SELECT *';
+        $sql = 'SELECT p.*, t.status AS trigger_status, t.name AS trigger_name, t.store_id';
 
         if (!empty($data['count'])) {
-            $sql = 'SELECT COUNT(price_rule_id)';
+            $sql = 'SELECT COUNT(p.price_rule_id)';
         }
 
-        $sql .= ' FROM price_rule';
+        $sql .= ' FROM price_rule p LEFT JOIN triggers t ON(p.trigger_id = t.trigger_id)';
+
         $where = array();
 
-        if (!empty($data['price_rule_id'])) {
+        if (empty($data['price_rule_id'])) {
+            $sql .= ' WHERE p.price_rule_id IS NOT NULL';
+        } else {
             settype($data['price_rule_id'], 'array');
             $placeholders = rtrim(str_repeat('?,', count($data['price_rule_id'])), ',');
-            $sql .= " WHERE price_rule_id IN($placeholders)";
+            $sql .= " WHERE p.price_rule_id IN($placeholders)";
             $where = array_merge($where, $data['price_rule_id']);
-        } else {
-            $sql .= ' WHERE price_rule_id > 0';
         }
 
         if (!empty($data['trigger_id'])) {
             settype($data['trigger_id'], 'array');
             $placeholders = rtrim(str_repeat('?,', count($data['trigger_id'])), ',');
-            $sql .= " AND trigger_id IN($placeholders)";
+            $sql .= " AND p.trigger_id IN($placeholders)";
             $where = array_merge($where, $data['trigger_id']);
         }
 
         if (isset($data['name'])) {
-            $sql .= ' AND name LIKE ?';
+            $sql .= ' AND p.name LIKE ?';
             $where[] = "%{$data['name']}%";
         }
 
+        if (isset($data['trigger_name'])) {
+            $sql .= ' AND t.name LIKE ?';
+            $where[] = "%{$data['trigger_name']}%";
+        }
+
         if (isset($data['code'])) {
-            $sql .= ' AND code LIKE ?';
+            $sql .= ' AND p.code LIKE ?';
             $where[] = "%{$data['code']}%";
         }
 
         if (isset($data['value'])) {
-            $sql .= ' AND value = ?';
+            $sql .= ' AND p.value = ?';
             $where[] = (int) $data['value'];
         }
 
+        if (isset($data['store_id'])) {
+            $sql .= ' AND t.store_id = ?';
+            $where[] = (int) $data['store_id'];
+        }
+
         if (isset($data['value_type'])) {
-            $sql .= ' AND value_type = ?';
+            $sql .= ' AND p.value_type = ?';
             $where[] = $data['value_type'];
         }
 
         if (isset($data['status'])) {
-            $sql .= ' AND status = ?';
+            $sql .= ' AND p.status = ?';
+            $where[] = (int) $data['status'];
+        }
+
+        if (isset($data['trigger_status'])) {
+            $sql .= ' AND t.status = ?';
             $where[] = (int) $data['status'];
         }
 
         if (isset($data['currency'])) {
-            $sql .= ' AND currency = ?';
+            $sql .= ' AND p.currency = ?';
             $where[] = $data['currency'];
         }
 
         $orders = array('asc', 'desc');
-        $sorts = array('price_rule_id', 'name', 'code',
-            'value', 'value_type', 'weight', 'status', 'currency', 'trigger_id');
 
-        if ((isset($data['sort']) && in_array($data['sort'], $sorts))//
+        $sorts = array(
+            'price_rule_id' => 'p.price_rule_id',
+            'name' => 'p.name',
+            'code' => 'p.code',
+            'value' => 'p.value',
+            'value_type' => 'p.value_type',
+            'weight' => 'p.weight',
+            'status' => 'p.status',
+            'currency' => 'p.currency',
+            'trigger_id' => 'p.trigger_id',
+            'created' => 'p.created',
+            'modified' => 'p.modified',
+            'trigger_name' => 't.name',
+            'store_id' => 't.store_id'
+        );
+
+        if ((isset($data['sort']) && isset($sorts[$data['sort']]))//
                 && (isset($data['order']) && in_array($data['order'], $orders, true))) {
-            $sql .= " ORDER BY {$data['sort']} {$data['order']}";
+            $sql .= " ORDER BY {$sorts[$data['sort']]} {$data['order']}";
         } else {
-            $sql .= ' ORDER BY weight ASC';
+            $sql .= ' ORDER BY p.weight ASC';
         }
 
         if (!empty($data['limit'])) {
@@ -132,10 +162,10 @@ class PriceRule extends Model
         }
 
         $options = array('index' => 'price_rule_id');
-        $price_rules = $this->db->fetchAll($sql, $where, $options);
+        $list = $this->db->fetchAll($sql, $where, $options);
 
-        $this->hook->fire('price.rule.list', $data, $price_rules, $this);
-        return $price_rules;
+        $this->hook->fire('price.rule.list', $data, $list, $this);
+        return $list;
     }
 
     /**
@@ -167,6 +197,7 @@ class PriceRule extends Model
             return false;
         }
 
+        $data['created'] = $data['modified'] = GC_TIME;
         $data['price_rule_id'] = $this->db->insert('price_rule', $data);
 
         $this->hook->fire('price.rule.add.after', $data, $this);
@@ -187,6 +218,7 @@ class PriceRule extends Model
             return false;
         }
 
+        $data['modified'] = GC_TIME;
         $conditions = array('price_rule_id' => $price_rule_id);
         $result = $this->db->update('price_rule', $data, $conditions);
 
