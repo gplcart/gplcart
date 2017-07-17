@@ -25,7 +25,6 @@ class Collection extends ComponentValidator
     protected $collection;
 
     /**
-     * Constructor
      * @param CollectionModel $collection
      */
     public function __construct(CollectionModel $collection)

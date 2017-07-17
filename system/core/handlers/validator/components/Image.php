@@ -26,7 +26,6 @@ class Image extends ComponentValidator
     protected $image;
 
     /**
-     * Constructor
      * @param ImageModel $image
      */
     public function __construct(ImageModel $image)

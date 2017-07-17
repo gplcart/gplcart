@@ -33,7 +33,6 @@ class Trigger extends ComponentValidator
     protected $trigger;
 
     /**
-     * Constructor
      * @param ConditionModel $condition
      * @param TriggerModel $trigger
      */

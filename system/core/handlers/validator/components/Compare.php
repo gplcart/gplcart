@@ -25,7 +25,6 @@ class Compare extends ComponentValidator
     protected $product;
 
     /**
-     * Constructor
      * @param ProductModel $product
      */
     public function __construct(ProductModel $product)

@@ -9,7 +9,7 @@
 ?>
 <div class="edit-settings">
   <h4>
-    <a href="<?php echo $this->url('admin/settings/store/1/edit'); ?>">
+    <a href="<?php echo $this->url('admin/settings/store/edit/1'); ?>">
       <?php echo $this->text('Settings'); ?>
     </a>
   </h4>

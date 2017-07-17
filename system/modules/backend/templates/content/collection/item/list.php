@@ -96,7 +96,7 @@
 <?php } else { ?>
 <div class="row">
   <div class="col-md-12">
-    <?php echo $this->text('This collection has no items'); ?>
+    <?php echo $this->text('There are no items yet'); ?>
     <?php if ($this->access('collection_item_add')) { ?>
     <a class="btn btn-default" href="<?php echo $this->url("admin/content/collection-item/{$collection['collection_id']}/add"); ?>">
       <?php echo $this->text('Add'); ?>

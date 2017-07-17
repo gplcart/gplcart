@@ -32,7 +32,6 @@ class Wishlist extends ComponentValidator
     protected $product;
 
     /**
-     * Constructor
      * @param WishlistModel $wishlist
      * @param ProductModel $product
      */

@@ -32,7 +32,6 @@ class Rating extends ComponentValidator
     protected $product;
 
     /**
-     * Constructor
      * @param RatingModel $rating
      * @param ProductModel $product
      */

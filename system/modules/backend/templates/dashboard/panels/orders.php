@@ -12,20 +12,25 @@
     <?php echo $this->text('Recent orders'); ?>
   </div>
   <div class="panel-body">
-    <?php if (!empty($orders)) { ?>
-    <table class="table table-responsive table-condensed">
+    <?php if (!empty($items)) { ?>
+    <table class="table table-condensed">
       <tbody>
-        <?php foreach ($orders as $order) { ?>
+        <?php foreach ($items as $item) { ?>
         <tr>
           <td>
-            <a href="<?php echo $this->url("admin/sale/order/{$order['order_id']}"); ?>">
-            <b>#<?php echo $order['order_id']; ?></b>
-            <?php echo $this->text('Created'); ?>: <?php echo $this->date($order['created']); ?>,
-            <?php echo $this->text('Total'); ?>: <?php echo $order['total_formatted']; ?>
+            <?php if($this->access('order')) { ?>
+            <a href="<?php echo $this->url("admin/sale/order/{$item['order_id']}"); ?>">
+              <?php echo $this->text('Order #@order_id', array('@order_id' => $item['order_id'])); ?>
             </a>
-            <?php if(!empty($order['is_new'])) { ?>
-            <span class="label label-danger"><?php echo $this->text('new'); ?></span>
+            <?php } else { ?>
+            <?php echo $this->text('Order #@order_id', array('@order_id' => $item['order_id'])); ?>
             <?php } ?>
+          </td>
+          <td>
+            <?php echo $this->e($item['total_formatted']); ?>
+          </td>
+          <td>
+            <?php echo $this->date($item['created']); ?>
           </td>
         </tr>
         <?php } ?>
@@ -37,12 +42,7 @@
       </a>
     </div>
     <?php } else { ?>
-    <?php echo $this->text('No have no orders yet'); ?>
-    <?php if ($this->access('order_add') && $this->access('user')) { ?>
-    <a href="<?php echo $this->url('admin/user/list'); ?>">
-      <?php echo $this->text('Add'); ?>
-    </a>
-    <?php } ?>
+    <?php echo $this->text('There no items yet'); ?>
     <?php } ?>		
   </div>
 </div>

@@ -25,7 +25,6 @@ class Install extends ComponentValidator
     protected $install;
 
     /**
-     * Constructor
      * @param InstallModel $install
      */
     public function __construct(InstallModel $install)

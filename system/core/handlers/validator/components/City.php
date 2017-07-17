@@ -46,7 +46,6 @@ class City extends ComponentValidator
     protected $state;
 
     /**
-     * Constructor
      * @param CityModel $city
      * @param StateModel $state
      * @param CountryModel $country

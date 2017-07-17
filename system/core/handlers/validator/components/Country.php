@@ -39,7 +39,6 @@ class Country extends ComponentValidator
     protected $state;
 
     /**
-     * Constructor
      * @param CountryModel $country
      * @param StateModel $state
      * @param ZoneModel $zone

@@ -25,7 +25,6 @@ class Zone extends ComponentValidator
     protected $zone;
 
     /**
-     * Constructor
      * @param ZoneModel $zone
      */
     public function __construct(ZoneModel $zone)

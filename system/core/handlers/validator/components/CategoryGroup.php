@@ -25,7 +25,6 @@ class CategoryGroup extends ComponentValidator
     protected $category_group;
 
     /**
-     * Constructor
      * @param CategoryGroupModel $category_group
      */
     public function __construct(CategoryGroupModel $category_group)

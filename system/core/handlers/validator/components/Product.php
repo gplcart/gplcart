@@ -71,7 +71,6 @@ class Product extends ComponentValidator
     protected $currency;
 
     /**
-     * Constructor
      * @param ProductModel $product
      * @param ProductClassModel $product_class
      * @param SkuModel $sku

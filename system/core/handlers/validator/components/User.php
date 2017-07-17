@@ -25,7 +25,6 @@ class User extends ComponentValidator
     protected $role;
 
     /**
-     * Constructor
      * @param UserRoleModel $role
      */
     public function __construct(UserRoleModel $role)

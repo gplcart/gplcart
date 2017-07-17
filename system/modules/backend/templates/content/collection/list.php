@@ -178,7 +178,7 @@
   <div class="col-md-12">
     <?php echo $this->text('There are no items yet'); ?>
     <?php if ($this->access('collection_add')) { ?>
-    <a href="<?php echo $this->url('admin/content/collection/add'); ?>">
+    <a class="btn btn-default" href="<?php echo $this->url('admin/content/collection/add'); ?>">
       <?php echo $this->text('Add'); ?>
     </a>
     <?php } ?>

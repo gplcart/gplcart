@@ -46,7 +46,6 @@ class Cart extends ComponentValidator
     protected $order;
 
     /**
-     * Constructor
      * @param CartModel $cart
      * @param ProductModel $product
      * @param SkuModel $sku

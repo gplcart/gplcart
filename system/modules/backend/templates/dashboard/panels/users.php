@@ -10,16 +10,24 @@
 <div class="panel panel-default">
   <div class="panel-heading"><?php echo $this->text('Recent users'); ?></div>
   <div class="panel-body">
-    <ul class="list-unstyled">
-      <?php foreach ($users as $user) { ?>
-      <?php if(!$this->isSuperadmin($user['user_id']) || $this->isSuperadmin()) { ?>
-      <li class="list-group-item clearfix">
-        <span class="pull-left"><?php echo $this->truncate($this->e($user['email']), 30); ?></span>
-        <span class="pull-right small text-muted"><?php echo $this->date($user['created']); ?></span>
-      </li>
+    <table class="table table-condensed">
+      <?php foreach ($items as $item) { ?>
+      <?php if(!$this->isSuperadmin($item['user_id']) || $this->isSuperadmin()) { ?>
+      <tr>
+        <td>
+          <?php if($this->access('user_edit')) { ?>
+          <a href="<?php echo $this->url("admin/user/edit/{$item['user_id']}"); ?>">
+            <?php echo $this->truncate($this->e($item['email']), 30); ?>
+          </a>
+          <?php } else { ?>
+          <?php echo $this->truncate($this->e($item['email']), 50); ?>
+          <?php } ?>
+        </td>
+        <td><?php echo $this->date($item['created']); ?></td>
+      </tr>
       <?php } ?>
       <?php } ?>
-    </ul>
+    </table>
     <div class="text-right">
       <a href="<?php echo $this->url('admin/user/list'); ?>">
         <?php echo $this->text('See all'); ?>

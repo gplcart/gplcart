@@ -18,57 +18,68 @@ class Csv
 {
 
     /**
-     * @var resource File handler
+     * File handler
+     * @var resource
      */
     protected $handle;
 
     /**
-     * @var string Current CSV line
+     * Current CSV line
+     * @var string
      */
     protected $current_line;
 
     /**
-     * @var integer Current offset in bytes
+     * Current offset in bytes
+     * @var integer
      */
     protected $current_position;
 
     /**
-     * @var integer Total CSV file size in bytes
+     * Total CSV file size in bytes
+     * @var integer
      */
     protected $total;
 
     /**
-     * @var string Path to CSV file
+     * Path to CSV file
+     * @var string
      */
     protected $file;
 
     /**
-     * @var integer Max number of rows to parse
+     * Max number of rows to parse
+     * @var integer
      */
     protected $limit;
 
     /**
-     * @var integer Final offset in bytes
+     * Final offset in bytes
+     * @var integer
      */
     protected $last_position;
 
     /**
-     * @var integer Starting offset in bytes
+     * Starting offset in bytes
+     * @var integer
      */
     protected $offset;
 
     /**
-     * @var array Array of header names
+     * Array of header names
+     * @var array
      */
     protected $header;
 
     /**
-     * @var boolean Skip or not first line
+     * Skip or not first line
+     * @var boolean
      */
     protected $skip_header;
 
     /**
-     * @var string CSV delimiter
+     * CSV delimiter
+     * @var string
      */
     protected $delimiter;
 
@@ -100,14 +111,13 @@ class Csv
      * Sets file to parse
      * @param string $file
      * @param integer $filesize
-     * @return self
+     * @return $this
      */
     public function setFile($file, $filesize = null)
     {
         $this->handle = fopen($file, 'r');
 
         if (!is_resource($this->handle)) {
-            // This prevents server from hanging when opening up an invalid file
             throw new UnexpectedValueException('Failed to open CSV file');
         }
 
@@ -119,7 +129,7 @@ class Csv
     /**
      * Sets max lines to parse
      * @param integer $limit
-     * @return self
+     * @return $this
      */
     public function setLimit($limit)
     {
@@ -130,7 +140,7 @@ class Csv
     /**
      * Sets separator between columns
      * @param string $character
-     * @return self
+     * @return $this
      */
     public function setDelimiter($character)
     {
@@ -152,7 +162,7 @@ class Csv
     /**
      * Sets header (first line)
      * @param array $header
-     * @return self
+     * @return $this
      */
     public function setHeader(array $header)
     {
@@ -262,7 +272,6 @@ class Csv
             $parsed++;
 
             if (!empty($this->limit) && $parsed >= $this->limit) {
-                // Remember last offset
                 $this->last_position = $this->currentPosition();
                 break;
             }
@@ -273,7 +282,7 @@ class Csv
 
     /**
      * Moves pointer to a certain position
-     * @param integer $position Bytes
+     * @param integer $position
      */
     protected function rewind($position = 0)
     {
@@ -285,7 +294,7 @@ class Csv
 
     /**
      * Sets current string and offset
-     * @return mixed
+     * @return null|integer
      */
     protected function next()
     {
@@ -337,7 +346,7 @@ class Csv
     /**
      * Sets initial file offset in bytes
      * @param integer $offset
-     * @return self
+     * @return $this
      */
     public function setOffset($offset)
     {
@@ -347,7 +356,7 @@ class Csv
 
     /**
      * Force to skip first row (header)
-     * @return self
+     * @return $this
      */
     public function skipHeader()
     {

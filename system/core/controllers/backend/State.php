@@ -138,11 +138,11 @@ class State extends BackendController
         $deleted = $updated = 0;
         foreach ($selected as $id) {
 
-            if ($action == 'status' && $this->access('state_edit')) {
+            if ($action === 'status' && $this->access('state_edit')) {
                 $updated += (int) $this->state->update($id, array('status' => $value));
             }
 
-            if ($action == 'delete' && $this->access('state_delete')) {
+            if ($action === 'delete' && $this->access('state_delete')) {
                 $deleted += (int) $this->state->delete($id);
             }
         }

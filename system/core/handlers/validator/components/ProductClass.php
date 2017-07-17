@@ -25,7 +25,6 @@ class ProductClass extends ComponentValidator
     protected $product_class;
 
     /**
-     * Constructor
      * @param ProductClassModel $product_class
      */
     public function __construct(ProductClassModel $product_class)

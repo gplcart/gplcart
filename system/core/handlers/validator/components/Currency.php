@@ -25,7 +25,6 @@ class Currency extends ComponentValidator
     protected $currency;
 
     /**
-     * Constructor
      * @param CurrencyModel $currency
      */
     public function __construct(CurrencyModel $currency)

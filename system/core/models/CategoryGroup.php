@@ -226,8 +226,8 @@ class CategoryGroup extends Model
     protected function getDefaultTypes()
     {
         return array(
-            'brand' => $this->language->text('Brand'),
-            'catalog' => $this->language->text('Catalog')
+            'catalog' => $this->language->text('Catalog'),
+            'brand' => $this->language->text('Brand')
         );
     }
 

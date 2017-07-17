@@ -68,13 +68,13 @@ class Route
     protected $db;
 
     /**
-     * @param UrlHelper $url
-     * @param RequestHelper $request
      * @param Config $config
      * @param Hook $hook
+     * @param UrlHelper $url
+     * @param RequestHelper $request
      */
-    public function __construct(UrlHelper $url, RequestHelper $request,
-            Config $config, Hook $hook)
+    public function __construct(Config $config, Hook $hook, UrlHelper $url,
+            RequestHelper $request)
     {
         $this->url = $url;
         $this->hook = $hook;
@@ -83,6 +83,7 @@ class Route
         $this->db = $config->getDb();
 
         $this->setLangcode();
+
         $this->path = $this->url->path();
     }
 
@@ -152,7 +153,6 @@ class Route
         $suffix = $is_default ? '' : $this->langcode;
         $this->request->setLangcode($suffix);
 
-        // Redirect to URL without default language code
         if ($found && $is_default && $this->config->get('redirect_default_langcode', 1)) {
             unset($segments[0]);
             $path = $this->request->base(true) . implode('/', $segments);
@@ -165,12 +165,11 @@ class Route
      */
     protected function seekAlias()
     {
-        // We need database set up to find aliases
         if (empty($this->db)) {
             return null;
         }
 
-        // Assuming we're on some/path.html
+        // Assume we're on some/path.html
         // First check if the path stored in the database as an entity alias
         $info = $this->getAliasByPath($this->path);
 

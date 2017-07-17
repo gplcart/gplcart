@@ -96,11 +96,11 @@ class Review extends BackendController
         $updated = $deleted = 0;
         foreach ($selected as $review_id) {
 
-            if ($action == 'status' && $this->access('review_edit')) {
+            if ($action === 'status' && $this->access('review_edit')) {
                 $updated += (int) $this->review->update($review_id, array('status' => $value));
             }
 
-            if ($action == 'delete' && $this->access('review_delete')) {
+            if ($action === 'delete' && $this->access('review_delete')) {
                 $deleted += (int) $this->review->delete($review_id);
             }
         }

@@ -32,7 +32,6 @@ class Review extends ComponentValidator
     protected $product;
 
     /**
-     * Constructor
      * @param ReviewModel $review
      * @param ProductModel $product
      */

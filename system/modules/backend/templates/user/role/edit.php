@@ -43,11 +43,11 @@
       <div class="form-group<?php echo $this->error('redirect', ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Redirect'); ?></label>
         <div class="col-md-4">
-          <input maxlength="255" name="role[redirect]" class="form-control" value="<?php echo isset($role['redirect']) ? $this->e($role['redirect']) : ''; ?>">
+          <input maxlength="255" name="role[redirect]" placeholder="<?php echo $this->text('To account'); ?>" class="form-control" value="<?php echo isset($role['redirect']) ? $this->e($role['redirect']) : ''; ?>">
           <div class="help-block">
             <?php echo $this->error('redirect'); ?>
             <div class="text-muted">
-              <?php echo $this->text('A path to which redirect a user having this role after login. Defaults to the user account page'); ?>
+              <?php echo $this->text('A destination that a user is redirected to after logging in'); ?>
             </div>
           </div>
         </div>

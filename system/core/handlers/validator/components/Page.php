@@ -32,7 +32,6 @@ class Page extends ComponentValidator
     protected $category;
 
     /**
-     * Constructor
      * @param PageModel $page
      * @param CategoryModel $category
      */

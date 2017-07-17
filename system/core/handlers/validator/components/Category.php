@@ -32,7 +32,6 @@ class Category extends ComponentValidator
     protected $category_group;
 
     /**
-     * Constructor
      * @param CategoryModel $category
      * @param CategoryGroupModel $category_group
      */

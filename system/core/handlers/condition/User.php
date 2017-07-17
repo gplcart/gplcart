@@ -44,7 +44,7 @@ class User extends BaseHandler
         static $user_id = null;
 
         if ($user_id === null) {
-            $user_id = (int) $this->user->getId();
+            $user_id = $this->user->getId();
         }
 
         return $this->compare($user_id, $condition['value'], $condition['operator']);

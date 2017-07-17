@@ -25,7 +25,6 @@ class Field extends ComponentValidator
     protected $field;
 
     /**
-     * Constructor
      * @param FieldModel $field
      */
     public function __construct(FieldModel $field)

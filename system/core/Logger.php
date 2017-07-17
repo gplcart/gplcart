@@ -9,8 +9,6 @@
 
 namespace gplcart\core;
 
-use gplcart\core\Config;
-
 /**
  * Provides methods to log various errors and events
  */
@@ -30,18 +28,12 @@ class Logger
     protected $db;
 
     /**
-     * Config instance
-     * @var \gplcart\core\Config $config
+     * Sets the database instance
+     * @param \gplcart\core\Database $db
      */
-    protected $config;
-
-    /**
-     * @param Config $config
-     */
-    public function __construct(Config $config)
+    public function setDb($db)
     {
-        $this->config = $config;
-        $this->db = $this->config->getDb();
+        $this->db = $db;
     }
 
     /**
@@ -69,11 +61,12 @@ class Logger
      */
     public function log($type, $data, $severity = 'info', $translatable = true)
     {
-        if (empty($this->db)) {
+        if (!$this->db instanceof \gplcart\core\Database) {
             return false;
         }
 
         $message = '';
+
         if (is_string($data)) {
             $message = $data;
         } elseif (isset($data['message'])) {
@@ -103,8 +96,6 @@ class Logger
             'log_id' => gplcart_string_random(6)
         );
 
-        // In some cases the log table may not be available
-        // so we use try catch here
         try {
             return (bool) $this->db->insert('log', $data);
         } catch (\Exception $ex) {
@@ -119,8 +110,6 @@ class Logger
      */
     public function selectPhpErrors($limit = null)
     {
-        $results = array();
-
         $sql = "SELECT * FROM log WHERE type LIKE ? ORDER BY time DESC";
 
         if (isset($limit)) {
@@ -160,12 +149,10 @@ class Logger
 
         $key = md5(json_encode($error));
 
-        if (isset($this->errors[$key])) {
-            return null; // Don't log the same error again
+        if (!isset($this->errors[$key])) {
+            $this->errors[$key] = $error;
+            $this->log('php_error', $error, 'warning', false);
         }
-
-        $this->log('php_error', $error, 'warning', false);
-        $this->errors[$key] = $error;
     }
 
     /**
@@ -174,10 +161,8 @@ class Logger
     public function shutdownHandler()
     {
         $error = error_get_last();
-        $types = $this->getFatalErrorTypes();
 
-        if (in_array($error['type'], $types)) {
-            $error['code'] = $error['type'];
+        if (in_array($error['type'], $this->getFatalErrorTypes())) {
             $this->log('php_shutdown', $error, 'danger', false);
         }
     }
@@ -202,8 +187,9 @@ class Logger
 
     /**
      * Common exception handler
+     * @param \Exception $exception
      */
-    public function exceptionHandler($exception)
+    public function exceptionHandler(\Exception $exception)
     {
         $error = $this->getExceptionMessageArray($exception);
         $this->log('php_exception', $error, 'danger', false);
@@ -212,10 +198,10 @@ class Logger
 
     /**
      * Returns an array of exception data to be rendered
-     * @param object $instance
+     * @param \Exception $instance
      * @return array
      */
-    protected function getExceptionMessageArray($instance)
+    protected function getExceptionMessageArray(\Exception $instance)
     {
         return array(
             'code' => $instance->getCode(),
@@ -240,7 +226,15 @@ class Logger
         }
 
         $message .= "Message: {$error['message']}<br>\n";
-        $message .= "Code: {$error['code']}<br>\n";
+
+        if (isset($error['code'])) {
+            $message .= "Code: {$error['code']}<br>\n";
+        }
+
+        if (isset($error['type'])) {
+            $message .= "Type: {$error['type']}<br>\n";
+        }
+
         $message .= "File: {$error['file']}<br>\n";
         $message .= "Line: {$error['line']}<br>\n";
 
@@ -266,6 +260,7 @@ class Logger
         foreach ($this->errors as $error) {
             $formatted[] = $this->getFormattedError($error);
         }
+
         return $formatted;
     }
 

@@ -46,7 +46,6 @@ class PriceRule extends ComponentValidator
     protected $price;
 
     /**
-     * Constructor
      * @param PriceRuleModel $rule
      * @param TriggerModel $trigger
      * @param CurrencyModel $currency
