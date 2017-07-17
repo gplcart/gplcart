@@ -24,10 +24,10 @@ body.js .hidden-js {
 }
 
 pre {
-    white-space: pre-wrap;       /* css-3 */
-    white-space: -moz-pre-wrap !important;  /* Mozilla, since 1999 */
-    white-space: -o-pre-wrap;    /* Opera 7 */
-    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap !important;
+    white-space: -o-pre-wrap;
+    word-wrap: break-word;
 }
 
 .indentation {
@@ -105,8 +105,10 @@ h1 {
     overflow-y:auto;
 }
 
-.tab-content {
-    padding-top:30px;
+.list-inline .active a {
+    text-decoration: none;
+    color: #333;
+    cursor: default;
 }
 
 .panel:not(.thumb) {
