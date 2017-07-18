@@ -303,13 +303,14 @@ class Store extends Model
         }
 
         $conditions = array('store_id' => $store_id);
+        $result = (bool) $this->db->delete('store', $conditions);
 
-        $result = $this->db->delete('store', $conditions);
-
-        $this->db->delete('triggers', $conditions);
-        $this->db->delete('wishlist', $conditions);
-        $this->db->delete('collection', $conditions);
-        $this->db->delete('product_sku', $conditions);
+        if ($result) {
+            $this->db->delete('triggers', $conditions);
+            $this->db->delete('wishlist', $conditions);
+            $this->db->delete('collection', $conditions);
+            $this->db->delete('product_sku', $conditions);
+        }
 
         $this->hook->fire('store.delete.after', $store_id, $result, $this);
 
