@@ -185,6 +185,7 @@ class User extends Model
             $this->db->delete('address', $conditions);
             $this->db->delete('wishlist', $conditions);
             $this->db->delete('rating_user', $conditions);
+            $this->db->delete('dashboard', $conditions);
         }
 
         $this->hook->fire('user.delete.after', $user_id, $deleted, $this);
