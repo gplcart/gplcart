@@ -40,6 +40,7 @@ define('GC_CONFIG_MAIL', GC_CONFIG_DIR . '/default/mail.php');
 define('GC_CONFIG_COLLECTION', GC_CONFIG_DIR . '/default/collection.php');
 define('GC_CONFIG_CONDITION', GC_CONFIG_DIR . '/default/condition.php');
 define('GC_CONFIG_COUNTRY_FORMAT', GC_CONFIG_DIR . '/default/country_format.php');
+define('GC_CONFIG_DASHBOARD', GC_CONFIG_DIR . '/default/dashboard.php');
 define('GC_UPLOAD_DIR', GC_FILE_DIR . '/upload');
 define('GC_DOWNLOAD_DIR', GC_FILE_DIR . '/download');
 define('GC_PRIVATE_DIR', GC_FILE_DIR . '/private');

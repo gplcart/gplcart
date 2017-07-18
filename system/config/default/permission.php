@@ -13,6 +13,8 @@ return array(
     'cart' => 'Cart items: access',
     'cart_delete' => 'Cart items: delete',
     'cli' => 'Console emulator: access',
+    'dashboard' => 'Dashboard: access',
+    'dashboard_edit' => 'Dashboard: edit',
     'product' => 'Product: access',
     'product_add' => 'Product: add',
     'product_edit' => 'Product: edit',

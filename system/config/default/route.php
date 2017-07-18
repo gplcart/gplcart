@@ -159,8 +159,15 @@ return array(
         )
     ),
     'admin' => array(
+        'access' => 'dashboard',
         'handlers' => array(
             'controller' => array('gplcart\\core\\controllers\\backend\\Dashboard', 'indexDashboard')
+        )
+    ),
+    'admin/dashboard' => array(
+        'access' => 'dashboard_edit',
+        'handlers' => array(
+            'controller' => array('gplcart\\core\\controllers\\backend\\Dashboard', 'editDashboard')
         )
     ),
     'admin/content' => array(

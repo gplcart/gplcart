@@ -142,6 +142,13 @@ return array(
             'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
         )
     ),
+    'dashboard' => array(
+        'fields' => array(
+            'dashboard_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+            'user_id' => array('type' => 'int', 'length' => 10, 'not_null' => true),
+            'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true)
+        )
+    ),
     'field' => array(
         'fields' => array(
             'field_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
