@@ -44,11 +44,11 @@ class Handler
     {
         try {
             $handler = static::get($handlers, $handler_id, $method);
-        } catch (\ReflectionException $ex) {
+        } catch (\Exception $ex) {
             throw new \InvalidArgumentException($ex->getMessage());
         }
 
-        if (empty($handler[0])) {
+        if (empty($handler)) {
             throw new \InvalidArgumentException('Invalid handler instance');
         }
 
@@ -74,6 +74,10 @@ class Handler
                 return false;
             }
             $handler = $handlers['handlers'][$name];
+        }
+
+        if (is_object($handler) && $handler instanceof \Closure) {
+            return $handler;
         }
 
         $handler[0] = Container::get($handler);
