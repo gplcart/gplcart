@@ -1046,13 +1046,18 @@ abstract class Controller
     public function setSubmitted($key = null, $value = null, $filter = true)
     {
         if (!isset($key)) {
-            $this->submitted = (array) $this->request->post(null, array(), $filter, 'array');
+
+            if (isset($value)) {
+                return $this->submitted = $value;
+            }
+
+            $this->submitted = $this->request->post(null, array(), $filter, 'array');
             return $this->submitted;
         }
 
         if (!isset($value) && empty($this->submitted)) {
             $this->form_source = (string) $key;
-            $this->submitted = (array) $this->request->post($key, array(), $filter, 'array');
+            $this->submitted = $this->request->post($key, array(), $filter, 'array');
             return $this->submitted;
         }
 
@@ -1084,8 +1089,7 @@ abstract class Controller
      */
     public function setSubmittedBool($key)
     {
-        $original = $this->getSubmitted($key);
-        $this->setSubmitted($key, (bool) $original);
+        $this->setSubmitted($key, (bool) $this->getSubmitted($key));
     }
 
     /**
