@@ -215,12 +215,7 @@ class Product extends BackendController
      */
     protected function setBreadcrumbListProduct()
     {
-        $breadcrumb = array(
-            'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')
-        );
-
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbBackend();
     }
 
     /**
@@ -573,19 +568,14 @@ class Product extends BackendController
      */
     protected function setBreadcrumbEditProduct()
     {
-        $breadcrumbs = array();
+        $this->setBreadcrumbBackend();
 
-        $breadcrumbs[] = array(
-            'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')
-        );
-
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'text' => $this->text('Products'),
             'url' => $this->url('admin/content/product')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**

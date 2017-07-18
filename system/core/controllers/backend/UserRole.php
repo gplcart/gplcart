@@ -195,19 +195,14 @@ class UserRole extends BackendController
      */
     protected function setBreadcrumbEditUserRole()
     {
-        $breadcrumbs = array();
+        $this->setBreadcrumbBackend();
 
-        $breadcrumbs[] = array(
-            'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')
-        );
-
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'text' => $this->text('Roles'),
             'url' => $this->url('admin/user/role')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -335,12 +330,7 @@ class UserRole extends BackendController
      */
     protected function setBreadcrumbListUserRole()
     {
-        $breadcrumb = array(
-            'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')
-        );
-
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbBackend();
     }
 
     /**

@@ -127,12 +127,7 @@ class Alias extends BackendController
      */
     protected function setBreadcrumbListAlias()
     {
-        $breadcrumb = array(
-            'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')
-        );
-
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbBackend();
     }
 
     /**

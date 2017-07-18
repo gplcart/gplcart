@@ -287,12 +287,7 @@ class Module extends BackendController
      */
     protected function setBreadcrumbListModule()
     {
-        $breadcrumb = array(
-            'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')
-        );
-
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbBackend();
     }
 
     /**

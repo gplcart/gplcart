@@ -137,12 +137,7 @@ class Zone extends BackendController
      */
     protected function setBreadcrumbListZone()
     {
-        $breadcrumb = array(
-            'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')
-        );
-
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbBackend();
     }
 
     /**
@@ -296,19 +291,14 @@ class Zone extends BackendController
      */
     protected function setBreadcrumbEditZone()
     {
-        $breadcrumbs = array();
+        $this->setBreadcrumbBackend();
 
-        $breadcrumbs[] = array(
-            'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')
-        );
-
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'text' => $this->text('Zones'),
             'url' => $this->url('admin/settings/zone')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**

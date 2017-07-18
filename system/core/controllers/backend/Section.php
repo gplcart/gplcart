@@ -68,12 +68,7 @@ class Section extends BackendController
      */
     protected function setBreadcrumbListSection()
     {
-        $breadcrumb = array(
-            'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')
-        );
-
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbBackend();
     }
 
     /**

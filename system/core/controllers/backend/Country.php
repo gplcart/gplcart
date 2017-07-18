@@ -164,12 +164,7 @@ class Country extends BackendController
      */
     protected function setBreadcrumbListCountry()
     {
-        $breadcrumb = array(
-            'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')
-        );
-
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbBackend();
     }
 
     /**
@@ -335,19 +330,14 @@ class Country extends BackendController
      */
     protected function setBreadcrumbEditCountry()
     {
-        $breadcrumbs = array();
+        $this->setBreadcrumbBackend();
 
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')
-        );
-
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'url' => $this->url('admin/settings/country'),
             'text' => $this->text('Countries')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**

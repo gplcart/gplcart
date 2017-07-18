@@ -311,19 +311,14 @@ class Order extends BackendController
      */
     protected function setBreadcrumbIndexOrder()
     {
-        $breadcrumbs = array();
+        $this->setBreadcrumbBackend();
 
-        $breadcrumbs[] = array(
-            'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')
-        );
-
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'text' => $this->text('Orders'),
             'url' => $this->url('admin/sale/order')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -564,11 +559,7 @@ class Order extends BackendController
      */
     protected function setBreadcrumbListOrder()
     {
-        $breadcrumb = array(
-            'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard'));
-
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbBackend();
     }
 
     /**

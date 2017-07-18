@@ -67,12 +67,7 @@ class Currency extends BackendController
      */
     protected function setBreadcrumbListCurrency()
     {
-        $breadcrumb = array(
-            'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')
-        );
-
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbBackend();
     }
 
     /**
@@ -135,6 +130,7 @@ class Currency extends BackendController
         $this->setSubmitted('update', $this->data_currency);
 
         $this->validateComponent('currency');
+
         return !$this->hasErrors();
     }
 
@@ -226,19 +222,14 @@ class Currency extends BackendController
      */
     protected function setBreadcrumbEditCurrency()
     {
-        $breadcrumbs = array();
+        $this->setBreadcrumbBackend();
 
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')
-        );
-
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'url' => $this->url('admin/settings/currency'),
             'text' => $this->text('Currencies')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**

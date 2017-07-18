@@ -218,12 +218,9 @@ class City extends BackendController
      */
     protected function setBreadcrumbListCity()
     {
+        $this->setBreadcrumbBackend();
+        
         $breadcrumbs = array();
-
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')
-        );
 
         $breadcrumbs[] = array(
             'url' => $this->url('admin/settings/country'),
@@ -340,6 +337,7 @@ class City extends BackendController
         $this->setSubmitted('state_id', $this->data_state['state_id']);
 
         $this->validateComponent('city');
+        
         return !$this->hasErrors();
     }
 
@@ -411,12 +409,9 @@ class City extends BackendController
      */
     protected function setBreadcrumbEditCity()
     {
-        $breadcrumbs = array();
+        $this->setBreadcrumbBackend();
 
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')
-        );
+        $breadcrumbs = array();
 
         $breadcrumbs[] = array(
             'url' => $this->url('admin/settings/country'),

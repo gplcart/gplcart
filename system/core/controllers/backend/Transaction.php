@@ -135,12 +135,7 @@ class Transaction extends BackendController
      */
     protected function setBreadcrumbListTransaction()
     {
-        $breadcrumb = array(
-            'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')
-        );
-
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbBackend();
     }
 
     /**

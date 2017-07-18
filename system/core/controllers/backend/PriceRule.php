@@ -125,11 +125,11 @@ class PriceRule extends BackendController
         $deleted = $updated = 0;
         foreach ($selected as $rule_id) {
 
-            if ($action == 'status' && $this->access('price_rule_edit')) {
+            if ($action === 'status' && $this->access('price_rule_edit')) {
                 $updated += (int) $this->rule->update($rule_id, array('status' => $value));
             }
 
-            if ($action == 'delete' && $this->access('price_rule_delete')) {
+            if ($action === 'delete' && $this->access('price_rule_delete')) {
                 $deleted += (int) $this->rule->delete($rule_id);
             }
         }
@@ -185,12 +185,7 @@ class PriceRule extends BackendController
      */
     protected function setBreadcrumbListPriceRule()
     {
-        $breadcrumb = array(
-            'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')
-        );
-
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbBackend();
     }
 
     /**
@@ -260,7 +255,7 @@ class PriceRule extends BackendController
      */
     protected function preparePriceRule(array $rule)
     {
-        if ($rule['value_type'] == 'fixed') {
+        if ($rule['value_type'] === 'fixed') {
             $rule['value'] = $this->price->decimal($rule['value'], $rule['currency']);
         }
 
@@ -323,8 +318,7 @@ class PriceRule extends BackendController
     {
         $this->controlAccess('price_rule_edit');
 
-        $submitted = $this->getSubmitted();
-        $this->rule->update($this->data_rule['price_rule_id'], $submitted);
+        $this->rule->update($this->data_rule['price_rule_id'], $this->getSubmitted());
 
         $message = $this->text('Price rule has been updated');
         $this->redirect('admin/sale/price', $message, 'success');
@@ -364,19 +358,14 @@ class PriceRule extends BackendController
      */
     protected function setBreadcrumbEditPriceRule()
     {
-        $breadcrumbs = array();
+        $this->setBreadcrumbBackend();
 
-        $breadcrumbs[] = array(
-            'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')
-        );
-
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'text' => $this->text('Price rules'),
             'url' => $this->url('admin/sale/price')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**

@@ -192,19 +192,14 @@ class State extends BackendController
      */
     protected function setBreadcrumbListState()
     {
-        $breadcrumbs = array();
+        $this->setBreadcrumbBackend();
 
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')
-        );
-
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'url' => $this->url('admin/settings/country'),
             'text' => $this->text('Countries')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -363,12 +358,9 @@ class State extends BackendController
      */
     protected function setBreadcrumbEditState()
     {
-        $breadcrumbs = array();
+        $this->setBreadcrumbBackend();
 
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')
-        );
+        $breadcrumbs = array();
 
         $breadcrumbs[] = array(
             'url' => $this->url('admin/settings/country'),

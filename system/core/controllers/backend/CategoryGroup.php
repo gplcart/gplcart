@@ -100,12 +100,7 @@ class CategoryGroup extends BackendController
      */
     protected function setBreadcrumbListCategoryGroup()
     {
-        $breadcrumb = array(
-            'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')
-        );
-
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbBackend();
     }
 
     /**
@@ -190,6 +185,7 @@ class CategoryGroup extends BackendController
         $this->setSubmitted('update', $this->data_category_group);
 
         $this->validateComponent('category_group');
+
         return !$this->hasErrors();
     }
 
@@ -259,19 +255,14 @@ class CategoryGroup extends BackendController
      */
     protected function setBreadcrumbEditCategoryGroup()
     {
-        $breadcrumbs = array();
+        $this->setBreadcrumbBackend();
 
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')
-        );
-
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'url' => $this->url('admin/content/category-group'),
             'text' => $this->text('Category groups')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**

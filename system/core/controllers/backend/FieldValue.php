@@ -215,19 +215,14 @@ class FieldValue extends BackendController
      */
     protected function setBreadcrumbListFieldValue()
     {
-        $breadcrumbs = array();
+        $this->setBreadcrumbBackend();
 
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')
-        );
-
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'url' => $this->url('admin/content/field'),
             'text' => $this->text('Fields')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -416,12 +411,9 @@ class FieldValue extends BackendController
      */
     protected function setBreadcrumbEditFieldValue()
     {
-        $breadcrumbs = array();
+        $this->setBreadcrumbBackend();
 
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')
-        );
+        $breadcrumbs = array();
 
         $breadcrumbs[] = array(
             'url' => $this->url('admin/content/field'),

@@ -166,19 +166,14 @@ class CollectionItem extends BackendController
      */
     protected function setBreadcrumbListCollectionItem()
     {
-        $breadcrumbs = array();
+        $this->setBreadcrumbBackend();
 
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')
-        );
-
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'text' => $this->text('Collections'),
             'url' => $this->url('admin/content/collection')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -293,12 +288,9 @@ class CollectionItem extends BackendController
      */
     protected function setBreadcrumbEditCollectionItem()
     {
-        $breadcrumbs = array();
+        $this->setBreadcrumbBackend();
 
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')
-        );
+        $breadcrumbs = array();
 
         $breadcrumbs[] = array(
             'url' => $this->url('admin/content/collection'),

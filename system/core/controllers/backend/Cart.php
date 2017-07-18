@@ -114,12 +114,7 @@ class Cart extends BackendController
      */
     protected function setBreadcrumbListCart()
     {
-        $breadcrumb = array(
-            'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')
-        );
-
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbBackend();
     }
 
     /**

@@ -146,12 +146,7 @@ class ProductClass extends BackendController
      */
     protected function setBreadcrumbListProductClass()
     {
-        $breadcrumb = array(
-            'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')
-        );
-
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbBackend();
     }
 
     /**
@@ -294,19 +289,14 @@ class ProductClass extends BackendController
      */
     protected function setBreadcrumbEditProductClass()
     {
-        $breadcrumbs = array();
+        $this->setBreadcrumbBackend();
 
-        $breadcrumbs[] = array(
-            'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')
-        );
-
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'text' => $this->text('Product classes'),
             'url' => $this->url('admin/content/product-class')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -415,19 +405,14 @@ class ProductClass extends BackendController
      */
     protected function setBreadcrumbFieldsProductClass()
     {
-        $breadcrumbs = array();
+        $this->setBreadcrumbBackend();
 
-        $breadcrumbs[] = array(
-            'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')
-        );
-
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'text' => $this->text('Product classes'),
             'url' => $this->url('admin/content/product-class')
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -508,12 +493,9 @@ class ProductClass extends BackendController
      */
     protected function setBreadcrumbEditFieldProductClass()
     {
-        $breadcrumbs = array();
+        $this->setBreadcrumbBackend();
 
-        $breadcrumbs[] = array(
-            'text' => $this->text('Dashboard'),
-            'url' => $this->url('admin')
-        );
+        $breadcrumbs = array();
 
         $breadcrumbs[] = array(
             'text' => $this->text('Product classes'),

@@ -136,11 +136,7 @@ class Address extends BackendController
      */
     protected function setBreadcrumbListAddress()
     {
-        $breadcrumb = array(
-            'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')
-        );
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbBackend();
     }
 
     /**

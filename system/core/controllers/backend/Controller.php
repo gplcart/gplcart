@@ -37,11 +37,10 @@ class Controller extends BaseController
     {
         parent::__construct();
 
-        $this->setBackendInstanceProperties();
+        $this->setInstancePropertiesBackend();
         $this->processCurrentJob();
-
         $this->setJsCron();
-        $this->setBackendDefaultData();
+        $this->setDefaultDataBackend();
 
         $this->hook->fire('construct.controller.backend', $this);
         $this->controlHttpStatus();
@@ -50,7 +49,7 @@ class Controller extends BaseController
     /**
      * Sets class instances
      */
-    protected function setBackendInstanceProperties()
+    protected function setInstancePropertiesBackend()
     {
         $this->job = Container::get('gplcart\\core\\models\\Job');
         $this->image = Container::get('gplcart\\core\\models\\Image');
@@ -59,7 +58,7 @@ class Controller extends BaseController
     /**
      * Sets default variables for backend templates
      */
-    protected function setBackendDefaultData()
+    protected function setDefaultDataBackend()
     {
         $this->data['_job'] = $this->renderJob();
         $this->data['_menu'] = $this->renderAdminMenu();
@@ -237,6 +236,19 @@ class Controller extends BaseController
         );
 
         return $this->image->deleteMultiple($options);
+    }
+
+    /**
+     * Set a single breadcrumb item that points to the dashboard
+     */
+    protected function setBreadcrumbBackend()
+    {
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
 }
