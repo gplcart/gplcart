@@ -6,12 +6,13 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
+
 <?php if($this->access('user')) { ?>
 <div class="panel panel-default">
-  <div class="panel-heading"><?php echo $this->text('Recent users'); ?></div>
+  <div class="panel-heading"><?php echo $this->e($content['title']); ?></div>
   <div class="panel-body">
     <table class="table table-condensed">
-      <?php foreach ($items as $item) { ?>
+      <?php foreach ($content['data'] as $item) { ?>
       <?php if(!$this->isSuperadmin($item['user_id']) || $this->isSuperadmin()) { ?>
       <tr>
         <td>

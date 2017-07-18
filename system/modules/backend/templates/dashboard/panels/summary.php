@@ -9,40 +9,40 @@
 <?php if($this->access('report')) { ?>
 <div class="panel panel-default">
   <div class="panel-heading">
-    <?php echo $this->text('Summary'); ?>
+    <?php echo $this->e($content['title']); ?>
   </div>
   <div class="panel-body">
     <ul class="list-unstyled">
       <li>
         <?php echo $this->text('Orders'); ?>:
         <?php if ($this->access('order')) { ?>
-        <a href="<?php echo $this->url('admin/sale/order'); ?>"><?php echo $order_total; ?></a>
+        <a href="<?php echo $this->url('admin/sale/order'); ?>"><?php echo $this->e($content['data']['order_total']); ?></a>
         <?php } else { ?>
-        <?php echo $order_total; ?>
+        <?php echo $this->e($content['data']['order_total']); ?>
         <?php } ?>
       </li>
       <li>
         <?php echo $this->text('Users'); ?>:
         <?php if ($this->access('user')) { ?>
-        <a href="<?php echo $this->url('admin/user/list'); ?>"><?php echo $user_total; ?></a>
+        <a href="<?php echo $this->url('admin/user/list'); ?>"><?php echo $this->e($content['data']['user_total']); ?></a>
         <?php } else { ?>
-        <?php echo $user_total; ?>
+        <?php echo $this->e($content['data']['user_total']); ?>
         <?php } ?>
       </li>
       <li>
         <?php echo $this->text('Reviews'); ?>:
         <?php if ($this->access('review')) { ?>
-        <a href="<?php echo $this->url('admin/content/review'); ?>"><?php echo $review_total; ?></a>
+        <a href="<?php echo $this->url('admin/content/review'); ?>"><?php echo $this->e($content['data']['review_total']); ?></a>
         <?php } else { ?>
-        <?php echo $review_total; ?>
+        <?php echo $this->e($content['data']['review_total']); ?>
         <?php } ?>
       </li>
       <li>
         <?php echo $this->text('Products'); ?>:
         <?php if ($this->access('product')) { ?>
-        <a href="<?php echo $this->url('admin/content/product'); ?>"><?php echo $product_total; ?></a>
+        <a href="<?php echo $this->url('admin/content/product'); ?>"><?php echo $this->e($content['data']['product_total']); ?></a>
         <?php } else { ?>
-        <?php echo $product_total; ?>
+        <?php echo $this->e($content['data']['product_total']); ?>
         <?php } ?>
       </li>
     </ul>

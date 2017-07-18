@@ -9,13 +9,13 @@
 <?php if($this->access('order')) { ?>
 <div class="panel panel-default">
   <div class="panel-heading">
-    <?php echo $this->text('Recent orders'); ?>
+    <?php echo $this->e($content['title']); ?>
   </div>
   <div class="panel-body">
-    <?php if (!empty($items)) { ?>
+    <?php if (!empty($content['data'])) { ?>
     <table class="table table-condensed">
       <tbody>
-        <?php foreach ($items as $item) { ?>
+        <?php foreach ($content['data'] as $item) { ?>
         <tr>
           <td>
             <?php if($this->access('order')) { ?>
