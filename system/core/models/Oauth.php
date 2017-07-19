@@ -177,14 +177,11 @@ class Oauth extends Model
     {
         $data = array(
             'id' => $provider['id'],
-            'url' => $this->url->get('', array(), true), // Current absolute URL
+            'url' => $this->url->get('', array(), true),
             'key' => gplcart_string_random(4), // Make resulting hash unique
         );
 
-        // Base 64 Url safe encoding
         $state = gplcart_string_encode(json_encode($data));
-
-        // Memorize in session
         $this->setState($state, $provider['id']);
         return $state;
     }
@@ -278,8 +275,12 @@ class Oauth extends Model
     {
         $this->hook->fire('oauth.request.token.before', $provider, $query, $this);
 
-        $response = $this->curl->post($provider['url']['token'], array('fields' => $query));
-        $token = json_decode($response, true);
+        try {
+            $response = $this->curl->post($provider['url']['token'], array('fields' => $query));
+            $token = json_decode($response, true);
+        } catch (\Exception $ex) {
+            $token = array();
+        }
 
         $this->hook->fire('oauth.request.token.after', $provider, $query, $token, $this);
         return $token;

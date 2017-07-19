@@ -12,7 +12,6 @@ GPLCart is an open source e-commerce platform based on the classical LAMP stack 
 
 Also you'll need the following extension enabled:
 
-- Curl
 - OpenSSL
 - Mb string
 - Mod Rewrite

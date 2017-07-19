@@ -138,8 +138,7 @@ class File extends Model
         $data['file_id'] = $file_id;
         $updated += (int) $this->setTranslationTrait($this->db, $data, 'file');
 
-        $result = ($updated > 0);
-
+        $result = $updated > 0;
         $this->hook->fire('file.update.after', $file_id, $data, $result, $this);
         return $result;
     }
@@ -153,8 +152,11 @@ class File extends Model
     public function get($file_id, $language = null)
     {
         $this->hook->fire('file.get.before', $file_id, $this);
+
         $file = $this->db->fetch('SELECT * FROM file WHERE file_id=?', array($file_id));
+
         $this->attachTranslationTrait($this->db, $file, 'file', $language);
+
         $this->hook->fire('file.get.after', $file, $this);
         return $file;
     }
@@ -611,7 +613,13 @@ class File extends Model
      */
     protected function writeTempFile($url)
     {
-        $content = $this->curl->get($url);
+        try {
+            $content = $this->curl->get($url);
+        } catch (\Exception $ex) {
+            $this->error = $ex->getMessage();
+            return false;
+        }
+
         $error = $this->curl->getError();
 
         if (!empty($error)) {
@@ -810,6 +818,7 @@ class File extends Model
         if ($relative) {
             return $this->path($this->transferred);
         }
+
         return $this->transferred;
     }
 
