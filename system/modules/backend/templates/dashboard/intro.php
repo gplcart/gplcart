@@ -6,7 +6,6 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
-<?php if (!empty($items)) { ?>
 <div class="panel panel-default">
   <div class="panel-body">
     <h1 class="h3"><?php echo $this->text('Welcome!'); ?></h1>
@@ -28,4 +27,3 @@
     </a>
   </div>
 </div>
-<?php } ?>
