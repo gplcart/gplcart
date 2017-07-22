@@ -7,15 +7,16 @@
  */
 ?>
 <?php if (!empty($collections) || $_filtering) { ?>
-<div class="panel panel-default">
-  <div class="panel-heading clearfix">
-    <div class="btn-group pull-left">
+<form data-filter-empty="true">
+  <?php if ($this->access('collection_edit') || $this->access('collection_delete') || $this->access('collection_add')) { ?>
+  <div class="btn-toolbar actions">
+    <?php $access_actions = false; ?>
+    <?php if ($this->access('collection_edit') || $this->access('collection_delete')) { ?>
+    <?php $access_actions = true; ?>
+    <div class="btn-group">
       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-         <span class="caret"></span>
+        <?php echo $this->text('With selected'); ?> <span class="caret"></span>
       </button>
-      <?php $access_actions = false; ?>
-      <?php if ($this->access('collection_edit') || $this->access('collection_delete')) { ?>
-      <?php $access_actions = true; ?>
       <ul class="dropdown-menu">
         <?php if ($this->access('collection_edit')) { ?>
         <li>
@@ -37,18 +38,17 @@
         </li>
         <?php } ?>
       </ul>
-      <?php } ?>
-    </div>
-    <?php if ($this->access('collection_add')) { ?>
-    <div class="btn-toolbar pull-right">
-      <a class="btn btn-default" href="<?php echo $this->url('admin/content/collection/add'); ?>">
-        <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
-      </a>
     </div>
     <?php } ?>
+    <?php if ($this->access('collection_add')) { ?>
+    <a class="btn btn-default" href="<?php echo $this->url('admin/content/collection/add'); ?>">
+      <?php echo $this->text('Add'); ?>
+    </a>
+    <?php } ?>
   </div>
-  <div class="panel-body table-responsive">
-    <table class="table table-condensed collections">
+  <?php } ?>
+  <div class="table-responsive">
+    <table class="table collections">
       <thead>
         <tr>
           <th><input type="checkbox" id="select-all" value="1"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
@@ -67,9 +67,7 @@
           </th>
           <th>
             <select class="form-control" name="type">
-              <option value=""<?php echo ($filter_type === '') ? ' selected' : ''; ?>>
-              <?php echo $this->text('Any'); ?>
-              </option>
+              <option value=""><?php echo $this->text('Any'); ?></option>
               <?php foreach ($handlers as $handler_id => $handler) { ?>
               <?php if ($filter_type === $handler_id) { ?>
               <option value="<?php echo $this->e($handler_id); ?>" selected><?php echo $this->e($handler['title']); ?></option>
@@ -81,7 +79,7 @@
           </th>
           <th>
             <select class="form-control" name="store_id">
-              <option value=""<?php echo $filter_store_id ? '' : ' selected'; ?>><?php echo $this->text('Any'); ?></option>
+              <option value=""><?php echo $this->text('Any'); ?></option>
               <?php foreach ($_stores as $store_id => $store) { ?>
               <option value="<?php echo $store_id; ?>"<?php echo $filter_store_id == $store_id ? ' selected' : ''; ?>><?php echo $this->e($store['name']); ?></option>
               <?php } ?>
@@ -89,22 +87,20 @@
           </th>
           <th>
             <select class="form-control" name="status">
-              <option value="any">
-              <?php echo $this->text('Any'); ?>
-              </option>
+              <option value=""><?php echo $this->text('Any'); ?></option>
               <option value="1"<?php echo $filter_status === '1' ? ' selected' : ''; ?>>
-              <?php echo $this->text('Enabled'); ?>
+                <?php echo $this->text('Enabled'); ?>
               </option>
               <option value="0"<?php echo $filter_status === '0' ? ' selected' : ''; ?>>
-              <?php echo $this->text('Disabled'); ?>
+                <?php echo $this->text('Disabled'); ?>
               </option>
             </select>
           </th>
           <th>
-            <button type="button" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
+            <a href="<?php echo $this->url($_path); ?>" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
               <i class="fa fa-refresh"></i>
-            </button>
-            <button type="button" class="btn btn-default filter" title="<?php echo $this->text('Filter'); ?>">
+            </a>
+            <button class="btn btn-default filter" title="<?php echo $this->text('Filter'); ?>">
               <i class="fa fa-search"></i>
             </button>
           </th>
@@ -114,8 +110,8 @@
         <?php if (empty($collections) && $_filtering) { ?>
         <tr>
           <td colspan="7">
-            <?php echo $this->text('No results'); ?>
-            <a class="clear-filter" href="#"><?php echo $this->text('Reset'); ?></a>
+              <?php echo $this->text('No results'); ?>
+            <a href="<?php echo $this->url($_path); ?>" class="clear-filter"><?php echo $this->text('Reset'); ?></a>
           </td>
         </tr>
         <?php } else { ?>
@@ -170,9 +166,11 @@
         <?php } ?>
       </tbody>
     </table>
-    <?php echo $_pager; ?>
   </div>
-</div>
+  <?php if (!empty($_pager)) { ?>
+  <?php echo $_pager; ?>
+  <?php } ?>
+</form>
 <?php } else { ?>
 <div class="row">
   <div class="col-md-12">

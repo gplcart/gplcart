@@ -7,15 +7,16 @@
  */
 ?>
 <?php if (!empty($countries) || $_filtering) { ?>
-<div class="panel panel-default">
-  <div class="panel-heading clearfix">
-    <div class="btn-group pull-left">
+<form data-filter-empty="true">
+  <?php if ($this->access('country_edit') || $this->access('country_delete') || $this->access('country_add')) { ?>
+  <div class="btn-toolbar actions">
+    <?php $access_options = false; ?>
+    <?php if ($this->access('country_edit') || $this->access('country_delete')) { ?>
+    <?php $access_options = true; ?>
+    <div class="btn-group">
       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-         <span class="caret"></span>
+        <?php echo $this->text('With selected'); ?> <span class="caret"></span>
       </button>
-      <?php $access_options = false; ?>
-      <?php if($this->access('country_edit') || $this->access('country_delete')) { ?>
-      <?php $access_options = true; ?>
       <ul class="dropdown-menu">
         <?php if ($this->access('country_edit')) { ?>
         <li>
@@ -37,18 +38,17 @@
         </li>
         <?php } ?>
       </ul>
-      <?php } ?>
     </div>
-    <div class="btn-toolbar pull-right">
-      <?php if ($this->access('country_add')) { ?>
-      <a href="<?php echo $this->url('admin/settings/country/add'); ?>" class="btn btn-default add">
-        <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
-      </a>
-      <?php } ?>
-    </div>
+    <?php } ?>
+    <?php if ($this->access('country_add')) { ?>
+    <a class="btn btn-default add" href="<?php echo $this->url('admin/settings/country/add'); ?>">
+      <?php echo $this->text('Add'); ?>
+    </a>
+    <?php } ?>
   </div>
-  <div class="panel-body table-responsive">
-    <table class="table table-condensed countries">
+  <?php } ?>
+  <div class="table-responsive">
+    <table class="table countries">
       <thead>
         <tr>
           <th><input type="checkbox" id="select-all" value="1"<?php echo $access_options ? '' : ' disabled'; ?>></th>
@@ -71,20 +71,20 @@
           </th>
           <th class="middle">
             <select class="form-control" name="status">
-              <option value="any"><?php echo $this->text('Any'); ?></option>
+              <option value=""><?php echo $this->text('Any'); ?></option>
               <option value="1"<?php echo $filter_status === '1' ? ' selected' : ''; ?>>
-                <?php echo $this->text('Enabled'); ?>
+              <?php echo $this->text('Enabled'); ?>
               </option>
               <option value="0"<?php echo $filter_status === '0' ? ' selected' : ''; ?>>
-                <?php echo $this->text('Disabled'); ?>
+              <?php echo $this->text('Disabled'); ?>
               </option>
             </select>
           </th>
           <th class="middle">
-            <button type="button" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
+            <a href="<?php echo $this->url($_path); ?>" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
               <i class="fa fa-refresh"></i>
-            </button>
-            <button type="button" class="btn btn-default filter" title="<?php echo $this->text('Filter'); ?>">
+            </a>
+            <button class="btn btn-default filter" title="<?php echo $this->text('Filter'); ?>">
               <i class="fa fa-search"></i>
             </button>
           </th>
@@ -95,17 +95,14 @@
         <tr>
           <td class="middle" colspan="6">
             <?php echo $this->text('No results'); ?>
-            <a href="#" class="clear-filter"><?php echo $this->text('Reset'); ?></a>
+            <a href="<?php echo $this->url($_path); ?>" class="clear-filter"><?php echo $this->text('Reset'); ?></a>
           </td>
         </tr>
         <?php } ?>
         <?php foreach ($countries as $code => $country) { ?>
         <tr>
           <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $code; ?>"<?php echo $access_options ? '' : ' disabled'; ?>></td>
-          <td class="middle">
-            <input type="hidden" name="country[<?php echo $code; ?>][weight]" value="<?php echo $country['weight']; ?>">
-            <?php echo $this->e($country['name']); ?>
-          </td>
+          <td class="middle"><?php echo $this->e($country['name']); ?></td>
           <td class="middle"><?php echo $this->e($country['native_name']); ?></td>
           <td class="middle"><?php echo $this->e($code); ?></td>
           <td class="middle">
@@ -144,13 +141,13 @@
         <?php } ?>
       </tbody>
     </table>
-    <?php if(!empty($_pager)) { ?>
-    <?php echo $_pager; ?>
-    <?php } ?>
   </div>
-</div>
+  <?php if (!empty($_pager)) { ?>
+  <?php echo $_pager; ?>
+  <?php } ?>
+</form>
 <?php } else { ?>
-<div class="row empty">
+<div class="row">
   <div class="col-md-12">
     <?php echo $this->text('There are no items yet'); ?>
     <?php if ($this->access('country_add')) { ?>

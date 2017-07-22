@@ -25,14 +25,6 @@
             <?php } else { ?>
             <?php echo $this->truncate($this->e($item['name']), 50); ?>
             <?php } ?>
-            /
-            <?php if($this->access('trigger_edit')) { ?>
-            <a href="<?php echo $this->url("admin/settings/trigger/edit/{$item['trigger_id']}"); ?>">
-              <?php echo $this->truncate($this->e($item['trigger_name']), 50); ?>
-            </a>
-            <?php } else { ?>
-            <?php echo $this->truncate($this->e($item['trigger_name']), 50); ?>
-            <?php } ?>
           </td>
           <td>
             <?php echo $this->e($item['value_formatted']); ?>

@@ -7,7 +7,7 @@
  */
 ?>
 <?php if(empty($menu)) { ?>
-<?php echo $this->text('This section has no items for you'); ?>
+<?php echo $this->text('There are no items yet'); ?>
 <?php } else { ?>
 <?php echo $menu; ?>
 <?php } ?>

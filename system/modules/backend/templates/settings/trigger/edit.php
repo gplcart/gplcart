@@ -6,113 +6,99 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
-<form method="post" id="edit-trigger" class="form-horizontal">
+<form method="post" class="form-horizontal">
   <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <div class="row">
     <div class="col-md-6">
-      <div class="panel panel-default">
-        <div class="panel-body">
-          <div class="form-group">
-            <label class="col-md-3 control-label">
-              <?php echo $this->text('Status'); ?>
+      <div class="form-group">
+        <label class="col-md-3 control-label">
+          <?php echo $this->text('Status'); ?>
+        </label>
+        <div class="col-md-9">
+          <div class="btn-group" data-toggle="buttons">
+            <label class="btn btn-default<?php echo empty($trigger['status']) ? '' : ' active'; ?>">
+              <input name="trigger[status]" type="radio" autocomplete="off" value="1"<?php echo empty($trigger['status']) ? '' : ' checked'; ?>><?php echo $this->text('Enabled'); ?>
             </label>
-            <div class="col-md-9">
-              <div class="btn-group" data-toggle="buttons">
-                <label class="btn btn-default<?php echo empty($trigger['status']) ? '' : ' active'; ?>">
-                  <input name="trigger[status]" type="radio" autocomplete="off" value="1"<?php echo empty($trigger['status']) ? '' : ' checked'; ?>><?php echo $this->text('Enabled'); ?>
-                </label>
-                <label class="btn btn-default<?php echo empty($trigger['status']) ? ' active' : ''; ?>">
-                  <input name="trigger[status]" type="radio" autocomplete="off" value="0"<?php echo empty($trigger['status']) ? ' checked' : ''; ?>><?php echo $this->text('Disabled'); ?>
-                </label>
-              </div>
-              <div class="help-block">
-                <?php echo $this->text('Disabled triggers will be excluded from processing'); ?>
-              </div>
-            </div>
-          </div>
-          <div class="form-group required<?php echo $this->error('name', ' has-error'); ?>">
-            <label class="col-md-3 control-label"><?php echo $this->text('Name'); ?></label>
-            <div class="col-md-9">
-              <input maxlength="255" name="trigger[name]" class="form-control" value="<?php echo isset($trigger['name']) ? $this->e($trigger['name']) : ''; ?>">
-              <div class="help-block">
-                <?php echo $this->error('name'); ?>
-                <div class="text-muted">
-                  <?php echo $this->text('Required. The name will be shown to administrators'); ?>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-md-3 control-label">
-              <?php echo $this->text('Store'); ?>
+            <label class="btn btn-default<?php echo empty($trigger['status']) ? ' active' : ''; ?>">
+              <input name="trigger[status]" type="radio" autocomplete="off" value="0"<?php echo empty($trigger['status']) ? ' checked' : ''; ?>><?php echo $this->text('Disabled'); ?>
             </label>
-            <div class="col-md-9">
-              <select name="trigger[store_id]" class="form-control">
-                <?php foreach ($_stores as $store_id => $store) { ?>
-                <?php if (isset($trigger['store_id']) && $trigger['store_id'] == $store_id) { ?>
-                <option value="<?php echo $store_id; ?>" selected><?php echo $this->e($store['name']); ?></option>
-                <?php } else { ?>
-                <option value="<?php echo $store_id; ?>"><?php echo $this->e($store['name']); ?></option>
-                <?php } ?>
-                <?php } ?>
-              </select>
-              <div class="help-block">
-                <?php echo $this->text('Select a store where to invoke this trigger'); ?>
-              </div>
-            </div>
           </div>
-          <div class="form-group<?php echo $this->error('weight', ' has-error'); ?>">
-            <label class="col-md-3 control-label"><?php echo $this->text('Weight'); ?></label>
-            <div class="col-md-9">
-              <input maxlength="2" name="trigger[weight]" class="form-control" value="<?php echo isset($trigger['weight']) ? $this->e($trigger['weight']) : '0'; ?>">
-              <div class="help-block">
-                <?php echo $this->error('weight'); ?>
-                <div class="text-muted">
-                  <?php echo $this->text('A position of the trigger among other enabled triggers. Triggers with lower weight are invoked earlier'); ?>
-                </div>
-              </div>
+          <div class="help-block">
+            <?php echo $this->text('Disabled triggers will be excluded from processing'); ?>
+          </div>
+        </div>
+      </div>
+      <div class="form-group required<?php echo $this->error('name', ' has-error'); ?>">
+        <label class="col-md-3 control-label"><?php echo $this->text('Name'); ?></label>
+        <div class="col-md-9">
+          <input maxlength="255" name="trigger[name]" class="form-control" value="<?php echo isset($trigger['name']) ? $this->e($trigger['name']) : ''; ?>">
+          <div class="help-block">
+            <?php echo $this->error('name'); ?>
+            <div class="text-muted">
+              <?php echo $this->text('Required. The name will be shown to administrators'); ?>
             </div>
           </div>
         </div>
       </div>
-      <div class="panel panel-default">
-        <div class="panel-body">
-          <div class="form-group required<?php echo $this->error('data.conditions', ' has-error'); ?>">
-            <label class="col-md-3 control-label"><?php echo $this->text('Conditions'); ?></label>
-            <div class="col-md-9">
-              <textarea name="trigger[data][conditions]" rows="6" class="form-control"><?php echo empty($trigger['data']['conditions']) ? '' : $this->e($trigger['data']['conditions']); ?></textarea>
-              <div class="help-block">
-                <?php echo $this->error('data.conditions'); ?>
-                <div class="text-muted">
-                  <?php echo $this->text('Required. Which conditions must be met to invoke the trigger. One condition per line. See the legend. Conditions are checked from the top to bottom. Format: [condition ID][space][operator][space][parameter(s)]'); ?>
-                </div>
-              </div>
+      <div class="form-group">
+        <label class="col-md-3 control-label">
+          <?php echo $this->text('Store'); ?>
+        </label>
+        <div class="col-md-9">
+          <select name="trigger[store_id]" class="form-control">
+            <?php foreach ($_stores as $store_id => $store) { ?>
+            <?php if (isset($trigger['store_id']) && $trigger['store_id'] == $store_id) { ?>
+            <option value="<?php echo $store_id; ?>" selected><?php echo $this->e($store['name']); ?></option>
+            <?php } else { ?>
+            <option value="<?php echo $store_id; ?>"><?php echo $this->e($store['name']); ?></option>
+            <?php } ?>
+            <?php } ?>
+          </select>
+          <div class="help-block">
+            <?php echo $this->text('Select a store where to invoke this trigger'); ?>
+          </div>
+        </div>
+      </div>
+      <div class="form-group<?php echo $this->error('weight', ' has-error'); ?>">
+        <label class="col-md-3 control-label"><?php echo $this->text('Weight'); ?></label>
+        <div class="col-md-9">
+          <input maxlength="2" name="trigger[weight]" class="form-control" value="<?php echo isset($trigger['weight']) ? $this->e($trigger['weight']) : '0'; ?>">
+          <div class="help-block">
+            <?php echo $this->error('weight'); ?>
+            <div class="text-muted">
+              <?php echo $this->text('A position of the trigger among other enabled triggers. Triggers with lower weight are invoked earlier'); ?>
             </div>
           </div>
         </div>
       </div>
-      <div class="panel panel-default">
-        <div class="panel-body">
-          <div class="row">
-            <div class="col-md-3">
-              <?php if ($can_delete) { ?>
-              <button class="btn btn-danger delete" name="delete" value="1" onclick="return confirm(GplCart.text('Delete? It cannot be undone!'));">
-                <i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?>
-              </button>
-              <?php } ?>
+      <div class="form-group required<?php echo $this->error('data.conditions', ' has-error'); ?>">
+        <label class="col-md-3 control-label"><?php echo $this->text('Conditions'); ?></label>
+        <div class="col-md-9">
+          <textarea name="trigger[data][conditions]" rows="6" class="form-control"><?php echo empty($trigger['data']['conditions']) ? '' : $this->e($trigger['data']['conditions']); ?></textarea>
+          <div class="help-block">
+            <?php echo $this->error('data.conditions'); ?>
+            <div class="text-muted">
+              <?php echo $this->text('Required. Which conditions must be met to invoke the trigger. One condition per line. See the legend. Conditions are checked from the top to bottom. Format: [condition ID][space][operator][space][parameter(s)]'); ?>
             </div>
-            <div class="col-md-9">
-              <div class="btn-toolbar">
-                <a href="<?php echo $this->url('admin/settings/trigger'); ?>" class="btn btn-default cancel">
-                  <i class="fa fa-reply"></i> <?php echo $this->text('Cancel'); ?>
-                </a>
-                <?php if ($this->access('trigger_edit') || $this->access('trigger_add')) { ?>
-                <button class="btn btn-default save" name="save" value="1">
-                  <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
-                </button>
-                <?php } ?>
-              </div>
-            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-md-10 col-md-offset-3">
+          <div class="btn-toolbar">
+            <?php if ($can_delete) { ?>
+            <button class="btn btn-danger delete" name="delete" value="1" onclick="return confirm(GplCart.text('Are you sure? It cannot be undone!'));">
+              <?php echo $this->text('Delete'); ?>
+            </button>
+            <?php } ?>
+            <a class="btn btn-default cancel" href="<?php echo $this->url('admin/settings/trigger'); ?>">
+              <?php echo $this->text('Cancel'); ?>
+            </a>
+            <?php if ($this->access('trigger_edit') || $this->access('trigger_add')) { ?>
+            <button class="btn btn-default save" name="save" value="1">
+              <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
+            </button>
+            <?php } ?>
           </div>
         </div>
       </div>
@@ -129,7 +115,7 @@
               </tr>
             </thead>
             <tbody>
-              <?php foreach($operators as $key => $name) { ?>
+              <?php foreach ($operators as $key => $name) { ?>
               <tr>
                 <td><?php echo $this->e($key); ?></td>
                 <td><?php echo $this->e($name); ?></td>

@@ -11,7 +11,7 @@
 <?php foreach ($images as $index => $image) { ?>
 <?php $file_id = empty($image['file_id']) ? '' : $image['file_id']; ?>
 <div class="sortable-thumb">
-  <div class="col-md-4">
+  <div class="col-md-3">
     <div class="panel panel-default thumb">
       <input type="hidden" name="<?php echo $name_prefix; ?>[images][<?php echo $index; ?>][file_id]" value="<?php echo $file_id; ?>">
       <input type="hidden" name="<?php echo $name_prefix; ?>[images][<?php echo $index; ?>][path]" value="<?php echo $this->e($image['path']); ?>">
@@ -85,10 +85,16 @@
 </div>
 <?php } ?>
 <?php if ($this->access('file_upload')) { ?>
+<hr>
 <div class="form-group<?php echo $this->error('images', ' has-error'); ?>">
-  <div class="col-md-4">
+  <div class="col-md-4 col-md-offset-2">
     <input type="file" class="form-control" name="files[]" multiple accept="image/*">
-    <?php echo $this->error('images'); ?>
+    <div class="help-block">
+       <?php echo $this->error('images'); ?>
+      <div class="text-muted">
+          <?php echo $this->text('Select one or more images'); ?>
+      </div>
+    </div>
   </div>
 </div>
 <?php } ?>

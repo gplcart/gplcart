@@ -7,7 +7,7 @@
  */
 ?>
 <body<?php echo $this->attributes(array('class' => $_classes)); ?>>
-  <nav class="navbar navbar-inverse navbar-fixed-top hidden-print admin-menu">
+  <nav class="navbar navbar-inverse navbar-static-top hidden-print admin-menu">
     <div class="container-fluid">
       <div class="navbar-header">
         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
@@ -61,8 +61,10 @@
       </div>
     </div>
   </nav>
-  <?php if (!empty($_page_title) || !empty($_breadcrumbs)) { ?>
-  <div class="container-fluid content-header hidden-print">
+  <?php if (!empty($_breadcrumbs) || !empty($_page_title)) { ?>
+  <div class="container-fluid header">
+  <?php if (!empty($_breadcrumbs)) { ?>
+  <div class="breadcrumbs hidden-print">
     <div class="row">
       <div class="col-md-12">
         <ol class="breadcrumb">
@@ -75,20 +77,22 @@
           <?php } ?>
           <?php } ?>
           <?php } ?>
-          <?php if(!empty($_page_title)) { ?>
-          <li><?php echo $this->filter($_page_title); ?></li>
-          <?php } ?>
         </ol>
       </div>
     </div>
   </div>
   <?php } ?>
+  <?php if(!empty($_page_title)) { ?>
+  <div class="page-title">
+    <h1 class="h3"><?php echo $this->filter($_page_title); ?></h1>
+  </div>
+  <?php } ?>
+  </div>
+  <?php } ?>
+  <?php if(!empty($_help)) { ?>
+  <div class="container-fluid help"><?php echo $this->filter($_help); ?></div>
+  <?php } ?>
   <div class="container-fluid content">
-    <noscript>
-      <div class="alert alert-warning">
-        <?php echo $this->text('Your browser seems to have JavaScript disabled. Some functions may not work'); ?>
-      </div>
-    </noscript>
     <?php if (!empty($_messages)) { ?>
     <div class="row hidden-print" id="message">
       <div class="col-md-12">

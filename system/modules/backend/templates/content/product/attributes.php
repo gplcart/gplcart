@@ -9,14 +9,10 @@
 <div>
   <div id="attribute-form">
     <?php if (!empty($fields['attribute'])) { ?>
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h4 class="panel-title">
-        <?php echo $this->text('Attributes'); ?>
-        </h4>
-      </div>
-      <div class="panel-body table-responsive">
-        <table class="table table-condensed attribute">
+    <fieldset class="attribute">
+      <legend><?php echo $this->text('Attributes'); ?></legend>
+      <div class="table-responsive">
+        <table class="table attribute">
           <tbody>
             <?php foreach ($fields['attribute'] as $field_id => $attribute) { ?>
             <tr>
@@ -56,7 +52,7 @@
           </tbody>
         </table>
       </div>
-    </div>
+    </fieldset>
     <?php } ?>
   </div>
 </div>

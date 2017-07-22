@@ -200,35 +200,14 @@
     };
 
     /**
-     * Clears all filters
+     * Prevent submitting empty inputs
      * @returns {undefined}
      */
-    GplCart.onload.clearFilter = function () {
-        $('.clear-filter').click(function () {
-            window.location.replace(GplCart.settings.urn.split("?")[0]);
-        });
-    };
-
-    /**
-     * Rerforms filter query
-     * @returns {undefined}
-     */
-    GplCart.onload.filterQuery = function () {
-
-        var url, query;
-
-        $('.filters .filter').click(function () {
-
-            query = $('.filters :input').filter(function (i, e) {
-                return $(e).val() !== "";
-            }).serialize();
-
-            if (query) {
-                url = GplCart.settings.urn.split("?")[0] + '?' + query;
-                window.location.replace(url);
-            }
-
-            return false;
+    GplCart.onload.filterEmptyInputs = function () {
+        $('[data-filter-empty="true"]').submit(function () {
+            $(this).find(':input[name]').filter(function () {
+                return this.value === "";
+            }).prop('name', '');
         });
     };
 

@@ -7,15 +7,16 @@
  */
 ?>
 <?php if (!empty($states) || $_filtering) { ?>
-<div class="panel panel-default">
-  <div class="panel-heading clearfix">
-    <div class="btn-group pull-left">
+<form data-filter-empty="true">
+  <?php if ($this->access('state_edit') || $this->access('state_delete') || $this->access('state_add')) { ?>
+  <div class="btn-toolbar actions">
+    <?php $access_actions = false; ?>
+    <?php if ($this->access('state_edit') || $this->access('state_delete')) { ?>
+    <?php $access_actions = true; ?>
+    <div class="btn-group">
       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-         <span class="caret"></span>
+        <?php echo $this->text('With selected'); ?> <span class="caret"></span>
       </button>
-      <?php $access_actions = false; ?>
-      <?php if ($this->access('state_edit') || $this->access('state_delete')) { ?>
-      <?php $access_actions = true; ?>
       <ul class="dropdown-menu">
         <?php if ($this->access('state_edit')) { ?>
         <li>
@@ -37,18 +38,17 @@
         </li>
         <?php } ?>
       </ul>
-      <?php } ?>
     </div>
-    <div class="btn-toolbar pull-right">
-      <?php if ($this->access('state_add')) { ?>
-      <a href="<?php echo $this->url("admin/settings/state/add/{$country['code']}"); ?>" class="btn btn-default add">
-        <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
-      </a>
-      <?php } ?>
-    </div>
+    <?php } ?>
+    <?php if ($this->access('state_add')) { ?>
+    <a class="btn btn-default add" href="<?php echo $this->url("admin/settings/state/add/{$country['code']}"); ?>">
+      <?php echo $this->text('Add'); ?>
+    </a>
+    <?php } ?>
   </div>
-  <div class="panel-body table-responsive">
-    <table class="table table-condensed country-states">
+  <?php } ?>
+  <div class="table-responsive">
+    <table class="table country-states">
       <thead>
         <tr>
           <th><input type="checkbox" id="select-all" value="1"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
@@ -69,28 +69,33 @@
           </th>
           <th class="middle">
             <select class="form-control" name="status">
-              <option value="any"><?php echo $this->text('Any'); ?></option>
+              <option value=""><?php echo $this->text('Any'); ?></option>
               <option value="1"<?php echo $filter_status === '1' ? ' selected' : ''; ?>>
-              <?php echo $this->text('Enabled'); ?>
+                <?php echo $this->text('Enabled'); ?>
               </option>
               <option value="0"<?php echo $filter_status === '0' ? ' selected' : ''; ?>>
-              <?php echo $this->text('Disabled'); ?>
+                <?php echo $this->text('Disabled'); ?>
               </option>
             </select>
           </th>
           <th class="middle">
-            <button type="button" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
+            <a href="<?php echo $this->url($_path); ?>" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
               <i class="fa fa-refresh"></i>
-            </button>
-            <button type="button" class="btn btn-default filter" title="<?php echo $this->text('Filter'); ?>">
+            </a>
+            <button class="btn btn-default filter" title="<?php echo $this->text('Filter'); ?>">
               <i class="fa fa-search"></i>
             </button>
           </th>
         </tr>
       </thead>
       <tbody>
-        <?php if($_filtering && empty($states)) { ?>
-        <tr><td class="middle" colspan="6"><?php echo $this->text('No results'); ?></td></tr>
+        <?php if ($_filtering && empty($states)) { ?>
+        <tr>
+          <td class="middle" colspan="6">
+            <?php echo $this->text('No results'); ?>
+            <a href="<?php echo $this->url($_path); ?>" class="clear-filter"><?php echo $this->text('Reset'); ?></a>
+          </td>
+        </tr>
         <?php } ?>
         <?php foreach ($states as $state_id => $state) { ?>
         <tr>
@@ -107,7 +112,7 @@
           </td>
           <td class="middle">
             <ul class="list-inline">
-              <?php if ($this->access('state_edit')) { ?>
+             <?php if ($this->access('state_edit')) { ?>
               <li>
                 <a href="<?php echo $this->url("admin/settings/state/edit/{$country['code']}/$state_id"); ?>">
                   <?php echo $this->lower($this->text('Edit')); ?>
@@ -127,18 +132,18 @@
         <?php } ?>
       </tbody>
     </table>
-    <?php if(!empty($_pager)) { ?>
-    <?php echo $_pager; ?>
-    <?php } ?>
   </div>
-</div>
+  <?php if (!empty($_pager)) { ?>
+  <?php echo $_pager; ?>
+  <?php } ?>
+</form>
 <?php } else { ?>
-<div class="row empty">
+<div class="row">
   <div class="col-md-12">
-    <?php echo $this->text('This country has no states yet'); ?>
+    <?php echo $this->text('There are no items yet'); ?>
     <?php if ($this->access('state_add')) { ?>
     <a class="btn btn-default add" href="<?php echo $this->url("admin/settings/state/add/{$country['code']}"); ?>">
-    <?php echo $this->text('Add'); ?>
+      <?php echo $this->text('Add'); ?>
     </a>
     <?php } ?>
   </div>

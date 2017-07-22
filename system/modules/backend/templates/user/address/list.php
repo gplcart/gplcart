@@ -7,15 +7,15 @@
  */
 ?>
 <?php if (!empty($addresses) || $_filtering) { ?>
-<div class="panel panel-default">
-  <div class="panel-heading clearfix">
-    <div class="btn-group pull-left">
+<form data-filter-empty="true">
+  <?php $access_actions = false; ?>
+  <?php if ($this->access('address_delete')) { ?>
+  <?php $access_actions = true; ?>
+  <div class="btn-toolbar actions">
+    <div class="btn-group">
       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-        <span class="caret"></span>
+        <?php echo $this->text('With selected'); ?> <span class="caret"></span>
       </button>
-      <?php $access_actions = false; ?>
-      <?php if ($this->access('address_delete')) { ?>
-      <?php $access_actions = true; ?>
       <ul class="dropdown-menu">
         <li>
           <a data-action="delete" data-action-confirm="<?php echo $this->text('Are you sure? It cannot be undone!'); ?>" href="#">
@@ -23,11 +23,11 @@
           </a>
         </li>
       </ul>
-      <?php } ?>
     </div>
   </div>
-  <div class="panel-body table-responsive">
-    <table class="table table-condensed addresses">
+  <?php } ?>
+  <div class="table-responsive">
+    <table class="table addresses">
       <thead>
         <tr>
           <th><input type="checkbox" id="select-all" value="1"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
@@ -58,10 +58,10 @@
             <input class="form-control" name="phone" maxlength="255" value="<?php echo $filter_phone; ?>" placeholder="<?php echo $this->text('Any'); ?>">
           </th>
           <th>
-            <button type="button" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
+            <a href="<?php echo $this->url($_path); ?>" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
               <i class="fa fa-refresh"></i>
-            </button>
-            <button type="button" class="btn btn-default filter" title="<?php echo $this->text('Filter'); ?>">
+            </a>
+            <button class="btn btn-default filter" title="<?php echo $this->text('Filter'); ?>">
               <i class="fa fa-search"></i>
             </button>
           </th>
@@ -72,7 +72,7 @@
         <tr>
           <td colspan="8">
             <?php echo $this->text('No results'); ?>
-            <a href="#" class="clear-filter"><?php echo $this->text('Reset'); ?></a>
+            <a href="<?php echo $this->url($_path); ?>" class="clear-filter"><?php echo $this->text('Reset'); ?></a>
           </td>
         </tr>
         <?php } ?>
@@ -95,7 +95,7 @@
           <td colspan="8">
             <div class="row">
               <div class="col-md-12">
-                <table class="table table-condensed">
+                <table class="table table-condensed table-bordered">
                   <?php foreach ($address['translated'] as $label => $value) { ?>
                   <tr>
                     <td><?php echo $this->e($label); ?></td>
@@ -110,11 +110,11 @@
         <?php } ?>
       </tbody>
     </table>
-    <?php if(!empty($_pager)) { ?>
-    <?php echo $_pager; ?>
-    <?php } ?>
   </div>
-</div>
+  <?php if (!empty($_pager)) { ?>
+  <?php echo $_pager; ?>
+  <?php } ?>
+</form>
 <?php } else { ?>
 <div class="row">
   <div class="col-md-12">

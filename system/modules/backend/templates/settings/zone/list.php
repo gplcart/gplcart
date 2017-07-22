@@ -6,16 +6,17 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
-<?php if (!empty($zones)) { ?>
-<div class="panel panel-default">
-  <div class="panel-heading clearfix">
-    <div class="btn-group pull-left">
+<?php if (!empty($zones) || $_filtering) { ?>
+<form data-filter-empty="true">
+  <?php if ($this->access('zone_edit') || $this->access('zone_delete') || $this->access('zone_add')) { ?>
+  <div class="btn-toolbar actions">
+    <?php $access_actions = false; ?>
+    <?php if ($this->access('zone_edit') || $this->access('zone_delete')) { ?>
+    <?php $access_actions = true; ?>
+    <div class="btn-group">
       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-         <span class="caret"></span>
+        <?php echo $this->text('With selected'); ?> <span class="caret"></span>
       </button>
-      <?php $access_actions = false; ?>
-      <?php if ($this->access('zone_edit') || $this->access('zone_delete')) { ?>
-      <?php $access_actions = true; ?>
       <ul class="dropdown-menu">
         <?php if ($this->access('zone_edit')) { ?>
         <li>
@@ -37,28 +38,61 @@
         </li>
         <?php } ?>
       </ul>
-      <?php } ?>
-    </div>
-    <?php if ($this->access('zone_add')) { ?>
-    <div class="btn-group pull-right">
-      <a class="btn btn-default" href="<?php echo $this->url('admin/settings/zone/add'); ?>">
-        <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
-      </a>
     </div>
     <?php } ?>
+    <?php if ($this->access('zone_add')) { ?>
+    <a class="btn btn-default" href="<?php echo $this->url('admin/settings/zone/add'); ?>">
+      <?php echo $this->text('Add'); ?>
+    </a>
+    <?php } ?>
   </div>
-  <div class="panel-body table-responsive">
-    <table class="table table-condensed zones">
+  <?php } ?>
+  <div class="table-responsive">
+    <table class="table zones">
       <thead>
         <tr>
           <th><input type="checkbox" id="select-all" value="1"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
           <th><?php echo $this->text('ID'); ?></th>
           <th><a href="<?php echo $sort_title; ?>"><?php echo $this->text('Title'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_status; ?>"><?php echo $this->text('Enabled'); ?> <i class="fa fa-sort"></i></a></th>
-          <th><?php echo $this->text('Actions'); ?></th>
+          <th></th>
+        </tr>
+        <tr class="filters active">
+          <th></th>
+          <th></th>
+          <th>
+            <input class="form-control" name="title" value="<?php echo $filter_title; ?>" placeholder="<?php echo $this->text('Any'); ?>">
+          </th>
+          <th>
+            <select class="form-control" name="status">
+              <option value=""><?php echo $this->text('Any'); ?></option>
+              <option value="1"<?php echo $filter_status === '1' ? ' selected' : ''; ?>>
+              <?php echo $this->text('Enabled'); ?>
+              </option>
+              <option value="0"<?php echo $filter_status === '0' ? ' selected' : ''; ?>>
+              <?php echo $this->text('Disabled'); ?>
+              </option>
+            </select>
+          </th>
+          <th>
+            <a href="<?php echo $this->url($_path); ?>" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
+              <i class="fa fa-refresh"></i>
+            </a>
+            <button class="btn btn-default filter" title="<?php echo $this->text('Filter'); ?>">
+              <i class="fa fa-search"></i>
+            </button>
+          </th>
         </tr>
       </thead>
       <tbody>
+        <?php if ($_filtering && empty($zones)) { ?>
+        <tr>
+          <td colspan="5">
+            <?php echo $this->text('No results'); ?>
+            <a href="<?php echo $this->url($_path); ?>" class="clear-filter"><?php echo $this->text('Reset'); ?></a>
+          </td>
+        </tr>
+        <?php } ?>
         <?php foreach ($zones as $zone) { ?>
         <tr>
           <td class="middle">
@@ -88,11 +122,11 @@
         <?php } ?>
       </tbody>
     </table>
-    <?php if(!empty($_pager)) { ?>
-    <?php echo $_pager; ?>
-    <?php } ?>
   </div>
-</div>
+  <?php if (!empty($_pager)) { ?>
+  <?php echo $_pager; ?>
+  <?php } ?>
+</form>
 <?php } else { ?>
 <div class="row">
   <div class="col-md-12">

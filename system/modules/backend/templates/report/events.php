@@ -7,16 +7,14 @@
  */
 ?>
 <?php if (!empty($records) || $_filtering) { ?>
-<div class="panel panel-default">
-  <div class="panel-heading clearfix">
-    <div class="btn-toolbar pull-right">
-      <a class="btn btn-default" href="<?php echo $this->url('', array('clear' => true, 'token' => $_token)); ?>">
-        <?php echo $this->text('Clear'); ?>
-      </a>
-    </div>
+<form data-filter-empty="true">
+  <div class="btn-toolbar actions">
+    <a class="btn btn-default" href="<?php echo $this->url('', array('clear' => true, 'token' => $_token)); ?>">
+      <?php echo $this->text('Clear'); ?>
+    </a>
   </div>
-  <div class="panel-body table-responsive">
-    <table class="table table-condensed report-events">
+  <div class="table-responsive">
+    <table class="table report-events">
       <thead>
         <tr>
           <th><a href="<?php echo $sort_text; ?>"><?php echo $this->text('Message'); ?> <i class="fa fa-sort"></i></a></th>
@@ -31,7 +29,7 @@
           </th>
           <th>
             <select name="type" class="form-control">
-              <option value="any"><?php echo $this->text('Any'); ?></option>
+              <option value=""><?php echo $this->text('Any'); ?></option>
               <?php foreach ($types as $type) { ?>
               <option value="<?php echo $type; ?>"<?php echo $type == $filter_type ? ' selected' : ''; ?>>
               <?php echo $type; ?>
@@ -41,7 +39,7 @@
           </th>
           <th>
             <select name="severity" class="form-control">
-              <option value="any"><?php echo $this->text('Any'); ?></option>
+              <option value=""><?php echo $this->text('Any'); ?></option>
               <?php foreach ($severities as $severity => $severity_name) { ?>
               <option value="<?php echo $severity; ?>"<?php echo $severity == $filter_severity ? ' selected' : ''; ?>>
               <?php echo $severity_name; ?>
@@ -51,10 +49,10 @@
           </th>
           <th></th>
           <th>
-            <button type="button" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
+            <a href="<?php echo $this->url($_path); ?>" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
               <i class="fa fa-refresh"></i>
-            </button>
-            <button type="button" class="btn btn-default filter" title="<?php echo $this->text('Filter'); ?>">
+            </a>
+            <button class="btn btn-default filter" title="<?php echo $this->text('Filter'); ?>">
               <i class="fa fa-search"></i>
             </button>
           </th>
@@ -65,7 +63,7 @@
         <tr>
           <td class="middle" colspan="5">
             <?php echo $this->text('No results'); ?>
-            <a href="#" class="clear-filter"><?php echo $this->text('Reset'); ?></a>
+            <a href="<?php echo $this->url($_path); ?>" class="clear-filter"><?php echo $this->text('Reset'); ?></a>
           </td>
         </tr>
         <?php } ?>
@@ -104,11 +102,11 @@
         <?php } ?>
       </tbody>
     </table>
-    <?php if(!empty($_pager)) { ?>
-    <?php echo $_pager; ?>
-    <?php } ?>
   </div>
-</div>
+  <?php if (!empty($_pager)) { ?>
+  <?php echo $_pager; ?>
+  <?php } ?>
+</form>
 <?php } else { ?>
 <div class="row">
   <div class="col-md-12">

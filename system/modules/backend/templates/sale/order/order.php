@@ -22,7 +22,7 @@
       <div class="panel panel-default hidden-print">
         <div class="panel-body">
           <?php if ($this->access('order_delete')) { ?>
-          <button class="btn btn-danger" name="delete" value="1" onclick="return confirm(GplCart.text('Delete? It cannot be undone!'));"><?php echo $this->text('Delete'); ?></button>
+          <button class="btn btn-danger" name="delete" value="1" onclick="return confirm(GplCart.text('Are you sure? It cannot be undone!'));"><?php echo $this->text('Delete'); ?></button>
           <?php } ?>
           <div class="btn-toolbar pull-right">
             <a href="#" class="btn btn-default" onclick="window.print(); return false;">

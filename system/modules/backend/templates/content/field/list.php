@@ -7,34 +7,34 @@
  */
 ?>
 <?php if (!empty($fields) || $_filtering) { ?>
-<div class="panel panel-default">
-  <div class="panel-heading clearfix">
-  <div class="btn-group pull-left">
-    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-       <span class="caret"></span>
-    </button>
+<form data-filter-empty="true">
+  <?php if ($this->access('field_delete') || $this->access('field_add')) { ?>
+  <div class="btn-toolbar actions">
     <?php $access_options = false; ?>
     <?php if ($this->access('field_delete')) { ?>
     <?php $access_options = true; ?>
-    <ul class="dropdown-menu">
-      <li>
-        <a data-action="delete" data-action-confirm="<?php echo $this->text('Are you sure? It cannot be undone!'); ?>" href="#">
-          <?php echo $this->text('Delete'); ?>
-        </a>
-      </li>
-    </ul>
+    <div class="btn-group">
+      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+        <?php echo $this->text('With selected'); ?> <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu">
+        <li>
+          <a data-action="delete" data-action-confirm="<?php echo $this->text('Are you sure? It cannot be undone!'); ?>" href="#">
+            <?php echo $this->text('Delete'); ?>
+          </a>
+        </li>
+      </ul>
+    </div>
+    <?php } ?>
+    <?php if ($this->access('field_add')) { ?>
+    <a class="btn btn-default add" href="<?php echo $this->url('admin/content/field/add'); ?>">
+      <?php echo $this->text('Add'); ?>
+    </a>
     <?php } ?>
   </div>
-  <?php if ($this->access('field_add')) { ?>
-  <div class="btn-toolbar pull-right">
-    <a class="btn btn-default add" href="<?php echo $this->url('admin/content/field/add'); ?>">
-      <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
-    </a>
-  </div>
   <?php } ?>
-  </div>
-  <div class="panel-body table-responsive">
-    <table class="table table-condensed fields">
+  <div class="table-responsive">
+    <table class="table fields">
       <thead>
         <tr>
           <th class="middle"><input type="checkbox" id="select-all" value="1"<?php echo $access_options ? '' : ' disabled'; ?>></th>
@@ -52,30 +52,30 @@
           </th>
           <th class="middle">
             <select class="form-control" name="type">
-              <option value="any"><?php echo $this->text('Any'); ?></option>
+              <option value=""><?php echo $this->text('Any'); ?></option>
               <option value="option"<?php echo $filter_type === 'option' ? ' selected' : ''; ?>>
-              <?php echo $this->text('Option'); ?>
+                <?php echo $this->text('Option'); ?>
               </option>
               <option value="attribute"<?php echo $filter_type === 'attribute' ? ' selected' : ''; ?>>
-              <?php echo $this->text('Attribute'); ?>
+                <?php echo $this->text('Attribute'); ?>
               </option>
             </select>
           </th>
           <th class="middle">
             <select class="form-control" name="widget">
-              <option value="any"><?php echo $this->text('Any'); ?></option>
+              <option value=""><?php echo $this->text('Any'); ?></option>
               <?php foreach ($widget_types as $type => $name) { ?>
               <option value="<?php echo $type; ?>"<?php echo $filter_widget == $type ? ' selected' : ''; ?>>
-              <?php echo $this->e($name); ?>
+                <?php echo $this->e($name); ?>
               </option>
               <?php } ?>
             </select>
           </th>
           <th class="middle">
-            <button type="button" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
+            <a href="<?php echo $this->url($_path); ?>" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
               <i class="fa fa-refresh"></i>
-            </button>
-            <button type="button" class="btn btn-default filter" title="<?php echo $this->text('Filter'); ?>">
+            </a>
+            <button class="btn btn-default filter" title="<?php echo $this->text('Filter'); ?>">
               <i class="fa fa-search"></i>
             </button>
           </th>
@@ -83,7 +83,12 @@
       </thead>
       <tbody>
         <?php if ($_filtering && empty($fields)) { ?>
-        <tr><td class="middle" colspan="6"><?php echo $this->text('No results'); ?></td></tr>
+        <tr>
+          <td class="middle" colspan="6">
+            <?php echo $this->text('No results'); ?>
+            <a href="<?php echo $this->url($_path); ?>" class="clear-filter"><?php echo $this->text('Reset'); ?></a>
+          </td>
+        </tr>
         <?php } ?>
         <?php foreach ($fields as $field) { ?>
         <tr>
@@ -123,11 +128,11 @@
         <?php } ?>
       </tbody>
     </table>
-    <?php if(!empty($_pager)) { ?>
-    <?php echo $_pager; ?>
-    <?php } ?>
   </div>
-</div>
+  <?php if (!empty($_pager)) { ?>
+  <?php echo $_pager; ?>
+  <?php } ?>
+</form>
 <?php } else { ?>
 <div class="row">
   <div class="col-md-12">

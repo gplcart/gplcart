@@ -8,45 +8,39 @@
 ?>
 <form method="post" class="form-horizontal">
   <input type="hidden" name="token" value="<?php echo $_token; ?>">
-  <div class="panel panel-default">
-    <div class="panel-heading clearfix">
-      <div class="btn-toolbar pull-right">
-        <?php if(isset($dashboard['dashboard_id'])) { ?>
-        <button class="btn btn-default delete" name="delete" value="1">
-          <i class="fa fa-refresh"></i> <?php echo $this->text('Reset'); ?>
-        </button>
-        <?php } ?>
-        <button class="btn btn-default save" name="save" value="1">
-          <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
-        </button>
-      </div>
-    </div>
-    <div class="panel-body">
-      <table class="table table-condensed" data-sortable-input-weight="true">
-        <thead>
-          <tr>
-            <th><?php echo $this->text('Panel'); ?></th>
-            <th><?php echo $this->text('Enabled'); ?></th>
-            <th><?php echo $this->text('Weight'); ?></th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php foreach ($dashboard['data'] as $id => $handler) { ?>
-          <tr>
-            <td class="middle"><?php echo $this->e($handler['title']); ?></td>
-            <td class="middle">
-              <input type="checkbox" name="dashboard[<?php echo $id; ?>][status]" value="1"<?php echo empty($handler['status']) ? '' : ' checked'; ?>>
-            </td>
-            <td class="middle">
-              <input type="hidden" name="dashboard[<?php echo $id; ?>][weight]" value="<?php echo $this->e($handler['weight']); ?>">
-              <i class="fa fa-arrows handle"></i> <span class="weight"><?php echo $this->e($handler['weight']); ?></span>
-            </td>
-          </tr>
-          <?php } ?>
-        </tbody>
-      </table>
-    </div>
+  <div class="btn-toolbar actions">
+    <?php if (isset($dashboard['dashboard_id'])) { ?>
+    <button class="btn btn-default delete" name="delete" value="1">
+      <i class="fa fa-refresh"></i> <?php echo $this->text('Reset'); ?>
+    </button>
+    <?php } ?>
+    <button class="btn btn-default save" name="save" value="1">
+      <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
+    </button>
   </div>
+  <table class="table table-condensed" data-sortable-input-weight="true">
+    <thead>
+      <tr>
+        <th><?php echo $this->text('Panel'); ?></th>
+        <th><?php echo $this->text('Enabled'); ?></th>
+        <th><?php echo $this->text('Weight'); ?></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php foreach ($dashboard['data'] as $id => $handler) { ?>
+      <tr>
+        <td class="middle"><?php echo $this->e($handler['title']); ?></td>
+        <td class="middle">
+          <input type="checkbox" name="dashboard[<?php echo $id; ?>][status]" value="1"<?php echo empty($handler['status']) ? '' : ' checked'; ?>>
+        </td>
+        <td class="middle">
+          <input type="hidden" name="dashboard[<?php echo $id; ?>][weight]" value="<?php echo $this->e($handler['weight']); ?>">
+          <i class="fa fa-arrows handle"></i> <span class="weight"><?php echo $this->e($handler['weight']); ?></span>
+        </td>
+      </tr>
+      <?php } ?>
+    </tbody>
+  </table>
 </form>
 

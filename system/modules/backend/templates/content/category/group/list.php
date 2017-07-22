@@ -7,18 +7,16 @@
  */
 ?>
 <?php if (!empty($groups) || $_filtering) { ?>
-<div class="panel panel-default">
-  <div class="panel-heading clearfix">
-    <?php if ($this->access('category_group_add')) { ?>
-    <div class="btn-toolbar pull-right">
-      <a class="btn btn-default" href="<?php echo $this->url('admin/content/category-group/add'); ?>">
-        <i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?>
-      </a>
-    </div>
-    <?php } ?>
+<form data-filter-empty="true">
+  <?php if ($this->access('category_group_add')) { ?>
+  <div class="btn-toolbar actions">
+    <a class="btn btn-default" href="<?php echo $this->url('admin/content/category-group/add'); ?>">
+      <?php echo $this->text('Add'); ?>
+    </a>
   </div>
-  <div class="panel-body table-responsive">
-    <table class="table table-condensed category-group">
+  <?php } ?>
+  <div class="table-responsive">
+    <table class="table category-group">
       <thead>
         <tr>
           <th><a href="<?php echo $sort_category_group_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a></th>
@@ -34,7 +32,7 @@
           </th>
           <th>
             <select class="form-control" name="store_id">
-              <option value=""<?php echo $filter_store_id ? '' : ' selected'; ?>><?php echo $this->text('Any'); ?></option>
+              <option value=""><?php echo $this->text('Any'); ?></option>
               <?php foreach ($_stores as $store_id => $store) { ?>
               <option value="<?php echo $store_id; ?>"<?php echo $filter_store_id == $store_id ? ' selected' : ''; ?>><?php echo $this->e($store['name']); ?></option>
               <?php } ?>
@@ -42,16 +40,16 @@
           </th>
           <th>
             <select class="form-control" name="type">
-              <option value=""<?php echo $filter_type ? '' : ' selected'; ?>><?php echo $this->text('Any'); ?></option>
+              <option value=""><?php echo $this->text('Any'); ?></option>
               <option value="catalog"<?php echo $filter_type === 'catalog' ? ' selected' : ''; ?>><?php echo $this->text('Catalog'); ?></option>
               <option value="brand"<?php echo $filter_type === 'brand' ? ' selected' : ''; ?>><?php echo $this->text('Brand'); ?></option>
             </select>
           </th>
           <th>
-            <button type="button" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
+            <a href="<?php echo $this->url($_path); ?>" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
               <i class="fa fa-refresh"></i>
-            </button>
-            <button type="button" class="btn btn-default filter" title="<?php echo $this->text('Filter'); ?>">
+            </a>
+            <button class="btn btn-default filter" title="<?php echo $this->text('Filter'); ?>">
               <i class="fa fa-search"></i>
             </button>
           </th>
@@ -62,7 +60,7 @@
         <tr>
           <td colspan="5">
             <?php echo $this->text('No results'); ?>
-            <a class="clear-filter" href="#"><?php echo $this->text('Reset'); ?></a>
+            <a href="<?php echo $this->url($_path); ?>" class="clear-filter"><?php echo $this->text('Reset'); ?></a>
           </td>
         </tr>
         <?php } else { ?>
@@ -98,9 +96,11 @@
         <?php } ?>
       </tbody>
     </table>
-    <?php echo $_pager; ?>
   </div>
-</div>
+  <?php if (!empty($_pager)) { ?>
+  <?php echo $_pager; ?>
+  <?php } ?>
+</form>
 <?php } else { ?>
 <div class="row">
   <div class="col-md-12">
