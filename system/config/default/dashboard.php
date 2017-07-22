@@ -7,15 +7,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 return array(
-    'summary' => array(
-        'title' => 'Summary',
-        'status' => true,
-        'weight' => 0,
-        'template' => 'dashboard/panels/summary',
-        'handlers' => array(
-            'data' => array('gplcart\core\handlers\dashboard\Dashboard', 'summary'),
-        )
-    ),
+    
     'order' => array(
         'title' => 'Recent orders',
         'status' => true,
@@ -25,10 +17,19 @@ return array(
             'data' => array('gplcart\core\handlers\dashboard\Dashboard', 'order'),
         )
     ),
+    'cart' => array(
+        'title' => 'Recent cart items',
+        'status' => true,
+        'weight' => 1,
+        'template' => 'dashboard/panels/cart',
+        'handlers' => array(
+            'data' => array('gplcart\core\handlers\dashboard\Dashboard', 'cart'),
+        )
+    ),
     'transaction' => array(
         'title' => 'Recent transactions',
         'status' => true,
-        'weight' => 0,
+        'weight' => 2,
         'template' => 'dashboard/panels/transactions',
         'handlers' => array(
             'data' => array('gplcart\core\handlers\dashboard\Dashboard', 'transaction'),
@@ -37,46 +38,46 @@ return array(
     'pricerule' => array(
         'title' => 'Active price rules',
         'status' => true,
-        'weight' => 0,
+        'weight' => 3,
         'template' => 'dashboard/panels/pricerules',
         'handlers' => array(
             'data' => array('gplcart\core\handlers\dashboard\Dashboard', 'pricerule'),
         )
     ),
-    'cart' => array(
-        'title' => 'Recent cart items',
+    'summary' => array(
+        'title' => 'Summary',
         'status' => true,
-        'weight' => 0,
-        'template' => 'dashboard/panels/cart',
+        'weight' => 4,
+        'template' => 'dashboard/panels/summary',
         'handlers' => array(
-            'data' => array('gplcart\core\handlers\dashboard\Dashboard', 'cart'),
+            'data' => array('gplcart\core\handlers\dashboard\Dashboard', 'summary'),
         )
     ),
     'review' => array(
         'title' => 'Recent reviews',
         'status' => true,
-        'weight' => 0,
+        'weight' => 5,
         'template' => 'dashboard/panels/reviews',
         'handlers' => array(
             'data' => array('gplcart\core\handlers\dashboard\Dashboard', 'review'),
         )
     ),
-    'event' => array(
-        'title' => 'Recent events',
-        'status' => true,
-        'weight' => 0,
-        'template' => 'dashboard/panels/events',
-        'handlers' => array(
-            'data' => array('gplcart\core\handlers\dashboard\Dashboard', 'event'),
-        )
-    ),
     'user' => array(
         'title' => 'Recent users',
         'status' => true,
-        'weight' => 0,
+        'weight' => 6,
         'template' => 'dashboard/panels/users',
         'handlers' => array(
             'data' => array('gplcart\core\handlers\dashboard\Dashboard', 'user'),
+        )
+    ),
+    'event' => array(
+        'title' => 'Recent events',
+        'status' => true,
+        'weight' => 7,
+        'template' => 'dashboard/panels/events',
+        'handlers' => array(
+            'data' => array('gplcart\core\handlers\dashboard\Dashboard', 'event'),
         )
     )
 );
