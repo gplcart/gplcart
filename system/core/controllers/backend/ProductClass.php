@@ -168,10 +168,22 @@ class ProductClass extends BackendController
         $this->setTitleEditProductClass();
         $this->setBreadcrumbEditProductClass();
 
+        $this->setData('can_delete', $this->canDelete());
         $this->setData('product_class', $this->data_product_class);
 
         $this->submitEditProductClass();
         $this->outputEditProductClass();
+    }
+
+    /**
+     * Whether a product class can be deleted
+     * @return bool
+     */
+    protected function canDelete()
+    {
+        return isset($this->data_product_class['product_class_id'])//
+                && $this->access('product_class_delete')//
+                && $this->product_class->canDelete($this->data_product_class['product_class_id']);
     }
 
     /**
@@ -193,7 +205,7 @@ class ProductClass extends BackendController
      */
     protected function submitEditProductClass()
     {
-        if ($this->isPosted('delete')) {
+        if ($this->isPosted('delete') && $this->canDelete()) {
             $this->deleteProductClass();
             return null;
         }
@@ -238,7 +250,7 @@ class ProductClass extends BackendController
             $this->redirect('admin/content/product-class', $message, 'success');
         }
 
-        $message = $this->text('Unable to delete this product class');
+        $message = $this->text('Unable to delete');
         $this->redirect('', $message, 'danger');
     }
 
@@ -317,8 +329,10 @@ class ProductClass extends BackendController
 
         $this->setTitleFieldsProductClass();
         $this->setBreadcrumbFieldsProductClass();
+        $this->setFilterFieldsProductClass();
 
-        $this->setData('fields', $this->getFieldsProductClass($product_class_id));
+        $this->setData('field_types', $this->field->getTypes());
+        $this->setData('fields', $this->getFieldsProductClass());
         $this->setData('product_class', $this->data_product_class);
 
         $this->submitFieldsProductClass();
@@ -326,30 +340,48 @@ class ProductClass extends BackendController
     }
 
     /**
+     * Sets filter on the product class fields overview page
+     */
+    protected function setFilterFieldsProductClass()
+    {
+        $allowed = array('title', 'required', 'multiple', 'type', 'weight');
+        $this->setFilter($allowed);
+    }
+
+    /**
      * Returns an array of fields for the given product class
-     * @param integer $product_class_id
      * @param boolean $unique
      * @return array
      */
-    protected function getFieldsProductClass($product_class_id, $unique = false)
+    protected function getFieldsProductClass($unique = false)
     {
-        $class_fields = $this->product_class->getFields($product_class_id);
+        $options = array('product_class_id' => $this->data_product_class['product_class_id']) + $this->query_filter;
 
-        if (!$unique) {
-            return $class_fields;
+        $fields = $this->product_class->getFields($options);
+
+        if ($unique) {
+            return $this->prepareFieldsProductClass($fields);
         }
 
-        $unique_fields = array();
-        $fields = (array) $this->field->getList();
+        return $fields;
+    }
 
-        foreach ($fields as $field) {
-            if (empty($class_fields[$field['field_id']])) {
-                $type = ($field['type'] === 'option') ? $this->text('Option') : $this->text('Attribute');
-                $unique_fields[$field['field_id']] = "{$field['title']} ($type)";
+    /**
+     * Prepares an array of product class fields
+     * @param array $fields
+     * @return array
+     */
+    protected function prepareFieldsProductClass(array $fields)
+    {
+        $unique = array();
+        foreach ((array) $this->field->getList() as $field) {
+            if (empty($fields[$field['field_id']])) {
+                $type = $field['type'] === 'option' ? $this->text('Option') : $this->text('Attribute');
+                $unique[$field['field_id']] = "{$field['title']} ($type)";
             }
         }
 
-        return $unique_fields;
+        return $unique;
     }
 
     /**
@@ -363,7 +395,7 @@ class ProductClass extends BackendController
     }
 
     /**
-     * Updates fields
+     * Updates product class fields
      */
     protected function updateFieldsProductClass()
     {
@@ -434,10 +466,8 @@ class ProductClass extends BackendController
         $this->setTitleEditFieldProductClass();
         $this->setBreadcrumbEditFieldProductClass();
 
-        $fields = $this->getFieldsProductClass($product_class_id, true);
-
-        $this->setData('fields', $fields);
         $this->setData('product_class', $this->data_product_class);
+        $this->setData('fields', $this->getFieldsProductClass(true));
 
         $this->submitEditFieldProductClass();
         $this->outputEditFieldProductClass();
@@ -448,9 +478,22 @@ class ProductClass extends BackendController
      */
     protected function submitEditFieldProductClass()
     {
-        if ($this->isPosted('save')) {
+        if ($this->isPosted('save') && $this->validateEditFieldProductClass()) {
             $this->addFieldProductClass();
         }
+    }
+
+    /**
+     * Validates an array of submitted fields
+     * @return bool
+     */
+    protected function validateEditFieldProductClass()
+    {
+        $this->setSubmitted('field');
+
+        $this->validateElement('values', 'required');
+
+        return !$this->hasErrors(false);
     }
 
     /**
@@ -460,16 +503,10 @@ class ProductClass extends BackendController
     {
         $this->controlAccess('product_class_edit');
 
-        $fields = $this->setSubmitted('fields');
         $id = $this->data_product_class['product_class_id'];
 
-        foreach (array_values($fields) as $field_id) {
-
-            $field = array(
-                'field_id' => $field_id,
-                'product_class_id' => $id
-            );
-
+        foreach (array_values($this->getSubmitted('values')) as $field_id) {
+            $field = array('field_id' => $field_id, 'product_class_id' => $id);
             $this->product_class->addField($field);
         }
 
@@ -515,7 +552,7 @@ class ProductClass extends BackendController
      */
     protected function outputEditFieldProductClass()
     {
-        $this->output('content/product/class/field');
+        $this->output('content/product/class/edit_field');
     }
 
 }

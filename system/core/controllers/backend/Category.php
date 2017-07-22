@@ -317,6 +317,7 @@ class Category extends BackendController
         $this->setSubmitted('form', true);
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $this->data_category);
+        $this->setSubmitted('category_group_id', $this->data_category_group['category_group_id']);
 
         if (empty($this->data_category['category_id'])) {
             $this->setSubmitted('user_id', $this->uid);
@@ -342,7 +343,7 @@ class Category extends BackendController
             $this->redirect($url, $message, 'success');
         }
 
-        $message = $this->text('Unable to delete this category');
+        $message = $this->text('Unable to delete');
         $this->redirect('', $message, 'danger');
     }
 

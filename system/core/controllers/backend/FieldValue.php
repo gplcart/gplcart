@@ -329,7 +329,7 @@ class FieldValue extends BackendController
             $this->redirect($url, $message, 'success');
         }
 
-        $message = $this->text('Unable to delete this field value');
+        $message = $this->text('Unable to delete');
         $this->redirect('', $message, 'warning');
     }
 

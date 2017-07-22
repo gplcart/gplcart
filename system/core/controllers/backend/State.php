@@ -305,7 +305,7 @@ class State extends BackendController
             $this->redirect($url, $message, 'success');
         }
 
-        $message = $this->text('Unable to delete this country state');
+        $message = $this->text('Unable to delete');
         $this->redirect($url, $message, 'danger');
     }
 

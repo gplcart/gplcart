@@ -405,7 +405,7 @@ class Product extends BackendController
             $this->redirect('admin/content/product', $message, 'success');
         }
 
-        $message = $this->text('Unable to delete this product');
+        $message = $this->text('Unable to delete');
         $this->redirect('admin/content/product', $message, 'danger');
     }
 

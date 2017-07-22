@@ -499,7 +499,7 @@ class Account extends FrontendController
             $this->redirect('', $message, 'success');
         }
 
-        $message = $this->text('Unable to delete this address');
+        $message = $this->text('Unable to delete');
         $this->redirect('', $message, 'warning');
     }
 

@@ -241,7 +241,7 @@ class Zone extends BackendController
             $this->redirect('admin/settings/zone', $message, 'success');
         }
 
-        $message = $this->text('Unable to delete this zone');
+        $message = $this->text('Unable to delete');
         $this->redirect('', $message, 'danger');
     }
 

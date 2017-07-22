@@ -287,7 +287,7 @@ class Review extends FrontendController
     protected function deleteReview()
     {
         if (!$this->canDeleteReview()) {
-            $message = $this->text('Unable to delete this review');
+            $message = $this->text('Unable to delete');
             $this->redirect("product/{$this->data_product['product_id']}", $message, 'warning');
         }
 

@@ -106,7 +106,7 @@ class Language extends BackendController
             $this->redirect('admin/settings/language', $message, 'success');
         }
 
-        $message = $this->text('Unable to delete this language');
+        $message = $this->text('Unable to delete');
         $this->redirect('', $message, 'danger');
     }
 

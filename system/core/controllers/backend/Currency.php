@@ -174,7 +174,7 @@ class Currency extends BackendController
             $this->redirect('admin/settings/currency', $message, 'success');
         }
 
-        $message = $this->text('Unable to delete this currency');
+        $message = $this->text('Unable to delete');
         $this->redirect('', $message, 'danger');
     }
 

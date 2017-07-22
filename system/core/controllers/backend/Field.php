@@ -236,7 +236,7 @@ class Field extends BackendController
             $this->redirect('admin/content/field', $message, 'success');
         }
 
-        $message = $this->text('Unable to delete this field');
+        $message = $this->text('Unable to delete');
         $this->redirect('', $message, 'danger');
     }
 

@@ -356,7 +356,7 @@ class City extends BackendController
             $this->redirect($url, $message, 'success');
         }
 
-        $message = $this->text('Unable to delete this city');
+        $message = $this->text('Unable to delete');
         $this->redirect('', $message, 'warning');
     }
 

@@ -159,7 +159,7 @@ class Wishlist extends Model
         $result = array(
             'redirect' => '',
             'severity' => 'warning',
-            'message' => $this->language->text('Unable to delete this product')
+            'message' => $this->language->text('Unable to delete')
         );
 
         if (empty($data)) {

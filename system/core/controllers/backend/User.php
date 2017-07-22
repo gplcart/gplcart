@@ -294,7 +294,7 @@ class User extends BackendController
             $this->redirect('admin/user/list', $message, 'success');
         }
 
-        $message = $this->text('Unable to delete this user');
+        $message = $this->text('Unable to delete');
         $this->redirect('admin/user/list', $message, 'danger');
     }
 

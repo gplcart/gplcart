@@ -145,7 +145,7 @@ class UserRole extends BackendController
             $this->redirect('admin/user/role', $message, 'success');
         }
 
-        $message = $this->text('Unable to delete this role');
+        $message = $this->text('Unable to delete');
         $this->redirect('', $message, 'danger');
     }
 

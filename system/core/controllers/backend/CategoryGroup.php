@@ -186,7 +186,7 @@ class CategoryGroup extends BackendController
 
         $this->validateComponent('category_group');
 
-        return !$this->hasErrors();
+        return !$this->hasErrors(false);
     }
 
     /**
@@ -203,7 +203,7 @@ class CategoryGroup extends BackendController
             $this->redirect('admin/content/category-group', $message, 'success');
         }
 
-        $message = $this->text('Unable to delete this category group');
+        $message = $this->text('Unable to delete');
         $this->redirect('', $message, 'danger');
     }
 

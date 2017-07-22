@@ -279,7 +279,7 @@ class Country extends BackendController
             $this->redirect('admin/settings/country', $message, 'success');
         }
 
-        $message = $this->text('Unable to delete this country');
+        $message = $this->text('UUnable to delete');
         $this->redirect('', $message, 'danger');
     }
 

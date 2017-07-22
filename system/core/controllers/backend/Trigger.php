@@ -268,7 +268,7 @@ class Trigger extends BackendController
         $deleted = $this->trigger->delete($this->data_trigger['trigger_id']);
 
         if (empty($deleted)) {
-            $message = $this->text('Unable to delete this trigger');
+            $message = $this->text('Unable to delete');
             $this->redirect('', $message, 'warning');
         }
 

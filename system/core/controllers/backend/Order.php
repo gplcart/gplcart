@@ -152,6 +152,7 @@ class Order extends BackendController
     protected function validateIndexOrder()
     {
         $this->setSubmitted('order');
+
         return !$this->isError();
     }
 
@@ -167,7 +168,7 @@ class Order extends BackendController
             $this->redirect('admin/sale/order', $message, 'success');
         }
 
-        $this->redirect('', $this->text('Unable to delete this order'), 'warning');
+        $this->redirect('', $this->text('Unable to delete'), 'warning');
     }
 
     /**
@@ -484,7 +485,7 @@ class Order extends BackendController
     protected function setFilterListOrder()
     {
         $allowed = array('store_id', 'order_id', 'status', 'created',
-            'creator', 'user_id', 'total', 'currency');
+            'creator', 'user_id', 'total', 'currency', 'customer');
         $this->setFilter($allowed);
     }
 
