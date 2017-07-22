@@ -415,7 +415,7 @@ abstract class Controller
     {
         if (!$this->isInstalling()) {
             $this->cart_uid = $this->cart->getUid();
-            $this->uid = (int) $this->user->getId();
+            $this->uid = $this->user->getId();
             if (!empty($this->uid)) {
                 $this->current_user = $this->user->get($this->uid);
             }
@@ -460,6 +460,7 @@ abstract class Controller
         if (property_exists($this, $name)) {
             return $this->$name;
         }
+
         throw new \InvalidArgumentException("Property $name does not exist");
     }
 
@@ -499,6 +500,7 @@ abstract class Controller
         if ($langcode === $this->language->getDefault()) {
             $langcode = '';
         }
+
         return $this->url->language($langcode, $path, $query);
     }
 
@@ -557,6 +559,7 @@ abstract class Controller
         if (isset($item)) {
             return gplcart_array_get($this->current_store, $item);
         }
+
         return $this->current_store;
     }
 
@@ -570,6 +573,7 @@ abstract class Controller
         if (isset($item)) {
             return gplcart_array_get($this->current_user, $item);
         }
+
         return $this->current_user;
     }
 
@@ -581,6 +585,7 @@ abstract class Controller
     {
         $stylesheets = $this->asset->getCss();
         $this->compressAssets($stylesheets, 'css');
+
         return $stylesheets;
     }
 
@@ -593,6 +598,7 @@ abstract class Controller
     {
         $scripts = $this->asset->getJs($position);
         $this->compressAssets($scripts, 'js');
+
         return $scripts;
     }
 
@@ -720,6 +726,7 @@ abstract class Controller
             $data = implode(' ', (array) $data);
             $data = $attribute . '="' . htmlspecialchars($data, ENT_QUOTES, 'UTF-8') . '"';
         }
+
         return empty($attributes) ? '' : ' ' . implode(' ', $attributes);
     }
 
@@ -740,6 +747,7 @@ abstract class Controller
         if ($summary !== '' && $xss) {
             $summary = $this->filter($summary, $filter);
         }
+
         return $summary;
     }
 
@@ -754,6 +762,7 @@ abstract class Controller
         if (isset($pattern)) {
             return preg_match("~$pattern~i", $this->path) === 1;
         }
+
         return $this->path;
     }
 
@@ -893,6 +902,7 @@ abstract class Controller
     public function isQuery($key = null)
     {
         $value = $this->request->get($key);
+
         return !empty($value);
     }
 
@@ -916,6 +926,7 @@ abstract class Controller
     public function isSubmitted($key)
     {
         $result = $this->getSubmitted($key);
+
         return isset($result);
     }
 
@@ -998,25 +1009,32 @@ abstract class Controller
      * Sets a template variable
      * @param string|array $key
      * @param mixed $value
+     * @return array
      */
     public function setData($key, $value)
     {
         gplcart_array_set($this->data, $key, $value);
+
+        return $this->data;
     }
 
     /**
      * Removes a value by a key from an array of template data
      * @param string|array $key
+     * @return array
      */
     public function unsetData($key)
     {
         gplcart_array_unset($this->data, $key);
+
+        return $this->data;
     }
 
     /**
      * Sets an error
      * @param null|string|array $key
      * @param mixed $value
+     * @return array
      */
     public function setError($key, $value)
     {
@@ -1025,15 +1043,20 @@ abstract class Controller
         } else {
             $this->errors = (array) $value;
         }
+
+        return $this->errors;
     }
 
     /**
      * Removes an error by a key from an array of errors
      * @param string|array $key
+     * @return array
      */
     public function unsetError($key)
     {
         gplcart_array_unset($this->errors, $key);
+
+        return $this->errors;
     }
 
     /**
@@ -1068,41 +1091,53 @@ abstract class Controller
     /**
      * Removes a value(s) from an array of submitted data
      * @param string|array $key
+     * @return array
      */
     public function unsetSubmitted($key)
     {
         gplcart_array_unset($this->submitted, $key);
+        return $this->submitted;
     }
 
     /**
+     * Limit an array of submitted data to the allowed keys
      * @param array $allowed
+     * @return array
      */
     protected function filterSubmitted(array $allowed)
     {
         $this->submitted = array_intersect_key($this->submitted, array_flip($allowed));
+        return $this->submitted;
     }
 
     /**
      * Converts a submitted value to boolean
-     * If no value is set, it becomes FALSE
      * @param string|array $key
+     * @return boolean
      */
     public function setSubmittedBool($key)
     {
-        $this->setSubmitted($key, (bool) $this->getSubmitted($key));
+        $bool = (bool) $this->getSubmitted($key);
+        $this->setSubmitted($key, $bool);
+        return $bool;
     }
 
     /**
      * Converts a submitted value to array using multiline delimiter
      * @param string|array $key
+     * @return array
      */
     public function setSubmittedArray($key)
     {
         $value = $this->getSubmitted($key);
 
         if (isset($value) && is_string($value)) {
-            $this->setSubmitted($key, gplcart_string_array($value));
+            $array = gplcart_string_array($value);
+            $this->setSubmitted($key, $array);
+            return $array;
         }
+
+        return array();
     }
 
     /**
@@ -1270,7 +1305,6 @@ abstract class Controller
             $this->redirect('/', $this->text('No access'), 'warning');
         }
 
-        // Check route specific access
         if (isset($this->current_route['access']) && !$this->access($this->current_route['access'])) {
             $this->setHttpStatus(403);
         }
@@ -1341,6 +1375,7 @@ abstract class Controller
         if ($message !== '') {
             $this->setMessage($message, $severity, true);
         }
+
         $this->url->redirect($url);
     }
 
@@ -1352,6 +1387,7 @@ abstract class Controller
     public function setTitle($title, $both = true)
     {
         $this->data['_head_title'] = strip_tags($title);
+
         if ($both && !isset($this->data['_page_title'])) {
             $this->setPageTitle($title);
         }
@@ -1629,6 +1665,7 @@ abstract class Controller
         foreach ($this->getDefaultData() as $key => $value) {
             $settings[ltrim($key, '_')] = $value;
         }
+
         $this->setJsSettings('', $settings, 60);
     }
 
@@ -1711,14 +1748,18 @@ abstract class Controller
             return !empty($value['status']);
         });
 
+        $this->data['_help'] = '';
+        $this->data['_classes'] = array();
         $this->data['_languages'] = $languages;
         $this->data['_user'] = $this->current_user;
         $this->data['_store'] = $this->current_store;
         $this->data['_messages'] = $this->session->getMessage();
         $this->data['_has_enabled_languages'] = !empty($enabled_languages);
 
-        $controller = strtolower(str_replace('\\', '-', $this->current_route['handlers']['controller'][0]));
-        $this->data['_classes'] = array_slice(explode('-', $controller, 3), -1);
+        if (!empty($this->current_route['handlers']['controller'][0])) {
+            $parts = explode('controllers\\', strtolower($this->current_route['handlers']['controller'][0]), 2);
+            $this->data['_classes'] = explode('\\', $parts[1]);
+        }
 
         $this->setDefaultJs();
     }
@@ -1741,39 +1782,50 @@ abstract class Controller
      * Adds a JS on the page
      * @param string $script
      * @param array $data
+     * @return bool|array
      */
     public function setJs($script, array $data = array())
     {
-        $this->asset->setJs($script, $data);
+        return $this->asset->setJs($script, $data);
     }
 
     /**
      * Adds a CSS on the page
      * @param string $css
      * @param array $data
+     * @return bool|array
      */
     public function setCss($css, array $data = array())
     {
-        $this->asset->setCss($css, $data);
+        return $this->asset->setCss($css, $data);
     }
 
     /**
      * Adds single or multiple asset libraries
      * @param string|array $library_id
      * @param array $data
+     * @return array
      */
     public function addAssetLibrary($library_id, array $data = array())
     {
+        $added = array();
+
         foreach ($this->library->getFiles($library_id) as $file) {
-            switch (pathinfo($file, PATHINFO_EXTENSION)) {
-                case 'js':
-                    $this->setJs($file, $data);
-                    break;
-                case 'css':
-                    $this->setCss($file, $data);
-                    break;
+
+            $extension = pathinfo($file, PATHINFO_EXTENSION);
+
+            if ($extension === 'js') {
+                $result = $this->setJs($file, $data);
+            } else if ($extension === 'css') {
+                $result = $this->setCss($file, $data);
+            }
+
+            if (!empty($result)) {
+                $added[] = $file;
             }
         }
+
+        return $added;
     }
 
     /**
@@ -1784,9 +1836,11 @@ abstract class Controller
     public function setMeta($content)
     {
         $key = '_meta_tags';
+
         if (!isset($this->data[$key])) {
             $this->data[$key] = array();
         }
+
         $this->data[$key][] = $content;
     }
 
@@ -1798,9 +1852,11 @@ abstract class Controller
     public function setBreadcrumb(array $breadcrumb)
     {
         $key = '_breadcrumbs';
+
         if (!isset($this->data[$key])) {
             $this->data[$key] = array();
         }
+
         $this->data[$key][] = $breadcrumb;
     }
 
@@ -1813,9 +1869,11 @@ abstract class Controller
         if (!empty($data['meta_title'])) {
             $this->setTitle($data['meta_title'], false);
         }
+
         if (!empty($data['meta_description'])) {
             $this->setMeta(array('name' => 'description', 'content' => $data['meta_description']));
         }
+
         $this->setMeta(array('rel' => 'canonical', 'href' => $this->path));
     }
 
@@ -1829,6 +1887,7 @@ abstract class Controller
         if (empty($options['items'])) {
             return '';
         }
+
         $options += array('depth' => 0, 'template' => 'common/menu');
         return $this->render($options['template'], $options);
     }
@@ -1993,7 +2052,6 @@ abstract class Controller
             $this->data["sort_$filter"] = $this->url('', $sort);
         }
 
-        // Filter out arrays to prevent PHP errors
         $this->query_filter = array_filter($query, 'is_string');
 
         if (isset($this->query_filter['sort']) && isset($this->query_filter['order'])) {
