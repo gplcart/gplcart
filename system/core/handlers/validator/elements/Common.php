@@ -38,6 +38,7 @@ class Common extends ElementValidator
         if (empty($value)) {
             return $this->setErrorRequired($options['field'], $options['label']);
         }
+
         return true;
     }
 
@@ -54,7 +55,25 @@ class Common extends ElementValidator
         if (is_numeric($value)) {
             return true;
         }
+
         return $this->setErrorNumeric($options['field'], $options['label']);
+    }
+
+    /**
+     * Validates a field/value consists of digits
+     * @param array $submitted
+     * @param array $options
+     * @return boolean
+     */
+    public function integer(array $submitted, array $options)
+    {
+        $value = gplcart_array_get($submitted, $options['field']);
+
+        if (filter_var($value, FILTER_VALIDATE_INT) === false) {
+            return $this->setErrorInteger($options['field'], $options['label']);
+        }
+
+        return true;
     }
 
     /**
@@ -73,6 +92,7 @@ class Common extends ElementValidator
         if ($min <= $length && $length <= $max) {
             return true;
         }
+
         return $this->setErrorLengthRange($options['field'], $options['label'], $min, $max);
     }
 
@@ -85,9 +105,11 @@ class Common extends ElementValidator
     public function regexp(array $submitted, array $options)
     {
         $value = gplcart_array_get($submitted, $options['field']);
+
         if (empty($options['arguments']) || preg_match(reset($options['arguments']), $value) !== 1) {
-            return $this->setErrorInvalidValue($options['field'], $options['label']);
+            return $this->setErrorInvalid($options['field'], $options['label']);
         }
+
         return true;
     }
 
@@ -101,9 +123,11 @@ class Common extends ElementValidator
     public function dateformat(array $submitted, array $options)
     {
         $value = gplcart_array_get($submitted, $options['field']);
+
         if (strtotime($value) === false) {
-            return $this->setErrorInvalidValue($options['field'], $options['label']);
+            return $this->setErrorInvalid($options['field'], $options['label']);
         }
+
         return true;
     }
 
@@ -116,9 +140,11 @@ class Common extends ElementValidator
     public function json(array $submitted, array $options)
     {
         $value = gplcart_array_get($submitted, $options['field']);
+
         if (json_decode($value) === null) {
-            return $this->setErrorInvalidValue($options['field'], $options['label']);
+            return $this->setErrorInvalid($options['field'], $options['label']);
         }
+
         return true;
     }
 

@@ -205,6 +205,11 @@ return array(
             'validate' => array('gplcart\\core\\handlers\\validator\\elements\\Common', 'numeric')
         )
     ),
+    'integer' => array(
+        'handlers' => array(
+            'validate' => array('gplcart\\core\\handlers\\validator\\elements\\Common', 'integer')
+        )
+    ),
     'length' => array(
         'handlers' => array(
             'validate' => array('gplcart\\core\\handlers\\validator\\elements\\Common', 'length')
