@@ -326,7 +326,7 @@ class Request
         foreach (array_keys($_COOKIE) as $key) {
             $this->deleteCookie($key);
         }
-        
+
         return true;
     }
 

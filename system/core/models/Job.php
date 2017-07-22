@@ -189,7 +189,6 @@ class Job extends Model
         $progress = 0;
         $start_time = microtime(true);
 
-        // Loop until the max time limit reached
         while (round((microtime(true) - $start_time) * 1000, 2) < self::MAX_TIME) {
 
             $this->call($job);

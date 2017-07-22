@@ -33,8 +33,11 @@ class Zone extends Model
     public function get($zone_id)
     {
         $this->hook->fire('zone.get.before', $zone_id, $this);
+
         $zone = $this->db->fetch('SELECT * FROM zone WHERE zone_id=?', array($zone_id));
+
         $this->hook->fire('zone.get.after', $zone, $this);
+
         return $zone;
     }
 
@@ -53,6 +56,7 @@ class Zone extends Model
 
         $data['zone_id'] = $this->db->insert('zone', $data);
         $this->hook->fire('zone.add.after', $data, $this);
+
         return $data['zone_id'];
     }
 
@@ -72,6 +76,7 @@ class Zone extends Model
 
         $result = $this->db->update('zone', $data, array('zone_id' => $zone_id));
         $this->hook->fire('zone.update.after', $zone_id, $data, $result, $this);
+
         return (bool) $result;
     }
 
@@ -90,6 +95,7 @@ class Zone extends Model
 
         $result = (bool) $this->db->delete('zone', array('zone_id' => $zone_id));
         $this->hook->fire('zone.delete.after', $zone_id, $result, $this);
+
         return (bool) $result;
     }
 
@@ -120,13 +126,18 @@ class Zone extends Model
             $sql = 'SELECT COUNT(zone_id)';
         }
 
-        $sql .= ' FROM zone WHERE zone_id > 0';
+        $sql .= ' FROM zone WHERE zone_id IS NOT NULL';
 
         $conditions = array();
 
         if (isset($data['status'])) {
             $sql .= ' AND status=?';
             $conditions[] = (int) $data['status'];
+        }
+
+        if (isset($data['title'])) {
+            $sql .= ' AND title LIKE ?';
+            $conditions[] = "%{$data['title']}%";
         }
 
         $allowed_order = array('asc', 'desc');
@@ -149,6 +160,7 @@ class Zone extends Model
 
         $list = $this->db->fetchAll($sql, $conditions, array('index' => 'zone_id'));
         $this->hook->fire('zone.list', $list, $this);
+
         return $list;
     }
 

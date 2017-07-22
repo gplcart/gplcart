@@ -331,7 +331,7 @@ class Store extends BackendController
             $this->redirect('admin/settings/store', $message, 'success');
         }
 
-        $message = $this->text('Unable to delete this store');
+        $message = $this->text('Unable to delete');
         $this->redirect('', $message, 'danger');
     }
 

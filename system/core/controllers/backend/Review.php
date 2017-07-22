@@ -135,6 +135,7 @@ class Review extends BackendController
         $query = $this->query_filter;
         $query['limit'] = $this->limit;
         $reviews = (array) $this->review->getList($query);
+        
         return $this->prepareListReview($reviews);
     }
 
