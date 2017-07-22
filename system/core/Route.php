@@ -252,13 +252,14 @@ class Route
         $route += array('arguments' => array(), 'pattern' => $pattern);
         $route['arguments'] += $arguments;
 
+        $this->route = $route;
+
         $handler = Handler::get($route, null, 'controller');
 
         if (empty($handler[0]) || !$handler[0] instanceof \gplcart\core\Controller) {
             throw new RouteException('Controller must be instance of \gplcart\core\Controller');
         }
 
-        $this->route = $route;
         call_user_func_array($handler, $this->route['arguments']); // We should stop here
         throw new RouteException('An error occurred while processing the route');
     }
