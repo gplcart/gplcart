@@ -153,7 +153,7 @@ class Category extends ComponentValidator
         $category = $this->getSubmitted('category');
 
         if (isset($category['category_id']) && $category['category_id'] == $parent_id) {
-            $this->setErrorInvalidValue($field, $label);
+            $this->setErrorInvalid($field, $label);
             return false;
         }
 

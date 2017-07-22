@@ -193,7 +193,6 @@ class Dashboard extends Handler
             'status' => 1,
             'order' => 'desc',
             'sort' => 'created',
-            'trigger_status' => 1,
             'limit' => array(0, $this->limit));
 
         $items = $this->pricerule->getList($options);

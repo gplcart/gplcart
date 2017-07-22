@@ -133,7 +133,7 @@ class Review extends ComponentValidator
         $timestamp = strtotime($value);
 
         if (empty($timestamp)) {
-            $this->setErrorInvalidValue($field, $this->language->text('Created'));
+            $this->setErrorInvalid($field, $this->language->text('Created'));
             return false;
         }
 

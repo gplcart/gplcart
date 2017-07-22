@@ -141,7 +141,7 @@ class FieldValue extends ComponentValidator
         }
 
         if (preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $color) !== 1) {
-            $this->setErrorInvalidValue('color', $this->language->text('Color'));
+            $this->setErrorInvalid('color', $this->language->text('Color'));
             return false;
         }
 

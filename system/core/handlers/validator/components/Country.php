@@ -167,7 +167,7 @@ class Country extends ComponentValidator
         }
 
         if (preg_match('/^[A-Z]{2}$/', $code) !== 1) {
-            $this->setErrorInvalidValue($field, $label);
+            $this->setErrorInvalid($field, $label);
             return false;
         }
 

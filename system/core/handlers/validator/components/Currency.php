@@ -171,7 +171,7 @@ class Currency extends ComponentValidator
         }
 
         if (preg_match('/^[0-9]\d*(\.\d+)?$/', $conversion_rate) !== 1) {
-            $this->setErrorInvalidValue($field, $label);
+            $this->setErrorInvalid($field, $label);
             return false;
         }
         return true;
@@ -197,7 +197,7 @@ class Currency extends ComponentValidator
         }
 
         if (preg_match('/^[0-9]\d*(\.\d+)?$/', $rounding_step) !== 1) {
-            $this->setErrorInvalidValue($field, $label);
+            $this->setErrorInvalid($field, $label);
             return false;
         }
         return true;
@@ -223,7 +223,7 @@ class Currency extends ComponentValidator
         }
 
         if (preg_match('/^[0-2]+$/', $decimals) !== 1) {
-            $this->setErrorInvalidValue($field, $label);
+            $this->setErrorInvalid($field, $label);
             return false;
         }
         return true;
@@ -249,7 +249,7 @@ class Currency extends ComponentValidator
         }
 
         if (preg_match('/^[0-9]{3}$/', $numeric_code) !== 1) {
-            $this->setErrorInvalidValue($field, $label);
+            $this->setErrorInvalid($field, $label);
             return false;
         }
 
@@ -289,7 +289,7 @@ class Currency extends ComponentValidator
         }
 
         if (preg_match('/^[A-Z]{3}$/', $code) !== 1) {
-            $this->setErrorInvalidValue($field, $label);
+            $this->setErrorInvalid($field, $label);
             return false;
         }
 

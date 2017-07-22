@@ -57,13 +57,13 @@ class PriceRule extends Model
             return $list;
         }
 
-        $sql = 'SELECT p.*, t.status AS trigger_status, t.name AS trigger_name, t.store_id';
+        $sql = 'SELECT p.*';
 
         if (!empty($data['count'])) {
             $sql = 'SELECT COUNT(p.price_rule_id)';
         }
 
-        $sql .= ' FROM price_rule p LEFT JOIN triggers t ON(p.trigger_id = t.trigger_id)';
+        $sql .= ' FROM price_rule p';
 
         $where = array();
 
@@ -88,11 +88,6 @@ class PriceRule extends Model
             $where[] = "%{$data['name']}%";
         }
 
-        if (isset($data['trigger_name'])) {
-            $sql .= ' AND t.name LIKE ?';
-            $where[] = "%{$data['trigger_name']}%";
-        }
-
         if (isset($data['code'])) {
             $sql .= ' AND p.code LIKE ?';
             $where[] = "%{$data['code']}%";
@@ -103,11 +98,6 @@ class PriceRule extends Model
             $where[] = (int) $data['value'];
         }
 
-        if (isset($data['store_id'])) {
-            $sql .= ' AND t.store_id = ?';
-            $where[] = (int) $data['store_id'];
-        }
-
         if (isset($data['value_type'])) {
             $sql .= ' AND p.value_type = ?';
             $where[] = $data['value_type'];
@@ -115,11 +105,6 @@ class PriceRule extends Model
 
         if (isset($data['status'])) {
             $sql .= ' AND p.status = ?';
-            $where[] = (int) $data['status'];
-        }
-
-        if (isset($data['trigger_status'])) {
-            $sql .= ' AND t.status = ?';
             $where[] = (int) $data['status'];
         }
 
@@ -141,9 +126,7 @@ class PriceRule extends Model
             'currency' => 'p.currency',
             'trigger_id' => 'p.trigger_id',
             'created' => 'p.created',
-            'modified' => 'p.modified',
-            'trigger_name' => 't.name',
-            'store_id' => 't.store_id'
+            'modified' => 'p.modified'
         );
 
         if ((isset($data['sort']) && isset($sorts[$data['sort']]))//

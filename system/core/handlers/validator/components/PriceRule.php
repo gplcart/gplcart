@@ -210,7 +210,7 @@ class PriceRule extends ComponentValidator
         }
 
         if (empty($type) || !in_array($type, array('percent', 'fixed'))) {
-            $this->setErrorInvalidValue($field, $this->language->text('Value type'));
+            $this->setErrorInvalid($field, $this->language->text('Value type'));
             return false;
         }
         return true;

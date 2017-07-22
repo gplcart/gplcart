@@ -114,7 +114,7 @@ class Rating extends ComponentValidator
         }
 
         if ((float) $value > 5) {
-            $this->setErrorInvalidValue($field, $label);
+            $this->setErrorInvalid($field, $label);
             return false;
         }
         return true;

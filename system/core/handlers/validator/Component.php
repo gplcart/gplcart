@@ -80,6 +80,7 @@ class Component extends BaseValidator
             $this->setErrorLengthRange($field, $label);
             return false;
         }
+
         return true;
     }
 
@@ -101,6 +102,7 @@ class Component extends BaseValidator
             $this->setErrorLengthRange($field, $label);
             return false;
         }
+
         return true;
     }
 
@@ -118,6 +120,7 @@ class Component extends BaseValidator
             $this->setErrorLengthRange($field, $label, 0, 60);
             return false;
         }
+
         return true;
     }
 
@@ -135,6 +138,7 @@ class Component extends BaseValidator
             $this->setErrorLengthRange($field, $label, 0, 160);
             return false;
         }
+
         return true;
     }
 
@@ -152,6 +156,7 @@ class Component extends BaseValidator
             $this->setErrorLengthRange($field, $label, 0, 65535);
             return false;
         }
+
         return true;
     }
 
@@ -169,6 +174,7 @@ class Component extends BaseValidator
             $this->setErrorNumeric($field, $label);
             return false;
         }
+
         return true;
     }
 
@@ -185,6 +191,7 @@ class Component extends BaseValidator
             $value = (int) gplcart_string_bool($status);
             $this->setSubmitted($field, $value);
         }
+
         return true;
     }
 
@@ -201,6 +208,7 @@ class Component extends BaseValidator
             $value = (int) gplcart_string_bool($default);
             $this->setSubmitted($field, $value);
         }
+
         return true;
     }
 
@@ -312,6 +320,7 @@ class Component extends BaseValidator
                 $this->setError('images', $result['error']);
             }
         }
+
         return empty($errors);
     }
 
@@ -335,7 +344,7 @@ class Component extends BaseValidator
         }
 
         if (preg_match('/^[A-Za-z0-9_.-]+$/', $alias) !== 1) {
-            $this->setErrorInvalidValue($field, $label);
+            $this->setErrorInvalid($field, $label);
             return false;
         }
 
@@ -351,6 +360,7 @@ class Component extends BaseValidator
             $this->setErrorExists($field, $label);
             return false;
         }
+
         return true;
     }
 
@@ -384,6 +394,7 @@ class Component extends BaseValidator
             $this->setErrorUnavailable($field, $label);
             return false;
         }
+
         return true;
     }
 
@@ -417,6 +428,7 @@ class Component extends BaseValidator
             $this->setErrorUnavailable($field, $label);
             return false;
         }
+
         return true;
     }
 
@@ -454,6 +466,7 @@ class Component extends BaseValidator
             $this->setErrorUnavailable($field, $label);
             return false;
         }
+
         return true;
     }
 
@@ -477,9 +490,10 @@ class Component extends BaseValidator
         }
 
         if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
-            $this->setErrorInvalidValue($field, $label);
+            $this->setErrorInvalid($field, $label);
             return false;
         }
+
         return true;
     }
 

@@ -126,6 +126,7 @@ class File extends BackendController
     {
         $query = $this->query_filter;
         $query['limit'] = $this->limit;
+
         $files = (array) $this->file->getList($query);
         return $this->prepareListFile($files);
     }
@@ -144,6 +145,7 @@ class File extends BackendController
                 $file['url'] = $this->file->url($file['path']);
             }
         }
+
         return $files;
     }
 
@@ -230,7 +232,6 @@ class File extends BackendController
 
     /**
      * Saves an array of submitted values
-     * @return null
      */
     protected function submitEditFile()
     {
@@ -258,7 +259,7 @@ class File extends BackendController
         $this->controlAccess('file_delete');
         $result = $this->file->deleteAll($this->data_file['file_id']);
 
-        if (array_sum($result) === 2) {
+        if (array_sum($result) == 2) {
             $message = $this->text('File has been deleted from database and disk');
             $this->redirect('admin/content/file', $message, 'success');
         }
@@ -286,17 +287,10 @@ class File extends BackendController
     protected function updateFile()
     {
         $this->controlAccess('file_edit');
+        $this->file->update($this->data_file['file_id'], $this->getSubmitted());
 
-        $submitted = $this->getSubmitted();
-        $updated = $this->file->update($this->data_file['file_id'], $submitted);
-
-        if ($updated) {
-            $message = $this->text('File has been updated');
-            $this->redirect('admin/content/file', $message, 'success');
-        }
-
-        $message = $this->text('File has not been updated');
-        $this->redirect('admin/content/file', $message, 'warning');
+        $message = $this->text('File has been updated');
+        $this->redirect('admin/content/file', $message, 'success');
     }
 
     /**
@@ -306,8 +300,7 @@ class File extends BackendController
     {
         $this->controlAccess('file_add');
 
-        $submitted = $this->getSubmitted();
-        $result = $this->file->add($submitted);
+        $result = $this->file->add($this->getSubmitted());
 
         if (empty($result)) {
             $message = $this->text('File has not been added');

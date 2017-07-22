@@ -177,6 +177,11 @@ class Report extends BackendController
                 continue;
             }
 
+            if ($route['access'] === '__superadmin') {
+                $route['permission_name'] = array($this->text('Superadmin'));
+                continue;
+            }
+
             if (!isset($permissions[$route['access']])) {
                 $route['permission_name'] = array($this->text('Unknown'));
                 continue;

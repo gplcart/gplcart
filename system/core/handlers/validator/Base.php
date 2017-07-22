@@ -133,6 +133,7 @@ class Base extends Handler
         if (empty($this->submitted[$key]) || is_array($this->submitted[$key])) {
             return false;
         }
+
         return $this->submitted[$key];
     }
 
@@ -162,8 +163,7 @@ class Base extends Handler
      */
     protected function setError($key, $error)
     {
-        $parents = $this->getParents($key);
-        gplcart_array_set($this->errors, $parents, $error);
+        gplcart_array_set($this->errors, $this->getParents($key), $error);
         return $this->errors;
     }
 
@@ -204,7 +204,7 @@ class Base extends Handler
     protected function getResult()
     {
         $result = empty($this->errors) ? true : $this->errors;
-        $this->errors = array(); // Important. Reset all errors
+        $this->errors = array();
         return $result;
     }
 
@@ -229,6 +229,18 @@ class Base extends Handler
     protected function setErrorNumeric($field, $label)
     {
         $error = $this->language->text('@field must be numeric', array('@field' => $label));
+        return $this->setError($field, $error);
+    }
+
+    /**
+     * Set "Field not integer" error
+     * @param string $field
+     * @param string $label
+     * @return array
+     */
+    protected function setErrorInteger($field, $label)
+    {
+        $error = $this->language->text('@field must be integer', array('@field' => $label));
         return $this->setError($field, $error);
     }
 
@@ -263,7 +275,7 @@ class Base extends Handler
      * @param string $label
      * @return array
      */
-    protected function setErrorInvalidValue($field, $label)
+    protected function setErrorInvalid($field, $label)
     {
         $error = $this->language->text('@field has invalid value', array('@field' => $label));
         return $this->setError($field, $error);

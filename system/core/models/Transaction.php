@@ -32,33 +32,33 @@ class Transaction extends Model
      */
     public function getList(array $data = array())
     {
-        $sql = 'SELECT t.*';
+        $sql = 'SELECT *';
 
         if (!empty($data['count'])) {
-            $sql = ' SELECT COUNT(t.transaction_id) ';
+            $sql = ' SELECT COUNT(transaction_id) ';
         }
 
-        $sql .= ' FROM transaction t';
+        $sql .= ' FROM transaction WHERE transaction_id IS NOT NULL';
 
         $where = array();
 
         if (isset($data['order_id'])) {
-            $sql .= ' AND t.order_id = ?';
+            $sql .= ' AND order_id = ?';
             $where[] = (int) $data['order_id'];
         }
 
         if (isset($data['created'])) {
-            $sql .= ' AND t.created = ?';
+            $sql .= ' AND created = ?';
             $where[] = (int) $data['created'];
         }
 
         if (isset($data['payment_method'])) {
-            $sql .= ' AND t.payment_method LIKE ?';
+            $sql .= ' AND payment_method LIKE ?';
             $where[] = "%{$data['payment_method']}%";
         }
 
         if (isset($data['gateway_transaction_id'])) {
-            $sql .= ' AND t.gateway_transaction_id LIKE ?';
+            $sql .= ' AND gateway_transaction_id LIKE ?';
             $where[] = "%{$data['gateway_transaction_id']}%";
         }
 
@@ -67,9 +67,9 @@ class Transaction extends Model
 
         if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort))//
                 && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
-            $sql .= " ORDER BY t.{$data['sort']} {$data['order']}";
+            $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
-            $sql .= ' ORDER BY t.created DESC';
+            $sql .= ' ORDER BY created DESC';
         }
 
         if (!empty($data['limit'])) {
@@ -100,11 +100,10 @@ class Transaction extends Model
             return false;
         }
 
-        $data += array('created' => GC_TIME);
+        $data['created'] = GC_TIME;
         $data['transaction_id'] = $this->db->insert('transaction', $data);
 
         $this->hook->fire('transaction.add.after', $data, $this);
-
         return $data['transaction_id'];
     }
 

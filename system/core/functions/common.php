@@ -142,3 +142,29 @@ function gplcart_relative_path($absolute)
     }
     return $absolute;
 }
+
+/**
+ * Safe type casting
+ * @param mixed $value
+ * @param null|string $type
+ * @param mixed $default
+ * @return bool
+ */
+function gplcart_settype(&$value, $type, $default)
+{
+    if ($value === $default || empty($type)) {
+        return false;
+    }
+
+    if (is_array($value) && $type === 'string') {
+        $value = $default;
+        return false;
+    }
+
+    if (settype($value, $type)) {
+        return true;
+    }
+
+    $value = $default;
+    return false;
+}

@@ -121,7 +121,7 @@ class Store extends ComponentValidator
         $invalid = (filter_var($value, FILTER_VALIDATE_IP) === false || !gplcart_valid_domain($value));
 
         if ($invalid) {
-            $this->setErrorInvalidValue($field, $label);
+            $this->setErrorInvalid($field, $label);
             return false;
         }
 
@@ -167,7 +167,7 @@ class Store extends ComponentValidator
         }
 
         if (preg_match('/^[a-z0-9-]{0,50}$/', $value) !== 1) {
-            $this->setErrorInvalidValue($field, $label);
+            $this->setErrorInvalid($field, $label);
             return false;
         }
 
@@ -210,7 +210,7 @@ class Store extends ComponentValidator
         });
 
         if (count($value) != count($filtered)) {
-            $this->setErrorInvalidValue($field, $label);
+            $this->setErrorInvalid($field, $label);
             return false;
         }
         return true;
@@ -231,12 +231,12 @@ class Store extends ComponentValidator
         }
 
         if (count($value) != 2) {
-            $this->setErrorInvalidValue($field, $label);
+            $this->setErrorInvalid($field, $label);
             return false;
         }
 
         if (count($value) != count(array_filter($value, 'is_numeric'))) {
-            $this->setErrorInvalidValue($field, $label);
+            $this->setErrorInvalid($field, $label);
             return false;
         }
         return true;

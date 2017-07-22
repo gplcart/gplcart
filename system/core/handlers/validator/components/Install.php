@@ -183,7 +183,7 @@ class Install extends ComponentValidator
             return true;
         }
 
-        $this->setErrorInvalidValue($field, $label);
+        $this->setErrorInvalid($field, $label);
         return false;
     }
 
@@ -225,7 +225,7 @@ class Install extends ComponentValidator
         }
 
         if (preg_match('/^[a-z0-9-\/]{0,50}$/', $basepath) !== 1) {
-            $this->setErrorInvalidValue($field, $this->language->text('Base path'));
+            $this->setErrorInvalid($field, $this->language->text('Base path'));
             return false;
         }
 
@@ -254,7 +254,7 @@ class Install extends ComponentValidator
         $timezones = gplcart_timezones();
 
         if (empty($timezones[$timezone])) {
-            $this->setErrorInvalidValue($field, $label);
+            $this->setErrorInvalid($field, $label);
             return false;
         }
 

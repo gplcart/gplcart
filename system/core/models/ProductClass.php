@@ -256,7 +256,7 @@ class ProductClass extends Model
         $result = array();
         $fields = $this->field->getList();
 
-        foreach ($this->getFields($product_class_id) as $field) {
+        foreach ($this->getFields(array('product_class_id' => $product_class_id)) as $field) {
 
             if (!isset($fields[$field['field_id']])) {
                 continue;
@@ -275,22 +275,65 @@ class ProductClass extends Model
 
     /**
      * Loads an array of product class fields
-     * @param integer $product_class_id
+     * @param array $data
      * @return array
      */
-    public function getFields($product_class_id)
+    public function getFields(array $data = array())
     {
         $sql = 'SELECT pcf.*, COALESCE(NULLIF(ft.title, ""), f.title) AS title, f.type AS type'
                 . ' FROM product_class_field pcf'
                 . ' LEFT JOIN field f ON(pcf.field_id = f.field_id)'
-                . ' LEFT JOIN field_translation ft ON(pcf.field_id = ft.field_id AND ft.language=:language)'
-                . ' WHERE product_class_id=:product_class_id'
-                . ' ORDER BY weight ASC';
+                . ' LEFT JOIN field_translation ft ON(pcf.field_id = ft.field_id AND ft.language=?)'
+                . ' WHERE pcf.product_class_field_id IS NOT NULL';
 
-        $conditions = array(
-            'language' => $this->language->current(),
-            'product_class_id' => $product_class_id
+        $conditions = array($this->language->current());
+
+        if (isset($data['product_class_id'])) {
+            $sql .= ' AND pcf.product_class_id=?';
+            $conditions[] = (int) $data['product_class_id'];
+        }
+
+        if (isset($data['type'])) {
+            $sql .= ' AND f.type=?';
+            $conditions[] = $data['type'];
+        }
+
+        if (isset($data['required'])) {
+            $sql .= ' AND pcf.required=?';
+            $conditions[] = (int) $data['required'];
+        }
+
+        if (isset($data['multiple'])) {
+            $sql .= ' AND pcf.multiple=?';
+            $conditions[] = (int) $data['multiple'];
+        }
+
+        $allowed_order = array('asc', 'desc');
+
+        $allowed_sort = array(
+            'type' => 'f.type',
+            'title' => 'f.title',
+            'required' => 'pcf.required',
+            'multiple' => 'pcf.multiple',
+            'weight' => 'pcf.weight'
         );
+
+        if (isset($data['sort']) && isset($allowed_sort[$data['sort']])//
+                && isset($data['order'])//
+                && in_array($data['order'], $allowed_order)
+        ) {
+            $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
+        } else {
+            $sql .= " ORDER BY pcf.weight ASC";
+        }
+
+        if (!empty($data['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        }
+
+        if (!empty($data['count'])) {
+            return (int) $this->db->fetchColumn($sql, $conditions);
+        }
 
         return $this->db->fetchAll($sql, $conditions, array('index' => 'field_id'));
     }
