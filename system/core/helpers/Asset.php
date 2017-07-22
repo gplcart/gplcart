@@ -47,6 +47,7 @@ class Asset
      * Adds a JS file
      * @param string $script
      * @param array $data
+     * @return bool|array
      */
     public function setJs($script, $data = array())
     {
@@ -60,13 +61,14 @@ class Asset
             $data['weight'] = $this->getNextWeight('js', $data['position']);
         }
 
-        $this->set($data);
+        return $this->set($data);
     }
 
     /**
      * Adds a CSS file
      * @param string $css
      * @param array $data
+     * @return bool|array
      */
     public function setCss($css, $data = array())
     {
@@ -79,7 +81,7 @@ class Asset
             $data['weight'] = $this->getNextWeight('css', 'top');
         }
 
-        $this->set($data);
+        return $this->set($data);
     }
 
     /**
@@ -146,23 +148,23 @@ class Asset
 
     /**
      * Sets an asset
-     * @param array $data
-     * @return bool
+     * @param array $asset
+     * @return bool|array
      */
-    protected function set(array $data)
+    protected function set(array $asset)
     {
-        $data = $this->build($data);
+        $build = $this->build($asset);
 
-        if (empty($data['asset'])) {
+        if (empty($build['asset'])) {
             return false;
         }
 
-        if (isset($this->assets[$data['type']][$data['position']][$data['key']])) {
+        if (isset($this->assets[$build['type']][$build['position']][$build['key']])) {
             return false;
         }
 
-        $this->assets[$data['type']][$data['position']][$data['key']] = $data;
-        return true;
+        $this->assets[$build['type']][$build['position']][$build['key']] = $build;
+        return $this->assets[$build['type']];
     }
 
     /**
