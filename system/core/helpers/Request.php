@@ -217,7 +217,55 @@ class Request
             $return = $post;
         }
 
-        return $this->setType($return, $type, $default);
+        gplcart_settype($return, $type, $default);
+
+        return $return;
+    }
+
+    /**
+     * Returns a data from the GET request
+     * @param string $name
+     * @param mixed $default
+     * @param null|string $type
+     * @return mixed
+     */
+    public function get($name = null, $default = null, $type = null)
+    {
+        $get = $_GET;
+
+        if (empty($get)) {
+            $get = array();
+        }
+
+        gplcart_array_trim($get, true);
+
+        if (isset($name)) {
+            $result = gplcart_array_get($get, $name);
+            $return = isset($result) ? $result : $default;
+        } else {
+            $return = $get;
+        }
+
+        gplcart_settype($return, $type, $default);
+
+        return $return;
+    }
+
+    /**
+     * Returns a data from the FILES request
+     * @param string $name
+     * @param mixed $default
+     * @return mixed
+     */
+    public function file($name = null, $default = null)
+    {
+        $files = $_FILES;
+
+        if (isset($name)) {
+            return !empty($files[$name]['name']) ? $files[$name] : $default;
+        }
+
+        return $files;
     }
 
     /**
@@ -243,7 +291,9 @@ class Request
             $return = $cookie;
         }
 
-        return $this->setType($return, $type, $default);
+        gplcart_settype($return, $type, $default);
+
+        return $return;
     }
 
     /**
@@ -276,74 +326,8 @@ class Request
         foreach (array_keys($_COOKIE) as $key) {
             $this->deleteCookie($key);
         }
+        
         return true;
-    }
-
-    /**
-     * Returns a data from the GET request
-     * @param string $name
-     * @param mixed $default
-     * @param null|string $type
-     * @return mixed
-     */
-    public function get($name = null, $default = null, $type = null)
-    {
-        $get = $_GET;
-
-        if (empty($get)) {
-            $get = array();
-        }
-
-        gplcart_array_trim($get, true);
-
-        if (isset($name)) {
-            $result = gplcart_array_get($get, $name);
-            $return = isset($result) ? $result : $default;
-        } else {
-            $return = $get;
-        }
-
-        return $this->setType($return, $type, $default);
-    }
-
-    /**
-     * Returns a data from the FILES request
-     * @param string $name
-     * @param mixed $default
-     * @return mixed
-     */
-    public function file($name = null, $default = null)
-    {
-        $files = $_FILES;
-
-        if (isset($name)) {
-            return !empty($files[$name]['name']) ? $files[$name] : $default;
-        }
-        return $files;
-    }
-
-    /**
-     * Type casting
-     * @param mixed $value
-     * @param null|string $type
-     * @param mixed $default
-     * @return mixed
-     */
-    protected function setType($value, $type, $default)
-    {
-        if (!isset($type)) {
-            return $value;
-        }
-
-        if (is_array($value) && $type === 'string') {
-            return $default;
-        }
-
-        if (settype($value, $type)) {
-            return $value;
-        }
-
-        return $default;
     }
 
 }
