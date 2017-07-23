@@ -47,6 +47,10 @@ class Price extends Model
     {
         $data = (array) $this->currency->get($currency);
 
+        if (empty($data)) {
+            return '';
+        }
+
         if ($decimal) {
             $amount = $this->decimal($amount, $currency);
         }
