@@ -179,6 +179,7 @@ class Dashboard extends BackendController
      */
     protected function saveDashboard()
     {
+        $this->controlAccess('dashboard_edit');
         $this->dashboard->setByUser($this->uid, $this->getSubmitted());
         $this->redirect('admin', $this->text('Your dashboard has been updated'), 'success');
     }
@@ -188,6 +189,7 @@ class Dashboard extends BackendController
      */
     protected function deleteDashboard()
     {
+        $this->controlAccess('dashboard_edit');
         $this->dashboard->delete($this->data_dashboard['dashboard_id']);
         $this->redirect('admin', $this->text('Your dashboard has been reset to default state'), 'success');
     }
