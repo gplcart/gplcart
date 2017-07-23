@@ -188,7 +188,7 @@ class Module extends Model
         $instance = $this->config->getModuleInstance($module_id);
 
         if (!$instance instanceof \gplcart\core\Module) {
-            return $this->language->text('Main module class is not instance of gplcart\core\Module');
+            return $this->language->text('Failed to instantiate the main module class');
         }
 
         return $this->checkRequirements($module_id);
