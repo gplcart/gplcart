@@ -8,92 +8,88 @@
 ?>
 <form method="post" enctype="multipart/form-data" class="form-horizontal">
   <input type="hidden" name="token" value="<?php echo $_token; ?>">
-  <div class="form-group">
-    <label class="col-md-2 control-label">
-      <?php echo $this->text('Status'); ?>
-    </label>
-    <div class="col-md-6">
-      <div class="btn-group" data-toggle="buttons">
-        <label class="btn btn-default<?php echo !isset($category['status']) || $category['status'] ? ' active' : ''; ?>">
-          <input name="category[status]" type="radio" autocomplete="off" value="1"<?php echo !isset($category['status']) || $category['status'] ? ' checked' : ''; ?>>
-          <?php echo $this->text('Enabled'); ?>
-        </label>
-        <label class="btn btn-default<?php echo !isset($category['status']) || $category['status'] ? '' : ' active'; ?>">
-          <input name="category[status]" type="radio" autocomplete="off" value="0"<?php echo !isset($category['status']) || $category['status'] ? '' : ' checked'; ?>>
-          <?php echo $this->text('Disabled'); ?>
-        </label>
-      </div>
-      <div class="help-block">
-        <?php echo $this->text('Disabled categories will not be available for frontend users and search engines'); ?>
-      </div>
-    </div>
-  </div>
-  <div class="form-group required<?php echo $this->error('title', ' has-error'); ?>">
-    <label class="col-md-2 control-label"><?php echo $this->text('Title'); ?></label>
-    <div class="col-md-8">
-      <input maxlength="255" name="category[title]" class="form-control" value="<?php echo isset($category['title']) ? $this->e($category['title']) : ''; ?>">
-      <div class="help-block">
-        <?php echo $this->error('title'); ?>
-        <div class="text-muted">
-        <?php echo $this->text('Required. The title will be used on the category page and menu'); ?>
+  <fieldset>
+    <div class="form-group">
+      <label class="col-md-2 control-label"><?php echo $this->text('Status'); ?></label>
+      <div class="col-md-6">
+        <div class="btn-group" data-toggle="buttons">
+          <label class="btn btn-default<?php echo!isset($category['status']) || $category['status'] ? ' active' : ''; ?>">
+            <input name="category[status]" type="radio" autocomplete="off" value="1"<?php echo!isset($category['status']) || $category['status'] ? ' checked' : ''; ?>>
+            <?php echo $this->text('Enabled'); ?>
+          </label>
+          <label class="btn btn-default<?php echo!isset($category['status']) || $category['status'] ? '' : ' active'; ?>">
+            <input name="category[status]" type="radio" autocomplete="off" value="0"<?php echo!isset($category['status']) || $category['status'] ? '' : ' checked'; ?>>
+            <?php echo $this->text('Disabled'); ?>
+          </label>
+        </div>
+        <div class="help-block">
+          <?php echo $this->text('Disabled categories will not be available for frontend users and search engines'); ?>
         </div>
       </div>
     </div>
-  </div>
-  <div class="form-group">
-    <label class="col-md-2 control-label">
-      <?php echo $this->text('First description'); ?>
-    </label>
-    <div class="col-md-8">
-      <textarea class="form-control" data-wysiwyg="true" rows="10" name="category[description_1]"><?php echo isset($category['description_1']) ? $this->filter($category['description_1']) : ''; ?></textarea>
-      <div class="help-block">
-        <?php echo $this->text('Optional. A text that usually placed at the top of the category page'); ?>
-      </div>
-    </div>
-  </div>
-  <div class="form-group">
-    <label class="col-md-2 control-label">
-      <?php echo $this->text('Second description'); ?>
-    </label>
-    <div class="col-md-8">
-      <textarea class="form-control" data-wysiwyg="true" rows="10" name="category[description_2]"><?php echo isset($category['description_2']) ? $this->filter($category['description_2']) : ''; ?></textarea>
-      <div class="help-block">
-        <?php echo $this->text('Optional. A text that usually placed at the bottom of the category page'); ?>
-      </div>
-    </div>
-  </div>
-  <?php if (!empty($_languages)) { ?>
-  <div class="form-group">
-    <div class="col-md-10 col-md-offset-2">
-      <a data-toggle="collapse" href="#translations">
-        <?php echo $this->text('Translations'); ?> <span class="caret"></span>
-      </a>
-    </div>
-  </div>
-  <div id="translations" class="collapse translations<?php echo $this->error(null, ' in'); ?>">
-    <?php foreach ($_languages as $code => $language) { ?>
-    <div class="form-group<?php echo $this->error("translation.$code.title", ' has-error'); ?>">
-      <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $language['native_name'])); ?></label>
+    <div class="form-group required<?php echo $this->error('title', ' has-error'); ?>">
+      <label class="col-md-2 control-label"><?php echo $this->text('Title'); ?></label>
       <div class="col-md-8">
-        <input maxlength="255" name="category[translation][<?php echo $code; ?>][title]" class="form-control" value="<?php echo isset($category['translation'][$code]['title']) ? $this->e($category['translation'][$code]['title']) : ''; ?>">
-        <div class="help-block"><?php echo $this->error("translation.$code.title"); ?></div>
+        <input maxlength="255" name="category[title]" class="form-control" value="<?php echo isset($category['title']) ? $this->e($category['title']) : ''; ?>">
+        <div class="help-block">
+          <?php echo $this->error('title'); ?>
+          <div class="text-muted">
+            <?php echo $this->text('Required. The title will be used on the category page and menu'); ?>
+          </div>
+        </div>
       </div>
     </div>
     <div class="form-group">
-      <label class="col-md-2 control-label"><?php echo $this->text('First description %language', array('%language' => $language['native_name'])); ?></label>
+      <label class="col-md-2 control-label"><?php echo $this->text('First description'); ?></label>
       <div class="col-md-8">
-        <textarea class="form-control" data-wysiwyg="true" rows="10" name="category[translation][<?php echo $code; ?>][description_1]"><?php echo isset($category['translation'][$code]['description_1']) ? $this->filter($category['translation'][$code]['description_1']) : ''; ?></textarea>
+        <textarea class="form-control" data-wysiwyg="true" rows="10" name="category[description_1]"><?php echo isset($category['description_1']) ? $this->filter($category['description_1']) : ''; ?></textarea>
+        <div class="help-block">
+          <?php echo $this->text('Optional. A text that usually placed at the top of the category page'); ?>
+        </div>
       </div>
     </div>
     <div class="form-group">
-      <label class="col-md-2 control-label"><?php echo $this->text('Second description %language', array('%language' => $language['native_name'])); ?></label>
+      <label class="col-md-2 control-label"><?php echo $this->text('Second description'); ?></label>
       <div class="col-md-8">
-        <textarea class="form-control" data-wysiwyg="true" rows="10" name="category[translation][<?php echo $code; ?>][description_2]"><?php echo isset($category['translation'][$code]['description_2']) ? $this->filter($category['translation'][$code]['description_2']) : ''; ?></textarea>
+        <textarea class="form-control" data-wysiwyg="true" rows="10" name="category[description_2]"><?php echo isset($category['description_2']) ? $this->filter($category['description_2']) : ''; ?></textarea>
+        <div class="help-block">
+          <?php echo $this->text('Optional. A text that usually placed at the bottom of the category page'); ?>
+        </div>
       </div>
+    </div>
+    <?php if (!empty($_languages)) { ?>
+    <div class="form-group">
+      <div class="col-md-10 col-md-offset-2">
+        <a data-toggle="collapse" href="#translations">
+          <?php echo $this->text('Translations'); ?> <span class="caret"></span>
+        </a>
+      </div>
+    </div>
+    <div id="translations" class="collapse translations<?php echo $this->error(null, ' in'); ?>">
+      <?php foreach ($_languages as $code => $language) { ?>
+      <div class="form-group<?php echo $this->error("translation.$code.title", ' has-error'); ?>">
+        <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $language['native_name'])); ?></label>
+        <div class="col-md-8">
+          <input maxlength="255" name="category[translation][<?php echo $code; ?>][title]" class="form-control" value="<?php echo isset($category['translation'][$code]['title']) ? $this->e($category['translation'][$code]['title']) : ''; ?>">
+          <div class="help-block"><?php echo $this->error("translation.$code.title"); ?></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-md-2 control-label"><?php echo $this->text('First description %language', array('%language' => $language['native_name'])); ?></label>
+        <div class="col-md-8">
+          <textarea class="form-control" data-wysiwyg="true" rows="10" name="category[translation][<?php echo $code; ?>][description_1]"><?php echo isset($category['translation'][$code]['description_1']) ? $this->filter($category['translation'][$code]['description_1']) : ''; ?></textarea>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-md-2 control-label"><?php echo $this->text('Second description %language', array('%language' => $language['native_name'])); ?></label>
+        <div class="col-md-8">
+          <textarea class="form-control" data-wysiwyg="true" rows="10" name="category[translation][<?php echo $code; ?>][description_2]"><?php echo isset($category['translation'][$code]['description_2']) ? $this->filter($category['translation'][$code]['description_2']) : ''; ?></textarea>
+        </div>
+      </div>
+      <?php } ?>
     </div>
     <?php } ?>
-  </div>
-  <?php } ?>
+  </fieldset>
   <fieldset>
     <legend><?php echo $this->text('Relations'); ?></legend>
     <div class="form-group">

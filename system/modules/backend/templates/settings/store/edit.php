@@ -8,6 +8,7 @@
 ?>
 <form method="post" enctype="multipart/form-data" class="form-horizontal">
   <input type="hidden" name="token" value="<?php echo $_token; ?>">
+  <fieldset>
     <div class="form-group">
       <label class="col-md-2 control-label"><?php echo $this->text('Status'); ?></label>
       <div class="col-md-4">
@@ -98,6 +99,7 @@
         </div>
       </div>
     </div>
+  </fieldset>
   <fieldset>
     <legend><?php echo $this->text('Description'); ?></legend>
     <div class="form-group<?php echo $this->error('data.meta_title', ' has-error'); ?>">

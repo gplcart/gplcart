@@ -8,88 +8,90 @@
 ?>
 <form method="post" enctype="multipart/form-data" class="form-horizontal">
   <input type="hidden" name="token" value="<?php echo $_token; ?>">
-  <?php if (isset($page['page_id'])) { ?>
-  <div class="form-group">
-    <div class="col-md-10 col-md-offset-2">
-      <ul class="list-unstyled">
-        <li><?php echo $this->text('Author'); ?>: <?php echo $page['author']; ?></li>
-        <li><?php echo $this->text('Created'); ?>: <?php echo $this->date($page['created']); ?></li>
-        <?php if ($page['modified'] > $page['created']) { ?>
-        <li><?php echo $this->text('Modified'); ?>: <?php echo $this->date($page['modified']); ?></li>
-        <?php } ?>
-      </ul>
-    </div>
-  </div>
-  <?php } ?>
-  <div class="form-group">
-    <label class="col-md-2 control-label"><?php echo $this->text('Status'); ?></label>
-    <div class="col-md-8">
-      <div class="btn-group" data-toggle="buttons">
-        <label class="btn btn-default<?php echo (!isset($page['status']) || $page['status']) ? ' active' : ''; ?>">
-          <input name="page[status]" type="radio" autocomplete="off" value="1"<?php echo (!isset($page['status']) || $page['status']) ? ' checked' : ''; ?>><?php echo $this->text('Enabled'); ?>
-        </label>
-        <label class="btn btn-default<?php echo (isset($page['status']) && !$page['status']) ? ' active' : ''; ?>">
-          <input name="page[status]" type="radio" autocomplete="off" value="0"<?php echo (isset($page['status']) && !$page['status']) ? ' checked' : ''; ?>><?php echo $this->text('Disabled'); ?>
-        </label>
-      </div>
-      <div class="help-block">
-        <?php echo $this->text('Disabled pages will not be available for frontend users and search engines'); ?>
-      </div>
-    </div>
-  </div>
-  <div class="form-group required<?php echo $this->error('title', ' has-error'); ?>">
-    <label class="col-md-2 control-label"><?php echo $this->text('Title'); ?></label>
-    <div class="col-md-10">
-      <input maxlength="255" name="page[title]" class="form-control" value="<?php echo (isset($page['title'])) ? $this->e($page['title']) : ''; ?>" autofocus>
-      <div class="help-block">
-        <?php echo $this->error('title'); ?>
-        <div class="text-muted"><?php echo $this->text('Required. The title will be used on the page and menu'); ?></div>
-      </div>
-    </div>
-  </div>
-  <div class="form-group required<?php echo $this->error('description', ' has-error'); ?>">
-    <label class="col-md-2 control-label"><?php echo $this->text('Text'); ?></label>
-    <div class="col-md-10">
-      <textarea class="form-control" rows="10" data-wysiwyg="true" name="page[description]"><?php echo (isset($page['description'])) ? $this->filter($page['description']) : ''; ?></textarea>
-      <div class="help-block">
-        <?php echo $this->error('description'); ?>
-        <div class="text-muted">
-          <?php echo $this->text('Required. You can use any HTML but user can see only allowed tags'); ?>
-        </div>
-      </div>
-    </div>
-  </div>
-  <?php if (!empty($_languages)) { ?>
-  <div class="form-group">
-    <div class="col-md-10 col-md-offset-2">
-      <a data-toggle="collapse" href="#translations">
-        <?php echo $this->text('Translations'); ?> <span class="caret"></span>
-      </a>
-    </div>
-  </div>
-  <div id="translations" class="collapse translations<?php echo $this->error(null, ' in'); ?>">
-    <?php foreach ($_languages as $code => $info) { ?>
-    <div class="form-group<?php echo $this->error("translation.$code.title", ' has-error'); ?>">
-      <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $info['native_name'])); ?></label>
-      <div class="col-md-10">
-        <input maxlength="255" name="page[translation][<?php echo $code; ?>][title]" class="form-control" value="<?php echo (isset($page['translation'][$code]['title'])) ? $this->e($page['translation'][$code]['title']) : ''; ?>">
-        <div class="help-block">
-            <?php echo $this->error("translation.$code.title", ' has-error'); ?>
-        </div>
-      </div>
-    </div>
-    <div class="form-group<?php echo $this->error("translation.$code.description", ' has-error'); ?>">
-      <label class="col-md-2 control-label"><?php echo $this->text('Description %language', array('%language' => $info['native_name'])); ?></label>
-      <div class="col-md-10">
-        <textarea class="form-control" rows="10" data-wysiwyg="true" name="page[translation][<?php echo $code; ?>][description]"><?php echo (isset($page['translation'][$code]['description'])) ? $this->filter($page['translation'][$code]['description']) : ''; ?></textarea>
-        <div class="help-block">
-          <?php echo $this->error("translation.$code.description"); ?>
-        </div>
+  <fieldset>
+    <?php if (isset($page['page_id'])) { ?>
+    <div class="form-group">
+      <div class="col-md-10 col-md-offset-2">
+        <ul class="list-unstyled">
+          <li><?php echo $this->text('Author'); ?>: <?php echo $page['author']; ?></li>
+          <li><?php echo $this->text('Created'); ?>: <?php echo $this->date($page['created']); ?></li>
+          <?php if ($page['modified'] > $page['created']) { ?>
+          <li><?php echo $this->text('Modified'); ?>: <?php echo $this->date($page['modified']); ?></li>
+          <?php } ?>
+        </ul>
       </div>
     </div>
     <?php } ?>
-  </div>
-  <?php } ?>
+    <div class="form-group">
+      <label class="col-md-2 control-label"><?php echo $this->text('Status'); ?></label>
+      <div class="col-md-8">
+        <div class="btn-group" data-toggle="buttons">
+          <label class="btn btn-default<?php echo (!isset($page['status']) || $page['status']) ? ' active' : ''; ?>">
+            <input name="page[status]" type="radio" autocomplete="off" value="1"<?php echo (!isset($page['status']) || $page['status']) ? ' checked' : ''; ?>><?php echo $this->text('Enabled'); ?>
+          </label>
+          <label class="btn btn-default<?php echo (isset($page['status']) && !$page['status']) ? ' active' : ''; ?>">
+            <input name="page[status]" type="radio" autocomplete="off" value="0"<?php echo (isset($page['status']) && !$page['status']) ? ' checked' : ''; ?>><?php echo $this->text('Disabled'); ?>
+          </label>
+        </div>
+        <div class="help-block">
+          <?php echo $this->text('Disabled pages will not be available for frontend users and search engines'); ?>
+        </div>
+      </div>
+    </div>
+    <div class="form-group required<?php echo $this->error('title', ' has-error'); ?>">
+      <label class="col-md-2 control-label"><?php echo $this->text('Title'); ?></label>
+      <div class="col-md-10">
+        <input maxlength="255" name="page[title]" class="form-control" value="<?php echo (isset($page['title'])) ? $this->e($page['title']) : ''; ?>" autofocus>
+        <div class="help-block">
+          <?php echo $this->error('title'); ?>
+          <div class="text-muted"><?php echo $this->text('Required. The title will be used on the page and menu'); ?></div>
+        </div>
+      </div>
+    </div>
+    <div class="form-group required<?php echo $this->error('description', ' has-error'); ?>">
+      <label class="col-md-2 control-label"><?php echo $this->text('Text'); ?></label>
+      <div class="col-md-10">
+        <textarea class="form-control" rows="10" data-wysiwyg="true" name="page[description]"><?php echo (isset($page['description'])) ? $this->filter($page['description']) : ''; ?></textarea>
+        <div class="help-block">
+          <?php echo $this->error('description'); ?>
+          <div class="text-muted">
+            <?php echo $this->text('Required. You can use any HTML but user can see only allowed tags'); ?>
+          </div>
+        </div>
+      </div>
+    </div>
+    <?php if (!empty($_languages)) { ?>
+    <div class="form-group">
+      <div class="col-md-10 col-md-offset-2">
+        <a data-toggle="collapse" href="#translations">
+          <?php echo $this->text('Translations'); ?> <span class="caret"></span>
+        </a>
+      </div>
+    </div>
+    <div id="translations" class="collapse translations<?php echo $this->error(null, ' in'); ?>">
+      <?php foreach ($_languages as $code => $info) { ?>
+      <div class="form-group<?php echo $this->error("translation.$code.title", ' has-error'); ?>">
+        <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $info['native_name'])); ?></label>
+        <div class="col-md-10">
+          <input maxlength="255" name="page[translation][<?php echo $code; ?>][title]" class="form-control" value="<?php echo (isset($page['translation'][$code]['title'])) ? $this->e($page['translation'][$code]['title']) : ''; ?>">
+          <div class="help-block">
+            <?php echo $this->error("translation.$code.title", ' has-error'); ?>
+          </div>
+        </div>
+      </div>
+      <div class="form-group<?php echo $this->error("translation.$code.description", ' has-error'); ?>">
+        <label class="col-md-2 control-label"><?php echo $this->text('Description %language', array('%language' => $info['native_name'])); ?></label>
+        <div class="col-md-10">
+          <textarea class="form-control" rows="10" data-wysiwyg="true" name="page[translation][<?php echo $code; ?>][description]"><?php echo (isset($page['translation'][$code]['description'])) ? $this->filter($page['translation'][$code]['description']) : ''; ?></textarea>
+          <div class="help-block">
+            <?php echo $this->error("translation.$code.description"); ?>
+          </div>
+        </div>
+      </div>
+      <?php } ?>
+    </div>
+    <?php } ?>
+  </fieldset>
   <fieldset>
     <legend><?php echo $this->text('Relations'); ?></legend>
     <div class="form-group<?php echo $this->error('store_id', ' has-error'); ?>">

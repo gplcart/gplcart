@@ -12,7 +12,7 @@
 <?php } ?>
 <?php if (!empty($modules)) { ?>
 <div class="table-responsive">
-  <table class="table modules">
+  <table class="table table-hover modules">
     <thead>
       <tr>
         <th><a href="<?php echo $sort_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a></th>
@@ -58,7 +58,7 @@
             <?php if ($this->access('module_disable') && empty($info['lock'])) { ?>
             <li>
               <a href="<?php echo $this->url(false, array('action' => 'disable', 'module_id' => $module_id, 'token' => $_token)); ?>">
-                <b><?php echo $this->lower($this->text('Disable')); ?></b>
+                <span class="text-danger"><?php echo $this->lower($this->text('Disable')); ?></span>
               </a>
             </li>
             <?php } ?>

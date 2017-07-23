@@ -8,92 +8,94 @@
 ?>
 <form method="post" id="edit-product" enctype="multipart/form-data" class="form-horizontal">
   <input type="hidden" name="token" value="<?php echo $_token; ?>">
-  <?php if (isset($product['product_id'])) { ?>
-  <div class="form-group">
-    <div class="col-md-10 col-md-offset-2">
-      <ul class="list-unstyled">
-        <li><?php echo $this->text('User'); ?>: <?php echo empty($product['author']) ? $this->text('Unknown') : $product['author']; ?></li>
-        <li><?php echo $this->text('Created'); ?>: <?php echo $this->date($product['created']); ?></li>
-        <?php if ($product['modified'] > $product['created']) { ?>
-        <li><?php echo $this->text('Modified'); ?>: <?php echo $this->date($product['modified']); ?></li>
-        <?php } ?>
-      </ul>
-    </div>
-  </div>
-  <?php } ?>
-  <div class="form-group">
-    <label class="col-md-2 control-label"><?php echo $this->text('Status'); ?></label>
-    <div class="col-md-4">
-      <div class="btn-group" data-toggle="buttons">
-        <label class="btn btn-default<?php echo (!isset($product['status']) || $product['status']) ? ' active' : ''; ?>">
-          <input name="product[status]" type="radio" autocomplete="off" value="1"<?php echo (!isset($product['status']) || $product['status']) ? ' checked' : ''; ?>><?php echo $this->text('Enabled'); ?>
-        </label>
-        <label class="btn btn-default<?php echo (!isset($product['status']) || $product['status']) ? '' : ' active'; ?>">
-          <input name="product[status]" type="radio" autocomplete="off" value="0"<?php echo (!isset($product['status']) || $product['status']) ? '' : ' checked'; ?>><?php echo $this->text('Disabled'); ?>
-        </label>
-      </div>
-      <div class="help-block">
-        <?php echo $this->text('Disabled products will not be available for frontend users and search engines'); ?>
-      </div>
-    </div>
-  </div>
-  <div class="form-group required<?php echo $this->error('title', ' has-error'); ?>">
-    <label class="col-md-2 control-label"><?php echo $this->text('Title'); ?></label>
-    <div class="col-md-6">
-      <input name="product[title]" maxlength="255" class="form-control" value="<?php echo isset($product['title']) ? $this->e($product['title']) : ''; ?>" autofocus>
-      <div class="help-block">
-        <?php echo $this->error('title'); ?>
-        <div class="text-muted"><?php echo $this->text('Required. The title will be used on the product page and menu'); ?></div>
-      </div>
-    </div>
-  </div>
-  <div class="form-group<?php echo $this->error('description', ' has-error'); ?>">
-    <label class="col-md-2 control-label"><?php echo $this->text('Description'); ?></label>
-    <div class="col-md-10">
-      <textarea class="form-control" data-wysiwyg="true" rows="10" name="product[description]"><?php echo isset($product['description']) ? $this->filter($product['description']) : ''; ?></textarea>
-      <div class="help-block">
-        <?php echo $this->error('description'); ?>
-        <div class="text-muted"><?php echo $this->text('Required. You can use any HTML but user can see only allowed tags'); ?></div>
-      </div>
-    </div>
-  </div>
-  <?php if (!empty($_languages)) { ?>
-  <div class="form-group">
-    <div class="col-md-10 col-md-offset-2">
-      <a data-toggle="collapse" href="#translations">
-        <?php echo $this->text('Translations'); ?> <span class="caret"></span>
-      </a>
-    </div>
-  </div>
-  <div id="translations" class="collapse translations<?php echo $this->error(null, ' in'); ?>">
-    <?php foreach ($_languages as $code => $info) { ?>
-    <div class="form-group<?php echo $this->error("translation.$code.title", ' has-error'); ?>">
-      <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $info['native_name'])); ?></label>
-      <div class="col-md-10">
-        <input name="product[translation][<?php echo $code; ?>][title]" maxlength="255" class="form-control" value="<?php echo isset($product['translation'][$code]['title']) ? $this->e($product['translation'][$code]['title']) : ''; ?>">
-        <div class="help-block">
-          <?php echo $this->error("translation.$code.title"); ?>
-          <div class="text-muted">
-            <?php echo $this->text('An optional translation for language %name', array('%name' => $info['name'])); ?>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="form-group<?php echo $this->error("translation.$code.description", ' has-error'); ?>">
-      <label class="col-md-2 control-label"><?php echo $this->text('Description %language', array('%language' => $info['native_name'])); ?></label>
-      <div class="col-md-10">
-        <textarea class="form-control" rows="10" data-wysiwyg="true" name="product[translation][<?php echo $code; ?>][description]"><?php echo isset($product['translation'][$code]['description']) ? $this->filter($product['translation'][$code]['description']) : ''; ?></textarea>
-        <div class="help-block">
-          <?php echo $this->error("translation.$code.description"); ?>
-          <div class="text-muted">
-            <?php echo $this->text('An optional translation for language %name', array('%name' => $info['name'])); ?>
-          </div>
-        </div>
+  <fieldset>
+    <?php if (isset($product['product_id'])) { ?>
+    <div class="form-group">
+      <div class="col-md-10 col-md-offset-2">
+        <ul class="list-unstyled">
+          <li><?php echo $this->text('User'); ?>: <?php echo empty($product['author']) ? $this->text('Unknown') : $product['author']; ?></li>
+          <li><?php echo $this->text('Created'); ?>: <?php echo $this->date($product['created']); ?></li>
+          <?php if ($product['modified'] > $product['created']) { ?>
+          <li><?php echo $this->text('Modified'); ?>: <?php echo $this->date($product['modified']); ?></li>
+          <?php } ?>
+        </ul>
       </div>
     </div>
     <?php } ?>
-  </div>
-  <?php } ?>
+    <div class="form-group">
+      <label class="col-md-2 control-label"><?php echo $this->text('Status'); ?></label>
+      <div class="col-md-4">
+        <div class="btn-group" data-toggle="buttons">
+          <label class="btn btn-default<?php echo (!isset($product['status']) || $product['status']) ? ' active' : ''; ?>">
+            <input name="product[status]" type="radio" autocomplete="off" value="1"<?php echo (!isset($product['status']) || $product['status']) ? ' checked' : ''; ?>><?php echo $this->text('Enabled'); ?>
+          </label>
+          <label class="btn btn-default<?php echo (!isset($product['status']) || $product['status']) ? '' : ' active'; ?>">
+            <input name="product[status]" type="radio" autocomplete="off" value="0"<?php echo (!isset($product['status']) || $product['status']) ? '' : ' checked'; ?>><?php echo $this->text('Disabled'); ?>
+          </label>
+        </div>
+        <div class="help-block">
+          <?php echo $this->text('Disabled products will not be available for frontend users and search engines'); ?>
+        </div>
+      </div>
+    </div>
+    <div class="form-group required<?php echo $this->error('title', ' has-error'); ?>">
+      <label class="col-md-2 control-label"><?php echo $this->text('Title'); ?></label>
+      <div class="col-md-6">
+        <input name="product[title]" maxlength="255" class="form-control" value="<?php echo isset($product['title']) ? $this->e($product['title']) : ''; ?>" autofocus>
+        <div class="help-block">
+          <?php echo $this->error('title'); ?>
+          <div class="text-muted"><?php echo $this->text('Required. The title will be used on the product page and menu'); ?></div>
+        </div>
+      </div>
+    </div>
+    <div class="form-group<?php echo $this->error('description', ' has-error'); ?>">
+      <label class="col-md-2 control-label"><?php echo $this->text('Description'); ?></label>
+      <div class="col-md-10">
+        <textarea class="form-control" data-wysiwyg="true" rows="10" name="product[description]"><?php echo isset($product['description']) ? $this->filter($product['description']) : ''; ?></textarea>
+        <div class="help-block">
+          <?php echo $this->error('description'); ?>
+          <div class="text-muted"><?php echo $this->text('Required. You can use any HTML but user can see only allowed tags'); ?></div>
+        </div>
+      </div>
+    </div>
+    <?php if (!empty($_languages)) { ?>
+    <div class="form-group">
+      <div class="col-md-10 col-md-offset-2">
+        <a data-toggle="collapse" href="#translations">
+          <?php echo $this->text('Translations'); ?> <span class="caret"></span>
+        </a>
+      </div>
+    </div>
+    <div id="translations" class="collapse translations<?php echo $this->error(null, ' in'); ?>">
+      <?php foreach ($_languages as $code => $info) { ?>
+      <div class="form-group<?php echo $this->error("translation.$code.title", ' has-error'); ?>">
+        <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $info['native_name'])); ?></label>
+        <div class="col-md-10">
+          <input name="product[translation][<?php echo $code; ?>][title]" maxlength="255" class="form-control" value="<?php echo isset($product['translation'][$code]['title']) ? $this->e($product['translation'][$code]['title']) : ''; ?>">
+          <div class="help-block">
+            <?php echo $this->error("translation.$code.title"); ?>
+            <div class="text-muted">
+              <?php echo $this->text('An optional translation for language %name', array('%name' => $info['name'])); ?>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group<?php echo $this->error("translation.$code.description", ' has-error'); ?>">
+        <label class="col-md-2 control-label"><?php echo $this->text('Description %language', array('%language' => $info['native_name'])); ?></label>
+        <div class="col-md-10">
+          <textarea class="form-control" rows="10" data-wysiwyg="true" name="product[translation][<?php echo $code; ?>][description]"><?php echo isset($product['translation'][$code]['description']) ? $this->filter($product['translation'][$code]['description']) : ''; ?></textarea>
+          <div class="help-block">
+            <?php echo $this->error("translation.$code.description"); ?>
+            <div class="text-muted">
+              <?php echo $this->text('An optional translation for language %name', array('%name' => $info['name'])); ?>
+            </div>
+          </div>
+        </div>
+      </div>
+      <?php } ?>
+    </div>
+    <?php } ?>
+  </fieldset>
   <fieldset>
     <legend><?php echo $this->text('Data'); ?></legend>
     <?php if (!empty($classes)) { ?>

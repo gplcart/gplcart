@@ -8,46 +8,48 @@
 ?>
 <form method="post" class="form-horizontal">
   <input type="hidden" name="token" value="<?php echo $_token; ?>">
-  <div class="form-group">
-    <label class="col-md-2 control-label"><?php echo $this->text('Status'); ?></label>
-    <div class="col-md-4">
-      <div class="btn-group" data-toggle="buttons">
-        <label class="btn btn-default<?php echo empty($role['status']) ? '' : ' active'; ?>">
-          <input name="role[status]" type="radio" autocomplete="off" value="1"<?php echo empty($role['status']) ? '' : ' checked'; ?>>
-          <?php echo $this->text('Enabled'); ?>
-        </label>
-        <label class="btn btn-default<?php echo empty($role['status']) ? ' active' : ''; ?>">
-          <input name="role[status]" type="radio" autocomplete="off" value="0"<?php echo empty($role['status']) ? ' checked' : ''; ?>>
-          <?php echo $this->text('Disabled'); ?>
-        </label>
+  <fieldset>
+    <div class="form-group">
+      <label class="col-md-2 control-label"><?php echo $this->text('Status'); ?></label>
+      <div class="col-md-4">
+        <div class="btn-group" data-toggle="buttons">
+          <label class="btn btn-default<?php echo empty($role['status']) ? '' : ' active'; ?>">
+            <input name="role[status]" type="radio" autocomplete="off" value="1"<?php echo empty($role['status']) ? '' : ' checked'; ?>>
+            <?php echo $this->text('Enabled'); ?>
+          </label>
+          <label class="btn btn-default<?php echo empty($role['status']) ? ' active' : ''; ?>">
+            <input name="role[status]" type="radio" autocomplete="off" value="0"<?php echo empty($role['status']) ? ' checked' : ''; ?>>
+            <?php echo $this->text('Disabled'); ?>
+          </label>
+        </div>
+        <div class="help-block"><?php echo $this->text('Disabled roles will not be available for users'); ?></div>
       </div>
-      <div class="help-block"><?php echo $this->text('Disabled roles will not be available for users'); ?></div>
     </div>
-  </div>
-  <div class="form-group required<?php echo $this->error('name', ' has-error'); ?>">
-    <label class="col-md-2 control-label"><?php echo $this->text('Name'); ?></label>
-    <div class="col-md-4">
-      <input maxlength="255" name="role[name]" class="form-control" value="<?php echo isset($role['name']) ? $this->e($role['name']) : ''; ?>">
-      <div class="help-block">
-        <?php echo $this->error('name'); ?>
-        <div class="text-muted">
-          <?php echo $this->text('Required. A descriptive name of the role, e.g Boss, Manager etc'); ?>
+    <div class="form-group required<?php echo $this->error('name', ' has-error'); ?>">
+      <label class="col-md-2 control-label"><?php echo $this->text('Name'); ?></label>
+      <div class="col-md-4">
+        <input maxlength="255" name="role[name]" class="form-control" value="<?php echo isset($role['name']) ? $this->e($role['name']) : ''; ?>">
+        <div class="help-block">
+          <?php echo $this->error('name'); ?>
+          <div class="text-muted">
+            <?php echo $this->text('Required. A descriptive name of the role, e.g Boss, Manager etc'); ?>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <div class="form-group<?php echo $this->error('redirect', ' has-error'); ?>">
-    <label class="col-md-2 control-label"><?php echo $this->text('Redirect'); ?></label>
-    <div class="col-md-4">
-      <input maxlength="255" name="role[redirect]" placeholder="<?php echo $this->text('To account page'); ?>" class="form-control" value="<?php echo isset($role['redirect']) ? $this->e($role['redirect']) : ''; ?>">
-      <div class="help-block">
-        <?php echo $this->error('redirect'); ?>
-        <div class="text-muted">
-          <?php echo $this->text('A destination that a user is redirected to after logging in'); ?>
+    <div class="form-group<?php echo $this->error('redirect', ' has-error'); ?>">
+      <label class="col-md-2 control-label"><?php echo $this->text('Redirect'); ?></label>
+      <div class="col-md-4">
+        <input maxlength="255" name="role[redirect]" placeholder="<?php echo $this->text('To account page'); ?>" class="form-control" value="<?php echo isset($role['redirect']) ? $this->e($role['redirect']) : ''; ?>">
+        <div class="help-block">
+          <?php echo $this->error('redirect'); ?>
+          <div class="text-muted">
+            <?php echo $this->text('A destination that a user is redirected to after logging in'); ?>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </fieldset>
   <fieldset>
     <legend><?php echo $this->text('Permissions'); ?></legend>
     <div class="form-group">

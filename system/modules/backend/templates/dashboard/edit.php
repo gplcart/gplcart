@@ -11,7 +11,7 @@
   <div class="btn-toolbar actions">
     <?php if (isset($dashboard['dashboard_id'])) { ?>
     <button class="btn btn-default delete" name="delete" value="1">
-      <i class="fa fa-refresh"></i> <?php echo $this->text('Reset'); ?>
+      <?php echo $this->text('Reset'); ?>
     </button>
     <?php } ?>
     <button class="btn btn-default save" name="save" value="1">
