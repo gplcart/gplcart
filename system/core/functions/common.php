@@ -32,11 +32,18 @@ function gplcart_to_bytes($value)
 /**
  * Returns XSS-safe JSON string
  * @param mixed $data
+ * @param bool $pretty
  * @return string
  */
-function gplcart_json_encode($data)
+function gplcart_json_encode($data, $pretty = false)
 {
-    return json_encode($data, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
+    $options = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT;
+
+    if ($pretty) {
+        $options = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_PRETTY_PRINT;
+    }
+
+    return json_encode($data, $options);
 }
 
 /**
