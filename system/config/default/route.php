@@ -164,12 +164,6 @@ return array(
             'controller' => array('gplcart\\core\\controllers\\backend\\Dashboard', 'indexDashboard')
         )
     ),
-    'admin/dashboard' => array(
-        'access' => 'dashboard_edit',
-        'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\backend\\Dashboard', 'editDashboard')
-        )
-    ),
     'admin/content' => array(
         'menu' => array('admin' => 'Content'),
         'arguments' => array('admin/content'),
@@ -534,6 +528,13 @@ return array(
         'menu' => array('admin' => 'Common'),
         'handlers' => array(
             'controller' => array('gplcart\\core\\controllers\\backend\\Settings', 'editSettings')
+        )
+    ),
+    'admin/settings/dashboard' => array(
+        'menu' => array('admin' => 'Dashboard'),
+        'access' => 'dashboard_edit',
+        'handlers' => array(
+            'controller' => array('gplcart\\core\\controllers\\backend\\Dashboard', 'editDashboard')
         )
     ),
     'admin/settings/language' => array(
