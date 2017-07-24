@@ -314,6 +314,11 @@ class User extends Model
 
         $this->hook->fire('user.get.before', $user_id, $store_id, $this);
 
+        if (empty($user_id)) {
+            // This is also prevents fatal errors when db is unavailable
+            return $user = array();
+        }
+
         $sql = 'SELECT u.*, r.status AS role_status, r.name AS role_name, r.permissions AS role_permissions'
                 . ' FROM user u'
                 . ' LEFT JOIN role r ON (u.role_id = r.role_id)'
