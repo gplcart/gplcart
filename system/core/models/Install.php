@@ -73,25 +73,33 @@ class Install extends Model
      */
     public function getList()
     {
-        $installers = array();
+        $installers = $this->getDefault();
+
         $this->hook->fire('install.modules', $installers, $this);
 
-        // Default installer definition goes after the hook 
-        // to prevent changing form a module
-        $installers['default'] = array(
-            'weight' => 0,
-            'path' => 'install',
-            'title' => $this->language->text('Default'),
-            'description' => $this->language->text('Default system installer'),
-        );
-
-        // Append installer ID
         array_walk($installers, function(&$value, $key) {
             $value['id'] = $key;
         });
 
         gplcart_array_sort($installers);
+
         return $installers;
+    }
+
+    /**
+     * Returns an array of default installers
+     * @return array
+     */
+    protected function getDefault()
+    {
+        return array(
+            'default' => array(
+                'weight' => 0,
+                'path' => 'install',
+                'title' => $this->language->text('Default'),
+                'description' => $this->language->text('Default system installer'),
+            )
+        );
     }
 
     /**
@@ -111,68 +119,7 @@ class Install extends Model
      */
     public function getRequirements()
     {
-        $requirements = array();
-
-        $requirements['extensions']['gd'] = array(
-            'status' => extension_loaded('gd'),
-            'severity' => 'danger',
-            'message' => $this->language->text('@name extension installed', array('@name' => 'GD'))
-        );
-
-        $requirements['extensions']['pdo'] = array(
-            'status' => extension_loaded('pdo'),
-            'severity' => 'danger',
-            'message' => $this->language->text('@name extension installed', array('@name' => 'PDO'))
-        );
-
-        $requirements['extensions']['spl'] = array(
-            'status' => extension_loaded('spl'),
-            'severity' => 'danger',
-            'message' => $this->language->text('@name extension installed', array('@name' => 'SPL'))
-        );
-
-        $requirements['extensions']['curl'] = array(
-            'status' => extension_loaded('curl'),
-            'severity' => 'danger',
-            'message' => $this->language->text('@name extension installed', array('@name' => 'CURL'))
-        );
-
-        $requirements['extensions']['fileinfo'] = array(
-            'status' => extension_loaded('fileinfo'),
-            'severity' => 'danger',
-            'message' => $this->language->text('@name extension installed', array('@name' => 'FileInfo'))
-        );
-
-        $requirements['extensions']['openssl'] = array(
-            'status' => extension_loaded('openssl'),
-            'severity' => 'danger',
-            'message' => $this->language->text('@name extension installed', array('@name' => 'OpenSSL'))
-        );
-
-        $requirements['extensions']['ctype'] = array(
-            'status' => extension_loaded('ctype'),
-            'severity' => 'danger',
-            'message' => $this->language->text('@name extension installed', array('@name' => 'Ctype'))
-        );
-
-        $requirements['php']['allow_url_fopen'] = array(
-            'status' => !ini_get('allow_url_fopen'),
-            'severity' => 'warning',
-            'message' => $this->language->text('allow_url_fopen directive disabled')
-        );
-
-        $requirements['files']['system_directory'] = array(
-            'status' => is_writable(GC_CONFIG_DIR . '/runtime'),
-            'severity' => 'danger',
-            'message' => $this->language->text('@file exists and writable', array('@file' => '/system/config/runtime'))
-        );
-
-        $requirements['files']['cache_directory'] = array(
-            'status' => is_writable(GC_CACHE_DIR),
-            'severity' => 'danger',
-            'message' => $this->language->text('@file exists and writable', array('@file' => '/cache'))
-        );
-
+        $requirements = require GC_CONFIG_REQUIREMENT;
         return $requirements;
     }
 
@@ -224,8 +171,18 @@ class Install extends Model
      */
     public function tables()
     {
+        $result = null;
         $scheme = $this->database->getScheme();
-        return $this->database->import($scheme);
+        $this->hook->fire('install.tables.before', $scheme, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
+        $result = $this->database->import($scheme);
+        $this->hook->fire('install.tables.after', $scheme, $result, $this);
+
+        return $result;
     }
 
     /**
@@ -237,6 +194,13 @@ class Install extends Model
     {
         $config = file_get_contents(GC_CONFIG_COMMON_DEFAULT);
 
+        $result = null;
+        $this->hook->fire('install.config.before', $settings, $config, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
         if (empty($config)) {
             return false;
         }
@@ -246,12 +210,15 @@ class Install extends Model
         $config .= 'return $config;';
         $config .= PHP_EOL;
 
+        $result = false;
         if (file_put_contents(GC_CONFIG_COMMON, $config)) {
             chmod(GC_CONFIG_COMMON, 0444);
-            return true;
+            $result = true;
         }
 
-        return false;
+        $this->hook->fire('install.config.after', $settings, $config, $result, $this);
+
+        return $result;
     }
 
     /**
@@ -262,6 +229,13 @@ class Install extends Model
     public function store(array $settings)
     {
         Container::unregister(); // Remove old instances to prevent conflicts
+
+        $result = null;
+        $this->hook->fire('install.store.before', $settings, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
 
         $this->config = Container::get('gplcart\\core\\Config');
         $this->database = $this->config->getDb();
@@ -285,7 +259,10 @@ class Install extends Model
         $this->createLanguages($settings);
         $this->createPages($user_id, $store_id);
 
-        return true;
+        $result = true;
+        $this->hook->fire('install.store.after', $settings, $result, $this);
+
+        return $result;
     }
 
     /**
@@ -418,10 +395,19 @@ class Install extends Model
     /**
      * Performs full system installation
      * @param array $data
-     * @return boolean|string Either TRUE on success or a error message 
+     * @return boolean|string Either TRUE on success or a error message
      */
     public function full(array $data)
     {
+        set_time_limit(0);
+
+        $result = null;
+        $this->hook->fire('install.full.before', $data, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
         if ($this->tables() !== true) {
             return $this->language->text('Failed to create all necessary tables in the database');
         }
@@ -436,7 +422,8 @@ class Install extends Model
             return (string) $result;
         }
 
-        return true;
+        $this->hook->fire('install.full.after', $data, $result, $this);
+        return $result;
     }
 
 }
