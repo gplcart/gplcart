@@ -162,8 +162,6 @@ class Install extends Controller
      */
     protected function processStartInstall(array $submitted)
     {
-        ini_set('max_execution_time', 0);
-
         $this->session->delete('user');
         $this->session->delete('install');
 
@@ -217,7 +215,8 @@ class Install extends Controller
         $this->setSubmitted('store.basepath', trim($this->request->base(true), '/'));
 
         $this->validateComponent('install');
-        return !$this->hasErrors();
+
+        return !$this->hasErrors(false);
     }
 
 }
