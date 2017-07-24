@@ -1,13 +1,34 @@
-table.requirements {
-    margin-bottom: 20px;
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+
+body {
+    font-family: 'Open Sans', sans-serif;
 }
 
-.form-group.required .control-label:before,
-span.required:before {
-    content: "* ";
-    color: red;
+.required > td > .name:before {
+    content:"* ";
+    color:red;
+}
+
+td {
+    vertical-align: middle !important;
+}
+
+.has-error {
+    color: #a94442;
+}
+
+.actions {
+    margin: 50px 0;
 }
 
 .select-language {
     margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+@media (min-width: 768px) {
+    .container {
+        max-width: 730px;
+    }
 }
