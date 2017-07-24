@@ -146,6 +146,18 @@ label {
     box-shadow: none;
 }
 
+.panel-heading {
+    background-color: transparent !important;
+    margin-left: 15px;
+    margin-right: 15px;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.panel-heading li a {
+    font-size: 90%;
+}
+
 .panel-body table tr:first-child td {
     border: none !important;
 }
