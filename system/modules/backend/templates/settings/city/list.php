@@ -122,14 +122,10 @@
   <?php } ?>
 </form>
 <?php } else { ?>
-<div class="row empty">
-  <div class="col-md-12">
-    <?php echo $this->text('There are no items yet'); ?>
-    <?php if ($this->access('city_add')) { ?>
-    <a class="btn btn-default add" href="<?php echo $this->url("admin/settings/city/add/{$country['code']}/{$state['state_id']}"); ?>">
-      <?php echo $this->text('Add'); ?>
-    </a>
-    <?php } ?>
-  </div>
-</div>
+<?php echo $this->text('There are no items yet'); ?>&nbsp;
+<?php if ($this->access('city_add')) { ?>
+<a class="btn btn-default add" href="<?php echo $this->url("admin/settings/city/add/{$country['code']}/{$state['state_id']}"); ?>">
+  <?php echo $this->text('Add'); ?>
+</a>
+<?php } ?>
 <?php } ?>

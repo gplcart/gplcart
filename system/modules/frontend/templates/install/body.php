@@ -7,209 +7,197 @@
  */
 ?>
 <body class="install">
-  <div class="container-fluid">
-    <form method="post" class="form-horizontal">
-      <div class="row">
-        <div class="col-md-12">
-          <h1 class="h3"><?php echo $this->text('Welcome to GPL Cart'); ?></h1>
-          <?php if (!empty($_languages) && count($_languages) > 1) { ?>
-          <div class="select-language clearfix">
-            <span class="pull-left"><?php echo $this->text('Select a language'); ?>:&nbsp;&nbsp;</span>
-            <div class="btn-toolbar">
-              <?php foreach ($_languages as $code => $data) { ?>
-                <a class="btn btn-default btn-xs<?php echo $code === $language ? ' active' : ''; ?>" href="<?php echo $this->url('', array('lang' => $code)); ?>">
-                  <?php echo $this->e($data['native_name']); ?>
-                </a>
-              <?php } ?>
-            </div>
-          </div>
-          <?php } ?>
-        </div>
-      </div>
-      <?php if (!empty($_messages)) { ?>
-      <div class="row">
-        <div class="col-md-12">
-          <?php foreach ($_messages as $type => $strings) { ?>
-          <div class="alert alert-<?php echo $this->e($type); ?> alert-dismissible fade in">
-            <button type="button" class="close" data-dismiss="alert">
-              <span aria-hidden="true">&times;</span>
-            </button>
-            <?php foreach ($strings as $string) { ?>
-            <?php echo $this->filter($string); ?>
-            <?php } ?>
-          </div>
-          <?php } ?>
-        </div>
+  <div class="container">
+    <h2><?php echo $this->e($_page_title); ?> <small>v. <?php echo GC_VERSION; ?></small></h2>
+    <form method="post">
+      <?php if (!empty($_languages) && count($_languages) > 1) { ?>
+      <div class="select-language clearfix">
+        <?php echo $this->text('Select a language'); ?>:
+        <?php foreach ($_languages as $code => $data) { ?>
+        <a class="<?php echo $code === $language ? ' active' : ''; ?>" href="<?php echo $this->url('', array('lang' => $code)); ?>">
+          <?php echo $this->e($data['native_name']); ?>
+        </a>
+        <?php } ?>
       </div>
       <?php } ?>
-      <div class="row">
-        <?php if ($severity !== 'danger') { ?>
-        <div class="col-md-8">
-          <div class="panel panel-default">
-            <div class="panel-heading"><?php echo $this->text('Database'); ?></div>
-            <div class="panel-body">
-              <?php if ($this->error('database.connect', true)) { ?>
-              <div class="alert alert-warning alert-dismissible">
-                <button type="button" class="close" data-dismiss="alert">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-                <?php echo $this->error('database.connect'); ?>
-              </div>
-              <?php } ?>
-              <div class="required form-group<?php echo $this->error('database.name', ' has-error'); ?>">
-                <label class="col-md-3 control-label"><?php echo $this->text('Database name'); ?></label>
-                <div class="col-md-4">
-                  <input name="settings[database][name]" class="form-control" value="<?php echo isset($settings['database']['name']) ? $this->e($settings['database']['name']) : ''; ?>">
-                  <div class="help-block">
-                    <?php echo $this->error('database.name'); ?>
-                  </div>
-                </div>
-                <div class="col-md-5"><?php echo $this->text('A name of the database you want to connect to'); ?></div>
-              </div>
-              <div class="required form-group<?php echo $this->error('database.user', ' has-error'); ?>">
-                <label class="col-md-3 control-label"><?php echo $this->text('Database user'); ?></label>
-                <div class="col-md-4">
-                  <input name="settings[database][user]" class="form-control" value="<?php echo isset($settings['database']['user']) ? $this->e($settings['database']['user']) : 'root'; ?>">
-                  <div class="help-block">
-                    <?php echo $this->error('database.user'); ?>
-                  </div>
-                </div>
-                <div class="col-md-5">
-                  <?php echo $this->text('An existing username to access the database'); ?>
-                </div>
-              </div>
-              <div class="form-group<?php echo $this->error('database.password', ' has-error'); ?>">
-                <label class="col-md-3 control-label"><?php echo $this->text('Database password'); ?></label>
-                <div class="col-md-4">
-                  <input type="password" name="settings[database][password]" class="form-control" value="<?php echo isset($settings['database']['password']) ? $this->e($settings['database']['password']) : ''; ?>">
-                  <div class="help-block">
-                    <?php echo $this->error('database.password'); ?>
-                  </div>
-                </div>
-                <div class="col-md-5"><?php echo $this->text('A password to access the database. Can be empty'); ?></div>
-              </div>
-              <?php if (!$this->error(null, true)) { ?>
-              <div class="form-group">
-                <div class="col-md-5 col-md-offset-3">
-                  <a href="#db-advanced" data-toggle="collapse"><?php echo $this->text('Advanced'); ?> <span class="caret"></span></a>
-                </div>
-              </div>
-              <?php } ?>
-              <div id="db-advanced" class="<?php echo $this->error(null, '', 'collapse'); ?>">
-                <div class="form-group">
-                  <label class="col-md-3 control-label"><?php echo $this->text('Database type'); ?></label>
-                  <div class="col-md-4">
-                    <select name="settings[database][type]" class="form-control">
-                      <option value="mysql"<?php echo isset($settings['database']['type']) && $settings['database']['type'] === 'mysql' ? ' selected' : ''; ?>><?php echo $this->text('mysql'); ?></option>
-                      <option value="sqlite"<?php echo isset($settings['database']['type']) && $settings['database']['type'] === 'sqlite' ? ' selected' : ''; ?>><?php echo $this->text('sqlite'); ?></option>
-                    </select>
-                  </div>
-                </div>
-                <div class="required form-group<?php echo $this->error('database.port', ' has-error'); ?>">
-                  <label class="col-md-3 control-label"><?php echo $this->text('Database port'); ?></label>
-                  <div class="col-md-4">
-                    <input name="settings[database][port]" class="form-control" value="<?php echo isset($settings['database']['port']) ? $this->e($settings['database']['port']) : '3306'; ?>">
-                    <div class="help-block"><?php echo $this->error('database.port'); ?></div>
-                  </div>
-                </div>
-                <div class="required form-group<?php echo $this->error('database.host', ' has-error'); ?>">
-                  <label class="col-md-3 control-label"><?php echo $this->text('Database host'); ?></label>
-                  <div class="col-md-4">
-                    <input name="settings[database][host]" class="form-control" value="<?php echo isset($settings['database']['host']) ? $this->e($settings['database']['host']) : 'localhost'; ?>">
-                    <div class="help-block"><?php echo $this->error('database.host'); ?></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="panel panel-default">
-            <div class="panel-heading"><?php echo $this->text('Site'); ?></div>
-            <div class="panel-body">
-              <div class="required form-group<?php echo $this->error('user.email', ' has-error'); ?>">
-                <label class="col-md-3 control-label"><?php echo $this->text('E-mail'); ?></label>
-                <div class="col-md-4">
-                  <input name="settings[user][email]" class="form-control" value="<?php echo isset($settings['user']['email']) ? $this->e($settings['user']['email']) : ''; ?>">
-                  <div class="help-block">
-                    <?php echo $this->error('user.email'); ?>
-                  </div>
-                </div>
-                <div class="col-md-5"><?php echo $this->text('An E-mail for superadmin'); ?></div>
-              </div>
-              <div class="required form-group<?php echo $this->error('user.password', ' has-error'); ?>">
-                <label class="col-md-3 control-label"><?php echo $this->text('Password'); ?></label>
-                <div class="col-md-4">
-                  <input type="password" name="settings[user][password]" class="form-control" value="<?php echo isset($settings['user']['password']) ? $this->e($settings['user']['password']) : ''; ?>">
-                  <div class="help-block">
-                    <?php echo $this->error('user.password'); ?>
-                  </div>
-                </div>
-                <div class="col-md-5"><?php echo $this->text('A password for superadmin'); ?></div>
-              </div>
-              <div class="required form-group<?php echo $this->error('store.title', ' has-error'); ?>">
-                <label class="col-md-3 control-label"><?php echo $this->text('Store title'); ?></label>
-                <div class="col-md-4">
-                  <input name="settings[store][title]" class="form-control" value="<?php echo isset($settings['store']['title']) ? $this->e($settings['store']['title']) : 'GPL Cart'; ?>">
-                  <div class="help-block">
-                    <?php echo $this->error('store.title'); ?>
-                  </div>
-                </div>
-                <div class="col-md-5"><?php echo $this->text('A name of the store'); ?></div>
-              </div>
-              <div class="form-group">
-                <label class="col-md-3 control-label"><?php echo $this->text('Timezone'); ?></label>
-                <div class="col-md-4">
-                  <select name="settings[store][timezone]" class="form-control">
-                    <?php foreach ($timezones as $value => $label) { ?>
-                    <option value="<?php echo $this->e($value); ?>"<?php echo isset($settings['store']['timezone']) && $settings['store']['timezone'] == $value ? ' selected' : ''; ?>><?php echo $this->e($label); ?></option>
-                    <?php } ?>
-                  </select>
-                </div>
-                <div class="col-md-5"><?php echo $this->text('Choose your local timezone'); ?></div>
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <div class="col-md-12 text-right">
-              <button class="btn btn btn-default" name="install" value="1"><?php echo $this->text('Install'); ?></button>
-            </div>
-          </div>
-        </div>
+      <?php if (!empty($_messages)) { ?>
+      <?php foreach ($_messages as $type => $strings) { ?>
+      <div class="alert alert-<?php echo $this->e($type); ?> alert-dismissible fade in">
+        <button type="button" class="close" data-dismiss="alert">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <?php foreach ($strings as $string) { ?>
+        <?php echo $this->filter($string); ?>
         <?php } ?>
-        <div class="<?php echo $severity === 'danger' ? 'col-md-12' : 'col-md-4'; ?>">
-          <div class="panel panel-default">
-            <div class="panel-heading"><?php echo $this->text('Requirements'); ?></div>
-            <div class="panel-body">
-              <table class="table-condensed requirements">
-                <tbody>
-                  <?php foreach ($requirements as $section => $items) { ?>
-                  <?php foreach ($items as $name => $info) { ?>
-                  <tr>
-                    <td><?php echo $this->text($info['message']); ?></td>
-                    <td>
-                      <?php if ($info['status']) { ?>
-                      <?php echo $this->text('OK'); ?>
-                      <?php } else { ?>
-                      <?php if ($info['severity'] === 'warning') { ?>
-                      <?php echo $this->text('Non-critical issue'); ?>
-                      <?php } else if ($info['severity'] === 'danger') { ?>
-                      <?php echo $this->text('Critical issue'); ?>
-                      <?php } else { ?>
-                      <?php echo $this->text('Error'); ?>
-                      <?php } ?>
-                      <?php } ?>
-                    </td>
-                  </tr>
-                <?php } ?>
-                <?php } ?>
-              </tbody>
-            </table>
-            </div>
-          </div>
-          <?php if ($severity === 'danger') { ?>
-          <p><b><?php echo $this->text('Please fix all critical errors in your environment before continue'); ?></b></p>
-          <?php } ?>
-        </div>
       </div>
+      <?php } ?>
+      <?php } ?>
+      <?php if ($severity === 'danger' || $severity === 'warning') { ?>
+      <div class="alert alert-<?php echo $severity; ?> alert-dismissible fade in">
+        <?php echo $this->text('There are some issues in your environment:'); ?>
+        <ol>
+          <?php foreach ($requirements as $section => $items) { ?>
+          <?php foreach ($items as $info) { ?>
+          <?php if (empty($info['status'])) { ?>
+          <li>
+            <?php echo $this->text($info['message']); ?> - <?php echo $this->text('No'); ?>
+            <?php if ($info['severity'] === 'warning') { ?>
+            (<?php echo $this->text('non-critical issue'); ?>)
+            <?php } else if ($info['severity'] === 'danger') { ?>
+            (<?php echo $this->text('critical issue'); ?>)
+            <?php } else { ?>
+            (<?php echo $this->text('error'); ?>)
+            <?php } ?>
+          </li>
+          <?php } ?>
+          <?php } ?>
+          <?php } ?>
+        </ol>
+      </div>
+      <?php } ?>
+      <?php if ($this->error('database.connect', true)) { ?>
+      <div class="alert alert-warning alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <?php echo $this->error('database.connect'); ?>
+      </div>
+      <?php } ?>
+      <?php if ($severity === 'danger') { ?>
+      <p><?php echo $this->text('Please fix all critical errors in your environment before continue'); ?></p>
+      <?php } else { ?>
+      <table class="table table-striped">
+        <caption><?php echo $this->text('Database'); ?></caption>
+        <tbody>
+          <tr class="required<?php echo $this->error('database.name', ' has-error'); ?>">
+            <td class="col-md-6">
+              <div class="name"><?php echo $this->text('Database name'); ?></div>
+              <div class="text-muted description"><?php echo $this->text('A name of the database you want to connect to'); ?></div>
+            </td>
+            <td class="middle col-md-6">
+              <input name="settings[database][name]" class="form-control" value="<?php echo isset($settings['database']['name']) ? $this->e($settings['database']['name']) : ''; ?>">
+              <?php echo $this->error('database.name'); ?>
+            </td>
+          </tr>
+          <tr class="required<?php echo $this->error('database.user', ' has-error'); ?>">
+            <td>
+              <div class="name"><?php echo $this->text('Database user'); ?></div>
+              <div class="text-muted description">
+                <?php echo $this->text('An existing username to access the database'); ?>
+              </div>
+            </td>
+            <td>
+              <input name="settings[database][user]" class="form-control" value="<?php echo isset($settings['database']['user']) ? $this->e($settings['database']['user']) : 'root'; ?>">
+              <?php echo $this->error('database.user'); ?>
+            </td>
+          </tr>
+          <tr class="<?php echo $this->error('database.password', ' has-error'); ?>">
+            <td>
+              <div class="name"><?php echo $this->text('Database password'); ?></div>
+              <div class="text-muted description">
+                <?php echo $this->text('A password to access the database. Can be empty'); ?>
+              </div>
+            </td>
+            <td>
+              <input type="password" name="settings[database][password]" class="form-control" value="<?php echo isset($settings['database']['password']) ? $this->e($settings['database']['password']) : ''; ?>">
+              <?php echo $this->error('database.password'); ?>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="table user table-striped">
+        <caption><?php echo $this->text('Site'); ?></caption>
+        <tbody>
+          <tr class="required<?php echo $this->error('user.email', ' has-error'); ?>">
+            <td class="col-md-6">
+              <div class="name"><?php echo $this->text('E-mail'); ?></div>
+              <div class="text-muted description"><?php echo $this->text('An E-mail for superadmin'); ?></div>
+            </td>
+            <td class="col-md-6">
+              <input name="settings[user][email]" class="form-control" value="<?php echo isset($settings['user']['email']) ? $this->e($settings['user']['email']) : ''; ?>">
+              <?php echo $this->error('user.email'); ?>
+            </td>
+          </tr>
+          <tr class="required<?php echo $this->error('user.password', ' has-error'); ?>">
+            <td>
+              <div class="name"><?php echo $this->text('Password'); ?></div>
+              <div class="text-muted description"><?php echo $this->text('A password for superadmin'); ?></div>
+            </td>
+            <td>
+              <input type="password" name="settings[user][password]" class="form-control" value="<?php echo isset($settings['user']['password']) ? $this->e($settings['user']['password']) : ''; ?>">
+              <?php echo $this->error('user.password'); ?>
+            </td>
+          </tr>
+          <tr class="required<?php echo $this->error('store.title', ' has-error'); ?>">
+            <td>
+              <div class="name"><?php echo $this->text('Store title'); ?></div>
+              <div class="text-muted description"><?php echo $this->text('A name of the store'); ?></div>
+            </td>
+            <td>
+              <input name="settings[store][title]" class="form-control" value="<?php echo isset($settings['store']['title']) ? $this->e($settings['store']['title']) : 'GPL Cart'; ?>">
+              <?php echo $this->error('store.title'); ?>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="name"><?php echo $this->text('Timezone'); ?></div>
+              <div class="text-muted description"><?php echo $this->text('Choose your local timezone'); ?></div>
+            </td>
+            <td>
+              <select name="settings[store][timezone]" class="form-control">
+                <?php foreach ($timezones as $value => $label) { ?>
+                <option value="<?php echo $this->e($value); ?>"<?php echo isset($settings['store']['timezone']) && $settings['store']['timezone'] == $value ? ' selected' : ''; ?>><?php echo $this->e($label); ?></option>
+                <?php } ?>
+              </select>
+              <?php echo $this->error('store.timezone'); ?>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p><a href="#advanced-db" data-toggle="collapse"><?php echo $this->text('Advanced database settings'); ?> <span class="caret"></span></a></p>
+      <div id="advanced-db" class="<?php echo $this->error(null, '', 'collapse'); ?>">
+        <table class="table advanced-db table-striped">
+          <tbody>
+            <tr class="<?php echo $this->error('database.type', ' has-error'); ?>">
+              <td class="col-md-6">
+                <div class="name"><?php echo $this->text('Database type'); ?></div>
+                <div class="text-muted description"><?php echo $this->text('Select your database type from the list of supported PDO drivers'); ?></div>
+              </td>
+              <td class="col-md-6">
+                <select name="settings[database][type]" class="form-control">
+                  <option value="mysql"<?php echo isset($settings['database']['type']) && $settings['database']['type'] === 'mysql' ? ' selected' : ''; ?>><?php echo $this->text('mysql'); ?></option>
+                  <option value="sqlite"<?php echo isset($settings['database']['type']) && $settings['database']['type'] === 'sqlite' ? ' selected' : ''; ?>><?php echo $this->text('sqlite'); ?></option>
+                </select>
+                <?php echo $this->error('database.type'); ?>
+              </td>
+            </tr>
+            <tr class="required<?php echo $this->error('database.port', ' has-error'); ?>">
+              <td>
+                <div class="name"><?php echo $this->text('Database port'); ?></div>
+                <div class="text-muted description"><?php echo $this->text('An alternative non-standard database port'); ?></div>
+              </td>
+              <td>
+                <input name="settings[database][port]" class="form-control" value="<?php echo isset($settings['database']['port']) ? $this->e($settings['database']['port']) : '3306'; ?>">
+                <?php echo $this->error('database.port'); ?>
+              </td>
+            </tr>
+            <tr class="required<?php echo $this->error('database.host', ' has-error'); ?>">
+              <td>
+                <div class="name"><?php echo $this->text('Database host'); ?></div>
+                <div class="text-muted description"><?php echo $this->text('An alternative IP or domain name'); ?></div>
+              </td>
+              <td>
+                <input name="settings[database][host]" class="form-control" value="<?php echo isset($settings['database']['host']) ? $this->e($settings['database']['host']) : 'localhost'; ?>">
+                <?php echo $this->error('database.host'); ?>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="actions">
+        <button class="btn btn-default" name="install" value="1"><?php echo $this->text('Install'); ?></button>
+      </div>
+      <?php } ?>
     </form>
   </div>
 </body>

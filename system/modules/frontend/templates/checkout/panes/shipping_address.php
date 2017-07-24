@@ -62,7 +62,6 @@
                     <option value="<?php echo $this->e($code); ?>"<?php echo $address['shipping']['country'] == $code ? ' selected' : ''; ?>><?php echo $this->e($name); ?></option>
                     <?php } ?>
                   </select>
-                  <div class="help-block"><?php echo $this->error('address.shipping.country'); ?></div>
                 </div>
                 <noscript>
                 <div class="btn-group">
@@ -94,7 +93,6 @@
                 <?php } else { ?>
                 <input name="order[address][shipping][<?php echo $this->e($key); ?>]" data-ajax="false" maxlength="255" class="form-control" value="<?php echo isset($address['shipping'][$key]) ? $this->e($address['shipping'][$key]) : ''; ?>">
                 <?php } ?>
-                <div class="help-block"><?php echo $this->error("address.shipping.$key"); ?></div>
               </div>
             </td>
           </tr>
@@ -104,20 +102,16 @@
         </table>
       </div>
     </div>
-    <div class="form-group">
+    <div class="btn-toolbar">
       <?php if (!empty($addresses)) { ?>
-      <div class="col-md-6">
-        <button class="btn btn-default" name="cancel_address_form" value="shipping">
-          <?php echo $this->text('Cancel'); ?>
-        </button>
-      </div>
+      <button class="btn btn-default" name="cancel_address_form" value="shipping">
+        <?php echo $this->text('Cancel'); ?>
+      </button>
       <?php } ?>
       <?php if ($can_save_address && (empty($countries) || !empty($address['shipping']['country']))) { ?>
-      <div class="col-md-6 text-right">
-        <button class="btn btn-default" name="save_address" value="shipping">
-          <?php echo $this->text('Save'); ?>
-        </button>
-      </div>
+      <button class="btn btn-default" name="save_address" value="shipping">
+        <?php echo $this->text('Save'); ?>
+      </button>
       <?php } ?>
     </div>
     <?php } ?>

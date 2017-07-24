@@ -122,14 +122,10 @@
   <?php } ?>
 </form>
 <?php } else { ?>
-<div class="row">
-  <div class="col-md-12">
-    <?php echo $this->text('There are no items yet'); ?>
-    <?php if ($this->access('user_role_add')) { ?>
-    <a class="btn btn-default" href="<?php echo $this->url('admin/user/role/add'); ?>">
-      <?php echo $this->text('Add'); ?>
-    </a>
-    <?php } ?>
-  </div>
-</div>
+<?php echo $this->text('There are no items yet'); ?>&nbsp;
+<?php if ($this->access('user_role_add')) { ?>
+<a class="btn btn-default" href="<?php echo $this->url('admin/user/role/add'); ?>">
+  <?php echo $this->text('Add'); ?>
+</a>
+<?php } ?>
 <?php } ?>
