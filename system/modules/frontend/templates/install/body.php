@@ -66,6 +66,27 @@
       <?php if ($severity === 'danger') { ?>
       <p><?php echo $this->text('Please fix all critical errors in your environment before continue'); ?></p>
       <?php } else { ?>
+      <?php if(count($handlers) > 1) { ?>
+      <table class="table table-striped">
+        <caption><?php echo $this->text('Installation profiles'); ?></caption>
+        <tbody>
+          <tr class="required<?php echo $this->error('installer', ' has-error'); ?>">
+            <td class="col-md-6">
+              <div class="name"><?php echo $this->text('Installer'); ?></div>
+              <div class="text-muted description"><?php echo $this->text('This distribution can be installed in several ways. Select an installer that fits your needs'); ?></div>
+            </td>
+            <td class="middle col-md-6">
+              <select name="settings[installer]" class="form-control">
+                <?php foreach ($handlers as $id => $handler) { ?>
+                  <option value="<?php echo $this->e($id); ?>"<?php echo isset($settings['installer']) && $settings['installer'] == $id ? ' selected' : ''; ?>><?php echo $this->e($handler['title']); ?></option>
+                <?php } ?>
+              </select>
+              <?php echo $this->error('installer'); ?>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <?php } ?>
       <table class="table table-striped">
         <caption><?php echo $this->text('Database'); ?></caption>
         <tbody>

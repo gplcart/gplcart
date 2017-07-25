@@ -59,6 +59,7 @@ class Install extends Controller
         $this->setData('timezones', gplcart_timezones());
         $this->setData('language', $this->install_language);
         $this->setData('languages', $this->getLanguagesInstall());
+        $this->setData('handlers', $this->install->getHandlers());
         $this->setData('severity', $this->getSeverityInstall($issues));
         $this->setData('settings.store.language', $this->install_language);
 
@@ -139,48 +140,8 @@ class Install extends Controller
      */
     protected function processInstall()
     {
-        $submitted = $this->getSubmitted();
-        $this->processStartInstall($submitted);
-
-        $result = $this->install->full($submitted);
-
-        if ($result === true) {
-            $this->processFinishInstall();
-        }
-
-        if (empty($result)) {
-            $result = $this->text('An error occurred');
-        }
-
-        $url = $this->url('', $this->query);
-        $this->redirect($url, (string) $result, 'danger');
-    }
-
-    /**
-     * Prepares installation
-     * @param array $submitted
-     */
-    protected function processStartInstall(array $submitted)
-    {
-        $this->session->delete('user');
-        $this->session->delete('install');
-
-        $this->session->set('install.processing', true);
-        $this->session->set('install.settings', $submitted);
-    }
-
-    /**
-     * Finishes the installation process
-     */
-    protected function processFinishInstall()
-    {
-        $this->session->delete('install');
-        $this->request->deleteCookie();
-
-        $args = array('@url' => $this->url('/'));
-        $message = $this->text('You <a href="@url">store</a> has been installed. Now you can log in as superadmin', $args);
-
-        $this->redirect('login', $message, 'success');
+        $result = $this->install->process($this->getSubmitted());
+        $this->redirect($result['redirect'], $result['message'], $result['severity']);
     }
 
     /**

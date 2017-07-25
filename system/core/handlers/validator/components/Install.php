@@ -278,10 +278,10 @@ class Install extends ComponentValidator
             return null;
         }
 
-        $installer = $this->install->get($installer_id);
+        $installer = $this->install->getHandler($installer_id);
 
         if (empty($installer)) {
-            $installers = $this->install->getList();
+            $installers = $this->install->getHandlers();
             $list = implode(',', array_keys($installers));
             $vars = array('@field' => $this->language->text('Installer'), '@allowed' => $list);
             $error = $this->language->text('@field has invalid value. Allowed values: @allowed', $vars);
@@ -444,7 +444,7 @@ class Install extends ComponentValidator
         }
 
         $settings = $this->getSubmitted('database');
-        $result = $this->install->connect($settings);
+        $result = $this->install->connectDb($settings);
 
         if ($result === true) {
             return true;

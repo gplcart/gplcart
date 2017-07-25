@@ -140,12 +140,12 @@ class Install extends CliController
 
         // Make sure the database is set up
         // If a connection error has occurred before the database remains uninitialized
-        $this->install->connect($settings['database']);
+        $this->install->connectDb($settings['database']);
 
-        $result = $this->install->full($settings);
+        $result = $this->install->process($settings);
 
         $message = '';
-        if ($result === true) {
+        if ($result['severity'] === 'success') {
             $message = $this->getMessageCompletedInstall();
         }
 
@@ -161,6 +161,7 @@ class Install extends CliController
     {
         $host = $this->getSubmitted('store.host');
         $basepath = $this->getSubmitted('store.basepath');
+
         $vars = array('@url' => rtrim("$host/$basepath", '/'));
         return $this->text("Your store has been installed.\nURL: @url\nAdmin area: @url/admin\nGood luck!", $vars);
     }
