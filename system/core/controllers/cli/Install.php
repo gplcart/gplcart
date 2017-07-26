@@ -137,33 +137,15 @@ class Install extends CliController
     protected function processInstall()
     {
         $settings = $this->getSubmitted();
-
-        // Make sure the database is set up
-        // If a connection error has occurred before the database remains uninitialized
         $this->install->connectDb($settings['database']);
 
-        $result = $this->install->process($settings);
+        $result = $this->install->process($settings, $this->current_route);
 
-        $message = '';
         if ($result['severity'] === 'success') {
-            $message = $this->getMessageCompletedInstall();
+            $this->line($result['message']);
+        } else {
+            $this->error($result['message']);
         }
-
-        $this->hook->fire('cli.install.after', $result, $message, $this);
-        $this->line($message);
-    }
-
-    /**
-     * Sets a message on success installation
-     * @return string
-     */
-    protected function getMessageCompletedInstall()
-    {
-        $host = $this->getSubmitted('store.host');
-        $basepath = $this->getSubmitted('store.basepath');
-
-        $vars = array('@url' => rtrim("$host/$basepath", '/'));
-        return $this->text("Your store has been installed.\nURL: @url\nAdmin area: @url/admin\nGood luck!", $vars);
     }
 
     /**

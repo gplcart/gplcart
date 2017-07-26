@@ -182,12 +182,13 @@ class Install extends Model
     /**
      * Performs full system installation
      * @param array $data
+     * @param array $cli_route
      * @return array
      */
-    public function process(array $data)
+    public function process(array $data, array $cli_route = array())
     {
         $result = null;
-        $this->hook->fire('install.before', $data, $result, $this);
+        $this->hook->fire('install.before', $data, $result, $cli_route, $this);
 
         if (isset($result)) {
             return $result;
@@ -199,10 +200,13 @@ class Install extends Model
             'message' => $this->language->text('An error occurred')
         );
 
-        $handler_id = isset($data['installer']) ? $data['installer'] : 'default';
-        $result = array_merge($default_result, $this->callHandler($handler_id, $data));
+        if (!isset($data['installer'])) {
+            $data['installer'] = 'default';
+        }
 
-        $this->hook->fire('install.after', $data, $result, $handler_id, $this);
+        $result = array_merge($default_result, $this->callHandler($data['installer'], $data));
+
+        $this->hook->fire('install.after', $data, $result, $cli_route, $this);
         return $result;
     }
 

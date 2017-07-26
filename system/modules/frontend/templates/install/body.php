@@ -195,7 +195,7 @@
             <tr class="required<?php echo $this->error('database.port', ' has-error'); ?>">
               <td>
                 <div class="name"><?php echo $this->text('Database port'); ?></div>
-                <div class="text-muted description"><?php echo $this->text('An alternative non-standard database port'); ?></div>
+                <div class="text-muted description"><?php echo $this->text('The port number to use for the connection. The default port number is 3306'); ?></div>
               </td>
               <td>
                 <input name="settings[database][port]" class="form-control" value="<?php echo isset($settings['database']['port']) ? $this->e($settings['database']['port']) : '3306'; ?>">
@@ -205,7 +205,7 @@
             <tr class="required<?php echo $this->error('database.host', ' has-error'); ?>">
               <td>
                 <div class="name"><?php echo $this->text('Database host'); ?></div>
-                <div class="text-muted description"><?php echo $this->text('An alternative IP or domain name'); ?></div>
+                <div class="text-muted description"><?php echo $this->text('The default host name is localhost. If your database should be connected remotely specify here its IP or domain'); ?></div>
               </td>
               <td>
                 <input name="settings[database][host]" class="form-control" value="<?php echo isset($settings['database']['host']) ? $this->e($settings['database']['host']) : 'localhost'; ?>">

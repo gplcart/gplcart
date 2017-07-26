@@ -68,8 +68,23 @@ class Install extends BaseInstall
         return array(
             'redirect' => 'login',
             'severity' => 'success',
-            'message' => $this->language->text('Your store has been installed. Now you can log in as superadmin')
+            'message' => $this->getSuccessMessage($data)
         );
+    }
+
+    /**
+     * Returns success message
+     * @param array $data
+     * @return string
+     */
+    protected function getSuccessMessage(array $data)
+    {
+        if (GC_CLI) {
+            $vars = array('@url' => rtrim("{$data['store']['host']}/{$data['store']['basepath']}", '/'));
+            return $this->language->text("Your store has been installed.\nURL: @url\nAdmin area: @url/admin\nGood luck!", $vars);
+        }
+
+        return $this->language->text('Your store has been installed. Now you can log in as superadmin');
     }
 
 }
