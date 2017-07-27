@@ -24,7 +24,7 @@ function gplcart_setup_requirements()
 /**
  * Check and fix if needed some importan server vars
  */
-function gplcart_setup_server_vars()
+function gplcart_setup_server()
 {
     if (GC_CLI) {
         return null;
@@ -51,39 +51,20 @@ function gplcart_setup_server_vars()
 /**
  * Sets up PHP ini options
  */
-function gplcart_setup_ini()
+function gplcart_setup_php()
 {
-    gplcart_setup_ini_session();
-    gplcart_setup_ini_memory('1G');
-}
-
-/**
- * Sets session INI
- */
-function gplcart_setup_ini_session()
-{
-    if (!GC_CLI) {
+    if (GC_CLI) {
+        $bytes = gplcart_to_bytes('1G');
+        $limit = trim(ini_get('memory_limit'));
+        if ($limit != -1 && $bytes < 1024 * 1024 * 1024) {
+            ini_set('memory_limit', '1G');
+        }
+    } else {
         ini_set('session.use_cookies', '1');
         ini_set('session.use_only_cookies', '1');
         ini_set('session.use_trans_sid', '0');
         ini_set('session.cache_limiter', '');
         ini_set('session.cookie_httponly', '1');
-    }
-}
-
-/**
- * Checks and tries to increase memory_limit if needed
- * @param string $value
- * @return null
- */
-function gplcart_setup_ini_memory($value)
-{
-    if (GC_CLI) {
-        $bytes = gplcart_to_bytes($value);
-        $limit = trim(ini_get('memory_limit'));
-        if ($limit != -1 && $bytes < 1024 * 1024 * 1024) {
-            ini_set('memory_limit', $value);
-        }
     }
 }
 
