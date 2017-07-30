@@ -63,13 +63,13 @@ class Checkout extends FrontendController
      * Current state of shipping address form
      * @var boolean
      */
-    protected $shipping_address_form = false;
+    protected $show_shipping_address_form = false;
 
     /**
      * Current state of payment address form
      * @var boolean
      */
-    protected $payment_address_form = false;
+    protected $show_payment_address_form = false;
 
     /**
      * Whether payment address should be provided
@@ -81,7 +81,7 @@ class Checkout extends FrontendController
      * Current state of login form
      * @var bool
      */
-    protected $login_form = false;
+    protected $show_login_form = false;
 
     /**
      * Whether the cart has been updated
@@ -349,6 +349,7 @@ class Checkout extends FrontendController
         $this->data_form['statuses'] = $this->order->getStatuses();
         $this->data_form['payment_methods'] = $this->getPaymentMethodsCheckout();
         $this->data_form['shipping_methods'] = $this->getShippingMethodsCheckout();
+        $this->data_form['has_dynamic_shipping_methods'] = $this->hasDynamicMethods($this->data_form['shipping_methods']);
 
         // Price rule calculator requires this data
         $this->data_form['store_id'] = $this->order_store_id;
@@ -407,6 +408,7 @@ class Checkout extends FrontendController
                 $method['image'] = $this->url(gplcart_relative_path($path));
             }
         }
+
         return $methods;
     }
 
@@ -434,14 +436,21 @@ class Checkout extends FrontendController
 
         $this->data_form['address'] = $address;
         $this->data_form['countries'] = $countries;
-        $this->data_form['login_form'] = $this->login_form;
-        $this->data_form['has_payment_address'] = $this->has_payment_address;
-        $this->data_form['payment_address_form'] = $this->payment_address_form;
-        $this->data_form['shipping_address_form'] = $this->shipping_address_form;
-
-        $this->data_form['context_template'] = $this->getTemplatesCheckout('context', $this->getSubmitted());
         $this->data_form['cart'] = $this->prepareCart($this->data_cart);
         $this->data_form['addresses'] = $this->address->getTranslatedList($this->order_user_id);
+
+        if (empty($this->data_form['addresses'])) {
+            $this->show_shipping_address_form = true;
+        }
+
+        $this->data_form['has_payment_address'] = $this->has_payment_address;
+        $this->data_form['get_shipping_methods'] = $this->isPosted('get_shipping_methods');
+
+        $this->data_form['show_login_form'] = $this->show_login_form;
+        $this->data_form['show_payment_address_form'] = $this->show_payment_address_form;
+        $this->data_form['show_shipping_address_form'] = $this->show_shipping_address_form;
+        $this->data_form['show_shipping_methods'] = !$this->data_form['has_dynamic_shipping_methods'];
+        $this->data_form['context_templates'] = $this->getTemplatesCheckout('context', $this->getSubmitted());
 
         $excess = $this->address->getExcess($this->order_user_id, $this->data_form['addresses']);
 
@@ -451,7 +460,6 @@ class Checkout extends FrontendController
         foreach ($address as $type => $fields) {
             $this->data_form['format'][$type] = $this->country->getFormat($fields['country']);
             $this->data_form['states'][$type] = $this->state->getList(array('country' => $fields['country'], 'status' => 1));
-
             if (empty($this->data_form['states'][$type])) {
                 unset($this->data_form['format'][$type]['state_id']);
             }
@@ -460,8 +468,39 @@ class Checkout extends FrontendController
         $this->data_form['order']['volume'] = $this->order->getVolume($this->data_form['order'], $this->data_form['cart']);
         $this->data_form['order']['weight'] = $this->order->getWeight($this->data_form['order'], $this->data_form['cart']);
 
-        $this->calculateCheckout();
+        $submitted = array('order' => $this->getSubmitted());
+        $this->data_form = gplcart_array_merge($this->data_form, $submitted);
+
+        $this->data_form['request_shipping_methods'] = false;
+        if ($this->data_form['get_shipping_methods'] || !empty($this->data_form['order']['shipping'])) {
+            $this->data_form['show_shipping_methods'] = true;
+            $this->data_form['request_shipping_methods'] = true;
+        }
+
+        $result = $this->order->calculate($this->data_form);
+
+        $this->data_form['total'] = $result['total'];
+        $this->data_form['total_decimal'] = $result['total_decimal'];
+        $this->data_form['total_formatted'] = $result['total_formatted'];
+        $this->data_form['price_components'] = $this->prepareOrderComponentsCheckout($result);
+
         $this->setFormDataPanesOrder();
+    }
+
+    /**
+     * Whether a list of shipping/payment methods contains at least one dynamic method
+     * @param array $methods
+     * @return boolean
+     */
+    protected function hasDynamicMethods(array $methods)
+    {
+        foreach ($methods as $method) {
+            if (!empty($method['dynamic'])) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -483,11 +522,12 @@ class Checkout extends FrontendController
     protected function submitEditCheckout()
     {
         $this->setSubmitted('order');
+
         $this->setAddressFormCheckout();
         $this->submitAddAddressCheckout();
 
         if ($this->isPosted('checkout_login') && empty($this->uid)) {
-            $this->login_form = true;
+            $this->show_login_form = true;
         }
 
         if ($this->isPosted('payment_address')) {
@@ -501,7 +541,7 @@ class Checkout extends FrontendController
         $this->submitLoginCheckout();
 
         if ($this->isPosted('checkout_anonymous')) {
-            $this->login_form = false;
+            $this->show_login_form = false;
         }
 
         $this->validateCouponCheckout();
@@ -514,8 +554,8 @@ class Checkout extends FrontendController
      */
     protected function setAddressFormCheckout()
     {
-        $this->payment_address_form = $this->isSubmitted('address.payment');
-        $this->shipping_address_form = $this->isSubmitted('address.shipping');
+        $this->show_payment_address_form = $this->isSubmitted('address.payment');
+        $this->show_shipping_address_form = $this->isSubmitted('address.shipping');
 
         $actions = array(
             'add_address' => true,
@@ -526,7 +566,7 @@ class Checkout extends FrontendController
         foreach ($actions as $field => $action) {
             $value = $this->getPosted($field, '', true, 'string');
             if (isset($value)) {
-                $this->{"{$value}_address_form"} = $action;
+                $this->{"show_{$value}_address_form"} = $action;
             }
         }
     }
@@ -546,7 +586,7 @@ class Checkout extends FrontendController
 
         if (empty($errors)) {
             $this->addAddressCheckout($type);
-            $this->{"{$type}_address_form"} = false;
+            $this->{"show_{$type}_address_form"} = false;
         }
     }
 
@@ -556,7 +596,7 @@ class Checkout extends FrontendController
     protected function submitLoginCheckout()
     {
         if ($this->isPosted('login')) {
-            $this->login_form = true;
+            $this->show_login_form = true;
             $this->loginCheckout();
         }
     }
@@ -581,7 +621,6 @@ class Checkout extends FrontendController
 
     /**
      * Validates a coupon code
-     * @return null
      */
     protected function validateCouponCheckout()
     {
@@ -617,7 +656,6 @@ class Checkout extends FrontendController
 
     /**
      * Applies an action to the cart items
-     * @return null
      */
     protected function submitCartItemsCheckout()
     {
@@ -780,10 +818,11 @@ class Checkout extends FrontendController
      */
     protected function validateAddressCheckout($type)
     {
-        if ($this->{"{$type}_address_form"}) {
+        if ($this->{"show_{$type}_address_form"}) {
             $this->setSubmitted("address.{$type}.user_id", $this->order_user_id);
             return $this->validateComponent('address', array('parents' => "address.$type"));
         }
+
         return array();
     }
 
@@ -813,7 +852,7 @@ class Checkout extends FrontendController
     {
         $submitted = $this->getSubmitted("address.$type");
 
-        if ($this->{"{$type}_address_form"} && !empty($submitted)) {
+        if ($this->{"show_{$type}_address_form"} && !empty($submitted)) {
             $address_id = $this->address->add($submitted);
             $this->setSubmitted("{$type}_address", $address_id);
             $this->address->controlLimit($this->order_user_id);
@@ -826,8 +865,7 @@ class Checkout extends FrontendController
     protected function addOrderCheckout()
     {
         $submitted = $this->getSubmittedOrderCheckout();
-
-        $result = $this->order->submit($submitted, $this->data_cart, array('admin' => $this->admin));
+        $result = $this->order->submit($submitted, array('admin' => $this->admin));
         $this->finishOrderCheckout($result, $submitted);
     }
 
@@ -929,37 +967,32 @@ class Checkout extends FrontendController
     }
 
     /**
-     * Calculates order totals
-     */
-    protected function calculateCheckout()
-    {
-        $submitted = array('order' => $this->getSubmitted());
-        $this->data_form = gplcart_array_merge($this->data_form, $submitted);
-
-        $result = $this->order->calculate($this->data_form);
-
-        $this->data_form['total'] = $result['total'];
-        $this->data_form['total_decimal'] = $result['total_decimal'];
-        $this->data_form['total_formatted'] = $result['total_formatted'];
-        $this->data_form['price_components'] = $this->prepareOrderComponentsCheckout($result);
-    }
-
-    /**
      * Prepares an array of price rule components
      * @param array $calculated
      * @return array
      */
     protected function prepareOrderComponentsCheckout($calculated)
     {
+        $extra = array(
+            'shipping' => $this->text('Shipping'),
+            'payment' => $this->text('Payment')
+        );
+
         $components = array();
         foreach ($calculated['components'] as $type => $component) {
+
             $components[$type] = array(
-                'rule' => $component['rule'],
                 'price' => $component['price'],
-                'name' => $component['rule']['name'],
                 'price_decimal' => $this->price->decimal($component['price'], $calculated['currency']),
                 'price_formatted' => $this->price->format($component['price'], $calculated['currency'])
             );
+
+            if (empty($component['rule'])) {
+                $components[$type]['name'] = $extra[$type];
+            } else {
+                $components[$type]['rule'] = $component['rule'];
+                $components[$type]['name'] = $component['rule']['name'];
+            }
         }
 
         return $components;
