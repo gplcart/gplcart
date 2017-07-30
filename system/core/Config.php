@@ -318,14 +318,26 @@ class Config
     }
 
     /**
+     * Retuns a string containing base namespace for the given module ID
+     * @param string $module_id
+     * @return string
+     */
+    public function getModuleBaseNamespace($module_id)
+    {
+        return "gplcart\\modules\\$module_id";
+    }
+
+    /**
      * Returns a namespaced class for the given module id
      * @param string $module_id
      * @return string
      */
     public function getModuleClassNamespace($module_id)
     {
-        $class_name = $this->getModuleClassName($module_id);
-        return "gplcart\\modules\\$module_id\\$class_name";
+        $classname = $this->getModuleClassName($module_id);
+        $basenamespace = $this->getModuleBaseNamespace($module_id);
+
+        return "$basenamespace\\$classname";
     }
 
     /**
