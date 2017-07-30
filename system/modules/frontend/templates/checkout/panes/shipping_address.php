@@ -22,14 +22,14 @@
       <?php echo $this->error('shipping_address'); ?>
     </div>
     <?php } ?>
-    <?php if (!empty($addresses) && !$shipping_address_form) { ?>
+    <?php if (!empty($addresses) && !$show_shipping_address_form) { ?>
     <div class="form-group">
       <div class="col-md-12">
         <div class="btn-group saved-addresses">
           <?php foreach ($addresses as $address_id => $address) { ?>
           <div class="radio address">
-            <label class="address<?php echo isset($order['shipping_address']) && $order['shipping_address'] == $address_id ? ' active' : ''; ?>">
-              <input type="radio" name="order[shipping_address]" value="<?php echo $this->e($address_id); ?>" autocomplete="off"<?php echo isset($order['shipping_address']) && $order['shipping_address'] == $address_id ? ' checked' : ''; ?>>
+            <label class="address<?php echo ((isset($order['shipping_address']) && $order['shipping_address'] == $address_id) || count($addresses) == 1) ? ' active' : ''; ?>">
+              <input type="radio" name="order[shipping_address]" value="<?php echo $this->e($address_id); ?>" autocomplete="off"<?php echo ((isset($order['shipping_address']) && $order['shipping_address'] == $address_id) || count($addresses) == 1) ? ' checked' : ''; ?>>
               <?php foreach ($address as $name => $value) { ?>
               <span class="clearfix"><?php echo $this->e($name); ?> : <?php echo $this->e($value); ?></span>
               <?php } ?>
@@ -56,12 +56,17 @@
             <td>
               <div class="btn-toolbar">
                 <div class="btn-group country<?php echo $this->error('address.shipping.country', ' has-error'); ?>">
+                  <?php if(count($countries) > 1) { ?>
                   <select class="form-control" name="order[address][shipping][country]">
                     <option value="" disabled selected><?php echo $this->text('- select -'); ?></option>
                     <?php foreach ($countries as $code => $name) { ?>
                     <option value="<?php echo $this->e($code); ?>"<?php echo $address['shipping']['country'] == $code ? ' selected' : ''; ?>><?php echo $this->e($name); ?></option>
                     <?php } ?>
                   </select>
+                  <?php } else { ?>
+                  <?php echo $this->e(reset($countries)); ?>
+                  <input type="hidden" name="order[address][shipping][country]" value="<?php echo $this->e(key($countries)); ?>">
+                  <?php } ?>
                 </div>
                 <noscript>
                 <div class="btn-group">

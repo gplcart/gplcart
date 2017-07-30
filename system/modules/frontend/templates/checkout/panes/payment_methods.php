@@ -8,9 +8,9 @@
 ?>
 <div class="panel panel-checkout payment-methods panel-default">
   <div class="panel-heading clearfix">
-    <?php echo $this->text('Payment'); ?>
+    <?php echo $this->text('Payment method'); ?>
     <noscript>
-    <button title="<?php echo $this->text('Update'); ?>" class="btn btn-default btn-xs pull-right" name="update" value="1"><i class="fa fa-refresh"></i></button>
+      <button title="<?php echo $this->text('Update'); ?>" class="btn btn-default btn-xs pull-right" name="update" value="1"><i class="fa fa-refresh"></i></button>
     </noscript>
   </div>
   <div class="panel-body">
@@ -30,7 +30,7 @@
             <?php if (!empty($method['image'])) { ?>
             <img class="img-responsive" src="<?php echo $this->e($method['image']); ?>">
             <?php } ?>
-            <input type="radio" name="order[payment]" value="<?php echo $this->e($method_id); ?>"<?php echo isset($order['payment']) && $order['payment'] == $method_id ? ' checked' : ''; ?>> <?php echo $this->e($method['title']); ?>
+            <input type="radio" name="order[payment]" value="<?php echo $this->e($method_id); ?>"<?php echo ((isset($order['payment']) && $order['payment'] == $method_id) || count($payment_methods) == 1) ? ' checked' : ''; ?>> <?php echo $this->e($method['title']); ?>
             <?php if (!empty($method['description'])) { ?>
             <div class="description small"><?php echo $this->filter($method['description']); ?></div>
             <?php } ?>

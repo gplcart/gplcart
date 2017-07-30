@@ -25,7 +25,7 @@
   </noscript>
   <div class="row">
     <div class="col-md-12">
-      <?php if ($login_form) { ?>
+      <?php if ($show_login_form) { ?>
       <?php echo $pane_login; ?>
       <?php } else if (!$_uid) { ?>
       <div class="form-group">
@@ -39,7 +39,7 @@
       <?php } ?>
     </div>
   </div>
-  <?php if (!$login_form) { ?>
+  <?php if (!$show_login_form) { ?>
   <div class="row">
     <div class="col-md-4">
       <?php if (!empty($pane_shipping_address)) { ?>
@@ -49,20 +49,18 @@
       <?php echo $pane_payment_address; ?>
       <?php } ?>
     </div>
-    <?php if ($shipping_methods || $payment_methods) { ?>
     <div class="col-md-3">
       <div class="form-group">
         <div class="col-md-12">
-          <?php if ($shipping_methods) { ?>
+          <?php if(!empty($pane_shipping_methods)) { ?>
           <?php echo $pane_shipping_methods; ?>
           <?php } ?>
-          <?php if ($payment_methods) { ?>
+          <?php if(!empty($pane_payment_methods)) { ?>
           <?php echo $pane_payment_methods; ?>
           <?php } ?>
         </div>
       </div>
     </div>
-    <?php } ?>
     <div class="col-md-5">
       <?php if (!empty($pane_review)) { ?>
       <?php echo $pane_review; ?>

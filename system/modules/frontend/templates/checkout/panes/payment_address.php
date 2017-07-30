@@ -9,7 +9,7 @@
 <div class="panel panel-checkout payment-address panel-default">
   <div class="panel-heading clearfix">
     <label>
-      <input type="checkbox" name="payment_address" value="1"<?php echo $has_payment_address ? ' checked' : ''; ?>> <?php echo $this->text('Payment address'); ?>
+      <input type="checkbox" name="payment_address" value="1"<?php echo $has_payment_address ? ' checked' : ''; ?>> <?php echo $this->text('I have different payment address'); ?>
     </label>
     <noscript>
     <button title="<?php echo $this->text('Update'); ?>" class="btn btn-default btn-xs pull-right" name="update" value="1"><i class="fa fa-refresh"></i></button>
@@ -25,7 +25,7 @@
       <?php echo $this->error('payment_address'); ?>
     </div>
     <?php } ?>
-    <?php if (!empty($addresses) && !$payment_address_form) { ?>
+    <?php if (!empty($addresses) && !$show_payment_address_form) { ?>
     <div class="form-group">
       <div class="col-md-12">
         <div class="btn-group saved-addresses">
@@ -52,19 +52,24 @@
     <?php } else if ($can_add_address) { ?>
     <div class="form-group">
       <div class="col-md-12">
-        <table class="table table-borderless table-condensed payment-address">
+        <table class="table table-borderless table-condensed table-striped payment-address">
           <?php if (!empty($countries)) { ?>
           <tr>
             <td class="middle"><?php echo $this->text('Country'); ?></td>
             <td>
               <div class="btn-toolbar">
                 <div class="btn-group country<?php echo $this->error('address.payment.country', ' has-error'); ?>">
+                  <?php if(count($countries) > 1) { ?>
                   <select class="form-control" name="order[address][payment][country]">
                     <option value="" disabled selected><?php echo $this->text('- select -'); ?></option>
                     <?php foreach ($countries as $code => $name) { ?>
                     <option value="<?php echo $this->e($code); ?>"<?php echo $address['payment']['country'] == $code ? ' selected' : ''; ?>><?php echo $this->e($name); ?></option>
                     <?php } ?>
                   </select>
+                  <?php } else { ?>
+                  <?php echo $this->e(reset($countries)); ?>
+                  <input type="hidden" name="order[address][payment][country]" value="<?php echo $this->e(key($countries)); ?>">
+                  <?php } ?>
                 </div>
                 <noscript>
                 <div class="btn-group">

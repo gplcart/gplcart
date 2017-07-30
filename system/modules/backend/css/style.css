@@ -61,6 +61,7 @@ pre {
 fieldset legend {
     border: none;
     font-size: 18px;
+    margin-bottom: 0;
 }
 
 fieldset + fieldset legend:before {
