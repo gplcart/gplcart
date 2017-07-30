@@ -98,7 +98,7 @@ class Currency extends Model
             $saved = $this->config->select('currencies', array());
         }
 
-        $currencies = gplcart_array_merge($default, $saved);
+        $currencies = array_merge($default, $saved);
         $this->hook->fire('currency.list', $currencies, $this);
 
         if (!$enabled) {
@@ -307,24 +307,18 @@ class Currency extends Model
      */
     protected function getDefaultList()
     {
-        return array(
-            'USD' => array(
-                'code' => 'USD',
-                'name' => 'United States Dollars',
-                'symbol' => '$',
-                'status' => 1,
-                'default' => 1,
-                'decimals' => 2,
-                'major_unit' => 'Dollar',
-                'minor_unit' => 'Cent',
-                'numeric_code' => 840,
-                'rounding_step' => 0,
-                'conversion_rate' => 1,
-                'decimal_separator' => '.',
-                'thousands_separator' => ',',
-                'template' => '%symbol%price'
-            )
-        );
+        $list = $this->getIso();
+        $default = $this->getDefaultData();
+
+        foreach ($list as $code => &$currency) {
+            $currency['code'] = $code;
+            $currency += $default;
+        }
+
+        $list['USD']['status'] = 1;
+        $list['USD']['default'] = 1;
+
+        return $list;
     }
 
     /**
