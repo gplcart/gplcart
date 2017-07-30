@@ -37,30 +37,22 @@ class Install extends BaseInstall
 
         $this->start($data);
 
-        if (!$this->createDefaultDb()) {
-            return array(
-                'redirect' => '',
-                'severity' => 'warning',
-                'message' => $this->language->text('Failed to create all necessary tables in the database')
-            );
+        $result_db = $this->createDb();
+
+        if ($result_db !== true) {
+            return array('redirect' => '', 'severity' => 'warning', 'message' => $result_db);
         }
 
-        if (!$this->createDefaultConfig($data)) {
-            return array(
-                'redirect' => '',
-                'severity' => 'warning',
-                'message' => $this->language->text('Failed to create config.php')
-            );
+        $result_config = $this->createConfig($data);
+
+        if ($result_config !== true) {
+            return array('redirect' => '', 'severity' => 'warning', 'message' => $result_config);
         }
 
-        $result = $this->setDefaultStore($data);
+        $result_store = $this->setStore($data);
 
-        if ($result !== true) {
-            return array(
-                'redirect' => '',
-                'severity' => 'warning',
-                'message' => (string) $result
-            );
+        if ($result_store !== true) {
+            return array('redirect' => '', 'severity' => 'warning', 'message' => $result_store);
         }
 
         $this->finish();
