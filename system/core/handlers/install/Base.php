@@ -57,14 +57,15 @@ class Base extends Handler
     /**
      * Creates config.php
      * @param array $settings
-     * @return boolean
+     * @return boolean|string
      */
-    protected function createDefaultConfig(array $settings)
+    protected function createConfig(array $settings)
     {
         $config = file_get_contents(GC_CONFIG_COMMON_DEFAULT);
 
         if (empty($config)) {
-            return false;
+            return $this->language->text('Failed to read the source config @path', array(
+                        '@path' => GC_CONFIG_COMMON_DEFAULT));
         }
 
         $config .= '$config[\'database\'] = ' . var_export($settings['database'], true) . ';';
@@ -72,13 +73,12 @@ class Base extends Handler
         $config .= 'return $config;';
         $config .= PHP_EOL;
 
-        $result = false;
         if (file_put_contents(GC_CONFIG_COMMON, $config)) {
             chmod(GC_CONFIG_COMMON, 0444);
-            $result = true;
+            return true;
         }
 
-        return $result;
+        return $this->language->text('Failed to create config.php');
     }
 
     /**
@@ -86,7 +86,7 @@ class Base extends Handler
      * @param integer $user_id
      * @param integer $store_id
      */
-    protected function createDefaultPages($user_id, $store_id)
+    protected function createPages($user_id, $store_id)
     {
         $pages = array();
 
@@ -125,7 +125,7 @@ class Base extends Handler
      * Creates default languages
      * @param array $settings
      */
-    protected function createDefaultLanguages(array $settings)
+    protected function createLanguages(array $settings)
     {
         if (empty($settings['store']['language'])) {
             return null;
@@ -186,7 +186,7 @@ class Base extends Handler
      * @param array $settings
      * @return integer
      */
-    protected function createDefaultStore(array $settings)
+    protected function createStore(array $settings)
     {
         $data = $this->store->defaultConfig();
 
@@ -213,10 +213,12 @@ class Base extends Handler
      * @param array $settings
      * @return boolean|string
      */
-    protected function setDefaultStore(array $settings)
+    protected function setStore(array $settings)
     {
-        Container::unregister(); // Remove old instances to prevent conflicts
+        // Remove old instances to prevent conflicts
+        Container::unregister();
 
+        // Re-instantiate Config and set fresh database object
         $this->config = Container::get('gplcart\\core\\Config');
         $this->db = $this->config->getDb();
 
@@ -228,27 +230,61 @@ class Base extends Handler
             $settings['store']['timezone'] = date_default_timezone_get();
         }
 
-        $this->config->set('intro', 1);
-        $this->config->set('installed', GC_TIME);
-        $this->config->set('cron_key', gplcart_string_random());
-        $this->config->set('timezone', $settings['store']['timezone']);
+        try {
 
-        $store_id = $this->createDefaultStore($settings);
-        $user_id = $this->createSuperadmin($settings, $store_id);
+            $this->config->set('intro', 1);
+            $this->config->set('installed', GC_TIME);
+            $this->config->set('cron_key', gplcart_string_random());
+            $this->config->set('timezone', $settings['store']['timezone']);
 
-        $this->createDefaultLanguages($settings);
-        $this->createDefaultPages($user_id, $store_id);
+            $store_id = $this->createStore($settings);
+            $user_id = $this->createSuperadmin($settings, $store_id);
+
+            $this->createCountries();
+            $this->createLanguages($settings);
+            $this->createPages($user_id, $store_id);
+        } catch (\Exception $ex) {
+            return $ex->getMessage();
+        }
 
         return true;
     }
 
     /**
      * Create default database structure
-     * @return bool
+     * @return bool|string
      */
-    protected function createDefaultDb()
+    protected function createDb()
     {
-        return $this->db->import($this->db->getScheme());
+        try {
+            $result = $this->db->import($this->db->getScheme());
+        } catch (\Exception $ex) {
+            $result = $ex->getMessage();
+        }
+
+        if (empty($result)) {
+            return $this->language->text('Failed to import database tables');
+        }
+
+        return $result;
+    }
+
+    /**
+     * Creates countries fron ISO list
+     */
+    protected function createCountries()
+    {
+        $countries = require GC_CONFIG_COUNTRY;
+
+        $rows = $placeholders = array();
+
+        foreach ($countries as $code => $name) {
+            $placeholders[] = '(?,?,?,?,?)';
+            $rows = array_merge($rows, array(0, $name, $code, $name, 'a:0:{}'));
+        }
+
+        $sql = 'INSERT INTO country (status, name, code, native_name, format) VALUES ' . implode(',', $placeholders);
+        $this->db->run($sql, $rows);
     }
 
     /**
