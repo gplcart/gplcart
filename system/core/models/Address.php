@@ -68,6 +68,10 @@ class Address extends Model
         $options = array('unserialize' => array('data', 'country_format'));
         $address = $this->db->fetch($sql, array($address_id), $options);
 
+        if (isset($address['country_format'])) {
+            $address['country_format'] += $this->country->getDefaultFormat();
+        }
+
         $this->hook->fire('address.get.after', $address_id, $address, $this);
         return $address;
     }
