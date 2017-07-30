@@ -393,13 +393,12 @@ class Order extends Model
     /**
      * Submits an order
      * @param array $data
-     * @param array $cart
      * @param array $options
      * @return array
      */
-    public function submit(array $data, array $cart, array $options = array())
+    public function submit(array $data, array $options = array())
     {
-        $this->hook->fire('order.submit.before', $data, $cart, $options, $this);
+        $this->hook->fire('order.submit.before', $data, $options, $this);
 
         $result = array(
             'redirect' => '',
@@ -411,7 +410,8 @@ class Order extends Model
             return $result;
         }
 
-        $this->prepareComponents($data, $cart);
+        $this->prepareComponents($data);
+
         $order_id = $this->add($data);
 
         if (empty($order_id)) {
@@ -422,9 +422,9 @@ class Order extends Model
 
         if (empty($data['order_id'])) {
             $this->setPriceRule($order);
-            $this->updateCart($order, $cart);
+            $this->updateCart($order, $data['cart']);
         } else {
-            $this->cloneCart($order, $cart);
+            $this->cloneCart($order, $data['cart']);
         }
 
         $result = array(
@@ -439,7 +439,8 @@ class Order extends Model
             $result['message'] = '';
             $result['redirect'] = "checkout/complete/$order_id";
         }
-        $this->hook->fire('order.submit.after', $order, $result, $cart, $options, $this);
+
+        $this->hook->fire('order.submit.after', $data, $options, $result, $this);
         return $result;
     }
 
@@ -732,17 +733,17 @@ class Order extends Model
      */
     public function calculate(array &$data)
     {
-        static $total = 0;
+        $this->hook->fire('order.calculate.before', $data, $this);
 
-        $total += $data['cart']['total'];
+        $total = $data['cart']['total'];
 
         $components = array();
-        foreach (array('shipping', 'payment') as $module) {
+        foreach (array('shipping', 'payment') as $type) {
 
-            if (isset($data[$module]) && isset($data[$module . '_methods'][$data[$module]]['price'])) {
-                $price = $data[$module . '_methods'][$data[$module]]['price'];
-                $components[$module] = array('price' => $price);
-                $total += $components[$module]['price'];
+            if (isset($data['order'][$type]) && isset($data[$type . '_methods'][$data['order'][$type]]['price'])) {
+                $price = $data[$type . '_methods'][$data['order'][$type]]['price'];
+                $components[$type] = array('price' => $price);
+                $total += $components[$type]['price'];
             }
         }
 
@@ -758,7 +759,7 @@ class Order extends Model
             'total_formatted_number' => $this->price->format($total, $data['cart']['currency'], true, false),
         );
 
-        $this->hook->fire('order.calculate', $result, $data, $this);
+        $this->hook->fire('order.calculate.after', $data, $result, $this);
         return $result;
     }
 
@@ -808,16 +809,13 @@ class Order extends Model
      * Prepares order components
      * @param array $order
      * @param array $cart
-     * @return null
      */
-    protected function prepareComponents(array &$order, array $cart)
+    protected function prepareComponents(array &$order)
     {
-        if (empty($cart['items'])) {
-            return null;
-        }
-
-        foreach ($cart['items'] as $sku => $item) {
-            $order['data']['components']['cart'][$sku] = $item['total'];
+        if (!empty($order['cart']['items'])) {
+            foreach ($order['cart']['items'] as $sku => $item) {
+                $order['data']['components']['cart'][$sku] = $item['total'];
+            }
         }
     }
 
