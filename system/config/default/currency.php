@@ -7,6 +7,13 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 return array(
+    'USD' => array(
+        'symbol' => '$',
+        'name' => 'United States Dollar',
+        'numeric_code' => '840',
+        'minor_unit' => 'Cent',
+        'major_unit' => 'Dollar',
+    ),
     'AED' => array(
         'symbol' => 'د.إ',
         'name' => 'United Arab Emirates Dirham',
@@ -1004,13 +1011,6 @@ return array(
         'numeric_code' => '800',
         'minor_unit' => 'Cent',
         'major_unit' => 'Shilling',
-    ),
-    'USD' => array(
-        'symbol' => '$',
-        'name' => 'United States Dollar',
-        'numeric_code' => '840',
-        'minor_unit' => 'Cent',
-        'major_unit' => 'Dollar',
     ),
     'UYU' => array(
         'symbol' => '$U',
