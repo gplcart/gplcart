@@ -44,7 +44,7 @@ return array(
         'status' => 1
     ),
     'postcode' => array(
-        'name' => 'Post code',
+        'name' => 'Post code/ZIP',
         'required' => 1,
         'weight' => 6,
         'status' => 1
@@ -57,9 +57,9 @@ return array(
     ),
     'middle_name' => array(
         'name' => 'Middle name',
-        'required' => 1,
+        'required' => 0,
         'weight' => 8,
-        'status' => 1
+        'status' => 0
     ),
     'last_name' => array(
         'name' => 'Last name',
