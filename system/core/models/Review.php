@@ -33,7 +33,7 @@ class Review extends Model
     public function add(array $data)
     {
         $result = null;
-        $this->hook->fire('review.add.before', $data, $result, $this);
+        $this->hook->attach('review.add.before', $data, $result, $this);
 
         if (isset($result)) {
             return (int) $result;
@@ -42,7 +42,7 @@ class Review extends Model
         $data['created'] = $data['modified'] = GC_TIME;
         $result = $this->db->insert('review', $data);
 
-        $this->hook->fire('review.add.after', $data, $result, $this);
+        $this->hook->attach('review.add.after', $data, $result, $this);
         return (int) $result;
     }
 
@@ -54,7 +54,7 @@ class Review extends Model
     public function get($review_id)
     {
         $result = null;
-        $this->hook->fire('review.get.before', $review_id, $result, $this);
+        $this->hook->attach('review.get.before', $review_id, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -63,7 +63,7 @@ class Review extends Model
         $sql = 'SELECT * FROM review WHERE review_id=?';
         $result = $this->db->fetch($sql, array($review_id));
 
-        $this->hook->fire('review.get.after', $review_id, $result, $this);
+        $this->hook->attach('review.get.after', $review_id, $result, $this);
         return $result;
     }
 
@@ -76,7 +76,7 @@ class Review extends Model
     public function update($review_id, array $data)
     {
         $result = null;
-        $this->hook->fire('review.update.before', $review_id, $data, $result, $this);
+        $this->hook->attach('review.update.before', $review_id, $data, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -85,7 +85,7 @@ class Review extends Model
         $data['modified'] = GC_TIME;
         $result = $this->db->update('review', $data, array('review_id' => $review_id));
 
-        $this->hook->fire('review.update.after', $review_id, $data, $result, $this);
+        $this->hook->attach('review.update.after', $review_id, $data, $result, $this);
         return (bool) $result;
     }
 
@@ -97,7 +97,7 @@ class Review extends Model
     public function delete($review_id)
     {
         $result = null;
-        $this->hook->fire('review.delete.before', $review_id, $result, $this);
+        $this->hook->attach('review.delete.before', $review_id, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -110,7 +110,7 @@ class Review extends Model
 
         $result = (bool) $this->db->run($sql, $review_id)->rowCount();
 
-        $this->hook->fire('review.delete.after', $review_id, $result, $this);
+        $this->hook->attach('review.delete.after', $review_id, $result, $this);
         return (bool) $result;
     }
 
@@ -194,7 +194,7 @@ class Review extends Model
         }
 
         $list = $this->db->fetchAll($sql, $where, array('index' => 'review_id'));
-        $this->hook->fire('review.list', $list, $this);
+        $this->hook->attach('review.list', $list, $this);
 
         return $list;
     }

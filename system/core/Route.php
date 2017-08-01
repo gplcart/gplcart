@@ -100,7 +100,7 @@ class Route
         }
 
         $routes = require GC_CONFIG_ROUTE;
-        $this->hook->fire('route.list', $routes, $this);
+        $this->hook->attach('route.list', $routes, $this);
         return $routes;
     }
 

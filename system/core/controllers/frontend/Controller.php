@@ -105,7 +105,7 @@ class Controller extends BaseController
         $this->submitCompare();
         $this->submitWishlist();
 
-        $this->hook->fire('construct.controller.frontend', $this);
+        $this->hook->attach('construct.controller.frontend', $this);
 
         $this->controlHttpStatus();
     }

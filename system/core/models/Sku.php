@@ -115,7 +115,7 @@ class Sku extends Model
             $result['fields'] = $this->getFieldValues($result['combination_id']);
         }
 
-        $this->hook->fire('sku.list', $results, $this);
+        $this->hook->attach('sku.list', $results, $this);
         return $results;
     }
 
@@ -127,7 +127,7 @@ class Sku extends Model
     public function add(array $data)
     {
         $result = null;
-        $this->hook->fire('sku.add.before', $data, $result, $this);
+        $this->hook->attach('sku.add.before', $data, $result, $this);
 
         if (isset($result)) {
             return (int) $result;
@@ -135,7 +135,7 @@ class Sku extends Model
 
         $result = $this->db->insert('product_sku', $data);
 
-        $this->hook->fire('sku.add.after', $data, $result, $this);
+        $this->hook->attach('sku.add.after', $data, $result, $this);
         return (int) $result;
     }
 
@@ -148,7 +148,7 @@ class Sku extends Model
     public function delete($product_id, array $options = array())
     {
         $result = null;
-        $this->hook->fire('sku.delete.before', $product_id, $options, $result, $this);
+        $this->hook->attach('sku.delete.before', $product_id, $options, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -166,7 +166,7 @@ class Sku extends Model
 
         $result = (bool) $this->db->run($sql, array($product_id))->rowCount();
 
-        $this->hook->fire('sku.delete.after', $product_id, $options, $result, $this);
+        $this->hook->attach('sku.delete.after', $product_id, $options, $result, $this);
         return (bool) $result;
     }
 
@@ -248,7 +248,7 @@ class Sku extends Model
     public function selectCombination(array $product, array $field_value_ids)
     {
         $result = array();
-        $this->hook->fire('sku.select.combination.before', $product, $field_value_ids, $result, $this);
+        $this->hook->attach('sku.select.combination.before', $product, $field_value_ids, $result, $this);
 
         if (!empty($result)) {
             return (array) $result;
@@ -268,7 +268,7 @@ class Sku extends Model
         );
 
         if (empty($field_value_ids)) {
-            $this->hook->fire('sku.select.combination.after', $product, $field_value_ids, $result, $this);
+            $this->hook->attach('sku.select.combination.after', $product, $field_value_ids, $result, $this);
             return (array) $result;
         }
 
@@ -276,7 +276,7 @@ class Sku extends Model
             $result['severity'] = 'danger';
             $result['message'] = $this->language->text('Unavailable product');
 
-            $this->hook->fire('sku.select.combination.after', $product, $field_value_ids, $result, $this);
+            $this->hook->attach('sku.select.combination.after', $product, $field_value_ids, $result, $this);
             return (array) $result;
         }
 
@@ -291,7 +291,7 @@ class Sku extends Model
             $result['message'] = $this->language->text('Unavailable');
             $result['related'] = $this->getRelatedFieldValues($product, $field_value_ids);
 
-            $this->hook->fire('sku.select.combination.after', $product, $field_value_ids, $result, $this);
+            $this->hook->attach('sku.select.combination.after', $product, $field_value_ids, $result, $this);
             return (array) $result;
         }
 
@@ -307,7 +307,7 @@ class Sku extends Model
             $result['message'] = $this->language->text('Out of stock');
         }
 
-        $this->hook->fire('sku.select.combination.after', $product, $field_value_ids, $result, $this);
+        $this->hook->attach('sku.select.combination.after', $product, $field_value_ids, $result, $this);
         return (array) $result;
     }
 

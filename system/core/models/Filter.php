@@ -48,7 +48,7 @@ class Filter extends Model
         }
 
         $result = null;
-        $this->hook->fire('filter', $text, $filter, $result, $this);
+        $this->hook->attach('filter', $text, $filter, $result, $this);
 
         if (isset($result)) {
             return (string) $result;
@@ -112,7 +112,7 @@ class Filter extends Model
         }
 
         $filters = array();
-        $this->hook->fire('filter.list', $filters, $this);
+        $this->hook->attach('filter.list', $filters, $this);
         return $filters;
     }
 

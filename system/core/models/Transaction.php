@@ -83,7 +83,7 @@ class Transaction extends Model
         $options = array('index' => 'transaction_id', 'unserialize' => 'data');
         $results = $this->db->fetchAll($sql, $where, $options);
 
-        $this->hook->fire('transaction.list', $results, $this);
+        $this->hook->attach('transaction.list', $results, $this);
         return $results;
     }
 
@@ -95,7 +95,7 @@ class Transaction extends Model
     public function add(array $data)
     {
         $result = null;
-        $this->hook->fire('transaction.add.before', $data, $result, $this);
+        $this->hook->attach('transaction.add.before', $data, $result, $this);
 
         if (isset($result)) {
             return (int) $result;
@@ -104,7 +104,7 @@ class Transaction extends Model
         $data['created'] = GC_TIME;
         $result = $this->db->insert('transaction', $data);
 
-        $this->hook->fire('transaction.add.after', $data, $result, $this);
+        $this->hook->attach('transaction.add.after', $data, $result, $this);
         return (int) $result;
     }
 
@@ -116,7 +116,7 @@ class Transaction extends Model
     public function get($transaction_id)
     {
         $result = null;
-        $this->hook->fire('transaction.get.before', $transaction_id, $result, $this);
+        $this->hook->attach('transaction.get.before', $transaction_id, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -125,7 +125,7 @@ class Transaction extends Model
         $sql = 'SELECT * FROM transaction WHERE transaction_id=?';
         $result = $this->db->fetch($sql, array($transaction_id), array('unserialize' => 'data'));
 
-        $this->hook->fire('transaction.get.after', $transaction_id, $result, $this);
+        $this->hook->attach('transaction.get.after', $transaction_id, $result, $this);
         return $result;
     }
 
@@ -137,7 +137,7 @@ class Transaction extends Model
     public function delete($transaction_id)
     {
         $result = null;
-        $this->hook->fire('transaction.delete.before', $transaction_id, $result, $this);
+        $this->hook->attach('transaction.delete.before', $transaction_id, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -145,7 +145,7 @@ class Transaction extends Model
 
         $result = (bool) $this->db->delete('transaction', array('transaction_id' => $transaction_id));
 
-        $this->hook->fire('transaction.delete.after', $transaction_id, $result, $this);
+        $this->hook->attach('transaction.delete.after', $transaction_id, $result, $this);
         return (bool) $result;
     }
 

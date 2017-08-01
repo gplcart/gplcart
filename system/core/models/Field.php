@@ -55,7 +55,7 @@ class Field extends Model
             'select' => $this->language->text('Dropdown list')
         );
 
-        $this->hook->fire('field.widget.types', $types, $this);
+        $this->hook->attach('field.widget.types', $types, $this);
         return $types;
     }
 
@@ -76,7 +76,7 @@ class Field extends Model
             'attribute' => $this->language->text('Attribute')
         );
 
-        $this->hook->fire('field.types', $types, $this);
+        $this->hook->attach('field.types', $types, $this);
         return $types;
     }
 
@@ -88,7 +88,7 @@ class Field extends Model
     public function add(array $data)
     {
         $result = null;
-        $this->hook->fire('field.add.before', $data, $result, $this);
+        $this->hook->attach('field.add.before', $data, $result, $this);
 
         if (isset($result)) {
             return (int) $result;
@@ -98,7 +98,7 @@ class Field extends Model
 
         $this->setTranslationTrait($this->db, $data, 'field', false);
 
-        $this->hook->fire('field.add.after', $data, $result, $this);
+        $this->hook->attach('field.add.after', $data, $result, $this);
         return (int) $result;
     }
 
@@ -166,7 +166,7 @@ class Field extends Model
         }
 
         $list = $this->db->fetchAll($sql, $where, array('index' => 'field_id'));
-        $this->hook->fire('field.list', $list, $this);
+        $this->hook->attach('field.list', $list, $this);
 
         return $list;
     }
@@ -180,7 +180,7 @@ class Field extends Model
     public function get($field_id, $language = null)
     {
         $result = null;
-        $this->hook->fire('field.get.before', $field_id, $language, $result, $this);
+        $this->hook->attach('field.get.before', $field_id, $language, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -191,7 +191,7 @@ class Field extends Model
 
         $this->attachTranslationTrait($this->db, $result, 'field', $language);
 
-        $this->hook->fire('field.get.after', $field_id, $language, $result, $this);
+        $this->hook->attach('field.get.after', $field_id, $language, $result, $this);
         return $result;
     }
 
@@ -203,7 +203,7 @@ class Field extends Model
     public function delete($field_id)
     {
         $result = null;
-        $this->hook->fire('field.delete.before', $field_id, $result, $this);
+        $this->hook->attach('field.delete.before', $field_id, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -233,7 +233,7 @@ class Field extends Model
             $this->db->delete('product_class_field', $conditions);
         }
 
-        $this->hook->fire('field.delete.after', $field_id, $result, $this);
+        $this->hook->attach('field.delete.after', $field_id, $result, $this);
         return (bool) $result;
     }
 
@@ -259,7 +259,7 @@ class Field extends Model
     public function update($field_id, array $data)
     {
         $result = null;
-        $this->hook->fire('field.update.before', $field_id, $data, $result, $this);
+        $this->hook->attach('field.update.before', $field_id, $data, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -273,7 +273,7 @@ class Field extends Model
 
         $result = $updated > 0;
 
-        $this->hook->fire('field.update.after', $field_id, $data, $result, $this);
+        $this->hook->attach('field.update.after', $field_id, $data, $result, $this);
         return (bool) $result;
     }
 

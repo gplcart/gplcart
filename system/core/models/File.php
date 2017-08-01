@@ -97,7 +97,7 @@ class File extends Model
     public function add(array $data)
     {
         $result = null;
-        $this->hook->fire('file.add.before', $data, $result, $this);
+        $this->hook->attach('file.add.before', $data, $result, $this);
 
         if (isset($result)) {
             return (int) $result;
@@ -121,7 +121,7 @@ class File extends Model
 
         $this->setTranslationTrait($this->db, $data, 'file', false);
 
-        $this->hook->fire('file.add.after', $data, $result, $this);
+        $this->hook->attach('file.add.after', $data, $result, $this);
         return (int) $result;
     }
 
@@ -134,7 +134,7 @@ class File extends Model
     public function update($file_id, array $data)
     {
         $result = null;
-        $this->hook->fire('file.update.before', $file_id, $data, $result, $this);
+        $this->hook->attach('file.update.before', $file_id, $data, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -148,7 +148,7 @@ class File extends Model
 
         $result = $updated > 0;
 
-        $this->hook->fire('file.update.after', $file_id, $data, $result, $this);
+        $this->hook->attach('file.update.after', $file_id, $data, $result, $this);
         return (bool) $result;
     }
 
@@ -161,7 +161,7 @@ class File extends Model
     public function get($file_id, $language = null)
     {
         $result = null;
-        $this->hook->fire('file.get.before', $file_id, $language, $result, $this);
+        $this->hook->attach('file.get.before', $file_id, $language, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -170,7 +170,7 @@ class File extends Model
         $result = $this->db->fetch('SELECT * FROM file WHERE file_id=?', array($file_id));
         $this->attachTranslationTrait($this->db, $result, 'file', $language);
 
-        $this->hook->fire('file.get.after', $file_id, $language, $result, $this);
+        $this->hook->attach('file.get.after', $file_id, $language, $result, $this);
         return $result;
     }
 
@@ -182,7 +182,7 @@ class File extends Model
     public function delete($file_id)
     {
         $result = null;
-        $this->hook->fire('file.delete.before', $file_id, $result, $this);
+        $this->hook->attach('file.delete.before', $file_id, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -199,7 +199,7 @@ class File extends Model
             $this->db->delete('file_translation', $conditions);
         }
 
-        $this->hook->fire('file.delete.after', $file_id, $result, $this);
+        $this->hook->attach('file.delete.after', $file_id, $result, $this);
         return (bool) $result;
     }
 
@@ -289,7 +289,7 @@ class File extends Model
             'validator' => 'zip'
         );
 
-        $this->hook->fire('file.handlers', $handlers, $this);
+        $this->hook->attach('file.handlers', $handlers, $this);
 
         return $handlers;
     }
@@ -446,7 +446,7 @@ class File extends Model
 
         $files = $this->db->fetchAll($sql, $params, array('index' => 'file_id'));
 
-        $this->hook->fire('file.list', $files, $this);
+        $this->hook->attach('file.list', $files, $this);
         return $files;
     }
 
@@ -529,7 +529,7 @@ class File extends Model
         $this->transferred = null;
 
         $result = null;
-        $this->hook->fire('file.upload.before', $post, $handler, $path, $result, $this);
+        $this->hook->attach('file.upload.before', $post, $handler, $path, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -552,7 +552,7 @@ class File extends Model
         }
 
         $result = true;
-        $this->hook->fire('file.upload.after', $post, $handler, $path, $result, $this);
+        $this->hook->attach('file.upload.after', $post, $handler, $path, $result, $this);
         return $result;
     }
 
@@ -602,7 +602,7 @@ class File extends Model
         $this->transferred = null;
 
         $result = null;
-        $this->hook->fire('file.download.before', $url, $handler, $path, $result, $this);
+        $this->hook->attach('file.download.before', $url, $handler, $path, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -627,7 +627,7 @@ class File extends Model
         }
 
         $result = true;
-        $this->hook->fire('file.download.after', $url, $handler, $temp, $result, $this);
+        $this->hook->attach('file.download.after', $url, $handler, $temp, $result, $this);
         return $result;
     }
 

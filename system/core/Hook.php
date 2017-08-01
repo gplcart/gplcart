@@ -47,7 +47,7 @@ class Hook
     /**
      * Registers all hooks from all modules
      */
-    public function registerAll()
+    public function attachAll()
     {
         foreach ($this->config->getEnabledModules() as $module) {
             if (empty($module['hooks'])) {
@@ -121,7 +121,7 @@ class Hook
      * @param mixed $e
      * @return boolean
      */
-    public function fire($hook, &$a = null, &$b = null, &$c = null, &$d = null,
+    public function attach($hook, &$a = null, &$b = null, &$c = null, &$d = null,
             &$e = null)
     {
         if (strpos($hook, '|') !== false) {

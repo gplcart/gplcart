@@ -74,7 +74,7 @@ class Page extends Model
     public function get($page_id, $language = null)
     {
         $result = null;
-        $this->hook->fire('page.get.before', $page_id, $language, $result, $this);
+        $this->hook->attach('page.get.before', $page_id, $language, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -91,7 +91,7 @@ class Page extends Model
         $this->attachImagesTrait($this->file, $result, 'page', $language);
         $this->attachTranslationTrait($this->db, $result, 'page', $language);
 
-        $this->hook->fire('page.get.after', $page_id, $language, $result, $this);
+        $this->hook->attach('page.get.after', $page_id, $language, $result, $this);
 
         return $result;
     }
@@ -104,7 +104,7 @@ class Page extends Model
     public function add(array $data)
     {
         $result = null;
-        $this->hook->fire('page.add.before', $data, $result, $this);
+        $this->hook->attach('page.add.before', $data, $result, $this);
 
         if (isset($result)) {
             return (int) $result;
@@ -117,7 +117,7 @@ class Page extends Model
         $this->setImagesTrait($this->file, $data, 'page');
         $this->setAliasTrait($this->alias, $data, 'page', false);
 
-        $this->hook->fire('page.add.after', $data, $result, $this);
+        $this->hook->attach('page.add.after', $data, $result, $this);
         return (int) $result;
     }
 
@@ -130,7 +130,7 @@ class Page extends Model
     public function update($page_id, array $data)
     {
         $result = null;
-        $this->hook->fire('page.update.before', $page_id, $data, $result, $this);
+        $this->hook->attach('page.update.before', $page_id, $data, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -150,7 +150,7 @@ class Page extends Model
 
         $result = $updated > 0;
 
-        $this->hook->fire('page.update.after', $page_id, $data, $result, $this);
+        $this->hook->attach('page.update.after', $page_id, $data, $result, $this);
         return (bool) $result;
     }
 
@@ -162,7 +162,7 @@ class Page extends Model
     public function delete($page_id)
     {
         $result = null;
-        $this->hook->fire('page.delete.before', $page_id, $result, $this);
+        $this->hook->attach('page.delete.before', $page_id, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -187,7 +187,7 @@ class Page extends Model
             $this->db->run($sql, array('page', $page_id));
         }
 
-        $this->hook->fire('page.delete.after', $page_id, $result, $this);
+        $this->hook->attach('page.delete.after', $page_id, $result, $this);
         return (bool) $result;
     }
 
@@ -271,7 +271,7 @@ class Page extends Model
         $options = array('index' => 'page_id');
         $list = $this->db->fetchAll($sql, $where, $options);
 
-        $this->hook->fire('page.list', $list, $this);
+        $this->hook->attach('page.list', $list, $this);
         return $list;
     }
 

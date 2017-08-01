@@ -53,7 +53,7 @@ class Currency extends Model
     public function add(array $data)
     {
         $result = null;
-        $this->hook->fire('currency.get.before', $data, $result, $this);
+        $this->hook->attach('currency.get.before', $data, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -74,7 +74,7 @@ class Currency extends Model
         $this->config->set('currencies', $currencies);
 
         $result = true;
-        $this->hook->fire('currency.get.after', $data, $result, $this);
+        $this->hook->attach('currency.get.after', $data, $result, $this);
         return (bool) $result;
     }
 
@@ -101,7 +101,7 @@ class Currency extends Model
         }
 
         $currencies = array_merge($default, $saved);
-        $this->hook->fire('currency.list', $currencies, $this);
+        $this->hook->attach('currency.list', $currencies, $this);
 
         if ($enabled) {
             $currencies = array_filter($currencies, function ($currency) {
@@ -121,7 +121,7 @@ class Currency extends Model
     public function update($code, array $data)
     {
         $result = null;
-        $this->hook->fire('currency.update.before', $code, $data, $result, $this);
+        $this->hook->attach('currency.update.before', $code, $data, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -147,7 +147,7 @@ class Currency extends Model
         $this->config->set('currencies', $currencies);
 
         $result = true;
-        $this->hook->fire('currency.update.after', $code, $data, $result, $this);
+        $this->hook->attach('currency.update.after', $code, $data, $result, $this);
         return (bool) $result;
     }
 
@@ -159,7 +159,7 @@ class Currency extends Model
     public function delete($code)
     {
         $result = null;
-        $this->hook->fire('currency.delete.before', $code, $result, $this);
+        $this->hook->attach('currency.delete.before', $code, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -176,7 +176,7 @@ class Currency extends Model
         $this->config->set('currencies', $currencies);
 
         $result = true;
-        $this->hook->fire('currency.delete.after', $code, $result, $this);
+        $this->hook->attach('currency.delete.after', $code, $result, $this);
         return (bool) $result;
     }
 

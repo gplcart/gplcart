@@ -34,7 +34,7 @@ class State extends Model
     public function add(array $data)
     {
         $result = null;
-        $this->hook->fire('state.add.before', $data, $result, $this);
+        $this->hook->attach('state.add.before', $data, $result, $this);
 
         if (isset($result)) {
             return (int) $result;
@@ -42,7 +42,7 @@ class State extends Model
 
         $result = $this->db->insert('state', $data);
 
-        $this->hook->fire('state.add.after', $data, $result, $this);
+        $this->hook->attach('state.add.after', $data, $result, $this);
         return (int) $result;
     }
 
@@ -59,7 +59,7 @@ class State extends Model
             return $result;
         }
 
-        $this->hook->fire('state.get.before', $state_id, $result, $this);
+        $this->hook->attach('state.get.before', $state_id, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -68,7 +68,7 @@ class State extends Model
         $sql = 'SELECT * FROM state WHERE state_id=?';
         $result = $this->db->fetch($sql, array($state_id));
 
-        $this->hook->fire('state.get.after', $state_id, $result, $this);
+        $this->hook->attach('state.get.after', $state_id, $result, $this);
         return $result;
     }
 
@@ -139,7 +139,7 @@ class State extends Model
         }
 
         $states = $this->db->fetchAll($sql, $where, array('index' => 'state_id'));
-        $this->hook->fire('state.list', $states, $this);
+        $this->hook->attach('state.list', $states, $this);
         return $states;
     }
 
@@ -151,7 +151,7 @@ class State extends Model
     public function delete($state_id)
     {
         $result = null;
-        $this->hook->fire('state.delete.before', $state_id, $result, $this);
+        $this->hook->attach('state.delete.before', $state_id, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -168,7 +168,7 @@ class State extends Model
             $this->db->delete('city', $conditions);
         }
 
-        $this->hook->fire('state.delete.after', $state_id, $result, $this);
+        $this->hook->attach('state.delete.after', $state_id, $result, $this);
         return (bool) $result;
     }
 
@@ -194,7 +194,7 @@ class State extends Model
     public function update($state_id, array $data)
     {
         $result = null;
-        $this->hook->fire('state.update.before', $state_id, $data, $result, $this);
+        $this->hook->attach('state.update.before', $state_id, $data, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -202,7 +202,7 @@ class State extends Model
 
         $result = (bool) $this->db->update('state', $data, array('state_id' => $state_id));
 
-        $this->hook->fire('state.update.after', $state_id, $data, $result, $this);
+        $this->hook->attach('state.update.after', $state_id, $data, $result, $this);
         return (bool) $result;
     }
 

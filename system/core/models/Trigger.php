@@ -111,7 +111,7 @@ class Trigger extends Model
             $triggers[$trigger['trigger_id']] = $trigger;
         }
 
-        $this->hook->fire('trigger.list', $triggers, $this);
+        $this->hook->attach('trigger.list', $triggers, $this);
         return $triggers;
     }
 
@@ -123,7 +123,7 @@ class Trigger extends Model
     public function add(array $data)
     {
         $result = null;
-        $this->hook->fire('trigger.add.before', $data, $result, $this);
+        $this->hook->attach('trigger.add.before', $data, $result, $this);
 
         if (isset($result)) {
             return (int) $result;
@@ -131,7 +131,7 @@ class Trigger extends Model
 
         $result = $this->db->insert('triggers', $data);
 
-        $this->hook->fire('trigger.add.after', $data, $result, $this);
+        $this->hook->attach('trigger.add.after', $data, $result, $this);
         return (int) $result;
     }
 
@@ -143,7 +143,7 @@ class Trigger extends Model
     public function get($trigger_id)
     {
         $result = null;
-        $this->hook->fire('trigger.get.before', $trigger_id, $result, $this);
+        $this->hook->attach('trigger.get.before', $trigger_id, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -152,7 +152,7 @@ class Trigger extends Model
         $sql = 'SELECT * FROM triggers WHERE trigger_id=?';
         $result = $this->db->fetch($sql, array($trigger_id), array('unserialize' => 'data'));
 
-        $this->hook->fire('trigger.get.after', $trigger_id, $result, $this);
+        $this->hook->attach('trigger.get.after', $trigger_id, $result, $this);
         return $result;
     }
 
@@ -164,7 +164,7 @@ class Trigger extends Model
     public function delete($trigger_id)
     {
         $result = null;
-        $this->hook->fire('trigger.delete.before', $trigger_id, $result, $this);
+        $this->hook->attach('trigger.delete.before', $trigger_id, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -172,7 +172,7 @@ class Trigger extends Model
 
         $result = (bool) $this->db->delete('triggers', array('trigger_id' => $trigger_id));
 
-        $this->hook->fire('trigger.delete.after', $trigger_id, $result, $this);
+        $this->hook->attach('trigger.delete.after', $trigger_id, $result, $this);
         return (bool) $result;
     }
 
@@ -185,7 +185,7 @@ class Trigger extends Model
     public function update($trigger_id, array $data)
     {
         $result = null;
-        $this->hook->fire('trigger.update.before', $trigger_id, $data, $result, $this);
+        $this->hook->attach('trigger.update.before', $trigger_id, $data, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -193,7 +193,7 @@ class Trigger extends Model
 
         $result = (bool) $this->db->update('triggers', $data, array('trigger_id' => $trigger_id));
 
-        $this->hook->fire('trigger.update.after', $trigger_id, $data, $result, $this);
+        $this->hook->attach('trigger.update.after', $trigger_id, $data, $result, $this);
         return (bool) $result;
     }
 

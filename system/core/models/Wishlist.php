@@ -62,7 +62,7 @@ class Wishlist extends Model
     public function get($wishlist_id)
     {
         $result = null;
-        $this->hook->fire('wishlist.get.before', $wishlist_id, $result, $this);
+        $this->hook->attach('wishlist.get.before', $wishlist_id, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -71,7 +71,7 @@ class Wishlist extends Model
         $sql = 'SELECT * FROM wishlist WHERE wishlist_id=?';
         $result = $this->db->fetch($sql, array($wishlist_id));
 
-        $this->hook->fire('wishlist.get.after', $wishlist_id, $result, $this);
+        $this->hook->attach('wishlist.get.after', $wishlist_id, $result, $this);
         return $result;
     }
 
@@ -83,7 +83,7 @@ class Wishlist extends Model
     public function add(array $data)
     {
         $result = null;
-        $this->hook->fire('wishlist.add.before', $data, $result, $this);
+        $this->hook->attach('wishlist.add.before', $data, $result, $this);
 
         if (isset($result)) {
             return (int) $result;
@@ -94,7 +94,7 @@ class Wishlist extends Model
 
         Cache::clearMemory();
 
-        $this->hook->fire('wishlist.add.after', $data, $result, $this);
+        $this->hook->attach('wishlist.add.after', $data, $result, $this);
         return (int) $result;
     }
 
@@ -106,7 +106,7 @@ class Wishlist extends Model
     public function addProduct(array $data)
     {
         $result = array();
-        $this->hook->fire('wishlist.add.product.before', $data, $result, $this);
+        $this->hook->attach('wishlist.add.product.before', $data, $result, $this);
 
         if (!empty($result)) {
             return (array) $result;
@@ -150,7 +150,7 @@ class Wishlist extends Model
                 'message' => $this->language->text('Product has been added to your <a href="!href">wishlist</a>', array('!href' => $href)));
         }
 
-        $this->hook->fire('wishlist.add.product.after', $data, $result, $this);
+        $this->hook->attach('wishlist.add.product.after', $data, $result, $this);
         return (array) $result;
     }
 
@@ -162,7 +162,7 @@ class Wishlist extends Model
     public function deleteProduct(array $data)
     {
         $result = array();
-        $this->hook->fire('wishlist.delete.product.before', $data, $result, $this);
+        $this->hook->attach('wishlist.delete.product.before', $data, $result, $this);
 
         if (!empty($result)) {
             return (array) $result;
@@ -189,7 +189,7 @@ class Wishlist extends Model
             );
         }
 
-        $this->hook->fire('wishlist.delete.product.after', $data, $result, $this);
+        $this->hook->attach('wishlist.delete.product.after', $data, $result, $this);
         return (array) $result;
     }
 
@@ -250,7 +250,7 @@ class Wishlist extends Model
     public function delete(array $data)
     {
         $result = null;
-        $this->hook->fire('wishlist.delete.before', $data, $result, $this);
+        $this->hook->attach('wishlist.delete.before', $data, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -260,7 +260,7 @@ class Wishlist extends Model
 
         Cache::clearMemory();
 
-        $this->hook->fire('wishlist.delete.after', $data, $result, $this);
+        $this->hook->attach('wishlist.delete.after', $data, $result, $this);
         return (bool) $result;
     }
 
@@ -335,7 +335,7 @@ class Wishlist extends Model
         }
 
         $items = $this->db->fetchAll($sql, $where, array('index' => 'wishlist_id'));
-        $this->hook->fire('wishlist.list', $items, $this);
+        $this->hook->attach('wishlist.list', $items, $this);
 
         return $items;
     }

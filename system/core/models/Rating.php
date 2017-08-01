@@ -33,7 +33,7 @@ class Rating extends Model
     public function getByProduct($product_id)
     {
         $result = null;
-        $this->hook->fire('rating.get.before', $product_id, $result, $this);
+        $this->hook->attach('rating.get.before', $product_id, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -41,7 +41,7 @@ class Rating extends Model
 
         $sql = 'SELECT rating, votes FROM rating WHERE product_id=?';
         $result = $this->db->fetch($sql, array($product_id));
-        $this->hook->fire('rating.get.after', $product_id, $result, $this);
+        $this->hook->attach('rating.get.after', $product_id, $result, $this);
 
         return $result;
     }
@@ -55,7 +55,7 @@ class Rating extends Model
     public function getByUser($product_id, $user_id)
     {
         $result = null;
-        $this->hook->fire('rating.get.user.before', $product_id, $user_id, $result, $this);
+        $this->hook->attach('rating.get.user.before', $product_id, $user_id, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -73,7 +73,7 @@ class Rating extends Model
             $result = $result[$user_id];
         }
 
-        $this->hook->fire('rating.get.user.after', $product_id, $user_id, $result, $this);
+        $this->hook->attach('rating.get.user.after', $product_id, $user_id, $result, $this);
         return $result;
     }
 
@@ -85,7 +85,7 @@ class Rating extends Model
     public function set(array $data)
     {
         $result = null;
-        $this->hook->fire('rating.set.before', $data, $result, $this);
+        $this->hook->attach('rating.set.before', $data, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -106,7 +106,7 @@ class Rating extends Model
 
         $result = $this->setBayesian($data);
 
-        $this->hook->fire('rating.set.after', $data, $result, $this);
+        $this->hook->attach('rating.set.after', $data, $result, $this);
         return $result;
     }
 
@@ -118,7 +118,7 @@ class Rating extends Model
     protected function addByUser(array $data)
     {
         $result = null;
-        $this->hook->fire('rating.add.user.before', $data, $result, $this);
+        $this->hook->attach('rating.add.user.before', $data, $result, $this);
 
         if (isset($result)) {
             return (int) $result;
@@ -129,7 +129,7 @@ class Rating extends Model
         }
 
         $result = $this->db->insert('rating_user', $data);
-        $this->hook->fire('rating.add.user.after', $data, $result, $this);
+        $this->hook->attach('rating.add.user.after', $data, $result, $this);
 
         return (int) $result;
     }

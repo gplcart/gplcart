@@ -33,7 +33,7 @@ class Zone extends Model
     public function get($zone_id)
     {
         $result = null;
-        $this->hook->fire('zone.get.before', $zone_id, $result, $this);
+        $this->hook->attach('zone.get.before', $zone_id, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -41,7 +41,7 @@ class Zone extends Model
 
         $result = $this->db->fetch('SELECT * FROM zone WHERE zone_id=?', array($zone_id));
 
-        $this->hook->fire('zone.get.after', $zone_id, $result, $this);
+        $this->hook->attach('zone.get.after', $zone_id, $result, $this);
         return $result;
     }
 
@@ -53,14 +53,14 @@ class Zone extends Model
     public function add(array $data)
     {
         $result = null;
-        $this->hook->fire('zone.add.before', $data, $result, $this);
+        $this->hook->attach('zone.add.before', $data, $result, $this);
 
         if (isset($result)) {
             return (int) $result;
         }
 
         $result = $this->db->insert('zone', $data);
-        $this->hook->fire('zone.add.after', $data, $result, $this);
+        $this->hook->attach('zone.add.after', $data, $result, $this);
 
         return (int) $result;
     }
@@ -74,7 +74,7 @@ class Zone extends Model
     public function update($zone_id, array $data)
     {
         $result = null;
-        $this->hook->fire('zone.update.before', $zone_id, $data, $result, $this);
+        $this->hook->attach('zone.update.before', $zone_id, $data, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -82,7 +82,7 @@ class Zone extends Model
 
         $result = (bool) $this->db->update('zone', $data, array('zone_id' => $zone_id));
 
-        $this->hook->fire('zone.update.after', $zone_id, $data, $result, $this);
+        $this->hook->attach('zone.update.after', $zone_id, $data, $result, $this);
         return (bool) $result;
     }
 
@@ -94,7 +94,7 @@ class Zone extends Model
     public function delete($zone_id)
     {
         $result = null;
-        $this->hook->fire('zone.delete.before', $zone_id, $result, $this);
+        $this->hook->attach('zone.delete.before', $zone_id, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -106,7 +106,7 @@ class Zone extends Model
 
         $result = (bool) $this->db->delete('zone', array('zone_id' => $zone_id));
 
-        $this->hook->fire('zone.delete.after', $zone_id, $result, $this);
+        $this->hook->attach('zone.delete.after', $zone_id, $result, $this);
         return (bool) $result;
     }
 
@@ -170,7 +170,7 @@ class Zone extends Model
         }
 
         $list = $this->db->fetchAll($sql, $conditions, array('index' => 'zone_id'));
-        $this->hook->fire('zone.list', $list, $this);
+        $this->hook->attach('zone.list', $list, $this);
 
         return $list;
     }

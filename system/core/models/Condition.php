@@ -70,7 +70,7 @@ class Condition extends Model
     public function isMet(array $trigger, array $data)
     {
         $met = null;
-        $this->hook->fire('condition.met.before', $trigger, $data, $met, $this);
+        $this->hook->attach('condition.met.before', $trigger, $data, $met, $this);
 
         if (isset($met)) {
             return (bool) $met;
@@ -101,7 +101,7 @@ class Condition extends Model
             }
         }
 
-        $this->hook->fire('condition.met.after', $trigger, $data, $met, $this);
+        $this->hook->attach('condition.met.after', $trigger, $data, $met, $this);
         return (bool) $met;
     }
 
@@ -140,7 +140,7 @@ class Condition extends Model
             $handler['description'] = $this->language->text($handler['description']);
         });
 
-        $this->hook->fire('condition.handlers', $handlers, $this);
+        $this->hook->attach('condition.handlers', $handlers, $this);
         return $handlers;
     }
 

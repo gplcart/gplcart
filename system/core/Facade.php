@@ -67,8 +67,8 @@ class Facade
         $this->config = $config;
         $this->session = $session;
 
-        $this->hook->registerAll();
-        $this->hook->fire('construct', $this);
+        $this->hook->attachAll();
+        $this->hook->attach('construct', $this);
     }
 
     /**

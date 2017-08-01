@@ -58,7 +58,7 @@ class CollectionItem extends Model
         $options = array('index' => 'collection_item_id', 'unserialize' => 'data');
         $items = $this->db->fetchAll($sql, $params, $options);
 
-        $this->hook->fire('collection.item.list', $items, $this);
+        $this->hook->attach('collection.item.list', $items, $this);
         return $items;
     }
 
@@ -129,7 +129,7 @@ class CollectionItem extends Model
     public function add(array $data)
     {
         $result = null;
-        $this->hook->fire('collection.item.add.before', $data, $result, $this);
+        $this->hook->attach('collection.item.add.before', $data, $result, $this);
 
         if (isset($result)) {
             return (int) $result;
@@ -137,7 +137,7 @@ class CollectionItem extends Model
 
         $result = (int) $this->db->insert('collection_item', $data);
 
-        $this->hook->fire('collection.item.add.after', $data, $result, $this);
+        $this->hook->attach('collection.item.add.after', $data, $result, $this);
         return (int) $result;
     }
 
@@ -149,7 +149,7 @@ class CollectionItem extends Model
     public function get($id)
     {
         $result = null;
-        $this->hook->fire('collection.item.get.before', $id, $result, $this);
+        $this->hook->attach('collection.item.get.before', $id, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -158,7 +158,7 @@ class CollectionItem extends Model
         $sql = 'SELECT * FROM collection_item WHERE collection_item_id=?';
         $result = $this->db->fetch($sql, array($id));
 
-        $this->hook->fire('collection.item.get.after', $id, $result, $this);
+        $this->hook->attach('collection.item.get.after', $id, $result, $this);
         return $result;
     }
 
@@ -170,7 +170,7 @@ class CollectionItem extends Model
     public function delete($id)
     {
         $result = null;
-        $this->hook->fire('collection.item.delete.before', $id, $result, $this);
+        $this->hook->attach('collection.item.delete.before', $id, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -178,7 +178,7 @@ class CollectionItem extends Model
 
         $result = (bool) $this->db->delete('collection_item', array('collection_item_id' => $id));
 
-        $this->hook->fire('collection.item.delete.after', $id, $result, $this);
+        $this->hook->attach('collection.item.delete.after', $id, $result, $this);
         return (bool) $result;
     }
 
@@ -191,7 +191,7 @@ class CollectionItem extends Model
     public function update($id, array $data)
     {
         $result = null;
-        $this->hook->fire('collection.item.update.before', $id, $data, $result, $this);
+        $this->hook->attach('collection.item.update.before', $id, $data, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -199,7 +199,7 @@ class CollectionItem extends Model
 
         $result = (bool) $this->db->update('collection_item', $data, array('collection_item_id' => $id));
 
-        $this->hook->fire('collection.item.update.after', $id, $data, $result, $this);
+        $this->hook->attach('collection.item.update.after', $id, $data, $result, $this);
         return (bool) $result;
     }
 

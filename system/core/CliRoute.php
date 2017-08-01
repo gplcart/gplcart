@@ -58,7 +58,7 @@ class CliRoute
             $this->arguments = $this->cli->parse($_SERVER['argv']);
         }
 
-        $this->hook->fire('construct.cli.route', $this);
+        $this->hook->attach('construct.cli.route', $this);
     }
 
     /**
@@ -100,7 +100,7 @@ class CliRoute
         }
 
         $routes = require GC_CONFIG_CLI_ROUTE;
-        $this->hook->fire('cli.route.list', $routes, $this);
+        $this->hook->attach('cli.route.list', $routes, $this);
         return $routes;
     }
 

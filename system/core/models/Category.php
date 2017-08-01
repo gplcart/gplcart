@@ -76,7 +76,7 @@ class Category extends Model
     public function get($category_id, $language = null, $store_id = null)
     {
         $result = null;
-        $this->hook->fire('category.get.before', $category_id, $language, $store_id, $result, $this);
+        $this->hook->attach('category.get.before', $category_id, $language, $store_id, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -100,7 +100,7 @@ class Category extends Model
         $this->attachTranslationTrait($this->db, $category, 'category', $language);
         $this->attachImagesTrait($this->file, $category, 'category', $language);
 
-        $this->hook->fire('category.get.after', $category, $language, $store_id, $this);
+        $this->hook->attach('category.get.after', $category, $language, $store_id, $this);
         return $category;
     }
 
@@ -272,7 +272,7 @@ class Category extends Model
             }
         }
 
-        $this->hook->fire('category.tree', $tree, $this);
+        $this->hook->attach('category.tree', $tree, $this);
         return $tree;
     }
 
@@ -364,7 +364,7 @@ class Category extends Model
 
         $list = $this->db->fetchAll($sql, $where, array('index' => 'category_id'));
 
-        $this->hook->fire('category.list', $list, $this);
+        $this->hook->attach('category.list', $list, $this);
         return $list;
     }
 
@@ -376,7 +376,7 @@ class Category extends Model
     public function add(array $data)
     {
         $result = null;
-        $this->hook->fire('category.add.before', $data, $result, $this);
+        $this->hook->attach('category.add.before', $data, $result, $this);
 
         if (isset($result)) {
             return (int) $result;
@@ -388,7 +388,7 @@ class Category extends Model
         $this->setImagesTrait($this->file, $data, 'category');
         $this->setAliasTrait($this->alias, $data, 'category', false);
 
-        $this->hook->fire('category.add.after', $data, $result, $this);
+        $this->hook->attach('category.add.after', $data, $result, $this);
 
         return (int) $result;
     }
@@ -402,7 +402,7 @@ class Category extends Model
     public function update($category_id, array $data)
     {
         $result = null;
-        $this->hook->fire('category.update.before', $category_id, $data, $result, $this);
+        $this->hook->attach('category.update.before', $category_id, $data, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -418,7 +418,7 @@ class Category extends Model
 
         $result = $updated > 0;
 
-        $this->hook->fire('category.update.after', $category_id, $data, $result, $this);
+        $this->hook->attach('category.update.after', $category_id, $data, $result, $this);
         return (bool) $result;
     }
 
@@ -430,7 +430,7 @@ class Category extends Model
     public function delete($category_id)
     {
         $result = null;
-        $this->hook->fire('category.delete.before', $category_id, $result, $this);
+        $this->hook->attach('category.delete.before', $category_id, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -450,7 +450,7 @@ class Category extends Model
         $this->db->delete('alias', $conditions2);
 
         $result = true;
-        $this->hook->fire('category.delete.after', $category_id, $result, $this);
+        $this->hook->attach('category.delete.after', $category_id, $result, $this);
         return (bool) $result;
     }
 

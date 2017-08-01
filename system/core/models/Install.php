@@ -60,7 +60,7 @@ class Install extends Model
     {
         $handlers = $this->getDefaultHandler();
 
-        $this->hook->fire('install.handlers', $handlers, $this);
+        $this->hook->attach('install.handlers', $handlers, $this);
 
         array_walk($handlers, function(&$value, $key) {
             $value['id'] = $key;
@@ -133,7 +133,7 @@ class Install extends Model
         }
 
         $requirements = require GC_CONFIG_REQUIREMENT;
-        $this->hook->fire('install.requirements', $requirements);
+        $this->hook->attach('install.requirements', $requirements);
         return (array) $requirements;
     }
 
@@ -197,7 +197,7 @@ class Install extends Model
     public function process(array $data, array $cli_route = array())
     {
         $result = null;
-        $this->hook->fire('install.before', $data, $cli_route, $result, $this);
+        $this->hook->attach('install.before', $data, $cli_route, $result, $this);
 
         if (isset($result)) {
             return (array) $result;
@@ -215,7 +215,7 @@ class Install extends Model
 
         $result = array_merge($default_result, $this->callHandler($data['installer'], $data));
 
-        $this->hook->fire('install.after', $data, $cli_route, $result, $this);
+        $this->hook->attach('install.after', $data, $cli_route, $result, $this);
         return (array) $result;
     }
 

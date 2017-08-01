@@ -104,7 +104,7 @@ class Cart extends Model
             return $result;
         }
 
-        $this->hook->fire('cart.get.content.before', $data, $result, $this);
+        $this->hook->attach('cart.get.content.before', $data, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -141,7 +141,7 @@ class Cart extends Model
         $result['total'] = $total;
         $result['quantity'] = $quantity;
 
-        $this->hook->fire('cart.get.content.after', $data, $result, $this);
+        $this->hook->attach('cart.get.content.after', $data, $result, $this);
         return $result;
     }
 
@@ -253,7 +253,7 @@ class Cart extends Model
         $options = array('unserialize' => 'data', 'index' => $index);
         $list = $this->db->fetchAll($sql, $where, $options);
 
-        $this->hook->fire('cart.list', $list, $this);
+        $this->hook->attach('cart.list', $list, $this);
         return $list;
     }
 
@@ -281,7 +281,7 @@ class Cart extends Model
     public function addProduct(array $product, array $data)
     {
         $result = array();
-        $this->hook->fire('cart.add.product.before', $product, $data, $result, $this);
+        $this->hook->attach('cart.add.product.before', $product, $data, $result, $this);
 
         if (!empty($result)) {
             return (array) $result;
@@ -321,7 +321,7 @@ class Cart extends Model
             );
         }
 
-        $this->hook->fire('cart.add.product.after', $product, $data, $result, $this);
+        $this->hook->attach('cart.add.product.after', $product, $data, $result, $this);
         return (array) $result;
     }
 
@@ -383,7 +383,7 @@ class Cart extends Model
     public function add(array $data)
     {
         $result = null;
-        $this->hook->fire('cart.add.before', $data, $result, $this);
+        $this->hook->attach('cart.add.before', $data, $result, $this);
 
         if (isset($result)) {
             return (int) $result;
@@ -394,7 +394,7 @@ class Cart extends Model
 
         Cache::clearMemory();
 
-        $this->hook->fire('cart.add.after', $data, $result, $this);
+        $this->hook->attach('cart.add.after', $data, $result, $this);
         return (int) $result;
     }
 
@@ -407,7 +407,7 @@ class Cart extends Model
     public function update($cart_id, array $data)
     {
         $result = null;
-        $this->hook->fire('cart.update.before', $cart_id, $data, $result, $this);
+        $this->hook->attach('cart.update.before', $cart_id, $data, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -418,7 +418,7 @@ class Cart extends Model
 
         Cache::clearMemory();
 
-        $this->hook->fire('cart.update.after', $cart_id, $data, $result, $this);
+        $this->hook->attach('cart.update.after', $cart_id, $data, $result, $this);
         return (bool) $result;
     }
 
@@ -456,7 +456,7 @@ class Cart extends Model
     public function get($cart_id)
     {
         $result = null;
-        $this->hook->fire('cart.get.before', $cart_id, $result, $this);
+        $this->hook->attach('cart.get.before', $cart_id, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -464,7 +464,7 @@ class Cart extends Model
 
         $result = $this->db->fetch('SELECT * FROM cart WHERE cart_id=?', array($cart_id));
 
-        $this->hook->fire('cart.get.after', $cart_id, $result, $this);
+        $this->hook->attach('cart.get.after', $cart_id, $result, $this);
         return $result;
     }
 
@@ -476,7 +476,7 @@ class Cart extends Model
     public function moveToWishlist(array $data)
     {
         $result = array();
-        $this->hook->fire('cart.move.wishlist.before', $data, $result, $this);
+        $this->hook->attach('cart.move.wishlist.before', $data, $result, $this);
 
         if (!empty($result)) {
             return (array) $result;
@@ -510,7 +510,7 @@ class Cart extends Model
             'wishlist_id' => $data['wishlist_id']
         );
 
-        $this->hook->fire('cart.move.wishlist.after', $data, $result, $this);
+        $this->hook->attach('cart.move.wishlist.after', $data, $result, $this);
         return (array) $result;
     }
 
@@ -523,7 +523,7 @@ class Cart extends Model
     public function login(array $user, array $cart)
     {
         $result = array();
-        $this->hook->fire('cart.login.before', $user, $cart, $result, $this);
+        $this->hook->attach('cart.login.before', $user, $cart, $result, $this);
 
         if (!empty($result)) {
             return (array) $result;
@@ -551,7 +551,7 @@ class Cart extends Model
             ))
         );
 
-        $this->hook->fire('cart.login.after', $user, $cart, $result, $this);
+        $this->hook->attach('cart.login.after', $user, $cart, $result, $this);
         return (array) $result;
     }
 
@@ -563,7 +563,7 @@ class Cart extends Model
     public function delete($cart_id)
     {
         $result = null;
-        $this->hook->fire('cart.delete.before', $cart_id, $result, $this);
+        $this->hook->attach('cart.delete.before', $cart_id, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -577,7 +577,7 @@ class Cart extends Model
 
         Cache::clearMemory();
 
-        $this->hook->fire('cart.delete.after', $cart_id, $result, $this);
+        $this->hook->attach('cart.delete.after', $cart_id, $result, $this);
 
         return (bool) $result;
     }

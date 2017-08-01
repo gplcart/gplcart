@@ -42,7 +42,7 @@ class Controller extends BaseController
         $this->setJsCron();
         $this->setDefaultDataBackend();
 
-        $this->hook->fire('construct.controller.backend', $this);
+        $this->hook->attach('construct.controller.backend', $this);
         $this->controlHttpStatus();
     }
 

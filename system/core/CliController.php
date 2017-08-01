@@ -102,7 +102,7 @@ class CliController
         $this->setRouteProperties();
         $this->outputHelp();
 
-        $this->hook->fire('construct.cli.controller', $this);
+        $this->hook->attach('construct.cli.controller', $this);
     }
 
     /**
@@ -110,7 +110,7 @@ class CliController
      */
     public function __destruct()
     {
-        $this->hook->fire('destruct.cli.controller', $this);
+        $this->hook->attach('destruct.cli.controller', $this);
     }
 
     /**
@@ -123,7 +123,7 @@ class CliController
         if (strpos($method, 'composer') === 0 && defined('GC_VERSION')) {
             /* @var $hook \gplcart\core\Hook */
             $hook = Container::get('gplcart\\core\\Hook');
-            $hook->fire('cli.composer', $method, $args, $this);
+            $hook->attach('cli.composer', $method, $args, $this);
         }
     }
 

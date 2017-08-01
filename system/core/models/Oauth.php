@@ -86,7 +86,7 @@ class Oauth extends Model
         }
 
         $providers = array();
-        $this->hook->fire('oauth.providers', $providers, $this);
+        $this->hook->attach('oauth.providers', $providers, $this);
 
         foreach ($providers as $provider_id => &$provider) {
             $provider += array('type' => '', 'id' => $provider_id, 'status' => true);
@@ -276,7 +276,7 @@ class Oauth extends Model
     public function requestToken(array $provider, array $query)
     {
         $result = null;
-        $this->hook->fire('oauth.request.token.before', $provider, $query, $result, $this);
+        $this->hook->attach('oauth.request.token.before', $provider, $query, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -289,7 +289,7 @@ class Oauth extends Model
             $result = array();
         }
 
-        $this->hook->fire('oauth.request.token.after', $provider, $query, $result, $this);
+        $this->hook->attach('oauth.request.token.after', $provider, $query, $result, $this);
         return $result;
     }
 
@@ -378,7 +378,7 @@ class Oauth extends Model
     public function process(array $provider, $params)
     {
         $result = null;
-        $this->hook->fire('oauth.process.before', $provider, $params, $result, $this);
+        $this->hook->attach('oauth.process.before', $provider, $params, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -386,7 +386,7 @@ class Oauth extends Model
 
         $result = $this->call('process', $provider, $params);
 
-        $this->hook->fire('oauth.process.after', $provider, $params, $result, $this);
+        $this->hook->attach('oauth.process.after', $provider, $params, $result, $this);
 
         return $result;
     }

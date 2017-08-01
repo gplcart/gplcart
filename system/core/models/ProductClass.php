@@ -100,7 +100,7 @@ class ProductClass extends Model
         }
 
         $list = $this->db->fetchAll($sql, $where, array('index' => 'product_class_id'));
-        $this->hook->fire('product.class.list', $list, $this);
+        $this->hook->attach('product.class.list', $list, $this);
 
         return $list;
     }
@@ -113,7 +113,7 @@ class ProductClass extends Model
     public function get($product_class_id)
     {
         $result = null;
-        $this->hook->fire('product.class.get.before', $product_class_id, $result, $this);
+        $this->hook->attach('product.class.get.before', $product_class_id, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -122,7 +122,7 @@ class ProductClass extends Model
         $sql = 'SELECT * FROM product_class WHERE product_class_id=?';
         $result = $this->db->fetch($sql, array($product_class_id));
 
-        $this->hook->fire('product.class.get.after', $result, $this);
+        $this->hook->attach('product.class.get.after', $result, $this);
         return $result;
     }
 
@@ -134,7 +134,7 @@ class ProductClass extends Model
     public function add(array $data)
     {
         $result = null;
-        $this->hook->fire('product.class.add.before', $data, $result, $this);
+        $this->hook->attach('product.class.add.before', $data, $result, $this);
 
         if (isset($result)) {
             return (int) $result;
@@ -142,7 +142,7 @@ class ProductClass extends Model
 
         $result = $this->db->insert('product_class', $data);
 
-        $this->hook->fire('product.class.add.after', $data, $result, $this);
+        $this->hook->attach('product.class.add.after', $data, $result, $this);
         return (int) $result;
     }
 
@@ -154,7 +154,7 @@ class ProductClass extends Model
     public function delete($product_class_id)
     {
         $result = null;
-        $this->hook->fire('product.class.delete.before', $product_class_id, $result, $this);
+        $this->hook->attach('product.class.delete.before', $product_class_id, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -171,7 +171,7 @@ class ProductClass extends Model
             $this->db->delete('product_class_field', $conditions);
         }
 
-        $this->hook->fire('product.class.delete.after', $product_class_id, $result, $this);
+        $this->hook->attach('product.class.delete.after', $product_class_id, $result, $this);
         return (bool) $result;
     }
 
@@ -197,7 +197,7 @@ class ProductClass extends Model
     public function update($product_class_id, array $data)
     {
         $result = null;
-        $this->hook->fire('product.class.update.before', $product_class_id, $data, $result, $this);
+        $this->hook->attach('product.class.update.before', $product_class_id, $data, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -206,7 +206,7 @@ class ProductClass extends Model
         $conditions = array('product_class_id' => $product_class_id);
         $result = (bool) $this->db->update('product_class', $data, $conditions);
 
-        $this->hook->fire('product.class.update.after', $product_class_id, $data, $result, $this);
+        $this->hook->attach('product.class.update.after', $product_class_id, $data, $result, $this);
         return (bool) $result;
     }
 
@@ -218,14 +218,14 @@ class ProductClass extends Model
     public function addField(array $data)
     {
         $result = null;
-        $this->hook->fire('product.class.add.field.before', $data, $result, $this);
+        $this->hook->attach('product.class.add.field.before', $data, $result, $this);
 
         if (isset($result)) {
             return (int) $result;
         }
 
         $result = $this->db->insert('product_class_field', $data);
-        $this->hook->fire('product.class.add.field.after', $data, $result, $this);
+        $this->hook->attach('product.class.add.field.after', $data, $result, $this);
 
         return (int) $result;
     }
@@ -238,7 +238,7 @@ class ProductClass extends Model
     public function deleteField($product_class_id)
     {
         $result = null;
-        $this->hook->fire('product.class.delete.field.before', $product_class_id, $result, $this);
+        $this->hook->attach('product.class.delete.field.before', $product_class_id, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -247,7 +247,7 @@ class ProductClass extends Model
         $conditions = array('product_class_id' => $product_class_id);
         $result = (bool) $this->db->delete('product_class_field', $conditions);
 
-        $this->hook->fire('product.class.delete.field.after', $product_class_id, $result, $this);
+        $this->hook->attach('product.class.delete.field.after', $product_class_id, $result, $this);
         return (bool) $result;
     }
 

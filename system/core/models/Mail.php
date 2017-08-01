@@ -40,7 +40,7 @@ class Mail extends Model
         }
 
         $handlers = require GC_CONFIG_MAIL;
-        $this->hook->fire('mail.handlers', $handlers, $this);
+        $this->hook->attach('mail.handlers', $handlers, $this);
 
         return $handlers;
     }
@@ -62,7 +62,7 @@ class Mail extends Model
         settype($to, 'array');
 
         $result = null;
-        $this->hook->fire('mail.send', $to, $subject, $message, $options, $result);
+        $this->hook->attach('mail.send', $to, $subject, $message, $options, $result);
 
         if (isset($result)) {
             return $result;

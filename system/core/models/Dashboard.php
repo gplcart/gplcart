@@ -49,7 +49,7 @@ class Dashboard extends Model
         }
 
         $handlers = require GC_CONFIG_DASHBOARD;
-        $this->hook->fire('dashboard.handlers', $handlers, $this);
+        $this->hook->attach('dashboard.handlers', $handlers, $this);
         return $handlers;
     }
 
@@ -61,7 +61,7 @@ class Dashboard extends Model
     public function add(array $data)
     {
         $result = null;
-        $this->hook->fire('dashboard.add.before', $data, $result, $this);
+        $this->hook->attach('dashboard.add.before', $data, $result, $this);
 
         if (isset($result)) {
             return (int) $result;
@@ -69,7 +69,7 @@ class Dashboard extends Model
 
         $result = $this->db->insert('dashboard', $data);
 
-        $this->hook->fire('dashboard.add.after', $data, $result, $this);
+        $this->hook->attach('dashboard.add.after', $data, $result, $this);
         return (int) $result;
     }
 
@@ -82,7 +82,7 @@ class Dashboard extends Model
     public function update($dashboard_id, array $data)
     {
         $result = null;
-        $this->hook->fire('dashboard.update.before', $dashboard_id, $data, $result, $this);
+        $this->hook->attach('dashboard.update.before', $dashboard_id, $data, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -90,7 +90,7 @@ class Dashboard extends Model
 
         $result = (bool) $this->db->update('dashboard', $data, array('dashboard_id' => $dashboard_id));
 
-        $this->hook->fire('dashboard.update.after', $dashboard_id, $data, $result, $this);
+        $this->hook->attach('dashboard.update.after', $dashboard_id, $data, $result, $this);
         return (bool) $result;
     }
 
@@ -125,7 +125,7 @@ class Dashboard extends Model
 
         gplcart_array_sort($result['data']);
 
-        $this->hook->fire('dashboard.get.user', $result, $this);
+        $this->hook->attach('dashboard.get.user', $result, $this);
         return $result;
     }
 
@@ -154,7 +154,7 @@ class Dashboard extends Model
     public function delete($dashboard_id)
     {
         $result = null;
-        $this->hook->fire('dashboard.delete.before', $dashboard_id, $result, $this);
+        $this->hook->attach('dashboard.delete.before', $dashboard_id, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -162,7 +162,7 @@ class Dashboard extends Model
 
         $result = (bool) $this->db->delete('dashboard', array('dashboard_id'));
 
-        $this->hook->fire('dashboard.delete.after', $dashboard_id, $result, $this);
+        $this->hook->attach('dashboard.delete.after', $dashboard_id, $result, $this);
         return (bool) $result;
     }
 

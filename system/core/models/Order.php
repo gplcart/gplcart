@@ -113,7 +113,7 @@ class Order extends Model
         }
 
         $statuses = $this->getDefaultStatuses();
-        $this->hook->fire('order.statuses', $statuses, $this);
+        $this->hook->attach('order.statuses', $statuses, $this);
 
         return $statuses;
     }
@@ -223,7 +223,7 @@ class Order extends Model
         $options = array('unserialize' => 'data', 'index' => 'order_id');
         $orders = $this->db->fetchAll($sql, $where, $options);
 
-        $this->hook->fire('order.list', $orders, $this);
+        $this->hook->attach('order.list', $orders, $this);
         return $orders;
     }
 
@@ -235,7 +235,7 @@ class Order extends Model
     public function get($order_id)
     {
         $result = null;
-        $this->hook->fire('order.get.before', $order_id, $result, $this);
+        $this->hook->attach('order.get.before', $order_id, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -250,7 +250,7 @@ class Order extends Model
 
         $this->attachCart($result);
 
-        $this->hook->fire('order.get.after', $order_id, $result, $this);
+        $this->hook->attach('order.get.after', $order_id, $result, $this);
         return $result;
     }
 
@@ -290,7 +290,7 @@ class Order extends Model
     public function update($order_id, array $data)
     {
         $result = null;
-        $this->hook->fire('order.update.before', $order_id, $data, $result, $this);
+        $this->hook->attach('order.update.before', $order_id, $data, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -303,7 +303,7 @@ class Order extends Model
         }
 
         $result = (bool) $this->db->update('orders', $data, array('order_id' => $order_id));
-        $this->hook->fire('order.update.after', $order_id, $data, $result, $this);
+        $this->hook->attach('order.update.after', $order_id, $data, $result, $this);
 
         return (bool) $result;
     }
@@ -316,7 +316,7 @@ class Order extends Model
     public function delete($order_id)
     {
         $result = null;
-        $this->hook->fire('order.delete.before', $order_id, $result, $this);
+        $this->hook->attach('order.delete.before', $order_id, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -333,7 +333,7 @@ class Order extends Model
             $this->db->delete('history', $conditions2);
         }
 
-        $this->hook->fire('order.delete.after', $order_id, $result, $this);
+        $this->hook->attach('order.delete.after', $order_id, $result, $this);
         return (bool) $result;
     }
 
@@ -407,7 +407,7 @@ class Order extends Model
     public function submit(array $data, array $options = array())
     {
         $result = array();
-        $this->hook->fire('order.submit.before', $data, $options, $result, $this);
+        $this->hook->attach('order.submit.before', $data, $options, $result, $this);
 
         if (!empty($result)) {
             return (array) $result;
@@ -447,7 +447,7 @@ class Order extends Model
             $result['redirect'] = "checkout/complete/$order_id";
         }
 
-        $this->hook->fire('order.submit.after', $data, $options, $result, $this);
+        $this->hook->attach('order.submit.after', $data, $options, $result, $this);
         return (array) $result;
     }
 
@@ -606,7 +606,7 @@ class Order extends Model
             $message = $this->getCompleteMessageAnonymous($order);
         }
 
-        $this->hook->fire('order.complete.message', $message, $order, $this);
+        $this->hook->attach('order.complete.message', $message, $order, $this);
         return $message;
     }
 
@@ -654,7 +654,7 @@ class Order extends Model
     public function add(array $order)
     {
         $result = null;
-        $this->hook->fire('order.add.before', $order, $result, $this);
+        $this->hook->attach('order.add.before', $order, $result, $this);
 
         if (isset($result)) {
             return (int) $result;
@@ -672,7 +672,7 @@ class Order extends Model
 
         $result = $this->db->insert('orders', $order);
 
-        $this->hook->fire('order.add.after', $order, $result, $this);
+        $this->hook->attach('order.add.after', $order, $result, $this);
         return (int) $result;
     }
 
@@ -747,7 +747,7 @@ class Order extends Model
     public function calculate(array &$data)
     {
         $result = array();
-        $this->hook->fire('order.calculate.before', $data, $result, $this);
+        $this->hook->attach('order.calculate.before', $data, $result, $this);
 
         if (!empty($result)) {
             return (array) $result;
@@ -777,7 +777,7 @@ class Order extends Model
             'total_formatted_number' => $this->price->format($total, $data['cart']['currency'], true, false),
         );
 
-        $this->hook->fire('order.calculate.after', $data, $result, $this);
+        $this->hook->attach('order.calculate.after', $data, $result, $this);
         return (array) $result;
     }
 

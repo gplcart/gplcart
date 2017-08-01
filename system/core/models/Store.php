@@ -99,7 +99,7 @@ class Store extends Model
         $options = array('unserialize' => 'data', 'index' => 'store_id');
         $stores = $this->db->fetchAll($sql, $where, $options);
 
-        $this->hook->fire('store.list', $stores, $this);
+        $this->hook->attach('store.list', $stores, $this);
         return $stores;
     }
 
@@ -136,7 +136,7 @@ class Store extends Model
             return $result;
         }
 
-        $this->hook->fire('store.get.before', $store_id, $result, $this);
+        $this->hook->attach('store.get.before', $store_id, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -152,7 +152,7 @@ class Store extends Model
             $result['data'] += $this->defaultConfig();
         }
 
-        $this->hook->fire('store.get.after', $store_id, $result, $this);
+        $this->hook->attach('store.get.after', $store_id, $result, $this);
         return $result;
     }
 
@@ -225,7 +225,7 @@ class Store extends Model
     public function add(array $data)
     {
         $result = null;
-        $this->hook->fire('store.add.before', $data, $result, $this);
+        $this->hook->attach('store.add.before', $data, $result, $this);
 
         if (isset($result)) {
             return (int) $result;
@@ -234,7 +234,7 @@ class Store extends Model
         $data['created'] = $data['modified'] = GC_TIME;
         $result = $this->db->insert('store', $data);
 
-        $this->hook->fire('store.add.after', $data, $result, $this);
+        $this->hook->attach('store.add.after', $data, $result, $this);
         return (int) $result;
     }
 
@@ -273,7 +273,7 @@ class Store extends Model
     public function update($store_id, array $data)
     {
         $result = null;
-        $this->hook->fire('store.update.before', $store_id, $data, $result, $this);
+        $this->hook->attach('store.update.before', $store_id, $data, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -282,7 +282,7 @@ class Store extends Model
         $data['modified'] = GC_TIME;
         $result = (bool) $this->db->update('store', $data, array('store_id' => $store_id));
 
-        $this->hook->fire('store.update.after', $store_id, $data, $result, $this);
+        $this->hook->attach('store.update.after', $store_id, $data, $result, $this);
         return (bool) $result;
     }
 
@@ -294,7 +294,7 @@ class Store extends Model
     public function delete($store_id)
     {
         $result = null;
-        $this->hook->fire('store.delete.before', $store_id, $result, $this);
+        $this->hook->attach('store.delete.before', $store_id, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -314,7 +314,7 @@ class Store extends Model
             $this->db->delete('product_sku', $conditions);
         }
 
-        $this->hook->fire('store.delete.after', $store_id, $result, $this);
+        $this->hook->attach('store.delete.after', $store_id, $result, $this);
         return (bool) $result;
     }
 

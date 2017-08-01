@@ -102,7 +102,7 @@ class Search extends Model
     public function index($handler_id, $data)
     {
         $result = null;
-        $this->hook->fire('search.index', $handler_id, $data, $result, $this);
+        $this->hook->attach('search.index', $handler_id, $data, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -126,7 +126,7 @@ class Search extends Model
         }
 
         $result = null;
-        $this->hook->fire('search', $handler_id, $query, $options, $result, $this);
+        $this->hook->attach('search', $handler_id, $query, $options, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -161,7 +161,7 @@ class Search extends Model
         }
 
         $snippet = $this->filterStopwords(implode(' ', $parts), $language);
-        $this->hook->fire('search.index.snippet', $data, $language, $snippet);
+        $this->hook->attach('search.index.snippet', $data, $language, $snippet);
         return $snippet;
     }
 
@@ -178,7 +178,7 @@ class Search extends Model
         }
 
         $handlers = $this->getDefaultHandlers();
-        $this->hook->fire('search.handlers', $handlers, $this);
+        $this->hook->attach('search.handlers', $handlers, $this);
         return $handlers;
     }
 

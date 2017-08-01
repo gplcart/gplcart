@@ -350,7 +350,7 @@ abstract class Controller
         $this->controlCommonAccess();
         $this->controlMaintenanceMode();
 
-        $this->hook->fire('construct.controller', $this);
+        $this->hook->attach('construct.controller', $this);
     }
 
     /**
@@ -358,7 +358,7 @@ abstract class Controller
      */
     public function __destruct()
     {
-        $this->hook->fire('destruct.controller', $this);
+        $this->hook->attach('destruct.controller', $this);
     }
 
     /**
@@ -808,10 +808,10 @@ abstract class Controller
             $data = array_merge($data, $this->getDefaultData());
         }
 
-        $this->hook->fire('template', $template, $data, $this);
+        $this->hook->attach('template', $template, $data, $this);
 
         $rendered = null;
-        $this->hook->fire('template.render', $template, $data, $rendered, $this);
+        $this->hook->attach('template.render', $template, $data, $rendered, $this);
 
         if (isset($rendered)) {
             return trim($rendered);
@@ -956,7 +956,7 @@ abstract class Controller
             $this->theme_frontend = $this->theme = $this->store->config('theme');
         }
 
-        $this->hook->fire('theme', $this);
+        $this->hook->attach('theme', $this);
 
         if (empty($this->theme)) {
             $this->response->error404();
@@ -1472,7 +1472,7 @@ abstract class Controller
         $data['region_body'] = $this->render($templates['region_body'], $body);
 
         $html = $this->render($layout, $data, false);
-        $this->hook->fire('template.output', $html, $this);
+        $this->hook->attach('template.output', $html, $this);
         return $html;
     }
 

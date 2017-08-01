@@ -101,7 +101,7 @@ class FieldValue extends Model
 
         $list = $this->db->fetchAll($sql, $where, array('index' => 'field_value_id'));
 
-        $this->hook->fire('field.value.list', $data, $list, $this);
+        $this->hook->attach('field.value.list', $data, $list, $this);
         return $list;
     }
 
@@ -114,7 +114,7 @@ class FieldValue extends Model
     public function get($field_value_id, $language = null)
     {
         $result = null;
-        $this->hook->fire('field.value.get.before', $field_value_id, $language, $result, $this);
+        $this->hook->attach('field.value.get.before', $field_value_id, $language, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -128,7 +128,7 @@ class FieldValue extends Model
         $result = $this->db->fetch($sql, array($field_value_id));
         $this->attachTranslationTrait($this->db, $result, 'field_value', $language);
 
-        $this->hook->fire('field.value.get.after', $field_value_id, $language, $result, $this);
+        $this->hook->attach('field.value.get.after', $field_value_id, $language, $result, $this);
         return $result;
     }
 
@@ -140,7 +140,7 @@ class FieldValue extends Model
     public function add(array $data)
     {
         $result = null;
-        $this->hook->fire('field.value.add.before', $data, $result, $this);
+        $this->hook->attach('field.value.add.before', $data, $result, $this);
 
         if (isset($result)) {
             return (int) $result;
@@ -151,7 +151,7 @@ class FieldValue extends Model
         $this->setFile($data, false);
         $this->setTranslationTrait($this->db, $data, 'field_value', false);
 
-        $this->hook->fire('field.value.add.after', $data, $result, $this);
+        $this->hook->attach('field.value.add.after', $data, $result, $this);
         return (int) $result;
     }
 
@@ -197,7 +197,7 @@ class FieldValue extends Model
     public function update($field_value_id, array $data)
     {
         $result = null;
-        $this->hook->fire('field.value.update.before', $field_value_id, $data, $result, $this);
+        $this->hook->attach('field.value.update.before', $field_value_id, $data, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -213,7 +213,7 @@ class FieldValue extends Model
 
         $result = $updated > 0;
 
-        $this->hook->fire('field.value.update.after', $field_value_id, $data, $result, $this);
+        $this->hook->attach('field.value.update.after', $field_value_id, $data, $result, $this);
         return (bool) $result;
     }
 
@@ -225,7 +225,7 @@ class FieldValue extends Model
     public function delete($field_value_id)
     {
         $result = null;
-        $this->hook->fire('field.value.delete.before', $field_value_id, $result, $this);
+        $this->hook->attach('field.value.delete.before', $field_value_id, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -246,7 +246,7 @@ class FieldValue extends Model
             $this->db->delete('field_value_translation', $conditions);
         }
 
-        $this->hook->fire('field.value.delete.after', $field_value_id, $result, $this);
+        $this->hook->attach('field.value.delete.after', $field_value_id, $result, $this);
         return (bool) $result;
     }
 

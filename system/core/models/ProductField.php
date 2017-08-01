@@ -33,7 +33,7 @@ class ProductField extends Model
     public function add(array $data)
     {
         $result = null;
-        $this->hook->fire('product.field.add.before', $data, $result, $this);
+        $this->hook->attach('product.field.add.before', $data, $result, $this);
 
         if (isset($result)) {
             return (int) $result;
@@ -41,7 +41,7 @@ class ProductField extends Model
 
         $result = $this->db->insert('product_field', $data);
 
-        $this->hook->fire('product.field.add.after', $data, $result, $this);
+        $this->hook->attach('product.field.add.after', $data, $result, $this);
         return (int) $result;
     }
 
@@ -54,7 +54,7 @@ class ProductField extends Model
     public function delete($type, $product_id)
     {
         $result = null;
-        $this->hook->fire('product.field.delete.before', $type, $product_id, $result, $this);
+        $this->hook->attach('product.field.delete.before', $type, $product_id, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -63,7 +63,7 @@ class ProductField extends Model
         $conditions = array('type' => $type, 'product_id' => $product_id);
         $result = (bool) $this->db->delete('product_field', $conditions);
 
-        $this->hook->fire('product.field.delete.after', $type, $product_id, $result, $this);
+        $this->hook->attach('product.field.delete.after', $type, $product_id, $result, $this);
         return (bool) $result;
     }
 
@@ -82,7 +82,7 @@ class ProductField extends Model
             $list[$field['type']][$field['field_id']][] = $field['field_value_id'];
         }
 
-        $this->hook->fire('product.field.list', $prodict_id, $list, $this);
+        $this->hook->attach('product.field.list', $prodict_id, $list, $this);
         return $list;
     }
 

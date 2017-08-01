@@ -103,7 +103,7 @@ class City extends Model
 
         $cities = $this->db->fetchAll($sql, $where, array('index' => 'city_id'));
 
-        $this->hook->fire('city.list', $cities, $this);
+        $this->hook->attach('city.list', $cities, $this);
         return $cities;
     }
 
@@ -115,7 +115,7 @@ class City extends Model
     public function add(array $data)
     {
         $result = null;
-        $this->hook->fire('city.add.before', $data, $result, $this);
+        $this->hook->attach('city.add.before', $data, $result, $this);
 
         if (isset($result)) {
             return (int) $result;
@@ -123,7 +123,7 @@ class City extends Model
 
         $result = $this->db->insert('city', $data);
 
-        $this->hook->fire('city.add.after', $data, $result, $this);
+        $this->hook->attach('city.add.after', $data, $result, $this);
         return (int) $result;
     }
 
@@ -140,7 +140,7 @@ class City extends Model
             return $result;
         }
 
-        $this->hook->fire('city.get.before', $city_id, $result, $this);
+        $this->hook->attach('city.get.before', $city_id, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -148,7 +148,7 @@ class City extends Model
 
         $result = $this->db->fetch('SELECT * FROM city WHERE city_id=?', array($city_id));
 
-        $this->hook->fire('city.get.after', $city_id, $result, $this);
+        $this->hook->attach('city.get.after', $city_id, $result, $this);
         return $result;
     }
 
@@ -160,7 +160,7 @@ class City extends Model
     public function delete($city_id)
     {
         $result = null;
-        $this->hook->fire('city.delete.before', $city_id, $result, $this);
+        $this->hook->attach('city.delete.before', $city_id, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -172,7 +172,7 @@ class City extends Model
 
         $result = (bool) $this->db->delete('city', array('city_id' => $city_id));
 
-        $this->hook->fire('city.delete.after', $city_id, $result, $this);
+        $this->hook->attach('city.delete.after', $city_id, $result, $this);
         return (bool) $result;
     }
 
@@ -198,7 +198,7 @@ class City extends Model
     public function update($city_id, array $data)
     {
         $result = null;
-        $this->hook->fire('city.update.before', $city_id, $data, $result, $this);
+        $this->hook->attach('city.update.before', $city_id, $data, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -206,7 +206,7 @@ class City extends Model
 
         $result = (bool) $this->db->update('city', $data, array('city_id' => $city_id));
 
-        $this->hook->fire('city.update.after', $city_id, $data, $result, $this);
+        $this->hook->attach('city.update.after', $city_id, $data, $result, $this);
         return (bool) $result;
     }
 

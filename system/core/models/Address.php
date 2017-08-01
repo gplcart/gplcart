@@ -48,7 +48,7 @@ class Address extends Model
             return $result;
         }
 
-        $this->hook->fire('address.get.before', $address_id, $result, $this);
+        $this->hook->attach('address.get.before', $address_id, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -72,7 +72,7 @@ class Address extends Model
             $result['country_format'] += $this->country->getDefaultFormat();
         }
 
-        $this->hook->fire('address.get.after', $address_id, $result, $this);
+        $this->hook->attach('address.get.after', $address_id, $result, $this);
         return $result;
     }
 
@@ -84,7 +84,7 @@ class Address extends Model
     public function add(array $data)
     {
         $result = null;
-        $this->hook->fire('address.add.before', $data, $result, $this);
+        $this->hook->attach('address.add.before', $data, $result, $this);
 
         if (isset($result)) {
             return (int) $result;
@@ -93,7 +93,7 @@ class Address extends Model
         $data['created'] = GC_TIME;
         $result = $this->db->insert('address', $data);
 
-        $this->hook->fire('address.add.after', $data, $result, $this);
+        $this->hook->attach('address.add.after', $data, $result, $this);
         return (int) $result;
     }
 
@@ -137,7 +137,7 @@ class Address extends Model
         $results = $this->db->fetchAll($sql, $replacements, $options);
 
         $list = $this->prepareList($results, $data);
-        $this->hook->fire('address.list', $data, $list, $this);
+        $this->hook->attach('address.list', $data, $list, $this);
         return $list;
     }
 
@@ -349,7 +349,7 @@ class Address extends Model
             }
         }
 
-        $this->hook->fire('address.geocode', $data, $fields, $components, $this);
+        $this->hook->attach('address.geocode', $data, $fields, $components, $this);
         return implode(',', $components);
     }
 
@@ -422,7 +422,7 @@ class Address extends Model
     public function delete($address_id)
     {
         $result = null;
-        $this->hook->fire('address.delete.before', $address_id, $result, $this);
+        $this->hook->attach('address.delete.before', $address_id, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -434,7 +434,7 @@ class Address extends Model
 
         $result = (bool) $this->db->delete('address', array('address_id' => $address_id));
 
-        $this->hook->fire('address.delete.after', $address_id, $result, $this);
+        $this->hook->attach('address.delete.after', $address_id, $result, $this);
         return (bool) $result;
     }
 
@@ -460,7 +460,7 @@ class Address extends Model
     public function update($address_id, array $data)
     {
         $result = null;
-        $this->hook->fire('address.update.before', $address_id, $data, $result, $this);
+        $this->hook->attach('address.update.before', $address_id, $data, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -469,7 +469,7 @@ class Address extends Model
         $conditions = array('address_id' => $address_id);
         $result = (bool) $this->db->update('address', $data, $conditions);
 
-        $this->hook->fire('address.update.after', $address_id, $data, $result, $this);
+        $this->hook->attach('address.update.after', $address_id, $data, $result, $this);
         return (bool) $result;
     }
 

@@ -49,7 +49,7 @@ class Shipping extends Model
         }
 
         $methods = $this->getDefaultList();
-        $this->hook->fire('shipping.methods', $methods, $this);
+        $this->hook->attach('shipping.methods', $methods, $this);
 
         $weights = array();
         foreach ($methods as $id => $method) {

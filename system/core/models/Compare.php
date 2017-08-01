@@ -52,7 +52,7 @@ class Compare extends Model
     public function add($product_id)
     {
         $result = null;
-        $this->hook->fire('compare.add.before', $product_id, $result, $this);
+        $this->hook->attach('compare.add.before', $product_id, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -68,7 +68,7 @@ class Compare extends Model
         $this->controlLimit($product_ids);
         $result = $this->set($product_ids);
 
-        $this->hook->fire('compare.add.after', $product_id, $result, $this);
+        $this->hook->attach('compare.add.after', $product_id, $result, $this);
         return (bool) $result;
     }
 
@@ -81,7 +81,7 @@ class Compare extends Model
     public function addProduct(array $product, array $data)
     {
         $result = array();
-        $this->hook->fire('compare.add.product.before', $product, $data, $result, $this);
+        $this->hook->attach('compare.add.product.before', $product, $data, $result, $this);
 
         if (!empty($result)) {
             return (array) $result;
@@ -110,7 +110,7 @@ class Compare extends Model
             );
         }
 
-        $this->hook->fire('compare.add.product.after', $product, $data, $result, $this);
+        $this->hook->attach('compare.add.product.after', $product, $data, $result, $this);
         return (array) $result;
     }
 
@@ -122,7 +122,7 @@ class Compare extends Model
     public function deleteProduct($product_id)
     {
         $result = null;
-        $this->hook->fire('compare.delete.product.before', $product_id, $result, $this);
+        $this->hook->attach('compare.delete.product.before', $product_id, $result, $this);
 
         if (!empty($result)) {
             return (array) $result;
@@ -144,7 +144,7 @@ class Compare extends Model
             );
         }
 
-        $this->hook->fire('compare.delete.product.after', $product_id, $result, $this);
+        $this->hook->attach('compare.delete.product.after', $product_id, $result, $this);
         return (array) $result;
     }
 
@@ -183,7 +183,7 @@ class Compare extends Model
         $array = explode('|', urldecode($cookie));
         $items = array_filter(array_map('trim', $array), 'ctype_digit');
 
-        $this->hook->fire('compare.list', $items, $this);
+        $this->hook->attach('compare.list', $items, $this);
         return $items;
     }
 
@@ -220,7 +220,7 @@ class Compare extends Model
     public function delete($product_id)
     {
         $result = null;
-        $this->hook->fire('compare.delete.before', $product_id, $result, $this);
+        $this->hook->attach('compare.delete.before', $product_id, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -237,7 +237,7 @@ class Compare extends Model
         unset($product_ids[$product_id]);
 
         $result = $this->set(array_keys($product_ids));
-        $this->hook->fire('compare.delete.after', $product_id, $result, $this);
+        $this->hook->attach('compare.delete.after', $product_id, $result, $this);
 
         return (bool) $result;
     }
