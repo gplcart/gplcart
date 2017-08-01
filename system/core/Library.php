@@ -93,14 +93,14 @@ class Library
         $libraries = &Cache::memory(__METHOD__);
 
         if (isset($libraries)) {
-            return $libraries;
+            return (array) $libraries;
         }
 
         $cached = $this->cache->get('libraries');
 
         if (!empty($cached)) {
             $libraries = $cached;
-            return $libraries;
+            return (array) $libraries;
         }
 
         $libraries = require GC_CONFIG_LIBRARY;
@@ -108,7 +108,7 @@ class Library
 
         $libraries = $this->prepareList($libraries);
         $this->cache->set('libraries', $libraries);
-        return $libraries;
+        return (array) $libraries;
     }
 
     /**
