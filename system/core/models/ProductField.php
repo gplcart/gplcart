@@ -28,20 +28,21 @@ class ProductField extends Model
     /**
      * Adds a field to a product
      * @param array $data
-     * @return boolean|integer
+     * @return integer
      */
     public function add(array $data)
     {
-        $this->hook->fire('product.field.add.before', $data, $this);
+        $result = null;
+        $this->hook->fire('product.field.add.before', $data, $result, $this);
 
-        if (empty($data)) {
-            return false;
+        if (isset($result)) {
+            return (int) $result;
         }
 
-        $data['product_field_id'] = $this->db->insert('product_field', $data);
+        $result = $this->db->insert('product_field', $data);
 
-        $this->hook->fire('product.field.add.after', $data, $this);
-        return $data['product_field_id'];
+        $this->hook->fire('product.field.add.after', $data, $result, $this);
+        return (int) $result;
     }
 
     /**
@@ -52,13 +53,18 @@ class ProductField extends Model
      */
     public function delete($type, $product_id)
     {
-        $this->hook->fire('product.field.delete.before', $type, $product_id, $this);
+        $result = null;
+        $this->hook->fire('product.field.delete.before', $type, $product_id, $result, $this);
+
+        if (isset($result)) {
+            return (bool) $result;
+        }
 
         $conditions = array('type' => $type, 'product_id' => $product_id);
         $result = (bool) $this->db->delete('product_field', $conditions);
 
         $this->hook->fire('product.field.delete.after', $type, $product_id, $result, $this);
-        return $result;
+        return (bool) $result;
     }
 
     /**

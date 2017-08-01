@@ -153,6 +153,7 @@ class Oauth extends Model
         );
 
         $default += $this->getDefaultQuery($provider);
+
         return array_merge($default, $params);
     }
 
@@ -183,6 +184,7 @@ class Oauth extends Model
 
         $state = gplcart_string_encode(json_encode($data));
         $this->setState($state, $provider['id']);
+
         return $state;
     }
 
@@ -273,17 +275,22 @@ class Oauth extends Model
      */
     public function requestToken(array $provider, array $query)
     {
-        $this->hook->fire('oauth.request.token.before', $provider, $query, $this);
+        $result = null;
+        $this->hook->fire('oauth.request.token.before', $provider, $query, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
 
         try {
             $response = $this->curl->post($provider['url']['token'], array('fields' => $query));
-            $token = json_decode($response, true);
+            $result = json_decode($response, true);
         } catch (\Exception $ex) {
-            $token = array();
+            $result = array();
         }
 
-        $this->hook->fire('oauth.request.token.after', $provider, $query, $token, $this);
-        return $token;
+        $this->hook->fire('oauth.request.token.after', $provider, $query, $result, $this);
+        return $result;
     }
 
     /**
@@ -370,9 +377,17 @@ class Oauth extends Model
      */
     public function process(array $provider, $params)
     {
-        $this->hook->fire('oauth.process.before', $provider, $params, $this);
+        $result = null;
+        $this->hook->fire('oauth.process.before', $provider, $params, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
         $result = $this->call('process', $provider, $params);
+
         $this->hook->fire('oauth.process.after', $provider, $params, $result, $this);
+
         return $result;
     }
 

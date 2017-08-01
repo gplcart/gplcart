@@ -52,13 +52,14 @@ class Currency extends Model
      */
     public function add(array $data)
     {
-        $this->hook->fire('currency.get.before', $data, $this);
+        $result = null;
+        $this->hook->fire('currency.get.before', $data, $result, $this);
 
-        if (empty($data)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
-        $data += array('modified' => GC_TIME);
+        $data['modified'] = GC_TIME;
 
         $default = $this->getDefaultData();
         $data += $default;
@@ -72,8 +73,9 @@ class Currency extends Model
         $currencies[$data['code']] = array_intersect_key($data, $default);
         $this->config->set('currencies', $currencies);
 
-        $this->hook->fire('currency.get.after', $data, $this);
-        return true;
+        $result = true;
+        $this->hook->fire('currency.get.after', $data, $result, $this);
+        return (bool) $result;
     }
 
     /**
@@ -101,13 +103,11 @@ class Currency extends Model
         $currencies = array_merge($default, $saved);
         $this->hook->fire('currency.list', $currencies, $this);
 
-        if (!$enabled) {
-            return $currencies;
+        if ($enabled) {
+            $currencies = array_filter($currencies, function ($currency) {
+                return !empty($currency['status']);
+            });
         }
-
-        $currencies = array_filter($currencies, function ($currency) {
-            return !empty($currency['status']);
-        });
 
         return $currencies;
     }
@@ -120,7 +120,12 @@ class Currency extends Model
      */
     public function update($code, array $data)
     {
-        $this->hook->fire('currency.update.before', $code, $data, $this);
+        $result = null;
+        $this->hook->fire('currency.update.before', $code, $data, $result, $this);
+
+        if (isset($result)) {
+            return (bool) $result;
+        }
 
         $currencies = $this->getList(false, false);
 
@@ -128,7 +133,7 @@ class Currency extends Model
             return false;
         }
 
-        $data += array('modified' => GC_TIME);
+        $data['modified'] = GC_TIME;
 
         if (!empty($data['default'])) {
             $data['status'] = 1;
@@ -138,10 +143,12 @@ class Currency extends Model
         $data += $currencies[$code];
         $default = $this->getDefaultData();
         $currencies[$code] = array_intersect_key($data, $default);
+
         $this->config->set('currencies', $currencies);
 
-        $this->hook->fire('currency.update.after', $data, $this);
-        return true;
+        $result = true;
+        $this->hook->fire('currency.update.after', $code, $data, $result, $this);
+        return (bool) $result;
     }
 
     /**
@@ -151,17 +158,26 @@ class Currency extends Model
      */
     public function delete($code)
     {
-        $this->hook->fire('currency.delete.before', $code, $this);
-        $currencies = $this->getList(false, false);
+        $result = null;
+        $this->hook->fire('currency.delete.before', $code, $result, $this);
 
-        if (empty($currencies[$code]) || !$this->canDelete($code)) {
+        if (isset($result)) {
+            return (bool) $result;
+        }
+
+        if (!$this->canDelete($code)) {
             return false;
         }
 
+        $currencies = $this->getList(false, false);
+
         unset($currencies[$code]);
+
         $this->config->set('currencies', $currencies);
-        $this->hook->fire('currency.delete.after', $code, $this);
-        return true;
+
+        $result = true;
+        $this->hook->fire('currency.delete.after', $code, $result, $this);
+        return (bool) $result;
     }
 
     /**
@@ -353,7 +369,11 @@ class Currency extends Model
      */
     public function getIso($code = null)
     {
-        $data = require GC_CONFIG_CURRENCY;
+        static $data = null;
+
+        if (!isset($data)) {
+            $data = require GC_CONFIG_CURRENCY;
+        }
 
         if (isset($code)) {
             return isset($data[$code]) ? $data[$code] + array('code' => $code) : array();

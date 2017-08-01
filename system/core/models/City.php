@@ -110,20 +110,21 @@ class City extends Model
     /**
      * Adds a city
      * @param array $data
-     * @return boolean|integer
+     * @return integer
      */
     public function add(array $data)
     {
-        $this->hook->fire('city.add.before', $data, $this);
+        $result = null;
+        $this->hook->fire('city.add.before', $data, $result, $this);
 
-        if (empty($data)) {
-            return false;
+        if (isset($result)) {
+            return (int) $result;
         }
 
-        $city_id = $this->db->insert('city', $data);
+        $result = $this->db->insert('city', $data);
 
-        $this->hook->fire('city.add.after', $data, $city_id, $this);
-        return $city_id;
+        $this->hook->fire('city.add.after', $data, $result, $this);
+        return (int) $result;
     }
 
     /**
@@ -133,16 +134,22 @@ class City extends Model
      */
     public function get($city_id)
     {
-        $city = &Cache::memory(__METHOD__ . $city_id);
+        $result = &Cache::memory(__METHOD__ . $city_id);
 
-        if (isset($city)) {
-            return $city;
+        if (isset($result)) {
+            return $result;
         }
 
-        $this->hook->fire('city.get.before', $city_id, $this);
-        $city = $this->db->fetch('SELECT * FROM city WHERE city_id=?', array($city_id));
-        $this->hook->fire('city.get.after', $city_id, $city, $this);
-        return $city;
+        $this->hook->fire('city.get.before', $city_id, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
+        $result = $this->db->fetch('SELECT * FROM city WHERE city_id=?', array($city_id));
+
+        $this->hook->fire('city.get.after', $city_id, $result, $this);
+        return $result;
     }
 
     /**
@@ -152,18 +159,18 @@ class City extends Model
      */
     public function delete($city_id)
     {
-        $this->hook->fire('city.delete.before', $city_id, $this);
+        $result = null;
+        $this->hook->fire('city.delete.before', $city_id, $result, $this);
 
-        if (empty($city_id)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
         if (!$this->canDelete($city_id)) {
             return false;
         }
 
-        $conditions = array('city_id' => (int) $city_id);
-        $result = $this->db->delete('city', $conditions);
+        $result = (bool) $this->db->delete('city', array('city_id' => $city_id));
 
         $this->hook->fire('city.delete.after', $city_id, $result, $this);
         return (bool) $result;
@@ -178,6 +185,7 @@ class City extends Model
     {
         $sql = 'SELECT address_id FROM address WHERE city_id=?';
         $result = $this->db->fetchColumn($sql, array($city_id));
+
         return empty($result);
     }
 
@@ -189,14 +197,14 @@ class City extends Model
      */
     public function update($city_id, array $data)
     {
-        $this->hook->fire('city.update.before', $city_id, $data, $this);
+        $result = null;
+        $this->hook->fire('city.update.before', $city_id, $data, $result, $this);
 
-        if (empty($city_id)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
-        $conditions = array('city_id' => $city_id);
-        $result = $this->db->update('city', $data, $conditions);
+        $result = (bool) $this->db->update('city', $data, array('city_id' => $city_id));
 
         $this->hook->fire('city.update.after', $city_id, $data, $result, $this);
         return (bool) $result;

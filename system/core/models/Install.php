@@ -11,7 +11,8 @@ namespace gplcart\core\models;
 
 use gplcart\core\Model,
     gplcart\core\Database,
-    gplcart\core\Handler;
+    gplcart\core\Handler,
+    gplcart\core\Cache;
 use gplcart\core\models\Language as LanguageModel;
 
 /**
@@ -96,6 +97,7 @@ class Install extends Model
     public function getHandler($handler_id)
     {
         $handlers = $this->getHandlers();
+
         return empty($handlers[$handler_id]) ? array() : $handlers[$handler_id];
     }
 
@@ -124,8 +126,15 @@ class Install extends Model
      */
     public function getRequirements()
     {
+        $requirements = &Cache::memory(__METHOD__);
+
+        if (isset($requirements)) {
+            return (array) $requirements;
+        }
+
         $requirements = require GC_CONFIG_REQUIREMENT;
-        return $requirements;
+        $this->hook->fire('install.requirements', $requirements);
+        return (array) $requirements;
     }
 
     /**
@@ -188,10 +197,10 @@ class Install extends Model
     public function process(array $data, array $cli_route = array())
     {
         $result = null;
-        $this->hook->fire('install.before', $data, $result, $cli_route, $this);
+        $this->hook->fire('install.before', $data, $cli_route, $result, $this);
 
         if (isset($result)) {
-            return $result;
+            return (array) $result;
         }
 
         $default_result = array(
@@ -206,8 +215,8 @@ class Install extends Model
 
         $result = array_merge($default_result, $this->callHandler($data['installer'], $data));
 
-        $this->hook->fire('install.after', $data, $result, $cli_route, $this);
-        return $result;
+        $this->hook->fire('install.after', $data, $cli_route, $result, $this);
+        return (array) $result;
     }
 
 }

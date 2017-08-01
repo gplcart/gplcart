@@ -98,13 +98,17 @@ class Cart extends Model
      */
     public function getContent(array $data)
     {
-        $cart = &Cache::memory(array(__METHOD__ => $data));
+        $result = &Cache::memory(array(__METHOD__ => $data));
 
-        if (isset($cart)) {
-            return $cart;
+        if (isset($result)) {
+            return $result;
         }
 
-        $this->hook->fire('cart.get.content.before', $data, $this);
+        $this->hook->fire('cart.get.content.before', $data, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
 
         $data['order_id'] = 0;
 
@@ -114,7 +118,7 @@ class Cart extends Model
             return array();
         }
 
-        $cart = array(
+        $result = array(
             'store_id' => $data['store_id'],
             'currency' => (string) $this->currency->get()
         );
@@ -123,22 +127,22 @@ class Cart extends Model
         $quantity = 0;
         foreach ((array) $items as $sku => $item) {
 
-            $prepared = $this->prepareItem($item, $cart);
+            $prepared = $this->prepareItem($item, $result);
 
             if (empty($prepared)) {
                 continue;
             }
 
-            $cart['items'][$sku] = $prepared;
+            $result['items'][$sku] = $prepared;
             $total += (int) $prepared['total'];
             $quantity += (int) $prepared['quantity'];
         }
 
-        $cart['total'] = $total;
-        $cart['quantity'] = $quantity;
+        $result['total'] = $total;
+        $result['quantity'] = $quantity;
 
-        $this->hook->fire('cart.get.content.after', $data, $cart, $this);
-        return $cart;
+        $this->hook->fire('cart.get.content.after', $data, $result, $this);
+        return $result;
     }
 
     /**
@@ -276,17 +280,18 @@ class Cart extends Model
      */
     public function addProduct(array $product, array $data)
     {
-        $this->hook->fire('cart.add.product.before', $product, $data, $this);
+        $result = array();
+        $this->hook->fire('cart.add.product.before', $product, $data, $result, $this);
+
+        if (!empty($result)) {
+            return (array) $result;
+        }
 
         $result = array(
             'redirect' => '',
             'severity' => 'warning',
             'message' => $this->language->text('Unable to add this product')
         );
-
-        if (empty($product) || empty($data)) {
-            return $result;
-        }
 
         $data += array(
             'quantity' => 1,
@@ -317,7 +322,7 @@ class Cart extends Model
         }
 
         $this->hook->fire('cart.add.product.after', $product, $data, $result, $this);
-        return $result;
+        return (array) $result;
     }
 
     /**
@@ -373,23 +378,24 @@ class Cart extends Model
     /**
      * Adds a cart record to the database
      * @param array $data
-     * @return integer|boolean
+     * @return integer
      */
     public function add(array $data)
     {
-        $this->hook->fire('cart.add.before', $data, $this);
+        $result = null;
+        $this->hook->fire('cart.add.before', $data, $result, $this);
 
-        if (empty($data)) {
-            return false;
+        if (isset($result)) {
+            return (int) $result;
         }
 
         $data['created'] = $data['modified'] = GC_TIME;
-        $data['cart_id'] = $this->db->insert('cart', $data);
+        $result = $this->db->insert('cart', $data);
 
         Cache::clearMemory();
 
-        $this->hook->fire('cart.add.after', $data, $this);
-        return $data['cart_id'];
+        $this->hook->fire('cart.add.after', $data, $result, $this);
+        return (int) $result;
     }
 
     /**
@@ -400,14 +406,15 @@ class Cart extends Model
      */
     public function update($cart_id, array $data)
     {
-        $this->hook->fire('cart.update.before', $cart_id, $data, $this);
+        $result = null;
+        $this->hook->fire('cart.update.before', $cart_id, $data, $result, $this);
 
-        if (empty($cart_id)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
         $data['modified'] = GC_TIME;
-        $result = $this->db->update('cart', $data, array('cart_id' => $cart_id));
+        $result = (bool) $this->db->update('cart', $data, array('cart_id' => $cart_id));
 
         Cache::clearMemory();
 
@@ -425,6 +432,7 @@ class Cart extends Model
     public function getQuantity(array $conditions, $key = null)
     {
         $conditions += array('order_id' => 0);
+
         $items = $this->getList($conditions);
         $result = array('total' => 0, 'sku' => array());
 
@@ -447,10 +455,17 @@ class Cart extends Model
      */
     public function get($cart_id)
     {
-        $this->hook->fire('cart.get.before', $cart_id);
-        $cart = $this->db->fetch('SELECT * FROM cart WHERE cart_id=?', array($cart_id));
-        $this->hook->fire('cart.get.after', $cart_id, $cart, $this);
-        return $cart;
+        $result = null;
+        $this->hook->fire('cart.get.before', $cart_id, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
+        $result = $this->db->fetch('SELECT * FROM cart WHERE cart_id=?', array($cart_id));
+
+        $this->hook->fire('cart.get.after', $cart_id, $result, $this);
+        return $result;
     }
 
     /**
@@ -460,18 +475,17 @@ class Cart extends Model
      */
     public function moveToWishlist(array $data)
     {
-        $this->hook->fire('cart.move.wishlist.before', $data, $this);
+        $result = array();
+        $this->hook->fire('cart.move.wishlist.before', $data, $result, $this);
 
-        $result = array('redirect' => null, 'severity' => '', 'message' => '');
-
-        if (empty($data)) {
-            return $result;
+        if (!empty($result)) {
+            return (array) $result;
         }
 
         $skuinfo = $this->sku->get($data['sku'], $data['store_id']);
 
         if (empty($skuinfo['product_id'])) {
-            return $result;
+            return array('redirect' => null, 'severity' => '', 'message' => '');
         }
 
         $this->db->delete('cart', $data);
@@ -497,7 +511,7 @@ class Cart extends Model
         );
 
         $this->hook->fire('cart.move.wishlist.after', $data, $result, $this);
-        return $result;
+        return (array) $result;
     }
 
     /**
@@ -508,12 +522,11 @@ class Cart extends Model
      */
     public function login(array $user, array $cart)
     {
-        $this->hook->fire('cart.login.before', $user, $cart, $this);
+        $result = array();
+        $this->hook->fire('cart.login.before', $user, $cart, $result, $this);
 
-        $result = array('redirect' => null, 'severity' => '', 'message' => '');
-
-        if (empty($user) || empty($cart)) {
-            return $result;
+        if (!empty($result)) {
+            return (array) $result;
         }
 
         if (!$this->config->get('cart_login_merge', 0)) {
@@ -539,7 +552,7 @@ class Cart extends Model
         );
 
         $this->hook->fire('cart.login.after', $user, $cart, $result, $this);
-        return $result;
+        return (array) $result;
     }
 
     /**
@@ -549,18 +562,22 @@ class Cart extends Model
      */
     public function delete($cart_id)
     {
-        $this->hook->fire('cart.delete.before', $cart_id, $this);
+        $result = null;
+        $this->hook->fire('cart.delete.before', $cart_id, $result, $this);
 
-        if (empty($cart_id)) {
+        if (isset($result)) {
+            return (bool) $result;
+        }
+
+        if (!$this->canDelete($cart_id)) {
             return false;
         }
 
-        $result = false;
-        if ($this->canDelete($cart_id)) {
-            $result = (bool) $this->db->delete('cart', array('cart_id' => $cart_id));
-            Cache::clearMemory();
-            $this->hook->fire('cart.delete.after', $cart_id, $result, $this);
-        }
+        $result = (bool) $this->db->delete('cart', array('cart_id' => $cart_id));
+
+        Cache::clearMemory();
+
+        $this->hook->fire('cart.delete.after', $cart_id, $result, $this);
 
         return (bool) $result;
     }

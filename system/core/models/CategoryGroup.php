@@ -44,15 +44,20 @@ class CategoryGroup extends Model
      */
     public function get($group_id, $language = null)
     {
-        $this->hook->fire('category.group.get.before', $group_id, $this);
+        $result = null;
+        $this->hook->fire('category.group.get.before', $group_id, $language, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
 
         $sql = 'SELECT * FROM category_group WHERE category_group_id=?';
-        $group = $this->db->fetch($sql, array($group_id));
+        $result = $this->db->fetch($sql, array($group_id));
 
-        $this->attachTranslationTrait($this->db, $group, 'category_group', $language);
+        $this->attachTranslationTrait($this->db, $result, 'category_group', $language);
 
-        $this->hook->fire('category.group.get.after', $group, $this);
-        return $group;
+        $this->hook->fire('category.group.get.after', $result, $language, $this);
+        return $result;
     }
 
     /**
@@ -112,8 +117,7 @@ class CategoryGroup extends Model
             return (int) $this->db->fetchColumn($sql, $where);
         }
 
-        $options = array('index' => 'category_group_id');
-        $list = $this->db->fetchAll($sql, $where, $options);
+        $list = $this->db->fetchAll($sql, $where, array('index' => 'category_group_id'));
 
         $this->hook->fire('category.group.list', $list, $this);
         return $list;
@@ -122,23 +126,23 @@ class CategoryGroup extends Model
     /**
      * Adds a category group
      * @param array $data
-     * @return boolean|integer
+     * @return integer
      */
     public function add(array $data)
     {
-        $this->hook->fire('category.group.add.before', $data, $this);
+        $result = null;
+        $this->hook->fire('category.group.add.before', $data, $result, $this);
 
-        if (empty($data)) {
-            return false;
+        if (isset($result)) {
+            return (int) $result;
         }
 
-        $data['category_group_id'] = $this->db->insert('category_group', $data);
+        $result = $data['category_group_id'] = $this->db->insert('category_group', $data);
 
         $this->setTranslationTrait($this->db, $data, 'category_group', false);
 
-        $this->hook->fire('category.group.add.after', $data, $this);
-
-        return $data['category_group_id'];
+        $this->hook->fire('category.group.add.after', $data, $result, $this);
+        return (int) $result;
     }
 
     /**
@@ -148,25 +152,25 @@ class CategoryGroup extends Model
      */
     public function delete($category_group_id)
     {
-        $this->hook->fire('category.group.delete.before', $category_group_id, $this);
+        $result = null;
+        $this->hook->fire('category.group.delete.before', $category_group_id, $result, $this);
 
-        if (empty($category_group_id)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
         if (!$this->canDelete($category_group_id)) {
             return false;
         }
 
-        $conditions = array(
-            'category_group_id' => (int) $category_group_id
-        );
+        $conditions = array('category_group_id' => $category_group_id);
 
         $this->db->delete('category_group', $conditions);
         $this->db->delete('category_group_translation', $conditions);
 
-        $this->hook->fire('category.group.delete.after', $category_group_id, $this);
-        return true;
+        $result = true;
+        $this->hook->fire('category.group.delete.after', $category_group_id, $result, $this);
+        return (bool) $result;
     }
 
     /**
@@ -190,22 +194,23 @@ class CategoryGroup extends Model
      */
     public function update($category_group_id, array $data)
     {
-        $this->hook->fire('category.group.update.before', $category_group_id, $data, $this);
+        $result = null;
+        $this->hook->fire('category.group.update.before', $category_group_id, $data, $result, $this);
 
-        if (empty($category_group_id)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
         $conditions = array('category_group_id' => $category_group_id);
         $updated = $this->db->update('category_group', $data, $conditions);
 
         $data['category_group_id'] = $category_group_id;
-
         $updated += (int) $this->setTranslationTrait($this->db, $data, 'category_group');
-        $result = ($updated > 0);
+
+        $result = $updated > 0;
 
         $this->hook->fire('category.group.update.after', $category_group_id, $data, $result, $this);
-        return $result;
+        return (bool) $result;
     }
 
     /**
@@ -216,6 +221,7 @@ class CategoryGroup extends Model
     {
         $types = $this->getDefaultTypes();
         $this->hook->fire('category.group.types', $types, $this);
+
         return $types;
     }
 

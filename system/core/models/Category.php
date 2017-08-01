@@ -75,7 +75,12 @@ class Category extends Model
      */
     public function get($category_id, $language = null, $store_id = null)
     {
-        $this->hook->fire('category.get.before', $category_id, $this);
+        $result = null;
+        $this->hook->fire('category.get.before', $category_id, $language, $store_id, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
 
         $conditions = array($category_id);
 
@@ -95,7 +100,7 @@ class Category extends Model
         $this->attachTranslationTrait($this->db, $category, 'category', $language);
         $this->attachImagesTrait($this->file, $category, 'category', $language);
 
-        $this->hook->fire('category.get.after', $category, $this);
+        $this->hook->fire('category.get.after', $category, $language, $store_id, $this);
         return $category;
     }
 
@@ -124,19 +129,17 @@ class Category extends Model
 
     /**
      * Returns a list of categories to use directly in <select>
-     * @param null|integer $group_id
-     * @param integer $parent_id
+     * @param null|integer $gid
+     * @param integer $pid
      * @param boolean $hierarchy
      * @return array
      */
-    public function getOptionList(
-    $group_id = null, $parent_id = 0, $hierarchy = true
-    )
+    public function getOptionList($gid = null, $pid = 0, $hierarchy = true)
     {
         $conditions = array(
             'status' => 1,
-            'parent_id' => $parent_id,
-            'category_group_id' => $group_id
+            'parent_id' => $pid,
+            'category_group_id' => $gid
         );
 
         $categories = $this->getTree($conditions);
@@ -359,8 +362,7 @@ class Category extends Model
             return (int) $this->db->fetchColumn($sql, $where);
         }
 
-        $options = array('index' => 'category_id');
-        $list = $this->db->fetchAll($sql, $where, $options);
+        $list = $this->db->fetchAll($sql, $where, array('index' => 'category_id'));
 
         $this->hook->fire('category.list', $list, $this);
         return $list;
@@ -369,25 +371,26 @@ class Category extends Model
     /**
      * Adds a category
      * @param array $data
-     * @return integer|boolean
+     * @return integer
      */
     public function add(array $data)
     {
-        $this->hook->fire('category.add.before', $data, $this);
+        $result = null;
+        $this->hook->fire('category.add.before', $data, $result, $this);
 
-        if (empty($data)) {
-            return false;
+        if (isset($result)) {
+            return (int) $result;
         }
 
-        $data['category_id'] = $this->db->insert('category', $data);
+        $result = $data['category_id'] = $this->db->insert('category', $data);
 
         $this->setTranslationTrait($this->db, $data, 'category', false);
         $this->setImagesTrait($this->file, $data, 'category');
         $this->setAliasTrait($this->alias, $data, 'category', false);
 
-        $this->hook->fire('category.add.after', $data, $this);
+        $this->hook->fire('category.add.after', $data, $result, $this);
 
-        return $data['category_id'];
+        return (int) $result;
     }
 
     /**
@@ -398,14 +401,14 @@ class Category extends Model
      */
     public function update($category_id, array $data)
     {
-        $this->hook->fire('category.update.before', $category_id, $data, $this);
+        $result = null;
+        $this->hook->fire('category.update.before', $category_id, $data, $result, $this);
 
-        if (empty($category_id)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
-        $conditions = array('category_id' => (int) $category_id);
-        $updated = $this->db->update('category', $data, $conditions);
+        $updated = $this->db->update('category', $data, array('category_id' => $category_id));
 
         $data['category_id'] = $category_id;
 
@@ -413,10 +416,10 @@ class Category extends Model
         $updated += (int) $this->setImagesTrait($this->file, $data, 'category');
         $updated += (int) $this->setAliasTrait($this->alias, $data, 'category');
 
-        $result = ($updated > 0);
+        $result = $updated > 0;
 
         $this->hook->fire('category.update.after', $category_id, $data, $result, $this);
-        return $result;
+        return (bool) $result;
     }
 
     /**
@@ -426,18 +429,19 @@ class Category extends Model
      */
     public function delete($category_id)
     {
-        $this->hook->fire('category.delete.before', $category_id, $this);
+        $result = null;
+        $this->hook->fire('category.delete.before', $category_id, $result, $this);
 
-        if (empty($category_id)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
         if (!$this->canDelete($category_id)) {
             return false;
         }
 
-        $conditions = array('category_id' => (int) $category_id);
-        $conditions2 = array('id_key' => 'category_id', 'id_value' => (int) $category_id);
+        $conditions = array('category_id' => $category_id);
+        $conditions2 = array('id_key' => 'category_id', 'id_value' => $category_id);
 
         $this->db->delete('category', $conditions);
         $this->db->delete('category_translation', $conditions);
@@ -445,8 +449,9 @@ class Category extends Model
         $this->db->delete('file', $conditions2);
         $this->db->delete('alias', $conditions2);
 
-        $this->hook->fire('category.delete.after', $category_id, $this);
-        return true;
+        $result = true;
+        $this->hook->fire('category.delete.after', $category_id, $result, $this);
+        return (bool) $result;
     }
 
     /**

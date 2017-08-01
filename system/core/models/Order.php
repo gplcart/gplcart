@@ -114,6 +114,7 @@ class Order extends Model
 
         $statuses = $this->getDefaultStatuses();
         $this->hook->fire('order.statuses', $statuses, $this);
+
         return $statuses;
     }
 
@@ -233,19 +234,24 @@ class Order extends Model
      */
     public function get($order_id)
     {
-        $this->hook->fire('order.get.before', $order_id, $this);
+        $result = null;
+        $this->hook->fire('order.get.before', $order_id, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
 
         $sql = 'SELECT o.*, u.name AS user_name, u.email AS user_email'
                 . ' FROM orders o'
                 . ' LEFT JOIN user u ON(o.user_id=u.user_id)'
                 . ' WHERE o.order_id=?';
 
-        $order = $this->db->fetch($sql, array($order_id), array('unserialize' => 'data'));
+        $result = $this->db->fetch($sql, array($order_id), array('unserialize' => 'data'));
 
-        $this->attachCart($order);
+        $this->attachCart($result);
 
-        $this->hook->fire('order.get.after', $order, $this);
-        return $order;
+        $this->hook->fire('order.get.after', $order_id, $result, $this);
+        return $result;
     }
 
     /**
@@ -283,10 +289,11 @@ class Order extends Model
      */
     public function update($order_id, array $data)
     {
-        $this->hook->fire('order.update.before', $order_id, $data, $this);
+        $result = null;
+        $this->hook->fire('order.update.before', $order_id, $data, $result, $this);
 
-        if (empty($order_id)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
         $data['modified'] = GC_TIME;
@@ -295,7 +302,7 @@ class Order extends Model
             $this->prepareComponents($data, $data['cart']);
         }
 
-        $result = $this->db->update('orders', $data, array('order_id' => $order_id));
+        $result = (bool) $this->db->update('orders', $data, array('order_id' => $order_id));
         $this->hook->fire('order.update.after', $order_id, $data, $result, $this);
 
         return (bool) $result;
@@ -308,25 +315,26 @@ class Order extends Model
      */
     public function delete($order_id)
     {
-        $this->hook->fire('order.delete.before', $order_id, $this);
+        $result = null;
+        $this->hook->fire('order.delete.before', $order_id, $result, $this);
 
-        if (empty($order_id)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
         $conditions = array('order_id' => $order_id);
         $conditions2 = array('id_key' => 'order_id', 'id_value' => $order_id);
 
-        $deleted = (bool) $this->db->delete('orders', $conditions);
+        $result = (bool) $this->db->delete('orders', $conditions);
 
-        if ($deleted) {
+        if ($result) {
             $this->db->delete('cart', $conditions);
             $this->db->delete('order_log', $conditions);
             $this->db->delete('history', $conditions2);
         }
 
-        $this->hook->fire('order.delete.after', $order_id, $deleted, $this);
-        return (bool) $deleted;
+        $this->hook->fire('order.delete.after', $order_id, $result, $this);
+        return (bool) $result;
     }
 
     /**
@@ -387,7 +395,7 @@ class Order extends Model
             return !((GC_TIME - $order['created']) > $lifespan);
         }
 
-        return ((GC_TIME - $order['viewed']) > $lifespan);
+        return (GC_TIME - $order['viewed']) > $lifespan;
     }
 
     /**
@@ -398,16 +406,11 @@ class Order extends Model
      */
     public function submit(array $data, array $options = array())
     {
-        $this->hook->fire('order.submit.before', $data, $options, $this);
+        $result = array();
+        $this->hook->fire('order.submit.before', $data, $options, $result, $this);
 
-        $result = array(
-            'redirect' => '',
-            'severity' => 'warning',
-            'message' => $this->language->text('An error occurred')
-        );
-
-        if (empty($data)) {
-            return $result;
+        if (!empty($result)) {
+            return (array) $result;
         }
 
         $this->prepareComponents($data);
@@ -415,7 +418,11 @@ class Order extends Model
         $order_id = $this->add($data);
 
         if (empty($order_id)) {
-            return $result;
+            return array(
+                'redirect' => '',
+                'severity' => 'warning',
+                'message' => $this->language->text('An error occurred')
+            );
         }
 
         $order = $this->get($order_id);
@@ -441,7 +448,7 @@ class Order extends Model
         }
 
         $this->hook->fire('order.submit.after', $data, $options, $result, $this);
-        return $result;
+        return (array) $result;
     }
 
     /**
@@ -494,7 +501,6 @@ class Order extends Model
 
             $rule = $this->pricerule->get($component_id);
 
-            // Mark the coupon was used
             if ($rule['code'] !== '') {
                 $this->pricerule->setUsed($rule['price_rule_id']);
             }
@@ -509,6 +515,7 @@ class Order extends Model
     public function setNotificationCreated(array $order)
     {
         $this->mail->set('order_created_admin', array($order));
+
         if (is_numeric($order['user_id']) && !empty($order['user_email'])) {
             return $this->mail->set('order_created_customer', array($order));
         }
@@ -526,6 +533,7 @@ class Order extends Model
         if (is_numeric($order['user_id']) && !empty($order['user_email'])) {
             return $this->mail->set('order_updated_customer', array($order));
         }
+
         return false;
     }
 
@@ -645,13 +653,14 @@ class Order extends Model
      */
     public function add(array $order)
     {
-        $this->hook->fire('order.add.before', $order, $this);
+        $result = null;
+        $this->hook->fire('order.add.before', $order, $result, $this);
 
-        if (empty($order)) {
-            return 0;
+        if (isset($result)) {
+            return (int) $result;
         }
 
-        // In case we're cloning an order
+        // In case we're cloning the order
         unset($order['order_id']);
 
         $order['created'] = $order['modified'] = GC_TIME;
@@ -661,10 +670,10 @@ class Order extends Model
             $order['data']['user'] = $this->getUserData();
         }
 
-        $order['order_id'] = $this->db->insert('orders', $order);
-        $this->hook->fire('order.add.after', $order, $this);
+        $result = $this->db->insert('orders', $order);
 
-        return $order['order_id'];
+        $this->hook->fire('order.add.after', $order, $result, $this);
+        return (int) $result;
     }
 
     /**
@@ -674,7 +683,11 @@ class Order extends Model
      */
     public function addLog(array $log)
     {
-        $log += array('data' => array(), 'created' => GC_TIME);
+        $log += array(
+            'data' => array(),
+            'created' => GC_TIME
+        );
+
         return $this->db->insert('order_log', $log);
     }
 
@@ -706,6 +719,7 @@ class Order extends Model
         }
 
         $params = array('index' => 'order_log_id', 'unserialize' => 'data');
+
         return $this->db->fetchAll($sql, array($data['order_id']), $params);
     }
 
@@ -721,8 +735,7 @@ class Order extends Model
                 . ' LEFT JOIN user u ON(ol.user_id=u.user_id)'
                 . ' WHERE ol.order_log_id=?';
 
-        $params = array('unserialize' => 'data');
-        return $this->db->fetch($sql, array($order_log_id), $params);
+        return $this->db->fetch($sql, array($order_log_id), array('unserialize' => 'data'));
     }
 
     /**
@@ -733,7 +746,12 @@ class Order extends Model
      */
     public function calculate(array &$data)
     {
-        $this->hook->fire('order.calculate.before', $data, $this);
+        $result = array();
+        $this->hook->fire('order.calculate.before', $data, $result, $this);
+
+        if (!empty($result)) {
+            return (array) $result;
+        }
 
         $total = $data['cart']['total'];
 
@@ -760,7 +778,7 @@ class Order extends Model
         );
 
         $this->hook->fire('order.calculate.after', $data, $result, $this);
-        return $result;
+        return (array) $result;
     }
 
     /**
@@ -830,21 +848,26 @@ class Order extends Model
     {
         $total = 0;
         foreach ($cart['items'] as $item) {
+
             $product = $item['product'];
             if (empty($product['width']) || empty($product['height']) || empty($product['length'])) {
                 return (float) 0;
             }
+
             $volume = $product['width'] * $product['height'] * $product['length'];
             if (empty($product['size_unit']) || $product['size_unit'] == $order['size_unit']) {
                 $total += (float) ($volume * $item['quantity']);
                 continue;
             }
+
             $order_cubic = $order['size_unit'] . '2';
             $product_cubic = $product['size_unit'] . '2';
             $converted = $this->convertor->convert($volume, $product_cubic, $order_cubic, $decimals);
+
             if (empty($converted)) {
                 return (float) 0;
             }
+
             $total += (float) ($converted * $item['quantity']);
         }
 
@@ -862,18 +885,22 @@ class Order extends Model
     {
         $total = 0;
         foreach ($cart['items'] as $item) {
+
             if (empty($item['product']['weight'])) {
                 return (float) 0;
             }
+
             $product = $item['product'];
             if (empty($product['weight_unit']) || $product['weight_unit'] == $order['weight_unit']) {
                 $total += (float) ($product['weight'] * $item['quantity']);
                 continue;
             }
+
             $converted = $this->convertor->convert($product['weight'], $product['weight_unit'], $order['weight_unit'], $decimals);
             if (empty($converted)) {
                 return (float) 0;
             }
+
             $total += (float) ($converted * $item['quantity']);
         }
 

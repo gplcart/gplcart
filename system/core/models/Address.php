@@ -42,16 +42,16 @@ class Address extends Model
      */
     public function get($address_id)
     {
-        $address = &Cache::memory(__METHOD__ . $address_id);
+        $result = &Cache::memory(__METHOD__ . $address_id);
 
-        if (isset($address)) {
-            return $address;
+        if (isset($result)) {
+            return $result;
         }
 
-        $this->hook->fire('address.get.before', $address_id, $this);
+        $this->hook->fire('address.get.before', $address_id, $result, $this);
 
-        if (empty($address_id)) {
-            return $address = array();
+        if (isset($result)) {
+            return $result;
         }
 
         $sql = 'SELECT a.*, c.name AS country_name,'
@@ -66,34 +66,35 @@ class Address extends Model
                 . ' WHERE a.address_id = ?';
 
         $options = array('unserialize' => array('data', 'country_format'));
-        $address = $this->db->fetch($sql, array($address_id), $options);
+        $result = $this->db->fetch($sql, array($address_id), $options);
 
-        if (isset($address['country_format'])) {
-            $address['country_format'] += $this->country->getDefaultFormat();
+        if (isset($result['country_format'])) {
+            $result['country_format'] += $this->country->getDefaultFormat();
         }
 
-        $this->hook->fire('address.get.after', $address_id, $address, $this);
-        return $address;
+        $this->hook->fire('address.get.after', $address_id, $result, $this);
+        return $result;
     }
 
     /**
      * Adds a new address
      * @param array $data
-     * @return integer|boolean
+     * @return integer
      */
     public function add(array $data)
     {
-        $this->hook->fire('address.add.before', $data, $this);
+        $result = null;
+        $this->hook->fire('address.add.before', $data, $result, $this);
 
-        if (empty($data)) {
-            return false;
+        if (isset($result)) {
+            return (int) $result;
         }
 
         $data['created'] = GC_TIME;
-        $data['address_id'] = $this->db->insert('address', $data);
+        $result = $this->db->insert('address', $data);
 
-        $this->hook->fire('address.add.after', $data, $this);
-        return $data['address_id'];
+        $this->hook->fire('address.add.after', $data, $result, $this);
+        return (int) $result;
     }
 
     /**
@@ -420,20 +421,20 @@ class Address extends Model
      */
     public function delete($address_id)
     {
-        $this->hook->fire('address.delete.before', $address_id, $this);
+        $result = null;
+        $this->hook->fire('address.delete.before', $address_id, $result, $this);
 
-        if (empty($address_id)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
         if (!$this->canDelete($address_id)) {
             return false;
         }
 
-        $conditions = array('address_id' => $address_id);
-        $result = $this->db->delete('address', $conditions);
-        $this->hook->fire('address.delete.after', $address_id, $result, $this);
+        $result = (bool) $this->db->delete('address', array('address_id' => $address_id));
 
+        $this->hook->fire('address.delete.after', $address_id, $result, $this);
         return (bool) $result;
     }
 
@@ -458,14 +459,15 @@ class Address extends Model
      */
     public function update($address_id, array $data)
     {
-        $this->hook->fire('address.update.before', $address_id, $data, $this);
+        $result = null;
+        $this->hook->fire('address.update.before', $address_id, $data, $result, $this);
 
-        if (empty($address_id)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
         $conditions = array('address_id' => $address_id);
-        $result = $this->db->update('address', $data, $conditions);
+        $result = (bool) $this->db->update('address', $data, $conditions);
 
         $this->hook->fire('address.update.after', $address_id, $data, $result, $this);
         return (bool) $result;

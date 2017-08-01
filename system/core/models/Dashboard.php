@@ -56,19 +56,21 @@ class Dashboard extends Model
     /**
      * Adds a dashboard record
      * @param array $data
-     * @return boolean|integer
+     * @return integer
      */
     public function add(array $data)
     {
-        $this->hook->fire('dashboard.add.before', $data, $this);
+        $result = null;
+        $this->hook->fire('dashboard.add.before', $data, $result, $this);
 
-        if (empty($data)) {
-            return false;
+        if (isset($result)) {
+            return (int) $result;
         }
 
-        $data['dashboard_id'] = $this->db->insert('dashboard', $data);
-        $this->hook->fire('dashboard.add.after', $data, $this);
-        return $data['dashboard_id'];
+        $result = $this->db->insert('dashboard', $data);
+
+        $this->hook->fire('dashboard.add.after', $data, $result, $this);
+        return (int) $result;
     }
 
     /**
@@ -79,13 +81,15 @@ class Dashboard extends Model
      */
     public function update($dashboard_id, array $data)
     {
-        $this->hook->fire('dashboard.update.before', $dashboard_id, $data, $this);
+        $result = null;
+        $this->hook->fire('dashboard.update.before', $dashboard_id, $data, $result, $this);
 
-        if (empty($data)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
-        $result = $this->db->update('dashboard', $data, array('dashboard_id' => $dashboard_id));
+        $result = (bool) $this->db->update('dashboard', $data, array('dashboard_id' => $dashboard_id));
+
         $this->hook->fire('dashboard.update.after', $dashboard_id, $data, $result, $this);
         return (bool) $result;
     }
@@ -149,15 +153,17 @@ class Dashboard extends Model
      */
     public function delete($dashboard_id)
     {
-        $this->hook->fire('dashboard.delete.before', $dashboard_id, $this);
+        $result = null;
+        $this->hook->fire('dashboard.delete.before', $dashboard_id, $result, $this);
 
-        if (empty($dashboard_id)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
-        $result = $this->db->delete('dashboard', array('dashboard_id'));
+        $result = (bool) $this->db->delete('dashboard', array('dashboard_id'));
+
         $this->hook->fire('dashboard.delete.after', $dashboard_id, $result, $this);
-        return $result;
+        return (bool) $result;
     }
 
 }

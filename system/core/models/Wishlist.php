@@ -61,35 +61,41 @@ class Wishlist extends Model
      */
     public function get($wishlist_id)
     {
-        $this->hook->fire('wishlist.get.before', $wishlist_id, $this);
+        $result = null;
+        $this->hook->fire('wishlist.get.before', $wishlist_id, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
 
         $sql = 'SELECT * FROM wishlist WHERE wishlist_id=?';
-        $wishlist = $this->db->fetch($sql, array($wishlist_id));
+        $result = $this->db->fetch($sql, array($wishlist_id));
 
-        $this->hook->fire('wishlist.get.after', $wishlist, $this);
-        return $wishlist;
+        $this->hook->fire('wishlist.get.after', $wishlist_id, $result, $this);
+        return $result;
     }
 
     /**
      * Adds a product to a wishlist
      * @param array $data
-     * @return boolean
+     * @return integer
      */
     public function add(array $data)
     {
-        $this->hook->fire('wishlist.add.before', $data, $this);
+        $result = null;
+        $this->hook->fire('wishlist.add.before', $data, $result, $this);
 
-        if (empty($data)) {
-            return false;
+        if (isset($result)) {
+            return (int) $result;
         }
 
         $data['created'] = GC_TIME;
-        $data['wishlist_id'] = $this->db->insert('wishlist', $data);
+        $result = $this->db->insert('wishlist', $data);
 
         Cache::clearMemory();
 
-        $this->hook->fire('wishlist.add.after', $data, $this);
-        return $data['wishlist_id'];
+        $this->hook->fire('wishlist.add.after', $data, $result, $this);
+        return (int) $result;
     }
 
     /**
@@ -99,17 +105,18 @@ class Wishlist extends Model
      */
     public function addProduct(array $data)
     {
-        $this->hook->fire('wishlist.add.product.before', $data, $this);
+        $result = array();
+        $this->hook->fire('wishlist.add.product.before', $data, $result, $this);
+
+        if (!empty($result)) {
+            return (array) $result;
+        }
 
         $result = array(
             'redirect' => '',
             'severity' => 'warning',
-            'message' => $this->language->text('Unable to add this product')
+            'message' => $this->language->text('Unable to add to wishlist')
         );
-
-        if (empty($data)) {
-            return $result;
-        }
 
         $href = $this->url->get('wishlist');
 
@@ -144,7 +151,7 @@ class Wishlist extends Model
         }
 
         $this->hook->fire('wishlist.add.product.after', $data, $result, $this);
-        return $result;
+        return (array) $result;
     }
 
     /**
@@ -154,21 +161,20 @@ class Wishlist extends Model
      */
     public function deleteProduct(array $data)
     {
-        $this->hook->fire('wishlist.delete.product.before', $data, $this);
+        $result = array();
+        $this->hook->fire('wishlist.delete.product.before', $data, $result, $this);
+
+        if (!empty($result)) {
+            return (array) $result;
+        }
 
         $result = array(
             'redirect' => '',
             'severity' => 'warning',
-            'message' => $this->language->text('Unable to delete')
+            'message' => $this->language->text('Unable to delete from wishlist')
         );
 
-        if (empty($data)) {
-            return $result;
-        }
-
-        $deleted = (bool) $this->delete($data);
-
-        if ($deleted) {
+        if ($this->delete($data)) {
 
             unset($data['product_id']);
 
@@ -184,7 +190,7 @@ class Wishlist extends Model
         }
 
         $this->hook->fire('wishlist.delete.product.after', $data, $result, $this);
-        return $result;
+        return (array) $result;
     }
 
     /**
@@ -243,10 +249,11 @@ class Wishlist extends Model
      */
     public function delete(array $data)
     {
-        $this->hook->fire('wishlist.delete.before', $data, $this);
+        $result = null;
+        $this->hook->fire('wishlist.delete.before', $data, $result, $this);
 
-        if (empty($data)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
         $result = (bool) $this->db->delete('wishlist', $data);

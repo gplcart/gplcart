@@ -116,8 +116,7 @@ class Store extends Model
             $domain .= "/$basepath";
         }
 
-        $store = $this->get($domain);
-        return $store;
+        return $this->get($domain);
     }
 
     /**
@@ -131,26 +130,30 @@ class Store extends Model
             return array();
         }
 
-        $store = &Cache::memory(__METHOD__ . $store_id);
+        $result = &Cache::memory(__METHOD__ . $store_id);
 
-        if (isset($store)) {
-            return $store;
+        if (isset($result)) {
+            return $result;
         }
 
-        $this->hook->fire('store.get.before', $store_id, $this);
+        $this->hook->fire('store.get.before', $store_id, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
 
         if (is_numeric($store_id)) {
-            $store = $this->selectById($store_id);
+            $result = $this->selectById($store_id);
         } else {
-            $store = $this->selectByDomain($store_id);
+            $result = $this->selectByDomain($store_id);
         }
 
-        if (!empty($store)) {
-            $store['data'] += $this->defaultConfig();
+        if (!empty($result)) {
+            $result['data'] += $this->defaultConfig();
         }
 
-        $this->hook->fire('store.get.after', $store, $this);
-        return $store;
+        $this->hook->fire('store.get.after', $store_id, $result, $this);
+        return $result;
     }
 
     /**
@@ -161,9 +164,7 @@ class Store extends Model
     protected function selectById($store_id)
     {
         $sql = 'SELECT * FROM store WHERE store_id=?';
-
-        $options = array('unserialize' => 'data');
-        return $this->db->fetch($sql, array($store_id), $options);
+        return $this->db->fetch($sql, array($store_id), array('unserialize' => 'data'));
     }
 
     /**
@@ -219,21 +220,22 @@ class Store extends Model
     /**
      * Adds a store to the database
      * @param array $data
-     * @return boolean|integer
+     * @return integer
      */
     public function add(array $data)
     {
-        $this->hook->fire('store.add.before', $data, $this);
+        $result = null;
+        $this->hook->fire('store.add.before', $data, $result, $this);
 
-        if (empty($data)) {
-            return false;
+        if (isset($result)) {
+            return (int) $result;
         }
 
         $data['created'] = $data['modified'] = GC_TIME;
-        $data['store_id'] = $this->db->insert('store', $data);
+        $result = $this->db->insert('store', $data);
 
-        $this->hook->fire('store.add.after', $data, $this);
-        return $data['store_id'];
+        $this->hook->fire('store.add.after', $data, $result, $this);
+        return (int) $result;
     }
 
     /**
@@ -270,16 +272,15 @@ class Store extends Model
      */
     public function update($store_id, array $data)
     {
-        $this->hook->fire('store.update.before', $store_id, $data, $this);
+        $result = null;
+        $this->hook->fire('store.update.before', $store_id, $data, $result, $this);
 
-        if (empty($store_id)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
         $data['modified'] = GC_TIME;
-        $conditions = array('store_id' => $store_id);
-
-        $result = $this->db->update('store', $data, $conditions);
+        $result = (bool) $this->db->update('store', $data, array('store_id' => $store_id));
 
         $this->hook->fire('store.update.after', $store_id, $data, $result, $this);
         return (bool) $result;
@@ -292,10 +293,11 @@ class Store extends Model
      */
     public function delete($store_id)
     {
-        $this->hook->fire('store.delete.before', $store_id, $this);
+        $result = null;
+        $this->hook->fire('store.delete.before', $store_id, $result, $this);
 
-        if (empty($store_id)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
         if (!$this->canDelete($store_id)) {
@@ -313,7 +315,6 @@ class Store extends Model
         }
 
         $this->hook->fire('store.delete.after', $store_id, $result, $this);
-
         return (bool) $result;
     }
 

@@ -29,20 +29,21 @@ class State extends Model
     /**
      * Adds a country state
      * @param array $data
-     * @return boolean|integer
+     * @return integer
      */
     public function add(array $data)
     {
-        $this->hook->fire('state.add.before', $data, $this);
+        $result = null;
+        $this->hook->fire('state.add.before', $data, $result, $this);
 
-        if (empty($data)) {
-            return false;
+        if (isset($result)) {
+            return (int) $result;
         }
 
-        $data['state_id'] = $this->db->insert('state', $data);
+        $result = $this->db->insert('state', $data);
 
-        $this->hook->fire('state.add.after', $data, $this);
-        return $data['state_id'];
+        $this->hook->fire('state.add.after', $data, $result, $this);
+        return (int) $result;
     }
 
     /**
@@ -52,19 +53,23 @@ class State extends Model
      */
     public function get($state_id)
     {
-        $state = &Cache::memory(__METHOD__ . $state_id);
+        $result = &Cache::memory(__METHOD__ . $state_id);
 
-        if (isset($state)) {
-            return $state;
+        if (isset($result)) {
+            return $result;
         }
 
-        $this->hook->fire('state.get.before', $state_id, $this);
+        $this->hook->fire('state.get.before', $state_id, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
 
         $sql = 'SELECT * FROM state WHERE state_id=?';
-        $state = $this->db->fetch($sql, array($state_id));
+        $result = $this->db->fetch($sql, array($state_id));
 
-        $this->hook->fire('state.get.after', $state_id, $state, $this);
-        return $state;
+        $this->hook->fire('state.get.after', $state_id, $result, $this);
+        return $result;
     }
 
     /**
@@ -75,8 +80,7 @@ class State extends Model
      */
     public function getByCode($code, $country = null)
     {
-        $conditions = array('code' => $code, 'country' => $country);
-        $state = $this->getList($conditions);
+        $state = $this->getList(array('code' => $code, 'country' => $country));
         return $state ? reset($state) : array();
     }
 
@@ -146,25 +150,26 @@ class State extends Model
      */
     public function delete($state_id)
     {
-        $this->hook->fire('state.delete.before', $state_id, $this);
+        $result = null;
+        $this->hook->fire('state.delete.before', $state_id, $result, $this);
 
-        if (empty($state_id)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
         if (!$this->canDelete($state_id)) {
             return false;
         }
 
-        $conditions = array('state_id' => (int) $state_id);
-        $deleted = (bool) $this->db->delete('state', $conditions);
+        $conditions = array('state_id' => $state_id);
+        $result = (bool) $this->db->delete('state', $conditions);
 
-        if ($deleted) {
+        if ($result) {
             $this->db->delete('city', $conditions);
         }
 
-        $this->hook->fire('state.delete.after', $state_id, $deleted, $this);
-        return (bool) $deleted;
+        $this->hook->fire('state.delete.after', $state_id, $result, $this);
+        return (bool) $result;
     }
 
     /**
@@ -188,14 +193,14 @@ class State extends Model
      */
     public function update($state_id, array $data)
     {
-        $this->hook->fire('state.update.before', $state_id, $data, $this);
+        $result = null;
+        $this->hook->fire('state.update.before', $state_id, $data, $result, $this);
 
-        if (empty($state_id)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
-        $conditions = array('state_id' => $state_id);
-        $result = $this->db->update('state', $data, $conditions);
+        $result = (bool) $this->db->update('state', $data, array('state_id' => $state_id));
 
         $this->hook->fire('state.update.after', $state_id, $data, $result, $this);
         return (bool) $result;

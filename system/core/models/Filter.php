@@ -47,11 +47,11 @@ class Filter extends Model
             $filter = $this->get($filter);
         }
 
-        $filtered = null;
-        $this->hook->fire('filter', $text, $filter, $filtered, $this);
+        $result = null;
+        $this->hook->fire('filter', $text, $filter, $result, $this);
 
-        if (isset($filtered)) {
-            return (string) $filtered;
+        if (isset($result)) {
+            return (string) $result;
         }
 
         return $this->filter($text);

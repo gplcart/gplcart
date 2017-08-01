@@ -68,26 +68,30 @@ class Country extends Model
      */
     public function get($code)
     {
-        $country = &Cache::memory(__METHOD__ . $code);
+        $result = &Cache::memory(__METHOD__ . $code);
 
-        if (isset($country)) {
-            return $country;
+        if (isset($result)) {
+            return $result;
         }
 
-        $this->hook->fire('country.get.before', $code, $this);
+        $this->hook->fire('country.get.before', $code, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
 
         $sql = 'SELECT * FROM country WHERE code=?';
         $options = array('unserialize' => 'format');
-        $country = $this->db->fetch($sql, array($code), $options);
+        $result = $this->db->fetch($sql, array($code), $options);
 
-        if (!empty($country)) {
+        if (!empty($result)) {
             $default_format = $this->getDefaultFormat();
-            $country['format'] = gplcart_array_merge($default_format, $country['format']);
-            gplcart_array_sort($country['format']);
+            $result['format'] = gplcart_array_merge($default_format, $result['format']);
+            gplcart_array_sort($result['format']);
         }
 
-        $this->hook->fire('country.get.after', $code, $country, $this);
-        return $country;
+        $this->hook->fire('country.get.after', $code, $result, $this);
+        return $result;
     }
 
     /**
@@ -96,11 +100,17 @@ class Country extends Model
      */
     public function getDefaultFormat()
     {
-        $items = require GC_CONFIG_COUNTRY_FORMAT;
-        array_walk($items, function(&$item) {
+        static $format = null;
+
+        if (!isset($format)) {
+            $format = require GC_CONFIG_COUNTRY_FORMAT;
+        }
+
+        array_walk($format, function(&$item) {
             $item['name'] = $this->language->text($item['name']);
         });
-        return $items;
+
+        return $format;
     }
 
     /**
@@ -110,13 +120,16 @@ class Country extends Model
      */
     public function add(array $data)
     {
-        $this->hook->fire('country.add.before', $data, $this);
+        $result = null;
+        $this->hook->fire('country.add.before', $data, $result, $this);
 
-        if (empty($data['code'])) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
+        // Country table has no auto-incremented fields so we cannot get the last inserted ID
         $result = true;
+
         $this->db->insert('country', $data);
         $this->hook->fire('country.add.after', $data, $result, $this);
 
@@ -131,14 +144,15 @@ class Country extends Model
      */
     public function update($code, array $data)
     {
-        $this->hook->fire('country.update.before', $code, $data, $this);
+        $result = null;
+        $this->hook->fire('country.update.before', $code, $data, $result, $this);
 
-        if (empty($code) || empty($data)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
         unset($data['code']); // Cannot update primary key
-        $result = $this->db->update('country', $data, array('code' => $code));
+        $result = (bool) $this->db->update('country', $data, array('code' => $code));
 
         $this->hook->fire('country.update.after', $code, $data, $result, $this);
         return (bool) $result;
@@ -151,21 +165,23 @@ class Country extends Model
      */
     public function delete($code)
     {
-        $this->hook->fire('country.delete.before', $code, $this);
+        $result = null;
+        $this->hook->fire('country.delete.before', $code, $result, $this);
 
-        if (empty($code)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
         if (!$this->canDelete($code)) {
             return false;
         }
 
-        $result = (bool) $this->db->delete('country', array('code' => $code));
+        $conditions = array('code' => $code);
+        $result = (bool) $this->db->delete('country', $conditions);
 
         if ($result) {
-            $this->db->delete('city', array('country' => $code));
-            $this->db->delete('state', array('country' => $code));
+            $this->db->delete('city', $conditions);
+            $this->db->delete('state', $conditions);
         }
 
         $this->hook->fire('country.delete.after', $code, $result, $this);
@@ -181,6 +197,7 @@ class Country extends Model
     {
         $sql = 'SELECT address_id FROM address WHERE country=?';
         $result = $this->db->fetchColumn($sql, array($code));
+
         return empty($result);
     }
 
@@ -197,6 +214,7 @@ class Country extends Model
         foreach ($countries as $code => $country) {
             $names[$code] = $country['native_name'];
         }
+
         return $names;
     }
 
@@ -281,7 +299,11 @@ class Country extends Model
      */
     public function getIso($code = null)
     {
-        $data = require GC_CONFIG_COUNTRY;
+        static $data = null;
+
+        if (!isset($data)) {
+            $data = require GC_CONFIG_COUNTRY;
+        }
 
         if (isset($code)) {
             return isset($data[$code]) ? $data[$code] : '';

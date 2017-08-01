@@ -73,16 +73,17 @@ class Job extends Model
      */
     public function get($job_id)
     {
-        $this->hook->fire('job.get.before', $job_id, $this);
+        $result = null;
+        $this->hook->fire('job.get.before', $job_id, $result, $this);
 
-        if (empty($job_id)) {
-            return array();
+        if (isset($result)) {
+            return $result;
         }
 
-        $job = $this->getSession($job_id);
+        $result = $this->getSession($job_id);
 
-        $this->hook->fire('job.get.after', $job_id, $job, $this);
-        return $job;
+        $this->hook->fire('job.get.after', $job_id, $result, $this);
+        return $result;
     }
 
     /**
@@ -92,24 +93,25 @@ class Job extends Model
      */
     public function set(array $job)
     {
-        $this->hook->fire('job.set.before', $job, $this);
+        $result = null;
+        $this->hook->fire('job.set.before', $job, $result, $this);
 
-        if (empty($job)) {
-            return array();
+        if (isset($result)) {
+            return (array) $result;
         }
 
         $default = $this->getDefault();
-        $job = gplcart_array_merge($default, $job);
+        $result = gplcart_array_merge($default, $job);
 
-        $existing = $this->getSession($job['id']);
+        $existing = $this->getSession($result['id']);
 
         if (!empty($existing)) {
-            return $existing;
+            return (array) $existing;
         }
 
-        $this->setSession($job);
-        $this->hook->fire('job.set.after', $job, $this);
-        return $job;
+        $this->setSession($result);
+        $this->hook->fire('job.set.after', $job, $result, $this);
+        return (array) $result;
     }
 
     /**
@@ -159,15 +161,17 @@ class Job extends Model
      */
     public function delete($job_id = null)
     {
-        $this->hook->fire('job.delete.before', $job_id, $this);
+        $result = null;
+        $this->hook->fire('job.delete.before', $job_id, $result, $this);
 
-        if ($job_id === false) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
-        $this->session->delete(self::SESSION_KEY . ".$job_id");
-        $this->hook->fire('job.delete.after', $job_id, $this);
-        return true;
+        $result = $this->session->delete(self::SESSION_KEY . ".$job_id");
+
+        $this->hook->fire('job.delete.after', $job_id, $result, $this);
+        return (bool) $result;
     }
 
     /**

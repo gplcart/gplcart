@@ -32,8 +32,15 @@ class Rating extends Model
      */
     public function getByProduct($product_id)
     {
-        $this->hook->fire('rating.get.before', $product_id, $this);
-        $result = $this->db->fetch('SELECT rating, votes FROM rating WHERE product_id=?', array($product_id));
+        $result = null;
+        $this->hook->fire('rating.get.before', $product_id, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
+        $sql = 'SELECT rating, votes FROM rating WHERE product_id=?';
+        $result = $this->db->fetch($sql, array($product_id));
         $this->hook->fire('rating.get.after', $product_id, $result, $this);
 
         return $result;
@@ -47,7 +54,12 @@ class Rating extends Model
      */
     public function getByUser($product_id, $user_id)
     {
-        $this->hook->fire('rating.get.user.before', $product_id, $user_id, $this);
+        $result = null;
+        $this->hook->fire('rating.get.user.before', $product_id, $user_id, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
 
         $user_ids = (array) $user_id;
         $placeholders = rtrim(str_repeat('?,', count($user_ids)), ',');
@@ -55,27 +67,32 @@ class Rating extends Model
         $sql = "SELECT * FROM rating_user WHERE user_id IN($placeholders) AND product_id=?";
 
         $conditions = array_merge($user_ids, array($product_id));
-        $ratings = $this->db->fetchAll($sql, $conditions, array('index' => 'user_id'));
+        $result = $this->db->fetchAll($sql, $conditions, array('index' => 'user_id'));
 
-        if (!is_array($user_id) && isset($ratings[$user_id])) {
-            $ratings = $ratings[$user_id];
+        if (!is_array($user_id) && isset($result[$user_id])) {
+            $result = $result[$user_id];
         }
 
-        $this->hook->fire('rating.get.user.after', $product_id, $user_id, $ratings, $this);
-        return $ratings;
+        $this->hook->fire('rating.get.user.after', $product_id, $user_id, $result, $this);
+        return $result;
     }
 
     /**
      * Sets a rating for the given user and product
      * @param array $data
-     * @return boolean|integer
+     * @return array
      */
     public function set(array $data)
     {
-        $this->hook->fire('rating.set.before', $data, $this);
+        $result = null;
+        $this->hook->fire('rating.set.before', $data, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
 
         if (empty($data['rating'])) {
-            return false;
+            return array();
         }
 
         $conditions = array(
@@ -96,20 +113,25 @@ class Rating extends Model
     /**
      * Adds a user rating
      * @param array $data
-     * @return boolean
+     * @return integer
      */
     protected function addByUser(array $data)
     {
-        $this->hook->fire('rating.add.user.before', $data, $this);
+        $result = null;
+        $this->hook->fire('rating.add.user.before', $data, $result, $this);
 
-        if (empty($data['rating'])) {
-            return false; // Do not add rating 0 (unvote)
+        if (isset($result)) {
+            return (int) $result;
         }
 
-        $result = (bool) $this->db->insert('rating_user', $data);
+        if (empty($data['rating'])) {
+            return 0; // Do not add rating 0 (unvote)
+        }
+
+        $result = $this->db->insert('rating_user', $data);
         $this->hook->fire('rating.add.user.after', $data, $result, $this);
 
-        return $result;
+        return (int) $result;
     }
 
     /**
@@ -155,7 +177,6 @@ class Rating extends Model
         $sql .= "@this_num_votes:= (SELECT COUNT(rating_user_id) FROM rating_user WHERE product_id=:pid) AS this_num_votes,";
         $sql .= "@this_rating:= (SELECT AVG(rating) FROM rating_user WHERE product_id=:pid) AS this_rating,";
 
-        // Calculate
         $sql .= "((@avg_num_votes * @avg_rating) + (@this_num_votes * @this_rating) ) / (@avg_num_votes + @this_num_votes) AS bayesian_rating";
         $sql .= " FROM rating_user";
 

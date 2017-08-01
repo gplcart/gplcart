@@ -51,10 +51,11 @@ class Compare extends Model
      */
     public function add($product_id)
     {
-        $this->hook->fire('compare.add.before', $product_id, $this);
+        $result = null;
+        $this->hook->fire('compare.add.before', $product_id, $result, $this);
 
-        if (empty($product_id)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
         $product_ids = $this->getList();
@@ -68,7 +69,7 @@ class Compare extends Model
         $result = $this->set($product_ids);
 
         $this->hook->fire('compare.add.after', $product_id, $result, $this);
-        return $result;
+        return (bool) $result;
     }
 
     /**
@@ -79,17 +80,18 @@ class Compare extends Model
      */
     public function addProduct(array $product, array $data)
     {
-        $this->hook->fire('compare.add.product.before', $product, $data, $this);
+        $result = array();
+        $this->hook->fire('compare.add.product.before', $product, $data, $result, $this);
+
+        if (!empty($result)) {
+            return (array) $result;
+        }
 
         $result = array(
             'redirect' => '',
             'severity' => 'warning',
-            'message' => $this->language->text('Unable to add this product')
+            'message' => $this->language->text('Unable to add product')
         );
-
-        if (empty($product)) {
-            return $result;
-        }
 
         $added = $this->add($product['product_id']);
 
@@ -109,7 +111,7 @@ class Compare extends Model
         }
 
         $this->hook->fire('compare.add.product.after', $product, $data, $result, $this);
-        return $result;
+        return (array) $result;
     }
 
     /**
@@ -119,17 +121,18 @@ class Compare extends Model
      */
     public function deleteProduct($product_id)
     {
-        $this->hook->fire('compare.delete.product.before', $product_id, $this);
+        $result = null;
+        $this->hook->fire('compare.delete.product.before', $product_id, $result, $this);
+
+        if (!empty($result)) {
+            return (array) $result;
+        }
 
         $result = array(
             'redirect' => '',
-            'severity' => 'warning',
-            'message' => $this->language->text('Unable to remove this product from comparison')
+            'severity' => '',
+            'message' => ''
         );
-
-        if (empty($product_id)) {
-            return $result;
-        }
 
         if ($this->delete($product_id)) {
             $existing = count($this->getList());
@@ -142,7 +145,7 @@ class Compare extends Model
         }
 
         $this->hook->fire('compare.delete.product.after', $product_id, $result, $this);
-        return $result;
+        return (array) $result;
     }
 
     /**
@@ -151,7 +154,7 @@ class Compare extends Model
      */
     protected function controlLimit(array &$product_ids)
     {
-        $limit = (int) $this->config->get('comparison_limit', 10);
+        $limit = $this->config->get('comparison_limit', 10);
 
         if (!empty($limit)) {
             $product_ids = array_slice($product_ids, 0, $limit);
@@ -216,10 +219,11 @@ class Compare extends Model
      */
     public function delete($product_id)
     {
-        $this->hook->fire('compare.delete.before', $product_id, $this);
+        $result = null;
+        $this->hook->fire('compare.delete.before', $product_id, $result, $this);
 
-        if (empty($product_id)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
         $compared = $this->getList();
@@ -235,7 +239,7 @@ class Compare extends Model
         $result = $this->set(array_keys($product_ids));
         $this->hook->fire('compare.delete.after', $product_id, $result, $this);
 
-        return $result;
+        return (bool) $result;
     }
 
 }

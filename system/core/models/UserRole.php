@@ -121,10 +121,11 @@ class UserRole extends Model
      */
     public function delete($role_id)
     {
-        $this->hook->fire('user.role.delete.before', $role_id, $this);
+        $result = null;
+        $this->hook->fire('user.role.delete.before', $role_id, $result, $this);
 
-        if (empty($role_id)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
         if (!$this->canDelete($role_id)) {
@@ -132,6 +133,7 @@ class UserRole extends Model
         }
 
         $result = $this->db->delete('role', array('role_id' => $role_id));
+
         $this->hook->fire('user.role.delete.after', $role_id, $result, $this);
         return (bool) $result;
     }
@@ -145,26 +147,28 @@ class UserRole extends Model
     {
         $sql = 'SELECT user_id FROM user WHERE role_id=?';
         $result = $this->db->fetchColumn($sql, array($role_id));
+
         return empty($result);
     }
 
     /**
      * Adds a role to the database
      * @param array $data
-     * @return integer|boolean
+     * @return integer
      */
     public function add(array $data)
     {
-        $this->hook->fire('user.role.add.before', $data, $this);
+        $result = null;
+        $this->hook->fire('user.role.add.before', $data, $result, $this);
 
-        if (empty($data)) {
-            return false;
+        if (isset($result)) {
+            return (int) $result;
         }
 
-        $data['role_id'] = $this->db->insert('role', $data);
+        $result = $this->db->insert('role', $data);
 
-        $this->hook->fire('user.role.add.after', $data, $this);
-        return $data['role_id'];
+        $this->hook->fire('user.role.add.after', $data, $result, $this);
+        return (int) $result;
     }
 
     /**
@@ -175,13 +179,15 @@ class UserRole extends Model
      */
     public function update($role_id, array $data)
     {
-        $this->hook->fire('user.role.update.before', $role_id, $data, $this);
+        $result = null;
+        $this->hook->fire('user.role.update.before', $role_id, $data, $result, $this);
 
-        if (empty($role_id)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
-        $result = $this->db->update('role', $data, array('role_id' => $role_id));
+        $result = (bool) $this->db->update('role', $data, array('role_id' => $role_id));
+
         $this->hook->fire('user.role.update.after', $role_id, $data, $result, $this);
         return (bool) $result;
     }
@@ -193,21 +199,24 @@ class UserRole extends Model
      */
     public function get($role_id)
     {
-        $role = &Cache::memory(__METHOD__ . $role_id);
+        $result = &Cache::memory(__METHOD__ . $role_id);
 
-        if (isset($role)) {
-            return $role;
+        if (isset($result)) {
+            return $result;
         }
 
-        $this->hook->fire('user.role.get.before', $role_id, $this);
+        $this->hook->fire('user.role.get.before', $role_id, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
 
         $sql = 'SELECT * FROM role WHERE role_id=?';
         $options = array('unserialize' => 'permissions');
+        $result = $this->db->fetch($sql, array($role_id), $options);
 
-        $role = $this->db->fetch($sql, array($role_id), $options);
-
-        $this->hook->fire('user.role.get.after', $role, $this);
-        return $role;
+        $this->hook->fire('user.role.get.after', $role_id, $result, $this);
+        return $result;
     }
 
 }

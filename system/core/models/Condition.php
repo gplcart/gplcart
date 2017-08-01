@@ -69,7 +69,12 @@ class Condition extends Model
      */
     public function isMet(array $trigger, array $data)
     {
-        $this->hook->fire('condition.met.before', $trigger, $data, $this);
+        $met = null;
+        $this->hook->fire('condition.met.before', $trigger, $data, $met, $this);
+
+        if (isset($met)) {
+            return (bool) $met;
+        }
 
         if (empty($trigger['data']['conditions'])) {
             return false;
@@ -97,7 +102,7 @@ class Condition extends Model
         }
 
         $this->hook->fire('condition.met.after', $trigger, $data, $met, $this);
-        return $met;
+        return (bool) $met;
     }
 
     /**

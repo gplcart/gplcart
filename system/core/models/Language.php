@@ -110,11 +110,12 @@ class Language extends Model
         foreach ($languages as $code => &$language) {
             $language['code'] = $code;
             $language['default'] = ($code == $default);
-            $language['weight'] = isset($language['weight']) ? (int) $language['weight'] : 0;
+            $language['weight'] = isset($language['weight']) ? $language['weight'] : 0;
         }
 
         $this->hook->fire('language.list', $languages, $this);
         gplcart_array_sort($languages);
+
         return $languages;
     }
 
@@ -191,10 +192,11 @@ class Language extends Model
      */
     public function add(array $data)
     {
-        $this->hook->fire('language.add.before', $data, $this);
+        $result = null;
+        $this->hook->fire('language.add.before', $data, $result, $this);
 
-        if (empty($data['code'])) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
         $values = array(
@@ -216,8 +218,10 @@ class Language extends Model
         $languages[$data['code']] = $values;
         $this->config->set('languages', $languages);
 
-        $this->hook->fire('language.add.after', $data, $this);
-        return true;
+        $result = true;
+        $this->hook->fire('language.add.after', $data, $result, $this);
+
+        return (bool) $result;
     }
 
     /**
@@ -228,7 +232,12 @@ class Language extends Model
      */
     public function update($code, array $data)
     {
-        $this->hook->fire('language.update.before', $code, $data, $this);
+        $result = null;
+        $this->hook->fire('language.update.before', $code, $data, $result, $this);
+
+        if (isset($result)) {
+            return (bool) $result;
+        }
 
         $languages = $this->getList();
 
@@ -248,8 +257,10 @@ class Language extends Model
         $languages[$code] = $data + $languages[$code];
         $this->config->set('languages', $languages);
 
-        $this->hook->fire('language.update.after', $code, $data, $this);
-        return true;
+        $result = true;
+        $this->hook->fire('language.update.after', $code, $data, $result, $this);
+
+        return (bool) $result;
     }
 
     /**
@@ -259,10 +270,11 @@ class Language extends Model
      */
     public function delete($code)
     {
-        $this->hook->fire('language.delete.before', $code, $this);
+        $result = null;
+        $this->hook->fire('language.delete.before', $code, $result, $this);
 
-        if (empty($code)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
         $languages = $this->getList();
@@ -273,8 +285,9 @@ class Language extends Model
             $this->config->reset('language');
         }
 
-        $this->hook->fire('language.delete.after', $code, $languages, $this);
-        return true;
+        $result = true;
+        $this->hook->fire('language.delete.after', $code, $result, $this);
+        return (bool) $result;
     }
 
     /**
@@ -322,6 +335,7 @@ class Language extends Model
 
         $this->addString($string);
         $this->processed[$string] = true;
+
         return $this->formatString($string, $arguments);
     }
 
@@ -337,6 +351,7 @@ class Language extends Model
         if (!isset($data[0]) || $data[0] === '') {
             return gplcart_string_format($source, $args);
         }
+
         return gplcart_string_format($data[0], $args);
     }
 
@@ -422,6 +437,7 @@ class Language extends Model
 
         $key = gplcart_json_encode($string);
         $translation = gplcart_json_encode($data);
+
         return (bool) file_put_contents($file, "GplCart.translations[$key]=$translation;\n", FILE_APPEND);
     }
 
@@ -452,16 +468,17 @@ class Language extends Model
      */
     public function translit($string, $language)
     {
-        $translit = null;
-        $this->hook->fire('language.translit', $string, $language, $translit, $this);
+        $result = null;
+        $this->hook->fire('language.translit', $string, $language, $result, $this);
 
-        if (isset($translit)) {
-            return $translit;
+        if (isset($result)) {
+            return $result;
         }
 
         if (function_exists('transliterator_transliterate')) {
             return transliterator_transliterate('Any-Latin; Latin-ASCII; [\u0100-\u7fff] remove', $string);
         }
+
         return $string;
     }
 
@@ -472,10 +489,16 @@ class Language extends Model
      */
     public function getIso($code = null)
     {
-        $data = require GC_CONFIG_LANGUAGE;
+        static $data = null;
+
+        if (!isset($data)) {
+            $data = require GC_CONFIG_LANGUAGE;
+        }
+
         if (isset($code)) {
             return isset($data[$code]) ? (array) $data[$code] : array();
         }
+
         return $data;
     }
 

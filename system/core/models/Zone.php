@@ -32,13 +32,17 @@ class Zone extends Model
      */
     public function get($zone_id)
     {
-        $this->hook->fire('zone.get.before', $zone_id, $this);
+        $result = null;
+        $this->hook->fire('zone.get.before', $zone_id, $result, $this);
 
-        $zone = $this->db->fetch('SELECT * FROM zone WHERE zone_id=?', array($zone_id));
+        if (isset($result)) {
+            return $result;
+        }
 
-        $this->hook->fire('zone.get.after', $zone, $this);
+        $result = $this->db->fetch('SELECT * FROM zone WHERE zone_id=?', array($zone_id));
 
-        return $zone;
+        $this->hook->fire('zone.get.after', $zone_id, $result, $this);
+        return $result;
     }
 
     /**
@@ -48,16 +52,17 @@ class Zone extends Model
      */
     public function add(array $data)
     {
-        $this->hook->fire('zone.add.before', $data, $this);
+        $result = null;
+        $this->hook->fire('zone.add.before', $data, $result, $this);
 
-        if (empty($data)) {
-            return false;
+        if (isset($result)) {
+            return (int) $result;
         }
 
-        $data['zone_id'] = $this->db->insert('zone', $data);
-        $this->hook->fire('zone.add.after', $data, $this);
+        $result = $this->db->insert('zone', $data);
+        $this->hook->fire('zone.add.after', $data, $result, $this);
 
-        return $data['zone_id'];
+        return (int) $result;
     }
 
     /**
@@ -68,15 +73,16 @@ class Zone extends Model
      */
     public function update($zone_id, array $data)
     {
-        $this->hook->fire('zone.update.before', $zone_id, $data, $this);
+        $result = null;
+        $this->hook->fire('zone.update.before', $zone_id, $data, $result, $this);
 
-        if (empty($zone_id) || empty($data)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
-        $result = $this->db->update('zone', $data, array('zone_id' => $zone_id));
-        $this->hook->fire('zone.update.after', $zone_id, $data, $result, $this);
+        $result = (bool) $this->db->update('zone', $data, array('zone_id' => $zone_id));
 
+        $this->hook->fire('zone.update.after', $zone_id, $data, $result, $this);
         return (bool) $result;
     }
 
@@ -87,15 +93,20 @@ class Zone extends Model
      */
     public function delete($zone_id)
     {
-        $this->hook->fire('zone.delete.before', $zone_id, $this);
+        $result = null;
+        $this->hook->fire('zone.delete.before', $zone_id, $result, $this);
 
-        if (empty($zone_id) || !$this->canDelete($zone_id)) {
+        if (isset($result)) {
+            return (bool) $result;
+        }
+
+        if (!$this->canDelete($zone_id)) {
             return false;
         }
 
         $result = (bool) $this->db->delete('zone', array('zone_id' => $zone_id));
-        $this->hook->fire('zone.delete.after', $zone_id, $result, $this);
 
+        $this->hook->fire('zone.delete.after', $zone_id, $result, $this);
         return (bool) $result;
     }
 

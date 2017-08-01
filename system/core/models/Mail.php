@@ -41,6 +41,7 @@ class Mail extends Model
 
         $handlers = require GC_CONFIG_MAIL;
         $this->hook->fire('mail.handlers', $handlers, $this);
+
         return $handlers;
     }
 
@@ -59,10 +60,9 @@ class Mail extends Model
         }
 
         settype($to, 'array');
-        $this->hook->fire('mail.send.before', $to, $subject, $message, $options, $this);
 
         $result = null;
-        $this->hook->fire('mail.send', $to, $subject, $message, $options, $result, $this);
+        $this->hook->fire('mail.send', $to, $subject, $message, $options, $result);
 
         if (isset($result)) {
             return $result;
@@ -81,6 +81,7 @@ class Mail extends Model
     {
         $handlers = $this->getHandlers();
         $data = Handler::call($handlers, $handler_id, 'data', $arguments);
+
         return call_user_func_array(array($this, 'send'), $data);
     }
 

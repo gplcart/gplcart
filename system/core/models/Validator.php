@@ -45,9 +45,13 @@ class Validator extends Model
      */
     public function run($handler_id, &$submitted, array $options = array())
     {
-        $this->hook->fire('validator.run.before', $submitted, $options, $this);
-
         $result = null;
+        $this->hook->fire('validator.run.before', $submitted, $options, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
         $handlers = $this->getHandlers();
 
         if (!empty($handlers[$handler_id]['handlers']['validate'])) {

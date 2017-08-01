@@ -125,14 +125,15 @@ class Product extends Model
     /**
      * Adds a product
      * @param array $data
-     * @return boolean|integer
+     * @return integer
      */
     public function add(array $data)
     {
-        $this->hook->fire('product.add.before', $data, $this);
+        $result = null;
+        $this->hook->fire('product.add.before', $data, $result, $this);
 
-        if (empty($data)) {
-            return false;
+        if (isset($result)) {
+            return (int) $result;
         }
 
         $data['created'] = $data['modified'] = GC_TIME;
@@ -143,7 +144,7 @@ class Product extends Model
 
         $this->setPrice($data);
 
-        $data['product_id'] = $this->db->insert('product', $data);
+        $result = $data['product_id'] = $this->db->insert('product', $data);
 
         $this->setTranslationTrait($this->db, $data, 'product', false);
         $this->setImagesTrait($this->file, $data, 'product');
@@ -157,8 +158,8 @@ class Product extends Model
 
         $this->search->index('product', $data);
 
-        $this->hook->fire('product.add.after', $data, $this);
-        return $data['product_id'];
+        $this->hook->fire('product.add.after', $data, $result, $this);
+        return (int) $result;
     }
 
     /**
@@ -169,10 +170,11 @@ class Product extends Model
      */
     public function update($product_id, array $data)
     {
-        $this->hook->fire('product.update.before', $product_id, $data, $this);
+        $result = null;
+        $this->hook->fire('product.update.before', $product_id, $data, $result, $this);
 
-        if (empty($product_id)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
         $data['modified'] = GC_TIME;
@@ -192,10 +194,9 @@ class Product extends Model
         $updated += (int) $this->setAttributes($data);
         $updated += (int) $this->setRelated($data);
 
-        $result = false;
+        $result = $updated > 0;
 
-        if ($updated > 0) {
-            $result = true;
+        if ($result) {
             $this->search->index('product', $product_id);
             $this->cache->clear("product.$product_id.", array('pattern' => '*'));
         }
@@ -267,35 +268,35 @@ class Product extends Model
      */
     public function get($product_id, array $options = array())
     {
-        $product = &Cache::memory(array(__METHOD__ . $product_id => $options));
+        $result = &Cache::memory(array(__METHOD__ . $product_id => $options));
 
-        if (isset($product)) {
-            return $product;
+        if (isset($result)) {
+            return $result;
         }
 
-        $this->hook->fire('product.get.before', $product_id, $options, $this);
+        $this->hook->fire('product.get.before', $product_id, $options, $result, $this);
 
-        if (empty($product_id)) {
-            return $product = array();
+        if (isset($result)) {
+            return $result;
         }
 
         $options += array('language' => null);
         $list = $this->getList(array('product_id' => $product_id));
 
         if (empty($list)) {
-            return $product = array();
+            return $result = array();
         }
 
-        $product = reset($list);
+        $result = reset($list);
 
-        $this->attachFields($product);
-        $this->attachSku($product);
-        $this->attachImagesTrait($this->file, $product, 'product', $options['language']);
-        $this->attachTranslationTrait($this->db, $product, 'product', $options['language']);
+        $this->attachFields($result);
+        $this->attachSku($result);
+        $this->attachImagesTrait($this->file, $result, 'product', $options['language']);
+        $this->attachTranslationTrait($this->db, $result, 'product', $options['language']);
 
-        $this->hook->fire('product.get.after', $product_id, $options, $product, $this);
+        $this->hook->fire('product.get.after', $product_id, $options, $result, $this);
 
-        return $product;
+        return $result;
     }
 
     /**
@@ -334,6 +335,7 @@ class Product extends Model
 
         $product = $this->db->fetch($sql, $conditions);
         $this->attachImagesTrait($this->file, $product, 'product', $language);
+
         return $product;
     }
 
@@ -362,7 +364,6 @@ class Product extends Model
     /**
      * Adds option combinations to the product
      * @param array $product
-     * @return null
      */
     protected function attachSku(array &$product)
     {
@@ -375,6 +376,7 @@ class Product extends Model
         $product['default_field_values'] = array();
 
         foreach ($skus as $sku) {
+
             if ($sku['combination_id'] !== '') {
                 $product['combination'][$sku['combination_id']] = $sku;
                 if (!empty($sku['is_default'])) {
@@ -396,10 +398,11 @@ class Product extends Model
      */
     public function delete($product_id)
     {
-        $this->hook->fire('product.delete.before', $product_id, $this);
+        $result = null;
+        $this->hook->fire('product.delete.before', $product_id, $result, $this);
 
-        if (empty($product_id)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
         if (!$this->canDelete($product_id)) {
@@ -409,9 +412,9 @@ class Product extends Model
         $conditions = array('product_id' => $product_id);
         $conditions2 = array('id_key' => 'product_id', 'id_value' => $product_id);
 
-        $deleted = (bool) $this->db->delete('product', $conditions);
+        $result = (bool) $this->db->delete('product', $conditions);
 
-        if ($deleted) {
+        if ($result) {
 
             $this->db->delete('cart', $conditions);
             $this->db->delete('review', $conditions);
@@ -433,8 +436,8 @@ class Product extends Model
             $this->db->run($sql, array('product', $product_id));
         }
 
-        $this->hook->fire('product.delete.after', $product_id, $deleted, $this);
-        return (bool) $deleted;
+        $this->hook->fire('product.delete.after', $product_id, $result, $this);
+        return (bool) $result;
     }
 
     /**
@@ -668,6 +671,7 @@ class Product extends Model
         $cookie = $this->request->cookie('viewed_products', '', 'string');
         $products = array_filter(explode('|', $cookie), 'is_numeric');
         $this->controlViewedLimit($products, $limit);
+
         return $products;
     }
 
@@ -684,8 +688,7 @@ class Product extends Model
             return $items;
         }
 
-        $items = array_slice($items, 0, $limit + 1);
-        return $items;
+        return array_slice($items, 0, $limit + 1);
     }
 
     /**
@@ -863,12 +866,14 @@ class Product extends Model
     {
         foreach ($data['field']['attribute'] as $field_id => $field_value_ids) {
             foreach ((array) $field_value_ids as $field_value_id) {
+
                 $options = array(
                     'type' => 'attribute',
                     'field_id' => $field_id,
                     'product_id' => $data['product_id'],
                     'field_value_id' => $field_value_id
                 );
+
                 $this->product_field->add($options);
             }
         }

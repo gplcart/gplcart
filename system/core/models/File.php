@@ -92,14 +92,15 @@ class File extends Model
     /**
      * Adds a file to the database
      * @param array $data
-     * @return boolean|integer
+     * @return integer
      */
     public function add(array $data)
     {
-        $this->hook->fire('file.add.before', $data, $this);
+        $result = null;
+        $this->hook->fire('file.add.before', $data, $result, $this);
 
-        if (empty($data)) {
-            return false;
+        if (isset($result)) {
+            return (int) $result;
         }
 
         if (empty($data['mime_type'])) {
@@ -114,33 +115,41 @@ class File extends Model
             $data['title'] = basename($data['path']);
         }
 
-        $data += array('created' => GC_TIME);
-        $data['file_id'] = $this->db->insert('file', $data);
+        $data['created'] = GC_TIME;
+
+        $result = $data['file_id'] = $this->db->insert('file', $data);
 
         $this->setTranslationTrait($this->db, $data, 'file', false);
 
-        $this->hook->fire('file.add.after', $data, $this);
-        return $data['file_id'];
+        $this->hook->fire('file.add.after', $data, $result, $this);
+        return (int) $result;
     }
 
     /**
      * Updates a file
      * @param integer $file_id
      * @param array $data
+     * @return boolean
      */
     public function update($file_id, array $data)
     {
-        $this->hook->fire('file.update.before', $file_id, $data, $this);
+        $result = null;
+        $this->hook->fire('file.update.before', $file_id, $data, $result, $this);
 
-        $conditions = array('file_id' => $file_id);
-        $updated = $this->db->update('file', $data, $conditions);
+        if (isset($result)) {
+            return (bool) $result;
+        }
+
+        $updated = $this->db->update('file', $data, array('file_id' => $file_id));
 
         $data['file_id'] = $file_id;
+
         $updated += (int) $this->setTranslationTrait($this->db, $data, 'file');
 
         $result = $updated > 0;
+
         $this->hook->fire('file.update.after', $file_id, $data, $result, $this);
-        return $result;
+        return (bool) $result;
     }
 
     /**
@@ -151,14 +160,18 @@ class File extends Model
      */
     public function get($file_id, $language = null)
     {
-        $this->hook->fire('file.get.before', $file_id, $this);
+        $result = null;
+        $this->hook->fire('file.get.before', $file_id, $language, $result, $this);
 
-        $file = $this->db->fetch('SELECT * FROM file WHERE file_id=?', array($file_id));
+        if (isset($result)) {
+            return $result;
+        }
 
-        $this->attachTranslationTrait($this->db, $file, 'file', $language);
+        $result = $this->db->fetch('SELECT * FROM file WHERE file_id=?', array($file_id));
+        $this->attachTranslationTrait($this->db, $result, 'file', $language);
 
-        $this->hook->fire('file.get.after', $file, $this);
-        return $file;
+        $this->hook->fire('file.get.after', $file_id, $language, $result, $this);
+        return $result;
     }
 
     /**
@@ -168,10 +181,11 @@ class File extends Model
      */
     public function delete($file_id)
     {
-        $this->hook->fire('file.delete.before', $file_id, $this);
+        $result = null;
+        $this->hook->fire('file.delete.before', $file_id, $result, $this);
 
-        if (empty($file_id)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
         if (!$this->canDelete($file_id)) {
@@ -179,14 +193,14 @@ class File extends Model
         }
 
         $conditions = array('file_id' => $file_id);
-        $deleted = (bool) $this->db->delete('file', $conditions);
+        $result = (bool) $this->db->delete('file', $conditions);
 
-        if ($deleted) {
+        if ($result) {
             $this->db->delete('file_translation', $conditions);
         }
 
-        $this->hook->fire('file.delete.after', $file_id, $deleted, $this);
-        return (bool) $deleted;
+        $this->hook->fire('file.delete.after', $file_id, $result, $this);
+        return (bool) $result;
     }
 
     /**
@@ -199,6 +213,7 @@ class File extends Model
         foreach ((array) $this->getList($options) as $file) {
             $deleted += (int) $this->delete($file['file_id']);
         }
+
         return $deleted > 0;
     }
 
@@ -322,6 +337,7 @@ class File extends Model
         } else {
             $this->handler = $id;
         }
+
         return $this;
     }
 
@@ -429,6 +445,7 @@ class File extends Model
         }
 
         $files = $this->db->fetchAll($sql, $params, array('index' => 'file_id'));
+
         $this->hook->fire('file.list', $files, $this);
         return $files;
     }
@@ -511,7 +528,12 @@ class File extends Model
         $this->error = null;
         $this->transferred = null;
 
-        $this->hook->fire('file.upload.before', $post, $handler, $path, $this);
+        $result = null;
+        $this->hook->fire('file.upload.before', $post, $handler, $path, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
 
         if (!empty($post['error']) || empty($post['tmp_name']) || !is_uploaded_file($post['tmp_name'])) {
             return $this->error = $this->language->text('Unable to upload the file');
@@ -529,8 +551,9 @@ class File extends Model
             return $this->error;
         }
 
-        $this->hook->fire('file.upload.after', $post, $this);
-        return true;
+        $result = true;
+        $this->hook->fire('file.upload.after', $post, $handler, $path, $result, $this);
+        return $result;
     }
 
     /**
@@ -578,10 +601,11 @@ class File extends Model
         $this->error = null;
         $this->transferred = null;
 
-        $this->hook->fire('file.download.before', $url, $handler, $path, $this);
+        $result = null;
+        $this->hook->fire('file.download.before', $url, $handler, $path, $result, $this);
 
-        if (empty($url)) {
-            return $this->language->text('Nothing to download');
+        if (isset($result)) {
+            return $result;
         }
 
         $temp = $this->writeTempFile($url);
@@ -602,8 +626,9 @@ class File extends Model
             return $this->error;
         }
 
-        $this->hook->fire('file.download.after', $url, $temp, $this);
-        return true;
+        $result = true;
+        $this->hook->fire('file.download.after', $url, $handler, $temp, $result, $this);
+        return $result;
     }
 
     /**
@@ -702,9 +727,11 @@ class File extends Model
     protected function cleanFileName($filename)
     {
         $clean = preg_replace('/[^A-Za-z0-9.]/', '', $filename);
+
         if ($this->config->get('file_upload_translit', 1) && preg_match('/[^A-Za-z0-9_.-]/', $clean) === 1) {
             $clean = $this->language->translit($clean, null);
         }
+
         return $clean;
     }
 

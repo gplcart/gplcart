@@ -73,7 +73,12 @@ class Page extends Model
      */
     public function get($page_id, $language = null)
     {
-        $this->hook->fire('page.get.before', $page_id, $language, $this);
+        $result = null;
+        $this->hook->fire('page.get.before', $page_id, $language, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
 
         $sql = 'SELECT p.*, u.role_id'
                 . ' FROM page p'
@@ -81,37 +86,39 @@ class Page extends Model
                 . ' WHERE p.page_id=?';
 
 
-        $page = $this->db->fetch($sql, array($page_id));
+        $result = $this->db->fetch($sql, array($page_id));
 
-        $this->attachImagesTrait($this->file, $page, 'page', $language);
-        $this->attachTranslationTrait($this->db, $page, 'page', $language);
+        $this->attachImagesTrait($this->file, $result, 'page', $language);
+        $this->attachTranslationTrait($this->db, $result, 'page', $language);
 
-        $this->hook->fire('page.get.after', $page_id, $page, $this);
-        return $page;
+        $this->hook->fire('page.get.after', $page_id, $language, $result, $this);
+
+        return $result;
     }
 
     /**
      * Adds a page
      * @param array $data
-     * @return integer|boolean
+     * @return integer
      */
     public function add(array $data)
     {
-        $this->hook->fire('page.add.before', $data, $this);
+        $result = null;
+        $this->hook->fire('page.add.before', $data, $result, $this);
 
-        if (empty($data)) {
-            return false;
+        if (isset($result)) {
+            return (int) $result;
         }
 
         $data['created'] = $data['modified'] = GC_TIME;
-        $data['page_id'] = $this->db->insert('page', $data);
+        $result = $data['page_id'] = $this->db->insert('page', $data);
 
         $this->setTranslationTrait($this->db, $data, 'page', false);
         $this->setImagesTrait($this->file, $data, 'page');
         $this->setAliasTrait($this->alias, $data, 'page', false);
 
-        $this->hook->fire('page.add.after', $data, $this);
-        return $data['page_id'];
+        $this->hook->fire('page.add.after', $data, $result, $this);
+        return (int) $result;
     }
 
     /**
@@ -122,16 +129,16 @@ class Page extends Model
      */
     public function update($page_id, array $data)
     {
-        $this->hook->fire('page.update.before', $page_id, $data, $this);
+        $result = null;
+        $this->hook->fire('page.update.before', $page_id, $data, $result, $this);
 
-        if (empty($page_id)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
         $data['modified'] = GC_TIME;
-        $conditions = array('page_id' => (int) $page_id);
 
-        $updated = $this->db->update('page', $data, $conditions);
+        $updated = $this->db->update('page', $data, array('page_id' => $page_id));
 
         $data['page_id'] = $page_id;
 
@@ -141,7 +148,7 @@ class Page extends Model
 
         $this->cache->clear("page.$page_id");
 
-        $result = ($updated > 0);
+        $result = $updated > 0;
 
         $this->hook->fire('page.update.after', $page_id, $data, $result, $this);
         return (bool) $result;
@@ -154,18 +161,19 @@ class Page extends Model
      */
     public function delete($page_id)
     {
-        $this->hook->fire('page.delete.before', $page_id, $this);
+        $result = null;
+        $this->hook->fire('page.delete.before', $page_id, $result, $this);
 
-        if (empty($page_id)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
         $conditions = array('page_id' => $page_id);
         $conditions2 = array('id_key' => 'page_id', 'id_value' => $page_id);
 
-        $deleted = (bool) $this->db->delete('page', $conditions);
+        $result = (bool) $this->db->delete('page', $conditions);
 
-        if ($deleted) {
+        if ($result) {
 
             $this->db->delete('page_translation', $conditions);
             $this->db->delete('file', $conditions2);
@@ -179,8 +187,8 @@ class Page extends Model
             $this->db->run($sql, array('page', $page_id));
         }
 
-        $this->hook->fire('page.delete.after', $page_id, $deleted, $this);
-        return (bool) $deleted;
+        $this->hook->fire('page.delete.after', $page_id, $result, $this);
+        return (bool) $result;
     }
 
     /**

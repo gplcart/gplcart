@@ -53,17 +53,22 @@ class Payment extends Model
 
         $weights = array();
         foreach ($methods as $id => $method) {
+
             if (!empty($data['status']) && empty($method['status'])) {
                 unset($methods[$id]);
                 continue;
             }
+
             if (!empty($data['module']) && (empty($method['module']) || !in_array($method['module'], (array) $data['module']))) {
                 unset($methods[$id]);
                 continue;
             }
+
             if (!isset($data['weight'])) {
                 $data['weight'] = 0;
             }
+
+            $method['id'] = $id; // Make sure ID is set
             $weights[] = $data['weight'];
         }
 

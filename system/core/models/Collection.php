@@ -101,21 +101,22 @@ class Collection extends Model
     /**
      * Adds a collection
      * @param array $data
-     * @return boolean|integer
+     * @return integer
      */
     public function add(array $data)
     {
-        $this->hook->fire('collection.add.before', $data, $this);
+        $result = null;
+        $this->hook->fire('collection.add.before', $data, $result, $this);
 
-        if (empty($data)) {
-            return false;
+        if (isset($result)) {
+            return (int) $result;
         }
 
-        $data['collection_id'] = $this->db->insert('collection', $data);
+        $result = $data['collection_id'] = $this->db->insert('collection', $data);
         $this->setTranslationTrait($this->db, $data, 'collection', false);
 
-        $this->hook->fire('collection.add.after', $data, $this);
-        return $data['collection_id'];
+        $this->hook->fire('collection.add.after', $data, $result, $this);
+        return (int) $result;
     }
 
     /**
@@ -126,15 +127,20 @@ class Collection extends Model
      */
     public function get($collection_id, $language = null)
     {
-        $this->hook->fire('collection.get.before', $collection_id, $this);
+        $result = null;
+        $this->hook->fire('collection.get.before', $collection_id, $language, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
 
         $sql = 'SELECT * FROM collection WHERE collection_id=?';
-        $collection = $this->db->fetch($sql, array($collection_id));
+        $result = $this->db->fetch($sql, array($collection_id));
 
-        $this->attachTranslationTrait($this->db, $collection, 'collection', $language);
+        $this->attachTranslationTrait($this->db, $result, 'collection', $language);
 
-        $this->hook->fire('collection.get.after', $collection_id, $collection, $this);
-        return $collection;
+        $this->hook->fire('collection.get.after', $collection_id, $language, $result, $this);
+        return $result;
     }
 
     /**
@@ -144,13 +150,18 @@ class Collection extends Model
      */
     public function delete($collection_id)
     {
-        $this->hook->fire('collection.delete.before', $collection_id, $this);
+        $result = null;
+        $this->hook->fire('collection.delete.before', $collection_id, $result, $this);
 
-        if (empty($collection_id) || !$this->canDelete($collection_id)) {
+        if (isset($result)) {
+            return (bool) $result;
+        }
+
+        if (!$this->canDelete($collection_id)) {
             return false;
         }
 
-        $conditions = array('collection_id' => (int) $collection_id);
+        $conditions = array('collection_id' => $collection_id);
         $result = $this->db->delete('collection', $conditions);
 
         if (!empty($result)) {
@@ -184,20 +195,22 @@ class Collection extends Model
      */
     public function update($collection_id, array $data)
     {
-        $this->hook->fire('collection.update.before', $collection_id, $data, $this);
+        $result = null;
+        $this->hook->fire('collection.update.before', $collection_id, $data, $result, $this);
 
-        if (empty($collection_id)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
         unset($data['type']); // Cannot change item type!
 
-        $conditions = array('collection_id' => (int) $collection_id);
-        $updated = $this->db->update('collection', $data, $conditions);
+        $updated = $this->db->update('collection', $data, array('collection_id' => $collection_id));
 
         $data['collection_id'] = $collection_id;
+
         $updated += (int) $this->setTranslationTrait($this->db, $data, 'collection');
-        $result = ($updated > 0);
+
+        $result = $updated > 0;
 
         $this->hook->fire('collection.update.after', $collection_id, $data, $result, $this);
         return (bool) $result;

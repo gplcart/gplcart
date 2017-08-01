@@ -28,22 +28,22 @@ class Review extends Model
     /**
      * Adds a review
      * @param array $data
-     * @return boolean|integer
+     * @return integer
      */
     public function add(array $data)
     {
-        $this->hook->fire('review.add.before', $data, $this);
+        $result = null;
+        $this->hook->fire('review.add.before', $data, $result, $this);
 
-        if (empty($data)) {
-            return false;
+        if (isset($result)) {
+            return (int) $result;
         }
-        
-        $data['created'] = GC_TIME;
-        $data['modified'] = GC_TIME;
-        $data['review_id'] = $this->db->insert('review', $data);
 
-        $this->hook->fire('review.add.after', $data, $this);
-        return $data['review_id'];
+        $data['created'] = $data['modified'] = GC_TIME;
+        $result = $this->db->insert('review', $data);
+
+        $this->hook->fire('review.add.after', $data, $result, $this);
+        return (int) $result;
     }
 
     /**
@@ -53,13 +53,18 @@ class Review extends Model
      */
     public function get($review_id)
     {
-        $this->hook->fire('review.get.before', $review_id, $this);
+        $result = null;
+        $this->hook->fire('review.get.before', $review_id, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
 
         $sql = 'SELECT * FROM review WHERE review_id=?';
-        $review = $this->db->fetch($sql, array($review_id));
+        $result = $this->db->fetch($sql, array($review_id));
 
-        $this->hook->fire('review.get.after', $review_id, $review, $this);
-        return $review;
+        $this->hook->fire('review.get.after', $review_id, $result, $this);
+        return $result;
     }
 
     /**
@@ -70,15 +75,15 @@ class Review extends Model
      */
     public function update($review_id, array $data)
     {
-        $this->hook->fire('review.update.before', $review_id, $data, $this);
+        $result = null;
+        $this->hook->fire('review.update.before', $review_id, $data, $result, $this);
 
-        if (empty($review_id)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
         $data['modified'] = GC_TIME;
-        $conditions = array('review_id' => $review_id);
-        $result = $this->db->update('review', $data, $conditions);
+        $result = $this->db->update('review', $data, array('review_id' => $review_id));
 
         $this->hook->fire('review.update.after', $review_id, $data, $result, $this);
         return (bool) $result;
@@ -91,10 +96,11 @@ class Review extends Model
      */
     public function delete($review_id)
     {
-        $this->hook->fire('review.delete.before', $review_id, $this);
+        $result = null;
+        $this->hook->fire('review.delete.before', $review_id, $result, $this);
 
-        if (empty($review_id)) {
-            return false;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
         settype($review_id, 'array');
