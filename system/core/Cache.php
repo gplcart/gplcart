@@ -156,7 +156,7 @@ class Cache
      * @param string|array|null $data
      * @return string|null
      */
-    protected static function buildKey($data)
+    public static function buildKey($data)
     {
         if (!isset($data)) {
             return null;
