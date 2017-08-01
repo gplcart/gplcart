@@ -10,7 +10,8 @@
 namespace gplcart\core;
 
 use gplcart\core\Hook,
-    gplcart\core\Handler;
+    gplcart\core\Handler,
+    gplcart\core\Cache;
 use gplcart\core\helpers\Cli as CliHelper;
 
 /**
@@ -92,6 +93,12 @@ class CliRoute
      */
     public function getList()
     {
+        $routes = &Cache::memory(__METHOD__);
+
+        if (isset($routes)) {
+            return $routes;
+        }
+
         $routes = require GC_CONFIG_CLI_ROUTE;
         $this->hook->fire('cli.route.list', $routes, $this);
         return $routes;
