@@ -394,7 +394,7 @@ class Config
             return false;
         }
 
-        $this->config = include GC_CONFIG_COMMON;
+        $this->config = require GC_CONFIG_COMMON;
 
         if (empty($this->config['database'])) {
             throw new DatabaseException('Missing database settings');
