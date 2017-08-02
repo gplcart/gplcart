@@ -17,8 +17,7 @@ use gplcart\core\models\Mail as MailModel,
     gplcart\core\models\Price as PriceModel,
     gplcart\core\models\Language as LanguageModel,
     gplcart\core\models\PriceRule as PriceRuleModel;
-use gplcart\core\helpers\Request as RequestHelper,
-    gplcart\core\helpers\Convertor as ConvertorHelper;
+use gplcart\core\helpers\Convertor as ConvertorHelper;
 
 /**
  * Manages basic behaviors and data related to store orders
@@ -63,12 +62,6 @@ class Order extends Model
     protected $price;
 
     /**
-     * Request class instance
-     * @var \gplcart\core\helpers\Request $request
-     */
-    protected $request;
-
-    /**
      * Convertor class instance
      * @var \gplcart\core\helpers\Convertor $convertor
      */
@@ -81,12 +74,11 @@ class Order extends Model
      * @param CartModel $cart
      * @param LanguageModel $language
      * @param MailModel $mail
-     * @param RequestHelper $request
      * @param ConvertorHelper $convertor
      */
     public function __construct(UserModel $user, PriceModel $price,
             PriceRuleModel $pricerule, CartModel $cart, LanguageModel $language,
-            MailModel $mail, RequestHelper $request, ConvertorHelper $convertor)
+            MailModel $mail, ConvertorHelper $convertor)
     {
         parent::__construct();
 
@@ -94,7 +86,6 @@ class Order extends Model
         $this->user = $user;
         $this->cart = $cart;
         $this->price = $price;
-        $this->request = $request;
         $this->language = $language;
         $this->convertor = $convertor;
         $this->pricerule = $pricerule;
@@ -130,7 +121,7 @@ class Order extends Model
     }
 
     /**
-     * Returns an array of orders or total number of orders
+     * Returns an array of orders or counts them
      * @param array $data
      * @return array|integer
      */
@@ -186,10 +177,20 @@ class Order extends Model
             $where[] = "%{$data['creator']}%";
         }
 
+        if (isset($data['shipping_prefix'])) {
+            $sql .= ' AND o.shipping LIKE ?';
+            $where[] = "{$data['shipping_prefix']}%";
+        }
+
         if (isset($data['customer'])) {
             $sql .= ' AND (uc.email LIKE ? OR uc.name LIKE ?)';
             $where[] = "%{$data['customer']}%";
             $where[] = "%{$data['customer']}%";
+        }
+
+        if (isset($data['tracking_number'])) {
+            $sql .= ' AND o.tracking_number LIKE ?';
+            $where[] = "%{$data['tracking_number']}%";
         }
 
         $allowed_order = array('asc', 'desc');
@@ -202,7 +203,8 @@ class Order extends Model
             'total' => 'o.total',
             'currency' => 'o.currency',
             'customer' => 'customer',
-            'creator' => 'u.email'
+            'creator' => 'u.email',
+            'tracking_number' => 'o.tracking_number'
         );
 
         if (isset($data['sort']) && isset($allowed_sort[$data['sort']])//
@@ -338,7 +340,7 @@ class Order extends Model
     }
 
     /**
-     * Mark the order ID is viewed by the current user
+     * Mark the order is viewed by the current user
      * @param array $order
      * @return boolean
      */
@@ -369,7 +371,7 @@ class Order extends Model
     }
 
     /**
-     * Whether the order ID is already in the history table
+     * Whether the order is already viewed by the user
      * @param array $order
      * @param integer $user_id
      * @return boolean
@@ -383,7 +385,7 @@ class Order extends Model
     }
 
     /**
-     * Whether the order has been already viewed by the user
+     * Whether the order has not been viewed by the current user
      * @param array $order
      * @return boolean
      */
@@ -666,10 +668,6 @@ class Order extends Model
         $order['created'] = $order['modified'] = GC_TIME;
         $order += array('status' => $this->getDefaultStatus());
 
-        if (empty($order['data']['user'])) {
-            $order['data']['user'] = $this->getUserData();
-        }
-
         $result = $this->db->insert('orders', $order);
 
         $this->hook->attach('order.add.after', $order, $result, $this);
@@ -809,18 +807,6 @@ class Order extends Model
         );
 
         return $statuses;
-    }
-
-    /**
-     * Returns an array of user data to be saved
-     * @return array
-     */
-    protected function getUserData()
-    {
-        return array(
-            'ip' => $this->request->ip(),
-            'agent' => $this->request->agent()
-        );
     }
 
     /**

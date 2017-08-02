@@ -260,6 +260,8 @@ return array(
             'user_id' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
             'payment' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
             'shipping' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+            'tracking_number' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
+            'tracking_status' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
             'status' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
             'comment' => array('type' => 'text', 'not_null' => true, 'default' => ''),
             'volume' => array('type' => 'float', 'default' => 0),
