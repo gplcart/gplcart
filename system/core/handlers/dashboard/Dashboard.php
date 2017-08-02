@@ -27,6 +27,8 @@ use gplcart\core\models\Cart as CartModel,
 class Dashboard extends Handler
 {
 
+    use \gplcart\core\traits\OrderTrait;
+
     /**
      * User model instance
      * @var \gplcart\core\models\User $user
@@ -156,8 +158,8 @@ class Dashboard extends Handler
         $items = $this->order->getList($options);
 
         array_walk($items, function (&$item) {
-            $item['is_new'] = $this->order->isNew($item);
-            $item['total_formatted'] = $this->price->format($item['total'], $item['currency']);
+            $this->prepareOrderNewTrait($item, $this->order);
+            $this->prepareOrderTotalTrait($item, $this->price);
         });
 
         return $items;
