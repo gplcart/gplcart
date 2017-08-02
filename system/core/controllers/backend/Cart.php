@@ -51,6 +51,7 @@ class Cart extends BackendController
     {
         $allowed = array('user_email', 'user_id', 'store_id', 'sku',
             'order_id', 'created', 'quantity');
+        
         $this->setFilter($allowed);
     }
 

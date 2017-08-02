@@ -112,7 +112,6 @@ class Order extends BackendController
     public function indexOrder($order_id)
     {
         $this->setOrder($order_id);
-
         $this->submitIndexOrder();
 
         $this->setTitleIndexOrder();
@@ -330,10 +329,13 @@ class Order extends BackendController
     protected function setOrder($order_id)
     {
         if (is_numeric($order_id)) {
+            
             $order = $this->order->get($order_id);
+            
             if (empty($order)) {
                 $this->outputHttpStatus(404);
             }
+            
             $this->order->setViewed($order);
             $this->data_order = $this->prepareOrder($order);
         }
@@ -486,6 +488,7 @@ class Order extends BackendController
     {
         $allowed = array('store_id', 'order_id', 'status', 'created',
             'creator', 'user_id', 'total', 'currency', 'customer');
+        
         $this->setFilter($allowed);
     }
 
@@ -580,6 +583,7 @@ class Order extends BackendController
         $query = $this->query_filter;
         $query['limit'] = $this->limit;
         $orders = (array) $this->order->getList($query);
+        
         return $this->prepareListOrder($orders);
     }
 
@@ -591,8 +595,8 @@ class Order extends BackendController
     protected function prepareListOrder(array $orders)
     {
         foreach ($orders as &$order) {
-            $order['is_new'] = $this->order->isNew($order);
-            $order['total_formatted'] = $this->price->format($order['total'], $order['currency']);
+            $this->prepareOrderNewTrait($order, $this->order);
+            $this->prepareOrderTotalTrait($order, $this->price);
         }
 
         return $orders;

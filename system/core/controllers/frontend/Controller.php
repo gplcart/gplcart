@@ -362,6 +362,7 @@ class Controller extends BaseController
             $this->attachItemPriceFormatted($item);
             $this->attachItemTotalFormatted($item);
         }
+
         $this->attachItemTotalFormatted($cart);
         return $cart;
     }
