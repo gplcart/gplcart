@@ -11,15 +11,15 @@
   <td colspan="2"><span class="text-danger"><?php echo $this->text('Unknown'); ?></span></td>
 </tr>
 <?php } else { ?>
-<tr class="active">
-  <td colspan="2"><?php echo $this->e($method['cart']['type']); ?></td>
+<tr class="active order-component-title">
+  <td colspan="2"><?php echo $this->e($title); ?></td>
 </tr>
 <tr>
   <td>
-    <?php if (empty($method['name'])) { ?>
+    <?php if (empty($method['title'])) { ?>
     <span class="text-danger"><?php echo $this->text('Unknown'); ?></span>
     <?php } else { ?>
-    <?php echo $this->text($method['name']); ?>
+    <?php echo $this->text($method['title']); ?>
     <?php if(!empty($method['description'])) { ?>
     <br><span class="small text-muted"><?php echo $this->filter($method['description']); ?></span>
     <?php } ?>

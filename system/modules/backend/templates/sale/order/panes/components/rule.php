@@ -11,7 +11,8 @@
   <td colspan="2"><span class="text-danger"><?php echo $this->text('Unknown'); ?></span></td>
 </tr>
 <?php } else { ?>
-<tr class="active">
+<tr class="active order-component-title">
+  <td colspan="2"><?php echo $this->text('Price rules'); ?></td>
 </tr>
 <tr>
   <td>

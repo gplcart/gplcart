@@ -9,6 +9,9 @@
 <?php if (empty($order['cart'])) { ?>
 <tr><td colspan="2"><?php echo $this->text('No products in the cart'); ?></td></tr>
 <?php } else { ?>
+<tr class="active order-component-title">
+  <td colspan="2"><?php echo $this->text('Cart'); ?></td>
+</tr>
 <?php foreach ($order['cart'] as $sku => $item) { ?>
 <tr>
   <td>

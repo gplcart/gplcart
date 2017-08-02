@@ -18,7 +18,7 @@
         <td class="middle"><?php echo $this->text('Status'); ?></td>
         <td>
           <?php if ($this->access('order_edit')) { ?>
-          <div class="input-group input-group-sm hidden-print">
+          <div class="input-group hidden-print">
             <select class="form-control" name="order[status]">
               <?php foreach ($statuses as $code => $name) { ?>
               <option value="<?php echo $code; ?>"<?php echo $order['status'] == $code ? ' selected' : ''; ?>>
@@ -84,6 +84,14 @@
           <?php } ?>
         </td>
       </tr>
+      <?php if(!empty($order['tracking_number'])) { ?>
+      <tr>
+        <td><?php echo $this->text('Tracking number'); ?></td>
+        <td>
+          <?php echo $this->e($order['tracking_number']); ?>
+        </td>
+      </tr>
+      <?php } ?>
     </table>
   </div>
 </div>
