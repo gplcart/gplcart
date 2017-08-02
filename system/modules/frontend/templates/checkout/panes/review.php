@@ -102,10 +102,10 @@
               </div>
               <?php } else { ?>
               <?php if ($admin) { ?>
-              <input class="form-control" name="order[data][components][<?php echo $this->e($id); ?>]" value="<?php echo $this->e($price_component['price_decimal']); ?>">
+              <input class="form-control" name="order[data][components][<?php echo $this->e($id); ?>][price]" value="<?php echo $this->e($price_component['price_decimal']); ?>">
               <?php } else { ?>
               <?php echo $this->e($price_component['price_formatted']); ?>
-              <input type="hidden" name="order[data][components][<?php echo $this->e($id); ?>]" value="<?php echo $this->e($price_component['price']); ?>">
+              <input type="hidden" name="order[data][components][<?php echo $this->e($id); ?>][price]" value="<?php echo $this->e($price_component['price']); ?>">
               <?php } ?>
               <?php } ?>
               <?php echo $this->error("data.components.$id"); ?>
@@ -145,7 +145,7 @@
     </div>
     <div class="form-group">
       <div class="col-md-6">
-        <button class="btn btn-default" name="save" value="1">
+        <button class="btn btn-success" name="save" value="1">
           <?php echo $admin ? $this->text('Save') : $this->text('Place order now'); ?>
         </button>
       </div>
