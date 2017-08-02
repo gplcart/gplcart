@@ -329,13 +329,13 @@ class Order extends BackendController
     protected function setOrder($order_id)
     {
         if (is_numeric($order_id)) {
-            
+
             $order = $this->order->get($order_id);
-            
+
             if (empty($order)) {
                 $this->outputHttpStatus(404);
             }
-            
+
             $this->order->setViewed($order);
             $this->data_order = $this->prepareOrder($order);
         }
@@ -430,9 +430,9 @@ class Order extends BackendController
     protected function setDataPanelComponentsIndexOrder()
     {
         $this->prepareOrderComponentCartTrait($this->data_order, $this, $this->price);
-        $this->prepareOrderComponentPaymentMethodTrait($this->data_order, $this, $this->price, $this->payment);
-        $this->prepareOrderComponentShippingMethodTrait($this->data_order, $this, $this->price, $this->shipping);
         $this->prepareOrderComponentPriceRuleTrait($this->data_order, $this, $this->price, $this->pricerule);
+        $this->prepareOrderComponentPaymentMethodTrait($this->data_order, $this, $this->price, $this->payment, $this->order);
+        $this->prepareOrderComponentShippingMethodTrait($this->data_order, $this, $this->price, $this->shipping, $this->order);
 
         ksort($this->data_order['data']['components']);
 
@@ -488,7 +488,7 @@ class Order extends BackendController
     {
         $allowed = array('store_id', 'order_id', 'status', 'created',
             'creator', 'user_id', 'total', 'currency', 'customer');
-        
+
         $this->setFilter($allowed);
     }
 
@@ -583,7 +583,7 @@ class Order extends BackendController
         $query = $this->query_filter;
         $query['limit'] = $this->limit;
         $orders = (array) $this->order->getList($query);
-        
+
         return $this->prepareListOrder($orders);
     }
 

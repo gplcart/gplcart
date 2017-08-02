@@ -140,9 +140,9 @@ class Account extends FrontendController
     protected function setDataPanelComponentsOrderAccount()
     {
         $this->prepareOrderComponentCartTrait($this->data_order, $this, $this->price);
-        $this->prepareOrderComponentPaymentMethodTrait($this->data_order, $this, $this->price, $this->payment);
-        $this->prepareOrderComponentShippingMethodTrait($this->data_order, $this, $this->price, $this->shipping);
         $this->prepareOrderComponentPriceRuleTrait($this->data_order, $this, $this->price, $this->pricerule);
+        $this->prepareOrderComponentPaymentMethodTrait($this->data_order, $this, $this->price, $this->payment, $this->order);
+        $this->prepareOrderComponentShippingMethodTrait($this->data_order, $this, $this->price, $this->shipping, $this->order);
 
         ksort($this->data_order['data']['components']);
 
