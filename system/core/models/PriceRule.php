@@ -144,8 +144,7 @@ class PriceRule extends Model
             return (int) $this->db->fetchColumn($sql, $where);
         }
 
-        $options = array('index' => 'price_rule_id');
-        $list = $this->db->fetchAll($sql, $where, $options);
+        $list = $this->db->fetchAll($sql, $where, array('index' => 'price_rule_id'));
 
         $this->hook->attach('price.rule.list', $data, $list, $this);
         return $list;
@@ -238,8 +237,7 @@ class PriceRule extends Model
                 . ' FROM price_rule'
                 . ' WHERE code=? AND price_rule_id=? AND status=?';
 
-        $params = array($code, $price_rule_id, 1);
-        return (bool) $this->db->fetchColumn($sql, $params);
+        return (bool) $this->db->fetchColumn($sql, array($code, $price_rule_id, 1));
     }
 
     /**
