@@ -348,12 +348,14 @@ class Order extends ComponentValidator
             return null;
         }
 
-        foreach ($components as $id => $price) {
-            if (is_numeric($id) && !is_numeric($price)) {
+        foreach ($components as $id => $component) {
+            
+            if (!is_numeric($component['price'])) {
                 $this->setErrorNumeric("data.components.$id", $label);
                 continue;
             }
-            if (strlen($price) > 10) {
+            
+            if (strlen($component['price']) > 10) {
                 $this->setErrorLengthRange("data.components.$id", $label, 0, 10);
             }
         }
