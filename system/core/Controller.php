@@ -1749,19 +1749,40 @@ abstract class Controller
         });
 
         $this->data['_help'] = '';
-        $this->data['_classes'] = array();
         $this->data['_languages'] = $languages;
         $this->data['_user'] = $this->current_user;
         $this->data['_store'] = $this->current_store;
         $this->data['_messages'] = $this->session->getMessage();
         $this->data['_has_enabled_languages'] = !empty($enabled_languages);
 
-        if (!empty($this->current_route['handlers']['controller'][0])) {
-            $parts = explode('controllers\\', strtolower($this->current_route['handlers']['controller'][0]), 2);
-            $this->data['_classes'] = explode('\\', $parts[1]);
+        $this->setClasses();
+        $this->setDefaultJs();
+    }
+
+    /**
+     * Sets an array of body css classes
+     * @return array
+     */
+    protected function setClasses()
+    {
+        if (empty($this->current_route['handlers']['controller'][0])) {
+            $this->data['_classes'] = array();
+            return null;
         }
 
-        $this->setDefaultJs();
+        $parts = explode('\\', strtolower($this->current_route['handlers']['controller'][0]));
+
+        foreach ($parts as $i => &$part) {
+
+            if (in_array($part, array('gplcart', 'controllers'))) {
+                unset($parts[$i]);
+                continue;
+            }
+
+            $part = "gc-$part"; // Add refix to prevent conflicts
+        }
+
+        $this->data['_classes'] = $parts;
     }
 
     /**
