@@ -368,12 +368,6 @@ class Checkout extends FrontendController
             'comment' => '',
             'payment' => '',
             'shipping' => '',
-            'data' => array(
-                'user' => array(
-                    'ip' => $this->request->ip(),
-                    'agent' => $this->request->agent()
-                )
-            ),
             'user_id' => $this->order_user_id,
             'creator' => $this->admin_user_id,
             'store_id' => $this->order_store_id,
@@ -953,8 +947,15 @@ class Checkout extends FrontendController
     protected function getSubmittedOrderCheckout()
     {
         $submitted = $this->getSubmitted();
+
         $submitted += $this->data_form['order'];
+
         $submitted['cart'] = $this->data_cart;
+
+        $submitted['data']['user'] = array(
+            'ip' => $this->request->ip(),
+            'agent' => $this->request->agent()
+        );
 
         if (empty($this->admin)) {
             return $submitted;
@@ -966,12 +967,15 @@ class Checkout extends FrontendController
             return $submitted;
         }
 
-        foreach ($submitted['data']['components'] as $id => &$price) {
-            if ($price == 0) {
+        foreach ($submitted['data']['components'] as $id => &$component) {
+
+            if ($component['price'] == 0) {
                 unset($submitted['data']['components'][$id]);
                 continue;
             }
-            $price = $this->price->amount($price, $submitted['currency']);
+
+            $component['currency'] = $submitted['currency'];
+            $component['price'] = $this->price->amount($component['price'], $submitted['currency']);
         }
 
         return $submitted;
@@ -984,10 +988,7 @@ class Checkout extends FrontendController
      */
     protected function prepareOrderComponentsCheckout($calculated)
     {
-        $extra = array(
-            'shipping' => $this->text('Shipping'),
-            'payment' => $this->text('Payment')
-        );
+        $component_types = $this->order->getComponentTypes();
 
         $components = array();
         foreach ($calculated['components'] as $type => $component) {
@@ -999,7 +1000,7 @@ class Checkout extends FrontendController
             );
 
             if (empty($component['rule'])) {
-                $components[$type]['name'] = $extra[$type];
+                $components[$type]['name'] = $component_types[$type];
             } else {
                 $components[$type]['rule'] = $component['rule'];
                 $components[$type]['name'] = $component['rule']['name'];
