@@ -349,6 +349,8 @@ class Checkout extends FrontendController
         $this->data_form['statuses'] = $this->order->getStatuses();
         $this->data_form['payment_methods'] = $this->getPaymentMethodsCheckout();
         $this->data_form['shipping_methods'] = $this->getShippingMethodsCheckout();
+
+        $this->data_form['has_dynamic_payment_methods'] = $this->hasDynamicMethods($this->data_form['payment_methods']);
         $this->data_form['has_dynamic_shipping_methods'] = $this->hasDynamicMethods($this->data_form['shipping_methods']);
 
         // Price rule calculator requires this data
@@ -366,6 +368,12 @@ class Checkout extends FrontendController
             'comment' => '',
             'payment' => '',
             'shipping' => '',
+            'data' => array(
+                'user' => array(
+                    'ip' => $this->request->ip(),
+                    'agent' => $this->request->agent()
+                )
+            ),
             'user_id' => $this->order_user_id,
             'creator' => $this->admin_user_id,
             'store_id' => $this->order_store_id,
@@ -442,6 +450,9 @@ class Checkout extends FrontendController
         if (empty($this->data_form['addresses'])) {
             $this->show_shipping_address_form = true;
         }
+
+        $this->data_form['default_payment_method'] = false;
+        $this->data_form['default_shipping_method'] = false;
 
         $this->data_form['has_payment_address'] = $this->has_payment_address;
         $this->data_form['get_shipping_methods'] = $this->isPosted('get_shipping_methods');

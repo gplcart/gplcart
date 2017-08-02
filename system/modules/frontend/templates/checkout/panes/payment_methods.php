@@ -30,7 +30,7 @@
             <?php if (!empty($method['image'])) { ?>
             <img class="img-responsive" src="<?php echo $this->e($method['image']); ?>">
             <?php } ?>
-            <input type="radio" name="order[payment]" value="<?php echo $this->e($method_id); ?>"<?php echo ((isset($order['payment']) && $order['payment'] == $method_id) || count($payment_methods) == 1) ? ' checked' : ''; ?>> <?php echo $this->e($method['title']); ?>
+            <input type="radio" name="order[payment]" value="<?php echo $this->e($method_id); ?>"<?php echo ((isset($order['payment']) && $order['payment'] == $method_id) || count($payment_methods) == 1 || $default_payment_method == $method_id) ? ' checked' : ''; ?>> <?php echo $this->e($method['title']); ?>
             <?php if (!empty($method['description'])) { ?>
             <div class="description small"><?php echo $this->filter($method['description']); ?></div>
             <?php } ?>
@@ -39,5 +39,10 @@
         <?php } ?>
       </div>
     </div>
+    <?php if(!empty($has_dynamic_payment_methods)) { ?>
+    <button class="btn btn-default" name="get_payment_methods" value="1">
+      <?php echo $this->text('Get services and rates'); ?>
+    </button>
+    <?php } ?>
   </div>
 </div>
