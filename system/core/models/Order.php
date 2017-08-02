@@ -284,6 +284,22 @@ class Order extends Model
     }
 
     /**
+     * Returns an array of order component types
+     * @return array
+     */
+    public function getComponentTypes()
+    {
+        $types = array(
+            'cart' => $this->language->text('Cart'),
+            'payment' => $this->language->text('Payment'),
+            'shipping' => $this->language->text('Shipping')
+        );
+
+        $this->hook->attach('order.component.types', $types);
+        return $types;
+    }
+
+    /**
      * Updates an order
      * @param integer $order_id
      * @param array $data
@@ -818,7 +834,7 @@ class Order extends Model
     {
         if (!empty($order['cart']['items'])) {
             foreach ($order['cart']['items'] as $sku => $item) {
-                $order['data']['components']['cart'][$sku] = $item['total'];
+                $order['data']['components']['cart']['items'][$sku]['price'] = $item['total'];
             }
         }
     }
