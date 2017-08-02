@@ -83,6 +83,17 @@ trait OrderTrait
     }
 
     /**
+     * Mark the order is new or not
+     * @param array $order
+     * @param \gplcart\core\models\Order $model
+     */
+    protected function prepareOrderNewTrait(&$order,
+            \gplcart\core\models\Order $model)
+    {
+        $order['is_new'] = $model->isNew($order);
+    }
+
+    /**
      * Prepare order addresses
      * @param array $order
      * @param \gplcart\core\models\Address $model
