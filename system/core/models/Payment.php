@@ -52,7 +52,13 @@ class Payment extends Model
         $this->hook->attach('payment.methods', $methods, $this);
 
         $weights = array();
-        foreach ($methods as $id => $method) {
+        foreach ($methods as $id => &$method) {
+
+            $method['id'] = $id;
+
+            if (!isset($method['weight'])) {
+                $method['weight'] = 0;
+            }
 
             if (!empty($data['status']) && empty($method['status'])) {
                 unset($methods[$id]);
@@ -64,12 +70,7 @@ class Payment extends Model
                 continue;
             }
 
-            if (!isset($data['weight'])) {
-                $data['weight'] = 0;
-            }
-
-            $method['id'] = $id; // Make sure ID is set
-            $weights[] = $data['weight'];
+            $weights[] = $method['weight'];
         }
 
         if (empty($methods)) {
