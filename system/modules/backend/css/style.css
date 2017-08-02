@@ -85,11 +85,6 @@ fieldset:last-of-type {
     margin-left: 10px;
 }
 
-
-.alert {
-    margin-bottom: 30px;
-}
-
 ol.breadcrumb {
     background-color: transparent;
     margin: 0 !important;
