@@ -6,9 +6,6 @@
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
-
-// Load bootstrap file
 require 'system/bootstrap.php';
 
-// Process the request
 \gplcart\core\Container::get('gplcart\\core\\Facade')->route();
