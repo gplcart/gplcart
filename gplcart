@@ -13,8 +13,6 @@ if (PHP_SAPI !== 'cli') {
 // Turn off HTML tags in error messages
 ini_set('html_errors', 'off');
 
-// Prepare stuff
 require 'system/bootstrap.php';
 
-// Route commands
 \gplcart\core\Container::get('gplcart\\core\\Facade')->route();
