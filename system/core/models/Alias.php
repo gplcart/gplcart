@@ -55,7 +55,7 @@ class Alias extends Model
         $values = array(
             'alias' => $alias,
             'id_key' => $id_key,
-            'id_value' => (int) $id_value
+            'id_value' => $id_value
         );
 
         return $this->db->insert('alias', $values);
