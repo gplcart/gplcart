@@ -19,53 +19,31 @@ class Container
 {
 
     /**
-     * Instance storage
+     * An array of instances
      * @var array
      */
-    protected static $registry = array();
-
-    /**
-     * Override class map
-     * @var array
-     */
-    protected static $override_config;
+    protected static $instances = array();
 
     /**
      * Instantiates and registers a class
-     * @param string|array $class
+     * @param string|array $callable
      * @param array $arguments
-     * @param boolean $share
      * @return object
      * @throws ReflectionException
      */
-    public static function get($class, array $arguments = array(), $share = true)
+    public static function get($callable, array $arguments = array())
     {
-        if (is_array($class)) {
-            if (!is_callable($class)) {
-                $method = implode('::', $class);
-                throw new ReflectionException("$method is not callable");
-            }
-
-            $class = reset($class);
-        }
+        $class = static::getClass($callable);
 
         if (is_object($class)) {
-            return $class; // TODO: register?
+            return $class;
         }
 
-        // Override class namespace
-        if (!isset(static::$override_config) && is_readable(GC_CONFIG_OVERRIDE)) {
-            static::$override_config = require GC_CONFIG_OVERRIDE;
-        }
+        static::overrideClass($class);
 
-        if (isset(static::$override_config[$class])) {
-            $override = end(static::$override_config[$class]);
-            $class = $override;
-        }
+        $registered = static::registered($class, $arguments);
 
-        $registered = static::registered($class);
-
-        if ($share && is_object($registered)) {
+        if (is_object($registered)) {
             return $registered;
         }
 
@@ -73,76 +51,167 @@ class Container
             throw new ReflectionException("Class $class does not exist");
         }
 
-        $reflection = new ReflectionClass($class);
+        return static::getInstance($class, $arguments);
+    }
+
+    /**
+     * Returns a registered instance using its namespace and arguments
+     * @param string $namespace
+     * @param array $arguments
+     * @return object
+     */
+    protected static function getInstance($namespace, array $arguments = array())
+    {
+        $reflection = new ReflectionClass($namespace);
 
         $constructor = $reflection->getConstructor();
 
         if (empty($constructor)) {
-            $instance = new $class;
-            return $share ? static::register($class, $instance) : $instance;
+            $instance = new $namespace;
+            static::register($namespace, $instance);
+            return $instance;
         }
 
         $parameters = $constructor->getParameters();
 
         if (empty($parameters)) {
-            $instance = new $class;
-            return $share ? static::register($class, $instance) : $instance;
+            $instance = new $namespace;
+            static::register($namespace, $instance);
+            return $instance;
         }
 
         $dependencies = array();
-        foreach ($parameters as $parameter) {
+        foreach ($parameters as $pos => $parameter) {
             $parameter_class = $parameter->getClass();
 
-            if (!empty($parameter_class)) {
-                $dependencies[] = static::get($parameter_class->getName());
+            if (empty($parameter_class)) {
+                $dependencies[$pos] = array_key_exists($pos, $arguments) ? $arguments[$pos] : $parameter;
+                continue;
             }
+
+            $dependencies[$pos] = static::get($parameter_class->getName());
         }
 
-        $instance = $reflection->newInstanceArgs($dependencies + $arguments);
-        return static::register($class, $instance);
-    }
-
-    /**
-     * Adds a class to the storage
-     * @param string $namespace
-     * @param object $instance
-     * @return object
-     */
-    public static function register($namespace, $instance)
-    {
-        static::$registry[strtolower(trim($namespace, '\\'))] = $instance;
+        $instance = $reflection->newInstanceArgs($dependencies);
+        static::register($namespace, $instance, $arguments);
         return $instance;
     }
 
     /**
-     * Removes a class(es) from the storage
-     * @param null|string $class
-     * @return boolean
+     * Validates and extracts an object or namespace from a callable content
+     * @param array|string|object $class
+     * @return string|object
+     * @throws ReflectionException
      */
-    public static function unregister($class = null)
+    protected static function getClass($class)
     {
-        if (!isset($class)) {
-            static::$registry = array(); // Unregister all
-            return false;
+        if (!is_array($class)) {
+            return $class;
         }
 
-        $key = strtolower(trim($class, '\\'));
-        unset(static::$registry[$key]);
-        return true;
+        if (!is_callable($class)) {
+            throw new ReflectionException(implode('::', $class) . ' is not callable');
+        }
+
+        return reset($class);
+    }
+
+    /**
+     * Tries to override a class namespace
+     * @param string $namespace
+     */
+    protected static function overrideClass(&$namespace)
+    {
+        $map = static::getOverrideMap();
+
+        if (isset($map[$namespace])) {
+            $override = end($map[$namespace]);
+            $namespace = $override;
+        }
+    }
+
+    /**
+     * Returns an array of class override map 
+     * @return array
+     */
+    protected static function getOverrideMap()
+    {
+        static $map = null;
+
+        if (isset($map)) {
+            return $map;
+        }
+
+        if (is_readable(GC_CONFIG_OVERRIDE)) {
+            $map = require GC_CONFIG_OVERRIDE;
+            return $map;
+        }
+
+        return $map = array();
+    }
+
+    /**
+     * Adds a class instance to the storage
+     * @param string $namespace
+     * @param object $instance
+     * @return array
+     */
+    public static function register($namespace, $instance, array $args = array())
+    {
+        static::$instances[static::getKey($namespace, $args)] = $instance;
+        return static::$instances;
+    }
+
+    /**
+     * Removes one or all instances from the storage
+     * @param null|string $namespace
+     * @param array $args
+     * @return array
+     */
+    public static function unregister($namespace = null, array $args = array())
+    {
+        if (isset($namespace)) {
+            unset(static::$instances[static::getKey($namespace, $args)]);
+            return static::$instances;
+        } else {
+            static::$instances = array();
+            return array();
+        }
     }
 
     /**
      * Returns a registered class instance
-     * @param string $class
-     * @return object
+     * @param string $namespace
+     * @param array $args
+     * @return object|bool
      */
-    public static function registered($class)
+    public static function registered($namespace, array $args = array())
     {
-        $key = strtolower(trim($class, '\\'));
+        $key = static::getKey($namespace, $args);
 
-        if (isset(static::$registry[$key])) {
-            return static::$registry[$key];
+        if (isset(static::$instances[$key])) {
+            return static::$instances[$key];
         }
+
+        return false;
+    }
+
+    /**
+     * Makes an object key from its namespace and arguments
+     * @param string $namespace
+     * @param array $args
+     * @return string
+     */
+    protected static function getKey($namespace, array $args = array())
+    {
+        $key = strtolower(trim($namespace, '\\'));
+
+        if (empty($args)) {
+            return $key;
+        }
+
+        sort($args);
+        return $key . md5(serialize($args));
     }
 
 }
