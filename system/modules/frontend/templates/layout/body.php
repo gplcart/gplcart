@@ -25,6 +25,13 @@
             <?php } ?>
           </p>
           <?php if (count($_currencies) > 1) { ?>
+          <?php $has_currency_items = false; ?>
+          <?php foreach ($_currencies as $currency) { ?>
+          <?php if($_currency['code'] !== $currency['code'] && !empty($currency['status'])) { ?>
+          <?php $has_currency_items = true; ?>
+          <?php } ?>
+          <?php } ?>
+          <?php if($has_currency_items) { ?>
           <div class="dropdown pull-left navbar-text">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <?php echo $this->e($_currency['name']); ?> <span class="caret"></span>
@@ -38,7 +45,10 @@
               <?php } ?>
               <?php } ?>
             </ul>
-          </div>
+          </div>          
+          <?php } else { ?>
+          <div class="pull-left navbar-text"><?php echo $this->e($_currency['name']); ?></div>
+          <?php } ?>
           <?php } ?>
           <?php if ($_has_enabled_languages) { ?>
           <div class="dropdown pull-left navbar-text">
