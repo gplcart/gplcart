@@ -11,7 +11,7 @@ namespace gplcart\core;
 
 use gplcart\core\helpers\Url as UrlHelper,
     gplcart\core\helpers\Request as RequestHelper;
-use gplcart\core\exceptions\RouteException;
+use gplcart\core\exceptions\Route as RouteException;
 
 /**
  * Routes incoming requests

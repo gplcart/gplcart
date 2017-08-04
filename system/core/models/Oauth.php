@@ -15,7 +15,7 @@ use gplcart\core\Model,
 use gplcart\core\helpers\Url as UrlHelper,
     gplcart\core\helpers\Curl as CurlHelper,
     gplcart\core\helpers\Session as SessionHelper;
-use gplcart\core\exceptions\OauthAuthorizationException;
+use gplcart\core\exceptions\OauthAuthorization as OauthAuthorizationException;
 
 /**
  * Manages basic behaviors and data related to Oauth 2.0 functionality

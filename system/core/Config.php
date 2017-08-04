@@ -9,7 +9,7 @@
 
 namespace gplcart\core;
 
-use gplcart\core\exceptions\DatabaseException;
+use gplcart\core\exceptions\Database as DatabaseException;
 
 /**
  * Contains methods to work with system configurations

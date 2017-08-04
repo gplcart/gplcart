@@ -11,7 +11,7 @@ namespace gplcart\core;
 
 use PDO;
 use PDOException;
-use gplcart\core\exceptions\DatabaseException;
+use gplcart\core\exceptions\Database as DatabaseException;
 
 /**
  * Provides wrappers for PDO methods

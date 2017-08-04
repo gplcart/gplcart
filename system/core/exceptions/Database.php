@@ -11,7 +11,7 @@ namespace gplcart\core\exceptions;
 
 use gplcart\core\Exception as CoreException;
 
-class ModuleException extends CoreException
+class Database extends CoreException
 {
 
     /**

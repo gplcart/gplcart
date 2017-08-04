@@ -9,7 +9,7 @@
 
 namespace gplcart\core\helpers;
 
-use gplcart\core\exceptions\AuthorizationException;
+use gplcart\core\exceptions\Authorization as AuthorizationException;
 
 /**
  * Provides methods to work with sessions

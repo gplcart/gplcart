@@ -9,9 +9,9 @@
 
 namespace gplcart\core\exceptions;
 
-use gplcart\core\exceptions\AuthorizationException;
+use gplcart\core\Exception as CoreException;
 
-class OauthAuthorizationException extends AuthorizationException
+class Authorization extends CoreException
 {
 
     /**
