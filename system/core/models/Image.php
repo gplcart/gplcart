@@ -103,13 +103,15 @@ class Image extends Model
     }
 
     /**
-     * Returns a string containing an image url
+     * Returns a string containing a thumbnail image url
      * @param array $data
      * @param array $options
      * @return string
      */
     public function getThumb(array $data, array $options)
     {
+        $options += array('placeholder' => true, 'imagestyle' => 3);
+
         if (empty($options['ids'])) {
             return empty($options['placeholder']) ? '' : $this->placeholder($options['imagestyle']);
         }
