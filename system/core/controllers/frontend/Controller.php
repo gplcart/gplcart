@@ -17,6 +17,8 @@ use gplcart\core\Controller as BaseController;
  */
 class Controller extends BaseController
 {
+    
+    use \gplcart\core\traits\Item;
 
     /**
      * Trigger model instance
@@ -358,12 +360,12 @@ class Controller extends BaseController
     {
         foreach ($cart['items'] as &$item) {
             $item['currency'] = $cart['currency'];
-            $this->attachItemThumbCart($item);
-            $this->attachItemPriceFormatted($item);
-            $this->attachItemTotalFormatted($item);
+            $this->attachItemThumbCartTrait($item, $this->settings('image_style_cart', 3), $this->image);
+            $this->attachItemPriceFormattedTrait($item, $this->current_currency, $this->currency, $this->price);
+            $this->attachItemTotalFormattedTrait($item, $this->price);
         }
 
-        $this->attachItemTotalFormatted($cart);
+        $this->attachItemTotalFormattedTrait($cart, $this->price);
         return $cart;
     }
 
@@ -620,243 +622,23 @@ class Controller extends BaseController
 
         foreach ($items as &$item) {
 
-            $this->attachItemUrl($item, $options);
-            $this->attachItemUrlActive($item);
-            $this->attachItemIndentation($item);
-            $this->attachItemThumb($item, $options);
+            $this->attachItemIndentationTrait($item);
+            $this->attachItemUrlTrait($item, $options, $this);
+            $this->attachItemUrlActiveTrait($item, $this->base, $this);
+            $this->attachItemThumbTrait($item, $options, $this->image);
 
             if ($options['entity'] == 'product') {
-                $this->attachItemPriceCalculated($item);
-                $this->attachItemPriceFormatted($item);
-                $this->attachItemInWishlist($item);
-                $this->attachItemInComparison($item);
-                $this->attachItemRenderedProduct($item, $options);
+                $this->attachItemInComparisonTrait($item, $this->compare);
+                $this->attachItemPriceCalculatedTrait($item, $this->product);
+                $this->attachItemInWishlistTrait($item, $this->cart_uid, $this->store_id, $this->wishlist);
+                $this->attachItemPriceFormattedTrait($item, $this->current_currency, $this->currency, $this->price);
+                $this->attachItemRenderedProductTrait($item, $options, $this);
             } else {
-                $this->attachItemRendered($item, array($options['entity'] => $item), $options);
+                $this->attachItemRenderedTrait($item, array($options['entity'] => $item), $options, $this);
             }
         }
 
         return $items;
-    }
-
-    /**
-     * Adds "In comparison" boolean flag
-     * @param array $item
-     */
-    protected function attachItemInComparison(array &$item)
-    {
-        $item['in_comparison'] = $this->compare->exists($item['product_id']);
-    }
-
-    /**
-     * Adds "In wishlist" boolean flag
-     * @param array $item
-     */
-    protected function attachItemInWishlist(&$item)
-    {
-        $conditions = array(
-            'user_id' => $this->cart_uid,
-            'store_id' => $this->store_id,
-            'product_id' => $item['product_id']
-        );
-
-        $item['in_wishlist'] = $this->wishlist->exists($conditions);
-    }
-
-    /**
-     * Add full formatted total amount
-     * @param array $item
-     */
-    protected function attachItemTotalFormatted(array &$item)
-    {
-        $item['total_formatted'] = $this->price->format($item['total'], $item['currency']);
-    }
-
-    /**
-     * Add formatted total amount without currency sign
-     * @param array $item
-     */
-    protected function attachItemTotalFormattedNumber(array &$item)
-    {
-        $item['total_formatted_number'] = $this->price->format($item['total'], $item['currency'], true, false);
-    }
-
-    /**
-     * Add decimat total
-     * @param array $item
-     */
-    protected function attachItemTotalDecimal(array &$item)
-    {
-        $item['total_decimal'] = $this->price->decimal($item['total'], $item['currency']);
-    }
-
-    /**
-     * Add thumb URL
-     * @param array $data
-     * @param array $options
-     * @return array
-     */
-    protected function attachItemThumb(&$data, $options = array())
-    {
-        if (empty($options['imagestyle'])) {
-            return $data;
-        }
-
-        if (!empty($options['path'])) {
-            $data['thumb'] = $this->image->url($options['imagestyle'], $options['path']);
-            return $data;
-        }
-
-        if (!empty($data['path'])) {
-            $data['thumb'] = $this->image->url($options['imagestyle'], $data['path']);
-            return $data;
-        }
-
-        if (empty($data['images'])) {
-            $data['thumb'] = $this->image->getThumb($data, $options);
-            return $data; // Processing single item, exit
-        }
-
-        foreach ($data['images'] as &$image) {
-            $image['url'] = $this->image->urlFromPath($image['path']);
-            $image['thumb'] = $this->image->url($options['imagestyle'], $image['path']);
-        }
-
-        return $data;
-    }
-
-    /**
-     * Add thumb URLs to cart items
-     * @param array $item
-     */
-    protected function attachItemThumbCart(array &$item)
-    {
-        $options = array(
-            'path' => '',
-            'imagestyle' => $this->settings('image_style_cart', 3)
-        );
-
-        if (empty($item['product']['combination_id']) && !empty($item['product']['images'])) {
-            $imagefile = reset($item['product']['images']);
-            $options['path'] = $imagefile['path'];
-        }
-
-        if (!empty($item['product']['file_id'])//
-                && !empty($item['product']['images'][$item['product']['file_id']]['path'])) {
-            $options['path'] = $item['product']['images'][$item['product']['file_id']]['path'];
-        }
-
-        $this->attachItemThumb($item, $options);
-    }
-
-    /**
-     * Add alias URL to an entity
-     * @param array $data
-     * @param array $options
-     */
-    protected function attachItemUrl(array &$data, array $options)
-    {
-        if (isset($options['id_key']) && empty($options['no_item_url'])) {
-            $id = $data[$options['id_key']];
-            $entity = preg_replace('/_id$/', '', $options['id_key']);
-            $data['url'] = empty($data['alias']) ? $this->url("$entity/$id") : $this->url($data['alias']);
-            // URL with preserved query to retain view, sort etc
-            $data['url_query'] = empty($data['alias']) ? $this->url("$entity/$id", $this->query) : $this->url($data['alias'], $this->query);
-        }
-    }
-
-    /**
-     * Adds rendered product item
-     * @param array $product
-     * @param array $options
-     */
-    protected function attachItemRenderedProduct(&$product, $options)
-    {
-        if (empty($options['template_item'])) {
-            return null;
-        }
-
-        $options += array(
-            'buttons' => array(
-                'cart_add', 'wishlist_add', 'compare_add'));
-
-        $data = array(
-            'product' => $product,
-            'buttons' => $options['buttons']
-        );
-
-        $this->attachItemRendered($product, $data, $options);
-    }
-
-    /**
-     * Add rendered item
-     * @param array $item
-     * @param array $data
-     * @param array $options
-     */
-    protected function attachItemRendered(&$item, $data, $options)
-    {
-        if (!empty($options['template_item'])) {
-            $item['rendered'] = $this->render($options['template_item'], $data, true);
-        }
-    }
-
-    /**
-     * Add formatted price
-     * @param array $item
-     */
-    protected function attachItemPriceFormatted(array &$item)
-    {
-        $price = $this->currency->convert($item['price'], $item['currency'], $this->current_currency);
-        $item['price_formatted'] = $this->price->format($price, $this->current_currency);
-
-        if (isset($item['original_price'])) {
-            $price = $this->currency->convert($item['original_price'], $item['currency'], $this->current_currency);
-            $item['original_price_formatted'] = $this->price->format($price, $this->current_currency);
-        }
-    }
-
-    /**
-     * Add calculated product price
-     * @param array $product
-     */
-    protected function attachItemPriceCalculated(array &$product)
-    {
-        $calculated = $this->product->calculate($product);
-
-        if (empty($calculated)) {
-            return null;
-        }
-
-        if ($product['price'] != $calculated['total']) {
-            $product['original_price'] = $product['price'];
-        }
-
-        $product['price'] = $calculated['total'];
-        $product['price_rule_components'] = $calculated['components'];
-    }
-
-    /**
-     * Whether the item URL mathes the current URL
-     * @param array $item
-     */
-    protected function attachItemUrlActive(array &$item)
-    {
-        if (isset($item['url'])) {
-            $path = substr($item['url'], strlen($this->base));
-            $item['active'] = $this->path($path);
-        }
-    }
-
-    /**
-     * Add indentation string indicating item depth (only for categories)
-     * @param array $item
-     */
-    protected function attachItemIndentation(array &$item)
-    {
-        if (isset($item['depth'])) {
-            $item['indentation'] = str_repeat('<span class="indentation"></span>', $item['depth']);
-        }
     }
 
     /**

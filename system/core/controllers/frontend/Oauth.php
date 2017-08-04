@@ -10,7 +10,7 @@
 namespace gplcart\core\controllers\frontend;
 
 use gplcart\core\models\Oauth as OauthModel;
-use gplcart\core\exceptions\OauthAuthorizationException;
+use gplcart\core\exceptions\OauthAuthorization as OauthAuthorizationException;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**

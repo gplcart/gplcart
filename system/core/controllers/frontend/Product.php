@@ -21,7 +21,7 @@ use gplcart\core\controllers\frontend\Controller as FrontendController;
 class Product extends FrontendController
 {
 
-    use \gplcart\core\traits\ProductTrait;
+    use \gplcart\core\traits\Product;
 
     /**
      * Product class model instance
@@ -147,7 +147,7 @@ class Product extends FrontendController
             $this->data_product['images'][] = array(
                 'thumb' => $this->image->placeholder($options['imagestyle']));
         } else {
-            $this->attachItemThumb($this->data_product, $options);
+            $this->attachItemThumbTrait($this->data_product, $options, $this->image);
         }
 
         $html = $this->render('product/images', array('product' => $this->data_product));
@@ -448,11 +448,11 @@ class Product extends FrontendController
 
         $this->unshiftSelectedImageProduct($selected, $product);
 
-        $this->attachItemInWishlist($product);
-        $this->attachItemInComparison($product);
+        $this->attachItemInComparisonTrait($product, $this->compare);
+        $this->attachItemInWishlistTrait($product, $this->cart_uid, $this->store_id, $this->wishlist);
 
-        $this->attachItemPriceCalculated($selected);
-        $this->attachItemPriceFormatted($selected);
+        $this->attachItemPriceCalculatedTrait($selected, $this->product);
+        $this->attachItemPriceFormattedTrait($selected, $this->current_currency, $this->currency, $this->price);
 
         $product['selected_combination'] = $selected;
         $product['total_reviews'] = $this->getTotalReviewsProduct($product);
@@ -512,6 +512,7 @@ class Product extends FrontendController
         $product_ids = $this->product->setViewed($this->data_product['product_id'], $limit, $lifespan);
 
         $current = array_search($this->data_product['product_id'], $product_ids);
+
         unset($product_ids[$current]); // Exclude the current product iD
 
         if (empty($product_ids)) {
