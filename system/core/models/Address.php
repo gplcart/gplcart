@@ -123,31 +123,6 @@ class Address extends Model
      */
     public function getList(array $data = array())
     {
-        list($sql, $replacements) = $this->getListSql($data);
-
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $replacements);
-        }
-
-        $options = array(
-            'index' => 'address_id',
-            'unserialize' => array('data', 'country_format')
-        );
-
-        $results = $this->db->fetchAll($sql, $replacements, $options);
-
-        $list = $this->prepareList($results, $data);
-        $this->hook->attach('address.list', $data, $list, $this);
-        return $list;
-    }
-
-    /**
-     * Returns an array containing SQL and its replacement values for getList() method
-     * @param array $data
-     * @return array
-     */
-    protected function getListSql(array $data)
-    {
         $sql = 'SELECT a.*, CONCAT_WS(" ", a.first_name, a.middle_name, a.last_name) AS full_name,'
                 . ' u.email AS user_email, u.name AS user_name,'
                 . ' ci.city_id, COALESCE(ci.name, a.city_id) AS city_name,'
@@ -166,68 +141,43 @@ class Address extends Model
                 . ' LEFT JOIN user u ON(a.user_id=u.user_id)'
                 . ' WHERE a.address_id > 0';
 
-        $replacements = array();
-        $this->setGetListSqlConditions($replacements, $sql, $data);
-        $this->setGetListSqlSort($sql, $data);
+        $conditions = array();
 
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
-        }
-
-        return array($sql, $replacements);
-    }
-
-    /**
-     * Set SQL query conditions for getList() method
-     * @param array $where
-     * @param string $sql
-     * @param array $data
-     */
-    protected function setGetListSqlConditions(&$where, &$sql, $data)
-    {
         if (isset($data['user_id'])) {
             $sql .= ' AND a.user_id = ?';
-            $where[] = $data['user_id'];
+            $conditions[] = $data['user_id'];
         }
 
         if (isset($data['user_email'])) {
             $sql .= ' AND u.email = ?';
-            $where[] = $data['user_email'];
+            $conditions[] = $data['user_email'];
         }
 
         if (isset($data['full_name'])) {
             $sql .= ' AND CONCAT_WS(" ", a.first_name, a.middle_name, a.last_name) LIKE ?';
-            $where[] = "%{$data['full_name']}%";
+            $conditions[] = "%{$data['full_name']}%";
         }
 
         if (isset($data['address_1'])) {
             $sql .= ' AND a.address_1 LIKE ?';
-            $where[] = "%{$data['address_1']}%";
+            $conditions[] = "%{$data['address_1']}%";
         }
 
         if (isset($data['city_id'])) {
             $sql .= ' AND a.city_id = ?';
-            $where[] = $data['city_id'];
+            $conditions[] = $data['city_id'];
         }
 
         if (isset($data['city_name'])) {
             $sql .= ' AND ci.name LIKE ?';
-            $where[] = "%{$data['city_name']}%";
+            $conditions[] = "%{$data['city_name']}%";
         }
 
         if (isset($data['phone'])) {
             $sql .= ' AND a.phone LIKE ?';
-            $where[] = "%{$data['phone']}%";
+            $conditions[] = "%{$data['phone']}%";
         }
-    }
 
-    /**
-     * Set SQL query sort and order clauses for getList() method
-     * @param string $sql
-     * @param array $data
-     */
-    protected function setGetListSqlSort(&$sql, array $data)
-    {
         $allowed_order = array('asc', 'desc');
 
         $allowed_sort = array(
@@ -246,6 +196,25 @@ class Address extends Model
         } else {
             $sql .= ' ORDER BY a.created ASC';
         }
+
+        if (!empty($data['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        }
+
+        if (!empty($data['count'])) {
+            return (int) $this->db->fetchColumn($sql, $conditions);
+        }
+
+        $options = array(
+            'index' => 'address_id',
+            'unserialize' => array('data', 'country_format')
+        );
+
+        $results = $this->db->fetchAll($sql, $conditions, $options);
+
+        $list = $this->prepareList($results, $data);
+        $this->hook->attach('address.list', $data, $list, $this);
+        return $list;
     }
 
     /**
