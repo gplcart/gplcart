@@ -23,9 +23,13 @@
   </div>
   <?php } ?>
   <div class="col-md-10">
+    <?php if(empty($first['url'])) { ?>
+    <img class="img-responsive" src="<?php echo $this->e($first['thumb']); ?>">
+    <?php } else { ?>
     <a data-gallery="product-images" data-gallery-main-image="true" href="<?php echo $this->e($first['url']); ?>">
       <img class="img-responsive" src="<?php echo $this->e($first['thumb']); ?>" alt="<?php echo $this->e($first['title']); ?>" title="<?php echo $this->e($first['title']); ?>">
     </a>
+    <?php } ?>
   </div>
 </div>
 <?php } ?>
