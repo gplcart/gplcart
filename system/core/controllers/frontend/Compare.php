@@ -19,7 +19,7 @@ use gplcart\core\controllers\frontend\Controller as FrontendController;
 class Compare extends FrontendController
 {
 
-    use \gplcart\core\traits\ProductTrait;
+    use \gplcart\core\traits\Product;
 
     /**
      * Product class model instance

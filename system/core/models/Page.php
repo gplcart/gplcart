@@ -21,8 +21,8 @@ use gplcart\core\models\File as FileModel,
 class Page extends Model
 {
 
-    use \gplcart\core\traits\ImageTrait,
-        \gplcart\core\traits\AliasTrait;
+    use \gplcart\core\traits\Image,
+        \gplcart\core\traits\Alias;
 
     /**
      * Cache instance

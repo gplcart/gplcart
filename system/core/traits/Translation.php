@@ -12,7 +12,7 @@ namespace gplcart\core\traits;
 /**
  * CRUD methods for entity translations
  */
-trait TranslationTrait
+trait Translation
 {
 
     /**

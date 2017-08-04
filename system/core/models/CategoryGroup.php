@@ -18,7 +18,7 @@ use gplcart\core\models\Language as LanguageModel;
 class CategoryGroup extends Model
 {
 
-    use \gplcart\core\traits\TranslationTrait;
+    use \gplcart\core\traits\Translation;
 
     /**
      * Language model instance
@@ -201,10 +201,10 @@ class CategoryGroup extends Model
             return (bool) $result;
         }
 
-        $conditions = array('category_group_id' => $category_group_id);
-        $updated = $this->db->update('category_group', $data, $conditions);
+        $updated = $this->db->update('category_group', $data, array('category_group_id' => $category_group_id));
 
         $data['category_group_id'] = $category_group_id;
+
         $updated += (int) $this->setTranslationTrait($this->db, $data, 'category_group');
 
         $result = $updated > 0;
@@ -232,8 +232,8 @@ class CategoryGroup extends Model
     protected function getDefaultTypes()
     {
         return array(
-            'catalog' => $this->language->text('Catalog'),
-            'brand' => $this->language->text('Brand')
+            'brand' => $this->language->text('Brand'),
+            'catalog' => $this->language->text('Catalog')
         );
     }
 

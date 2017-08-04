@@ -12,7 +12,7 @@ namespace gplcart\core\traits;
 /**
  * Contains controller methods for order components
  */
-trait OrderComponentTrait
+trait OrderComponent
 {
 
     /**

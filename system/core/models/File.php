@@ -22,7 +22,7 @@ use gplcart\core\models\Language as LanguageModel,
 class File extends Model
 {
 
-    use \gplcart\core\traits\TranslationTrait;
+    use \gplcart\core\traits\Translation;
 
     /**
      * Language model instance
@@ -373,7 +373,7 @@ class File extends Model
             $sql .= " WHERE f.file_id IN($placeholders)";
             $params = array_merge($params, $data['file_id']);
         } else {
-            $sql .= ' WHERE f.file_id > 0';
+            $sql .= ' WHERE f.file_id IS NOT NULL';
         }
 
         if (isset($data['title'])) {

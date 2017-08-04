@@ -23,8 +23,8 @@ use gplcart\core\controllers\frontend\Controller as FrontendController;
 class Account extends FrontendController
 {
 
-    use \gplcart\core\traits\OrderTrait;
-    use \gplcart\core\traits\OrderComponentTrait;
+    use \gplcart\core\traits\Order;
+    use \gplcart\core\traits\OrderComponent;
 
     /**
      * Address model instance

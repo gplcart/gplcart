@@ -27,7 +27,7 @@ use gplcart\core\models\Cart as CartModel,
 class Dashboard extends Handler
 {
 
-    use \gplcart\core\traits\OrderTrait;
+    use \gplcart\core\traits\Order;
 
     /**
      * User model instance

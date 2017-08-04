@@ -19,7 +19,7 @@ use gplcart\core\models\Language as LanguageModel;
 class Collection extends Model
 {
 
-    use \gplcart\core\traits\TranslationTrait;
+    use \gplcart\core\traits\Translation;
 
     /**
      * Language model instance

@@ -19,7 +19,7 @@ use gplcart\core\helpers\Graph as GraphHelper;
 class Library
 {
 
-    use \gplcart\core\traits\DependencyTrait;
+    use \gplcart\core\traits\Dependency;
 
     /**
      * Cache instance
