@@ -60,6 +60,7 @@ class Category extends FrontendController
     {
         $this->setCategory($category_id);
         $this->setTitleIndexCategory();
+        $this->setBreadcrumbIndexCategory();
 
         $this->setHtmlFilterIndexCategory();
 
@@ -81,6 +82,14 @@ class Category extends FrontendController
 
         $this->setMetaIndexCategory();
         $this->outputIndexCategory();
+    }
+
+    /**
+     * Sets breadcrumbs on the category page
+     */
+    protected function setBreadcrumbIndexCategory()
+    {
+        $this->setBreadcrumbHome();
     }
 
     /**

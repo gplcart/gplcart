@@ -336,12 +336,9 @@ class Product extends FrontendController
      */
     protected function setBreadcrumbIndexProduct()
     {
-        $breadcrumbs = array();
+        $this->setBreadcrumbHome();
 
-        $breadcrumbs[] = array(
-            'url' => $this->url('/'),
-            'text' => $this->text('Home')
-        );
+        $breadcrumbs = array();
 
         $categories = $this->getCategorytBreadcrumbsProduct($this->data_product['category_id']);
         $this->setBreadcrumbs(array_merge($breadcrumbs, $categories));

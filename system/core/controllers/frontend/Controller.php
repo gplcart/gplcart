@@ -865,4 +865,17 @@ class Controller extends BaseController
         }
     }
 
+    /**
+     * Sets a breadcrumb item that points to home page
+     */
+    protected function setBreadcrumbHome()
+    {
+        $breadcrumb = array(
+            'url' => $this->url('/'),
+            'text' => $this->text('Home')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
+    }
+
 }

@@ -109,6 +109,7 @@ class User extends FrontendController
         $this->filterSubmitted(array('email', 'password'));
 
         $this->validateComponent('user_login');
+
         return !$this->hasErrors(false);
     }
 
@@ -125,12 +126,7 @@ class User extends FrontendController
      */
     protected function setBreadcrumbEditLoginUser()
     {
-        $breadcrumb = array(
-            'text' => $this->text('Home'),
-            'url' => $this->url('/')
-        );
-
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbHome();
     }
 
     /**
@@ -158,7 +154,7 @@ class User extends FrontendController
     }
 
     /**
-     * Controls acccess to the register user page
+     * Controls access to the register user page
      */
     protected function controlAccessRegisterUser()
     {
@@ -222,12 +218,7 @@ class User extends FrontendController
      */
     protected function setBreadcrumbEditRegisterUser()
     {
-        $breadcrumb = array(
-            'url' => $this->url('/'),
-            'text' => $this->text('Home')
-        );
-
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbHome();
     }
 
     /**
@@ -357,12 +348,7 @@ class User extends FrontendController
      */
     protected function setBreadcrumbEditResetPasswordUser()
     {
-        $breadcrumb = array(
-            'text' => $this->text('Home'),
-            'url' => $this->url('/')
-        );
-
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbHome();
     }
 
     /**

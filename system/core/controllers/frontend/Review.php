@@ -127,19 +127,14 @@ class Review extends FrontendController
      */
     protected function setBreadcrumbEditReview()
     {
-        $breadcrumbs = array();
+        $this->setBreadcrumbHome();
 
-        $breadcrumbs[] = array(
-            'url' => $this->url('/'),
-            'text' => $this->text('Shop')
-        );
-
-        $breadcrumbs[] = array(
+        $breadcrumb = array(
             'url' => $this->url("product/{$this->data_product['product_id']}"),
             'text' => $this->data_product['title']
         );
 
-        $this->setBreadcrumbs($breadcrumbs);
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -218,6 +213,7 @@ class Review extends FrontendController
     protected function validateRatingReview()
     {
         $this->validateComponent('rating');
+
         return !$this->isError();
     }
 

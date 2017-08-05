@@ -136,8 +136,7 @@ class Page extends FrontendController
      */
     protected function setBreadcrumbIndexPage()
     {
-        $breadcrumb = array('url' => $this->url('/'), 'text' => $this->text('Home'));
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbHome();
     }
 
     /**
