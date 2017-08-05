@@ -42,7 +42,7 @@ class Install extends BaseController
     }
 
     /**
-     * Dispays the installation page
+     * Displays the installation page
      */
     public function editInstall()
     {
