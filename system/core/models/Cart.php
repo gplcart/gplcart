@@ -515,7 +515,7 @@ class Cart extends Model
     }
 
     /**
-     * Performs all needed tastks when customer logged in during checkout
+     * Performs all needed tasks when customer logged in during checkout
      * @param array $user
      * @param array $cart
      * @return array
@@ -530,14 +530,13 @@ class Cart extends Model
         }
 
         if (!$this->config->get('cart_login_merge', 0)) {
-            $items = $this->getList(array('user_id' => $user['user_id'], 'order_id' => 0));
-            foreach ((array) $items as $item) {
-                $this->delete($item['cart_id']);
-            }
+            $this->clear($user['user_id']);
         }
 
-        foreach ($cart['items'] as $item) {
-            $this->update($item['cart_id'], array('user_id' => $user['user_id']));
+        if (!empty($cart['items'])) {
+            foreach ($cart['items'] as $item) {
+                $this->update($item['cart_id'], array('user_id' => $user['user_id']));
+            }
         }
 
         $this->deleteCookie();
@@ -583,6 +582,28 @@ class Cart extends Model
     }
 
     /**
+     * Delete all non-referenced cart items for the user ID
+     * @param string $user_id
+     * @return boolean
+     */
+    public function clear($user_id)
+    {
+        $result = null;
+        $this->hook->attach('cart.clear.before', $user_id, $result, $this);
+
+        if (isset($result)) {
+            return (bool) $result;
+        }
+
+
+        $sql = 'DELETE FROM cart WHERE user_id=? AND order_id = 0';
+        $result = (bool) $this->db->run($sql, array($user_id))->rowCount();
+
+        $this->hook->attach('cart.clear.after', $user_id, $result, $this);
+        return (bool) $result;
+    }
+
+    /**
      * Whether a cart item can be deleted
      * @param integer $cart_id
      * @return boolean
@@ -591,7 +612,7 @@ class Cart extends Model
     {
         $sql = 'SELECT order_id FROM cart WHERE cart_id=?';
         $result = $this->db->fetchColumn($sql, array($cart_id));
-        return isset($result) && empty($result);
+        return empty($result);
     }
 
     /**
