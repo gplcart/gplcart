@@ -151,8 +151,8 @@ class Ajax extends FrontendController
         $response = $this->sku->selectCombination($product, $field_value_ids);
         $response += $product;
 
-        $this->attachItemPriceCalculatedTrait($response, $this->product);
-        $this->attachItemPriceFormattedTrait($response, $this->current_currency, $this->currency, $this->price);
+        $this->setItemPriceCalculatedTrait($response, $this->product);
+        $this->setItemPriceFormattedTrait($response, $this->current_currency, $this->currency, $this->price);
 
         return $response;
     }

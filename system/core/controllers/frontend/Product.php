@@ -107,12 +107,14 @@ class Product extends FrontendController
     protected function setDataSummaryIndexProduct()
     {
         $summary = '';
+
         if (!empty($this->data_product['description'])) {
             list($summary, $body) = $this->explodeText($this->data_product['description']);
             if ($body !== '') {
                 $summary = strip_tags($summary);
             }
         }
+
         $this->setData('summary', $summary);
     }
 
@@ -147,7 +149,7 @@ class Product extends FrontendController
             $this->data_product['images'][] = array(
                 'thumb' => $this->image->placeholder($options['imagestyle']));
         } else {
-            $this->attachItemThumbTrait($this->data_product, $options, $this->image);
+            $this->setItemThumbTrait($this->data_product, $options, $this->image);
         }
 
         $html = $this->render('product/images', array('product' => $this->data_product));
@@ -170,6 +172,7 @@ class Product extends FrontendController
     protected function setDataDescriptionIndexProduct()
     {
         $description = $this->data_product['description'];
+
         if (!empty($description)) {
             $exploded = $this->explodeText($description);
             $body = end($exploded);
@@ -448,16 +451,16 @@ class Product extends FrontendController
 
         $this->unshiftSelectedImageProduct($selected, $product);
 
-        $this->attachItemInComparisonTrait($product, $this->compare);
-        $this->attachItemInWishlistTrait($product, $this->cart_uid, $this->store_id, $this->wishlist);
+        $this->setItemInComparisonTrait($product, $this->compare);
+        $this->setItemInWishlistTrait($product, $this->cart_uid, $this->store_id, $this->wishlist);
 
-        $this->attachItemPriceCalculatedTrait($selected, $this->product);
-        $this->attachItemPriceFormattedTrait($selected, $this->current_currency, $this->currency, $this->price);
+        $this->setItemPriceCalculatedTrait($selected, $this->product);
+        $this->setItemPriceFormattedTrait($selected, $this->current_currency, $this->currency, $this->price);
 
         $product['selected_combination'] = $selected;
         $product['total_reviews'] = $this->getTotalReviewsProduct($product);
 
-        $this->attachProductFieldsTrait($product, $this->product_class, $this);
+        $this->attachProductFieldsTrait($product, $this->product_class, $this->image, $this);
         return $product;
     }
 

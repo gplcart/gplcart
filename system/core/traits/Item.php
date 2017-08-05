@@ -20,7 +20,7 @@ trait Item
      * @param array $item
      * @param \gplcart\core\models\Compare $compare_model
      */
-    protected function attachItemInComparisonTrait(array &$item,
+    protected function setItemInComparisonTrait(array &$item,
             \gplcart\core\models\Compare $compare_model)
     {
         $item['in_comparison'] = $compare_model->exists($item['product_id']);
@@ -33,7 +33,7 @@ trait Item
      * @param integer $store_id
      * @param \gplcart\core\models\Wishlist $wishlist_model
      */
-    protected function attachItemInWishlistTrait(&$item, $cart_uid, $store_id,
+    protected function setItemInWishlistTrait(&$item, $cart_uid, $store_id,
             \gplcart\core\models\Wishlist $wishlist_model)
     {
         $conditions = array(
@@ -50,7 +50,7 @@ trait Item
      * @param array $item
      * @param \gplcart\core\models\Price $price_model
      */
-    protected function attachItemTotalFormattedTrait(array &$item,
+    protected function setItemTotalFormattedTrait(array &$item,
             \gplcart\core\models\Price $price_model)
     {
         $item['total_formatted'] = $price_model->format($item['total'], $item['currency']);
@@ -61,7 +61,7 @@ trait Item
      * @param array $item
      * @param \gplcart\core\models\Price $price_model
      */
-    protected function attachItemTotalFormattedNumberTrait(array &$item,
+    protected function setItemTotalFormattedNumberTrait(array &$item,
             \gplcart\core\models\Price $price_model)
     {
         $item['total_formatted_number'] = $price_model->format($item['total'], $item['currency'], true, false);
@@ -74,7 +74,7 @@ trait Item
      * @param \gplcart\core\models\Image $image_model
      * @return array
      */
-    protected function attachItemThumbTrait(array &$data, array $options,
+    protected function setItemThumbTrait(array &$data, array $options,
             \gplcart\core\models\Image $image_model)
     {
         if (empty($options['imagestyle'])) {
@@ -107,8 +107,10 @@ trait Item
     /**
      * Add thumb URLs to the cart items
      * @param array $item
+     * @param integer $imagestyle
+     * @param \gplcart\core\models\Image $image_model
      */
-    protected function attachItemThumbCartTrait(array &$item, $imagestyle,
+    protected function setItemThumbCartTrait(array &$item, $imagestyle,
             \gplcart\core\models\Image $image_model)
     {
         $options = array(
@@ -128,7 +130,7 @@ trait Item
         if (empty($options['path'])) {
             $item['thumb'] = $image_model->placeholder($options['imagestyle']);
         } else {
-            $this->attachItemThumbTrait($item, $options, $image_model);
+            $this->setItemThumbTrait($item, $options, $image_model);
         }
     }
 
@@ -138,7 +140,7 @@ trait Item
      * @param array $options
      * @param \gplcart\core\Controller $controller
      */
-    protected function attachItemUrlTrait(array &$data, array $options,
+    protected function setItemUrlTrait(array &$data, array $options,
             \gplcart\core\Controller $controller)
     {
         if (isset($options['id_key']) && empty($options['no_item_url'])) {
@@ -159,8 +161,8 @@ trait Item
      * @param array $options
      * @param \gplcart\core\Controller $controller
      */
-    protected function attachItemRenderedProductTrait(array &$item,
-            array $options, \gplcart\core\Controller $controller)
+    protected function setItemRenderedProductTrait(array &$item, array $options,
+            \gplcart\core\Controller $controller)
     {
         if (empty($options['template_item'])) {
             return null;
@@ -175,7 +177,7 @@ trait Item
             'buttons' => $options['buttons']
         );
 
-        $this->attachItemRenderedTrait($item, $data, $options, $controller);
+        $this->setItemRenderedTrait($item, $data, $options, $controller);
     }
 
     /**
@@ -185,7 +187,7 @@ trait Item
      * @param array $options
      * @param \gplcart\core\Controller $controller
      */
-    protected function attachItemRenderedTrait(array &$item, array $data,
+    protected function setItemRenderedTrait(array &$item, array $data,
             array $options, \gplcart\core\Controller $controller)
     {
         if (!empty($options['template_item'])) {
@@ -200,7 +202,7 @@ trait Item
      * @param \gplcart\core\models\Currency $currency_model
      * @param \gplcart\core\models\Price $price_model
      */
-    protected function attachItemPriceFormattedTrait(array &$item, $currency,
+    protected function setItemPriceFormattedTrait(array &$item, $currency,
             \gplcart\core\models\Currency $currency_model,
             \gplcart\core\models\Price $price_model)
     {
@@ -218,7 +220,7 @@ trait Item
      * @param array $item
      * @param \gplcart\core\models\Product $product_model
      */
-    protected function attachItemPriceCalculatedTrait(array &$item,
+    protected function setItemPriceCalculatedTrait(array &$item,
             \gplcart\core\models\Product $product_model)
     {
         $calculated = $product_model->calculate($item);
@@ -241,7 +243,7 @@ trait Item
      * @param string $base
      * @param \gplcart\core\Controller $controller
      */
-    protected function attachItemUrlActiveTrait(array &$item, $base,
+    protected function setItemUrlActiveTrait(array &$item, $base,
             \gplcart\core\Controller $controller)
     {
         if (isset($item['url'])) {
@@ -254,7 +256,7 @@ trait Item
      * Add indentation string indicating item's depth (only for categories)
      * @param array $item
      */
-    protected function attachItemIndentationTrait(array &$item)
+    protected function setItemIndentationTrait(array &$item)
     {
         if (isset($item['depth'])) {
             $item['indentation'] = str_repeat('<span class="indentation"></span>', $item['depth']);
