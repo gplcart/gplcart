@@ -170,7 +170,7 @@ class Checkout extends FrontendController
     }
 
     /**
-     * Displays the checkout page when admin adds a new order for a user
+     * Displays the checkout page when admin adds a new order for a customer
      * @param integer $user_id
      */
     public function createOrderCheckout($user_id)
@@ -197,6 +197,8 @@ class Checkout extends FrontendController
      */
     protected function setAdminModeCheckout($mode)
     {
+        $this->admin = null;
+
         if ($this->access('order_add')) {
             if ($mode === 'add') {
                 $this->admin = 'add';
@@ -249,7 +251,7 @@ class Checkout extends FrontendController
     }
 
     /**
-     * Loads an order from the database
+     * Load and set an order from the database
      * @param integer $order_id
      * @return array
      */
@@ -273,7 +275,7 @@ class Checkout extends FrontendController
     }
 
     /**
-     * Loads the current cart content
+     * Load and set the current cart content
      * @return array
      */
     protected function setCartContentCheckout()
@@ -292,17 +294,14 @@ class Checkout extends FrontendController
      */
     protected function setTitleEditCheckout()
     {
-        $text = $this->text('Checkout');
-
-        switch ($this->admin) {
-            case 'clone':
-                $vars = array('@num' => $this->data_order['order_id']);
-                $text = $this->text('Cloning order #@num', $vars);
-                break;
-            case 'add':
-                $vars = array('%name' => $this->data_user['name']);
-                $text = $this->text('Add order for user %name', $vars);
-                break;
+        if ($this->admin === 'clone') {
+            $vars = array('@num' => $this->data_order['order_id']);
+            $text = $this->text('Cloning order #@num', $vars);
+        } else if ($this->admin === 'add') {
+            $vars = array('%name' => $this->data_user['name']);
+            $text = $this->text('Add order for user %name', $vars);
+        } else {
+            $text = $this->text('Checkout');
         }
 
         $this->setTitle($text);
@@ -423,6 +422,45 @@ class Checkout extends FrontendController
             return null;
         }
 
+        $this->data_form['cart'] = $this->prepareCart($this->data_cart);
+
+        $this->setFormDataAddressCheckout();
+
+        if (empty($this->data_form['addresses'])) {
+            $this->show_shipping_address_form = true;
+        }
+
+        $this->data_form['default_payment_method'] = false;
+        $this->data_form['default_shipping_method'] = false;
+
+        $this->data_form['has_payment_address'] = $this->has_payment_address;
+        $this->data_form['get_payment_methods'] = $this->isPosted('get_payment_methods');
+        $this->data_form['get_shipping_methods'] = $this->isPosted('get_shipping_methods');
+
+        $this->data_form['show_login_form'] = $this->show_login_form;
+        $this->data_form['show_payment_address_form'] = $this->show_payment_address_form;
+        $this->data_form['show_shipping_address_form'] = $this->show_shipping_address_form;
+        $this->data_form['show_shipping_methods'] = !$this->data_form['has_dynamic_shipping_methods'];
+
+        $this->data_form['context_templates'] = $this->getTemplatesCheckout('context', $this->getSubmitted());
+
+        $this->setFormDataDimensionsCheckout();
+
+        $submitted = array('order' => $this->getSubmitted());
+        $this->data_form = gplcart_array_merge($this->data_form, $submitted);
+
+        $this->setFormDataRequestServicesCheckout('payment');
+        $this->setFormDataRequestServicesCheckout('shipping');
+
+        $this->setFormDataCalculatedCheckout();
+        $this->setFormDataPanesCheckout();
+    }
+
+    /**
+     * Sets the checkout address variables
+     */
+    protected function setFormDataAddressCheckout()
+    {
         $countries = $this->country->getNames(true);
         $default_country = count($countries) == 1 ? key($countries) : '';
 
@@ -438,24 +476,7 @@ class Checkout extends FrontendController
 
         $this->data_form['address'] = $address;
         $this->data_form['countries'] = $countries;
-        $this->data_form['cart'] = $this->prepareCart($this->data_cart);
         $this->data_form['addresses'] = $this->address->getTranslatedList($this->order_user_id);
-
-        if (empty($this->data_form['addresses'])) {
-            $this->show_shipping_address_form = true;
-        }
-
-        $this->data_form['default_payment_method'] = false;
-        $this->data_form['default_shipping_method'] = false;
-
-        $this->data_form['has_payment_address'] = $this->has_payment_address;
-        $this->data_form['get_shipping_methods'] = $this->isPosted('get_shipping_methods');
-
-        $this->data_form['show_login_form'] = $this->show_login_form;
-        $this->data_form['show_payment_address_form'] = $this->show_payment_address_form;
-        $this->data_form['show_shipping_address_form'] = $this->show_shipping_address_form;
-        $this->data_form['show_shipping_methods'] = !$this->data_form['has_dynamic_shipping_methods'];
-        $this->data_form['context_templates'] = $this->getTemplatesCheckout('context', $this->getSubmitted());
 
         $excess = $this->address->getExcess($this->order_user_id, $this->data_form['addresses']);
 
@@ -469,27 +490,42 @@ class Checkout extends FrontendController
                 unset($this->data_form['format'][$type]['state_id']);
             }
         }
+    }
 
+    /**
+     * Sets boolean flags to request dynamic shipping/payment methods
+     * @param string $type
+     */
+    protected function setFormDataRequestServicesCheckout($type)
+    {
+        $this->data_form["request_{$type}_methods"] = false;
+
+        if (!empty($this->data_form["get_{$type}_methods"]) || !empty($this->data_form['order'][$type])) {
+            $this->data_form["show_{$type}_methods"] = true;
+            $this->data_form["request_{$type}_methods"] = true;
+        }
+    }
+
+    /**
+     * Calculates and sets order dimensions
+     */
+    protected function setFormDataDimensionsCheckout()
+    {
         $this->data_form['order']['volume'] = $this->order->getVolume($this->data_form['order'], $this->data_form['cart']);
         $this->data_form['order']['weight'] = $this->order->getWeight($this->data_form['order'], $this->data_form['cart']);
+    }
 
-        $submitted = array('order' => $this->getSubmitted());
-        $this->data_form = gplcart_array_merge($this->data_form, $submitted);
-
-        $this->data_form['request_shipping_methods'] = false;
-        if ($this->data_form['get_shipping_methods'] || !empty($this->data_form['order']['shipping'])) {
-            $this->data_form['show_shipping_methods'] = true;
-            $this->data_form['request_shipping_methods'] = true;
-        }
-
+    /**
+     * Calculates order total and price components
+     */
+    protected function setFormDataCalculatedCheckout()
+    {
         $result = $this->order->calculate($this->data_form);
 
         $this->data_form['total'] = $result['total'];
         $this->data_form['total_decimal'] = $result['total_decimal'];
         $this->data_form['total_formatted'] = $result['total_formatted'];
         $this->data_form['price_components'] = $this->prepareOrderComponentsCheckout($result);
-
-        $this->setFormDataPanesOrder();
     }
 
     /**
@@ -511,7 +547,7 @@ class Checkout extends FrontendController
     /**
      * Sets rendered panes
      */
-    protected function setFormDataPanesOrder()
+    protected function setFormDataPanesCheckout()
     {
         $panes = array('login', 'review', 'payment_methods',
             'shipping_methods', 'shipping_address', 'payment_address');
@@ -785,7 +821,6 @@ class Checkout extends FrontendController
 
     /**
      * Saves an order to the database
-     * @return null
      */
     protected function submitOrderCheckout()
     {
@@ -846,6 +881,10 @@ class Checkout extends FrontendController
         $this->setSubmitted('user_id', $this->order_user_id);
         $this->setSubmitted('creator', $this->admin_user_id);
 
+        if ($this->admin) {
+            $this->setSubmitted('status', $this->order->getStatusInitial());
+        }
+
         return $this->validateComponent('order');
     }
 
@@ -871,32 +910,31 @@ class Checkout extends FrontendController
     {
         $submitted = $this->getSubmittedOrderCheckout();
         $result = $this->order->submit($submitted, array('admin' => $this->admin));
-        $this->finishOrderCheckout($result, $submitted);
+        $this->finishOrderCheckout($result);
     }
 
     /**
      * Performs final tasks after an order has been created
      * @param array $result
-     * @param array $submitted
      */
-    protected function finishOrderCheckout(array $result, array $submitted)
+    protected function finishOrderCheckout(array $result)
     {
-        if (empty($this->admin)) {
-            $this->redirect($result['redirect'], $result['message'], $result['severity']);
+        if ($this->admin === 'add') {
+            $this->finishAddOrderCheckout($result);
+        } else if ($this->admin === 'clone') {
+            $this->finishCloneOrderCheckout($result);
         }
 
-        $this->finishAddOrderCheckout($result);
-        $this->finishCloneOrderCheckout($result, $submitted);
+        $this->redirect($result['redirect'], $result['message'], $result['severity']);
     }
 
     /**
      * Performs final tasks after an order has been added for a user
      * @param array $result
-     * @return null
      */
     protected function finishAddOrderCheckout(array $result)
     {
-        if ($this->admin !== 'add') {
+        if (empty($result['order']['order_id'])) {
             return null;
         }
 
@@ -913,12 +951,10 @@ class Checkout extends FrontendController
     /**
      * Performs final tasks after an order has been cloned
      * @param array $result
-     * @param array $submitted
-     * @return null
      */
-    protected function finishCloneOrderCheckout(array $result, array $submitted)
+    protected function finishCloneOrderCheckout(array $result)
     {
-        if ($this->admin !== 'clone') {
+        if (empty($result['order']['order_id'])) {
             return null;
         }
 
@@ -933,7 +969,7 @@ class Checkout extends FrontendController
         $vars = array(
             '@num' => $this->data_order['order_id'],
             '@url' => $this->url("admin/sale/order/{$this->order_id}"),
-            '@status' => $this->order->getStatusName($submitted['status'])
+            '@status' => $this->order->getStatusName($result['order']['status'])
         );
 
         $message = $this->text('Order has been cloned from order <a href="@url">@num</a>. Order status: @status', $vars);
@@ -947,9 +983,7 @@ class Checkout extends FrontendController
     protected function getSubmittedOrderCheckout()
     {
         $submitted = $this->getSubmitted();
-
         $submitted += $this->data_form['order'];
-
         $submitted['cart'] = $this->data_cart;
 
         $submitted['data']['user'] = array(
@@ -961,6 +995,7 @@ class Checkout extends FrontendController
             return $submitted;
         }
 
+        // Convert decimal prices from inputs in admin mode
         $submitted['total'] = $this->price->amount($submitted['total'], $submitted['currency']);
 
         if (empty($submitted['data']['components'])) {
@@ -1067,13 +1102,10 @@ class Checkout extends FrontendController
                 continue;
             }
 
-            switch ($type) {
-                case 'shipping':
-                    $method = $this->shipping->get($order[$type]);
-                    break;
-                case 'payment':
-                    $method = $this->payment->get($order[$type]);
-                    break;
+            if ($type === 'shipping') {
+                $method = $this->shipping->get($order[$type]);
+            } else if ($type === 'payment') {
+                $method = $this->payment->get($order[$type]);
             }
 
             if (empty($method['status']) || empty($method['template'][$name])) {
@@ -1134,16 +1166,11 @@ class Checkout extends FrontendController
     }
 
     /**
-     * Sets breadcrumbs on the complete order page
+     * Sets bread crumb on the complete order page
      */
     protected function setBreadcrumbCompleteCheckout()
     {
-        $breadcrumb = array(
-            'url' => $this->url('/'),
-            'text' => $this->text('Home')
-        );
-
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbHome();
     }
 
     /**
