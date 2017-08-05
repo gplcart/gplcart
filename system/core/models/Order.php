@@ -443,13 +443,6 @@ class Order extends Model
 
         $order = $this->get($order_id);
 
-        if (empty($data['order_id'])) {
-            $this->setPriceRule($order);
-            $this->updateCart($order, $data['cart']);
-        } else {
-            $this->cloneCart($order, $data['cart']);
-        }
-
         $result = array(
             'order' => $order,
             'severity' => 'success',
@@ -458,9 +451,15 @@ class Order extends Model
         );
 
         if (empty($options['admin'])) {
-            $this->setNotificationCreated($order);
+
+            $this->setPriceRules($order);
+            $this->updateCart($order, $data['cart']);
+            $this->setNotificationCreatedByCustomer($order);
+
             $result['message'] = '';
             $result['redirect'] = "checkout/complete/$order_id";
+        } else {
+            $this->cloneCart($order, $data['cart']);
         }
 
         $this->hook->attach('order.submit.after', $data, $options, $result, $this);
@@ -475,10 +474,12 @@ class Order extends Model
     protected function cloneCart(array $order, array $cart)
     {
         foreach ($cart['items'] as $item) {
+            $cart_id = $item['cart_id'];
             unset($item['cart_id']);
             $item['user_id'] = $order['user_id'];
             $item['order_id'] = $order['order_id'];
             $this->cart->add($item);
+            $this->cart->delete($cart_id);
         }
     }
 
@@ -507,7 +508,7 @@ class Order extends Model
      * Sets price rules after the order was created
      * @param array $order
      */
-    protected function setPriceRule(array $order)
+    protected function setPriceRules(array $order)
     {
         foreach (array_keys($order['data']['components']) as $component_id) {
 
@@ -528,7 +529,7 @@ class Order extends Model
      * @param array $order
      * @return boolean
      */
-    public function setNotificationCreated(array $order)
+    public function setNotificationCreatedByCustomer(array $order)
     {
         $this->mail->set('order_created_admin', array($order));
 
@@ -752,7 +753,7 @@ class Order extends Model
 
     /**
      * Calculates order totals
-     * @staticvar int $total
+     * @staticvar integer $total
      * @param array $data
      * @return array
      */
