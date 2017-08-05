@@ -67,7 +67,7 @@ class Currency extends BackendController
      */
     protected function setBreadcrumbListCurrency()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
     }
 
     /**
@@ -222,7 +222,7 @@ class Currency extends BackendController
      */
     protected function setBreadcrumbEditCurrency()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
 
         $breadcrumb = array(
             'url' => $this->url('admin/settings/currency'),

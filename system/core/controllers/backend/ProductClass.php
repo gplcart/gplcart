@@ -146,7 +146,7 @@ class ProductClass extends BackendController
      */
     protected function setBreadcrumbListProductClass()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
     }
 
     /**
@@ -301,7 +301,7 @@ class ProductClass extends BackendController
      */
     protected function setBreadcrumbEditProductClass()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
 
         $breadcrumb = array(
             'text' => $this->text('Product classes'),
@@ -437,7 +437,7 @@ class ProductClass extends BackendController
      */
     protected function setBreadcrumbFieldsProductClass()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
 
         $breadcrumb = array(
             'text' => $this->text('Product classes'),
@@ -530,7 +530,7 @@ class ProductClass extends BackendController
      */
     protected function setBreadcrumbEditFieldProductClass()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
 
         $breadcrumbs = array();
 

@@ -165,7 +165,7 @@ class User extends BackendController
      */
     protected function setBreadcrumbListUser()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
     }
 
     /**
@@ -339,7 +339,7 @@ class User extends BackendController
      */
     protected function setBreadcrumbEditUser()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
 
         $breadcrumb = array(
             'text' => $this->text('Users'),

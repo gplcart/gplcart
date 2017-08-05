@@ -140,7 +140,7 @@ class Dashboard extends BackendController
      */
     protected function setBreadcrumbEditDashboard()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
     }
 
     /**

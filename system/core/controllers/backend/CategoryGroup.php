@@ -100,7 +100,7 @@ class CategoryGroup extends BackendController
      */
     protected function setBreadcrumbListCategoryGroup()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
     }
 
     /**
@@ -255,7 +255,7 @@ class CategoryGroup extends BackendController
      */
     protected function setBreadcrumbEditCategoryGroup()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
 
         $breadcrumb = array(
             'url' => $this->url('admin/content/category-group'),

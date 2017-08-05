@@ -156,7 +156,7 @@ class Store extends BackendController
      */
     protected function setBreadcrumbListStore()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
     }
 
     /**
@@ -411,7 +411,7 @@ class Store extends BackendController
      */
     protected function setBreadcrumbEditStore()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
 
         $breadcrumb = array(
             'url' => $this->url('admin/settings/store'),

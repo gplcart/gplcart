@@ -67,7 +67,7 @@ class Section extends BackendController
      */
     protected function setBreadcrumbListSection()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
     }
 
     /**

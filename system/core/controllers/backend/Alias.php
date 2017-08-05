@@ -127,7 +127,7 @@ class Alias extends BackendController
      */
     protected function setBreadcrumbListAlias()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
     }
 
     /**

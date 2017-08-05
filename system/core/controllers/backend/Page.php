@@ -177,7 +177,7 @@ class Page extends BackendController
      */
     protected function setBreadcrumbListPage()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
     }
 
     /**
@@ -363,7 +363,7 @@ class Page extends BackendController
      */
     protected function setBreadcrumbEditPage()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
 
         $breadcrumb = array(
             'text' => $this->text('Pages'),

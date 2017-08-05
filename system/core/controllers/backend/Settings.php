@@ -130,7 +130,7 @@ class Settings extends BackendController
      */
     protected function setBreadcrumbEditSettings()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
     }
 
     /**

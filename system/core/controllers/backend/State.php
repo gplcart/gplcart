@@ -192,7 +192,7 @@ class State extends BackendController
      */
     protected function setBreadcrumbListState()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
 
         $breadcrumb = array(
             'url' => $this->url('admin/settings/country'),
@@ -358,7 +358,7 @@ class State extends BackendController
      */
     protected function setBreadcrumbEditState()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
 
         $breadcrumbs = array();
 

@@ -135,7 +135,7 @@ class Transaction extends BackendController
      */
     protected function setBreadcrumbListTransaction()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
     }
 
     /**

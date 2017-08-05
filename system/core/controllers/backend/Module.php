@@ -287,7 +287,7 @@ class Module extends BackendController
      */
     protected function setBreadcrumbListModule()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
     }
 
     /**

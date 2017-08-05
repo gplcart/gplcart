@@ -115,7 +115,7 @@ class Cart extends BackendController
      */
     protected function setBreadcrumbListCart()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
     }
 
     /**

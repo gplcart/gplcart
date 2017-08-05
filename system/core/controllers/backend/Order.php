@@ -219,8 +219,7 @@ class Order extends BackendController
         $log = array(
             'text' => $text,
             'user_id' => $this->uid,
-            'order_id' => $this->data_order['order_id'],
-            'data' => array('notify' => $submitted['notify'])
+            'order_id' => $this->data_order['order_id']
         );
 
         return (bool) $this->order->addLog($log);
@@ -252,11 +251,31 @@ class Order extends BackendController
         $this->controlAccess('order_edit');
         $this->controlAccess('order_add');
 
+        $this->createTempCartOrder();
+
         $update = array('status' => $this->order->getStatusCanceled());
         $this->order->update($this->data_order['order_id'], $update);
+
         $this->logUpdateStatusOrder($update);
 
         $this->redirect("checkout/clone/{$this->data_order['order_id']}");
+    }
+
+    /**
+     * Creates temporary cart for the current admin
+     */
+    protected function createTempCartOrder()
+    {
+        // Remove all previous cart items
+        $this->cart->clear($this->uid);
+
+        // Copy order's cart items
+        foreach ($this->data_order['cart'] as $item) {
+            unset($item['cart_id']);
+            $item['user_id'] = $this->uid;
+            $item['order_id'] = 0;
+            $this->cart->add($item);
+        }
     }
 
     /**
@@ -307,11 +326,11 @@ class Order extends BackendController
     }
 
     /**
-     * Sets breadcrumbs on the order overview page
+     * Sets bread crumbs on the order overview page
      */
     protected function setBreadcrumbIndexOrder()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
 
         $breadcrumb = array(
             'text' => $this->text('Orders'),
@@ -563,7 +582,7 @@ class Order extends BackendController
      */
     protected function setBreadcrumbListOrder()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
     }
 
     /**

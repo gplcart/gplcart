@@ -137,7 +137,7 @@ class Zone extends BackendController
      */
     protected function setBreadcrumbListZone()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
     }
 
     /**
@@ -291,7 +291,7 @@ class Zone extends BackendController
      */
     protected function setBreadcrumbEditZone()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
 
         $breadcrumb = array(
             'text' => $this->text('Zones'),

@@ -81,7 +81,7 @@ class Library extends BackendController
      */
     protected function setBreadcrumbListLibrary()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
     }
 
     /**

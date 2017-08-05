@@ -81,7 +81,7 @@ class ImageStyle extends BackendController
      */
     protected function setBreadcrumbListImageStyle()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
     }
 
     /**
@@ -264,7 +264,7 @@ class ImageStyle extends BackendController
      */
     protected function setBreadcrumbEditImageStyle()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
 
         $breadcrumb = array(
             'url' => $this->url('admin/settings/imagestyle'),

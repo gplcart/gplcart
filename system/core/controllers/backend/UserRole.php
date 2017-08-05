@@ -195,7 +195,7 @@ class UserRole extends BackendController
      */
     protected function setBreadcrumbEditUserRole()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
 
         $breadcrumb = array(
             'text' => $this->text('Roles'),
@@ -330,7 +330,7 @@ class UserRole extends BackendController
      */
     protected function setBreadcrumbListUserRole()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
     }
 
     /**

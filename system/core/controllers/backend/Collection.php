@@ -140,7 +140,7 @@ class Collection extends BackendController
      */
     protected function setBreadcrumbListCollection()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
     }
 
     /**
@@ -306,7 +306,7 @@ class Collection extends BackendController
      */
     protected function setBreadcrumbEditCollection()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
 
         $breadcrumb = array(
             'text' => $this->text('Collections'),

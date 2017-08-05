@@ -87,7 +87,7 @@ class Report extends BackendController
      */
     protected function setBreadcrumbListPaymentMethodsReport()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
     }
 
     /**
@@ -124,7 +124,7 @@ class Report extends BackendController
      */
     protected function setBreadcrumbListShippingMethodsReport()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
     }
 
     /**
@@ -207,7 +207,7 @@ class Report extends BackendController
      */
     protected function setBreadcrumbListRoutesReport()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
     }
 
     /**
@@ -327,7 +327,7 @@ class Report extends BackendController
      */
     protected function setBreadcrumbListEventReport()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
     }
 
     /**
@@ -364,7 +364,7 @@ class Report extends BackendController
      */
     protected function setBreadcrumbListStatusReport()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
     }
 
     /**

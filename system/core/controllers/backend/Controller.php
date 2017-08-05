@@ -149,7 +149,7 @@ class Controller extends BaseController
     }
 
     /**
-     * Adds full store url for every entity in the array
+     * Adds full store URL for every entity in the array
      * @param array $items
      * @param string $entity
      * @return array
@@ -209,7 +209,7 @@ class Controller extends BaseController
     /**
      * Set a single breadcrumb item that points to the dashboard
      */
-    protected function setBreadcrumbBackend()
+    protected function setBreadcrumbHome()
     {
         $breadcrumb = array(
             'url' => $this->url('admin'),

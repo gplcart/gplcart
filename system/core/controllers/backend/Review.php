@@ -181,7 +181,7 @@ class Review extends BackendController
      */
     protected function setBreadcrumbListReview()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
     }
 
     /**
@@ -335,7 +335,7 @@ class Review extends BackendController
      */
     protected function setBreadcrumbEditReview()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
 
         $breadcrumb = array(
             'text' => $this->text('Reviews'),

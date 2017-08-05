@@ -166,7 +166,7 @@ class CollectionItem extends BackendController
      */
     protected function setBreadcrumbListCollectionItem()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
 
         $breadcrumb = array(
             'text' => $this->text('Collections'),
@@ -288,7 +288,7 @@ class CollectionItem extends BackendController
      */
     protected function setBreadcrumbEditCollectionItem()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
 
         $breadcrumbs = array();
 

@@ -148,7 +148,7 @@ class Trigger extends BackendController
      */
     protected function setBreadcrumbListTrigger()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
     }
 
     /**
@@ -351,7 +351,7 @@ class Trigger extends BackendController
      */
     protected function setBreadcrumbEditTrigger()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
 
         $breadcrumb = array(
             'url' => $this->url('admin/settings/trigger'),

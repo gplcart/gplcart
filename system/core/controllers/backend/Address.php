@@ -136,7 +136,7 @@ class Address extends BackendController
      */
     protected function setBreadcrumbListAddress()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
     }
 
     /**

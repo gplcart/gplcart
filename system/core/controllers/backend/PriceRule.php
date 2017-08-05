@@ -185,7 +185,7 @@ class PriceRule extends BackendController
      */
     protected function setBreadcrumbListPriceRule()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
     }
 
     /**
@@ -358,7 +358,7 @@ class PriceRule extends BackendController
      */
     protected function setBreadcrumbEditPriceRule()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
 
         $breadcrumb = array(
             'text' => $this->text('Price rules'),

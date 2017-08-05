@@ -164,7 +164,7 @@ class Country extends BackendController
      */
     protected function setBreadcrumbListCountry()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
     }
 
     /**
@@ -330,7 +330,7 @@ class Country extends BackendController
      */
     protected function setBreadcrumbEditCountry()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
 
         $breadcrumb = array(
             'url' => $this->url('admin/settings/country'),

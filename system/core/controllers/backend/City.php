@@ -218,7 +218,7 @@ class City extends BackendController
      */
     protected function setBreadcrumbListCity()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
         
         $breadcrumbs = array();
 
@@ -409,7 +409,7 @@ class City extends BackendController
      */
     protected function setBreadcrumbEditCity()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
 
         $breadcrumbs = array();
 

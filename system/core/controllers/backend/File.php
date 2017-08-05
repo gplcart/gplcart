@@ -162,7 +162,7 @@ class File extends BackendController
      */
     protected function setBreadcrumbListFile()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
     }
 
     /**
@@ -330,7 +330,7 @@ class File extends BackendController
      */
     protected function setBreadcrumbEditFile()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
 
         $breadcrumb = array(
             'url' => $this->url('admin/content/file'),

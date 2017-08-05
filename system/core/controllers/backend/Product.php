@@ -215,7 +215,7 @@ class Product extends BackendController
      */
     protected function setBreadcrumbListProduct()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
     }
 
     /**
@@ -568,7 +568,7 @@ class Product extends BackendController
      */
     protected function setBreadcrumbEditProduct()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
 
         $breadcrumb = array(
             'text' => $this->text('Products'),

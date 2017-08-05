@@ -173,7 +173,7 @@ class Language extends BackendController
      */
     protected function setBreadcrumbEditLanguage()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
 
         $breadcrumb = array(
             'url' => $this->url('admin/settings/language'),
@@ -235,7 +235,7 @@ class Language extends BackendController
      */
     protected function setBreadcrumbListLanguage()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
     }
 
     /**

@@ -128,7 +128,7 @@ class Field extends BackendController
      */
     protected function setBreadcrumbListField()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
     }
 
     /**
@@ -287,7 +287,7 @@ class Field extends BackendController
      */
     protected function setBreadcrumbEditField()
     {
-        $this->setBreadcrumbBackend();
+        $this->setBreadcrumbHome();
 
         $breadcrumb = array(
             'url' => $this->url('admin/content/field'),
