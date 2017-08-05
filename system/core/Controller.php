@@ -15,6 +15,8 @@ namespace gplcart\core;
 abstract class Controller
 {
 
+    use \gplcart\core\traits\Item;
+
     /**
      * Whether we're installing the system
      * @var boolean

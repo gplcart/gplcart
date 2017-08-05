@@ -17,8 +17,6 @@ use gplcart\core\Controller as BaseController;
  */
 class Controller extends BaseController
 {
-    
-    use \gplcart\core\traits\Item;
 
     /**
      * Trigger model instance
@@ -360,12 +358,12 @@ class Controller extends BaseController
     {
         foreach ($cart['items'] as &$item) {
             $item['currency'] = $cart['currency'];
-            $this->attachItemThumbCartTrait($item, $this->settings('image_style_cart', 3), $this->image);
-            $this->attachItemPriceFormattedTrait($item, $this->current_currency, $this->currency, $this->price);
-            $this->attachItemTotalFormattedTrait($item, $this->price);
+            $this->setItemThumbCartTrait($item, $this->settings('image_style_cart', 3), $this->image);
+            $this->setItemPriceFormattedTrait($item, $this->current_currency, $this->currency, $this->price);
+            $this->setItemTotalFormattedTrait($item, $this->price);
         }
 
-        $this->attachItemTotalFormattedTrait($cart, $this->price);
+        $this->setItemTotalFormattedTrait($cart, $this->price);
         return $cart;
     }
 
@@ -622,19 +620,19 @@ class Controller extends BaseController
 
         foreach ($items as &$item) {
 
-            $this->attachItemIndentationTrait($item);
-            $this->attachItemUrlTrait($item, $options, $this);
-            $this->attachItemUrlActiveTrait($item, $this->base, $this);
-            $this->attachItemThumbTrait($item, $options, $this->image);
+            $this->setItemIndentationTrait($item);
+            $this->setItemUrlTrait($item, $options, $this);
+            $this->setItemUrlActiveTrait($item, $this->base, $this);
+            $this->setItemThumbTrait($item, $options, $this->image);
 
             if ($options['entity'] == 'product') {
-                $this->attachItemInComparisonTrait($item, $this->compare);
-                $this->attachItemPriceCalculatedTrait($item, $this->product);
-                $this->attachItemInWishlistTrait($item, $this->cart_uid, $this->store_id, $this->wishlist);
-                $this->attachItemPriceFormattedTrait($item, $this->current_currency, $this->currency, $this->price);
-                $this->attachItemRenderedProductTrait($item, $options, $this);
+                $this->setItemInComparisonTrait($item, $this->compare);
+                $this->setItemPriceCalculatedTrait($item, $this->product);
+                $this->setItemInWishlistTrait($item, $this->cart_uid, $this->store_id, $this->wishlist);
+                $this->setItemPriceFormattedTrait($item, $this->current_currency, $this->currency, $this->price);
+                $this->setItemRenderedProductTrait($item, $options, $this);
             } else {
-                $this->attachItemRenderedTrait($item, array($options['entity'] => $item), $options, $this);
+                $this->setItemRenderedTrait($item, array($options['entity'] => $item), $options, $this);
             }
         }
 
