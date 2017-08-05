@@ -102,7 +102,7 @@
               </div>
               <?php } else { ?>
               <?php if ($admin) { ?>
-              <input class="form-control" name="order[data][components][<?php echo $this->e($id); ?>][price]" value="<?php echo $this->e($price_component['price_decimal']); ?>">
+              <input class="form-control" data-ajax="false" name="order[data][components][<?php echo $this->e($id); ?>][price]" value="<?php echo $this->e($price_component['price_decimal']); ?>">
               <?php } else { ?>
               <?php echo $this->e($price_component['price_formatted']); ?>
               <input type="hidden" name="order[data][components][<?php echo $this->e($id); ?>][price]" value="<?php echo $this->e($price_component['price']); ?>">
@@ -116,7 +116,7 @@
             <td><b><?php echo $this->text('Grand total'); ?></b></td>
             <td>
               <?php if ($admin) { ?>
-              <input class="form-control" name="order[total]" value="<?php echo $this->e($total_decimal); ?>">
+              <input class="form-control" data-ajax="false" name="order[total]" value="<?php echo $this->e($total_decimal); ?>">
               <?php } else { ?>
               <input type="hidden" name="order[total]" value="<?php echo $this->e($total); ?>">
               <b><?php echo $this->e($total_formatted); ?></b>

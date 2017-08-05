@@ -104,7 +104,6 @@
           <?php } ?>
         </div>
         <ul class="nav navbar-nav navbar-right">
-          <?php if (!$this->path('^checkout$')) { ?>
           <li class="cart">
             <p class="navbar-btn">
             <a rel="nofollow" class="btn btn-default btn-block" id="cart-link" href="<?php echo $this->url('checkout'); ?>">
@@ -113,7 +112,6 @@
             </a>
             </p>
           </li>
-          <?php } ?>
           <li class="wishlist">
             <?php if (empty($_wishlist)) { ?>
             <p class="navbar-btn">

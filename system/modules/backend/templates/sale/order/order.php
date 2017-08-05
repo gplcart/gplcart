@@ -19,20 +19,16 @@
       <?php echo $pane_shipping_address; ?>
       <?php echo $pane_payment_address; ?>
       <?php echo $pane_comment; ?>
-      <div class="panel panel-default hidden-print">
-        <div class="panel-body">
-          <?php if ($this->access('order_delete')) { ?>
-          <button class="btn btn-danger" name="delete" value="1" onclick="return confirm(GplCart.text('Are you sure? It cannot be undone!'));"><?php echo $this->text('Delete'); ?></button>
-          <?php } ?>
-          <div class="btn-toolbar pull-right">
-            <a href="#" class="btn btn-default" onclick="window.print(); return false;">
-              <i class="fa fa-print"></i> <?php echo $this->text('Print'); ?>
-            </a>
-            <?php if ($this->access('order_add') && $this->access('order_edit')) { ?>
-            <button class="btn btn-default" name="clone" value="1" onclick="return confirm(GplCart.text('Are you sure? A new order will be created, this order will be canceled'));"><?php echo $this->text('Clone'); ?></button>
-            <?php } ?>
-          </div>
-        </div>
+      <div class="btn-toolbar">
+        <?php if ($this->access('order_delete')) { ?>
+        <button class="btn btn-danger" name="delete" value="1" onclick="return confirm(GplCart.text('Are you sure? It cannot be undone!'));"><?php echo $this->text('Delete'); ?></button>
+        <?php } ?>
+        <a href="#" class="btn btn-default" onclick="window.print(); return false;">
+          <?php echo $this->text('Print'); ?>
+        </a>
+        <?php if ($this->access('order_add') && $this->access('order_edit')) { ?>
+        <button class="btn btn-default" name="clone" value="1" onclick="return confirm(GplCart.text('Are you sure? A new order will be created, this order will be canceled'));"><?php echo $this->text('Clone'); ?></button>
+        <?php } ?>
       </div>
     </div>
   </div>
