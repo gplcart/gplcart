@@ -98,7 +98,7 @@ class Database extends PDO
      * Runs a SQL query with an array of placeholders
      * @param string $sql
      * @param array $params
-     * @return object
+     * @return \PDOStatement
      */
     public function run($sql, array $params = array())
     {
