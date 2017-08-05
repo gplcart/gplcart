@@ -1071,7 +1071,7 @@ abstract class Controller
         if (!isset($key)) {
 
             if (isset($value)) {
-                return $this->submitted = $value;
+                return $this->submitted = (array) $value;
             }
 
             $this->submitted = $this->request->post(null, array(), $filter, 'array');

@@ -316,9 +316,7 @@ class Order extends Model
 
         $data['modified'] = GC_TIME;
 
-        if (!empty($data['cart'])) {
-            $this->prepareComponents($data, $data['cart']);
-        }
+        $this->prepareComponents($data);
 
         $result = (bool) $this->db->update('orders', $data, array('order_id' => $order_id));
         $this->hook->attach('order.update.after', $order_id, $data, $result, $this);
@@ -602,7 +600,7 @@ class Order extends Model
     }
 
     /**
-     * Wheter the order is pending, i.e before processing
+     * Whether the order is pending, i.e before processing
      * @param array $order
      * @return bool
      */
@@ -828,7 +826,6 @@ class Order extends Model
     /**
      * Prepares order components
      * @param array $order
-     * @param array $cart
      */
     protected function prepareComponents(array &$order)
     {

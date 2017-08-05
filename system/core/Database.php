@@ -431,7 +431,6 @@ class Database extends PDO
      */
     public function deleteTable($table)
     {
-        // $this->quote() causes error 
         $this->query("DROP TABLE IF EXISTS $table");
     }
 

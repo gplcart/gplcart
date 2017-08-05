@@ -342,10 +342,6 @@ class ProductClass extends Model
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $conditions);
-        }
-
         return $this->db->fetchAll($sql, $conditions, array('index' => 'field_id'));
     }
 

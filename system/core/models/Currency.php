@@ -323,7 +323,7 @@ class Currency extends Model
      */
     protected function getDefaultList()
     {
-        $list = $this->getIso();
+        $list = (array) $this->getIso();
         $default = $this->getDefaultData();
 
         foreach ($list as $code => &$currency) {

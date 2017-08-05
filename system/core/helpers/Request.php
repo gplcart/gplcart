@@ -46,7 +46,7 @@ class Request
      * Returns the current base path
      * @staticvar array $cache
      * @param boolean $exclude_langcode
-     * @return array
+     * @return string
      */
     public function base($exclude_langcode = false)
     {
