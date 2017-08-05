@@ -15,8 +15,6 @@ namespace gplcart\core;
 abstract class Controller
 {
 
-    use \gplcart\core\traits\Item;
-
     /**
      * Whether we're installing the system
      * @var boolean
@@ -754,7 +752,7 @@ abstract class Controller
     }
 
     /**
-     * If $path isset - returns TRUE if the path pattern mathes the current URL path
+     * If $path is set - returns TRUE if the path pattern mathes the current URL path
      * If $path is not set or NULL - returns the current URL path
      * @param null|string $pattern
      * @return string|bool
@@ -1175,7 +1173,7 @@ abstract class Controller
     }
 
     /**
-     * Controll user access to the current page
+     * Controls user access to the current page
      */
     protected function controlCommonAccess()
     {
@@ -1323,7 +1321,7 @@ abstract class Controller
     }
 
     /**
-     * Contols access to account pages
+     * Controls access to account pages
      */
     protected function controlAccessAccount()
     {
@@ -1711,7 +1709,7 @@ abstract class Controller
     }
 
     /**
-     * Returns superglobal template variables
+     * Returns global template variables
      * @return array
      */
     protected function getDefaultData()
@@ -1898,30 +1896,6 @@ abstract class Controller
         }
 
         $this->setMeta(array('rel' => 'canonical', 'href' => $this->path));
-    }
-
-    /**
-     * Returns rendered menu
-     * @param array $options
-     * @return string
-     */
-    protected function renderMenu(array $options = array())
-    {
-        if (empty($options['items'])) {
-            return '';
-        }
-
-        $options += array('depth' => 0, 'template' => 'common/menu');
-        return $this->render($options['template'], $options);
-    }
-
-    /**
-     * Returns rendered honeypot input
-     * @return string
-     */
-    public function renderCaptcha()
-    {
-        return $this->render('common/honeypot');
     }
 
     /**
@@ -2185,19 +2159,46 @@ abstract class Controller
      */
     public function renderPager($total, $query, $limit, $key = 'p')
     {
-        $page = 1;
+        $data = array(
+            'page' => 1,
+            'limit' => $limit,
+            'total' => $total,
+            'query' => $query,
+            'prev' => $this->text('Back'),
+            'next' => $this->text('Next')
+        );
+
         if (isset($query[$key])) {
-            $page = (int) $query[$key];
+            $data['page'] = (int) $query[$key];
         }
 
-        $query[$key] = '%num';
+        $data['query'][$key] = '%num';
 
-        return $this->pager->setPage($page)
-                        ->setPerPage($limit)
-                        ->setTotal($total)
-                        ->setUrlPattern('?' . urldecode(http_build_query($query)))
-                        ->setPreviousText($this->text('Back'))
-                        ->setNextText($this->text('Next'))->render();
+        return $this->pager->build($data);
+    }
+
+    /**
+     * Returns the rendered menu
+     * @param array $options
+     * @return string
+     */
+    protected function renderMenu(array $options)
+    {
+        if (empty($options['items'])) {
+            return '';
+        }
+
+        $options += array('depth' => 0, 'template' => 'common/menu');
+        return $this->render($options['template'], $options);
+    }
+
+    /**
+     * Returns rendered honey pot input
+     * @return string
+     */
+    public function renderCaptcha()
+    {
+        return $this->render('common/honeypot');
     }
 
 }

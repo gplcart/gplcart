@@ -261,8 +261,8 @@ class Checkout extends FrontendController
             $this->outputHttpStatus(404);
         }
 
-        $this->setItemTotalFormattedTrait($order, $this->price);
-        $this->setItemTotalFormattedNumberTrait($order, $this->price);
+        $this->setItemTotalFormatted($order);
+        $this->setItemTotalFormattedNumber($order);
 
         $this->order_id = $order_id;
         $this->order_user_id = $order['user_id'];

@@ -45,8 +45,7 @@ class Section extends BackendController
      */
     protected function setDataListSection($parent)
     {
-        $data = array('template' => 'section/menu');
-        $this->setData('menu', $this->renderAdminMenu($parent, $data));
+        $this->setData('menu', $this->renderAdminMenu($parent, array('template' => 'section/menu')));
     }
 
     /**

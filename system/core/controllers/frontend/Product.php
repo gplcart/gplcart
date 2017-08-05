@@ -149,7 +149,7 @@ class Product extends FrontendController
             $this->data_product['images'][] = array(
                 'thumb' => $this->image->placeholder($options['imagestyle']));
         } else {
-            $this->setItemThumbTrait($this->data_product, $options, $this->image);
+            $this->setItemThumb($this->data_product, $options);
         }
 
         $html = $this->render('product/images', array('product' => $this->data_product));
@@ -451,16 +451,16 @@ class Product extends FrontendController
 
         $this->unshiftSelectedImageProduct($selected, $product);
 
-        $this->setItemInComparisonTrait($product, $this->compare);
-        $this->setItemInWishlistTrait($product, $this->cart_uid, $this->store_id, $this->wishlist);
+        $this->setItemInComparison($product);
+        $this->setItemInWishlist($product);
 
-        $this->setItemPriceCalculatedTrait($selected, $this->product);
-        $this->setItemPriceFormattedTrait($selected, $this->current_currency, $this->currency, $this->price);
+        $this->setItemPriceCalculated($selected);
+        $this->setItemPriceFormatted($selected);
 
         $product['selected_combination'] = $selected;
         $product['total_reviews'] = $this->getTotalReviewsProduct($product);
 
-        $this->attachProductFieldsTrait($product, $this->product_class, $this->image, $this);
+        $this->setProductFieldsTrait($product, $this->product_class, $this);
         return $product;
     }
 

@@ -61,8 +61,28 @@ class Controller extends BaseController
     protected function setDefaultDataBackend()
     {
         $this->data['_job'] = $this->renderJob();
-        $this->data['_menu'] = $this->renderAdminMenu();
+        $this->data['_menu'] = $this->renderAdminMenu('admin', array());
         $this->data['_stores'] = $this->store->getList(array('status' => 1));
+    }
+
+    /**
+     * Returns the rendered job widget
+     * @param null|string $job
+     * @return string
+     */
+    public function renderJob($job = null)
+    {
+        if (!isset($job)) {
+            $job_id = $this->getQuery('job_id', '', 'string');
+            $job = $this->job->get($job_id);
+        }
+
+        if (empty($job['status'])) {
+            return '';
+        }
+
+        $job += array('widget' => 'common/job');
+        return $this->render($job['widget'], array('job' => $job));
     }
 
     /**
@@ -105,59 +125,6 @@ class Controller extends BaseController
         if ($this->getQuery('process_job') === $job['id'] && $this->isAjax()) {
             $this->response->json($this->job->process($job));
         }
-    }
-
-    /**
-     * Returns the rendered job widget
-     * @param array|null $job
-     * @return string
-     */
-    public function renderJob($job = null)
-    {
-        if (!isset($job)) {
-            $job_id = $this->getQuery('job_id', '', 'string');
-            $job = $this->job->get($job_id);
-        }
-
-        if (empty($job['status'])) {
-            return '';
-        }
-
-        $job += array('widget' => 'common/job');
-        return $this->render($job['widget'], array('job' => $job));
-    }
-
-    /**
-     * Returns the rendered admin menu
-     * @param array $options
-     * @return string
-     */
-    public function renderAdminMenu($parent = 'admin', array $options = array())
-    {
-        if (!$this->access('admin')) {
-            return '';
-        }
-
-        $items = array();
-        foreach ($this->route->getList() as $path => $route) {
-
-            if (strpos($path, "$parent/") !== 0 || empty($route['menu']['admin'])) {
-                continue;
-            }
-            if (isset($route['access']) && !$this->access($route['access'])) {
-                continue;
-            }
-
-            $items[$path] = array(
-                'url' => $this->url($path),
-                'text' => $this->text($route['menu']['admin']),
-                'depth' => substr_count(substr($path, strlen("$parent/")), '/'),
-            );
-        }
-
-        ksort($items);
-        $options += array('items' => $items);
-        return $this->renderMenu($options);
     }
 
     /**
@@ -212,6 +179,7 @@ class Controller extends BaseController
             'name_prefix' => $entity,
             'languages' => $this->language->getList()
         );
+
         $this->setData('attached_images', $this->render('common/image', $data));
     }
 
@@ -249,6 +217,40 @@ class Controller extends BaseController
         );
 
         $this->setBreadcrumb($breadcrumb);
+    }
+
+    /**
+     * Returns the rendered admin menu
+     * @param string $parent
+     * @param array $options
+     * @return string
+     */
+    public function renderAdminMenu($parent, array $options = array())
+    {
+        if (!$this->access('admin')) {
+            return '';
+        }
+
+        $items = array();
+        foreach ($this->route->getList() as $path => $route) {
+
+            if (strpos($path, "$parent/") !== 0 || empty($route['menu']['admin'])) {
+                continue;
+            }
+            if (isset($route['access']) && !$this->access($route['access'])) {
+                continue;
+            }
+
+            $items[$path] = array(
+                'url' => $this->url($path),
+                'text' => $this->text($route['menu']['admin']),
+                'depth' => substr_count(substr($path, strlen("$parent/")), '/'),
+            );
+        }
+
+        ksort($items);
+        $options += array('items' => $items);
+        return $this->renderMenu($options);
     }
 
 }
