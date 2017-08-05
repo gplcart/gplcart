@@ -175,7 +175,7 @@ class Pager
     }
 
     /**
-     * Render an HTML pagination control.
+     * Render an HTML pagination control
      * @return string
      */
     public function render()
@@ -433,6 +433,30 @@ class Pager
     {
         $this->next_text = $text;
         return $this;
+    }
+
+    /**
+     * Construct ready-to-output pager
+     * @param array $data
+     * @return string
+     */
+    public function build(array $data = array())
+    {
+        $data += array(
+            'page' => 1,
+            'limit' => 0,
+            'total' => 0,
+            'prev' => 'Back',
+            'next' => 'Next',
+            'query' => array()
+        );
+
+        return $this->setPage($data['page'])
+                        ->setPerPage($data['limit'])
+                        ->setTotal($data['total'])
+                        ->setUrlPattern('?' . urldecode(http_build_query($data['query'])))
+                        ->setPreviousText($data['prev'])
+                        ->setNextText($data['next'])->render();
     }
 
 }
