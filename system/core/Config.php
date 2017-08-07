@@ -241,7 +241,7 @@ class Config
                 continue;
             }
 
-            $info['directory'] = GC_MODULE_DIR . "/$module_id";
+            $info['directory'] = $this->getModuleDirectory($module_id);
             $info += array('type' => 'module', 'name' => $module_id);
 
             // Do not override status set in module.json for locked modules
@@ -266,6 +266,16 @@ class Config
         }
 
         return $modules;
+    }
+
+    /**
+     * Returns a server path to the module
+     * @param string $module_id
+     * @return string
+     */
+    public function getModuleDirectory($module_id)
+    {
+        return GC_MODULE_DIR . "/$module_id";
     }
 
     /**
