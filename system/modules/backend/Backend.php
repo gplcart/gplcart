@@ -33,10 +33,16 @@ class Backend extends Module
     {
         if ($controller->isCurrentTheme('backend')) {
 
-            $controller->setJs('system/modules/backend/js/common.js');
-            $libraries = array('font_awesome', 'jquery_ui', 'bootstrap_select');
-            $controller->addAssetLibrary($libraries);
-            $controller->setCss('system/modules/backend/css/style.css');
+            $controller->addAssetLibrary('jquery_ui');
+            $controller->addAssetLibrary('bootstrap');
+            $controller->addAssetLibrary('bootstrap_select');
+            $controller->addAssetLibrary('html5shiv', array('aggregate' => false, 'condition' => 'if lt IE 9'));
+            $controller->addAssetLibrary('respond', array('aggregate' => false, 'condition' => 'if lt IE 9'));
+
+            $controller->setJs($this->getAsset('backend', 'js', 'common.js'));
+
+            $controller->addAssetLibrary('font_awesome');
+            $controller->setCss($this->getAsset('backend', 'css', 'style.css'));
 
             $controller->setMeta(array('charset' => 'utf-8'));
             $controller->setMeta(array('http-equiv' => 'X-UA-Compatible', 'content' => 'IE=edge'));
