@@ -10,7 +10,6 @@ namespace gplcart\core\helpers;
 
 /**
  * Provides methods to paging a data
- * Inspired by Jason Grimes's PHP paginator https://github.com/jasongrimes/php-paginator
  */
 class Pager
 {
@@ -52,18 +51,6 @@ class Pager
     protected $limit_pages = 10;
 
     /**
-     * "Previous" label text
-     * @var string
-     */
-    protected $previous_text = 'Previous';
-
-    /**
-     * "Next" label text
-     * @var string
-     */
-    protected $next_text = 'Next';
-
-    /**
      * Sets max number of pages to show in the pager links
      * @param int $limit_pages
      */
@@ -91,7 +78,7 @@ class Pager
      */
     protected function updateNumPages()
     {
-        $this->pages = ($this->limit == 0 ? 0 : (int) ceil($this->total / $this->limit));
+        $this->pages = ($this->limit == 0) ? 0 : (int) ceil($this->total / $this->limit);
         return $this;
     }
 
@@ -175,37 +162,6 @@ class Pager
     }
 
     /**
-     * Render an HTML pagination control
-     * @return string
-     */
-    public function render()
-    {
-        if ($this->pages <= 1) {
-            return '';
-        }
-
-        $html = '<ul class="pagination">';
-        if ($this->getPrevUrl() !== '') {
-            $html .= '<li><a rel="prev" href="' . $this->getPrevUrl() . '">&laquo; ' . $this->previous_text . '</a></li>';
-        }
-
-        foreach ($this->getPages() as $page) {
-            if ($page['url']) {
-                $html .= '<li' . ($page['is_current'] ? ' class="active"' : '') . '><a href="' . $page['url'] . '">' . $page['num'] . '</a></li>';
-            } else {
-                $html .= '<li class="disabled"><span>' . $page['num'] . '</span></li>';
-            }
-        }
-
-        if ($this->getNextUrl() !== '') {
-            $html .= '<li><a rel="next" href="' . $this->getNextUrl() . '">' . $this->next_text . ' &raquo;</a></li>';
-        }
-        $html .= '</ul>';
-
-        return $html;
-    }
-
-    /**
      * Returns the previous pager URL
      * @return string
      */
@@ -259,7 +215,6 @@ class Pager
             }
         } else {
 
-            // Determine the sliding range, centered around the current page.
             $num_adjacents = (int) floor(($this->limit_pages - 3) / 2);
 
             if ($this->current + $num_adjacents > $this->pages) {
@@ -278,7 +233,6 @@ class Pager
                 $sliding_end = $this->pages - 1;
             }
 
-            // Build the list of pages.
             $pages[] = $this->createPage(1, $this->current == 1);
 
             if ($sliding_start > 2) {
@@ -406,7 +360,7 @@ class Pager
 
     /**
      * Returns number of items per page
-     * @return int
+     * @return integer
      */
     public function getItemsPerPage()
     {
@@ -414,49 +368,33 @@ class Pager
     }
 
     /**
-     * Sets "Previous" text
-     * @param string $text
-     * @return \gplcart\core\helpers\Pager
-     */
-    public function setPreviousText($text)
-    {
-        $this->previous_text = $text;
-        return $this;
-    }
-
-    /**
-     * Sets "Next" text
-     * @param string $text
-     * @return \gplcart\core\helpers\Pager
-     */
-    public function setNextText($text)
-    {
-        $this->next_text = $text;
-        return $this;
-    }
-
-    /**
-     * Construct ready-to-output pager
+     * Returns an array of pager data for template
      * @param array $data
      * @return string
      */
-    public function build(array $data = array())
+    public function get(array $data = array())
     {
         $data += array(
             'page' => 1,
             'limit' => 0,
             'total' => 0,
-            'prev' => 'Back',
-            'next' => 'Next',
             'query' => array()
         );
 
-        return $this->setPage($data['page'])
-                        ->setPerPage($data['limit'])
-                        ->setTotal($data['total'])
-                        ->setUrlPattern('?' . urldecode(http_build_query($data['query'])))
-                        ->setPreviousText($data['prev'])
-                        ->setNextText($data['next'])->render();
+        $this->setPage($data['page'])
+                ->setPerPage($data['limit'])
+                ->setTotal($data['total'])
+                ->setUrlPattern('?' . urldecode(http_build_query($data['query'])));
+
+        if ($this->pages <= 1) {
+            return array();
+        }
+
+        return array(
+            'pages' => $this->getPages(),
+            'prev' => $this->getPrevUrl(),
+            'next' => $this->getNextUrl()
+        );
     }
 
 }
