@@ -9,8 +9,6 @@
 
 namespace gplcart\core\helpers;
 
-use gplcart\core\helpers\Request as RequestHelper;
-
 /**
  * Helpers to work with CSS/JS files
  */
@@ -23,25 +21,10 @@ class Asset
     const WEIGHT_STEP = 20;
 
     /**
-     * Request class instance
-     * @var \gplcart\core\helpers\Request $request
-     */
-    protected $request;
-
-    /**
-     * An array of added assests
+     * An array of added assets
      * @var array
      */
     protected $assets = array();
-
-    /**
-     * Constructor
-     * @param RequestHelper $request
-     */
-    public function __construct(RequestHelper $request)
-    {
-        $this->request = $request;
-    }
 
     /**
      * Adds a JS file
@@ -85,15 +68,13 @@ class Asset
     }
 
     /**
-     * Returns an array of added JS assest
-     * @param string $pos Top or Bottom
+     * Returns an array of added JS asset
+     * @param string $pos Either "top" or "bottom"
      * @return array
      */
     public function getJs($pos)
     {
-        $js = $this->get('js', $pos);
-        gplcart_array_sort($js);
-        return $js;
+        return $this->get('js', $pos);
     }
 
     /**
@@ -102,9 +83,7 @@ class Asset
      */
     public function getCss()
     {
-        $css = $this->get('css', 'top');
-        gplcart_array_sort($css);
-        return $css;
+        return $this->get('css', 'top');
     }
 
     /**
@@ -116,8 +95,7 @@ class Asset
     public function getNextWeight($type, $pos)
     {
         $count = $this->getLastWeight($type, $pos);
-        $weight = $count * self::WEIGHT_STEP + self::WEIGHT_STEP;
-        return $weight;
+        return $count * self::WEIGHT_STEP + self::WEIGHT_STEP;
     }
 
     /**
@@ -184,8 +162,9 @@ class Asset
             'type' => $type,
             'position' => 'top',
             'condition' => '',
-            'version' => 'v',
+            'version' => '',
             'text' => false,
+            'file' => '',
             'aggregate' => $type !== 'external'
         );
 
@@ -202,23 +181,23 @@ class Asset
             return $data;
         }
 
-        if (strpos($data['asset'], GC_ROOT_DIR) === 0) {
+        if (gplcart_is_absolute_path($data['asset'])) {
             $data['file'] = $data['asset'];
             $data['asset'] = gplcart_relative_path($data['asset']);
         } else if ($type !== 'external') {
             $data['file'] = gplcart_absolute_path($data['asset']);
         }
 
-        if (isset($data['file']) && !file_exists($data['file'])) {
-            return array();
+        if (!empty($data['file'])) {
+
+            if (!file_exists($data['file'])) {
+                return array();
+            }
+
+            $data['version'] = filemtime($data['file']);
         }
 
-        $data['key'] = $type === 'external' ? $data['asset'] : $this->request->base(true) . $data['asset'];
-
-        if (!empty($data['version']) && isset($data['file'])) {
-            $data['key'] .= "?{$data['version']}=" . filemtime($data['file']);
-        }
-
+        $data['key'] = $data['asset'] = str_replace('\\', '/', $data['asset']);
         return $data;
     }
 
