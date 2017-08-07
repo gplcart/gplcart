@@ -46,7 +46,7 @@ class Job extends Model
     protected $session;
 
     /**
-     * Url class instance
+     * URL class instance
      * @var \gplcart\core\helpers\Url $url
      */
     protected $url;
