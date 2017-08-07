@@ -8,7 +8,7 @@
  */
 
 /**
- * Converts human readable file syzes to numeric bytes
+ * Converts human readable file sizes to numeric bytes
  * @param string $value
  * @return integer
  */
@@ -51,7 +51,7 @@ function gplcart_json_encode($data, $pretty = false)
  * @param string $domain
  * @return boolean
  */
-function gplcart_valid_domain($domain)
+function gplcart_is_valid_domain($domain)
 {
     $pattern = '/^(?!\-)'
             . '(?:[a-zA-Z\d\-]{0,62}[a-zA-Z\d]\.)'
@@ -65,7 +65,7 @@ function gplcart_valid_domain($domain)
  * @param string $url
  * @return boolean
  */
-function gplcart_absolute_url($url)
+function gplcart_is_absolute_url($url)
 {
     $pattern = "/^(?:ftp|https?|feed):\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
         (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
@@ -76,31 +76,30 @@ function gplcart_absolute_url($url)
 }
 
 /**
- * Parses and extracts arguments from a string
+ * Whether the path is an absolute server path
+ * @return bool
+ */
+function gplcart_is_absolute_path($path)
+{
+    return strpos($path, GC_ROOT_DIR) === 0;
+}
+
+/**
+ * Parses and extracts arguments from a path string
  * @param string $string
  * @param string $pattern
  * @return boolean|array
  */
-function gplcart_parse_pattern($string, $pattern)
+function gplcart_parse_path($string, $pattern)
 {
-    $params = array();
-    if (preg_match("~^$pattern$~i", $string, $params) === 1) {
-        array_shift($params);
-        return array_values($params);
-    }
-    return false;
-}
+    $arguments = array();
 
-/**
- * Validates $_SERVER['HTTP_HOST'] variable
- * @return boolean
- */
-function gplcart_valid_host($host)
-{
-    return (strlen($host) <= 1000 //
-            && substr_count($host, '.') <= 100 //
-            && substr_count($host, ':') <= 100 //
-            && preg_match('/^\[?(?:[a-zA-Z0-9-:\]_]+\.?)+$/', $host) === 1);
+    if (preg_match("~^$pattern$~i", $string, $arguments) === 1) {
+        array_shift($arguments);
+        return array_values($arguments);
+    }
+
+    return false;
 }
 
 /**
@@ -129,7 +128,7 @@ function gplcart_timezones()
  */
 function gplcart_absolute_path($file)
 {
-    if (strpos($file, GC_ROOT_DIR) === 0) {
+    if (gplcart_is_absolute_path($file)) {
         return $file;
     }
 
@@ -137,17 +136,17 @@ function gplcart_absolute_path($file)
 }
 
 /**
- * Converts file from absolute to relative
- * @param string $absolute
+ * Converts the file path to a relative path
+ * @param string $file
  * @return string
  */
-function gplcart_relative_path($absolute)
+function gplcart_relative_path($file)
 {
-    $prefix = GC_ROOT_DIR;
-    if (substr($absolute, 0, strlen($prefix)) == $prefix) {
-        return ltrim(substr($absolute, strlen($prefix)), '/\\');
+    if (gplcart_is_absolute_path($file)) {
+        return trim(substr($file, strlen(GC_ROOT_DIR)), '/\\');
     }
-    return $absolute;
+
+    return $file;
 }
 
 /**
