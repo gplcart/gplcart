@@ -179,7 +179,7 @@ class Install extends ComponentValidator
             return true;
         }
 
-        if ($host === 'localhost' || gplcart_valid_domain($host)) {
+        if ($host === 'localhost' || gplcart_is_valid_domain($host)) {
             return true;
         }
 
