@@ -13,17 +13,17 @@
         <p class="text-muted small">
           &copy; <?php echo date('Y') == 2015 ? date('Y') : '2015 - ' . date('Y'); ?>
           <a href="http://gplcart.com">GPL Cart</a> v<?php echo GC_VERSION; ?>
-        </p>	  
+        </p>
       </div>
     </div>
   </div>
 </footer>
-<?php if(!empty($_scripts_bottom)) { ?>
-<?php foreach ($_scripts_bottom as $key => $info) { ?>
-<?php if (!empty($info['text'])) { ?>
-<script><?php echo $info['asset']; ?></script>
+<?php if(!empty($_js_bottom)) { ?>
+<?php foreach ($_js_bottom as $key => $js) { ?>
+<?php if (!empty($js['text'])) { ?>
+<script><?php echo $js['asset']; ?></script>
 <?php } else { ?>
-<script src="<?php echo $this->e($key); ?>"></script>
+<script src="<?php echo $this->url($js['asset'], array('v' => $js['version'])); ?>"></script>
 <?php } ?>
 <?php } ?>
 <?php } ?>

@@ -23,27 +23,27 @@
   <?php if(!empty($_store_favicon)) { ?>
   <link rel="icon" href="<?php echo $this->e($_store_favicon); ?>">
   <?php } ?>
-  <?php foreach ($_styles as $data) { ?>
-  <link href="<?php echo $this->e($data['key']); ?>" rel="stylesheet">
+  <?php foreach ($_css as $css) { ?>
+  <link href="<?php echo $this->url($css['asset'], array('v' => $css['version'])); ?>" rel="stylesheet">
   <?php } ?>
-  <?php foreach ($_scripts_top as $data) { ?>
-  <?php if (!empty($data['text'])) { ?>
-  <?php if (!empty($data['asset'])) { ?>
-  <?php if (!empty($data['condition'])) { ?>
-    <!--[<?php echo $this->e($data['condition']); ?>]>
-    <script><?php echo $data['asset']; ?></script>
+  <?php foreach ($_js_top as $js) { ?>
+  <?php if (!empty($js['text'])) { ?>
+  <?php if (!empty($js['asset'])) { ?>
+  <?php if (!empty($js['condition'])) { ?>
+    <!--[<?php echo $this->e($js['condition']); ?>]>
+    <script><?php echo $js['asset']; ?></script>
     <![endif]-->
   <?php } else { ?>
-  <script><?php echo $data['asset']; ?></script>
+  <script><?php echo $js['asset']; ?></script>
   <?php } ?>
   <?php } ?>
   <?php } else { ?>
-  <?php if (!empty($data['condition'])) { ?>
-    <!--[<?php echo $this->e($data['condition']); ?>]>
-    <script src="<?php echo $this->e($data['key']); ?>"></script>
+  <?php if (!empty($js['condition'])) { ?>
+    <!--[<?php echo $this->e($js['condition']); ?>]>
+    <script src="<?php echo $this->url($js['asset'], array('v' => $js['version'])); ?>"></script>
     <![endif]-->
   <?php } else { ?>
-  <script src="<?php echo $this->e($data['key']); ?>"></script>
+  <script src="<?php echo $this->url($js['asset'], array('v' => $js['version'])); ?>"></script>
   <?php } ?>
   <?php } ?>
   <?php } ?>

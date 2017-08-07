@@ -63,7 +63,7 @@
             </div>
           </div>
           <?php foreach ($permissions as $permission_group) { ?>
-          <div class="col-md-3">
+          <div class="col-md-<?php echo 12 / count($permissions); ?>">
             <?php foreach ($permission_group as $id => $name) { ?>
             <div class="checkbox">
               <label>
@@ -72,7 +72,7 @@
                 <?php } else { ?>
                 <input type="checkbox" class="select-all" name="role[permissions][]" value="<?php echo $id; ?>">
                 <?php } ?>
-                <?php echo $this->e($name); ?>
+                <?php echo $this->e($name); ?> <small class="text-muted"><small><?php echo $this->e($id); ?></small></small>
               </label>
             </div>
             <?php } ?>

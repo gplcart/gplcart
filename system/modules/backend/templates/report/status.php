@@ -33,6 +33,11 @@
           </ul>
         </div>
         <?php } ?>
+        <?php if ($status_id === 'cron' && $this->config('cron_key') && $this->access('cron')) { ?>
+        <a target="_blank" href="<?php echo $this->url('cron', array('key' => $this->config('cron_key'))); ?>">
+          <?php echo $this->text('Run cron'); ?>
+        </a>
+        <?php } ?>
       </td>
     </tr>
     <?php } ?>

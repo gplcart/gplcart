@@ -15,17 +15,17 @@
   <?php if(!empty($_head_title)) { ?>
   <title><?php echo $_head_title; ?></title>
   <?php } ?>
-  <?php if(!empty($_styles)) { ?>
-  <?php foreach ($_styles as $data) { ?>
-  <link href="<?php echo $this->e($data['key']); ?>" rel="stylesheet">
+  <?php if(!empty($_css)) { ?>
+  <?php foreach ($_css as $css) { ?>
+  <link href="<?php echo $this->url($css['asset'], array('v' => $css['version'])); ?>" rel="stylesheet">
   <?php } ?>
   <?php } ?>
-  <?php if(!empty($_scripts_top)) { ?>
-  <?php foreach ($_scripts_top as $data) { ?>
-    <?php if (!empty($data['text'])) { ?>
-    <script><?php echo $data['asset']; ?></script>
+  <?php if(!empty($_js_top)) { ?>
+  <?php foreach ($_js_top as $js) { ?>
+    <?php if (empty($js['text'])) { ?>
+    <script src="<?php echo $this->url($js['asset'], array('v' => $js['version'])); ?>"></script>
     <?php } else { ?>
-    <script src="<?php echo $this->e($data['key']); ?>"></script>
+    <script><?php echo $js['asset']; ?></script>
     <?php } ?>
   <?php } ?>
   <?php } ?>

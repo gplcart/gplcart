@@ -31,11 +31,6 @@
         <div class="text-muted">
           <?php echo $this->text('The key is used to run scheduled operations from outside of the site. Leave empty to generate a random key'); ?>
         </div>
-        <?php if (!empty($settings['cron_key']) && $this->access('cron')) { ?>
-        <a target="_blank" href="<?php echo $this->url('cron', array('key' => $settings['cron_key'])); ?>">
-          <?php echo $this->text('Run cron'); ?>
-        </a>
-        <?php } ?>
       </div>
     </div>
   </div>
