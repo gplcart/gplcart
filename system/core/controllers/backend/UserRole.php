@@ -68,7 +68,7 @@ class UserRole extends BackendController
         $permissions = $this->role->getPermissions();
 
         if ($chunked) {
-            $permissions = gplcart_array_split($permissions, 4);
+            $permissions = gplcart_array_split($permissions, 3);
         }
 
         return $permissions;
