@@ -100,4 +100,26 @@ abstract class Module
         return $this->getInstance('gplcart\\core\\Library');
     }
 
+    /**
+     * Returns language model instance
+     * @return \gplcart\core\models\Language
+     */
+    protected function getLanguage()
+    {
+        return $this->getModel('Language');
+    }
+
+    /**
+     * Returns an asset directory or file
+     * @param string $module_id
+     * @param string $type
+     * @param string $file
+     * @return string
+     */
+    protected function getAsset($module_id, $type, $file = '')
+    {
+        $directory = $this->config->getModuleDirectory($module_id);
+        return rtrim("$directory/$type/$file", '/');
+    }
+
 }
