@@ -21,7 +21,7 @@ class Frontend extends Module
      * Implements hook "route.list"
      * @param array $routes
      */
-    public function hookRouteList(&$routes)
+    public function hookRouteList(array &$routes)
     {
         $routes['admin/module/settings/frontend'] = array(
             'access' => 'module_edit',
@@ -41,19 +41,17 @@ class Frontend extends Module
             return null;
         }
 
-        $libraries = array('font_awesome');
-
-        if (!$controller->isInstalling()) {
-            $controller->setJs('system/modules/frontend/js/common.js');
-            $libraries = array_merge($libraries, array('jquery_match_height'));
-        }
-
-        $controller->addAssetLibrary($libraries);
+        $controller->addAssetLibrary('bootstrap');
+        $controller->addAssetLibrary('html5shiv', array('aggregate' => false, 'condition' => 'if lt IE 9'));
+        $controller->addAssetLibrary('respond', array('aggregate' => false, 'condition' => 'if lt IE 9'));
+        $controller->addAssetLibrary('font_awesome');
 
         if ($controller->isInstalling()) {
-            $controller->setCss('system/modules/frontend/css/install.css');
+            $controller->setCss($this->getAsset('frontend', 'css', 'install.css'));
         } else {
-            $controller->setCss('system/modules/frontend/css/style.css');
+            $controller->setCss($this->getAsset('frontend', 'css', 'style.css'));
+            $controller->addAssetLibrary('jquery_match_height');
+            $controller->setJs($this->getAsset('frontend', 'js', 'common.js'));
         }
 
         $controller->setMeta(array('charset' => 'utf-8'));
