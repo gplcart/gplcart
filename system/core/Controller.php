@@ -445,9 +445,6 @@ abstract class Controller
     {
         $this->addAssetLibrary('jquery');
         $this->setJs('files/assets/system/js/common.js');
-
-        $this->addAssetLibrary('bootstrap');
-        $this->addAssetLibrary(array('html5shiv', 'respond'), array('aggregate' => false, 'condition' => 'if lt IE 9'));
     }
 
     /**
@@ -583,10 +580,9 @@ abstract class Controller
      */
     public function getCss()
     {
-        $stylesheets = $this->asset->getCss();
-        $this->compressAssets($stylesheets, 'css');
-
-        return $stylesheets;
+        $css = $this->asset->getCss();
+        $this->compressAssets($css, 'css');
+        return $css;
     }
 
     /**
@@ -596,10 +592,9 @@ abstract class Controller
      */
     public function getJs($position)
     {
-        $scripts = $this->asset->getJs($position);
-        $this->compressAssets($scripts, 'js');
-
-        return $scripts;
+        $js = $this->asset->getJs($position);
+        $this->compressAssets($js, 'js');
+        return $js;
     }
 
     /**
@@ -808,8 +803,6 @@ abstract class Controller
             $data = array_merge($data, $this->getDefaultData());
         }
 
-        $this->hook->attach('template', $template, $data, $this);
-
         $rendered = null;
         $this->hook->attach('template.render', $template, $data, $rendered, $this);
 
@@ -838,7 +831,7 @@ abstract class Controller
 
         $fullpath = false;
         if (strpos($file, '|') === false) {
-            $fullpath = strpos($file, GC_ROOT_DIR) === 0;
+            $fullpath = gplcart_is_absolute_path($file);
         } else {
             list($module, $file) = explode('|', $file, 2);
         }
@@ -1441,9 +1434,15 @@ abstract class Controller
      */
     protected function prepareDataOutput()
     {
-        $this->data['_styles'] = $this->getCss();
-        $this->data['_scripts_top'] = $this->getJs('top');
-        $this->data['_scripts_bottom'] = $this->getJs('bottom');
+        $this->data['_css'] = $this->getCss();
+        $this->data['_js_top'] = $this->getJs('top');
+        $this->data['_js_bottom'] = $this->getJs('bottom');
+
+        $this->hook->attach('template.data', $this->data, $this);
+
+        gplcart_array_sort($this->data['_css']);
+        gplcart_array_sort($this->data['_js_top']);
+        gplcart_array_sort($this->data['_js_bottom']);
     }
 
     /**
@@ -1577,10 +1576,10 @@ abstract class Controller
         $groups = $results = array();
         foreach ($assets as $key => $asset) {
 
-            $exclude = (isset($asset['aggregate']) && empty($asset['aggregate']));
+            $exclude = isset($asset['aggregate']) && empty($asset['aggregate']);
 
             if (!empty($asset['text']) || $exclude) {
-                // Add underscrore to make the key not numeric
+                // Add underscore to make the key not numeric
                 // We check it later to define which assets should be aggregated
                 $groups["_$group"] = $asset;
                 $group++;
@@ -1681,8 +1680,7 @@ abstract class Controller
 
         foreach ($classes as $class) {
             $filename = strtolower(str_replace('\\', '-', $class));
-            $file = GC_LOCALE_JS_DIR . "/{$this->langcode}/$filename.js";
-            $this->setJs(str_replace(GC_ROOT_DIR . '/', '', $file));
+            $this->setJs(GC_LOCALE_JS_DIR . "/{$this->langcode}/$filename.js");
         }
     }
 
@@ -1726,13 +1724,22 @@ abstract class Controller
         $data['_query'] = $this->query;
         $data['_scheme'] = $this->scheme;
         $data['_cart_uid'] = $this->cart_uid;
-        $data['_is_front'] = $this->url->isFront();
+        $data['_is_front'] = $this->isFront();
         $data['_is_logged_in'] = !empty($this->uid);
         $data['_is_admin'] = $this->access('admin');
         $data['_is_superadmin'] = $this->isSuperadmin();
         $data['_langcode'] = empty($this->langcode) ? 'en' : $this->langcode;
 
         return $data;
+    }
+
+    /**
+     * Whether the current path is home page
+     * @return bool
+     */
+    public function isFront()
+    {
+        return $this->url->isFront();
     }
 
     /**
@@ -1953,8 +1960,8 @@ abstract class Controller
         if ($result === true) {
             return array();
         }
-        $this->errors = (array) $result;
-        return $this->errors;
+
+        return $this->errors = (array) $result;
     }
 
     /**
@@ -1999,10 +2006,12 @@ abstract class Controller
         settype($messages, 'array');
 
         foreach (gplcart_array_flatten($messages) as $message) {
+
             if ($once) {
                 $this->session->setMessage($message, $severity);
                 continue;
             }
+
             $this->data['_messages'][$severity][] = $message;
         }
     }
@@ -2163,9 +2172,7 @@ abstract class Controller
             'page' => 1,
             'limit' => $limit,
             'total' => $total,
-            'query' => $query,
-            'prev' => $this->text('Back'),
-            'next' => $this->text('Next')
+            'query' => $query
         );
 
         if (isset($query[$key])) {
@@ -2174,7 +2181,7 @@ abstract class Controller
 
         $data['query'][$key] = '%num';
 
-        return $this->pager->build($data);
+        return $this->render('common/pager', array('pager' => $this->pager->get($data)));
     }
 
     /**
