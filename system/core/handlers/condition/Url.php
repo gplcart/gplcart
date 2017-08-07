@@ -69,7 +69,7 @@ class Url extends BaseHandler
 
         $found = false;
         foreach ((array) $condition['value'] as $pattern) {
-            if (gplcart_parse_pattern($path, $pattern)) {
+            if (gplcart_parse_path($path, $pattern)) {
                 $found = true;
             }
         }
