@@ -293,7 +293,7 @@ class Route
     {
         foreach ($this->getList() as $pattern => $route) {
             $pattern = trim($pattern, '/');
-            $arguments = gplcart_parse_pattern($this->path, $pattern);
+            $arguments = gplcart_parse_path($this->path, $pattern);
             if (is_array($arguments)) {
                 $this->callController($pattern, $route, $arguments);
                 break;

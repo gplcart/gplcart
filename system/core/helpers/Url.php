@@ -65,7 +65,7 @@ class Url
      */
     public function isAbsolute($url)
     {
-        return gplcart_absolute_url($url);
+        return gplcart_is_absolute_url($url);
     }
 
     /**
