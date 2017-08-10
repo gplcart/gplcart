@@ -73,11 +73,29 @@
             <input type="checkbox" name="fields[<?php echo $field_id; ?>][remove]" value="1">
           </td>
           <td class="middle">
-            <?php if ($this->access('field_edit')) { ?>
-            <a href="<?php echo $this->url("admin/content/field/edit/$field_id"); ?>">
-              <?php echo $this->lower($this->text('Edit')); ?>
-            </a>
-            <?php } ?>
+            <ul class="list-inline">
+              <?php if ($this->access('field_edit')) { ?>
+              <li>
+                <a href="<?php echo $this->url("admin/content/field/edit/$field_id"); ?>">
+                  <?php echo $this->lower($this->text('Edit')); ?>
+                </a>
+              </li>
+              <?php } ?>
+              <?php if ($this->access('field_value')) { ?>
+              <li>
+                <a href="<?php echo $this->url("admin/content/field/value/$field_id"); ?>">
+                  <?php echo $this->lower($this->text('Values')); ?>
+                </a>
+              </li>
+              <?php } ?>
+              <?php if ($this->access('field_value_add')) { ?>
+              <li>
+                <a href="<?php echo $this->url("admin/content/field/value/$field_id/add"); ?>">
+                  <?php echo $this->lower($this->text('Add value')); ?>
+                </a>
+              </li>
+              <?php } ?>
+            </ul>
           </td>
         </tr>
         <?php } ?>

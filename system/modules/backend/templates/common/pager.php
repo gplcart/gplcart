@@ -9,7 +9,7 @@
 <?php if(!empty($pager['pages'])) { ?>
 <ul class="pagination">
   <?php if (!empty($pager['prev'])) { ?>
-  <li><a rel="prev" href="<?php echo $this->e($pager['prev']); ?>">&laquo; <?php echo $this->text('Previous'); ?></a></li>';
+  <li><a rel="prev" href="<?php echo $this->e($pager['prev']); ?>">&laquo; <?php echo $this->text('Previous'); ?></a></li>
   <?php } ?>
   <?php foreach ($pager['pages'] as $page) { ?>
   <?php if (empty($page['url'])) { ?>
