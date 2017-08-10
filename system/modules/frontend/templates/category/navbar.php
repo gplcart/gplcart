@@ -32,16 +32,10 @@
           <i class="fa fa-th-list"></i>
         </label>
         <label class="btn btn-default<?php echo $view === 'grid' ? ' active' : ''; ?>">
-          <input type="radio" name="view" autocomplete="off" value="grid"<?php echo $view === 'grid' ? ' active' : ''; ?>>
+          <input type="radio" name="view" autocomplete="off" value="grid"<?php echo $view === 'grid' ? ' checked' : ''; ?>>
           <i class="fa fa-th-large"></i>
         </label>
       </div>
-      <?php // Add hidden fields to retain additional GET parameters from the current URL (if any)  ?>
-      <?php foreach ($query as $key => $value) { ?>
-      <?php if (!in_array($key, array('sort', 'view'))) { ?>
-      <input type="hidden" name="<?php echo $this->e($key); ?>" value="<?php echo $this->e($value); ?>">
-      <?php } ?>
-      <?php } ?>
       <button class="btn btn-default hidden-js"><?php echo $this->text('Go'); ?></button>
     </form>
   </div>
