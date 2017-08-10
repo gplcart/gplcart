@@ -118,7 +118,7 @@ class Pager
 
     /**
      * Returns max number of pages to show in the pager links
-     * @return int
+     * @return integer
      */
     public function getMaxPagesToShow()
     {
@@ -127,7 +127,7 @@ class Pager
 
     /**
      * Returns the current page number
-     * @return int
+     * @return integer
      */
     public function getCurrentPage()
     {
@@ -136,7 +136,7 @@ class Pager
 
     /**
      * Returns total number of items
-     * @return int
+     * @return integer
      */
     public function getTotalItems()
     {
@@ -145,7 +145,7 @@ class Pager
 
     /**
      * Returns number of pages
-     * @return int
+     * @return integer
      */
     public function getNumPages()
     {
@@ -368,11 +368,11 @@ class Pager
     }
 
     /**
-     * Returns an array of pager data for template
+     * Set up pager from an array of parameters
      * @param array $data
-     * @return string
+     * @return \gplcart\core\helpers\Pager
      */
-    public function get(array $data = array())
+    public function build(array $data = array())
     {
         $data += array(
             'page' => 1,
@@ -386,6 +386,15 @@ class Pager
                 ->setTotal($data['total'])
                 ->setUrlPattern('?' . urldecode(http_build_query($data['query'])));
 
+        return $this;
+    }
+
+    /**
+     * Returns an array of pager data for template
+     * @return array
+     */
+    public function get()
+    {
         if ($this->pages <= 1) {
             return array();
         }
