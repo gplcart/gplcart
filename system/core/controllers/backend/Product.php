@@ -61,7 +61,7 @@ class Product extends BackendController
     protected $currency;
 
     /**
-     * Url model instance
+     * URL model instance
      * @var \gplcart\core\models\Alias $alias
      */
     protected $alias;
@@ -183,6 +183,7 @@ class Product extends BackendController
         $query = $this->query_filter;
         $query['limit'] = $this->limit;
         $products = (array) $this->product->getList($query);
+
         return empty($products) ? array() : $this->prepareListProduct($products);
     }
 
@@ -306,10 +307,12 @@ class Product extends BackendController
     protected function setProduct($product_id)
     {
         if (is_numeric($product_id)) {
+
             $product = $this->product->get($product_id);
             if (empty($product)) {
                 $this->outputHttpStatus(404);
             }
+
             $this->data_product = $this->prepareProduct($product);
         }
     }
@@ -434,6 +437,7 @@ class Product extends BackendController
         }
 
         $this->validateComponent('product');
+
         return !$this->hasErrors();
     }
 
