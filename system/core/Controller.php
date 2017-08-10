@@ -2025,6 +2025,7 @@ abstract class Controller
     {
         $delimiter = $this->config('summary_delimiter', '<!--summary-->');
         $parts = array_filter(array_map('trim', explode($delimiter, $text, 2)));
+
         return array_pad($parts, 2, '');
     }
 
@@ -2181,7 +2182,9 @@ abstract class Controller
 
         $data['query'][$key] = '%num';
 
-        return $this->render('common/pager', array('pager' => $this->pager->get($data)));
+        $pager = $this->pager->build($data)->get();
+
+        return $this->render('common/pager', array('pager' => $pager));
     }
 
     /**
@@ -2195,7 +2198,11 @@ abstract class Controller
             return '';
         }
 
-        $options += array('depth' => 0, 'template' => 'common/menu');
+        $options += array(
+            'depth' => 0,
+            'template' => 'common/menu'
+        );
+
         return $this->render($options['template'], $options);
     }
 
