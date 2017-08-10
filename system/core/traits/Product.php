@@ -51,6 +51,7 @@ trait Product
 
                 $options = array(
                     'imagestyle' => $imagestyle,
+                    'placeholder' => false,
                     'path' => $fields[$type][$field_id]['values'][$field_value_id]['path']
                 );
 
