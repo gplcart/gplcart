@@ -147,7 +147,7 @@ class Product extends FrontendController
 
         if (empty($this->data_product['images'])) {
             $this->data_product['images'][] = array(
-                'thumb' => $this->image->placeholder($options['imagestyle']));
+                'thumb' => $this->image->getPlaceholder($options['imagestyle']));
         } else {
             $this->setItemThumb($this->data_product, $options);
         }
@@ -292,10 +292,14 @@ class Product extends FrontendController
         }
 
         foreach ($reviews as &$review) {
+
             $rating = array('rating' => 0);
+
             if (isset($ratings[$review['user_id']]['rating'])) {
                 $rating['rating'] = $ratings[$review['user_id']]['rating'];
             }
+
+            $review['rating'] = $rating['rating'];
             $review['rating_formatted'] = $this->render('common/rating/static', array('rating' => $rating));
         }
 
