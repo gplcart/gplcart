@@ -14,9 +14,9 @@ var GplCart = GplCart || {settings: {}, translations: {}, onload: {}, modules: {
 
     /**
      * Translates a string
-     * @param {type} text
-     * @param {type} options
-     * @returns {type}
+     * @param {String} text
+     * @param {Object} options
+     * @returns {String}
      */
     GplCart.text = function (text, options) {
         options = options || {};
@@ -30,9 +30,9 @@ var GplCart = GplCart || {settings: {}, translations: {}, onload: {}, modules: {
 
     /**
      * Format strings using placeholders
-     * @param {type} str
-     * @param {type} args
-     * @returns {unresolved}
+     * @param {String} str
+     * @param {Object} args
+     * @returns {String}
      */
     GplCart.formatString = function (str, args) {
 
@@ -57,7 +57,7 @@ var GplCart = GplCart || {settings: {}, translations: {}, onload: {}, modules: {
 
     /**
      * Escapes a string
-     * @param {type} str
+     * @param {String} str
      * @returns {String}
      */
     GplCart.escape = function (str) {
@@ -79,7 +79,7 @@ var GplCart = GplCart || {settings: {}, translations: {}, onload: {}, modules: {
 
     /**
      * Processes AJAX requests for a job widget
-     * @param {type} settings
+     * @param {Object} settings
      * @returns {undefined}
      */
     GplCart.job = function (settings) {
