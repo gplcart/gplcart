@@ -47,7 +47,7 @@ class Hook
     /**
      * Registers all hooks from all modules
      */
-    public function attachAll()
+    public function registerAll()
     {
         foreach ($this->config->getEnabledModules() as $module) {
             if (empty($module['hooks'])) {
