@@ -35,7 +35,7 @@ class Image extends Model
     protected $language;
 
     /**
-     * Url class instance
+     * URL class instance
      * @var \gplcart\core\helpers\Url $url
      */
     protected $url;
@@ -103,7 +103,7 @@ class Image extends Model
     }
 
     /**
-     * Returns a string containing a thumbnail image url
+     * Returns a string containing a thumbnail image URL
      * @param array $data
      * @param array $options
      * @return string
@@ -113,7 +113,7 @@ class Image extends Model
         $options += array('placeholder' => true, 'imagestyle' => 3);
 
         if (empty($options['ids'])) {
-            return empty($options['placeholder']) ? '' : $this->placeholder($options['imagestyle']);
+            return empty($options['placeholder']) ? '' : $this->getPlaceholder($options['imagestyle']);
         }
 
         $conditions = array(
@@ -130,7 +130,7 @@ class Image extends Model
             }
         }
 
-        return empty($options['placeholder']) ? '' : $this->placeholder($options['imagestyle']);
+        return empty($options['placeholder']) ? '' : $this->getPlaceholder($options['imagestyle']);
     }
 
     /**
@@ -203,7 +203,7 @@ class Image extends Model
     }
 
     /**
-     * Returns an array of imagestyle actions
+     * Returns an array of image style actions
      * @param integer $imagestyle_id
      * @return array
      */
@@ -233,7 +233,7 @@ class Image extends Model
     }
 
     /**
-     * Adds an imagestyle
+     * Adds an image style
      * @param array $data
      * @return integer
      */
@@ -261,7 +261,7 @@ class Image extends Model
     }
 
     /**
-     * Updates an imagestyle
+     * Updates an image style
      * @param integer $imagestyle_id
      * @param array $data
      * @return boolean
@@ -292,7 +292,7 @@ class Image extends Model
     }
 
     /**
-     * Deletes an imagestyle
+     * Deletes an image style
      * @param integer $imagestyle_id
      * @return boolean
      */
@@ -322,7 +322,7 @@ class Image extends Model
     }
 
     /**
-     * Removes cached files for a given imagestyle
+     * Removes cached files for a given image style
      * @param integer|null $imagestyle_id
      * @return boolean
      */
@@ -353,15 +353,35 @@ class Image extends Model
      * @param boolean $absolute
      * @return string
      */
-    public function placeholder($imagestyle_id = null, $absolute = false)
+    public function getPlaceholder($imagestyle_id = null, $absolute = false)
     {
-        $placeholder = $this->config->get('no_image', 'image/misc/no-image.png');
+        $placeholder = $this->getPlaceholderPath();
 
         if (isset($imagestyle_id)) {
             return $this->url($imagestyle_id, $placeholder, $absolute);
         }
 
         return $this->url->get($placeholder, array(), true);
+    }
+
+    /**
+     * Returns a relative path to image placeholder
+     * @return string
+     */
+    public function getPlaceholderPath()
+    {
+        return $this->config->get('no_image', 'image/misc/no-image.png');
+    }
+
+    /**
+     * Whether the path is an image placeholder
+     * @param string $path
+     * @return bool
+     */
+    public function isPlaceholder($path)
+    {
+        $placeholder = $this->getPlaceholderPath();
+        return substr(strtok($path, '?'), -strlen($placeholder)) === $placeholder;
     }
 
     /**
@@ -374,7 +394,7 @@ class Image extends Model
     public function url($imagestyle_id, $image, $absolute = false)
     {
         if (empty($image)) {
-            return $this->placeholder($imagestyle_id, $absolute);
+            return $this->getPlaceholder($imagestyle_id, $absolute);
         }
 
         $trimmed = trim($image, "/");
