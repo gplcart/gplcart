@@ -151,13 +151,10 @@ class Address extends ComponentValidator
         $label = $this->language->text('Country');
         $code = $this->getSubmitted($field);
 
-        if (empty($code)) {
-            $countries = $this->country->getList();
-            if (empty($countries)) {
-                $format = $this->country->getDefaultFormat();
-                $this->setSubmitted('format', $format);
-                return null;
-            }
+        if (!isset($code)) {
+            $format = $this->country->getDefaultFormat();
+            $this->setSubmitted('format', $format);
+            return null;
         }
 
         $country = $this->country->get($code);
