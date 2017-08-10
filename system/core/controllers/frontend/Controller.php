@@ -700,31 +700,38 @@ class Controller extends BaseController
      */
     protected function setItemThumb(array &$data, array $options = array())
     {
+
         if (empty($options['imagestyle'])) {
             return $data;
         }
 
         if (!empty($options['path'])) {
             $data['thumb'] = $this->image->url($options['imagestyle'], $options['path']);
-            return $data;
-        }
-
-        if (!empty($data['path'])) {
+        } else if (!empty($data['path'])) {
             $data['thumb'] = $this->image->url($options['imagestyle'], $data['path']);
-            return $data;
-        }
-
-        if (empty($data['images'])) {
+        } else if (empty($data['images'])) {
             $data['thumb'] = $this->image->getThumb($data, $options);
-            return $data; // Processing single item
+        } else {
+            foreach ($data['images'] as &$image) {
+                $image['url'] = $this->image->urlFromPath($image['path']);
+                $image['thumb'] = $this->image->url($options['imagestyle'], $image['path']);
+                $this->setItemIsThumbPlaceholder($image);
+            }
         }
 
-        foreach ($data['images'] as &$image) {
-            $image['url'] = $this->image->urlFromPath($image['path']);
-            $image['thumb'] = $this->image->url($options['imagestyle'], $image['path']);
-        }
-
+        $this->setItemIsThumbPlaceholder($data);
         return $data;
+    }
+
+    /**
+     * Sets a boolean flag indicating that the thumb is an image placeholder
+     * @param array $data
+     */
+    protected function setItemIsThumbPlaceholder(array &$data)
+    {
+        if (!empty($data['thumb'])) {
+            $data['thumb_placeholder'] = $this->image->isPlaceholder($data['thumb']);
+        }
     }
 
     /**
@@ -748,7 +755,7 @@ class Controller extends BaseController
         }
 
         if (empty($options['path'])) {
-            $item['thumb'] = $this->image->placeholder($options['imagestyle']);
+            $item['thumb'] = $this->image->getPlaceholder($options['imagestyle']);
         } else {
             $this->setItemThumb($item, $options);
         }
