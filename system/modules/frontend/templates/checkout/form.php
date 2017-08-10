@@ -27,7 +27,7 @@
     <div class="col-md-12">
       <?php if ($show_login_form) { ?>
       <?php echo $pane_login; ?>
-      <?php } else if (!$_uid) { ?>
+      <?php } else if (!$_is_logged_in) { ?>
       <div class="form-group">
         <label class="col-md-2 control-label"><?php echo $this->text('Already registered?'); ?></label>
         <div class="col-md-4">
