@@ -5,8 +5,6 @@
 
     var image_container = '.image-container';
 
-    $.ajaxSetup({data: {token: GplCart.settings.token}});
-
     /**
      * Returns html for modal
      * @param {String} content
@@ -170,6 +168,7 @@
                     data: {
                         selected: selected,
                         action: $(this).data('action'),
+                        token: GplCart.settings.token,
                         value: $(this).data('action-value')
                     },
                     success: function () {
@@ -262,9 +261,13 @@
                     });
 
                     $.ajax({
-                        data: {action: 'weight', selected: weight},
                         type: 'POST',
                         url: GplCart.settings.urn,
+                        data: {
+                            action: 'weight',
+                            selected: weight,
+                            token: GplCart.settings.token
+                        },
                         success: function (data) {
                             if (typeof data === 'object' && data.success) {
                                 setAlert(data.success, 'weight-updating-success');
@@ -335,7 +338,11 @@
                 url: GplCart.settings.urn,
                 method: 'POST',
                 dataType: 'json',
-                data: {action: 'categories', store_id: $(this).find('option:selected').val()},
+                data: {
+                    action: 'categories',
+                    token: GplCart.settings.token,
+                    store_id: $(this).find('option:selected').val()
+                },
                 beforeSend: function () {
                     store.prop('disabled', true);
                     category.prop('disabled', true);
@@ -436,6 +443,7 @@
     GplCart.onload.updateProductClassFields = function () {
         var val;
         $('[name$="[product_class_id]"]').change(function () {
+
             val = $(this).val();
             loadProductFields(val);
 
@@ -662,12 +670,14 @@
      * @returns {undefined}
      */
     GplCart.onload.setProductCombinationImage = function () {
+
         var e, src, path, pos;
+
         $(document).on('click', 'img.combination-image', function () {
+
             src = $(this).attr('src');
             path = $(this).attr('data-file-path');
             pos = $(this).closest('#select-image-modal').attr('data-active-row');
-
             e = $('#option-form-wrapper tbody tr').eq(pos).find('.select-image');
 
             e.html(htmlProductCombinationImage(src));
@@ -721,12 +731,15 @@
             input.autocomplete({
                 minLength: 2,
                 source: function (request, response) {
+
                     params = {
                         status: 1,
                         term: request.term,
                         action: 'getProductsAjax',
+                        token: GplCart.settings.token,
                         store_id: $('select[name$="[store_id]"] option:selected').val()
                     };
+
                     $.post(GplCart.settings.base + 'ajax', params, function (data) {
                         response($.map(data, function (value, key) {
                             return {
@@ -765,11 +778,14 @@
         input.autocomplete({
             minLength: 2,
             source: function (request, response) {
+
                 params = {
                     term: request.term,
+                    token: GplCart.settings.token,
                     action: 'getCollectionItemAjax',
                     collection_id: GplCart.settings.collection.collection_id
                 };
+
                 $.post(GplCart.settings.base + 'ajax', params, function (data) {
                     response($.map(data, function (value, key) {
                         return {
@@ -804,7 +820,13 @@
             input.autocomplete({
                 minLength: 2,
                 source: function (request, response) {
-                    params = {term: request.term, action: 'getUsersAjax'};
+
+                    params = {
+                        term: request.term,
+                        action: 'getUsersAjax',
+                        token: GplCart.settings.token
+                    };
+
                     $.post(GplCart.settings.base + 'ajax', params, function (data) {
                         response($.map(data, function (value, key) {
                             return {
@@ -838,7 +860,13 @@
             input.autocomplete({
                 minLength: 2,
                 source: function (request, response) {
-                    params = {term: request.term, action: 'getProductsAjax'};
+
+                    params = {
+                        term: request.term,
+                        action: 'getProductsAjax',
+                        token: GplCart.settings.token
+                    };
+
                     $.post(GplCart.settings.base + 'ajax', params, function (data) {
                         response($.map(data, function (value, key) {
                             return {

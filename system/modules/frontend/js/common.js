@@ -5,8 +5,6 @@
 
     var selected_option_values = [];
 
-    $.ajaxSetup({data: {token: GplCart.settings.token}});
-
     /**
      * Returns HTML of modal pop-up
      * @param {String} content
@@ -263,7 +261,8 @@
                 params = {
                     action: 'searchCityAjax',
                     country: country.val(),
-                    state_id: state_id.val()
+                    state_id: state_id.val(),
+                    token: GplCart.settings.token
                 };
 
                 $.post(GplCart.settings.base + 'ajax', params, function (data) {
@@ -341,7 +340,10 @@
                 type: 'POST',
                 url: GplCart.settings.base + 'ajax',
                 dataType: 'json',
-                data: {action: 'getCartPreviewAjax'},
+                data: {
+                    action: 'getCartPreviewAjax',
+                    token: GplCart.settings.token
+                },
                 success: function (data) {
                     if (typeof data === 'object' && data.preview) {
                         setModal(data.preview, 'cart-preview', GplCart.text('Cart'));
@@ -441,14 +443,15 @@
             selected_option_values = selected.values;
 
             $.ajax({
+                method: 'POST',
+                dataType: 'json',
+                url: GplCart.settings.base + 'ajax',
                 data: {
                     values: selected.values,
                     action: 'switchProductOptionsAjax',
+                    token: GplCart.settings.token,
                     product_id: GplCart.settings.product.product_id
                 },
-                method: 'post',
-                dataType: 'json',
-                url: GplCart.settings.base + 'ajax',
                 success: function (data) {
 
                     if (typeof data !== 'object') {
