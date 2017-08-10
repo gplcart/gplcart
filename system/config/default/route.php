@@ -84,6 +84,11 @@ return array(
             'controller' => array('gplcart\\core\\controllers\\frontend\\User', 'editResetPasswordUser')
         )
     ),
+    'catalog' => array(
+        'handlers' => array(
+            'controller' => array('gplcart\\core\\controllers\\frontend\\Category', 'listCategory')
+        )
+    ),
     'category/(\d+)' => array(
         'alias' => array(0, 1),
         'handlers' => array(

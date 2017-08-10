@@ -53,6 +53,42 @@ class Category extends FrontendController
     }
 
     /**
+     * Displays the catalog page
+     */
+    public function listCategory()
+    {
+        $this->setTitleListCategory();
+        $this->setBreadcrumbListCategory();
+
+        $this->setData('categories', $this->data_categories);
+        $this->outputListCategory();
+    }
+
+    /**
+     * Sets titles on the catalog page
+     */
+    protected function setTitleListCategory()
+    {
+        $this->setTitle($this->text('Catalog'));
+    }
+
+    /**
+     * Sets bread crumbs on the catalog page
+     */
+    protected function setBreadcrumbListCategory()
+    {
+        $this->setBreadcrumbHome();
+    }
+
+    /**
+     * Renders and outputs the catalog page templates
+     */
+    protected function outputListCategory()
+    {
+        $this->output('category/list');
+    }
+
+    /**
      * Displays the category page
      * @param integer $category_id
      */
@@ -73,15 +109,42 @@ class Category extends FrontendController
 
         $this->setData('category', $this->data_category);
 
+        $this->setDataMenuIndexCategory();
         $this->setDataImagesIndexCategory();
         $this->setDataNavbarIndexCategory();
         $this->setDataProductsIndexCategory();
         $this->setDataChildrenIndexCategory();
 
-        $this->setRegionMenuIndexCategory();
-
         $this->setMetaIndexCategory();
         $this->outputIndexCategory();
+    }
+
+    /**
+     * Sets filter on the category page
+     */
+    protected function setFilterIndexCategory()
+    {
+        $default = array(
+            'view' => $this->settings('catalog_view', 'grid'),
+            'sort' => $this->settings('catalog_sort', 'price'),
+            'order' => $this->settings('catalog_order', 'asc')
+        );
+
+        $this->setFilter(array(), $this->getFilterQuery($default));
+    }
+
+    /**
+     * Sets a total number of products for the category
+     */
+    protected function setTotalIndexCategory()
+    {
+        $options = array(
+            'count' => true,
+            'category_id' => $this->data_category['category_id']
+        );
+
+        $options += $this->query_filter;
+        $this->total = (int) $this->product->getList($options);
     }
 
     /**
@@ -139,39 +202,24 @@ class Category extends FrontendController
     }
 
     /**
+     * Sets the navigation menu on the category page
+     */
+    protected function setDataMenuIndexCategory()
+    {
+        $options = array(
+            'template' => 'category/menu',
+            'items' => $this->data_categories
+        );
+
+        $this->setData('menu', $this->renderMenu($options));
+    }
+
+    /**
      * Sets HTML filter
      */
     protected function setHtmlFilterIndexCategory()
     {
         $this->setHtmlFilter($this->data_category);
-    }
-
-    /**
-     * Sets filter on the category page
-     */
-    protected function setFilterIndexCategory()
-    {
-        $default = array(
-            'view' => $this->settings('catalog_view', 'grid'),
-            'sort' => $this->settings('catalog_sort', 'price'),
-            'order' => $this->settings('catalog_order', 'asc')
-        );
-
-        $this->setFilter(array(), $this->getFilterQuery($default, array_keys($default)));
-    }
-
-    /**
-     * Sets a total number of products for the category
-     */
-    protected function setTotalIndexCategory()
-    {
-        $options = array(
-            'count' => true,
-            'category_id' => $this->data_category['category_id']
-        );
-
-        $options += $this->query_filter;
-        $this->total = (int) $this->product->getList($options);
     }
 
     /**
@@ -198,19 +246,6 @@ class Category extends FrontendController
         if (empty($this->data_children) && empty($this->data_products)) {
             $this->setMeta(array('name' => 'robots', 'content' => 'noindex'));
         }
-    }
-
-    /**
-     * Sets the navigation menu on the category page
-     */
-    protected function setRegionMenuIndexCategory()
-    {
-        $options = array(
-            'template' => 'category/menu',
-            'items' => $this->data_categories
-        );
-
-        $this->setRegion('left', $this->renderMenu($options));
     }
 
     /**
