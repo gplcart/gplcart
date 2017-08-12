@@ -1,5 +1,5 @@
 # Prevent direct access to files
-<FilesMatch "\.(htaccess|htpasswd|ini|fla|psd|log|sh|c|twig|exe|cache)$">
+<FilesMatch "\.(htaccess|htpasswd|ini|fla|psd|log|sh|c|twig|exe|cache|json)$">
     Order Allow,Deny
     Deny from all
 </FilesMatch>
