@@ -65,6 +65,12 @@
       <?php if (!empty($pane_review)) { ?>
       <?php echo $pane_review; ?>
       <?php } ?>
+      <?php if (!empty($pane_comment)) { ?>
+      <?php echo $pane_comment; ?>
+      <?php } ?>
+      <?php if (!empty($pane_action)) { ?>
+      <?php echo $pane_action; ?>
+      <?php } ?>
     </div>
   </div>
   <?php } ?>
