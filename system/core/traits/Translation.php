@@ -23,8 +23,7 @@ trait Translation
      * @param string $language
      * @return null
      */
-    protected function attachTranslationTrait(\gplcart\core\Database $db,
-            array &$data, $entity, $language)
+    protected function attachTranslationTrait($db, &$data, $entity, $language)
     {
         if (empty($data)) {
             return null;
@@ -49,7 +48,7 @@ trait Translation
      * @param string $entity
      * @return array
      */
-    public function getTranslationTrait(\gplcart\core\Database $db, $id, $entity)
+    public function getTranslationTrait($db, $id, $entity)
     {
         $sql = "SELECT * FROM {$entity}_translation WHERE {$entity}_id=?";
         return $db->fetchAll($sql, array($id));
@@ -63,8 +62,7 @@ trait Translation
      * @param boolean $update
      * @return null|bool
      */
-    protected function setTranslationTrait(\gplcart\core\Database $db,
-            array $data, $entity, $update = true)
+    protected function setTranslationTrait($db, $data, $entity, $update = true)
     {
         if (empty($data['form']) && empty($data['translation'])) {
             return null;
@@ -92,8 +90,7 @@ trait Translation
      * @param string $entity
      * @param null|string $language
      */
-    public function deleteTranslationTrait(\gplcart\core\Database $db, $id,
-            $entity, $language = null)
+    public function deleteTranslationTrait($db, $id, $entity, $language = null)
     {
         $conditions = array("{$entity}_id" => $id);
 
@@ -109,13 +106,12 @@ trait Translation
      * @param \gplcart\core\Database $db
      * @param integer $id
      * @param string $entity
-     * @param string $language
+     * @param string $lang
      * @param array $translation
      */
-    public function addTranslationTrait(\gplcart\core\Database $db, $id,
-            $entity, $language, array $translation)
+    public function addTranslationTrait($db, $id, $entity, $lang, $translation)
     {
-        $translation['language'] = $language;
+        $translation['language'] = $lang;
         $translation["{$entity}_id"] = $id;
 
         $db->insert("{$entity}_translation", $translation);

@@ -21,9 +21,8 @@ trait Product
      * @param \gplcart\core\models\ProductClass $product_model
      * @param \gplcart\core\Controller $controller
      */
-    protected function setProductFieldsTrait(array &$product,
-            \gplcart\core\models\ProductClass $product_model,
-            \gplcart\core\Controller $controller)
+    protected function setProductFieldsTrait(array &$product, $product_model,
+            $controller)
     {
         $fields = $product_model->getFieldData($product['product_class_id']);
         $this->prepareProductFieldsTrait($product, $fields, 'option', $controller);
@@ -38,7 +37,7 @@ trait Product
      * @param \gplcart\core\Controller $controller
      */
     protected function prepareProductFieldsTrait(array &$product, array $fields,
-            $type, \gplcart\core\Controller $controller)
+            $type, $controller)
     {
         if (empty($product['field'][$type])) {
             return null;

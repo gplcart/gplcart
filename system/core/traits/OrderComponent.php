@@ -21,9 +21,8 @@ trait OrderComponent
      * @param \gplcart\core\Controller $controller
      * @param \gplcart\core\models\Price $price_model
      */
-    protected function prepareOrderComponentCartTrait(&$order,
-            \gplcart\core\Controller $controller,
-            \gplcart\core\models\Price $price_model)
+    protected function prepareOrderComponentCartTrait(&$order, $controller,
+            $price_model)
     {
         if (empty($order['data']['components']['cart']['items'])) {
             return null;
@@ -45,21 +44,18 @@ trait OrderComponent
      * Prepare shipping method component
      * @param array $order
      * @param \gplcart\core\Controller $controller
-     * @param \gplcart\core\models\Price $price
-     * @param \gplcart\core\models\Shipping $shipping
+     * @param \gplcart\core\models\Price $price_model
+     * @param \gplcart\core\models\Shipping $shipping_model
      * @param \gplcart\core\models\Order $order_model
      */
     protected function prepareOrderComponentShippingMethodTrait(&$order,
-            \gplcart\core\Controller $controller,
-            \gplcart\core\models\Price $price,
-            \gplcart\core\models\Shipping $shipping,
-            \gplcart\core\models\Order $order_model)
+            $controller, $price_model, $shipping_model, $order_model)
     {
         if (!isset($order['data']['components']['shipping']['price'])) {
             return null;
         }
 
-        $method = $shipping->get($order['shipping']);
+        $method = $shipping_model->get($order['shipping']);
         $value = $order['data']['components']['shipping']['price'];
 
         if (abs($value) == 0) {
@@ -68,7 +64,7 @@ trait OrderComponent
 
         $component_types = $order_model->getComponentTypes();
 
-        $method['price_formatted'] = $price->format($value, $order['currency']);
+        $method['price_formatted'] = $price_model->format($value, $order['currency']);
         $data = array('method' => $method, 'title' => $component_types['shipping']);
 
         $html = $controller->render('backend|sale/order/panes/components/method', $data);
@@ -84,10 +80,7 @@ trait OrderComponent
      * @param \gplcart\core\models\Order $order_model
      */
     protected function prepareOrderComponentPaymentMethodTrait(&$order,
-            \gplcart\core\Controller $controller,
-            \gplcart\core\models\Price $price_model,
-            \gplcart\core\models\Payment $payment_model,
-            \gplcart\core\models\Order $order_model)
+            $controller, $price_model, $payment_model, $order_model)
     {
         if (!isset($order['data']['components']['payment']['price'])) {
             return null;
@@ -116,12 +109,9 @@ trait OrderComponent
      * @param \gplcart\core\models\Price $price_model
      * @param \gplcart\core\models\PriceRule $pricerule_model
      */
-    protected function prepareOrderComponentPriceRuleTrait(&$order,
-            \gplcart\core\Controller $controller,
-            \gplcart\core\models\Price $price_model,
-            \gplcart\core\models\PriceRule $pricerule_model)
+    protected function prepareOrderComponentPriceRuleTrait(&$order, $controller,
+            $price_model, $pricerule_model)
     {
-
         foreach ($order['data']['components'] as $price_rule_id => $component) {
 
             if (!is_numeric($price_rule_id)) {

@@ -21,9 +21,7 @@ trait Order
      * @param \gplcart\core\models\Shipping $model
      * @param \gplcart\core\Controller $controller
      */
-    protected function prepareOrderShippingTrait(&$order,
-            \gplcart\core\models\Shipping $model,
-            \gplcart\core\Controller $controller)
+    protected function prepareOrderShippingTrait(&$order, $model, $controller)
     {
         $data = $model->get($order['shipping']);
         $order['shipping_name'] = empty($data['title']) ? $controller->text('Unknown') : $data['title'];
@@ -35,9 +33,7 @@ trait Order
      * @param \gplcart\core\models\Payment $model
      * @param \gplcart\core\Controller $controller
      */
-    protected function prepareOrderPaymentTrait(&$order,
-            \gplcart\core\models\Payment $model,
-            \gplcart\core\Controller $controller)
+    protected function prepareOrderPaymentTrait(&$order, $model, $controller)
     {
         $data = $model->get($order['payment']);
         $order['payment_name'] = empty($data['title']) ? $controller->text('Unknown') : $data['title'];
@@ -49,9 +45,7 @@ trait Order
      * @param \gplcart\core\models\Store $model
      * @param \gplcart\core\Controller $controller
      */
-    protected function prepareOrderStoreTrait(&$order,
-            \gplcart\core\models\Store $model,
-            \gplcart\core\Controller $controller)
+    protected function prepareOrderStoreTrait(&$order, $model, $controller)
     {
         $data = $model->get($order['store_id']);
         $order['store_name'] = empty($data['name']) ? $controller->text('Unknown') : $data['name'];
@@ -63,9 +57,7 @@ trait Order
      * @param \gplcart\core\models\Order $model
      * @param \gplcart\core\Controller $controller
      */
-    protected function prepareOrderStatusTrait(&$order,
-            \gplcart\core\models\Order $model,
-            \gplcart\core\Controller $controller)
+    protected function prepareOrderStatusTrait(&$order, $model, $controller)
     {
         $data = $model->getStatusName($order['status']);
         $order['status_name'] = empty($data) ? $controller->text('Unknown') : $data;
@@ -76,8 +68,7 @@ trait Order
      * @param array $order
      * @param \gplcart\core\models\Price $model
      */
-    protected function prepareOrderTotalTrait(&$order,
-            \gplcart\core\models\Price $model)
+    protected function prepareOrderTotalTrait(&$order, $model)
     {
         $order['total_formatted'] = $model->format($order['total'], $order['currency']);
     }
@@ -87,8 +78,7 @@ trait Order
      * @param array $order
      * @param \gplcart\core\models\Order $model
      */
-    protected function prepareOrderNewTrait(&$order,
-            \gplcart\core\models\Order $model)
+    protected function prepareOrderNewTrait(&$order, $model)
     {
         $order['is_new'] = $model->isNew($order);
     }
@@ -98,8 +88,7 @@ trait Order
      * @param array $order
      * @param \gplcart\core\models\Address $model
      */
-    protected function prepareOrderAddressTrait(&$order,
-            \gplcart\core\models\Address $model)
+    protected function prepareOrderAddressTrait(&$order, $model)
     {
         $order['address'] = array();
         foreach (array('shipping', 'payment') as $type) {

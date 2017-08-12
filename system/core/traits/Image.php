@@ -22,15 +22,14 @@ trait Image
      * @param \gplcart\core\models\File $model
      * @param array $data
      * @param string $entity
-     * @param null|string $language
+     * @param null|string $lang
      */
-    protected function attachImagesTrait(\gplcart\core\models\File $model,
-            array &$data, $entity, $language = null)
+    protected function attachImagesTrait($model, &$data, $entity, $lang = null)
     {
         if (!empty($data)) {
             $images = $this->getImagesTrait($model, $data, "{$entity}_id");
             foreach ($images as &$image) {
-                $this->attachTranslationTrait($model->getDb(), $image, 'file', $language);
+                $this->attachTranslationTrait($model->getDb(), $image, 'file', $lang);
             }
             $data['images'] = $images;
         }
@@ -43,8 +42,7 @@ trait Image
      * @param string $key
      * @return array
      */
-    protected function getImagesTrait(\gplcart\core\models\File $model,
-            array $data, $key)
+    protected function getImagesTrait($model, array $data, $key)
     {
         $options = array(
             'order' => 'asc',
@@ -64,8 +62,7 @@ trait Image
      * @param string $entity
      * @return array
      */
-    protected function setImagesTrait(\gplcart\core\models\File $model,
-            array &$data, $entity)
+    protected function setImagesTrait($model, array &$data, $entity)
     {
         if (empty($data['images'])) {
             return array();

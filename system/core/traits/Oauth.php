@@ -20,8 +20,7 @@ trait Oauth
      * @param \gplcart\core\Controller $controller
      * @param \gplcart\core\models\Oauth $model
      */
-    protected function getOauthButtonsTrait(\gplcart\core\Controller $controller,
-            \gplcart\core\models\Oauth $model)
+    protected function getOauthButtonsTrait($controller, $model)
     {
         $options = array('type' => 'login', 'status' => true);
         $providers = $model->getProviders($options);

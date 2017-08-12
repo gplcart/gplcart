@@ -22,8 +22,7 @@ trait Alias
      * @param string $entity
      * @param boolean $update
      */
-    protected function setAliasTrait(\gplcart\core\models\Alias $model,
-            array $data, $entity, $update = true)
+    protected function setAliasTrait($model, $data, $entity, $update = true)
     {
         if (empty($data['form']) && empty($data['alias'])) {
             return null;
