@@ -75,7 +75,7 @@ class Checkout extends FrontendController
      * Whether payment address should be provided
      * @var bool
      */
-    protected $has_payment_address = false;
+    protected $same_payment_address = true;
 
     /**
      * Current state of login form
@@ -312,12 +312,7 @@ class Checkout extends FrontendController
      */
     protected function setBreadcrumbEditCheckout()
     {
-        $breadcrumb = array(
-            'url' => $this->url('/'),
-            'text' => $this->text('Home')
-        );
-
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbHome();
     }
 
     /**
@@ -433,13 +428,14 @@ class Checkout extends FrontendController
         $this->data_form['default_payment_method'] = false;
         $this->data_form['default_shipping_method'] = false;
 
-        $this->data_form['has_payment_address'] = $this->has_payment_address;
+        $this->data_form['same_payment_address'] = $this->same_payment_address;
         $this->data_form['get_payment_methods'] = $this->isPosted('get_payment_methods');
         $this->data_form['get_shipping_methods'] = $this->isPosted('get_shipping_methods');
 
         $this->data_form['show_login_form'] = $this->show_login_form;
         $this->data_form['show_payment_address_form'] = $this->show_payment_address_form;
         $this->data_form['show_shipping_address_form'] = $this->show_shipping_address_form;
+        $this->data_form['show_payment_methods'] = !$this->data_form['has_dynamic_payment_methods'];
         $this->data_form['show_shipping_methods'] = !$this->data_form['has_dynamic_shipping_methods'];
 
         $this->data_form['context_templates'] = $this->getTemplatesCheckout('context', $this->getSubmitted());
@@ -500,7 +496,8 @@ class Checkout extends FrontendController
     {
         $this->data_form["request_{$type}_methods"] = false;
 
-        if (!empty($this->data_form["get_{$type}_methods"]) || !empty($this->data_form['order'][$type])) {
+        if (!empty($this->data_form["get_{$type}_methods"])//
+                || (!empty($this->data_form['order'][$type]) && !empty($this->data_form["has_dynamic_{$type}_methods"]))) {
             $this->data_form["show_{$type}_methods"] = true;
             $this->data_form["request_{$type}_methods"] = true;
         }
@@ -550,7 +547,7 @@ class Checkout extends FrontendController
     protected function setFormDataPanesCheckout()
     {
         $panes = array('login', 'review', 'payment_methods',
-            'shipping_methods', 'shipping_address', 'payment_address');
+            'shipping_methods', 'shipping_address', 'payment_address', 'comment', 'action');
 
         foreach ($panes as $pane) {
             $this->data_form["pane_$pane"] = $this->render("checkout/panes/$pane", $this->data_form);
@@ -571,9 +568,7 @@ class Checkout extends FrontendController
             $this->show_login_form = true;
         }
 
-        if ($this->isPosted('payment_address')) {
-            $this->has_payment_address = true;
-        }
+        $this->same_payment_address = (bool) $this->getPosted('same_payment_address', true, false, 'bool');
 
         if ($this->isPosted('update')) {
             $this->setMessage($this->text('Form has been updated'), 'success', false);
@@ -599,8 +594,8 @@ class Checkout extends FrontendController
         $this->show_shipping_address_form = $this->isSubmitted('address.shipping');
 
         $actions = array(
-            'add_address' => true,
             'get_states' => true,
+            'add_address' => true,
             'cancel_address_form' => false
         );
 
@@ -872,7 +867,7 @@ class Checkout extends FrontendController
      */
     protected function validateOrderCheckout()
     {
-        if (!$this->has_payment_address) {
+        if ($this->same_payment_address) {
             $this->unsetSubmitted('address.payment');
         }
 
