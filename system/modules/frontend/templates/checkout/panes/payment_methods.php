@@ -24,6 +24,7 @@
     <?php } ?>
     <div class="form-group">
       <div class="col-md-12">
+        <?php if($show_payment_methods) { ?>
         <?php foreach ($payment_methods as $method_id => $method) { ?>
         <div class="radio">
           <label>
@@ -36,6 +37,7 @@
             <?php } ?>
           </label>
         </div>
+        <?php } ?>
         <?php } ?>
       </div>
     </div>

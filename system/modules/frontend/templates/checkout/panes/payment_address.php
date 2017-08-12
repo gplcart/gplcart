@@ -8,14 +8,15 @@
 ?>
 <div class="panel panel-checkout payment-address panel-default">
   <div class="panel-heading clearfix">
+    <input type="hidden" name="same_payment_address" value="0">
     <label>
-      <input type="checkbox" name="payment_address" value="1"<?php echo $has_payment_address ? ' checked' : ''; ?>> <?php echo $this->text('I have different payment address'); ?>
+      <input type="checkbox" name="same_payment_address" value="1"<?php echo $same_payment_address ? ' checked' : ''; ?>> <?php echo $this->text('My shipping and payment addresses are the same'); ?>
     </label>
     <noscript>
     <button title="<?php echo $this->text('Update'); ?>" class="btn btn-default btn-xs pull-right" name="update" value="1"><i class="fa fa-refresh"></i></button>
     </noscript>
   </div>
-  <?php if ($has_payment_address) { ?>
+  <?php if (!$same_payment_address) { ?>
   <div class="panel-body">
     <?php if ($this->error('payment_address', true)) { ?>
     <div class="alert alert-danger alert-dismissible">

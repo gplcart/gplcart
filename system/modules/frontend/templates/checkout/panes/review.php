@@ -137,18 +137,5 @@
     </div>
     <?php } ?>
     <?php } ?>
-    <div class="form-group">
-      <div class="col-md-12">
-        <a href="#" onclick="return false;" data-toggle="collapse" data-target="#order-comments"><?php echo $this->text('Order comments'); ?> <span class="caret"></span></a>
-        <textarea name="order[comment]" id="order-comments" class="form-control<?php echo empty($order['comment']) ? ' collapse' : ''; ?>"><?php echo $this->e($order['comment']); ?></textarea>
-      </div>
-    </div>
-    <div class="form-group">
-      <div class="col-md-6">
-        <button class="btn btn-success" name="save" value="1">
-          <?php echo $admin ? $this->text('Save') : $this->text('Place order now'); ?>
-        </button>
-      </div>
-    </div>
   </div>
 </div>
