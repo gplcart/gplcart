@@ -34,22 +34,8 @@ class Wishlist extends FrontendController
         $this->setBreadcrumbIndexWishlist();
 
         $this->setDataIndexWishlist();
-        $this->setRegionMenuIndexWishlist();
 
         $this->outputIndexWishlist();
-    }
-
-    /**
-     * Sets the navigation menu on the wishlist page
-     */
-    protected function setRegionMenuIndexWishlist()
-    {
-        $options = array(
-            'template' => 'category/menu',
-            'items' => $this->data_categories
-        );
-
-        $this->setRegion('left', $this->renderMenu($options));
     }
 
     /**

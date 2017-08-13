@@ -85,7 +85,6 @@ class Search extends FrontendController
     {
         $options = array(
             'total' => $this->total,
-            'query' => $this->query_filter,
             'view' => $this->query_filter['view'],
             'quantity' => count($this->data_results),
             'sort' => "{$this->query_filter['sort']}-{$this->query_filter['order']}"

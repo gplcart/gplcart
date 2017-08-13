@@ -632,7 +632,7 @@ class Controller extends BaseController
                 $this->setItemPriceFormatted($item);
                 $this->setItemRenderedProduct($item, $options);
             } else {
-                $this->setItemRendered($item, array($options['entity'] => $item), $options);
+                $this->setItemRendered($item, array('item' => $item), $options);
             }
         }
 
@@ -795,7 +795,7 @@ class Controller extends BaseController
                 'cart_add', 'wishlist_add', 'compare_add'));
 
         $data = array(
-            'product' => $item,
+            'item' => $item,
             'buttons' => $options['buttons']
         );
 

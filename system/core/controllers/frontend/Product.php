@@ -30,7 +30,7 @@ class Product extends FrontendController
     protected $product_class;
 
     /**
-     * Sku model instance
+     * SKU model instance
      * @var \gplcart\core\models\Sku $sku
      */
     protected $sku;

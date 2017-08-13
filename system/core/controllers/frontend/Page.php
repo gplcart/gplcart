@@ -56,22 +56,8 @@ class Page extends FrontendController
 
         $this->setData('page', $this->data_page);
         $this->setDataImagesIndexPage();
-        $this->setRegionMenuIndexPage();
 
         $this->outputIndexPage();
-    }
-
-    /**
-     * Sets the navigation menu on the category page
-     */
-    protected function setRegionMenuIndexPage()
-    {
-        $options = array(
-            'template' => 'category/menu',
-            'items' => $this->data_categories
-        );
-
-        $this->setRegion('left', $this->renderMenu($options));
     }
 
     /**
