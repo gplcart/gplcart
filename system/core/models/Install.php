@@ -49,7 +49,7 @@ class Install extends Model
      */
     public function isInstalled()
     {
-        return is_readable(GC_CONFIG_COMMON);
+        return is_file(GC_CONFIG_COMMON);
     }
 
     /**
