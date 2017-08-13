@@ -595,8 +595,9 @@
         });
 
         $(document).on('click', 'form#checkout :submit', function () {
-            clicked = $(this).attr('name');
-            $(this).closest('form').append($("<input type='hidden'>").attr({
+            clicked = $(this);
+            $(this).closest('form').append($('<input>').attr({
+                type: 'hidden',
                 name: $(this).attr('name'),
                 value: $(this).attr('value')
             }));
@@ -604,9 +605,7 @@
 
         $(document).off('submit').on('submit', 'form#checkout', function (e) {
 
-            if (clicked && (clicked === 'save'
-                    || clicked === 'login'
-                    || clicked.slice(-10) === '[wishlist]')) {
+            if (clicked && clicked.data('ajax') === false) {
                 return true;
             }
 
