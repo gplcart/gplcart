@@ -7,6 +7,10 @@
  */
 ?>
 <div class="page item col-md-12">
-  <div class="title"><a href="<?php echo $this->e($page['url']); ?>"><?php echo $this->e($page['title']); ?></a></div>
-  <p><?php echo $this->e($this->truncate(strip_tags($page['description']), 50)); ?></p>
+  <div class="title">
+    <a href="<?php echo empty($item['url']) ? $this->url("page/{$item['page_id']}") : $this->e($item['url']); ?>">
+      <?php echo $this->e($item['title']); ?>
+    </a>
+  </div>
+  <p><?php echo $this->e($this->truncate(strip_tags($item['description']), 50)); ?></p>
 </div>

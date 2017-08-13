@@ -67,7 +67,7 @@
             <i class="fa fa-trash"></i>
           </button>
           <?php if (!$admin) { ?>
-          <button title="<?php echo $this->text('Move to wishlist'); ?>" class="btn btn-default" name="order[cart][action][wishlist]" value="<?php echo $this->e($sku); ?>">
+          <button title="<?php echo $this->text('Move to wishlist'); ?>" class="btn btn-default" data-ajax="false" name="order[cart][action][wishlist]" value="<?php echo $this->e($sku); ?>">
             <i class="fa fa-star"></i>
           </button>
           <?php } ?>

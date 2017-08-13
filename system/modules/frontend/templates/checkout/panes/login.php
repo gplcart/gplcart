@@ -30,7 +30,7 @@
 </div>
 <div class="form-group">
   <div class="col-md-offset-2 col-md-4">
-    <button class="btn btn-default" name="login" value="1"><?php echo $this->text('Log in'); ?></button>
+    <button class="btn btn-default" name="login" data-ajax="false" value="1"><?php echo $this->text('Log in'); ?></button>
     <button class="btn btn-default" name="checkout_anonymous" value="1"><?php echo $this->text('Continue as guest'); ?></button>
   </div>
 </div>

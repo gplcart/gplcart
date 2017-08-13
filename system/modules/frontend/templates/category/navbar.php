@@ -37,6 +37,12 @@
         </label>
       </div>
       <button class="btn btn-default hidden-js"><?php echo $this->text('Go'); ?></button>
+      <?php // Add hidden fields to retain additional GET parameters from the current URL (if any)  ?>
+      <?php foreach ($_query as $key => $value) { ?>
+      <?php if (!in_array($key, array('sort', 'view'))) { ?>
+      <input type="hidden" name="<?php echo $this->e($key); ?>" value="<?php echo $this->e($value); ?>">
+      <?php } ?>
+      <?php } ?>
     </form>
   </div>
 </nav>

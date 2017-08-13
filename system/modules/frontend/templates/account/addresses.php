@@ -38,7 +38,7 @@
         <div class="panel panel-default address" data-equal-height="true">
           <div class="panel-heading clearfix">
             <?php if (($_uid == $user['user_id'] || $this->access('user_edit')) && empty($address['locked'])) { ?>
-            <a class="btn btn-default btn-sm pull-right" onclick="return confirm(GplCart.text('Are you sure?'));" title="<?php echo $this->text('Delete'); ?>" href="<?php echo $this->url('', array('delete' => $address_id, 'token' => $_token)); ?>">
+            <a class="btn btn-default btn-sm pull-right" onclick="return confirm(GplCart.text('Delete?'));" title="<?php echo $this->text('Delete'); ?>" href="<?php echo $this->url('', array('delete' => $address_id, 'token' => $_token)); ?>">
               <i class="fa fa-trash"></i>
             </a>
             <?php } else { ?>
@@ -60,15 +60,13 @@
       <?php } ?>
     </div>
     <?php } ?>
+    <?php if (empty($addresses) && $_uid == $user['user_id']) { ?>
     <div class="row">
       <div class="col-md-12">
-        <?php if (empty($addresses) && $_uid == $user['user_id']) { ?>
-        <p>
-          <?php echo $this->text('You have no saved addresses yet'); ?>
-        </p>
-        <?php } ?>
+        <?php echo $this->text('You have no saved addresses yet'); ?>
       </div>
     </div>
+    <?php } ?>
   </div>
 </div>
 

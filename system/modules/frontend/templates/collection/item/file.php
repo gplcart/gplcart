@@ -6,10 +6,10 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
-<?php if(!empty($file['thumb'])) { ?>
-<?php if (empty($file['collection_item']['data']['url'])) { ?>
-<img class="fill" alt="<?php echo $this->e($file['title']); ?>" src="<?php echo $this->e($file['thumb']); ?>">
+<?php if(!empty($item['thumb'])) { ?>
+<?php if (empty($item['collection_item']['data']['url'])) { ?>
+<img class="fill" alt="<?php echo $this->e($item['title']); ?>" src="<?php echo $this->e($item['thumb']); ?>">
 <?php } else { ?>
-<a href="<?php echo $this->e($file['collection_item']['data']['url']); ?>"><img alt="<?php echo $this->e($file['title']); ?>" src="<?php echo $this->e($file['thumb']); ?>"></a>
+<a href="<?php echo $this->e($item['collection_item']['data']['url']); ?>"><img alt="<?php echo $this->e($item['title']); ?>" src="<?php echo $this->e($item['thumb']); ?>"></a>
 <?php } ?>
 <?php } ?>

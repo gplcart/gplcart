@@ -8,27 +8,27 @@
 ?>
 <div class="grid product item col-md-3 col-sm-4 col-xs-12">
   <div class="thumbnail">
-    <?php if (!empty($product['thumb'])) { ?>
-    <a href="<?php echo empty($product['url']) ? $this->url("product/{$product['product_id']}") : $this->e($product['url']); ?>">
-      <img class="img-responsive thumbnail" title="<?php echo $this->e($product['title']); ?>" alt="<?php echo $this->e($product['title']); ?>" src="<?php echo $this->e($product['thumb']); ?>">
+    <?php if (!empty($item['thumb'])) { ?>
+    <a href="<?php echo empty($item['url']) ? $this->url("product/{$item['product_id']}") : $this->e($item['url']); ?>">
+      <img class="img-responsive thumbnail" title="<?php echo $this->e($item['title']); ?>" alt="<?php echo $this->e($item['title']); ?>" src="<?php echo $this->e($item['thumb']); ?>">
     </a>
     <?php } ?>
     <div class="caption text-center">
       <div class="title" data-equal-height="true">
-        <a href="<?php echo empty($product['url']) ? $this->url("product/{$product['product_id']}") : $this->e($product['url']); ?>">
-          <?php echo $this->e($this->truncate($product['title'], 50)); ?>
+        <a href="<?php echo empty($item['url']) ? $this->url("product/{$item['product_id']}") : $this->e($item['url']); ?>">
+          <?php echo $this->e($this->truncate($item['title'], 50)); ?>
         </a>
       </div>
       <p>
-        <?php if (isset($product['original_price']) && $product['original_price'] > $product['price']) { ?>
-        <s><?php echo $this->e($product['original_price_formatted']); ?></s>
+        <?php if (isset($item['original_price']) && $item['original_price'] > $item['price']) { ?>
+        <s><?php echo $this->e($item['original_price_formatted']); ?></s>
         <?php } ?>
-        <?php echo $this->e($product['price_formatted']); ?>
+        <?php echo $this->e($item['price_formatted']); ?>
       </p>
       <?php if (!empty($buttons)) { ?>
       <form method="post" class="form-horizontal product-action">
         <input type="hidden" name="token" value="<?php echo $_token; ?>">
-        <input type="hidden" name="product[product_id]" value="<?php echo $this->e($product['product_id']); ?>">
+        <input type="hidden" name="product[product_id]" value="<?php echo $this->e($item['product_id']); ?>">
         <div class="row">
           <div class="col-md-12">
             <?php if (in_array('wishlist_remove', $buttons)) { ?>
@@ -42,7 +42,7 @@
             </button>
             <?php } ?>
             <?php if (in_array('wishlist_add', $buttons)) { ?>
-            <?php if (empty($product['in_wishlist'])) { ?>
+            <?php if (empty($item['in_wishlist'])) { ?>
             <button title="<?php echo $this->text('Add to wishlist'); ?>" class="btn btn-default" data-ajax="true" name="add_to_wishlist" value="1">
               <i class="fa fa-heart"></i>
             </button>
@@ -53,7 +53,7 @@
             <?php } ?>
             <?php } ?>
             <?php if (in_array('compare_add', $buttons)) { ?>
-            <?php if (empty($product['in_comparison'])) { ?>
+            <?php if (empty($item['in_comparison'])) { ?>
             <button title="<?php echo $this->text('Compare'); ?>" class="btn btn-default" data-ajax="true" name="add_to_compare" value="1">
               <i class="fa fa-balance-scale"></i>
             </button>
