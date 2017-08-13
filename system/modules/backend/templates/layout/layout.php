@@ -8,6 +8,6 @@
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $_langcode; ?>">
-<?php echo $region_head; ?>
-<?php echo $region_body; ?>
+  <?php echo $_head; ?>
+  <?php echo $_body; ?>
 </html>

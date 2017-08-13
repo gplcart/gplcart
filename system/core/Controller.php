@@ -963,10 +963,9 @@ abstract class Controller
 
         $this->theme_settings = (array) $this->config->module($this->theme, null, array());
 
-        if (empty($this->theme_settings['templates'])) {
-            $this->templates = $this->getDefaultTemplates();
-        } else {
-            $this->templates = $this->theme_settings['templates'];
+        $this->templates = $this->getDefaultTemplates();
+        if (!empty($this->current_theme['data']['templates'])) {
+            $this->templates = array_merge($this->templates, $this->current_theme['data']['templates']);
         }
     }
 
@@ -1453,24 +1452,24 @@ abstract class Controller
     protected function renderOutput($templates)
     {
         if (is_string($templates)) {
-            $templates = array('region_content' => $templates);
+            $templates = array('region_content' => array('template' => $templates));
         }
 
-        $templates += $this->templates;
+        $templates = array_merge($this->templates, $templates);
         $layout = $templates['layout'];
         unset($templates['layout']);
 
         $body = $data = $this->data;
-        foreach ($templates as $region => $template) {
-            if (!in_array($region, array('region_head', 'region_body'))) {
-                $body[$region] = $this->renderRegion($region, $template);
+        foreach ($templates as $id => $info) {
+            if (strpos($id, 'region_') === 0) {
+                $body[$id] = $this->renderRegion($id, $info['template']);
             }
         }
 
-        $data['region_head'] = $this->render($templates['region_head'], $this->data);
-        $data['region_body'] = $this->render($templates['region_body'], $body);
+        $data['_head'] = $this->render($templates['head']['template'], $this->data);
+        $data['_body'] = $this->render($templates['body']['template'], $body);
 
-        $html = $this->render($layout, $data, false);
+        $html = $this->render($layout['template'], $data, false);
         $this->hook->attach('template.output', $html, $this);
         return $html;
     }
@@ -1541,20 +1540,16 @@ abstract class Controller
     }
 
     /**
-     * Returns an array of default templates keyed by region
+     * Returns an array of default templates
      * @return array
      */
     protected function getDefaultTemplates()
     {
         return array(
-            'layout' => 'layout/layout',
-            'region_top' => 'layout/top',
-            'region_head' => 'layout/head',
-            'region_body' => 'layout/body',
-            'region_left' => 'layout/left',
-            'region_right' => 'layout/right',
-            'region_bottom' => 'layout/bottom',
-            'region_content' => 'layout/content'
+            'head' => array('name' => 'Head', 'template' => 'layout/head'),
+            'body' => array('name' => 'Body', 'template' => 'layout/body'),
+            'layout' => array('name' => 'Layout', 'template' => 'layout/layout'),
+            'region_content' => array('name' => 'Content region', 'template' => 'layout/region_content')
         );
     }
 
@@ -1636,7 +1631,7 @@ abstract class Controller
     }
 
     /**
-     * Adds required javascripts
+     * Adds required java-scripts
      */
     protected function setDefaultJs()
     {
