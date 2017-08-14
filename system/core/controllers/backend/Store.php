@@ -369,7 +369,7 @@ class Store extends BackendController
         foreach (array('logo', 'favicon') as $field) {
             $value = $this->getData("store.data.$field");
             if (!empty($value)) {
-                $this->setData("store.{$field}_thumb", $this->image->urlFromPath($value));
+                $this->setData("store.{$field}_thumb", $this->image($value));
             }
         }
 

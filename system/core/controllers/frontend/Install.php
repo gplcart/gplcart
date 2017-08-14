@@ -38,7 +38,7 @@ class Install extends BaseController
         parent::__construct();
 
         $this->install = $install;
-        $this->install_language = $this->getQuery('lang', 'en', 'string');
+        $this->install_language = $this->getQuery('lang', '', 'string');
     }
 
     /**
@@ -47,6 +47,8 @@ class Install extends BaseController
     public function editInstall()
     {
         $this->controlAccessInstall();
+
+        $this->language->set($this->install_language);
 
         $this->setTitleEditInstall();
         $this->submitEditInstall();
@@ -58,24 +60,13 @@ class Install extends BaseController
         $this->setData('requirements', $requirements);
         $this->setData('timezones', gplcart_timezones());
         $this->setData('language', $this->install_language);
-        $this->setData('languages', $this->getLanguagesInstall());
+        $this->setData('languages', $this->language->getList());
         $this->setData('handlers', $this->install->getHandlers());
+        $this->setData('languages', $this->language->getList(false));
         $this->setData('severity', $this->getSeverityInstall($issues));
         $this->setData('settings.store.language', $this->install_language);
 
         $this->outputEditInstall();
-    }
-
-    /**
-     * Returns an array of ISO languages
-     * @return array
-     */
-    protected function getLanguagesInstall()
-    {
-        $iso = $this->language->getIso();
-        $available = $this->language->getAvailable();
-
-        return array_intersect_key($iso, $available);
     }
 
     /**
@@ -157,7 +148,7 @@ class Install extends BaseController
      */
     protected function outputEditInstall()
     {
-        $this->output(array('region_body' => 'install/body'));
+        $this->output(array('body' => 'install/body'));
     }
 
     /**
@@ -166,13 +157,9 @@ class Install extends BaseController
      */
     protected function validateEditInstall()
     {
-        $language = array(
-            $this->install_language => $this->language->getIso($this->install_language)
-        );
-
         $this->setSubmitted('settings');
-        $this->setSubmitted('store.language', $language);
         $this->setSubmitted('store.host', $this->request->host());
+        $this->setSubmitted('store.language', $this->install_language);
         $this->setSubmitted('store.basepath', trim($this->request->base(true), '/'));
 
         $this->validateComponent('install');

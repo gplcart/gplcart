@@ -31,22 +31,10 @@ class Controller extends BaseController
     protected $currency;
 
     /**
-     * The current currency code
-     * @var string
-     */
-    protected $current_currency;
-
-    /**
      * Price model instance
      * @var \gplcart\core\models\Price $price
      */
     protected $price;
-
-    /**
-     * Image model instance
-     * @var \gplcart\core\models\Image $image
-     */
-    protected $image;
 
     /**
      * Product model instance
@@ -77,6 +65,12 @@ class Controller extends BaseController
      * @var \gplcart\core\models\CollectionItem $collection_item
      */
     protected $collection_item;
+
+    /**
+     * The current currency code
+     * @var string
+     */
+    protected $current_currency;
 
     /**
      * An array of fired triggers for the current context
@@ -115,23 +109,24 @@ class Controller extends BaseController
      */
     protected function setDefaultDataFrontend()
     {
-        $currencies = $this->currency->getList();
+        $currencies = $this->currency->getList(true);
 
         $this->data['_cart'] = $this->getCart();
         $this->data['_currencies'] = $currencies;
         $this->data['_wishlist'] = $this->getWishlist();
         $this->data['_menu'] = $this->getCategoryMenu();
-        $this->data['_comparison'] = $this->getComparison();
         $this->data['_captcha'] = $this->renderCaptcha();
+        $this->data['_comparison'] = $this->getComparison();
+        $this->data['_languages'] = $this->language->getList(true);
         $this->data['_currency'] = $currencies[$this->current_currency];
         $this->data['_store_title'] = $this->store->getTranslation('title', $this->langcode);
 
         if (!empty($this->current_store['data']['logo'])) {
-            $this->data['_store_logo'] = $this->image->urlFromPath($this->current_store['data']['logo']);
+            $this->data['_store_logo'] = $this->image($this->current_store['data']['logo']);
         }
 
         if (!empty($this->current_store['data']['favicon'])) {
-            $this->data['_store_favicon'] = $this->image->urlFromPath($this->current_store['data']['favicon']);
+            $this->data['_store_favicon'] = $this->image($this->current_store['data']['favicon']);
         }
     }
 
@@ -141,7 +136,6 @@ class Controller extends BaseController
     protected function setFrontendInstancies()
     {
         $this->price = Container::get('gplcart\\core\\models\\Price');
-        $this->image = Container::get('gplcart\\core\\models\\Image');
         $this->trigger = Container::get('gplcart\\core\\models\\Trigger');
         $this->product = Container::get('gplcart\\core\\models\\Product');
         $this->compare = Container::get('gplcart\\core\\models\\Compare');
@@ -700,21 +694,20 @@ class Controller extends BaseController
      */
     protected function setItemThumb(array &$data, array $options = array())
     {
-
         if (empty($options['imagestyle'])) {
             return $data;
         }
 
         if (!empty($options['path'])) {
-            $data['thumb'] = $this->image->url($options['imagestyle'], $options['path']);
+            $data['thumb'] = $this->image($options['path'], $options['imagestyle']);
         } else if (!empty($data['path'])) {
-            $data['thumb'] = $this->image->url($options['imagestyle'], $data['path']);
+            $data['thumb'] = $this->image($data['path'], $options['imagestyle']);
         } else if (empty($data['images'])) {
             $data['thumb'] = $this->image->getThumb($data, $options);
         } else {
             foreach ($data['images'] as &$image) {
-                $image['url'] = $this->image->urlFromPath($image['path']);
-                $image['thumb'] = $this->image->url($options['imagestyle'], $image['path']);
+                $image['url'] = $this->image($image['path']);
+                $image['thumb'] = $this->image($image['path'], $options['imagestyle']);
                 $this->setItemIsThumbPlaceholder($image);
             }
         }

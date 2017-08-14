@@ -28,7 +28,7 @@ class Install extends CliController
      * Installation language
      * @var string
      */
-    protected $langcode;
+    protected $langcode = '';
 
     /**
      * @param InstallModel $install
@@ -168,11 +168,7 @@ class Install extends CliController
      */
     protected function validateInputInstall()
     {
-        $language = array(
-            $this->langcode => $this->language->getIso($this->langcode)
-        );
-
-        $this->setSubmitted('store.language', $language);
+        $this->setSubmitted('store.language', $this->langcode);
         $this->setSubmitted('store.host', $this->getHostInstall());
         $this->setSubmitted('store.timezone', date_default_timezone_get());
 
@@ -213,9 +209,8 @@ class Install extends CliController
      */
     protected function validateInputLanguageInstall()
     {
-        $this->langcode = 'en';
-        $languages = $this->language->getAvailable();
-        $languages[$this->langcode] = true;
+        $this->langcode = '';
+        $languages = $this->language->getList();
 
         if (count($languages) > 1) {
             $selected = $this->menu(array_keys($languages), 'en', $this->text('Language (enter a number)'));
@@ -275,7 +270,7 @@ class Install extends CliController
     }
 
     /**
-     * Validates server basepath input
+     * Validates server base path input
      */
     protected function validateInputBasepathInstall()
     {
