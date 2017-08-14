@@ -25,19 +25,14 @@ class Controller extends BaseController
     protected $job;
 
     /**
-     * Image model instance
-     * @var \gplcart\core\models\Image $image
-     */
-    protected $image;
-
-    /**
      * Constructor
      */
     public function __construct()
     {
         parent::__construct();
 
-        $this->setInstancePropertiesBackend();
+        $this->job = Container::get('gplcart\\core\\models\\Job');
+
         $this->processCurrentJob();
         $this->setJsCron();
         $this->setDefaultDataBackend();
@@ -47,22 +42,20 @@ class Controller extends BaseController
     }
 
     /**
-     * Sets class instances
-     */
-    protected function setInstancePropertiesBackend()
-    {
-        $this->job = Container::get('gplcart\\core\\models\\Job');
-        $this->image = Container::get('gplcart\\core\\models\\Image');
-    }
-
-    /**
      * Sets default variables for backend templates
      */
     protected function setDefaultDataBackend()
     {
         $this->data['_job'] = $this->renderJob();
+        $this->data['_stores'] = $this->store->getList();
+        $this->data['_languages'] = $this->language->getList(false);
         $this->data['_menu'] = $this->renderAdminMenu('admin', array());
-        $this->data['_stores'] = $this->store->getList(array('status' => 1));
+
+        foreach ($this->data['_stores'] as &$store) {
+            if (empty($store['status'])) {
+                $store['name'] = $this->text('@store (disabled)', array('@store' => $store['name']));
+            }
+        }
     }
 
     /**
@@ -144,8 +137,7 @@ class Controller extends BaseController
      */
     protected function attachThumb(&$item)
     {
-        $imagestyle = $this->config('image_style_ui', 2);
-        $item['thumb'] = $this->image->url($imagestyle, $item['path']);
+        $item['thumb'] = $this->image($item['path'], $this->config('image_style_ui', 2));
     }
 
     /**
