@@ -67,7 +67,7 @@ class Language extends Model
     }
 
     /**
-     * Set a langcode
+     * Set a language code
      * @param string $langcode
      */
     public function set($langcode)
@@ -92,11 +92,12 @@ class Language extends Model
 
     /**
      * Returns an array of languages
+     * @param bool $enabled
      * @return array
      */
-    public function getList()
+    public function getList($enabled = false)
     {
-        $languages = &Cache::memory(__METHOD__);
+        $languages = &Cache::memory(__METHOD__ . "$enabled");
 
         if (isset($languages)) {
             return $languages;
@@ -104,16 +105,22 @@ class Language extends Model
 
         $default = $this->getDefault();
         $available = $this->getAvailable();
-        $saved = $this->config->get('languages', array());
+        $saved = $this->config->get('languages', $this->getDefaultList());
         $languages = gplcart_array_merge($available, $saved);
 
         foreach ($languages as $code => &$language) {
             $language['code'] = $code;
             $language['default'] = ($code == $default);
-            $language['weight'] = isset($language['weight']) ? $language['weight'] : 0;
         }
 
         $this->hook->attach('language.list', $languages, $this);
+
+        if ($enabled) {
+            $languages = array_filter($languages, function ($language) {
+                return !empty($language['status']);
+            });
+        }
+
         gplcart_array_sort($languages);
 
         return $languages;
@@ -129,24 +136,66 @@ class Language extends Model
     }
 
     /**
+     * Sets default language
+     * @param string $code
+     * @return boolean
+     */
+    public function setDefault($code)
+    {
+        return $this->config->set('language', $code);
+    }
+
+    /**
+     * Returns an array of default languages
+     * @return array
+     */
+    public function getDefaultList()
+    {
+        return array(
+            'en' => array(
+                'weight' => 0,
+                'status' => true,
+                'default' => false,
+                'code' => 'en',
+                'name' => 'English',
+                'native_name' => 'English'
+            )
+        );
+    }
+
+    /**
      * Scans language folders and returns an array of available languages
-     * It assumes that each language folder name matches a valid language code
      * @return array
      */
     public function getAvailable()
     {
+        $iso = $this->getIso();
+
         $languages = array();
         foreach (scandir(GC_LOCALE_DIR) as $langcode) {
-            if (preg_match('/^[a-z]{2}(_[A-Z]{2})?$/', $langcode) === 1) {
-                $languages[$langcode] = array(
-                    'weight' => 0,
-                    'status' => false,
-                    'default' => false,
-                    'code' => $langcode,
-                    'name' => $langcode,
-                    'native_name' => $langcode
-                );
+
+            if (preg_match('/^[a-z]{2}(_[A-Z]{2})?$/', $langcode) !== 1) {
+                continue;
             }
+
+            $name = $native_name = $langcode;
+
+            if (!empty($iso[$langcode][0])) {
+                $name = $native_name = $iso[$langcode][0];
+            }
+
+            if (!empty($iso[$langcode][1])) {
+                $native_name = $iso[$langcode][1];
+            }
+
+            $languages[$langcode] = array(
+                'weight' => 0,
+                'name' => $name,
+                'status' => false,
+                'default' => false,
+                'code' => $langcode,
+                'native_name' => $native_name
+            );
         }
 
         return $languages;
@@ -199,20 +248,32 @@ class Language extends Model
             return (bool) $result;
         }
 
+        $iso = $this->getIso($data['code']);
+
+        $native_name = $name = $data['code'];
+
+        if (empty($data['name']) && !empty($iso[0])) {
+            $native_name = $name = $iso[0];
+        }
+
+        if (empty($data['native_name']) && !empty($iso[1])) {
+            $native_name = $iso[1];
+        }
+
         $values = array(
+            'name' => $name,
             'code' => $data['code'],
+            'native_name' => $native_name,
             'status' => !empty($data['status']),
             'default' => !empty($data['default']),
-            'weight' => isset($data['weight']) ? (int) $data['weight'] : 0,
-            'name' => empty($data['name']) ? $data['code'] : $data['name'],
-            'native_name' => empty($data['native_name']) ? $data['code'] : $data['native_name']
+            'weight' => isset($data['weight']) ? (int) $data['weight'] : 0
         );
 
         $languages = $this->getList();
 
         if (!empty($values['default'])) {
             $values['status'] = true;
-            $this->config->set('language', $data['code']);
+            $this->setDefault($data['code']);
         }
 
         $languages[$data['code']] = $values;
@@ -247,7 +308,7 @@ class Language extends Model
 
         if (!empty($data['default']) && !$this->isDefault($code)) {
             $data['status'] = true;
-            $this->config->set('language', $code);
+            $this->setDefault($code);
         }
 
         if ($this->isDefault($code)) {
@@ -461,7 +522,7 @@ class Language extends Model
     }
 
     /**
-     * Transliterates a string
+     * Transliterate a string
      * @param string $string
      * @param string $language
      * @return string
