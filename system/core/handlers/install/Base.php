@@ -25,12 +25,6 @@ class Base extends Handler
     protected $language;
 
     /**
-     * Store model instance
-     * @var \gplcart\core\models\Store $store
-     */
-    protected $store;
-
-    /**
      * Session class instance
      * @var \gplcart\core\helpers\Session $session
      */
@@ -49,9 +43,9 @@ class Base extends Handler
     {
         parent::__construct();
 
-        $this->store = Container::get('gplcart\\core\\models\\Store');
-        $this->language = Container::get('gplcart\\core\\models\\Language');
         $this->session = Container::get('gplcart\\core\\helpers\Session');
+        $this->language = Container::get('gplcart\\core\\models\\Language');
+        // Rest of models are loaded inline as they require database set up
     }
 
     /**
@@ -64,8 +58,8 @@ class Base extends Handler
         $config = file_get_contents(GC_CONFIG_COMMON_DEFAULT);
 
         if (empty($config)) {
-            return $this->language->text('Failed to read the source config @path', array(
-                        '@path' => GC_CONFIG_COMMON_DEFAULT));
+            $vars = array('@path' => GC_CONFIG_COMMON_DEFAULT);
+            return $this->language->text('Failed to read the source config @path', $vars);
         }
 
         $config .= '$config[\'database\'] = ' . var_export($settings['database'], true) . ';';
@@ -88,36 +82,30 @@ class Base extends Handler
      */
     protected function createPages($user_id, $store_id)
     {
+        /* @var $model \gplcart\core\models\Page */
+        $model = Container::get('gplcart\\core\\models\\Page');
+
         $pages = array();
 
-        $pages['contact.html'] = array(
+        $pages[] = array(
             'title' => 'Contact us',
             'description' => 'Contact information',
         );
 
-        $pages['help.html'] = array(
+        $pages[] = array(
             'title' => 'Help',
             'description' => 'Help information. Coming soon...',
         );
 
-        foreach ($pages as $alias => $data) {
+        foreach ($pages as $page) {
 
-            $data += array(
+            $page += array(
                 'status' => 1,
-                'created' => GC_TIME,
                 'user_id' => $user_id,
                 'store_id' => $store_id
             );
 
-            $page_id = $this->db->insert('page', $data);
-
-            $alias = array(
-                'alias' => $alias,
-                'id_key' => 'page_id',
-                'id_value' => $page_id
-            );
-
-            $this->db->insert('alias', $alias);
+            $model->add($page);
         }
     }
 
@@ -127,55 +115,34 @@ class Base extends Handler
      */
     protected function createLanguages(array $settings)
     {
-        if (empty($settings['store']['language'])) {
-            return null;
+        if (!empty($settings['store']['language']) && $settings['store']['language'] !== 'en') {
+            $language = array('code' => $settings['store']['language'], 'default' => true);
+            /* @var $model \gplcart\core\models\Language */
+            $model = Container::get('gplcart\\core\\models\\Language');
+            $model->add($language);
         }
-
-        $code = key($settings['store']['language']);
-
-        if ($code === 'en') {
-            return null;
-        }
-
-        $this->config->set('language', $code);
-
-        $native_name = $name = $settings['store']['language'][$code][0];
-
-        if (isset($settings['store']['language'][$code][1])) {
-            $native_name = $settings['store']['language'][$code][1];
-        }
-
-        $languages = array();
-
-        $languages[$code] = array(
-            'status' => 1,
-            'default' => 1,
-            'code' => $code,
-            'name' => $name,
-            'native_name' => $native_name
-        );
-
-        $this->config->set('languages', $languages);
     }
 
     /**
-     * Creates superadmin user
+     * Creates super admin user
      * @param array $settings
      * @param integer $store_id
      * @return integer
      */
     protected function createSuperadmin(array $settings, $store_id)
     {
+        /* @var $model \gplcart\core\models\User */
+        $model = Container::get('gplcart\\core\\models\\User');
+
         $user = array(
             'status' => 1,
-            'created' => GC_TIME,
             'name' => 'Superadmin',
             'store_id' => $store_id,
             'email' => $settings['user']['email'],
-            'hash' => gplcart_string_hash($settings['user']['password'])
+            'password' => $settings['user']['password']
         );
 
-        $user_id = (int) $this->db->insert('user', $user);
+        $user_id = $model->add($user);
         $this->config->set('user_superadmin', $user_id);
 
         return $user_id;
@@ -188,7 +155,10 @@ class Base extends Handler
      */
     protected function createStore(array $settings)
     {
-        $data = $this->store->defaultConfig();
+        /* @var $model \gplcart\core\models\Store */
+        $model = Container::get('gplcart\\core\\models\\Store');
+
+        $data = $model->defaultConfig();
 
         $data['title'] = $settings['store']['title'];
         $data['email'] = array($settings['user']['email']);
@@ -196,13 +166,12 @@ class Base extends Handler
         $store = array(
             'status' => 1,
             'data' => $data,
-            'created' => GC_TIME,
             'name' => $settings['store']['title'],
             'domain' => $settings['store']['host'],
             'basepath' => $settings['store']['basepath']
         );
 
-        $store_id = (int) $this->db->insert('store', $store);
+        $store_id = $model->add($store);
         $this->config->set('store', $store_id);
 
         return $store_id;
@@ -270,7 +239,7 @@ class Base extends Handler
     }
 
     /**
-     * Creates countries fron ISO list
+     * Creates countries from ISO list
      */
     protected function createCountries()
     {
@@ -283,6 +252,7 @@ class Base extends Handler
             $rows = array_merge($rows, array(0, $name, $code, $name, 'a:0:{}'));
         }
 
+        // For better performance insert all countries in one custom query.
         $sql = 'INSERT INTO country (status, name, code, native_name, format) VALUES ' . implode(',', $placeholders);
         $this->db->run($sql, $rows);
     }
