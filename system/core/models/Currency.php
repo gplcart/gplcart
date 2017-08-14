@@ -79,7 +79,7 @@ class Currency extends Model
     }
 
     /**
-     * Returns an array of currensies
+     * Returns an array of currencies
      * @param bool $enabled
      * @param bool $cache
      * @return array
@@ -246,7 +246,7 @@ class Currency extends Model
             $code = $this->getFromCookie();
         }
 
-        if (empty($list[$code])) {
+        if (empty($list[$code]['status'])) {
             $code = $this->getDefault();
         }
 
