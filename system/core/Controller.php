@@ -251,6 +251,12 @@ abstract class Controller
     protected $validator;
 
     /**
+     * Image model instance
+     * @var \gplcart\core\models\Image $image
+     */
+    protected $image;
+
+    /**
      * Library instance
      * @var \gplcart\core\Library $library
      */
@@ -263,7 +269,7 @@ abstract class Controller
     protected $langcode;
 
     /**
-     * Url class instance
+     * URL class instance
      * @var \gplcart\core\helpers\Url $url
      */
     protected $url;
@@ -369,6 +375,7 @@ abstract class Controller
         $this->cart = Container::get('gplcart\\core\\models\\Cart');
         $this->user = Container::get('gplcart\\core\\models\\User');
         $this->store = Container::get('gplcart\\core\\models\\Store');
+        $this->image = Container::get('gplcart\\core\\models\\Image');
         $this->language = Container::get('gplcart\\core\\models\\Language');
         $this->validator = Container::get('gplcart\\core\\models\\Validator');
         $this->filter = Container::get('gplcart\\core\\models\\Filter');
@@ -492,13 +499,30 @@ abstract class Controller
      * @param array $query
      * @return string
      */
-    public function urll($langcode, $path = '', array $query = array())
+    public function lurl($langcode, $path = '', array $query = array())
     {
         if ($langcode === $this->language->getDefault()) {
             $langcode = '';
         }
 
         return $this->url->language($langcode, $path, $query);
+    }
+
+    /**
+     * Returns an image URL
+     * @param string $path
+     * @param integer|null $imagestyle_id
+     * @param boolean $absolute
+     * @return string
+     */
+    public function image($path, $imagestyle_id = null, $absolute = false)
+    {
+
+        if (!isset($imagestyle_id)) {
+            return $this->image->urlFromPath($path);
+        }
+
+        return $this->image->url($imagestyle_id, $path, $absolute);
     }
 
     /**
@@ -1452,7 +1476,7 @@ abstract class Controller
     protected function renderOutput($templates)
     {
         if (is_string($templates)) {
-            $templates = array('region_content' => array('template' => $templates));
+            $templates = array('region_content' => $templates);
         }
 
         $templates = array_merge($this->templates, $templates);
@@ -1460,17 +1484,18 @@ abstract class Controller
         unset($templates['layout']);
 
         $body = $data = $this->data;
-        foreach ($templates as $id => $info) {
+        foreach ($templates as $id => $template) {
             if (strpos($id, 'region_') === 0) {
-                $body[$id] = $this->renderRegion($id, $info['template']);
+                $body[$id] = $this->renderRegion($id, $template);
             }
         }
 
-        $data['_head'] = $this->render($templates['head']['template'], $this->data);
-        $data['_body'] = $this->render($templates['body']['template'], $body);
+        $data['_head'] = $this->render($templates['head'], $this->data);
+        $data['_body'] = $this->render($templates['body'], $body);
 
-        $html = $this->render($layout['template'], $data, false);
+        $html = $this->render($layout, $data, false);
         $this->hook->attach('template.output', $html, $this);
+        
         return $html;
     }
 
@@ -1546,10 +1571,10 @@ abstract class Controller
     protected function getDefaultTemplates()
     {
         return array(
-            'head' => array('name' => 'Head', 'template' => 'layout/head'),
-            'body' => array('name' => 'Body', 'template' => 'layout/body'),
-            'layout' => array('name' => 'Layout', 'template' => 'layout/layout'),
-            'region_content' => array('name' => 'Content region', 'template' => 'layout/region_content')
+            'head' => 'layout/head',
+            'body' => 'layout/body',
+            'layout' => 'layout/layout',
+            'region_content' => 'layout/region_content'
         );
     }
 
@@ -1744,18 +1769,10 @@ abstract class Controller
     {
         $this->data = array_merge($this->data, $this->getDefaultData());
 
-        $languages = $this->language->getList();
-
-        $enabled_languages = array_filter($languages, function($value) {
-            return !empty($value['status']);
-        });
-
         $this->data['_help'] = '';
-        $this->data['_languages'] = $languages;
         $this->data['_user'] = $this->current_user;
         $this->data['_store'] = $this->current_store;
         $this->data['_messages'] = $this->session->getMessage();
-        $this->data['_has_enabled_languages'] = !empty($enabled_languages);
 
         $this->setClasses();
         $this->setDefaultJs();
