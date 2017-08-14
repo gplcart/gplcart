@@ -168,7 +168,7 @@ class Library
     }
 
     /**
-     * Validates libarary files
+     * Validates library files
      * @param array $library
      * @return bool
      */
