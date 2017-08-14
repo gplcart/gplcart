@@ -10,11 +10,12 @@
   <div class="container">
     <h2><?php echo $this->e($_page_title); ?> <small>v. <?php echo GC_VERSION; ?></small></h2>
     <form method="post">
-      <?php if (!empty($_languages) && count($_languages) > 1) { ?>
+      <?php if (!empty($languages) && count($languages) > 1) { ?>
       <div class="select-language clearfix">
         <?php echo $this->text('Select a language'); ?>:
-        <?php foreach ($_languages as $code => $data) { ?>
-        <a class="<?php echo $code === $language ? ' active' : ''; ?>" href="<?php echo $this->url('', array('lang' => $code)); ?>">
+        <?php foreach ($languages as $code => $data) { ?>
+        <?php $language_query = ($code === 'en') ? array() : array('lang' => $code); ?>
+        <a class="<?php echo $code === $language ? ' active' : ''; ?>" href="<?php echo $this->url('', $language_query); ?>">
           <?php echo $this->e($data['native_name']); ?>
         </a>
         <?php } ?>

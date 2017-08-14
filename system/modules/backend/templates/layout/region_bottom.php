@@ -23,7 +23,7 @@
 <?php if (!empty($js['text'])) { ?>
 <script><?php echo $js['asset']; ?></script>
 <?php } else { ?>
-<script src="<?php echo $this->url($js['asset'], array('v' => $js['version'])); ?>"></script>
+<script src="<?php echo $this->url($js['asset'], array('v' => $js['version']), false, true); ?>"></script>
 <?php } ?>
 <?php } ?>
 <?php } ?>

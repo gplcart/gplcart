@@ -24,7 +24,7 @@
   <link rel="icon" href="<?php echo $this->e($_store_favicon); ?>">
   <?php } ?>
   <?php foreach ($_css as $css) { ?>
-  <link href="<?php echo $this->url($css['asset'], array('v' => $css['version'])); ?>" rel="stylesheet">
+  <link href="<?php echo $this->url($css['asset'], array('v' => $css['version']), false, true); ?>" rel="stylesheet">
   <?php } ?>
   <?php foreach ($_js_top as $js) { ?>
   <?php if (!empty($js['text'])) { ?>
@@ -40,10 +40,10 @@
   <?php } else { ?>
   <?php if (!empty($js['condition'])) { ?>
     <!--[<?php echo $this->e($js['condition']); ?>]>
-    <script src="<?php echo $this->url($js['asset'], array('v' => $js['version'])); ?>"></script>
+    <script src="<?php echo $this->url($js['asset'], array('v' => $js['version']), false, true); ?>"></script>
     <![endif]-->
   <?php } else { ?>
-  <script src="<?php echo $this->url($js['asset'], array('v' => $js['version'])); ?>"></script>
+  <script src="<?php echo $this->url($js['asset'], array('v' => $js['version']), false, true); ?>"></script>
   <?php } ?>
   <?php } ?>
   <?php } ?>

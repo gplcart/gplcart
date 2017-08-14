@@ -25,20 +25,20 @@
             <?php } ?>
           </p>
           <?php if (count($_currencies) > 1) { ?>
-          <?php $has_currency_items = false; ?>
+          <?php $show_currency_selector = false; ?>
           <?php foreach ($_currencies as $currency) { ?>
-          <?php if($_currency['code'] !== $currency['code'] && !empty($currency['status'])) { ?>
-          <?php $has_currency_items = true; ?>
+          <?php if($_currency['code'] !== $currency['code']) { ?>
+          <?php $show_currency_selector = true; break; ?>
           <?php } ?>
           <?php } ?>
-          <?php if($has_currency_items) { ?>
+          <?php if($show_currency_selector) { ?>
           <div class="dropdown pull-left navbar-text">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <?php echo $this->e($_currency['name']); ?> <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
               <?php foreach ($_currencies as $currency) { ?>
-              <?php if($_currency['code'] !== $currency['code'] && !empty($currency['status'])) { ?>
+              <?php if($_currency['code'] !== $currency['code']) { ?>
               <li>
                 <a rel="nofollow" href="<?php echo $this->url('', array('currency' => $currency['code'])); ?>"><?php echo $this->e($currency['code']); ?></a>
               </li>
@@ -50,7 +50,7 @@
           <div class="pull-left navbar-text"><?php echo $this->e($_currency['name']); ?></div>
           <?php } ?>
           <?php } ?>
-          <?php if ($_has_enabled_languages) { ?>
+          <?php if(count($_languages) > 1) { ?>
           <div class="dropdown pull-left navbar-text">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <?php if (empty($_languages[$_langcode]['status'])) { ?>
@@ -62,9 +62,9 @@
             </a>
             <ul class="dropdown-menu">
               <?php foreach ($_languages as $language) { ?>
-              <?php if ($language['code'] !== $_langcode && !empty($language['status'])) { ?>
+              <?php if ($language['code'] !== $_langcode) { ?>
               <li>
-                <a href="<?php echo $this->urll($language['code'], '', $_query); ?>"><?php echo $this->e($language['native_name']); ?></a>
+                <a href="<?php echo $this->lurl($language['code'], '', $_query); ?>"><?php echo $this->e($language['native_name']); ?></a>
               </li>
               <?php } ?>
               <?php } ?>

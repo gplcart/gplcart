@@ -17,13 +17,13 @@
   <?php } ?>
   <?php if(!empty($_css)) { ?>
   <?php foreach ($_css as $css) { ?>
-  <link href="<?php echo $this->url($css['asset'], array('v' => $css['version'])); ?>" rel="stylesheet">
+  <link href="<?php echo $this->url($css['asset'], array('v' => $css['version']), false, true); ?>" rel="stylesheet">
   <?php } ?>
   <?php } ?>
   <?php if(!empty($_js_top)) { ?>
   <?php foreach ($_js_top as $js) { ?>
     <?php if (empty($js['text'])) { ?>
-    <script src="<?php echo $this->url($js['asset'], array('v' => $js['version'])); ?>"></script>
+    <script src="<?php echo $this->url($js['asset'], array('v' => $js['version']), false, true); ?>"></script>
     <?php } else { ?>
     <script><?php echo $js['asset']; ?></script>
     <?php } ?>

@@ -21,10 +21,10 @@
 <?php } else { ?>
 <?php if (!empty($js['condition'])) { ?>
 <!--[<?php echo $this->e($js['condition']); ?>]>
-<script src="<?php echo $this->url($js['asset'], array('v' => $js['version'])); ?>"></script>
+<script src="<?php echo $this->url($js['asset'], array('v' => $js['version']), false, true); ?>"></script>
 <![endif]-->
 <?php } else { ?>
-<script src="<?php echo $this->url($js['asset'], array('v' => $js['version'])); ?>"></script>
+<script src="<?php echo $this->url($js['asset'], array('v' => $js['version']), false, true); ?>"></script>
 <?php } ?>
 <?php } ?>
 <?php } ?>

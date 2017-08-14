@@ -152,7 +152,13 @@
             <b><?php echo $this->text('Error'); ?></b>:
             <ul class="list-unstyled">
               <?php foreach ($info['errors'] as $error) { ?>
-              <li><?php echo $this->text($error[0], $error[1]); ?></li>
+              <li>
+              <?php if(empty($error[1])) { ?>
+              <?php echo $this->text($error[0]); ?>
+              <?php } else { ?>
+              <?php echo $this->text($error[0], $error[1]); ?>
+              <?php } ?>
+              </li>
               <?php } ?>
             </ul>
           </div>
