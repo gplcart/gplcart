@@ -148,7 +148,7 @@ class Route
 
         $found = !empty($languages[$segments[0]]['status']);
         $this->langcode = $found ? $segments[0] : $default;
-        $is_default = $this->langcode === $default;
+        $is_default = ($this->langcode === $default);
 
         $suffix = $is_default ? '' : $this->langcode;
         $this->request->setLangcode($suffix);
@@ -169,19 +169,13 @@ class Route
             return null;
         }
 
-        // Assume we're on some/path.html
-        // First check if the path stored in the database as an entity alias
         $info = $this->getAliasByPath($this->path);
 
         if (!isset($info['id_key'])) {
-            // This path not found in the database. Then assume it's an entity path, e.g product/1 or category/1
-            // Try to find an alias for the entity and redirect to it
             $this->seekEntityAlias();
             return null;
         }
 
-        // Figure out which route is associated with the alias
-        // Get entity name by removing "_id" suffix from the end of the entity key
         $entity = substr($info['id_key'], 0, -3);
 
         foreach ($this->getList() as $pattern => $route) {
