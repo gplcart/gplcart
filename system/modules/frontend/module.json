@@ -10,8 +10,6 @@
     "configure": "admin/module/settings/frontend",
     "settings": {
         "catalog_limit": 20,
-        "catalog_front_sort": "price",
-        "catalog_front_order": "asc",
         "catalog_sort": "price",
         "catalog_order": "asc",
         "catalog_view": "grid",
