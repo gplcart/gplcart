@@ -14,7 +14,7 @@ use gplcart\core\models\Report as ReportModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
- * Handles incoming requests and outputs data related to cron jobs
+ * Handles incoming requests and outputs data related to CRON jobs
  */
 class Cron extends FrontendController
 {
@@ -44,7 +44,7 @@ class Cron extends FrontendController
     }
 
     /**
-     * Processes cron requests
+     * Processes CRON requests
      */
     public function executeCron()
     {
@@ -116,7 +116,7 @@ class Cron extends FrontendController
     }
 
     /**
-     * Checks filesystem and logs errors
+     * Checks file system and logs errors
      * @return boolean
      */
     protected function checkFilesystemCron()

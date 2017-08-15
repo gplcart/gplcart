@@ -328,7 +328,7 @@ class Config
     }
 
     /**
-     * Retuns a string containing base namespace for the given module ID
+     * Returns a string containing base name space for the given module ID
      * @param string $module_id
      * @return string
      */

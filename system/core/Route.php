@@ -20,7 +20,7 @@ class Route
 {
 
     /**
-     * Url class instance
+     * URL class instance
      * @var \gplcart\core\helpers\Url $url
      */
     protected $url;
