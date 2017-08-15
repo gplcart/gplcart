@@ -66,6 +66,7 @@ class Compare extends Model
 
         array_unshift($product_ids, $product_id);
         $this->controlLimit($product_ids);
+
         $result = $this->set($product_ids);
 
         $this->hook->attach('compare.add.after', $product_id, $result, $this);
@@ -93,19 +94,20 @@ class Compare extends Model
             'message' => $this->language->text('Unable to add product')
         );
 
-        $added = $this->add($product['product_id']);
+        if ($this->add($product['product_id'])) {
 
-        if (!empty($added)) {
+            $quantity = count($this->getList());
 
-            $existing = count($this->getList());
-            $existing ++;
+            if ($quantity < $this->getLimit()) {
+                $quantity ++;
+            }
 
             $href = $this->request->base() . 'compare';
 
             $result = array(
                 'redirect' => '',
                 'severity' => 'success',
-                'quantity' => $existing,
+                'quantity' => $quantity,
                 'message' => $this->language->text('Product has been added to <a href="!href">comparison</a>', array('!href' => $href))
             );
         }
@@ -154,11 +156,20 @@ class Compare extends Model
      */
     protected function controlLimit(array &$product_ids)
     {
-        $limit = $this->config->get('comparison_limit', 10);
+        $limit = $this->getLimit();
 
         if (!empty($limit)) {
             $product_ids = array_slice($product_ids, 0, $limit);
         }
+    }
+
+    /**
+     * Returns a max number of items to compare
+     * @return integer
+     */
+    public function getLimit()
+    {
+        return (int) $this->config->get('comparison_limit', 10);
     }
 
     /**
