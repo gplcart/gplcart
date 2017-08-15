@@ -119,15 +119,6 @@ class Controller extends BaseController
         $this->data['_comparison'] = $this->getComparison();
         $this->data['_languages'] = $this->language->getList(true);
         $this->data['_currency'] = $currencies[$this->current_currency];
-        $this->data['_store_title'] = $this->store->getTranslation('title', $this->langcode);
-
-        if (!empty($this->current_store['data']['logo'])) {
-            $this->data['_store_logo'] = $this->image($this->current_store['data']['logo']);
-        }
-
-        if (!empty($this->current_store['data']['favicon'])) {
-            $this->data['_store_favicon'] = $this->image($this->current_store['data']['favicon']);
-        }
     }
 
     /**
