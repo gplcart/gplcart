@@ -6,13 +6,15 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 ?>
-<!DOCTYPE html>
-<html>
-  <head>
-    <title><?php echo $this->text('Site maintenance'); ?></title>
-  </head>
-  <body>
+<body class="maintenance">
+  <div class="container-fluid wrapper">
     <h1><?php echo $this->text("We'll be back soon!"); ?></h1>
     <p><?php echo $this->text("Sorry for the inconvenience but we're performing some maintenance at the moment."); ?></p>
-  </body>
-</html>
+    <p>
+      <a href="mailto:<?php echo $this->e($_store['data']['email'][0]); ?>"><?php echo $this->e($_store['data']['email'][0]); ?></a>
+      <?php if (!empty($_store['data']['phone'][0])) { ?>
+      <a href="tel:<?php echo $this->e($_store['data']['phone'][0]); ?>"><?php echo $this->e($_store['data']['phone'][0]); ?></a>
+      <?php } ?>
+    </p>
+  </div>
+</body>

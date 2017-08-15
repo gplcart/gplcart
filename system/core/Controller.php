@@ -517,7 +517,6 @@ abstract class Controller
      */
     public function image($path, $imagestyle_id = null, $absolute = false)
     {
-
         if (!isset($imagestyle_id)) {
             return $this->image->urlFromPath($path);
         }
@@ -1362,9 +1361,20 @@ abstract class Controller
      */
     protected function controlMaintenanceMode()
     {
-        if (!$this->is_installing && !$this->is_backend//
-                && empty($this->current_store['status'])) {
+        $output = empty($this->current_store['status'])//
+                && !$this->is_installing//
+                && !$this->is_backend//
+                && !$this->path('^login$')//
+                && !$this->path('^logout$');
+
+        if ($output) {
+
             $this->is_maintenance = true;
+
+            if (!$this->isFront()) {
+                $this->redirect('/');
+            }
+
             $this->outputMaintenance();
         }
     }
@@ -1490,8 +1500,15 @@ abstract class Controller
             }
         }
 
-        $data['_head'] = $this->render($templates['head'], $this->data);
-        $data['_body'] = $this->render($templates['body'], $body);
+        $data['_head'] = $data['_body'] = '';
+
+        if (!empty($templates['head'])) {
+            $data['_head'] = $this->render($templates['head'], $this->data);
+        }
+
+        if (!empty($templates['body'])) {
+            $data['_body'] = $this->render($templates['body'], $body);
+        }
 
         $html = $this->render($layout, $data, false);
         $this->hook->attach('template.output', $html, $this);
@@ -1539,7 +1556,7 @@ abstract class Controller
     public function outputMaintenance()
     {
         $this->setTitle('Site maintenance', false);
-        $this->output(array('layout' => 'layout/maintenance'), array('headers' => 503));
+        $this->output(array('body' => 'layout/maintenance'), array('headers' => 503));
     }
 
     /**
@@ -1773,6 +1790,15 @@ abstract class Controller
         $this->data['_user'] = $this->current_user;
         $this->data['_store'] = $this->current_store;
         $this->data['_messages'] = $this->session->getMessage();
+        $this->data['_store_title'] = $this->store->getTranslation('title', $this->langcode);
+
+        if (!empty($this->current_store['data']['logo'])) {
+            $this->data['_store_logo'] = $this->image($this->current_store['data']['logo']);
+        }
+
+        if (!empty($this->current_store['data']['favicon'])) {
+            $this->data['_store_favicon'] = $this->image($this->current_store['data']['favicon']);
+        }
 
         $this->setClasses();
         $this->setDefaultJs();
