@@ -215,9 +215,9 @@ function &gplcart_static($cid, $default_value = null, $reset = false)
 
 /**
  * Reset static cache
- * @param string|array $cid
+ * @param string|array|null $cid
  */
-function gplcart_static_clear($cid)
+function gplcart_static_clear($cid = null)
 {
     gplcart_static(gplcart_cache_key($cid), null, true);
 }
