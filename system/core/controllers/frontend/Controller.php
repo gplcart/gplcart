@@ -317,7 +317,7 @@ class Controller extends BaseController
 
         $options += array(
             'entity' => 'category',
-            'imagestyle' => $this->settings('image_style_category_child', 3));
+            'imagestyle' => $this->configTheme('image_style_category_child', 3));
 
         $categories = $this->category->getTree($conditions);
         return $this->prepareEntityItems($categories, $options);
@@ -609,7 +609,7 @@ class Controller extends BaseController
             'ids' => array_keys($items),
             'id_key' => "{$options['entity']}_id",
             'template_item' => "{$options['entity']}/item/{$options['view']}",
-            'imagestyle' => $this->settings("image_style_{$options['entity']}_{$options['view']}", 3)
+            'imagestyle' => $this->configTheme("image_style_{$options['entity']}_{$options['view']}", 3)
         );
 
         foreach ($items as &$item) {
@@ -735,7 +735,7 @@ class Controller extends BaseController
     {
         $options = array(
             'path' => '',
-            'imagestyle' => $this->settings('image_style_cart', 3)
+            'imagestyle' => $this->configTheme('image_style_cart', 3)
         );
 
         if (empty($item['product']['combination_id']) && !empty($item['product']['images'])) {

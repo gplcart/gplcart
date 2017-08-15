@@ -706,7 +706,7 @@ abstract class Controller
      * @param mixed $default
      * @return mixed
      */
-    public function settings($key = null, $default = null)
+    public function configTheme($key = null, $default = null)
     {
         if (!isset($key)) {
             return $this->theme_settings;
@@ -1495,7 +1495,7 @@ abstract class Controller
 
         $html = $this->render($layout, $data, false);
         $this->hook->attach('template.output', $html, $this);
-        
+
         return $html;
     }
 

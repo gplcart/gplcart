@@ -74,7 +74,7 @@ class Compare extends FrontendController
             'product_id' => $this->getComparison());
 
         $options = array(
-            'view' => $this->settings('compare_view', 'grid'),
+            'view' => $this->configTheme('compare_view', 'grid'),
             'buttons' => array('cart_add', 'wishlist_add', 'compare_remove')
         );
 

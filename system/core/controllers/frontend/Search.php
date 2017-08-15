@@ -58,7 +58,7 @@ class Search extends FrontendController
 
         $this->setFilterQueryListSearch();
         $this->setTotalListSearch();
-        $this->setPagerLimit($this->settings('catalog_limit', 20));
+        $this->setPagerLimit($this->configTheme('catalog_limit', 20));
 
         $this->setResultsSearch();
 
@@ -107,9 +107,9 @@ class Search extends FrontendController
     protected function setFilterQueryListSearch()
     {
         $default = array(
-            'view' => $this->settings('catalog_view', 'grid'),
-            'sort' => $this->settings('catalog_sort', 'price'),
-            'order' => $this->settings('catalog_order', 'asc')
+            'view' => $this->configTheme('catalog_view', 'grid'),
+            'sort' => $this->configTheme('catalog_sort', 'price'),
+            'order' => $this->configTheme('catalog_order', 'asc')
         );
 
         $this->setFilter(array(), $this->getFilterQuery($default));

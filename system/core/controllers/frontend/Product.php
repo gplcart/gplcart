@@ -142,7 +142,7 @@ class Product extends FrontendController
     protected function setDataImagesIndexProduct()
     {
         $options = array(
-            'imagestyle' => $this->settings('image_style_product', 5)
+            'imagestyle' => $this->configTheme('image_style_product', 6)
         );
 
         if (empty($this->data_product['images'])) {

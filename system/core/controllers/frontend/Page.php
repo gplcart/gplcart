@@ -104,7 +104,7 @@ class Page extends FrontendController
      */
     protected function setDataImagesIndexPage()
     {
-        $options = array('imagestyle' => $this->settings('image_style_page', 5));
+        $options = array('imagestyle' => $this->configTheme('image_style_page', 5));
         $this->setItemThumb($this->data_page, $options);
         $this->setData('images', $this->render('page/images', array('page' => $this->data_page)));
     }

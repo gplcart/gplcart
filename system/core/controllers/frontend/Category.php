@@ -102,7 +102,7 @@ class Category extends FrontendController
 
         $this->setFilterIndexCategory();
         $this->setTotalIndexCategory();
-        $this->setPagerLimit($this->settings('catalog_limit', 20));
+        $this->setPagerLimit($this->configTheme('catalog_limit', 20));
 
         $this->setListProductCategory();
         $this->setChildrenCategory();
@@ -125,9 +125,9 @@ class Category extends FrontendController
     protected function setFilterIndexCategory()
     {
         $default = array(
-            'view' => $this->settings('catalog_view', 'grid'),
-            'sort' => $this->settings('catalog_sort', 'price'),
-            'order' => $this->settings('catalog_order', 'asc')
+            'view' => $this->configTheme('catalog_view', 'grid'),
+            'sort' => $this->configTheme('catalog_sort', 'price'),
+            'order' => $this->configTheme('catalog_order', 'asc')
         );
 
         $this->setFilter(array(), $this->getFilterQuery($default));
@@ -148,7 +148,7 @@ class Category extends FrontendController
     }
 
     /**
-     * Sets breadcrumbs on the category page
+     * Sets bread crumbs on the category page
      */
     protected function setBreadcrumbIndexCategory()
     {
@@ -169,7 +169,7 @@ class Category extends FrontendController
     protected function setDataImagesIndexCategory()
     {
         $options = array(
-            'imagestyle' => $this->settings('image_style_category', 3));
+            'imagestyle' => $this->configTheme('image_style_category', 3));
 
         $this->setItemThumb($this->data_category, $options);
 

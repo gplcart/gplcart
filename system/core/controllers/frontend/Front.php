@@ -47,7 +47,7 @@ class Front extends FrontendController
         $collection_id = $this->getStore("data.collection_$type");
 
         if (!empty($collection_id)) {
-            $options = array('imagestyle' => $this->settings("image_style_collection_$type"));
+            $options = array('imagestyle' => $this->configTheme("image_style_collection_$type"));
             $conditions = array('collection_id' => $collection_id);
             $html = $this->renderCollection($conditions, array_filter($options));
             $this->setData("collection_$type", $html);

@@ -43,7 +43,7 @@ trait Product
             return null;
         }
 
-        $imagestyle = $controller->settings('image_style_option', 1);
+        $imagestyle = $controller->configTheme('image_style_option', 1);
 
         foreach ($product['field'][$type] as $field_id => $field_values) {
             foreach ($field_values as $field_value_id) {
