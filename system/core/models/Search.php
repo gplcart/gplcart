@@ -10,7 +10,6 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Model,
-    gplcart\core\Cache,
     gplcart\core\Handler;
 use gplcart\core\models\Language as LanguageModel;
 
@@ -171,7 +170,7 @@ class Search extends Model
      */
     public function getHandlers()
     {
-        $handlers = &Cache::memory(__METHOD__);
+        $handlers = &gplcart_static(__METHOD__);
 
         if (isset($handlers)) {
             return $handlers;

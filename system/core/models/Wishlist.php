@@ -9,8 +9,7 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Cache;
+use gplcart\core\Model;
 use gplcart\core\models\User as UserModel,
     gplcart\core\models\Language as LanguageModel;
 use gplcart\core\helpers\Url as UrlHelper;
@@ -92,7 +91,7 @@ class Wishlist extends Model
         $data['created'] = GC_TIME;
         $result = $this->db->insert('wishlist', $data);
 
-        Cache::clearMemory();
+        gplcart_static_clear();
 
         $this->hook->attach('wishlist.add.after', $data, $result, $this);
         return (int) $result;
@@ -217,7 +216,8 @@ class Wishlist extends Model
         );
 
         $existing = $this->getList($conditions);
-        return (count($existing) < $limit);
+        
+        return count($existing) < $limit;
     }
 
     /**
@@ -258,7 +258,7 @@ class Wishlist extends Model
 
         $result = (bool) $this->db->delete('wishlist', $data);
 
-        Cache::clearMemory();
+        gplcart_static_clear();
 
         $this->hook->attach('wishlist.delete.after', $data, $result, $this);
         return (bool) $result;
@@ -271,7 +271,7 @@ class Wishlist extends Model
      */
     public function getList(array $data = array())
     {
-        $items = &Cache::memory(array(__METHOD__ => $data));
+        $items = &gplcart_static(array(__METHOD__ => $data));
 
         if (isset($items)) {
             return $items;

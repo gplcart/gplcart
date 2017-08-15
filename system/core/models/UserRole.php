@@ -9,8 +9,7 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Cache;
+use gplcart\core\Model;
 use gplcart\core\models\Language as LanguageModel;
 
 /**
@@ -41,7 +40,7 @@ class UserRole extends Model
      */
     public function getPermissions()
     {
-        $permissions = &Cache::memory(__METHOD__);
+        $permissions = &gplcart_static(__METHOD__);
 
         if (isset($permissions)) {
             return $permissions;
@@ -199,7 +198,7 @@ class UserRole extends Model
      */
     public function get($role_id)
     {
-        $result = &Cache::memory(__METHOD__ . $role_id);
+        $result = &gplcart_static(__METHOD__ . $role_id);
 
         if (isset($result)) {
             return $result;

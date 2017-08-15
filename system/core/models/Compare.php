@@ -9,8 +9,7 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Cache;
+use gplcart\core\Model;
 use gplcart\core\helpers\Request as RequestHelper;
 use gplcart\core\models\Language as LanguageModel;
 
@@ -178,7 +177,7 @@ class Compare extends Model
      */
     public function getList()
     {
-        $items = &Cache::memory(__METHOD__);
+        $items = &gplcart_static(__METHOD__);
 
         if (isset($items)) {
             return (array) $items;
@@ -219,7 +218,7 @@ class Compare extends Model
         $lifespan = $this->config->get('comparison_cookie_lifespan', 604800);
         $result = $this->request->setCookie('comparison', implode('|', (array) $product_ids), $lifespan);
 
-        Cache::clearMemory();
+        gplcart_static_clear();
         return $result;
     }
 

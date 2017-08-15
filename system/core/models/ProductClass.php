@@ -9,8 +9,7 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Cache,
-    gplcart\core\Model;
+use gplcart\core\Model;
 use gplcart\core\models\Field as FieldModel,
     gplcart\core\models\Language as LanguageModel,
     gplcart\core\models\FieldValue as FieldValueModel;
@@ -258,7 +257,7 @@ class ProductClass extends Model
      */
     public function getFieldData($product_class_id)
     {
-        $result = &Cache::memory(__METHOD__ . $product_class_id);
+        $result = &gplcart_static(__METHOD__ . $product_class_id);
 
         if (isset($result)) {
             return $result;

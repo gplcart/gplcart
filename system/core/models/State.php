@@ -9,8 +9,7 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Cache;
+use gplcart\core\Model;
 
 /**
  * Manages basic behaviors and data related to country states
@@ -53,7 +52,7 @@ class State extends Model
      */
     public function get($state_id)
     {
-        $result = &Cache::memory(__METHOD__ . $state_id);
+        $result = &gplcart_static(__METHOD__ . $state_id);
 
         if (isset($result)) {
             return $result;

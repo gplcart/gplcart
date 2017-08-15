@@ -9,8 +9,7 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Cache;
+use gplcart\core\Model;
 use gplcart\core\helpers\Url as UrlHelper,
     gplcart\core\helpers\Curl as CurlHelper;
 use gplcart\core\models\Language as LanguageModel,
@@ -261,7 +260,7 @@ class File extends Model
      */
     protected function getHandlers()
     {
-        $handlers = &Cache::memory(__METHOD__);
+        $handlers = &gplcart_static(__METHOD__);
 
         if (isset($handlers)) {
             return $handlers;
@@ -348,7 +347,7 @@ class File extends Model
      */
     public function getList(array $data = array())
     {
-        $files = &Cache::memory(array(__METHOD__ => $data));
+        $files = &gplcart_static(array(__METHOD__ => $data));
 
         if (isset($files)) {
             return $files;

@@ -9,8 +9,7 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Cache;
+use gplcart\core\Model;
 use gplcart\core\helpers\Filter as FilterHelper;
 
 /**
@@ -105,7 +104,7 @@ class Filter extends Model
      */
     public function getList()
     {
-        $filters = &Cache::memory(__METHOD__);
+        $filters = &gplcart_static(__METHOD__);
 
         if (isset($filters)) {
             return $filters;

@@ -174,3 +174,73 @@ function gplcart_settype(&$value, $type, $default)
     $value = $default;
     return false;
 }
+
+/**
+ * Central static variable storage
+ * Mostly taken from Drupal
+ * @param string|null|array $cid
+ * @param mixed $default_value
+ * @param boolean $reset
+ * @return mixed
+ */
+function &gplcart_static($cid, $default_value = null, $reset = false)
+{
+    $name = gplcart_cache_key($cid);
+
+    static $data = array(), $default = array();
+
+    if (isset($data[$name]) || array_key_exists($name, $data)) {
+        if ($reset) {
+            $data[$name] = $default[$name];
+        }
+
+        return $data[$name];
+    }
+
+    if (isset($name)) {
+        if ($reset) {
+            return $data;
+        }
+
+        $default[$name] = $data[$name] = $default_value;
+        return $data[$name];
+    }
+
+    foreach ($default as $name => $value) {
+        $data[$name] = $value;
+    }
+
+    return $data;
+}
+
+/**
+ * Reset static cache
+ * @param string|array $cid
+ */
+function gplcart_static_clear($cid)
+{
+    gplcart_static(gplcart_cache_key($cid), null, true);
+}
+
+/**
+ * Generates a cache key from an array of arguments like ('prefix' => array(...))
+ * @param string|array|null $data
+ * @return string|null
+ */
+function gplcart_cache_key($data)
+{
+    if (!isset($data)) {
+        return null;
+    }
+
+    if (!is_array($data)) {
+        return (string) $data;
+    }
+
+    list($key, $hash) = each($data);
+
+    settype($hash, 'array');
+    ksort($hash);
+
+    return $key . '.' . md5(json_encode($hash));
+}

@@ -10,7 +10,6 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Model,
-    gplcart\core\Cache,
     gplcart\core\Handler;
 use gplcart\core\helpers\Url as UrlHelper,
     gplcart\core\helpers\Curl as CurlHelper,
@@ -30,7 +29,7 @@ class Oauth extends Model
     protected $curl;
 
     /**
-     * Url helper instance
+     * URL helper instance
      * @var \gplcart\core\helpers\Url $url
      */
     protected $url;
@@ -79,7 +78,7 @@ class Oauth extends Model
      */
     public function getProviders(array $data = array())
     {
-        $providers = &Cache::memory(array(__METHOD__ => $data));
+        $providers = &gplcart_static(array(__METHOD__ => $data));
 
         if (isset($providers)) {
             return $providers;

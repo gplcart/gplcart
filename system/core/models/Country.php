@@ -9,8 +9,7 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Cache;
+use gplcart\core\Model;
 use gplcart\core\models\Language as LanguageModel;
 
 /**
@@ -68,7 +67,7 @@ class Country extends Model
      */
     public function get($code)
     {
-        $result = &Cache::memory(__METHOD__ . $code);
+        $result = &gplcart_static(__METHOD__ . $code);
 
         if (isset($result)) {
             return $result;
@@ -225,7 +224,7 @@ class Country extends Model
      */
     public function getList(array $data = array())
     {
-        $list = &Cache::memory(array(__METHOD__ => $data));
+        $list = &gplcart_static(array(__METHOD__ => $data));
 
         if (isset($list)) {
             return $list;

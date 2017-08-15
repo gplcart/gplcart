@@ -220,7 +220,7 @@ class Config
     public function getModules($cache = true)
     {
         if ($cache) {
-            $modules = &Cache::memory(__METHOD__);
+            $modules = &gplcart_static(__METHOD__);
             if (isset($modules)) {
                 return $modules;
             }
@@ -370,7 +370,7 @@ class Config
             return array();
         }
 
-        $modules = &Cache::memory(__METHOD__);
+        $modules = &gplcart_static(__METHOD__);
 
         if (isset($modules)) {
             return $modules;

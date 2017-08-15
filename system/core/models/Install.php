@@ -11,8 +11,7 @@ namespace gplcart\core\models;
 
 use gplcart\core\Model,
     gplcart\core\Database,
-    gplcart\core\Handler,
-    gplcart\core\Cache;
+    gplcart\core\Handler;
 use gplcart\core\models\Language as LanguageModel;
 
 /**
@@ -126,7 +125,7 @@ class Install extends Model
      */
     public function getRequirements()
     {
-        $requirements = &Cache::memory(__METHOD__);
+        $requirements = &gplcart_static(__METHOD__);
 
         if (isset($requirements)) {
             return (array) $requirements;

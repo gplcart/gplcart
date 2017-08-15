@@ -9,8 +9,7 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Cache;
+use gplcart\core\Model;
 use gplcart\core\models\Sku as SkuModel,
     gplcart\core\models\User as UserModel,
     gplcart\core\models\Product as ProductModel,
@@ -98,7 +97,7 @@ class Cart extends Model
      */
     public function getContent(array $data)
     {
-        $result = &Cache::memory(array(__METHOD__ => $data));
+        $result = &gplcart_static(array(__METHOD__ => $data));
 
         if (isset($result)) {
             return $result;
@@ -392,7 +391,7 @@ class Cart extends Model
         $data['created'] = $data['modified'] = GC_TIME;
         $result = $this->db->insert('cart', $data);
 
-        Cache::clearMemory();
+        gplcart_static_clear();
 
         $this->hook->attach('cart.add.after', $data, $result, $this);
         return (int) $result;
@@ -416,7 +415,7 @@ class Cart extends Model
         $data['modified'] = GC_TIME;
         $result = (bool) $this->db->update('cart', $data, array('cart_id' => $cart_id));
 
-        Cache::clearMemory();
+        gplcart_static_clear();
 
         $this->hook->attach('cart.update.after', $cart_id, $data, $result, $this);
         return (bool) $result;
@@ -498,7 +497,7 @@ class Cart extends Model
 
         $data['wishlist_id'] = $this->wishlist->addProduct($data);
 
-        Cache::clearMemory();
+        gplcart_static_clear();
 
         $url = $this->request->base() . 'wishlist';
         $message = $this->language->text('Product has been moved to your <a href="!href">wishlist</a>', array('!href' => $url));
@@ -574,7 +573,7 @@ class Cart extends Model
 
         $result = (bool) $this->db->delete('cart', array('cart_id' => $cart_id));
 
-        Cache::clearMemory();
+        gplcart_static_clear();
 
         $this->hook->attach('cart.delete.after', $cart_id, $result, $this);
 

@@ -9,8 +9,7 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Cache,
-    gplcart\core\Model;
+use gplcart\core\Model;
 use gplcart\core\models\Country as CountryModel;
 
 /**
@@ -42,7 +41,7 @@ class Address extends Model
      */
     public function get($address_id)
     {
-        $result = &Cache::memory(__METHOD__ . $address_id);
+        $result = &gplcart_static(__METHOD__ . $address_id);
 
         if (isset($result)) {
             return $result;

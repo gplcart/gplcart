@@ -9,8 +9,7 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Cache;
+use gplcart\core\Model;
 use gplcart\core\models\Trigger as TriggerModel,
     gplcart\core\models\Currency as CurrencyModel;
 
@@ -51,7 +50,7 @@ class PriceRule extends Model
      */
     public function getList(array $data = array())
     {
-        $list = &Cache::memory(array(__METHOD__ => $data));
+        $list = &gplcart_static(array(__METHOD__ => $data));
 
         if (isset($list)) {
             return $list;

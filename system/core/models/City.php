@@ -9,8 +9,7 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Cache;
+use gplcart\core\Model;
 
 /**
  * Manages basic behaviors and data related to cities
@@ -134,7 +133,7 @@ class City extends Model
      */
     public function get($city_id)
     {
-        $result = &Cache::memory(__METHOD__ . $city_id);
+        $result = &gplcart_static(__METHOD__ . $city_id);
 
         if (isset($result)) {
             return $result;

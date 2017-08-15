@@ -10,7 +10,6 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Model,
-    gplcart\core\Cache,
     gplcart\core\Hook;
 use gplcart\core\models\Language as LanguageModel;
 
@@ -440,7 +439,7 @@ class Module extends Model
      */
     public function getActiveThemes()
     {
-        $themes = &Cache::memory(__METHOD__);
+        $themes = &gplcart_static(__METHOD__);
 
         if (isset($themes)) {
             return $themes;
@@ -499,7 +498,7 @@ class Module extends Model
      */
     public function install($module_id, $status = true)
     {
-        Cache::clearMemory();
+        gplcart_static_clear();
 
         $result = $this->canInstall($module_id);
 
@@ -574,7 +573,7 @@ class Module extends Model
      */
     protected function getOverrideMap()
     {
-        Cache::clearMemory();
+        gplcart_static_clear();
 
         $map = array();
         foreach ($this->getEnabled() as $module) {

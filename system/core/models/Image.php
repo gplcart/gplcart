@@ -10,7 +10,6 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Model,
-    gplcart\core\Cache,
     gplcart\core\Handler;
 use gplcart\core\helpers\Url as UrlHelper;
 use gplcart\core\models\File as FileModel,
@@ -61,7 +60,7 @@ class Image extends Model
      */
     public function getActionHandlers()
     {
-        $handlers = &Cache::memory(__METHOD__);
+        $handlers = &gplcart_static(__METHOD__);
 
         if (isset($handlers)) {
             return (array) $handlers;
@@ -183,7 +182,7 @@ class Image extends Model
      */
     public function getStyleList()
     {
-        $imagestyles = &Cache::memory(__METHOD__);
+        $imagestyles = &gplcart_static(__METHOD__);
 
         if (isset($imagestyles)) {
             return (array) $imagestyles;

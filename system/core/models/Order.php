@@ -9,8 +9,7 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Cache;
+use gplcart\core\Model;
 use gplcart\core\models\Mail as MailModel,
     gplcart\core\models\Cart as CartModel,
     gplcart\core\models\User as UserModel,
@@ -97,7 +96,7 @@ class Order extends Model
      */
     public function getStatuses()
     {
-        $statuses = &Cache::memory(__METHOD__);
+        $statuses = &gplcart_static(__METHOD__);
 
         if (isset($statuses)) {
             return $statuses;

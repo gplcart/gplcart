@@ -10,7 +10,6 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Route,
-    gplcart\core\Cache,
     gplcart\core\Model;
 
 /**
@@ -97,7 +96,7 @@ class Language extends Model
      */
     public function getList($enabled = false)
     {
-        $languages = &Cache::memory(__METHOD__ . "$enabled");
+        $languages = &gplcart_static(__METHOD__ . "$enabled");
 
         if (isset($languages)) {
             return $languages;
@@ -429,7 +428,7 @@ class Language extends Model
             $cache_key .= $filename;
         }
 
-        $translations = &Cache::memory($cache_key);
+        $translations = &gplcart_static($cache_key);
 
         if (isset($translations)) {
             return (array) $translations;

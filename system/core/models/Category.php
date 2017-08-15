@@ -9,8 +9,7 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Cache;
+use gplcart\core\Model;
 use gplcart\core\models\File as FileModel,
     gplcart\core\models\Alias as AliasModel,
     gplcart\core\models\Language as LanguageModel,
@@ -164,7 +163,7 @@ class Category extends Model
      */
     public function getTree(array $data)
     {
-        $tree = &Cache::memory(array(__METHOD__ => $data));
+        $tree = &gplcart_static(array(__METHOD__ => $data));
 
         if (isset($tree)) {
             return $tree;

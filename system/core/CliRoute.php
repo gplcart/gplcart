@@ -10,8 +10,7 @@
 namespace gplcart\core;
 
 use gplcart\core\Hook,
-    gplcart\core\Handler,
-    gplcart\core\Cache;
+    gplcart\core\Handler;
 use gplcart\core\helpers\Cli as CliHelper;
 
 /**
@@ -93,7 +92,7 @@ class CliRoute
      */
     public function getList()
     {
-        $routes = &Cache::memory(__METHOD__);
+        $routes = &gplcart_static(__METHOD__);
 
         if (isset($routes)) {
             return $routes;

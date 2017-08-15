@@ -10,7 +10,6 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Model,
-    gplcart\core\Cache,
     gplcart\core\Handler,
     gplcart\core\Container;
 use gplcart\core\helpers\Url as UrlHelper,
@@ -364,7 +363,7 @@ class Job extends Model
      */
     protected function getHandlers()
     {
-        $handlers = &Cache::memory(__METHOD__);
+        $handlers = &gplcart_static(__METHOD__);
 
         if (isset($handlers)) {
             return $handlers;

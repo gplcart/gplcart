@@ -9,8 +9,7 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Cache,
-    gplcart\core\Model;
+use gplcart\core\Model;
 use gplcart\core\models\Language as LanguageModel;
 
 /**
@@ -42,7 +41,7 @@ class Payment extends Model
      */
     public function getList(array $data = array())
     {
-        $methods = &Cache::memory(array(__METHOD__ => $data));
+        $methods = &gplcart_static(array(__METHOD__ => $data));
 
         if (isset($methods)) {
             return $methods;

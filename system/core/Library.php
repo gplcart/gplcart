@@ -90,7 +90,7 @@ class Library
      */
     public function getList()
     {
-        $libraries = &Cache::memory(__METHOD__);
+        $libraries = &gplcart_static(__METHOD__);
 
         if (isset($libraries)) {
             return (array) $libraries;

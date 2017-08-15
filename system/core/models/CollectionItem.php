@@ -10,7 +10,6 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Model,
-    gplcart\core\Cache,
     gplcart\core\Handler;
 use gplcart\core\models\Collection as CollectionModel;
 
@@ -43,7 +42,7 @@ class CollectionItem extends Model
      */
     public function getList(array $data = array())
     {
-        $items = &Cache::memory(array(__METHOD__ => $data));
+        $items = &gplcart_static(array(__METHOD__ => $data));
 
         if (isset($items)) {
             return $items;

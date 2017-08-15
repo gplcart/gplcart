@@ -9,8 +9,7 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Cache;
+use gplcart\core\Model;
 use gplcart\core\models\Mail as MailModel,
     gplcart\core\models\Address as AddressModel,
     gplcart\core\models\UserRole as UserRoleModel,
@@ -311,7 +310,7 @@ class User extends Model
      */
     public function get($user_id, $store_id = null)
     {
-        $result = &Cache::memory(__METHOD__ . $user_id);
+        $result = &gplcart_static(__METHOD__ . $user_id);
 
         if (isset($result)) {
             return (array) $result;
