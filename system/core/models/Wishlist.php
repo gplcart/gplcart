@@ -34,7 +34,7 @@ class Wishlist extends Model
     protected $language;
 
     /**
-     * Url class instance
+     * URL class instance
      * @var \gplcart\core\helpers\Url $url
      */
     protected $url;
@@ -126,7 +126,7 @@ class Wishlist extends Model
         }
 
         if (!$this->canAdd($data['user_id'], $data['store_id'])) {
-            $vars = array('%num' => $this->getLimits($data['user_id']));
+            $vars = array('%num' => $this->getLimit($data['user_id']));
             $result['message'] = $this->language->text('You\'re exceeding %num items', $vars);
             return $result;
         }
@@ -205,7 +205,7 @@ class Wishlist extends Model
             return true; // No limits for superadmin
         }
 
-        $limit = $this->getLimits($user_id);
+        $limit = $this->getLimit($user_id);
 
         if (empty($limit)) {
             return true;
@@ -221,11 +221,11 @@ class Wishlist extends Model
     }
 
     /**
-     * Returns max allowed number of items in the user wishlist
+     * Returns a max number of items in the user wishlist
      * @param integer|string $user_id
      * @return integer
      */
-    public function getLimits($user_id)
+    public function getLimit($user_id)
     {
         $limit = $this->config->get('wishlist_limit', 20);
 
