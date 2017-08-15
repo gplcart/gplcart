@@ -9,9 +9,7 @@
 
 namespace gplcart\modules\frontend\controllers;
 
-use gplcart\core\models\Image as ImageModel,
-    gplcart\core\models\Module as ModuleModel;
-use gplcart\modules\frontend\Frontend as FrontendModule;
+use gplcart\core\models\Module as ModuleModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -21,36 +19,19 @@ class Settings extends BackendController
 {
 
     /**
-     * Image model instance
-     * @var \gplcart\core\models\Image $image
-     */
-    protected $image;
-
-    /**
      * Module model instance
      * @var \gplcart\core\models\Module $module
      */
     protected $module;
 
     /**
-     * Module instance
-     * @var \gplcart\modules\frontend\Frontend $frontend
-     */
-    protected $frontend;
-
-    /**
-     * @param ImageModel $image
      * @param ModuleModel $module
-     * @param FrontendModule $frontend
      */
-    public function __construct(ImageModel $image, ModuleModel $module,
-            FrontendModule $frontend)
+    public function __construct(ModuleModel $module)
     {
         parent::__construct();
 
-        $this->image = $image;
         $this->module = $module;
-        $this->frontend = $frontend;
     }
 
     /**
@@ -58,11 +39,8 @@ class Settings extends BackendController
      */
     public function editSettings()
     {
-        $imagestyles = $this->image->getStyleNames();
-        $settings = $this->config->module('frontend');
-
-        $this->setData('settings', $settings);
-        $this->setData('imagestyles', $imagestyles);
+        $this->setData('imagestyles', $this->image->getStyleNames());
+        $this->setData('settings', $this->config->module('frontend'));
         $this->setData('imagestyle_fields', $this->getImageStyleFieldsSettings());
 
         $this->submitSettings();
@@ -87,9 +65,9 @@ class Settings extends BackendController
             'image_style_product_list' => $this->text('Product catalog (list)'),
             'image_style_cart' => $this->text('Cart'),
             'image_style_option' => $this->text('Product option'),
-            'image_style_collection_file' => $this->text('Banners'),
-            'image_style_collection_page' => $this->text('Pages'),
-            'image_style_collection_product' => $this->text('Featured products'),
+            'image_style_collection_file' => $this->text('File collection (banners)'),
+            'image_style_collection_page' => $this->text('Page collection (news/articles)'),
+            'image_style_collection_product' => $this->text('Product collection (featured products)'),
         );
     }
 
@@ -123,10 +101,7 @@ class Settings extends BackendController
     protected function updateSettings()
     {
         $this->controlAccess('module_edit');
-
-        $settings = $this->getSubmitted();
-        // array_filter - remove empty ("default") values
-        $this->module->setSettings('frontend', array_filter($settings));
+        $this->module->setSettings('frontend', array_filter($this->getSubmitted()));
 
         $message = $this->text('Settings have been updated');
         $this->redirect('admin/module/list', $message, 'success');
@@ -140,11 +115,12 @@ class Settings extends BackendController
     {
         $this->setSubmitted('settings');
         $this->validateElement('catalog_limit', 'regexp', '/^[\d]{1,2}$/');
+
         return !$this->hasErrors();
     }
 
     /**
-     * Sets breadcrumbs on the module settings page
+     * Sets bread crumbs on the module settings page
      */
     protected function setBreadcrumbEditSettings()
     {
@@ -177,8 +153,7 @@ class Settings extends BackendController
     protected function setTitleEditSettings()
     {
         $vars = array('%name' => $this->text('Frontend'));
-        $title = $this->text('Edit %name settings', $vars);
-        $this->setTitle($title);
+        $this->setTitle($this->text('Edit %name settings', $vars));
     }
 
 }
