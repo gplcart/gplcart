@@ -76,6 +76,16 @@ class Module extends Model
     }
 
     /**
+     * Whether the module is an installer
+     * @param string $module_id
+     * @return bool
+     */
+    public function isInstaller($module_id)
+    {
+        return $this->config->isInstallerModule($module_id);
+    }
+
+    /**
      * Returns an array of all available modules
      * @return array
      */
@@ -152,10 +162,6 @@ class Module extends Model
      */
     public function canEnable($module_id)
     {
-        // Test module class
-        // If a fatal error occurs here, the module won't be enabled
-        $this->config->getModuleInstance($module_id);
-
         if ($this->isEnabled($module_id)) {
             return $this->language->text('Module already installed and enabled');
         }
@@ -163,6 +169,14 @@ class Module extends Model
         if ($this->isLocked($module_id)) {
             return $this->language->text('Module is locked in code');
         }
+
+        if ($this->isInstaller($module_id)) {
+            return $this->language->text('Installers cannot be enabled');
+        }
+
+        // Test module class
+        // If a fatal error occurs here, the module won't be enabled
+        $this->config->getModuleInstance($module_id);
 
         return $this->checkRequirements($module_id);
     }
@@ -180,6 +194,10 @@ class Module extends Model
 
         if ($this->isLocked($module_id)) {
             return $this->language->text('Module is locked in code');
+        }
+
+        if ($this->isInstaller($module_id)) {
+            return $this->language->text('Installers cannot be installed');
         }
 
         // Test module class
@@ -424,7 +442,7 @@ class Module extends Model
     }
 
     /**
-     * Whetner a given module is an active theme
+     * Whether a given module is an active theme
      * @param string $module_id
      * @return boolean
      */
@@ -491,7 +509,7 @@ class Module extends Model
     }
 
     /**
-     * Installs a module
+     * Install a module
      * @param string $module_id
      * @param boolean $status
      * @return mixed
@@ -528,7 +546,7 @@ class Module extends Model
     }
 
     /**
-     * Uninstalls a module
+     * Uninstall a module
      * @param string $module_id
      * @return mixed
      */
