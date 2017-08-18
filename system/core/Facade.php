@@ -28,28 +28,16 @@ class Facade
     protected $route;
 
     /**
-     * Url class instance
+     * URL class instance
      * @var \gplcart\core\helpers\Url $url
      */
     protected $url;
-
-    /**
-     * Session class instance
-     * @var \gplcart\core\helpers\Session $session
-     */
-    protected $session;
 
     /**
      * Config class instance
      * @var \gplcart\core\Config $config
      */
     protected $config;
-
-    /**
-     * Hook class instance
-     * @var \gplcart\core\Hook $hook
-     */
-    protected $hook;
 
     /**
      * @param Config $config
@@ -61,14 +49,14 @@ class Facade
     public function __construct(Config $config, Route $route, Hook $hook,
             UrlHelper $url, SessionHelper $session)
     {
+        $session->start();
+        
         $this->url = $url;
-        $this->hook = $hook;
         $this->route = $route;
         $this->config = $config;
-        $this->session = $session;
 
-        $this->hook->registerAll();
-        $this->hook->attach('construct', $this);
+        $hook->registerAll();
+        $hook->attach('construct', $this);
     }
 
     /**
@@ -94,26 +82,15 @@ class Facade
     }
 
     /**
-     * Routes normal HTTP requests
+     * Routes HTTP requests
      */
     protected function routeHttp()
     {
-        if ($this->isInstalling()) {
-            $this->url->redirect('install');
-        } else {
+        if ($this->config->exists() || $this->url->isInstall()) {
             $this->route->process();
+        } else {
+            $this->url->redirect('install');
         }
-    }
-
-    /**
-     * Whether the store is installing
-     * @return boolean
-     */
-    protected function isInstalling()
-    {
-        return (!$this->config->exists() // No config/common.php exists
-                || $this->session->get('install.processing')) // Installation in progress
-                && !$this->url->isInstall(); // and not on /install page
     }
 
 }
