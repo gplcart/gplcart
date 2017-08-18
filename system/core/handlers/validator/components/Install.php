@@ -157,7 +157,7 @@ class Install extends ComponentValidator
     }
 
     /**
-     * Validates a hostname (domain)
+     * Validates a host name (domain)
      * @return boolean
      */
     protected function validateStoreHostInstall()
@@ -243,18 +243,17 @@ class Install extends ComponentValidator
             return null;
         }
 
-        $label = $this->language->text('Timezone');
         $timezone = $this->getSubmitted($field);
 
         if (empty($timezone)) {
-            $this->setErrorRequired($field, $label);
-            return false;
+            $this->setSubmitted($field, date_default_timezone_get());
+            return true;
         }
 
         $timezones = gplcart_timezones();
 
         if (empty($timezones[$timezone])) {
-            $this->setErrorInvalid($field, $label);
+            $this->setErrorInvalid($field, $this->language->text('Timezone'));
             return false;
         }
 
@@ -275,17 +274,14 @@ class Install extends ComponentValidator
         $installer_id = $this->getSubmitted($field);
 
         if (empty($installer_id)) {
+            $this->setSubmitted('installer', 'default');
             return null;
         }
 
         $installer = $this->install->getHandler($installer_id);
 
         if (empty($installer)) {
-            $installers = $this->install->getHandlers();
-            $list = implode(',', array_keys($installers));
-            $vars = array('@field' => $this->language->text('Installer'), '@allowed' => $list);
-            $error = $this->language->text('@field has invalid value. Allowed values: @allowed', $vars);
-            $this->setError($field, $error);
+            $this->setErrorInvalid('installer', $this->language->text('Installer'));
             return false;
         }
 
