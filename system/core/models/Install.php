@@ -57,16 +57,36 @@ class Install extends Model
      */
     public function getHandlers()
     {
-        $handlers = $this->getDefaultHandler();
+        $handlers = &gplcart_static(__METHOD__);
 
+        if (isset($handlers)) {
+            return $handlers;
+        }
+
+        $handlers = array();
         $this->hook->attach('install.handlers', $handlers, $this);
 
-        array_walk($handlers, function(&$value, $key) {
-            $value['id'] = $key;
-        });
+        foreach ($handlers as $id => &$handler) {
+
+            if (empty($handler['module'])) {
+                unset($handlers[$id]);
+                continue;
+            }
+
+            $info = $this->config->getModuleInfo($handler['module']);
+
+            if (empty($info['type']) || $info['type'] !== 'installer') {
+                unset($handlers[$id]);
+                continue;
+            }
+
+            $handler['id'] = $id;
+            $handler['weight'] = isset($handler['weight']) ? $handler['weight'] : 0;
+        }
+
+        $handlers = array_merge($handlers, $this->getDefaultHandler());
 
         gplcart_array_sort($handlers);
-
         return $handlers;
     }
 
@@ -79,10 +99,12 @@ class Install extends Model
         return array(
             'default' => array(
                 'weight' => 0,
+                'module' => '',
+                'id' => 'default',
                 'title' => $this->language->text('Default'),
                 'description' => $this->language->text('Default system installer'),
                 'handlers' => array(
-                    'process' => array('gplcart\\core\\handlers\\install\\Install', 'process')
+                    'install' => array('gplcart\\core\\handlers\\install\\DefaultProfile', 'install')
                 )
             )
         );
@@ -104,14 +126,15 @@ class Install extends Model
      * Process installation by calling a handler
      * @param string $handler_id
      * @param array $data
+     * @param string $step
      * @return array
      */
-    public function callHandler($handler_id, array $data)
+    public function callHandler($handler_id, array $data, $step = '')
     {
         $handlers = $this->getHandlers();
 
         try {
-            $result = Handler::call($handlers, $handler_id, 'process', array($data, $this->database, $this));
+            $result = Handler::call($handlers, $handler_id, "install$step", array($data, $this->database));
         } catch (\Exception $ex) {
             $result = array();
         }
@@ -196,7 +219,7 @@ class Install extends Model
     public function process(array $data, array $cli_route = array())
     {
         $result = null;
-        $this->hook->attach('install.before', $data, $cli_route, $result, $this);
+        $this->hook->attach('install.before', $data, $result, $cli_route, $this);
 
         if (isset($result)) {
             return (array) $result;
@@ -208,13 +231,9 @@ class Install extends Model
             'message' => $this->language->text('An error occurred')
         );
 
-        if (!isset($data['installer'])) {
-            $data['installer'] = 'default';
-        }
-
         $result = array_merge($default_result, $this->callHandler($data['installer'], $data));
 
-        $this->hook->attach('install.after', $data, $cli_route, $result, $this);
+        $this->hook->attach('install.after', $data, $result, $cli_route, $this);
         return (array) $result;
     }
 
