@@ -155,6 +155,7 @@ class Install extends CliController
     {
         $this->validateInputLanguageInstall();
         $this->validateRequirementsInstall();
+        $this->validateInstallerInstall();
         $this->validateInputTitleInstall();
         $this->validateInputEmailInstall();
         $this->validateInputPasswordInstall();
@@ -212,15 +213,47 @@ class Install extends CliController
         $this->langcode = '';
         $languages = $this->language->getList();
 
-        if (count($languages) > 1) {
-            $selected = $this->menu(array_keys($languages), 'en', $this->text('Language (enter a number)'));
-            if (empty($selected)) {
-                $this->outputErrors($this->text('Invalid language'));
-                $this->validateInputLanguageInstall();
-            } else {
-                $this->langcode = (string) $selected;
-                $this->language->set($this->langcode);
-            }
+        if (count($languages) < 2) {
+            return null;
+        }
+
+        $options = array();
+        foreach ($languages as $code => $language) {
+            $options[$code] = $language['name'];
+        }
+
+        $selected = $this->menu($options, 'en', $this->text('Language (enter a number)'));
+
+        if (empty($languages[$selected])) {
+            $this->outputErrors($this->text('Invalid language'));
+            $this->validateInputLanguageInstall();
+        } else {
+            $this->langcode = (string) $selected;
+            $this->language->set($this->langcode);
+        }
+    }
+
+    /**
+     * Validates installation profile input
+     */
+    protected function validateInstallerInstall()
+    {
+        $handlers = $this->install->getHandlers();
+
+        if (count($handlers) < 2) {
+            return null;
+        }
+
+        $options = array();
+        foreach ($handlers as $id => $handler) {
+            $options[$id] = $handler['title'];
+        }
+
+        $input = $this->menu($options, 'default', $this->text('Installation profile (enter a number)'));
+
+        if (!$this->isValidInput($input, 'installer', 'install')) {
+            $this->outputErrors();
+            $this->validateInstallerInstall();
         }
     }
 
@@ -239,6 +272,7 @@ class Install extends CliController
     protected function validateInputTitleInstall()
     {
         $input = $this->prompt($this->text('Store title'), 'GPL Cart');
+
         if (!$this->isValidInput($input, 'store.title', 'install')) {
             $this->outputErrors();
             $this->validateInputTitleInstall();
@@ -251,6 +285,7 @@ class Install extends CliController
     protected function validateInputEmailInstall()
     {
         $input = $this->prompt($this->text('E-mail'), '');
+
         if (!$this->isValidInput($input, 'user.email', 'install')) {
             $this->outputErrors();
             $this->validateInputEmailInstall();
@@ -263,6 +298,7 @@ class Install extends CliController
     protected function validateInputPasswordInstall()
     {
         $input = $this->prompt($this->text('Password'), '');
+
         if (!$this->isValidInput($input, 'user.password', 'install')) {
             $this->outputErrors();
             $this->validateInputPasswordInstall();
@@ -275,6 +311,7 @@ class Install extends CliController
     protected function validateInputBasepathInstall()
     {
         $input = $this->prompt($this->text('Installation subdirectory'), '');
+
         if (!$this->isValidInput($input, 'store.basepath', 'install')) {
             $this->outputErrors();
             $this->validateInputBasepathInstall();
@@ -287,6 +324,7 @@ class Install extends CliController
     protected function validateInputDbNameInstall()
     {
         $input = $this->prompt($this->text('Database name'), '');
+
         if (!$this->isValidInput($input, 'database.name', 'install')) {
             $this->outputErrors();
             $this->validateInputDbNameInstall();
@@ -299,6 +337,7 @@ class Install extends CliController
     protected function validateInputDbUserInstall()
     {
         $input = $this->prompt($this->text('Database user'), 'root');
+
         if (!$this->isValidInput($input, 'database.user', 'install')) {
             $this->outputErrors();
             $this->validateInputDbUserInstall();
@@ -311,6 +350,7 @@ class Install extends CliController
     protected function validateInputDbPasswordInstall()
     {
         $input = $this->prompt($this->text('Database password'), '');
+
         if (!$this->isValidInput($input, 'database.password', 'install')) {
             $this->outputErrors();
             $this->validateInputDbPasswordInstall();
@@ -323,6 +363,7 @@ class Install extends CliController
     protected function validateInputDbPortInstall()
     {
         $input = $this->prompt($this->text('Database port'), '3306');
+
         if (!$this->isValidInput($input, 'database.port', 'install')) {
             $this->outputErrors();
             $this->validateInputDbPortInstall();
@@ -335,6 +376,7 @@ class Install extends CliController
     protected function validateInputDbHostInstall()
     {
         $input = $this->prompt($this->text('Database host'), 'localhost');
+
         if (!$this->isValidInput($input, 'database.host', 'install')) {
             $this->outputErrors();
             $this->validateInputDbHostInstall();
@@ -347,7 +389,9 @@ class Install extends CliController
     protected function validateInputDbTypeInstall()
     {
         $drivers = \PDO::getAvailableDrivers();
-        $input = $this->menu($drivers, 'mysql', $this->text('Database type (enter a number)'));
+
+        $input = $this->menu(array_combine($drivers, $drivers), 'mysql', $this->text('Database type (enter a number)'));
+
         if (!$this->isValidInput($input, 'database.type', 'install')) {
             $this->outputErrors();
             $this->validateInputDbTypeInstall();
