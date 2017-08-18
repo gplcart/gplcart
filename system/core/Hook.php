@@ -50,9 +50,11 @@ class Hook
     public function registerAll()
     {
         foreach ($this->config->getEnabledModules() as $module) {
+
             if (empty($module['hooks'])) {
                 continue;
             }
+
             foreach ($module['hooks'] as $method) {
                 $this->register($method, $module['class']);
             }
@@ -121,8 +123,8 @@ class Hook
      * @param mixed $e
      * @return boolean
      */
-    public function attach($hook, &$a = null, &$b = null, &$c = null, &$d = null,
-            &$e = null)
+    public function attach($hook, &$a = null, &$b = null, &$c = null,
+            &$d = null, &$e = null)
     {
         if (strpos($hook, '|') !== false) {
             list($hook, $module_id) = explode('|', $hook, 2);
