@@ -114,7 +114,7 @@ class CliController
     }
 
     /**
-     * Handle calls to unexisting static methods
+     * Handle calls to non-existing static methods
      * @param string $method
      * @param array $args
      */
@@ -243,7 +243,7 @@ class CliController
     }
 
     /**
-     * Returns the cli command
+     * Returns the CLI command
      * @return string
      */
     public function getCommand()
@@ -263,7 +263,7 @@ class CliController
     }
 
     /**
-     * Whether a submitted kay is not empty
+     * Whether a submitted key is not empty
      * @param string $key
      * @return boolean
      */
