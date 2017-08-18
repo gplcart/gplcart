@@ -51,12 +51,12 @@ class Install extends BaseController
         $this->language->set($this->install_language);
 
         $this->setTitleEditInstall();
-        $this->submitEditInstall();
 
         $requirements = $this->getRequirementsInstall();
         $issues = $this->getRequirementErrorsInstall($requirements);
 
         $this->setData('issues', $issues);
+        $this->setData('settings.installer', 'default');
         $this->setData('requirements', $requirements);
         $this->setData('timezones', gplcart_timezones());
         $this->setData('language', $this->install_language);
@@ -66,6 +66,7 @@ class Install extends BaseController
         $this->setData('severity', $this->getSeverityInstall($issues));
         $this->setData('settings.store.language', $this->install_language);
 
+        $this->submitEditInstall();
         $this->outputEditInstall();
     }
 
@@ -74,7 +75,7 @@ class Install extends BaseController
      */
     protected function controlAccessInstall()
     {
-        if ($this->config->exists() && !$this->session->get('install.processing')) {
+        if ($this->config->exists()) {
             $this->redirect('/');
         }
     }
