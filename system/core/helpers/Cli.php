@@ -144,46 +144,50 @@ class Cli
         }
 
         $this->out($question . $marker);
-        $line = $this->in();
 
-        if (!empty($line)) {
-            return $line;
+        $input = $this->in();
+
+        if ($input === '') {
+            return $default;
         }
 
-        return $default;
+        return $input;
     }
 
     /**
      * Displays a menu where a user can enter a number to choose an option
-     * @param array $items
+     * @param array $items An array like array('key' => 'Label')
      * @param mixed $default
      * @param string $title
      * @return mixed
      */
     public function menu($items, $default = null, $title = 'Choose an item')
     {
-        $values = array_values($items);
-        if (isset($values[$default]) && strpos($title, '[') === false) {
-            $title .= ' [' . $values[$default] . ']';
+        if (isset($items[$default]) && strpos($title, '[') === false) {
+            $title .= ' [' . $items[$default] . ']';
         }
 
         $this->line(sprintf('%s: ', $title));
 
-        foreach ($values as $i => $item) {
-            $this->line(sprintf('  %d. %s', $i + 1, $item));
+        $i = 1;
+        $keys = array();
+        foreach ($items as $key => $item) {
+            $keys[$i] = $key;
+            $this->line(sprintf('  %d. %s', $i, $item));
+            $i++;
         }
 
         $selected = $this->in();
 
-        if (!is_numeric($selected)) {
+        if ($selected === '') {
             return $default;
         }
 
-        if (isset($values[$selected - 1])) {
-            return $values[$selected - 1];
+        if (isset($keys[$selected])) {
+            return $keys[$selected];
         }
 
-        return null;
+        return $selected;
     }
 
     /**
@@ -211,7 +215,7 @@ class Cli
     }
 
     /**
-     * Abotr the current execution
+     * Abort the current script execution
      * @param integer $code
      */
     public function abort($code = 0)
