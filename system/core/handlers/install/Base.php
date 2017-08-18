@@ -25,6 +25,12 @@ class Base extends Handler
     protected $language;
 
     /**
+     * Install model instance
+     * @var \gplcart\core\models\Install $install
+     */
+    protected $install;
+
+    /**
      * Session class instance
      * @var \gplcart\core\helpers\Session $session
      */
@@ -37,6 +43,18 @@ class Base extends Handler
     protected $db;
 
     /**
+     * An array of data provided by a user during initial installation
+     * @var array
+     */
+    protected $settings = array();
+
+    /**
+     * An array of context data used during an installation process
+     * @var array
+     */
+    protected $context = array();
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -44,16 +62,16 @@ class Base extends Handler
         parent::__construct();
 
         $this->session = Container::get('gplcart\\core\\helpers\Session');
+        $this->install = Container::get('gplcart\\core\\models\\Install');
         $this->language = Container::get('gplcart\\core\\models\\Language');
         // Rest of models are loaded inline as they require database set up
     }
 
     /**
      * Creates config.php
-     * @param array $settings
      * @return boolean|string
      */
-    protected function createConfig(array $settings)
+    protected function createConfig()
     {
         $config = file_get_contents(GC_CONFIG_COMMON_DEFAULT);
 
@@ -62,7 +80,7 @@ class Base extends Handler
             return $this->language->text('Failed to read the source config @path', $vars);
         }
 
-        $config .= '$config[\'database\'] = ' . var_export($settings['database'], true) . ';';
+        $config .= '$config[\'database\'] = ' . var_export($this->settings['database'], true) . ';';
         $config .= PHP_EOL . PHP_EOL;
         $config .= 'return $config;';
         $config .= PHP_EOL;
@@ -77,10 +95,8 @@ class Base extends Handler
 
     /**
      * Creates default pages
-     * @param integer $user_id
-     * @param integer $store_id
      */
-    protected function createPages($user_id, $store_id)
+    protected function createPages()
     {
         /* @var $model \gplcart\core\models\Page */
         $model = Container::get('gplcart\\core\\models\\Page');
@@ -101,8 +117,8 @@ class Base extends Handler
 
             $page += array(
                 'status' => 1,
-                'user_id' => $user_id,
-                'store_id' => $store_id
+                'user_id' => $this->context['user_id'],
+                'store_id' => $this->context['store_id']
             );
 
             $model->add($page);
@@ -111,12 +127,11 @@ class Base extends Handler
 
     /**
      * Creates default languages
-     * @param array $settings
      */
-    protected function createLanguages(array $settings)
+    protected function createLanguages()
     {
-        if (!empty($settings['store']['language']) && $settings['store']['language'] !== 'en') {
-            $language = array('code' => $settings['store']['language'], 'default' => true);
+        if (!empty($this->settings['store']['language']) && $this->settings['store']['language'] !== 'en') {
+            $language = array('code' => $this->settings['store']['language'], 'default' => true);
             /* @var $model \gplcart\core\models\Language */
             $model = Container::get('gplcart\\core\\models\\Language');
             $model->add($language);
@@ -125,11 +140,8 @@ class Base extends Handler
 
     /**
      * Creates super admin user
-     * @param array $settings
-     * @param integer $store_id
-     * @return integer
      */
-    protected function createSuperadmin(array $settings, $store_id)
+    protected function createSuperadmin()
     {
         /* @var $model \gplcart\core\models\User */
         $model = Container::get('gplcart\\core\\models\\User');
@@ -137,52 +149,47 @@ class Base extends Handler
         $user = array(
             'status' => 1,
             'name' => 'Superadmin',
-            'store_id' => $store_id,
-            'email' => $settings['user']['email'],
-            'password' => $settings['user']['password']
+            'store_id' => $this->context['store_id'],
+            'email' => $this->settings['user']['email'],
+            'password' => $this->settings['user']['password']
         );
 
         $user_id = $model->add($user);
         $this->config->set('user_superadmin', $user_id);
-
-        return $user_id;
+        $this->setContext('user_id', $user_id);
     }
 
     /**
      * Creates default store
-     * @param array $settings
-     * @return integer
      */
-    protected function createStore(array $settings)
+    protected function createStore()
     {
         /* @var $model \gplcart\core\models\Store */
         $model = Container::get('gplcart\\core\\models\\Store');
 
-        $data = $model->defaultConfig();
+        $default = $model->defaultConfig();
 
-        $data['title'] = $settings['store']['title'];
-        $data['email'] = array($settings['user']['email']);
+        $default['title'] = $this->settings['store']['title'];
+        $default['email'] = array($this->settings['user']['email']);
 
         $store = array(
             'status' => 1,
-            'data' => $data,
-            'name' => $settings['store']['title'],
-            'domain' => $settings['store']['host'],
-            'basepath' => $settings['store']['basepath']
+            'data' => $default,
+            'name' => $this->settings['store']['title'],
+            'domain' => $this->settings['store']['host'],
+            'basepath' => $this->settings['store']['basepath']
         );
 
         $store_id = $model->add($store);
         $this->config->set('store', $store_id);
-
-        return $store_id;
+        $this->setContext('store_id', $store_id);
     }
 
     /**
-     * Sets the default store
-     * @param array $settings
+     * Create default content for the site
      * @return boolean|string
      */
-    protected function setStore(array $settings)
+    protected function createContent()
     {
         // Remove old instances to prevent conflicts
         Container::unregister();
@@ -191,32 +198,70 @@ class Base extends Handler
         $this->config = Container::get('gplcart\\core\\Config');
         $this->db = $this->config->getDb();
 
-        if (!$this->db instanceof \gplcart\core\Database) {
-            return $this->language->text('Could not connect to database');
-        }
-
-        if (empty($settings['store']['timezone'])) {
-            $settings['store']['timezone'] = date_default_timezone_get();
-        }
-
         try {
-
-            $this->config->set('intro', 1);
-            $this->config->set('installed', GC_TIME);
-            $this->config->set('cron_key', gplcart_string_random());
-            $this->config->set('timezone', $settings['store']['timezone']);
-
-            $store_id = $this->createStore($settings);
-            $user_id = $this->createSuperadmin($settings, $store_id);
-
+            $this->createDbConfig();
+            $this->createStore();
+            $this->createSuperadmin();
             $this->createCountries();
-            $this->createLanguages($settings);
-            $this->createPages($user_id, $store_id);
+            $this->createLanguages();
+            $this->createPages();
         } catch (\Exception $ex) {
             return $ex->getMessage();
         }
 
         return true;
+    }
+
+    /**
+     * Create store settings in the database
+     */
+    protected function createDbConfig()
+    {
+        $this->config->set('intro', 1);
+        $this->config->set('installed', GC_TIME);
+        $this->config->set('cron_key', gplcart_string_random());
+        $this->config->set('installer', $this->settings['installer']);
+        $this->config->set('timezone', $this->settings['store']['timezone']);
+    }
+
+    /**
+     * Sets the current context
+     * @param string $key
+     * @param mixed $value
+     */
+    protected function setContext($key, $value)
+    {
+        gplcart_array_set($this->context, $key, $value);
+
+        if (!GC_CLI) {
+            $this->session->set("install.context.$key", $value);
+        }
+    }
+
+    /**
+     * Returns a value from the current context
+     * @param string $key
+     * @return mixed
+     */
+    protected function getContext($key)
+    {
+        if (GC_CLI) {
+            return gplcart_array_get($this->context, $key);
+        }
+
+        return $this->session->get("install.context.$key");
+    }
+
+    /**
+     * Sets context error message
+     * @param integer $step
+     * @param string $message
+     */
+    protected function setContextError($step, $message)
+    {
+        $pos = count($this->getContext("errors.$step"));
+        $pos++;
+        $this->setContext("errors.$step.$pos", $message);
     }
 
     /**
@@ -252,27 +297,57 @@ class Base extends Handler
             $rows = array_merge($rows, array(0, $name, $code, $name, 'a:0:{}'));
         }
 
-        // For better performance insert all countries in one custom query.
         $sql = 'INSERT INTO country (status, name, code, native_name, format) VALUES ' . implode(',', $placeholders);
         $this->db->run($sql, $rows);
     }
 
     /**
      * Does initial tasks before installation
-     * @param array $settings
      */
-    protected function start(array $settings)
+    protected function start()
     {
         if (!GC_CLI) {
-
             set_time_limit(0);
-
             $this->session->delete('user');
             $this->session->delete('install');
-
-            $this->session->set('install.processing', true);
-            $this->session->set('install.settings', $settings);
+            $this->session->set('install.settings', $this->settings);
         }
+    }
+
+    /**
+     * Process installation
+     * @return boolean|array
+     */
+    protected function process()
+    {
+        $result = array(
+            'message' => '',
+            'redirect' => '',
+            'severity' => 'warning'
+        );
+
+        $result_db = $this->createDb();
+
+        if ($result_db !== true) {
+            $result['message'] = $result_db;
+            return $result;
+        }
+
+        $result_config = $this->createConfig();
+
+        if ($result_config !== true) {
+            $result['message'] = $result_config;
+            return $result;
+        }
+
+        $result_store = $this->createContent();
+
+        if ($result_store !== true) {
+            $result['message'] = $result_store;
+            return $result;
+        }
+
+        return true;
     }
 
     /**
@@ -282,6 +357,15 @@ class Base extends Handler
     {
         if (!GC_CLI) {
             $this->session->delete('install');
+        }
+
+        if ($this->settings['installer'] === 'default') {
+
+            $handler = $this->install->getHandler($this->settings['installer']);
+
+            /* @var $module_model \gplcart\core\models\Module */
+            $module_model = Container::get('gplcart\\core\\models\\Module');
+            $module_model->disable($handler['module']);
         }
     }
 
