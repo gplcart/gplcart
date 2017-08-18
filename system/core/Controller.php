@@ -16,10 +16,10 @@ abstract class Controller
 {
 
     /**
-     * Whether we're installing the system
+     * Whether the current path is an installation area
      * @var boolean
      */
-    protected $is_installing = false;
+    protected $is_install_url = false;
 
     /**
      * Whether the site in maintenance mode
@@ -401,7 +401,7 @@ abstract class Controller
     {
         $this->path = $this->url->path();
         $this->is_backend = $this->url->isBackend();
-        $this->is_installing = $this->url->isInstall();
+        $this->is_install_url = $this->url->isInstall();
 
         $this->langcode = $this->route->getLangcode();
         $this->current_route = $this->route->getCurrent();
@@ -420,7 +420,7 @@ abstract class Controller
      */
     protected function setUserProperties()
     {
-        if (!$this->isInstalling()) {
+        if (!$this->isInstallUrl()) {
             $this->cart_uid = $this->cart->getUid();
             $this->uid = $this->user->getId();
             if (!empty($this->uid)) {
@@ -785,16 +785,16 @@ abstract class Controller
     }
 
     /**
-     * Whether the system is installing
+     * Whether the current URL is an installing area
      * @return bool
      */
-    public function isInstalling()
+    public function isInstallUrl()
     {
-        return $this->is_installing;
+        return $this->is_install_url;
     }
 
     /**
-     * Whether the current URL is backend area (i.e /admin)
+     * Whether the current URL is an admin area
      * @return bool
      */
     public function isBackend()
@@ -863,7 +863,7 @@ abstract class Controller
     }
 
     /**
-     * Whether the user is superadmin
+     * Whether the user is super admin
      * @param null|integer $user_id
      * @return boolean
      */
@@ -905,7 +905,8 @@ abstract class Controller
      * @param string $type
      * @return mixed
      */
-    public function getPosted($name, $default, $filter, $type)
+    public function getPosted($name, $default = null, $filter = true,
+            $type = 'string')
     {
         return $this->request->post($name, $default, $filter, $type);
     }
@@ -966,7 +967,7 @@ abstract class Controller
 
         if ($this->is_backend) {
             $this->theme = $this->theme_backend;
-        } elseif ($this->is_installing) {
+        } elseif ($this->is_install_url) {
             $this->theme = $this->theme_frontend;
         } elseif (!empty($this->current_store)) {
             $this->theme_frontend = $this->theme = $this->store->config('theme');
@@ -1192,7 +1193,7 @@ abstract class Controller
      */
     protected function controlCommonAccess()
     {
-        if (!$this->isInstalling()) {
+        if (!$this->isInstallUrl()) {
 
             if (!empty($this->uid)) {
                 $this->controlAccessCredentials();
@@ -1361,15 +1362,13 @@ abstract class Controller
      */
     protected function controlMaintenanceMode()
     {
-        $output = empty($this->current_store['status'])//
-                && !$this->is_installing//
+        $this->is_maintenance = empty($this->current_store['status'])//
+                && !$this->is_install_url//
                 && !$this->is_backend//
                 && !$this->path('^login$')//
                 && !$this->path('^logout$');
 
-        if ($output) {
-
-            $this->is_maintenance = true;
+        if ($this->is_maintenance) {
 
             if (!$this->isFront()) {
                 $this->redirect('/');
