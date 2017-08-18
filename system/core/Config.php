@@ -214,16 +214,14 @@ class Config
 
     /**
      * Returns an array of all available modules
-     * @param boolean $cache
      * @return array
      */
-    public function getModules($cache = true)
+    public function getModules()
     {
-        if ($cache) {
-            $modules = &gplcart_static(__METHOD__);
-            if (isset($modules)) {
-                return $modules;
-            }
+        $modules = &gplcart_static(__METHOD__);
+
+        if (isset($modules)) {
+            return $modules;
         }
 
         $installed = $this->getInstalledModules();
@@ -242,11 +240,17 @@ class Config
             }
 
             $info['directory'] = $this->getModuleDirectory($module_id);
+
             $info += array('type' => 'module', 'name' => $module_id);
 
             // Do not override status set in module.json for locked modules
             if (isset($info['status']) && !empty($info['lock'])) {
                 unset($installed[$module_id]['status']);
+            }
+
+            // Do not override weight set in module.json for locked modules
+            if (isset($info['weight']) && !empty($info['lock'])) {
+                unset($installed[$module_id]['weight']);
             }
 
             if (isset($installed[$module_id])) {
@@ -505,8 +509,19 @@ class Config
      */
     public function isLockedModule($module_id)
     {
-        $modules = $this->getModules();
-        return !empty($modules[$module_id]['lock']);
+        $info = $this->getModuleInfo($module_id);
+        return !empty($info['lock']);
+    }
+
+    /**
+     * Whether the module is installer
+     * @param string $module_id
+     * @return boolean
+     */
+    public function isInstallerModule($module_id)
+    {
+        $info = $this->getModuleInfo($module_id);
+        return isset($info['type']) && $info['type'] === 'installer';
     }
 
     /**
