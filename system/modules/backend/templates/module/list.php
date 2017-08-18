@@ -63,7 +63,7 @@
             </li>
             <?php } ?>
             <?php } else { ?>
-            <?php if ($this->access('module_enable') && empty($info['lock'])) { ?>
+            <?php if ($this->access('module_enable') && empty($info['lock']) && $info['type'] !== 'installer') { ?>
             <li>
               <a href="<?php echo $this->url(false, array('action' => 'enable', 'module_id' => $module_id, 'token' => $_token)); ?>">
                   <?php echo $this->lower($this->text('Enable')); ?>
@@ -79,7 +79,7 @@
             <?php } ?>
             <?php } ?>
             <?php } else { ?>
-            <?php if ($this->access('module_install')) { ?>
+            <?php if ($this->access('module_install') && $info['type'] !== 'installer') { ?>
             <li>
               <a href="<?php echo $this->url(false, array('action' => 'install', 'module_id' => $module_id, 'token' => $_token)); ?>">
                 <?php echo $this->lower($this->text('Install and enable')); ?>
@@ -87,7 +87,7 @@
             </li>
             <?php } ?>
             <?php } ?>
-            <?php if (!empty($info['status']) && !empty($info['configure']) && $this->access('module_edit')) { ?>
+            <?php if ($this->access('module_edit') && !empty($info['status']) && !empty($info['configure']) && $info['type'] !== 'installer') { ?>
             <li>
               <a href="<?php echo $this->url($info['configure']); ?>">
                 <?php echo $this->lower($this->text('Configure')); ?>

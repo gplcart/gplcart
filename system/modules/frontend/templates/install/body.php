@@ -72,16 +72,22 @@
         <caption><?php echo $this->text('Installation profiles'); ?></caption>
         <tbody>
           <tr class="required<?php echo $this->error('installer', ' has-error'); ?>">
-            <td class="col-md-6">
+            <td class="middle col-md-6">
               <div class="name"><?php echo $this->text('Installer'); ?></div>
               <div class="text-muted description"><?php echo $this->text('This distribution can be installed in several ways. Select an installer that fits your needs'); ?></div>
             </td>
             <td class="middle col-md-6">
-              <select name="settings[installer]" class="form-control">
-                <?php foreach ($handlers as $id => $handler) { ?>
-                  <option value="<?php echo $this->e($id); ?>"<?php echo isset($settings['installer']) && $settings['installer'] == $id ? ' selected' : ''; ?>><?php echo $this->e($handler['title']); ?></option>
+              <?php foreach ($handlers as $id => $handler) { ?>
+              <div class="radio">
+                <label>
+                  <input type="radio" name="settings[installer]" value="<?php echo $this->e($id); ?>"<?php echo isset($settings['installer']) && $settings['installer'] == $id ? ' checked' : ''; ?>>
+                  <?php echo $this->e($handler['title']); ?>
+                </label>
+                <?php if(!empty($handler['description'])) { ?>
+                <div class="help-block"><?php echo $this->filter($handler['description']); ?></div>
                 <?php } ?>
-              </select>
+              </div>
+              <?php } ?>
               <?php echo $this->error('installer'); ?>
             </td>
           </tr>
