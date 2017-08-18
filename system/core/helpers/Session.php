@@ -18,15 +18,7 @@ class Session
 {
 
     /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->start();
-    }
-
-    /**
-     * Init a new session
+     * Initialize a new session
      * @throws AuthorizationException
      */
     public function start()
@@ -89,6 +81,7 @@ class Session
         if (isset($_SESSION)) {
             $value = gplcart_array_get($_SESSION, $key);
         }
+
         return isset($value) ? $value : $default;
     }
 
@@ -142,6 +135,7 @@ class Session
 
         $message = $this->get($key, array());
         $this->delete($key);
+
         return $message;
     }
 
