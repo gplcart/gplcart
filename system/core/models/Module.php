@@ -586,7 +586,7 @@ class Module extends Model
     }
 
     /**
-     * Returns an array of class namespaces to be overridden
+     * Returns an array of class name spaces to be overridden
      * @return array
      */
     protected function getOverrideMap()
@@ -596,7 +596,7 @@ class Module extends Model
         $map = array();
         foreach ($this->getEnabled() as $module) {
 
-            $directory = GC_MODULE_DIR . "/{$module['id']}/override";
+            $directory = GC_MODULE_DIR . "/{$module['id']}/override/classes";
 
             if (!is_readable($directory)) {
                 continue;

@@ -820,46 +820,52 @@ abstract class Controller
      */
     public function render($file, array $data = array(), $merge = true)
     {
-        $template = $this->getTemplateFile($file);
+        $templates = $this->getTemplateFiles($file);
 
         if ($merge) {
             $data = array_merge($data, $this->getDefaultData());
         }
 
         $rendered = null;
-        $this->hook->attach('template.render', $template, $data, $rendered, $this);
+        $this->hook->attach('template.render', $templates, $data, $rendered, $this);
 
         if (isset($rendered)) {
             return trim($rendered);
         }
 
-        $template .= '.php';
+        list($original, $overridden) = $templates;
 
-        if (is_file($template)) {
-            $rendered = $this->renderPhpTemplate($template, $data);
-            return trim($rendered);
+        if (is_file("$overridden.php")) {
+            $template = "$overridden.php";
+        } else if (is_file("$original.php")) {
+            $template = "$original.php";
         }
 
-        return $this->text('Could not load template %path', array('%path' => $template));
+        if (empty($template)) {
+            return '';
+        }
+
+        $rendered = $this->renderPhpTemplate($template, $data);
+        return trim($rendered);
     }
 
     /**
-     * Returns a full path to a module template WITHOUT extension
+     * Returns an array of full template paths without file extension
      * @param string $file
-     * @return string
+     * @return array
      */
-    protected function getTemplateFile($file)
+    protected function getTemplateFiles($file)
     {
-        $module = $this->theme;
+        $module_id = $this->theme;
 
-        $fullpath = false;
-        if (strpos($file, '|') === false) {
-            $fullpath = gplcart_is_absolute_path($file);
-        } else {
-            list($module, $file) = explode('|', $file, 2);
+        if (strpos($file, '|') !== false) {
+            list($module_id, $file) = explode('|', $file, 2);
         }
 
-        return $fullpath ? $file : GC_MODULE_DIR . "/$module/templates/$file";
+        return array(
+            GC_MODULE_DIR . "/$module_id/templates/$file",
+            GC_MODULE_DIR . "/{$this->theme}/override/templates/$module_id/$file"
+        );
     }
 
     /**
