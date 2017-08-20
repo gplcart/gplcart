@@ -19,7 +19,7 @@ abstract class Controller
      * Whether the current path is an installation area
      * @var boolean
      */
-    protected $is_install_url = false;
+    protected $is_install = false;
 
     /**
      * Whether the site in maintenance mode
@@ -401,7 +401,7 @@ abstract class Controller
     {
         $this->path = $this->url->path();
         $this->is_backend = $this->url->isBackend();
-        $this->is_install_url = $this->url->isInstall();
+        $this->is_install = $this->url->isInstall();
 
         $this->langcode = $this->route->getLangcode();
         $this->current_route = $this->route->getCurrent();
@@ -420,7 +420,7 @@ abstract class Controller
      */
     protected function setUserProperties()
     {
-        if (!$this->isInstallUrl()) {
+        if (!$this->isInstall()) {
             $this->cart_uid = $this->cart->getUid();
             $this->uid = $this->user->getId();
             if (!empty($this->uid)) {
@@ -788,9 +788,9 @@ abstract class Controller
      * Whether the current URL is an installing area
      * @return bool
      */
-    public function isInstallUrl()
+    public function isInstall()
     {
-        return $this->is_install_url;
+        return $this->is_install;
     }
 
     /**
@@ -973,7 +973,7 @@ abstract class Controller
 
         if ($this->is_backend) {
             $this->theme = $this->theme_backend;
-        } elseif ($this->is_install_url) {
+        } elseif ($this->is_install) {
             $this->theme = $this->theme_frontend;
         } elseif (!empty($this->current_store)) {
             $this->theme_frontend = $this->theme = $this->store->config('theme');
@@ -1199,7 +1199,7 @@ abstract class Controller
      */
     protected function controlCommonAccess()
     {
-        if (!$this->isInstallUrl()) {
+        if (!$this->isInstall()) {
 
             if (!empty($this->uid)) {
                 $this->controlAccessCredentials();
@@ -1369,7 +1369,7 @@ abstract class Controller
     protected function controlMaintenanceMode()
     {
         $this->is_maintenance = empty($this->current_store['status'])//
-                && !$this->is_install_url//
+                && !$this->is_install//
                 && !$this->is_backend//
                 && !$this->path('^login$')//
                 && !$this->path('^logout$');

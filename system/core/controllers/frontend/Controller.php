@@ -141,7 +141,7 @@ class Controller extends BaseController
      */
     protected function setFrontendProperties()
     {
-        if (!$this->isInstallUrl()) {
+        if (!$this->isInstall()) {
             $this->triggered = $this->getFiredTriggers();
             $this->data_categories = $this->getCategories();
             $this->current_currency = (string) $this->currency->get();

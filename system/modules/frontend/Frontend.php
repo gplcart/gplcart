@@ -46,7 +46,7 @@ class Frontend extends Module
         $controller->addAssetLibrary('respond', array('aggregate' => false, 'condition' => 'if lt IE 9'));
         $controller->addAssetLibrary('font_awesome');
 
-        if ($controller->isInstallUrl()) {
+        if ($controller->isInstall()) {
             $controller->setCss($this->getAsset('frontend', 'css', 'install.css'));
         } else {
             $controller->setCss($this->getAsset('frontend', 'css', 'style.css'));
