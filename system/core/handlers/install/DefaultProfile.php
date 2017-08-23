@@ -28,12 +28,14 @@ class DefaultProfile extends BaseInstall
     /**
      * Performs full system installation
      * @param array $settings
+     * @param integer $step
      * @param \gplcart\core\Database $db
      * @return array
      */
-    public function install(array $settings, $db)
+    public function install(array $settings, $step, $db)
     {
         $this->db = $db;
+        $this->step = $step;
         $this->settings = $settings;
 
         $this->start();
@@ -51,20 +53,6 @@ class DefaultProfile extends BaseInstall
             'severity' => 'success',
             'message' => $this->getSuccessMessage()
         );
-    }
-
-    /**
-     * Returns success message
-     * @return string
-     */
-    protected function getSuccessMessage()
-    {
-        if (GC_CLI) {
-            $vars = array('@url' => rtrim("{$this->settings['store']['host']}/{$this->settings['store']['basepath']}", '/'));
-            return $this->language->text("Your store has been installed.\nURL: @url\nAdmin area: @url/admin\nGood luck!", $vars);
-        }
-
-        return $this->language->text('Your store has been installed. Now you can log in as superadmin');
     }
 
 }
