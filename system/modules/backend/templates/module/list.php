@@ -52,6 +52,7 @@
           <?php } ?>
         </td>
         <td class="middle">
+          <?php if($info['type'] !== 'installer') { ?>
           <ul class="list-inline">
             <?php if (isset($info['status'])) { ?>
             <?php if ($info['status']) { ?>
@@ -63,7 +64,7 @@
             </li>
             <?php } ?>
             <?php } else { ?>
-            <?php if ($this->access('module_enable') && empty($info['lock']) && $info['type'] !== 'installer') { ?>
+            <?php if ($this->access('module_enable') && empty($info['lock'])) { ?>
             <li>
               <a href="<?php echo $this->url(false, array('action' => 'enable', 'module_id' => $module_id, 'token' => $_token)); ?>">
                   <?php echo $this->lower($this->text('Enable')); ?>
@@ -79,7 +80,7 @@
             <?php } ?>
             <?php } ?>
             <?php } else { ?>
-            <?php if ($this->access('module_install') && $info['type'] !== 'installer') { ?>
+            <?php if ($this->access('module_install')) { ?>
             <li>
               <a href="<?php echo $this->url(false, array('action' => 'install', 'module_id' => $module_id, 'token' => $_token)); ?>">
                 <?php echo $this->lower($this->text('Install and enable')); ?>
@@ -87,7 +88,7 @@
             </li>
             <?php } ?>
             <?php } ?>
-            <?php if ($this->access('module_edit') && !empty($info['status']) && !empty($info['configure']) && $info['type'] !== 'installer') { ?>
+            <?php if ($this->access('module_edit') && !empty($info['status']) && !empty($info['configure'])) { ?>
             <li>
               <a href="<?php echo $this->url($info['configure']); ?>">
                 <?php echo $this->lower($this->text('Configure')); ?>
@@ -95,6 +96,7 @@
             </li>
             <?php } ?>
           </ul>
+          <?php } ?>
         </td>
       </tr>
       <tr class="collapse active" id="module-details-<?php echo $module_id; ?>">
@@ -117,6 +119,11 @@
           <?php if (!empty($info['hooks'])) { ?>
           <div class="hooks">
             <b><?php echo $this->text('Implements hooks'); ?></b>: <?php echo $this->e($this->truncate(implode(', ', $info['hooks']), 100)); ?>
+          </div>
+          <?php } ?>
+          <?php if (isset($info['php'])) { ?>
+          <div class="weight">
+            <b>PHP</b>: <?php echo $this->e($info['php']); ?>
           </div>
           <?php } ?>
           <?php if (!empty($info['requires'])) { ?>
