@@ -34,7 +34,7 @@ class Session
      */
     public function started()
     {
-        return session_status() === PHP_SESSION_ACTIVE;
+        return !GC_CLI && session_status() === PHP_SESSION_ACTIVE;
     }
 
     /**
@@ -78,7 +78,7 @@ class Session
      */
     public function get($key, $default = null)
     {
-        if (isset($_SESSION)) {
+        if (!GC_CLI && isset($_SESSION)) {
             $value = gplcart_array_get($_SESSION, $key);
         }
 
@@ -92,7 +92,7 @@ class Session
      */
     public function set($key, $value = null)
     {
-        if (isset($_SESSION)) {
+        if (!GC_CLI && isset($_SESSION)) {
             gplcart_array_set($_SESSION, $key, $value);
         }
     }
