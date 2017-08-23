@@ -118,7 +118,6 @@ class Install extends Model
     public function getHandler($handler_id)
     {
         $handlers = $this->getHandlers();
-
         return empty($handlers[$handler_id]) ? array() : $handlers[$handler_id];
     }
 
@@ -134,7 +133,7 @@ class Install extends Model
         $handlers = $this->getHandlers();
 
         try {
-            $result = Handler::call($handlers, $handler_id, "install$step", array($data, $this->database));
+            $result = Handler::call($handlers, $handler_id, "install$step", array($data, (int) $step, $this->database));
         } catch (\Exception $ex) {
             $result = array();
         }
@@ -221,20 +220,21 @@ class Install extends Model
         $result = null;
         $this->hook->attach('install.before', $data, $result, $cli_route, $this);
 
-        if (isset($result)) {
-            return (array) $result;
-        }
-
         $default_result = array(
-            'redirect' => '',
-            'severity' => 'warning',
-            'message' => $this->language->text('An error occurred')
+            'message' => '',
+            'severity' => '',
+            'redirect' => null,
+            'context' => array()
         );
 
-        $result = array_merge($default_result, $this->callHandler($data['installer'], $data));
+        if (isset($result)) {
+            return array_merge($default_result, (array) $result);
+        }
+
+        $result = $this->callHandler($data['installer'], $data);
 
         $this->hook->attach('install.after', $data, $result, $cli_route, $this);
-        return (array) $result;
+        return array_merge($default_result, (array) $result);
     }
 
 }
