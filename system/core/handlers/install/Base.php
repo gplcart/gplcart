@@ -31,10 +31,16 @@ class Base extends Handler
     protected $install;
 
     /**
-     * Session class instance
+     * Session helper instance
      * @var \gplcart\core\helpers\Session $session
      */
     protected $session;
+
+    /**
+     * Command line helper instance
+     * @var \gplcart\core\helpers\Cli $cli
+     */
+    protected $cli;
 
     /**
      * Database class instance
@@ -49,7 +55,13 @@ class Base extends Handler
     protected $settings = array();
 
     /**
-     * An array of context data used during an installation process
+     * The last installation step done
+     * @var integer
+     */
+    protected $step;
+
+    /**
+     * An array of context data used during installation process
      * @var array
      */
     protected $context = array();
@@ -61,6 +73,9 @@ class Base extends Handler
     {
         parent::__construct();
 
+        set_time_limit(0);
+
+        $this->cli = Container::get('gplcart\\core\\helpers\Cli');
         $this->session = Container::get('gplcart\\core\\helpers\Session');
         $this->install = Container::get('gplcart\\core\\models\\Install');
         $this->language = Container::get('gplcart\\core\\models\\Language');
@@ -155,6 +170,7 @@ class Base extends Handler
         );
 
         $user_id = $model->add($user);
+
         $this->config->set('user_superadmin', $user_id);
         $this->setContext('user_id', $user_id);
     }
@@ -181,6 +197,7 @@ class Base extends Handler
         );
 
         $store_id = $model->add($store);
+
         $this->config->set('store', $store_id);
         $this->setContext('store_id', $store_id);
     }
@@ -191,10 +208,8 @@ class Base extends Handler
      */
     protected function createContent()
     {
-        // Remove old instances to prevent conflicts
         Container::unregister();
 
-        // Re-instantiate Config and set fresh database object
         $this->config = Container::get('gplcart\\core\\Config');
         $this->db = $this->config->getDb();
 
@@ -232,10 +247,7 @@ class Base extends Handler
     protected function setContext($key, $value)
     {
         gplcart_array_set($this->context, $key, $value);
-
-        if (!GC_CLI) {
-            $this->session->set("install.context.$key", $value);
-        }
+        $this->session->set("install.context.$key", $value);
     }
 
     /**
@@ -256,12 +268,37 @@ class Base extends Handler
      * Sets context error message
      * @param integer $step
      * @param string $message
+     * @param bool $output_cli
      */
-    protected function setContextError($step, $message)
+    protected function setContextError($step, $message, $output_cli = true)
     {
         $pos = count($this->getContext("errors.$step"));
         $pos++;
         $this->setContext("errors.$step.$pos", $message);
+
+        if ($output_cli) {
+            $this->cli->error($message);
+        }
+    }
+    
+    /**
+     * Returns an array of context errors
+     * @param bool $flatten
+     * @return array
+     */
+    protected function getContextErrors($flatten = true)
+    {
+        $errors = $this->getContext('errors');
+
+        if (empty($errors)) {
+            return array();
+        }
+
+        if ($flatten) {
+            return gplcart_array_flatten($errors);
+        }
+
+        return $errors;
     }
 
     /**
@@ -294,7 +331,7 @@ class Base extends Handler
 
         foreach ($countries as $code => $name) {
             $placeholders[] = '(?,?,?,?,?)';
-            $rows = array_merge($rows, array(0, $name, $code, $name, 'a:0:{}'));
+            $rows = array_merge($rows, array(0, $name, $code, $name, serialize(array())));
         }
 
         $sql = 'INSERT INTO country (status, name, code, native_name, format) VALUES ' . implode(',', $placeholders);
@@ -306,12 +343,9 @@ class Base extends Handler
      */
     protected function start()
     {
-        if (!GC_CLI) {
-            set_time_limit(0);
-            $this->session->delete('user');
-            $this->session->delete('install');
-            $this->session->set('install.settings', $this->settings);
-        }
+        $this->session->delete('user');
+        $this->session->delete('install');
+        $this->session->set('install.settings', $this->settings);
     }
 
     /**
@@ -355,18 +389,41 @@ class Base extends Handler
      */
     protected function finish()
     {
-        if (!GC_CLI) {
-            $this->session->delete('install');
+        $this->uninstallInstaller();
+        $this->session->delete('install');
+    }
+
+    /**
+     * Disable installer module
+     * @return boolean|string
+     */
+    protected function uninstallInstaller()
+    {
+        $installer = $this->session->get('install.settings.installer');
+
+        if ($installer === 'default') {
+            return true;
         }
 
-        if ($this->settings['installer'] === 'default') {
+        $handler = $this->install->getHandler($installer);
 
-            $handler = $this->install->getHandler($this->settings['installer']);
-
-            /* @var $module_model \gplcart\core\models\Module */
-            $module_model = Container::get('gplcart\\core\\models\\Module');
-            $module_model->disable($handler['module']);
+        /* @var $model \gplcart\core\models\Module */
+        $model = Container::get('gplcart\\core\\models\\Module');
+        return $model->uninstall($handler['module']);
+    }
+    
+    /**
+     * Returns success message
+     * @return string
+     */
+    protected function getSuccessMessage()
+    {
+        if (GC_CLI) {
+            $vars = array('@url' => rtrim("{$this->settings['store']['host']}/{$this->settings['store']['basepath']}", '/'));
+            return $this->language->text("Your store has been installed.\nURL: @url\nAdmin area: @url/admin\nGood luck!", $vars);
         }
+
+        return $this->language->text('Your store has been installed. Now you can log in as superadmin');
     }
 
 }
