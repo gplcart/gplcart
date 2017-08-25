@@ -27,16 +27,14 @@ class DefaultProfile extends BaseInstall
 
     /**
      * Performs full system installation
-     * @param array $settings
-     * @param integer $step
+     * @param array $data
      * @param \gplcart\core\Database $db
      * @return array
      */
-    public function install(array $settings, $step, $db)
+    public function install(array $data, $db)
     {
         $this->db = $db;
-        $this->step = $step;
-        $this->settings = $settings;
+        $this->data = $data;
 
         $this->start();
 

@@ -125,15 +125,15 @@ class Install extends Model
      * Process installation by calling a handler
      * @param string $handler_id
      * @param array $data
-     * @param string $step
      * @return array
      */
-    public function callHandler($handler_id, array $data, $step = '')
+    public function callHandler($handler_id, array $data)
     {
         $handlers = $this->getHandlers();
+        $method = isset($data['step']) ? 'install_' . $data['step'] : 'install';
 
         try {
-            $result = Handler::call($handlers, $handler_id, "install$step", array($data, (int) $step, $this->database));
+            $result = Handler::call($handlers, $handler_id, $method, array($data, $this->database));
         } catch (\Exception $ex) {
             $result = array();
         }
@@ -223,8 +223,7 @@ class Install extends Model
         $default_result = array(
             'message' => '',
             'severity' => '',
-            'redirect' => null,
-            'context' => array()
+            'redirect' => null
         );
 
         if (isset($result)) {

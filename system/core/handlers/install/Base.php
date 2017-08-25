@@ -52,13 +52,7 @@ class Base extends Handler
      * An array of data provided by a user during initial installation
      * @var array
      */
-    protected $settings = array();
-
-    /**
-     * The last installation step done
-     * @var integer
-     */
-    protected $step;
+    protected $data = array();
 
     /**
      * An array of context data used during installation process
@@ -95,7 +89,7 @@ class Base extends Handler
             return $this->language->text('Failed to read the source config @path', $vars);
         }
 
-        $config .= '$config[\'database\'] = ' . var_export($this->settings['database'], true) . ';';
+        $config .= '$config[\'database\'] = ' . var_export($this->data['database'], true) . ';';
         $config .= PHP_EOL . PHP_EOL;
         $config .= 'return $config;';
         $config .= PHP_EOL;
@@ -145,8 +139,8 @@ class Base extends Handler
      */
     protected function createLanguages()
     {
-        if (!empty($this->settings['store']['language']) && $this->settings['store']['language'] !== 'en') {
-            $language = array('code' => $this->settings['store']['language'], 'default' => true);
+        if (!empty($this->data['store']['language']) && $this->data['store']['language'] !== 'en') {
+            $language = array('code' => $this->data['store']['language'], 'default' => true);
             /* @var $model \gplcart\core\models\Language */
             $model = Container::get('gplcart\\core\\models\\Language');
             $model->add($language);
@@ -165,8 +159,8 @@ class Base extends Handler
             'status' => 1,
             'name' => 'Superadmin',
             'store_id' => $this->context['store_id'],
-            'email' => $this->settings['user']['email'],
-            'password' => $this->settings['user']['password']
+            'email' => $this->data['user']['email'],
+            'password' => $this->data['user']['password']
         );
 
         $user_id = $model->add($user);
@@ -185,15 +179,15 @@ class Base extends Handler
 
         $default = $model->defaultConfig();
 
-        $default['title'] = $this->settings['store']['title'];
-        $default['email'] = array($this->settings['user']['email']);
+        $default['title'] = $this->data['store']['title'];
+        $default['email'] = array($this->data['user']['email']);
 
         $store = array(
             'status' => 1,
             'data' => $default,
-            'name' => $this->settings['store']['title'],
-            'domain' => $this->settings['store']['host'],
-            'basepath' => $this->settings['store']['basepath']
+            'name' => $this->data['store']['title'],
+            'domain' => $this->data['store']['host'],
+            'basepath' => $this->data['store']['basepath']
         );
 
         $store_id = $model->add($store);
@@ -235,8 +229,8 @@ class Base extends Handler
         $this->config->set('intro', 1);
         $this->config->set('installed', GC_TIME);
         $this->config->set('cron_key', gplcart_string_random());
-        $this->config->set('installer', $this->settings['installer']);
-        $this->config->set('timezone', $this->settings['store']['timezone']);
+        $this->config->set('installer', $this->data['installer']);
+        $this->config->set('timezone', $this->data['store']['timezone']);
     }
 
     /**
@@ -268,19 +262,14 @@ class Base extends Handler
      * Sets context error message
      * @param integer $step
      * @param string $message
-     * @param bool $output_cli
      */
-    protected function setContextError($step, $message, $output_cli = true)
+    protected function setContextError($step, $message)
     {
         $pos = count($this->getContext("errors.$step"));
         $pos++;
         $this->setContext("errors.$step.$pos", $message);
-
-        if ($output_cli) {
-            $this->cli->error($message);
-        }
     }
-    
+
     /**
      * Returns an array of context errors
      * @param bool $flatten
@@ -345,7 +334,7 @@ class Base extends Handler
     {
         $this->session->delete('user');
         $this->session->delete('install');
-        $this->session->set('install.settings', $this->settings);
+        $this->session->set('install.data', $this->data);
     }
 
     /**
@@ -399,7 +388,7 @@ class Base extends Handler
      */
     protected function uninstallInstaller()
     {
-        $installer = $this->session->get('install.settings.installer');
+        $installer = $this->session->get('install.data.installer');
 
         if ($installer === 'default') {
             return true;
@@ -411,7 +400,7 @@ class Base extends Handler
         $model = Container::get('gplcart\\core\\models\\Module');
         return $model->uninstall($handler['module']);
     }
-    
+
     /**
      * Returns success message
      * @return string
@@ -419,7 +408,7 @@ class Base extends Handler
     protected function getSuccessMessage()
     {
         if (GC_CLI) {
-            $vars = array('@url' => rtrim("{$this->settings['store']['host']}/{$this->settings['store']['basepath']}", '/'));
+            $vars = array('@url' => rtrim("{$this->data['store']['host']}/{$this->data['store']['basepath']}", '/'));
             return $this->language->text("Your store has been installed.\nURL: @url\nAdmin area: @url/admin\nGood luck!", $vars);
         }
 
