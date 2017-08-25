@@ -1374,7 +1374,7 @@ abstract class Controller
                 && !$this->path('^login$')//
                 && !$this->path('^logout$');
 
-        if ($this->is_maintenance) {
+        if ($this->is_maintenance && !$this->access('maintenance')) {
 
             if (!$this->isFront()) {
                 $this->redirect('/');

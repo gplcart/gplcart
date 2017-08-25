@@ -71,6 +71,7 @@ return array(
     'order_add' => 'Order: add',
     'order_edit' => 'Order: edit',
     'order_delete' => 'Order: delete',
+    'maintenance' => 'Maintenance: access disabled stores',
     'module' => 'Module: access',
     'module_edit' => 'Module: configure',
     'module_install' => 'Module: install',
