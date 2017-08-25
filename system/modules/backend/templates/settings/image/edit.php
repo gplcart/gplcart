@@ -45,7 +45,7 @@
           <div class="help-block">
             <?php echo $this->error('actions'); ?>
             <div class="text-muted">
-              <?php echo $this->text('Required. A list of actions to be applied to an image during processing with the imagestyle. One action per line. See the legend. Actions are applied from the top to bottom'); ?>
+              <?php echo $this->text('Required. A list of actions to be applied from the top to bottom. One action per line. See the legend'); ?>
             </div>
           </div>
         </div>
