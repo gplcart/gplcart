@@ -112,12 +112,16 @@ abstract class Module
     /**
      * Returns an asset directory or file
      * @param string $module_id
-     * @param string $type
      * @param string $file
+     * @param string|null $type
      * @return string
      */
-    protected function getAsset($module_id, $type, $file = '')
+    protected function getAsset($module_id, $file, $type = null)
     {
+        if (!isset($type)) {
+            $type = pathinfo($file, PATHINFO_EXTENSION);
+        }
+
         $directory = $this->config->getModuleDirectory($module_id);
         return rtrim("$directory/$type/$file", '/');
     }
