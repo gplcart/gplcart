@@ -39,10 +39,9 @@ class Backend extends Module
             $controller->addAssetLibrary('html5shiv', array('aggregate' => false, 'condition' => 'if lt IE 9'));
             $controller->addAssetLibrary('respond', array('aggregate' => false, 'condition' => 'if lt IE 9'));
 
-            $controller->setJs($this->getAsset('backend', 'js', 'common.js'));
-
+            $controller->setJs($this->getAsset('backend', 'common.js'));
             $controller->addAssetLibrary('font_awesome');
-            $controller->setCss($this->getAsset('backend', 'css', 'style.css'));
+            $controller->setCss($this->getAsset('backend', 'style.css'));
 
             $controller->setMeta(array('charset' => 'utf-8'));
             $controller->setMeta(array('http-equiv' => 'X-UA-Compatible', 'content' => 'IE=edge'));

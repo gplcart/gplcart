@@ -47,11 +47,11 @@ class Frontend extends Module
         $controller->addAssetLibrary('font_awesome');
 
         if ($controller->isInstall()) {
-            $controller->setCss($this->getAsset('frontend', 'css', 'install.css'));
+            $controller->setCss($this->getAsset('frontend', 'install.css'));
         } else {
-            $controller->setCss($this->getAsset('frontend', 'css', 'style.css'));
+            $controller->setCss($this->getAsset('frontend', 'style.css'));
             $controller->addAssetLibrary('jquery_match_height');
-            $controller->setJs($this->getAsset('frontend', 'js', 'common.js'));
+            $controller->setJs($this->getAsset('frontend', 'common.js'));
         }
 
         $controller->setMeta(array('charset' => 'utf-8'));
