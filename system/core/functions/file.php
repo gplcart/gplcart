@@ -136,7 +136,7 @@ function gplcart_file_csv($file, $data, $del = ",", $en = '"', $limit = 0)
 
     $result = fputcsv($handle, $data, $del, $en);
     fclose($handle);
-    return ($result !== false);
+    return $result !== false;
 }
 
 /**
