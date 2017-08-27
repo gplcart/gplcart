@@ -637,31 +637,18 @@ class Module extends Model
     /**
      * Copies translation files into the locale directory
      * @param string $module_id
-     * @return boolean
      */
     protected function setTranslations($module_id)
     {
-        $files = $this->scanTranslations($module_id);
+        foreach ($this->scanTranslations($module_id) as $file) {
 
-        if (empty($files)) {
-            return false;
-        }
+            $langcode = pathinfo($file, PATHINFO_FILENAME);
+            $directory = GC_LOCALE_DIR . "/$langcode";
 
-        $copied = 0;
-        foreach ($files as $file) {
-
-            $info = pathinfo($file);
-            $destination = GC_LOCALE_DIR . "/{$info['filename']}";
-
-            if (!file_exists($destination) && !mkdir($destination, 0775, true)) {
-                continue;
+            if (file_exists($directory) || mkdir($directory, 0775, true)) {
+                $this->language->mergeTranslations($langcode, $file);
             }
-
-            $destination .= "/{$module_id}_{$info['basename']}";
-            $copied += (int) copy($file, $destination);
         }
-
-        return count($files) == $copied;
     }
 
     /**
