@@ -34,8 +34,10 @@ class Url
      * @param string|null $url
      * @param array $options
      * @param boolean $full
+     * @param boolean $exclude_langcode
      */
-    final public function redirect($url = '', $options = array(), $full = false)
+    final public function redirect($url = '', $options = array(), $full = false,
+            $exclude_langcode = false)
     {
         if (!isset($url)) {
             return null;
@@ -54,7 +56,7 @@ class Url
             $options = is_array($parsed) ? $parsed : array();
         }
 
-        header('Location: ' . $this->get($url, $options));
+        header('Location: ' . $this->get($url, $options, false, $exclude_langcode));
         exit;
     }
 
