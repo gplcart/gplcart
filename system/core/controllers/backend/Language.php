@@ -137,7 +137,10 @@ class Language extends BackendController
         $this->language->update($this->data_language['code'], $submitted);
 
         $message = $this->text('Language has been updated');
-        $this->redirect('admin/settings/language', $message, 'success');
+
+        // Redirect to a path without language code to avoid "Page not found"
+        // if the current language has been disabled
+        $this->redirect('admin/settings/language', $message, 'success', true);
     }
 
     /**
