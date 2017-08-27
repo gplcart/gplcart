@@ -342,15 +342,11 @@ abstract class Controller
         $this->setInstanceProperties();
         $this->setRouteProperties();
 
-        $this->token = $this->config->token();
-
         $this->setUserProperties();
         $this->setStoreProperties();
 
         $this->setDefaultJsAssets();
         $this->setThemeProperties();
-
-        $this->language->load();
 
         $this->setDefaultData();
         $this->controlCommonAccess();
@@ -399,6 +395,8 @@ abstract class Controller
      */
     protected function setRouteProperties()
     {
+        $this->token = $this->config->token();
+
         $this->path = $this->url->path();
         $this->is_backend = $this->url->isBackend();
         $this->is_install = $this->url->isInstall();
@@ -1400,14 +1398,16 @@ abstract class Controller
      * @param string $url
      * @param string $message
      * @param string $severity
+     * @param boolean $exclude_langcode
      */
-    final public function redirect($url = '', $message = '', $severity = 'info')
+    final public function redirect($url = '', $message = '', $severity = 'info',
+            $exclude_langcode = false)
     {
         if ($message !== '') {
             $this->setMessage($message, $severity, true);
         }
 
-        $this->url->redirect($url);
+        $this->url->redirect($url, array(), false, $exclude_langcode);
     }
 
     /**
