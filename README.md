@@ -1,3 +1,4 @@
+[![Crowdin](https://d322cqt584bo4o.cloudfront.net/gplcart/localized.svg)](https://crowdin.com/project/gplcart)
 [![Build Status](https://scrutinizer-ci.com/g/gplcart/gplcart/badges/build.png?b=dev)](https://scrutinizer-ci.com/g/gplcart/gplcart/build-status/dev)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/gplcart/gplcart/badges/quality-score.png?b=dev)](https://scrutinizer-ci.com/g/gplcart/gplcart/?branch=dev)
 
