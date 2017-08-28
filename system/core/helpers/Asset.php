@@ -27,6 +27,12 @@ class Asset
     protected $assets = array();
 
     /**
+     * An array of asset groups
+     * @var array
+     */
+    protected $groups = array();
+
+    /**
      * Adds a JS file
      * @param string $script
      * @param array $data
@@ -62,6 +68,28 @@ class Asset
 
         if (!isset($data['weight'])) {
             $data['weight'] = $this->getNextWeight('css', 'top');
+        }
+
+        return $this->set($data);
+    }
+
+    /**
+     * Sets groups of assets
+     * @param string $key
+     * @param array $data
+     * @return bool|array
+     */
+    public function setGroup($key, array $data)
+    {
+        if (!isset($this->groups[$data['type']][$key])) {
+            $this->groups[$data['type']][$key] = 0;
+        }
+
+        if (isset($data['weight'])) {
+            $this->groups[$data['type']][$key] += (int) $data['weight'];
+        } else {
+            $this->groups[$data['type']][$key] ++;
+            $data['weight'] = $this->groups[$data['type']][$key];
         }
 
         return $this->set($data);

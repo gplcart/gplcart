@@ -40,12 +40,6 @@ abstract class Controller
     protected $is_ajax;
 
     /**
-     * Weight of JS settings
-     * @var integer
-     */
-    protected $js_settings_weight = 0;
-
-    /**
      * The current HTTP status code
      * @var string
      */
@@ -541,8 +535,8 @@ abstract class Controller
      */
     public function text($string = null, array $arguments = array())
     {
-        $class = $this->current_route['handlers']['controller'][0];
-        return $this->language->text($string, $arguments, $class);
+        $context = $this->current_route['handlers']['controller'][0];
+        return $this->language->setContext($context)->text($string, $arguments);
     }
 
     /**
@@ -931,10 +925,10 @@ abstract class Controller
      * Returns a GET query
      * @param string|null $key
      * @param mixed $default
-     * @param string $type
+     * @param string|null $type
      * @return mixed
      */
-    public function getQuery($key = null, $default = null, $type = null)
+    public function getQuery($key = null, $default = null, $type = 'string')
     {
         return $this->request->get($key, $default, $type);
     }
@@ -1737,15 +1731,13 @@ abstract class Controller
         $json = gplcart_json_encode($data);
         $var = rtrim("GplCart.settings.$key", '.');
 
-        // Track weight of JS settings to keep them together
-        if (isset($weight)) {
-            $this->js_settings_weight += (int) $weight;
-        } else {
-            $this->js_settings_weight++;
-            $weight = $this->js_settings_weight;
-        }
+        $asset = array(
+            'type' => 'js',
+            'weight' => $weight,
+            'asset' => "$var = $json;"
+        );
 
-        $this->setJs("$var = $json;", array('weight' => $weight));
+        $this->asset->setGroup('settings', $asset);
     }
 
     /**
