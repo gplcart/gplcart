@@ -1,0 +1,6 @@
+files:
+  - source: /system/locale/**/*.csv
+    translation: /system/locale/%two_letters_code%/%original_file_name%
+    scheme : source_phrase,translation
+    ignore:
+        - /system/locale/**/_*
