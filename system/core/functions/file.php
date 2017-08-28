@@ -152,3 +152,23 @@ function gplcart_file_relative_path($absolute)
     }
     return $absolute;
 }
+
+/**
+ * Converts bytes to a human readable file size
+ * @param integer $size
+ * @param integer $precision
+ * @return string
+ */
+function gplcart_file_size($size, $precision = 2)
+{
+    $units = array('B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
+
+    $i = 0;
+    $step = 1024;
+    while (($size / $step) > 0.9) {
+        $size = $size / $step;
+        $i++;
+    }
+
+    return round($size, $precision) . $units[$i];
+}
