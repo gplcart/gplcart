@@ -72,7 +72,7 @@ class File extends BackendController
      */
     protected function downloadFile()
     {
-        $file_id = $this->getQuery('download', '', 'string');
+        $file_id = $this->getQuery('download', '');
 
         if (!empty($file_id)) {
             $file = $this->file->get($file_id);

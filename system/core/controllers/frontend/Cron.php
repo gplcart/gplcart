@@ -66,7 +66,7 @@ class Cron extends FrontendController
      */
     protected function controlAccessExecuteCron()
     {
-        $key = $this->getQuery('key', '', 'string');
+        $key = $this->getQuery('key', '');
         if (strcmp($key, $this->config('cron_key', '')) !== 0) {
             $this->response->error403(false);
         }

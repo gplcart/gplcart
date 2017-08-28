@@ -274,7 +274,7 @@ class Product extends BackendController
      */
     protected function outputCategoriesEditProduct()
     {
-        $store_id = $this->getQuery('store_id', '', 'string');
+        $store_id = $this->getQuery('store_id', '');
 
         if (!empty($store_id) && $this->isAjax()) {
             $response = $this->getListCategoryProduct($store_id);

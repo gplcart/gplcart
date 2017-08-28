@@ -66,7 +66,7 @@ class Controller extends BaseController
     public function renderJob($job = null)
     {
         if (!isset($job)) {
-            $job_id = $this->getQuery('job_id', '', 'string');
+            $job_id = $this->getQuery('job_id', '');
             $job = $this->job->get($job_id);
         }
 
@@ -99,14 +99,14 @@ class Controller extends BaseController
      */
     protected function processCurrentJob()
     {
-        $cancel_job_id = $this->getQuery('cancel_job', '', 'string');
+        $cancel_job_id = $this->getQuery('cancel_job', '');
 
         if (!empty($cancel_job_id)) {
             $this->job->delete($cancel_job_id);
             return null;
         }
 
-        $job_id = $this->getQuery('job_id', '', 'string');
+        $job_id = $this->getQuery('job_id', '');
         $job = $this->job->get($job_id);
 
         if (empty($job['status'])) {
