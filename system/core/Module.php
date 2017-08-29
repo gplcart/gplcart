@@ -126,4 +126,26 @@ abstract class Module
         return rtrim("$directory/$type/$file", '/');
     }
 
+    /**
+     * Install a database
+     * @param string $table
+     * @param array $scheme
+     * @return boolean|string
+     */
+    protected function installDbTable($table, array $scheme)
+    {
+        $language = $this->getLanguage();
+
+        if ($this->db->tableExists($table)) {
+            return $language->text('Table @name already exists', array('@name' => $table));
+        }
+
+        if (!$this->db->import($scheme)) {
+            $this->db->deleteTable($table);
+            return $language->text('An error occurred while importing database table @name', array('@name' => $table));
+        }
+
+        return true;
+    }
+
 }
