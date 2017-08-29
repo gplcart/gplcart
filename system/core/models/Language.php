@@ -92,8 +92,8 @@ class Language extends Model
      */
     protected function prepareFiles()
     {
-        $csv = $this->getDirectory($this->langcode);
-        $js = $this->getDirectory($this->langcode, true);
+        $csv = $this->getCompiledDirectory($this->langcode);
+        $js = $this->getCompiledDirectory($this->langcode, true);
 
         if (!file_exists($csv)) {
             mkdir($csv, 0775, true);
@@ -263,14 +263,14 @@ class Language extends Model
     }
 
     /**
-     * Returns a path to common translation file
+     * Returns the path to a common translation file
      * @param string $langcode
      * @return string
      */
     public function getCommonFile($langcode)
     {
-        $directory = $this->getDirectory($langcode);
-        return "$directory/_$langcode.csv";
+        $directory = $this->getCompiledDirectory($langcode);
+        return "$directory/$langcode.csv";
     }
 
     /**
@@ -458,9 +458,21 @@ class Language extends Model
     {
         $extension = $js ? 'js' : 'csv';
         $filename = $this->getContextFileName();
-        $directory = $this->getDirectory($langcode, $js);
+        $directory = $this->getCompiledDirectory($langcode, $js);
 
         return "$directory/$filename.$extension";
+    }
+
+    /**
+     * Returns a path to a directory containing compiled translations
+     * @param string $langcode
+     * @param bool $js
+     * @return string
+     */
+    public function getCompiledDirectory($langcode, $js = false)
+    {
+        $directory = $this->getDirectory($langcode, $js);
+        return "$directory/compiled";
     }
 
     /**
@@ -469,7 +481,7 @@ class Language extends Model
      */
     public function getContextFileName()
     {
-        return '_' . strtolower(str_replace('\\', '-', $this->context));
+        return strtolower(str_replace('\\', '-', $this->context));
     }
 
     /**
@@ -502,7 +514,6 @@ class Language extends Model
         }
 
         if (empty($file)) {
-            // Load main translation file
             $file = $this->getFile($this->langcode);
         }
 
@@ -567,7 +578,7 @@ class Language extends Model
     }
 
     /**
-     * Append a string to be translated to a translation file
+     * Append a string to be translated to the translation file
      * @param string $string
      * @param string $file
      */
@@ -594,13 +605,24 @@ class Language extends Model
     }
 
     /**
+     * Returns an array of compiled translations for the given language
+     * @param string $langcode
+     * @return array
+     */
+    public function getCompiledFiles($langcode)
+    {
+        $directory = $this->getCompiledDirectory($langcode);
+        return is_dir($directory) ? gplcart_file_scan($directory, array('csv')) : array();
+    }
+
+    /**
      * Removes cached translation files
      * @param string $langcode
      */
     public function refresh($langcode)
     {
-        gplcart_file_delete($this->getDirectory($langcode), '_*.csv');
-        gplcart_file_delete($this->getDirectory($langcode, true), array('js'));
+        gplcart_file_delete($this->getCompiledDirectory($langcode), array('csv'));
+        gplcart_file_delete($this->getCompiledDirectory($langcode, true), array('js'));
     }
 
     /**
