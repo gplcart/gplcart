@@ -97,6 +97,27 @@ class Zip
     }
 
     /**
+     * Create a ZIP archive
+     * @param array|string $source
+     * @param string $destination
+     * @return bool
+     */
+    public function create($source, $destination)
+    {
+        settype($source, 'array');
+
+        $this->set($destination);
+
+        $added = 0;
+        foreach ($source as $file) {
+            $added += (int) $this->zip->addFile($file, basename($file));
+        }
+
+        $this->zip->close();
+        return count($source) == $added;
+    }
+
+    /**
      * Removes a file from the archive
      * @param string $file
      * @return boolean
