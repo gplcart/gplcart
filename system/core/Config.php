@@ -273,6 +273,17 @@ class Config
     }
 
     /**
+     * Returns a module
+     * @param string $module_id
+     * @return array
+     */
+    public function getModule($module_id)
+    {
+        $modules = $this->getModules();
+        return empty($modules[$module_id]) ? array() : $modules[$module_id];
+    }
+
+    /**
      * Returns a server path to the module
      * @param string $module_id
      * @return string
