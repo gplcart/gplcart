@@ -76,8 +76,7 @@ class File extends BackendController
 
         if (!empty($file_id)) {
             $file = $this->file->get($file_id);
-            $filepath = GC_FILE_DIR . '/' . $file['path'];
-            $this->download($filepath);
+            $this->download(gplcart_file_absolute_path($file['path']));
         }
     }
 

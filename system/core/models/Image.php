@@ -410,9 +410,8 @@ class Image extends Model
      */
     public function urlFromPath($path)
     {
-        $expected = GC_FILE_DIR . "/$path";
+        $expected = gplcart_file_absolute_path($path);
         $query = is_file($expected) ? array('v' => filemtime($expected)) : array();
-
         return $this->url->get('files/' . gplcart_relative_path($path), $query, false, true);
     }
 

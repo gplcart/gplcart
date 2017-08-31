@@ -175,7 +175,7 @@ class FieldValue extends ComponentValidator
         }
 
         if (isset($path)) {
-            if (is_readable(GC_FILE_DIR . "/$path")) {
+            if (is_readable(gplcart_file_absolute_path($path))) {
                 return true;
             }
             $this->setErrorUnavailable('file', $this->language->text('File'));

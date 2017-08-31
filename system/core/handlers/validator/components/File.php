@@ -103,7 +103,7 @@ class File extends ComponentValidator
         $path = $this->getSubmitted('path');
 
         if (isset($path)) {
-            if (is_readable(GC_FILE_DIR . "/$path")) {
+            if (is_readable(gplcart_file_absolute_path($path))) {
                 return true;
             }
             $this->setErrorUnavailable($field, $label);

@@ -103,7 +103,7 @@ class File extends Model
         }
 
         if (empty($data['mime_type'])) {
-            $data['mime_type'] = mime_content_type(GC_FILE_DIR . "/{$data['path']}");
+            $data['mime_type'] = mime_content_type(gplcart_file_absolute_path($data['path']));
         }
 
         if (empty($data['file_type'])) {
@@ -481,7 +481,7 @@ class File extends Model
             return false;
         }
 
-        $path = GC_FILE_DIR . "/{$file['path']}";
+        $path = gplcart_file_absolute_path($file['path']);
         return file_exists($path) ? unlink($path) : false;
     }
 
@@ -667,7 +667,7 @@ class File extends Model
      */
     protected function finalizeTransfer($temp, $to, $upload)
     {
-        $directory = GC_FILE_DIR . '/' . $this->path($this->destination);
+        $directory = gplcart_file_absolute_path($this->path($this->destination));
         $pathinfo = $upload ? pathinfo($to) : pathinfo($directory);
 
         if ($upload) {
