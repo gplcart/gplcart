@@ -13,5 +13,4 @@ files/private/*
 !files/private/stopwords
 !files/private/download
 !files/private/temp
-!files/private/backup
 !files/private/modules

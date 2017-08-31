@@ -45,7 +45,6 @@ define('GC_CONFIG_REQUIREMENT', GC_CONFIG_DIR . '/default/requirement.php');
 define('GC_UPLOAD_DIR', GC_FILE_DIR . '/upload');
 define('GC_DOWNLOAD_DIR', GC_FILE_DIR . '/download');
 define('GC_PRIVATE_DIR', GC_FILE_DIR . '/private');
-define('GC_PRIVATE_BACKUP_DIR', GC_PRIVATE_DIR . '/backup');
 define('GC_PRIVATE_DOWNLOAD_DIR', GC_PRIVATE_DIR . '/download');
 define('GC_PRIVATE_TEMP_DIR', GC_PRIVATE_DIR . '/temp');
 define('GC_PRIVATE_MODULE_DIR', GC_PRIVATE_DIR . '/modules');
