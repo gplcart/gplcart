@@ -32,7 +32,11 @@ class FileType
      */
     public function csv($file)
     {
-        return strpos(mime_content_type($file), 'text/') === 0;
+        if (in_array(pathinfo($file, PATHINFO_EXTENSION), array('csv', 'tsv'))) {
+            return strpos(mime_content_type($file), 'text/') === 0;
+        }
+
+        return false;
     }
 
     /**
@@ -48,6 +52,7 @@ class FileType
             zip_close($zip);
             return true;
         }
+
         return false;
     }
 
