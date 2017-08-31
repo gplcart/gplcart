@@ -104,7 +104,7 @@ var GplCart = GplCart || {settings: {}, translations: {}, onload: {}, modules: {
                 }
 
                 if ('finish' in data && data.finish) {
-                    widget.find('.progress-bar').css('width', '100%')
+                    widget.find('.progress-bar').css('width', '100%');
                     widget.hide();
                     return false;
                 }
