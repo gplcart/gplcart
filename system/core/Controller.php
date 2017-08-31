@@ -1261,7 +1261,7 @@ abstract class Controller
     }
 
     /**
-     * Controls access to retricted areas
+     * Controls access to restricted areas
      */
     protected function controlAccessRestrictedArea()
     {
@@ -1325,7 +1325,7 @@ abstract class Controller
     }
 
     /**
-     * Restrict access to only superadmin (UID 1)
+     * Restrict access to only super-admin (UID 1)
      */
     protected function controlAccessSuperAdmin()
     {
@@ -1590,7 +1590,8 @@ abstract class Controller
             'head' => 'layout/head',
             'body' => 'layout/body',
             'layout' => 'layout/layout',
-            'region_content' => 'layout/region_content'
+            'region_content' => 'layout/region_content',
+            'region_bottom' => 'layout/region_bottom'
         );
     }
 
