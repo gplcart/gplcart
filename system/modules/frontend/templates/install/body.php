@@ -8,7 +8,7 @@
 ?>
 <body class="install">
   <div class="container">
-    <h2><?php echo $this->e($_page_title); ?> <small>v. <?php echo GC_VERSION; ?></small></h2>
+    <h2><?php echo $this->e($_page_title); ?> <small>v. <?php echo gplcart_version(); ?></small></h2>
     <form method="post">
       <?php if (!empty($languages) && count($languages) > 1) { ?>
       <div class="select-language clearfix">

@@ -172,7 +172,7 @@ class Report extends Model
             'title' => $this->language->text('Core version'),
             'description' => '',
             'severity' => 'info',
-            'status' => GC_VERSION,
+            'status' => gplcart_version(),
             'weight' => 0,
         );
 

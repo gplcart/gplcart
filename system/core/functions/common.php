@@ -8,6 +8,16 @@
  */
 
 /**
+ * Returns the core version
+ * @param bool $major
+ * @return string
+ */
+function gplcart_version($major = false)
+{
+    return $major ? strtok(GC_VERSION, '.') : GC_VERSION;
+}
+
+/**
  * Converts human readable file sizes to numeric bytes
  * @param string $value
  * @return integer

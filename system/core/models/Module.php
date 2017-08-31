@@ -354,7 +354,7 @@ class Module extends Model
             return $this->language->text('Missing core version');
         }
 
-        if (version_compare(GC_VERSION, $module['core']) < 0) {
+        if (version_compare(gplcart_version(), $module['core']) < 0) {
             return $this->language->text('Module incompatible with the current system core version');
         }
 
