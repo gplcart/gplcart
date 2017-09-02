@@ -266,30 +266,9 @@ class File extends Model
             return $handlers;
         }
 
-        $handlers = array();
-
-        $handlers['image'] = array(
-            'extensions' => array('jpg', 'jpeg', 'gif', 'png'),
-            'validator' => 'image'
-        );
-
-        $handlers['json'] = array(
-            'extensions' => array('json'),
-            'validator' => 'json'
-        );
-
-        $handlers['csv'] = array(
-            'extensions' => array('csv'),
-            'validator' => 'csv'
-        );
-
-        $handlers['zip'] = array(
-            'extensions' => array('zip'),
-            'validator' => 'zip'
-        );
+        $handlers = require GC_CONFIG_FILE;
 
         $this->hook->attach('file.handlers', $handlers, $this);
-
         return $handlers;
     }
 
@@ -322,7 +301,7 @@ class File extends Model
     }
 
     /**
-     * Sets the current tranfer handler
+     * Sets the current transfer handler
      * @param mixed $id
      *  - string: load by validator ID
      *  - false: disable validator at all,
@@ -519,10 +498,10 @@ class File extends Model
      * Uploads a file
      * @param array $post
      * @param null|string|false $handler
-     * @param string $path
+     * @param string|null $path
      * @return mixed
      */
-    public function upload($post, $handler, $path)
+    public function upload($post, $handler, $path = null)
     {
         $this->error = null;
         $this->transferred = null;
@@ -592,10 +571,10 @@ class File extends Model
      * Downloads a file from a remote URL
      * @param string $url
      * @param null|false|string $handler
-     * @param string $path
+     * @param string|null $path
      * @return mixed
      */
-    public function download($url, $handler, $path)
+    public function download($url, $handler, $path = null)
     {
         $this->error = null;
         $this->transferred = null;
@@ -651,11 +630,20 @@ class File extends Model
             return false;
         }
 
-        $file = tempnam(ini_get('upload_tmp_dir'), 'DWN');
+        $file = tempnam($this->getTempDirectory(), 'DWN');
         $fh = fopen($file, "w");
         fwrite($fh, $content);
         fclose($fh);
         return $file;
+    }
+
+    /**
+     * Returns directory path used for temporary files
+     * @return string
+     */
+    public function getTempDirectory()
+    {
+        return ini_get('upload_tmp_dir') ?: sys_get_temp_dir();
     }
 
     /**
@@ -667,6 +655,11 @@ class File extends Model
      */
     protected function finalizeTransfer($temp, $to, $upload)
     {
+        if (!isset($this->destination)) {
+            $this->transferred = $temp;
+            return true;
+        }
+
         $directory = gplcart_file_absolute_path($this->path($this->destination));
         $pathinfo = $upload ? pathinfo($to) : pathinfo($directory);
 
@@ -773,7 +766,7 @@ class File extends Model
             return $this->error;
         }
 
-        if (!$this->validateHandler($path)) {
+        if (!$this->validateHandler($path, $pathinfo['extension'])) {
             return $this->error;
         }
 
@@ -799,12 +792,18 @@ class File extends Model
     /**
      * Validates a file using a validator
      * @param string $file
+     * @param string|null $extension
      * @return boolean
      */
-    protected function validateHandler($file)
+    protected function validateHandler($file, $extension = null)
     {
         if (empty($this->handler['validator'])) {
             $this->error = $this->language->text('Missing validator');
+            return false;
+        }
+
+        if (!empty($this->handler['extensions']) && isset($extension) && !in_array($extension, $this->handler['extensions'])) {
+            $this->error = $this->language->text('Unsupported file extension');
             return false;
         }
 
