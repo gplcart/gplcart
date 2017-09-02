@@ -32,11 +32,7 @@ class FileType
      */
     public function csv($file)
     {
-        if (in_array(pathinfo($file, PATHINFO_EXTENSION), array('csv', 'tsv'))) {
-            return strpos(mime_content_type($file), 'text/') === 0;
-        }
-
-        return false;
+        return strpos(mime_content_type($file), 'text/') === 0;
     }
 
     /**
