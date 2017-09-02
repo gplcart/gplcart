@@ -269,6 +269,8 @@ class Config
             $modules[$module_id] = $info;
         }
 
+        gplcart_array_sort($modules);
+
         return $modules;
     }
 
@@ -391,7 +393,7 @@ class Config
             return $modules;
         }
 
-        $sql = 'SELECT * FROM module ORDER BY weight ASC';
+        $sql = 'SELECT * FROM module';
         $options = array('unserialize' => 'settings', 'index' => 'module_id');
 
         $modules = $this->db->fetchAll($sql, array(), $options);
