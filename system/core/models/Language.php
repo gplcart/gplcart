@@ -103,12 +103,24 @@ class Language extends Model
             mkdir($js, 0775, true);
         }
 
-        $main_file = $this->getFile($this->langcode);
-        $common_file = $this->getFileCommon($this->langcode);
+        $this->copyFile($langcode);
+    }
+
+    /**
+     * Create common compiled file using primary translation as a source
+     * @param string $langcode
+     * @return boolean
+     */
+    protected function copyFile($langcode)
+    {
+        $main_file = $this->getFile($langcode);
+        $common_file = $this->getFileCommon($langcode);
 
         if (!is_file($common_file) && is_file($main_file)) {
-            copy($main_file, $common_file);
+            return copy($main_file, $common_file);
         }
+
+        return false;
     }
 
     /**
@@ -235,17 +247,17 @@ class Language extends Model
     }
 
     /**
-     * Returns a path to the core translation file
+     * Returns a path to a translation file
      * @param string $langcode
-     * @param string|null $module_id
+     * @param string $module_id
      * @return string
      */
-    public function getFile($langcode, $module_id = null)
+    public function getFile($langcode, $module_id = '')
     {
-        if (isset($module_id)) {
-            $directory = $this->getDirectoryModule($module_id);
-        } else {
+        if (empty($module_id)) {
             $directory = $this->getDirectory($langcode);
+        } else {
+            $directory = $this->getDirectoryModule($module_id);
         }
 
         return "$directory/$langcode.csv";
@@ -427,7 +439,7 @@ class Language extends Model
         }
 
         $context_file = $this->getFileContext($this->context, $this->langcode);
-        $context_translations = $this->loadTranslations($context_file);
+        $context_translations = $this->loadTranslation($context_file);
 
         if (isset($context_translations[$string])) {
             $this->addJsTranslation($string, $context_translations);
@@ -437,7 +449,7 @@ class Language extends Model
         $this->toTranslate($string, $context_file);
 
         $common_file = $this->getFileCommon($this->langcode);
-        $common_translations = $this->loadTranslations($common_file);
+        $common_translations = $this->loadTranslation($common_file);
 
         if (isset($common_translations[$string])) {
             $this->addJsTranslation($string, $common_translations);
@@ -497,7 +509,7 @@ class Language extends Model
      * @param string $file
      * @return array
      */
-    public function loadTranslations($file)
+    public function loadTranslation($file)
     {
         $translations = &gplcart_static(__METHOD__ . $file);
 
@@ -535,34 +547,26 @@ class Language extends Model
     }
 
     /**
-     * Append translations from a file to the common file
-     * @param string $langcode
+     * Add translations from a file to the common file
      * @param string $merge_file
-     * @return array
+     * @param string $langcode
      */
-    public function mergeTranslations($langcode, $merge_file)
+    protected function mergeTranslation($merge_file, $langcode)
     {
         $common_file = $this->getFileCommon($langcode);
-        $common_content = $this->parseCsv($common_file);
-        $merge_content = $this->parseCsv($merge_file);
+        $merge_translations = $this->loadTranslation($merge_file);
+        $common_translations = $this->loadTranslation($common_file);
 
-        if (empty($merge_content)) {
-            return $common_content;
+        if (empty($merge_translations)) {
+            return null;
         }
 
-        $existing = array();
-        foreach ($common_content as $line) {
-            $existing[$line[0]] = true;
-        }
-
-        foreach ($merge_content as $line) {
-            if (!isset($existing[$line[0]])) {
-                $common_content[] = $line;
-                gplcart_file_csv($common_file, $line);
+        foreach ($merge_translations as $source => $translation) {
+            if (!isset($common_translations[$source])) {
+                array_unshift($translation, $source);
+                gplcart_file_csv($common_file, $translation);
             }
         }
-
-        return $common_content;
     }
 
     /**
@@ -611,6 +615,29 @@ class Language extends Model
     {
         gplcart_file_delete($this->getDirectoryCompiled($langcode), array('csv'));
         gplcart_file_delete($this->getDirectoryCompiled($langcode, true), array('js'));
+
+        $this->copyFile($langcode);
+        $this->mergeModuleTranslations($langcode);
+    }
+
+    /**
+     * Add translations from all enabled modules to the common file
+     * @param string $langcode
+     */
+    protected function mergeModuleTranslations($langcode)
+    {
+        $modules = $this->config->getEnabledModules();
+
+        // Sort modules in descending order
+        // More important modules go first so their translations will be added earlier
+        gplcart_array_sort($modules, 'weight', false);
+
+        foreach ($modules as $module) {
+            $file = $this->getFile($langcode, $module['module_id']);
+            if (is_file($file)) {
+                $this->mergeTranslation($file, $langcode);
+            }
+        }
     }
 
     /**
