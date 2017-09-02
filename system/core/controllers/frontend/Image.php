@@ -86,7 +86,7 @@ class Image extends FrontendController
      */
     protected function checkCacheDirectoryImage()
     {
-        if (!is_dir($this->data_imagestyle_directory) && !mkdir($this->data_imagestyle_directory, 0775, true)) {
+        if (!file_exists($this->data_imagestyle_directory) && !mkdir($this->data_imagestyle_directory, 0775, true)) {
             $this->response->error404(false);
         }
     }
@@ -180,7 +180,7 @@ class Image extends FrontendController
     protected function getHeaders($file)
     {
         $timestamp = filemtime($file);
-        $expires = (int) $this->config('image_cache_lifetime', 31536000); // 1 year
+        $expires = (int) $this->config('image_cache_lifetime', 365*24*60*60); // 1 year
 
         $headers = array(
             array('Last-Modified', gmdate('D, d M Y H:i:s T', $timestamp)),

@@ -259,7 +259,7 @@ class Currency extends Model
      */
     public function setCookie($code)
     {
-        $lifespan = $this->config->get('currency_cookie_lifespan', 31536000);
+        $lifespan = $this->config->get('currency_cookie_lifespan', 365*24*60*60);
         $this->request->setCookie(self::COOKIE_KEY, $code, $lifespan);
     }
 

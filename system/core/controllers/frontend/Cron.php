@@ -62,7 +62,7 @@ class Cron extends FrontendController
     }
 
     /**
-     * Controls access to execute cron
+     * Controls access to execute CRON
      */
     protected function controlAccessExecuteCron()
     {
@@ -88,7 +88,7 @@ class Cron extends FrontendController
      */
     protected function deleteExpiredHistoryCron()
     {
-        $ago = GC_TIME - (int) $this->config('history_lifespan', 2628000);
+        $ago = GC_TIME - (int) $this->config('history_lifespan', 30 * 24 * 60 * 60);
         $this->config->getDb()->run('DELETE FROM history WHERE time < ?', array($ago));
     }
 
@@ -111,7 +111,7 @@ class Cron extends FrontendController
      */
     protected function deleteExpiredLogsCron()
     {
-        $lifespan = $this->config('report_log_lifespan', 86400);
+        $lifespan = $this->config('report_log_lifespan', 24 * 60 * 60);
         $this->report->deleteExpired($lifespan);
     }
 

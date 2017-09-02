@@ -512,7 +512,7 @@ class Product extends FrontendController
     protected function getRecentProduct()
     {
         $limit = $this->config('recent_limit', 12);
-        $lifespan = $this->config('recent_cookie_lifespan', 31536000);
+        $lifespan = $this->config('recent_cookie_lifespan', 365*24*60*60);
         $product_ids = $this->product->setViewed($this->data_product['product_id'], $limit, $lifespan);
 
         $current = array_search($this->data_product['product_id'], $product_ids);

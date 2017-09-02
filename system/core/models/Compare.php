@@ -215,7 +215,7 @@ class Compare extends Model
      */
     public function set(array $product_ids)
     {
-        $lifespan = $this->config->get('comparison_cookie_lifespan', 604800);
+        $lifespan = $this->config->get('comparison_cookie_lifespan', 30*24*60*60);
         $result = $this->request->setCookie('comparison', implode('|', (array) $product_ids), $lifespan);
 
         gplcart_static_clear();

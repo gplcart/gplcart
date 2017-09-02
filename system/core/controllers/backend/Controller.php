@@ -85,7 +85,7 @@ class Controller extends BaseController
     {
         $key = $this->config('cron_key', '');
         $last_run = (int) $this->config('cron_last_run', 0);
-        $interval = (int) $this->config('cron_interval', 86400);
+        $interval = (int) $this->config('cron_interval', 24 * 60 * 60);
 
         if (!empty($interval) && (GC_TIME - $last_run) > $interval) {
             $url = $this->url('cron', array('key' => $key));
@@ -99,14 +99,19 @@ class Controller extends BaseController
      */
     protected function processCurrentJob()
     {
-        $cancel_job_id = $this->getQuery('cancel_job', '');
+        $cancel_job_id = $this->getQuery('cancel_job');
 
         if (!empty($cancel_job_id)) {
             $this->job->delete($cancel_job_id);
             return null;
         }
 
-        $job_id = $this->getQuery('job_id', '');
+        $job_id = $this->getQuery('job_id');
+
+        if (empty($job_id)) {
+            return null;
+        }
+
         $job = $this->job->get($job_id);
 
         if (empty($job['status'])) {

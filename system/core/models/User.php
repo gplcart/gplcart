@@ -576,7 +576,7 @@ class User extends Model
      */
     protected function resetPasswordStart(array $user)
     {
-        $lifetime = (int) $this->config->get('user_reset_password_lifespan', 86400);
+        $lifetime = (int) $this->config->get('user_reset_password_lifespan', 24*60*60);
 
         $user['data']['reset_password'] = array(
             'token' => gplcart_string_random(),
