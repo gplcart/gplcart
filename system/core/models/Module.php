@@ -149,7 +149,6 @@ class Module extends Model
         $this->update($module_id, array('status' => 1));
 
         $this->setOverrideConfig();
-        $this->setTranslations($module_id);
 
         $this->hook->attach("module.enable.after|$module_id", $result, $this);
         return $result;
@@ -530,7 +529,6 @@ class Module extends Model
         $this->add(array('module_id' => $module_id, 'status' => $status));
 
         $this->setOverrideConfig();
-        $this->setTranslations($module_id);
 
         $this->hook->attach("module.install.after|$module_id", $result, $this);
         return $result;
@@ -632,39 +630,6 @@ class Module extends Model
         }
 
         return $results;
-    }
-
-    /**
-     * Copies translation files into the locale directory
-     * @param string $module_id
-     */
-    protected function setTranslations($module_id)
-    {
-        foreach ($this->scanTranslations($module_id) as $file) {
-
-            $langcode = pathinfo($file, PATHINFO_FILENAME);
-            $directory = GC_LOCALE_DIR . "/$langcode";
-
-            if (file_exists($directory) || mkdir($directory, 0775, true)) {
-                $this->language->mergeTranslations($langcode, $file);
-            }
-        }
-    }
-
-    /**
-     * Finds possible translations of the module
-     * @param string $module_id
-     * @return array
-     */
-    protected function scanTranslations($module_id)
-    {
-        $directory = GC_MODULE_DIR . "/$module_id/locale";
-
-        if (file_exists($directory)) {
-            return gplcart_file_scan($directory, array('csv'));
-        }
-
-        return array();
     }
 
     /**
