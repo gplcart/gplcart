@@ -159,7 +159,7 @@ class Review extends BackendController
      */
     protected function setDataListReview()
     {
-        $product_id = $this->getQuery('product_id', '');
+        $product_id = $this->getQuery('product_id');
 
         if (!empty($product_id)) {
             $product = $this->product->get($product_id);

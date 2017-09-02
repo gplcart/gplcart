@@ -85,8 +85,8 @@ class Module extends BackendController
      */
     protected function actionListModule()
     {
-        $action = $this->getQuery('action', '');
-        $module_id = $this->getQuery('module_id', '');
+        $action = $this->getQuery('action');
+        $module_id = $this->getQuery('module_id');
 
         if (!empty($action) && !empty($module_id)) {
             $this->setModule($module_id);
@@ -102,6 +102,7 @@ class Module extends BackendController
     protected function setModule($module_id)
     {
         $this->data_module = $this->module->get($module_id);
+
         if (empty($this->data_module)) {
             $this->outputHttpStatus(403);
         }
@@ -238,21 +239,24 @@ class Module extends BackendController
     /**
      * Sort modules by a field
      * @param array $modules
-     * @return array
      */
     protected function sortListModule(array &$modules)
     {
         $query = $this->query_filter;
 
-        if (empty($query['order']) || empty($query['sort'])) {
-            return $modules;
+        if (empty($query['order'])) {
+            $query['order'] = 'asc';
+        }
+
+        if (empty($query['sort'])) {
+            $query['sort'] = 'id';
         }
 
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('type', 'name', 'version', 'id');
 
         if (!in_array($query['order'], $allowed_order) || !in_array($query['sort'], $allowed_sort)) {
-            return $modules;
+            return null;
         }
 
         uasort($modules, function($a, $b) use ($query) {
@@ -262,16 +266,17 @@ class Module extends BackendController
             }
 
             $diff = strcmp($a[$query['sort']], $b[$query['sort']]);
+
             if ($diff === 0) {
                 return 0;
             }
+
             if ($query['order'] === 'asc') {
                 return $diff > 0;
             }
+
             return $diff < 0;
         });
-
-        return $modules;
     }
 
     /**

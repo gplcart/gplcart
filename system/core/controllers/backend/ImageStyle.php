@@ -62,7 +62,7 @@ class ImageStyle extends BackendController
         $key = 'clear';
         $this->controlToken($key);
 
-        $style_id = $this->getQuery($key, '');
+        $style_id = $this->getQuery($key);
         if (!empty($style_id) && $this->image->clearCache($style_id)) {
             $this->redirect('', $this->text('Cache has been cleared'), 'success');
         }

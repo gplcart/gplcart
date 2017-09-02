@@ -215,8 +215,7 @@ class Language extends BackendController
     {
         $key = 'refresh';
         $this->controlToken($key);
-
-        $code = $this->getQuery($key, '');
+        $code = $this->getQuery($key);
 
         if (!empty($code)) {
             $this->controlAccess('language_edit');

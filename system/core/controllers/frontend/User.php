@@ -263,8 +263,8 @@ class User extends FrontendController
      */
     protected function setForgetfulUser()
     {
-        $token = $this->getQuery('key', '');
-        $user_id = $this->getQuery('user_id', '');
+        $token = $this->getQuery('key');
+        $user_id = $this->getQuery('user_id');
 
         if (empty($token) || !is_numeric($user_id)) {
             return array();
