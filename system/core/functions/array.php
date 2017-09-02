@@ -10,18 +10,25 @@
 /**
  * Sorts an array by the weight
  * @param array $array
+ * @param string $key
+ * @param bool $asc
  */
-function gplcart_array_sort(array &$array, $key = 'weight')
+function gplcart_array_sort(array &$array, $key = 'weight', $asc = true)
 {
-    uasort($array, function ($a, $b) use ($key) {
+    uasort($array, function ($a, $b) use ($key, $asc) {
 
-        $arg1 = (is_array($a) && isset($a[$key])) ? $a[$key] : 0;
-        $arg2 = (is_array($b) && isset($b[$key])) ? $b[$key] : 0;
+        $arg1 = is_array($a) && isset($a[$key]) ? $a[$key] : 0;
+        $arg2 = is_array($b) && isset($b[$key]) ? $b[$key] : 0;
 
         if ($arg1 == $arg2) {
             return 0;
         }
-        return ($arg1 < $arg2) ? -1 : 1;
+
+        if ($asc) {
+            return ($arg1 < $arg2) ? -1 : 1;
+        }
+
+        return ($arg1 < $arg2) ? 1 : -1;
     });
 }
 
