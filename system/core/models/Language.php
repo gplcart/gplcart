@@ -103,7 +103,7 @@ class Language extends Model
             mkdir($js, 0775, true);
         }
 
-        $this->copyFile($langcode);
+        $this->copyFile($this->langcode);
     }
 
     /**
