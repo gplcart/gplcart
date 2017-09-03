@@ -4,6 +4,8 @@
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+ * @var $this \gplcart\core\controllers\frontend\Controller
+ * To see available variables <?php print_r(get_defined_vars()); ?>
  */
 ?>
 <div class="grid product item col-md-3 col-sm-4 col-xs-12">

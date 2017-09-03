@@ -4,6 +4,8 @@
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+ * @var $this \gplcart\core\controllers\backend\Controller
+ * To see available variables <?php print_r(get_defined_vars()); ?>
  */
 ?>
 <h1 class="h3"><?php echo $this->text('Welcome!'); ?></h1>

@@ -4,6 +4,8 @@
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+ * @var $this \gplcart\core\controllers\frontend\Controller
+ * To see available variables <?php print_r(get_defined_vars()); ?>
  */
 ?>
 <body<?php echo $this->attributes(array('class' => $_classes)); ?>>
@@ -45,7 +47,7 @@
               <?php } ?>
               <?php } ?>
             </ul>
-          </div>          
+          </div>
           <?php } else { ?>
           <div class="pull-left navbar-text"><?php echo $this->e($_currency['name']); ?></div>
           <?php } ?>
