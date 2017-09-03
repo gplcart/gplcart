@@ -23,10 +23,9 @@ class UnitTest extends PHPUnit_Framework_TestCase
     protected $object;
 
     /**
-     * Constructor
      * @param null|string $name
      * @param array $data
-     * @param staring $dname
+     * @param string $dname
      */
     public function __construct($name = null, array $data = array(), $dname = '')
     {
@@ -44,7 +43,9 @@ class UnitTest extends PHPUnit_Framework_TestCase
 
     /**
      * Returns a class instance
+     * @param string $class
      * @return object
+     * @throws \ReflectionException
      */
     protected function getInstance($class)
     {
@@ -84,22 +85,6 @@ class UnitTest extends PHPUnit_Framework_TestCase
     {
         $this->expectOutputString('');
         print_r($data);
-    }
-
-    /**
-     * Returns a randomized string
-     * @param integer $length
-     * @return string
-     */
-    protected function getRandomString($length = 16)
-    {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $clength = strlen($characters);
-        $random = '';
-        for ($i = 0; $i < $length; $i++) {
-            $random .= $characters[rand(0, $clength - 1)];
-        }
-        return $random;
     }
 
 }
