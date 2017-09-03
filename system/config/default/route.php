@@ -667,12 +667,6 @@ return array(
             'controller' => array('gplcart\\core\\controllers\\backend\\City', 'listCity')
         )
     ),
-    'admin/settings/cities/(\w+)/(\d+)' => array(
-        'access' => 'city',
-        'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\backend\\City', 'listCity')
-        )
-    ),
     'admin/settings/city/add/(\w+)/(\d+)' => array(
         'access' => 'city_add',
         'handlers' => array(
