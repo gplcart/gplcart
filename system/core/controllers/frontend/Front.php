@@ -41,6 +41,7 @@ class Front extends FrontendController
 
     /**
      * Adds a collection block
+     * @param string $type
      */
     protected function setDataCollectionFront($type)
     {

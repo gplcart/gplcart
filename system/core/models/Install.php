@@ -53,7 +53,7 @@ class Install extends Model
 
     /**
      * Returns an array of defined handlers
-     * @return string
+     * @return array
      */
     public function getHandlers()
     {

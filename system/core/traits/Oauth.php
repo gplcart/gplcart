@@ -19,6 +19,7 @@ trait Oauth
      * Returns an array of Oauth login buttons
      * @param \gplcart\core\Controller $controller
      * @param \gplcart\core\models\Oauth $model
+     * @return array
      */
     protected function getOauthButtonsTrait($controller, $model)
     {

@@ -154,6 +154,7 @@ class Container
      * Adds a class instance to the storage
      * @param string $namespace
      * @param object $instance
+     * @param array $args
      * @return array
      */
     public static function register($namespace, $instance, array $args = array())

@@ -27,6 +27,7 @@ class Section extends BackendController
 
     /**
      * Displays the admin section page
+     * @param string $parent
      */
     public function listSection($parent)
     {

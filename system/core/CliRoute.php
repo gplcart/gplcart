@@ -44,8 +44,7 @@ class CliRoute
     protected $arguments = array();
 
     /**
-     * Constructor
-     * @param Cli $cli
+     * @param CliHelper $cli
      * @param Hook $hook
      */
     public function __construct(CliHelper $cli, Hook $hook)

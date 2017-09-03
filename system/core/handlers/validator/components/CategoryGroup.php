@@ -36,6 +36,7 @@ class CategoryGroup extends ComponentValidator
     /**
      * Performs full category group data validation
      * @param array $submitted
+     * @param array $options
      * @return boolean|array
      */
     public function categoryGroup(array &$submitted, array $options = array())

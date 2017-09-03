@@ -28,7 +28,7 @@ class Account extends BaseHandler
     /**
      * Sent to an admin when a user has been registered
      * @param array $user
-     * @return boolean
+     * @return array
      */
     public function registeredToAdmin(array $user)
     {
@@ -52,7 +52,7 @@ class Account extends BaseHandler
     /**
      * Sent to a user when his account has been created
      * @param array $user
-     * @return boolean
+     * @return array
      */
     public function registeredToCustomer(array $user)
     {
@@ -80,6 +80,7 @@ class Account extends BaseHandler
     /**
      * Sent when a user wants to reset his password
      * @param array $user
+     * @return array
      */
     public function resetPassword(array $user)
     {
@@ -109,6 +110,7 @@ class Account extends BaseHandler
     /**
      * Sent to a user whose password has been changed
      * @param array $user
+     * @return array
      */
     public function changedPassword(array $user)
     {

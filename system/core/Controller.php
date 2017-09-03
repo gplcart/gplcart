@@ -2158,6 +2158,7 @@ abstract class Controller
 
     /**
      * Set pager limits
+     * @param null|integer
      * @return array
      */
     public function setPagerLimit($limit = null)

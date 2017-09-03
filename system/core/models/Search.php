@@ -95,7 +95,7 @@ class Search extends Model
     /**
      * Indexes an item
      * @param string $handler_id
-     * @param array|numeric $data
+     * @param array|string $data
      * @return mixed
      */
     public function index($handler_id, $data)

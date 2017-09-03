@@ -17,7 +17,7 @@ class OauthAuthorization extends AuthorizationException
     /**
      * @param string|null $message
      * @param integer $code
-     * @param CoreException $previous
+     * @param $previous
      */
     public function __construct($message = null, $code = 0, $previous = null)
     {

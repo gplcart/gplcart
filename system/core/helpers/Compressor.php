@@ -223,6 +223,7 @@ class Compressor
     /**
      * Performs some safe CSS optimizations
      * @param string $contents
+     * @return string
      */
     public function optimizeCss($contents)
     {

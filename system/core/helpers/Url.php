@@ -35,6 +35,7 @@ class Url
      * @param array $options
      * @param boolean $full
      * @param boolean $exclude_langcode
+     * @return null
      */
     final public function redirect($url = '', $options = array(), $full = false,
             $exclude_langcode = false)
@@ -114,6 +115,7 @@ class Url
      * @param string $code
      * @param string $path
      * @param array $options
+     * @return string
      */
     public function language($code, $path = '', $options = array())
     {

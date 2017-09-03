@@ -73,7 +73,6 @@ class Price extends Model
 
     /**
      * Converts a price from minor to major units
-     * @staticvar array $divisors
      * @param integer $amount
      * @param string $currency_code
      * @return float
@@ -108,7 +107,6 @@ class Price extends Model
 
     /**
      * Converts a price from major to minor units
-     * @staticvar array $factors
      * @param float $decimal
      * @param string|null $currency_code
      * @param boolean $round

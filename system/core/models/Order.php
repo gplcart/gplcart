@@ -706,7 +706,7 @@ class Order extends Model
     /**
      * Returns an array of log records
      * @param array $data
-     * @return array
+     * @return array|int
      */
     public function getLogList(array $data)
     {
@@ -752,7 +752,6 @@ class Order extends Model
 
     /**
      * Calculates order totals
-     * @staticvar integer $total
      * @param array $data
      * @return array
      */

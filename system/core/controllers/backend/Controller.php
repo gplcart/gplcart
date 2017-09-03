@@ -184,6 +184,7 @@ class Controller extends BaseController
      * Deletes submitted image file IDs
      * @param array $data
      * @param string $entity
+     * @return null|bool
      */
     protected function deleteImages(array $data, $entity)
     {

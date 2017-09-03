@@ -236,7 +236,6 @@ class PriceRule extends BackendController
     /**
      * Returns an array of price rule data
      * @param null|integer $rule_id
-     * @return array
      */
     protected function setPriceRule($rule_id)
     {

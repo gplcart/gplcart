@@ -299,7 +299,7 @@ class Store extends BackendController
 
     /**
      * Validates a submitted store data
-     * @return array
+     * @return bool
      */
     protected function validateEditStore()
     {

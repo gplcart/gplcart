@@ -107,6 +107,7 @@ class Cli
     /**
      * Output an error message
      * @param string $text
+     * @return $this
      */
     public function error($text)
     {

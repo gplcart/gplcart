@@ -302,7 +302,7 @@ class Currency extends Model
     /**
      * Returns a default currency
      * @param boolean $load
-     * @return string
+     * @return string|array
      */
     public function getDefault($load = false)
     {

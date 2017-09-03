@@ -342,6 +342,7 @@ class Product extends Model
     /**
      * Adds fields to the product
      * @param array $product
+     * @return null
      */
     protected function attachFields(array &$product)
     {

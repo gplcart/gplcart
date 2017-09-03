@@ -434,8 +434,10 @@ class CliController
 
     /**
      * Whether an input passed a field validation
+     * @param string $input
      * @param string $field
-     * @return boolean
+     * @param string $handler_id
+     * @return bool
      */
     public function isValidInput($input, $field, $handler_id)
     {
@@ -482,6 +484,7 @@ class CliController
      * @param string $question
      * @param string $default
      * @param string $marker
+     * @return mixed
      */
     public function prompt($question, $default = '', $marker = ': ')
     {
@@ -523,6 +526,7 @@ class CliController
 
     /**
      * Read the user input
+     * @param string $format
      * @return string
      */
     public function in($format = '')

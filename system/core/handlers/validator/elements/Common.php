@@ -29,7 +29,7 @@ class Common extends ElementValidator
      * Validates field/value is not empty
      * @param array $submitted
      * @param array $options
-     * @return boolean
+     * @return mixed
      */
     public function required(array $submitted, array $options)
     {
@@ -46,7 +46,7 @@ class Common extends ElementValidator
      * Validates field/value is numeric
      * @param array $submitted
      * @param array $options
-     * @return boolean
+     * @return mixed
      */
     public function numeric(array $submitted, array $options)
     {
@@ -63,7 +63,7 @@ class Common extends ElementValidator
      * Validates a field/value consists of digits
      * @param array $submitted
      * @param array $options
-     * @return boolean
+     * @return mixed
      */
     public function integer(array $submitted, array $options)
     {
@@ -80,7 +80,7 @@ class Common extends ElementValidator
      * Validates field/value length is in range
      * @param array $submitted
      * @param array $options
-     * @return boolean
+     * @return mixed
      */
     public function length(array $submitted, array $options)
     {
@@ -100,7 +100,7 @@ class Common extends ElementValidator
      * Validates field/value matches a regexp pattern
      * @param array $submitted
      * @param array $options
-     * @return boolean
+     * @return mixed
      */
     public function regexp(array $submitted, array $options)
     {
@@ -118,7 +118,7 @@ class Common extends ElementValidator
      * @param array $submitted
      * @param array $options
      * @link http://php.net/manual/en/function.strtotime.php
-     * @return boolean
+     * @return mixed
      */
     public function dateformat(array $submitted, array $options)
     {
@@ -135,7 +135,7 @@ class Common extends ElementValidator
      * Validates a JSON encoded string
      * @param array $submitted
      * @param array $options
-     * @return boolean
+     * @return mixed
      */
     public function json(array $submitted, array $options)
     {

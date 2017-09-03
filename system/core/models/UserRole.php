@@ -60,6 +60,7 @@ class UserRole extends Model
 
     /**
      * Returns an array of roles or counts them
+     * @param array $data
      * @return array|integer
      */
     public function getList(array $data = array())

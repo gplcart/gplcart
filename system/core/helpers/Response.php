@@ -57,6 +57,7 @@ class Response
 
     /**
      * Returns an array of standard HTTP statuses
+     * @param null|int $status
      * @return array|string
      */
     public function statuses($status = null)
@@ -160,6 +161,7 @@ class Response
      * @param string $file Absolute path to the file
      * @param string $filename An alternative filename
      * @param array $options
+     * @return null
      */
     public function download($file, $filename = '', $options = array())
     {
@@ -217,7 +219,7 @@ class Response
 
     /**
      * Displays the 403 Access Denied message
-     * @param string $message
+     * @param bool $message
      */
     final public function error403($message = true)
     {

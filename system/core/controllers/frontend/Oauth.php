@@ -39,7 +39,7 @@ class Oauth extends FrontendController
 
     /**
      * A state hash received from a provider
-     * @var type 
+     * @var string
      */
     protected $data_state;
 
@@ -51,7 +51,7 @@ class Oauth extends FrontendController
 
     /**
      * A processed authorization result
-     * @var mixed 
+     * @var mixed
      */
     protected $data_result;
 
@@ -62,7 +62,7 @@ class Oauth extends FrontendController
     protected $data_url;
 
     /**
-     * @param OauthModuleModel $oauth
+     * @param OauthModel $oauth
      */
     public function __construct(OauthModel $oauth)
     {

@@ -38,7 +38,9 @@ class Zip
     /**
      * Sets a file path
      * @param string $path
+     * @param bool $create
      * @throws InvalidArgumentException
+     * @return $this
      */
     public function set($path, $create = true)
     {
@@ -54,6 +56,7 @@ class Zip
 
     /**
      * Adds a file to a ZIP archive from the given path
+     * @param string $file
      * @return boolean
      */
     public function add($file)

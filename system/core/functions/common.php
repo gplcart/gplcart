@@ -87,6 +87,7 @@ function gplcart_is_absolute_url($url)
 
 /**
  * Whether the path is an absolute server path
+ * @param string $path
  * @return bool
  */
 function gplcart_is_absolute_path($path)

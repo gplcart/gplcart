@@ -62,6 +62,7 @@ class User extends ComponentValidator
     /**
      * Performs full login data validation
      * @param array $submitted
+     * @param array $options
      * @return array|boolean
      */
     public function login(array &$submitted, array $options = array())
@@ -78,6 +79,7 @@ class User extends ComponentValidator
     /**
      * Performs password reset validation
      * @param array $submitted
+     * @param array $options
      * @return array|boolean
      */
     public function resetPassword(array &$submitted, array $options = array())

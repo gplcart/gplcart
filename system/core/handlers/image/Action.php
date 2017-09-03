@@ -36,6 +36,7 @@ class Action
      * @param string $source
      * @param string $target
      * @param array $action
+     * @return bool
      */
     public function thumbnail(&$source, $target, array $action)
     {
@@ -46,6 +47,7 @@ class Action
         } catch (\InvalidArgumentException $ex) {
             return false;
         }
+
         return true;
     }
 
@@ -54,6 +56,7 @@ class Action
      * @param string $source
      * @param string $target
      * @param array $action
+     * @return bool
      */
     public function crop(&$source, $target, array $action)
     {
@@ -64,6 +67,7 @@ class Action
         } catch (\InvalidArgumentException $ex) {
             return false;
         }
+
         return true;
     }
 
@@ -72,6 +76,7 @@ class Action
      * @param string $source
      * @param string $target
      * @param array $action
+     * @return bool
      */
     public function resize(&$source, $target, array $action)
     {
@@ -82,6 +87,7 @@ class Action
         } catch (\InvalidArgumentException $ex) {
             return false;
         }
+
         return true;
     }
 
@@ -90,6 +96,7 @@ class Action
      * @param string $source
      * @param string $target
      * @param array $action
+     * @return bool
      */
     public function fitWidth(&$source, $target, array $action)
     {
@@ -100,6 +107,7 @@ class Action
         } catch (\InvalidArgumentException $ex) {
             return false;
         }
+
         return true;
     }
 
@@ -108,6 +116,7 @@ class Action
      * @param string $source
      * @param string $target
      * @param array $action
+     * @return bool
      */
     public function fitHeight(&$source, $target, array $action)
     {
@@ -118,6 +127,7 @@ class Action
         } catch (\InvalidArgumentException $ex) {
             return false;
         }
+
         return true;
     }
 

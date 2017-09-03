@@ -46,7 +46,7 @@ class Order extends BaseHandler
     /**
      * Sends an email to an admin after a customer created an order
      * @param array $order
-     * @return boolean
+     * @return array
      */
     public function createdToAdmin($order)
     {
@@ -74,7 +74,7 @@ class Order extends BaseHandler
     /**
      * Sends an email to a logged in customer after his order has been created
      * @param array $order
-     * @return boolean
+     * @return array
      */
     public function createdToCustomer($order)
     {
@@ -103,7 +103,7 @@ class Order extends BaseHandler
     /**
      * Sends an email to a registered customer after his order has been updated
      * @param array $order
-     * @return boolean
+     * @return array
      */
     public function updatedToCustomer(array $order)
     {

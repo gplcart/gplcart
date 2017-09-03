@@ -53,6 +53,7 @@ class Pager
     /**
      * Sets max number of pages to show in the pager links
      * @param int $limit_pages
+     * @return $this
      */
     public function setMaxPagesToShow($limit_pages)
     {
@@ -63,7 +64,7 @@ class Pager
     /**
      * Sets total number of items
      * @param integer $num
-     * @return \gplcart\core\helpers\Pager
+     * @return $this
      */
     public function setTotal($num)
     {
@@ -74,7 +75,7 @@ class Pager
 
     /**
      * Updates the current number of pages
-     * @return \gplcart\core\helpers\Pager
+     * @return $this
      */
     protected function updateNumPages()
     {
@@ -85,7 +86,7 @@ class Pager
     /**
      * Sets items per page
      * @param integer $num
-     * @return \gplcart\core\helpers\Pager
+     * @return $this
      */
     public function setPerPage($num)
     {
@@ -97,7 +98,7 @@ class Pager
     /**
      * Sets the current page
      * @param integer $current
-     * @return \gplcart\core\helpers\Pager
+     * @return $this
      */
     public function setPage($current)
     {
@@ -109,6 +110,7 @@ class Pager
     /**
      * Sets pager URL pattern
      * @param string $pattern
+     * @return $this
      */
     public function setUrlPattern($pattern)
     {
@@ -345,7 +347,7 @@ class Pager
 
     /**
      * Returns a string with limits to be used in SQL LIMIT
-     * @return string
+     * @return array
      */
     public function getLimit()
     {
@@ -370,7 +372,7 @@ class Pager
     /**
      * Set up pager from an array of parameters
      * @param array $data
-     * @return \gplcart\core\helpers\Pager
+     * @return $this
      */
     public function build(array $data = array())
     {

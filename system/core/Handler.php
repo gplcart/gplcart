@@ -60,7 +60,7 @@ class Handler
      * @param array $handlers
      * @param string $handler_id
      * @param string $name
-     * @return boolean|array
+     * @return mixed
      */
     public static function get($handlers, $handler_id, $name)
     {

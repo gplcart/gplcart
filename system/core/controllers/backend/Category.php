@@ -139,7 +139,7 @@ class Category extends BackendController
     }
 
     /**
-     * Updates weigth for an array of categories
+     * Updates weight for an array of categories
      * @param array $categories
      */
     protected function updateWeightCategory(array $categories)
@@ -277,6 +277,7 @@ class Category extends BackendController
     /**
      * Prepares an array of category data
      * @param array $category
+     * @return array
      */
     protected function prepareCategory(array $category)
     {
