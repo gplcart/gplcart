@@ -324,7 +324,7 @@ class Review extends BackendController
         $title = $this->text('Add review');
 
         if (isset($this->data_review['review_id'])) {
-            $title = $this->text('Edit rewiew');
+            $title = $this->text('Edit review');
         }
 
         $this->setTitle($title);
