@@ -120,7 +120,7 @@ class Wishlist extends Model
         $href = $this->url->get('wishlist');
 
         if ($this->exists($data)) {
-            $result['message'] = $this->language->text('Product already in your <a href="!href">wishlist</a>', array('!href' => $href));
+            $result['message'] = $this->language->text('Product already in your <a href="@url">wishlist</a>', array('@url' => $href));
             return $result;
         }
 
@@ -146,7 +146,7 @@ class Wishlist extends Model
                 'severity' => 'success',
                 'quantity' => count($exists),
                 'wishlist_id' => $wishlist_id,
-                'message' => $this->language->text('Product has been added to your <a href="!href">wishlist</a>', array('!href' => $href)));
+                'message' => $this->language->text('Product has been added to your <a href="@url">wishlist</a>', array('@url' => $href)));
         }
 
         $this->hook->attach('wishlist.add.product.after', $data, $result, $this);
@@ -181,7 +181,6 @@ class Wishlist extends Model
 
             $result = array(
                 'message' => '',
-                'redirect' => '',
                 'severity' => 'success',
                 'quantity' => count($existing),
                 'redirect' => empty($existing) ? 'wishlist' : ''

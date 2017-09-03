@@ -348,7 +348,7 @@
           <?php } ?>
         </select>
         <div class="help-block">
-          <?php echo $this->text('Select a <a href="@href">collection</a> to be used for banner slideshow on the front page', array('@href' => $this->url('admin/content/collection'))); ?>
+          <?php echo $this->text('Select a <a href="@url">collection</a> to be used for banner slideshow on the front page', array('@url' => $this->url('admin/content/collection'))); ?>
         </div>
       </div>
     </div>
@@ -368,7 +368,7 @@
           <?php } ?>
         </select>
         <div class="help-block">
-          <?php echo $this->text('Select a <a href="@href">collection</a> to be used for list of featured products on the front page', array('@href' => $this->url('admin/content/collection'))); ?>
+          <?php echo $this->text('Select a <a href="@url">collection</a> to be used for list of featured products on the front page', array('@url' => $this->url('admin/content/collection'))); ?>
         </div>
       </div>
     </div>
@@ -388,7 +388,7 @@
           <?php } ?>
         </select>
         <div class="help-block">
-          <?php echo $this->text('Select a <a href="@href">collection</a> to be used for list of articles/news on the front page', array('@href' => $this->url('admin/content/collection'))); ?>
+          <?php echo $this->text('Select a <a href="@url">collection</a> to be used for list of articles/news on the front page', array('@url' => $this->url('admin/content/collection'))); ?>
         </div>
       </div>
     </div>

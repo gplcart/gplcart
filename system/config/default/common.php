@@ -102,7 +102,7 @@ $config = array();
 # $config['user_registration_status']             = 1; // Default account status upon registration
 # $config['user_reset_password_lifespan']         = 24*60*60; // Max number of seconds before password reset link will expire
 # $config['user_superadmin']                      = 1; // Default database ID for superadmin
-# $config['order_complete_message']               = 'Thank you for your order! Order ID: <a href="!url">!order_id</a>, status: !status'; // Default message to show when order is completed by logged in user
+# $config['order_complete_message']               = 'Thank you for your order! Order ID: <a href="@url">!order_id</a>, status: !status'; // Default message to show when order is completed by logged in user
 # $config['order_complete_message_anonymous']     = 'Thank you for your order! Order ID: !order_id, status: !status';          // Default message to show when order is completed by anonymous
 # $config['cli_status']                           = 1; // Enable/disable CLI
 # $config['field_value_image_dirname']            = 'field_value'; // Default folder for uploaded field value images

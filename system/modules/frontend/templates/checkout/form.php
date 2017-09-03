@@ -13,7 +13,7 @@
   <div class="col-md-12">
     <?php echo $this->text('Shopping cart is empty. <a href="@url">Shop now</a>', array('@url' => $this->url('catalog'))); ?>
     <?php if ($this->access('order_add')) { ?>
-    <p><?php echo $this->text('If you want to add a new order for a customer, add all needed products to your cart then add an order for a <a href="@href">user</a>. Your cart items will be assigned to that user.', array('@href' => $this->url('admin/user/list'))); ?></p>
+    <p><?php echo $this->text('If you want to add a new order for a customer, add all needed products to your cart then add an order for a <a href="@url">user</a>. Your cart items will be assigned to that user.', array('@url' => $this->url('admin/user/list'))); ?></p>
     <?php } ?>
   </div>
 </div>

@@ -75,7 +75,7 @@
     <div class="col-md-4 col-md-offset-2">
       <div class="checkbox">
         <label>
-          <input type="checkbox" name="delete_image" value="1"> <?php echo $this->text('Delete existing <a target="_blank" href="@href">image</a>', array('@href' => $field_value['thumb'])); ?>
+          <input type="checkbox" name="delete_image" value="1"> <?php echo $this->text('Delete existing <a target="_blank" href="@url">image</a>', array('@url' => $field_value['thumb'])); ?>
         </label>
       </div>
     </div>

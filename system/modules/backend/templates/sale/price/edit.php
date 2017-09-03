@@ -41,7 +41,7 @@
       </select>
       <div class="help-block">
         <?php echo $this->error('trigger_id'); ?>
-        <div class="text-muted"><?php echo $this->text('Select an enabled <a href="!href">trigger</a> that applies this rule. Keep in mind that triggers are per store', array('!href' => $this->url('admin/settings/trigger'))); ?></div>
+        <div class="text-muted"><?php echo $this->text('Select an enabled <a href="@url">trigger</a> that applies this rule. Keep in mind that triggers are per store', array('@url' => $this->url('admin/settings/trigger'))); ?></div>
       </div>
     </div>
   </div>
