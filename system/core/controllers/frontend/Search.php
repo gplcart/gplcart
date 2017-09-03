@@ -70,7 +70,6 @@ class Search extends FrontendController
 
     /**
      * Sets results on the search page
-     * @return string
      */
     protected function setDataProductsListSearch()
     {
@@ -79,7 +78,6 @@ class Search extends FrontendController
 
     /**
      * Sets the navbar on the search page
-     * @return string
      */
     protected function setDataNavbarListSearch()
     {

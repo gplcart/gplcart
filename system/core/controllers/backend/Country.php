@@ -90,7 +90,8 @@ class Country extends BackendController
         }
 
         if ($action === 'weight' && $this->access('country_edit')) {
-            return $this->updateWeightCountry($selected);
+            $this->updateWeightCountry($selected);
+            return null;
         }
 
         $updated = $deleted = 0;

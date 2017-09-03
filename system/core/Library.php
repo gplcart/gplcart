@@ -256,18 +256,11 @@ class Library
      */
     public function getVersionJson($file)
     {
-        if (pathinfo($file, PATHINFO_EXTENSION) !== 'json') {
-            return null;
-        }
-
-        $data = $this->getJsonData($file);
-
-        if (empty($data)) {
-            return null;
-        }
-
-        if (isset($data['version'])) {
-            return preg_replace('/^[\D\\s]+/', '', $data['version']);
+        if (pathinfo($file, PATHINFO_EXTENSION) === 'json') {
+            $data = $this->getJsonData($file);
+            if (isset($data['version'])) {
+                return preg_replace('/^[\D\\s]+/', '', $data['version']);
+            }
         }
     }
 

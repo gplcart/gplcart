@@ -77,7 +77,6 @@ class UserRole extends BackendController
     /**
      * Returns a user role data
      * @param integer|null $role_id
-     * @return array
      */
     protected function setUserRole($role_id)
     {

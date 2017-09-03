@@ -38,10 +38,7 @@
     <tbody>
       <?php foreach ($languages as $code => $language) { ?>
       <tr data-code="<?php echo $code; ?>">
-        <td class="middle">
-          <?php echo $this->e($language['name']); ?>
-        </td>
-        </td>
+        <td class="middle"><?php echo $this->e($language['name']); ?></td>
         <td class="middle"><?php echo $this->e($language['native_name']); ?></td>
         <td class="middle"><?php echo $this->e($code); ?></td>
         <td class="middle">

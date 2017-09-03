@@ -316,7 +316,7 @@ class Job extends Model
      * Sets finish redirect and message
      * @param array $result
      * @param array $job
-     * @return null
+     * @return null|bool
      */
     protected function setFinishData(array &$result, array &$job)
     {
@@ -354,7 +354,7 @@ class Job extends Model
                 '%updated' => $job['updated']));
         }
 
-        $this->session->setMessage($message, 'danger');
+        return $this->session->setMessage($message, 'danger');
     }
 
     /**

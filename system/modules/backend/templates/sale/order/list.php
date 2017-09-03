@@ -110,7 +110,7 @@
             <select name="status" class="form-control">
               <option value=""><?php echo $this->text('Any'); ?></option>
               <?php foreach ($statuses as $status) { ?>
-              <option value="<?php echo $status; ?>"<?php echo isset($filter_status) && $filter_status == $status ? ' selected' : ''; ?>><?php echo $this->text($status, array(), $status); ?></option>
+              <option value="<?php echo $status; ?>"<?php echo isset($filter_status) && $filter_status == $status ? ' selected' : ''; ?>><?php echo $this->text($status); ?></option>
               <?php } ?>
             </select>
           </th>

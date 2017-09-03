@@ -261,6 +261,7 @@ class Controller extends BaseController
 
     /**
      * Deletes a cart item
+     * @return null|array
      */
     protected function deleteFromCart()
     {

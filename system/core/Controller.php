@@ -1421,7 +1421,6 @@ abstract class Controller
     /**
      * Sets page titles (H tag)
      * @param string $title
-     * @return string
      */
     public function setPageTitle($title)
     {
@@ -1804,7 +1803,6 @@ abstract class Controller
 
     /**
      * Sets an array of body css classes
-     * @return array
      */
     protected function setClasses()
     {
@@ -1895,7 +1893,6 @@ abstract class Controller
     /**
      * Sets a meta tag on the page
      * @param array $content
-     * @return array
      */
     public function setMeta($content)
     {
@@ -1911,7 +1908,6 @@ abstract class Controller
     /**
      * Sets a single page breadcrumb
      * @param array $breadcrumb
-     * @return array
      */
     public function setBreadcrumb(array $breadcrumb)
     {
@@ -2162,11 +2158,11 @@ abstract class Controller
 
     /**
      * Set pager limits
-     * @return string
+     * @return array
      */
     public function setPagerLimit($limit = null)
     {
-        $this->limit = $this->setPager($this->total, $this->query_filter, $limit);
+        return $this->limit = $this->setPager($this->total, $this->query_filter, $limit);
     }
 
     /**

@@ -189,20 +189,19 @@ class Product extends FrontendController
      */
     protected function setDataReviewsIndexProduct()
     {
-        if (!$this->config('review_enabled', 1) || empty($this->data_product['total_reviews'])) {
-            return '';
+        if ($this->config('review_enabled', 1) && !empty($this->data_product['total_reviews'])) {
+
+            $max = (int) $this->config('review_limit', 5);
+            $pager = $this->getPager($this->data_product['total_reviews'], null, $max);
+
+            $data = array(
+                'pager' => $pager,
+                'product' => $this->data_product,
+                'reviews' => $this->getReviewsProduct($this->getPagerLimit())
+            );
+
+            $this->setData('reviews', $this->render('review/list', $data, true));
         }
-
-        $max = (int) $this->config('review_limit', 5);
-        $pager = $this->getPager($this->data_product['total_reviews'], null, $max);
-
-        $data = array(
-            'pager' => $pager,
-            'product' => $this->data_product,
-            'reviews' => $this->getReviewsProduct($this->getPagerLimit())
-        );
-
-        $this->setData('reviews', $this->render('review/list', $data, true));
     }
 
     /**
@@ -212,22 +211,21 @@ class Product extends FrontendController
     {
         $products = $this->getRecentProduct();
 
-        if (empty($products)) {
-            return '';
+        if (!empty($products)) {
+
+            $total = count($products);
+            $max = $this->config('recent_pager_limit', 4);
+            $pager = $this->getPager($total, null, $max, 'rcp');
+            $limit = $this->getPagerLimit();
+
+            if (!empty($limit)) {
+                list($from, $to) = $limit;
+                $products = array_slice($products, $from, $to);
+            }
+
+            $data = array('products' => $products, 'pager' => $pager);
+            $this->setData('recent', $this->render('product/recent', $data));
         }
-
-        $total = count($products);
-        $max = $this->config('recent_pager_limit', 4);
-        $pager = $this->getPager($total, null, $max, 'rcp');
-        $limit = $this->getPagerLimit();
-
-        if (!empty($limit)) {
-            list($from, $to) = $limit;
-            $products = array_slice($products, $from, $to);
-        }
-
-        $data = array('products' => $products, 'pager' => $pager);
-        $this->setData('recent', $this->render('product/recent', $data));
     }
 
     /**
@@ -237,22 +235,21 @@ class Product extends FrontendController
     {
         $products = $this->getRelatedProduct();
 
-        if (empty($products)) {
-            return '';
+        if (!empty($products)) {
+
+            $total = count($products);
+            $max = $this->config('related_pager_limit', 4);
+            $pager = $this->getPager($total, null, $max, 'rlp');
+            $limit = $this->getPagerLimit();
+
+            if (!empty($limit)) {
+                list($from, $to) = $limit;
+                $products = array_slice($products, $from, $to);
+            }
+
+            $data = array('products' => $products, 'pager' => $pager);
+            $this->setData('related', $this->render('product/related', $data));
         }
-
-        $total = count($products);
-        $max = $this->config('related_pager_limit', 4);
-        $pager = $this->getPager($total, null, $max, 'rlp');
-        $limit = $this->getPagerLimit();
-
-        if (!empty($limit)) {
-            list($from, $to) = $limit;
-            $products = array_slice($products, $from, $to);
-        }
-
-        $data = array('products' => $products, 'pager' => $pager);
-        $this->setData('related', $this->render('product/related', $data));
     }
 
     /**

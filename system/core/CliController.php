@@ -123,7 +123,7 @@ class CliController
         if (strpos($method, 'composer') === 0 && defined('GC_VERSION')) {
             /* @var $hook \gplcart\core\Hook */
             $hook = Container::get('gplcart\\core\\Hook');
-            $hook->attach('cli.composer', $method, $args, $this);
+            $hook->attach('cli.composer', $method, $args);
         }
     }
 

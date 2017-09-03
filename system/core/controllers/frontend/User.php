@@ -70,18 +70,14 @@ class User extends FrontendController
 
     /**
      * Logs in a user
-     * @return null
      */
     protected function submitLoginUser()
     {
-        if (!$this->isPosted('login')) {
-            return null;
-        }
-
-        $this->controlSpam();
-
-        if ($this->validateLoginUser()) {
-            $this->loginUser();
+        if ($this->isPosted('login')) {
+            $this->controlSpam();
+            if ($this->validateLoginUser()) {
+                $this->loginUser();
+            }
         }
     }
 
@@ -165,18 +161,14 @@ class User extends FrontendController
 
     /**
      * Registers a user using an array of submitted values
-     * @return null
      */
     protected function submitRegisterUser()
     {
-        if (!$this->isPosted('register')) {
-            return null;
-        }
-
-        $this->controlSpam();
-
-        if ($this->validateRegisterUser()) {
-            $this->registerUser();
+        if ($this->isPosted('register')) {
+            $this->controlSpam();
+            if ($this->validateRegisterUser()) {
+                $this->registerUser();
+            }
         }
     }
 
@@ -296,18 +288,14 @@ class User extends FrontendController
 
     /**
      * Restores forgotten password
-     * @return null
      */
     protected function submitResetPasswordUser()
     {
-        if (!$this->isPosted('reset')) {
-            return null;
-        }
-
-        $this->controlSpam();
-
-        if ($this->validateResetPasswordUser()) {
-            $this->resetPasswordUser();
+        if ($this->isPosted('reset')) {
+            $this->controlSpam();
+            if ($this->validateResetPasswordUser()) {
+                $this->resetPasswordUser();
+            }
         }
     }
 

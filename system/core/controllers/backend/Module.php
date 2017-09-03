@@ -145,19 +145,17 @@ class Module extends BackendController
     {
         $this->controlAccess("module_$action");
 
-        $id = $this->data_module['id'];
-
         // Don't call methods like $this->module->{$action}
         // to make them visible in IDE
         switch ($action) {
             case 'enable':
-                return $this->module->enable($id);
+                return $this->module->enable($this->data_module['id']);
             case 'disable':
-                return $this->module->disable($id);
+                return $this->module->disable($this->data_module['id']);
             case 'install':
-                return $this->module->install($id);
+                return $this->module->install($this->data_module['id']);
             case 'uninstall':
-                return $this->module->uninstall($id);
+                return $this->module->uninstall($this->data_module['id']);
         }
 
         $this->outputHttpStatus(403);

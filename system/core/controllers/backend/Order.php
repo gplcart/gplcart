@@ -343,7 +343,6 @@ class Order extends BackendController
     /**
      * Returns an order
      * @param integer $order_id
-     * @return array
      */
     protected function setOrder($order_id)
     {

@@ -111,7 +111,8 @@ class Category extends BackendController
         }
 
         if ($action === 'weight' && $this->access('category_edit')) {
-            return $this->updateWeightCategory($categories);
+            $this->updateWeightCategory($categories);
+            return null;
         }
 
         $updated = $deleted = 0;

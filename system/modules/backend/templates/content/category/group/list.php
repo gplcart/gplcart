@@ -73,7 +73,7 @@
           <td class="middle">
             <?php echo isset($_stores[$group['store_id']]) ? $this->e($_stores[$group['store_id']]['name']) : $this->text('Unknown'); ?>
           </td>
-          <td class="middle"><?php echo $this->text($group['type'], array(), $this->text('None')); ?>
+          <td class="middle"><?php echo $this->text($group['type']); ?>
           </td>
           <td class="middle">
             <ul class="list-inline">

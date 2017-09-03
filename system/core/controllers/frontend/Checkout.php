@@ -767,27 +767,25 @@ class Checkout extends FrontendController
 
     /**
      * Moves a cart item to the wishlist
-     * @return null
      */
     protected function moveCartWishlistCheckout()
     {
         $sku = $this->getSubmitted('cart.action.wishlist');
 
-        if (empty($sku)) {
-            return null;
-        }
+        if (!empty($sku)) {
 
-        $options = array(
-            'sku' => $sku,
-            'user_id' => $this->order_user_id,
-            'store_id' => $this->order_store_id
-        );
+            $options = array(
+                'sku' => $sku,
+                'user_id' => $this->order_user_id,
+                'store_id' => $this->order_store_id
+            );
 
-        $result = $this->cart->moveToWishlist($options);
+            $result = $this->cart->moveToWishlist($options);
 
-        if (isset($result['wishlist_id'])) {
-            $this->setSubmitted('cart.action.update', true);
-            $this->setMessage($result['message'], 'success');
+            if (isset($result['wishlist_id'])) {
+                $this->setSubmitted('cart.action.update', true);
+                $this->setMessage($result['message'], 'success');
+            }
         }
     }
 

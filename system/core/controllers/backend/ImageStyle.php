@@ -115,7 +115,6 @@ class ImageStyle extends BackendController
     /**
      * Sets an image style data
      * @param integer $style_id
-     * @return array
      */
     protected function setImageStyle($style_id)
     {

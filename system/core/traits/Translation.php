@@ -21,7 +21,6 @@ trait Translation
      * @param array $data
      * @param string $entity
      * @param string $language
-     * @return null
      */
     protected function attachTranslationTrait($db, &$data, $entity, $language)
     {

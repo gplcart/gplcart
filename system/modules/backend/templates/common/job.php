@@ -17,7 +17,7 @@
           <div class="title"><?php echo $this->e($job['title']); ?></div>
           <?php } ?>
           <div class="progress">
-            <div class="progress-bar active progress-bar-striped" style="width:0%">
+            <div class="progress-bar active progress-bar-striped" style="width:0">
             </div>
           </div>
           <div class="message">
