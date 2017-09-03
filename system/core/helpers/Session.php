@@ -39,7 +39,8 @@ class Session
 
     /**
      * Regenerates the current session
-     * @param boolean $delete_old_session
+     * @param bool $delete_old_session
+     * @throws AuthorizationException
      */
     public function regenerate($delete_old_session)
     {
@@ -52,22 +53,16 @@ class Session
      * Sets a message to be displayed to the user
      * @param string $message
      * @param string $type
-     * @return boolean
      */
     public function setMessage($message, $type = 'info')
     {
-        if ($message === '') {
-            return false;
+        if ($message !== '') {
+            $messages = (array)$this->get("messages.$type", array());
+            if (!in_array($message, $messages)) {
+                $messages[] = $message;
+                $this->set("messages.$type", $messages);
+            }
         }
-
-        $messages = (array) $this->get("messages.$type", array());
-
-        if (in_array($message, $messages)) {
-            return false;
-        }
-
-        $messages[] = $message;
-        return $this->set("messages.$type", $messages);
     }
 
     /**
@@ -99,8 +94,9 @@ class Session
 
     /**
      * Deletes a data from the session
-     * @param string|null|array $key
-     * @return boolean
+     * @param mixed $key
+     * @return bool
+     * @throws AuthorizationException
      */
     public function delete($key = null)
     {

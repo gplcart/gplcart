@@ -309,14 +309,14 @@ class Cart extends Model
             );
 
             $existing = $this->getQuantity($options);
-            $vars = array('!href' => $this->request->base() . 'checkout');
+            $vars = array('@url' => $this->request->base() . 'checkout');
 
             $result = array(
                 'redirect' => '',
                 'cart_id' => $cart_id,
                 'severity' => 'success',
                 'quantity' => $existing['total'],
-                'message' => $this->language->text('Product has been added to your cart. <a href="!href">Checkout</a>', $vars)
+                'message' => $this->language->text('Product has been added to your cart. <a href="@url">Checkout</a>', $vars)
             );
         }
 
@@ -481,15 +481,15 @@ class Cart extends Model
             return (array) $result;
         }
 
-        $skuinfo = $this->sku->get($data['sku'], $data['store_id']);
+        $sku_info = $this->sku->get($data['sku'], $data['store_id']);
 
-        if (empty($skuinfo['product_id'])) {
+        if (empty($sku_info['product_id'])) {
             return array('redirect' => null, 'severity' => '', 'message' => '');
         }
 
         $this->db->delete('cart', $data);
 
-        $data['product_id'] = $skuinfo['product_id'];
+        $data['product_id'] = $sku_info['product_id'];
 
         $conditions = $data;
         unset($conditions['sku']);
@@ -500,7 +500,7 @@ class Cart extends Model
         gplcart_static_clear();
 
         $url = $this->request->base() . 'wishlist';
-        $message = $this->language->text('Product has been moved to your <a href="!href">wishlist</a>', array('!href' => $url));
+        $message = $this->language->text('Product has been moved to your <a href="@url">wishlist</a>', array('@url' => $url));
 
         $result = array(
             'redirect' => '',

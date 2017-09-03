@@ -35,6 +35,7 @@ trait Product
      * @param array $fields
      * @param string $type
      * @param \gplcart\core\Controller $controller
+     * @return null
      */
     protected function prepareProductFieldsTrait(array &$product, array $fields,
             $type, $controller)
@@ -63,6 +64,7 @@ trait Product
         }
 
         $product['fields'][$type] = $fields[$type];
+        return null;
     }
 
 }

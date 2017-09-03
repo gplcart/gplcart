@@ -159,6 +159,7 @@ class Module extends BackendController
         }
 
         $this->outputHttpStatus(403);
+        return null;
     }
 
     /**
@@ -253,28 +254,22 @@ class Module extends BackendController
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('type', 'name', 'version', 'id');
 
-        if (!in_array($query['order'], $allowed_order) || !in_array($query['sort'], $allowed_sort)) {
-            return null;
+        if (in_array($query['order'], $allowed_order) && in_array($query['sort'], $allowed_sort)) {
+
+            uasort($modules, function ($a, $b) use ($query) {
+                if (empty($a[$query['sort']]) || empty($b[$query['sort']])) {
+                    return 0;
+                }
+                $diff = strcmp($a[$query['sort']], $b[$query['sort']]);
+                if ($diff === 0) {
+                    return 0;
+                }
+                if ($query['order'] === 'asc') {
+                    return $diff > 0;
+                }
+                return $diff < 0;
+            });
         }
-
-        uasort($modules, function($a, $b) use ($query) {
-
-            if (empty($a[$query['sort']]) || empty($b[$query['sort']])) {
-                return 0;
-            }
-
-            $diff = strcmp($a[$query['sort']], $b[$query['sort']]);
-
-            if ($diff === 0) {
-                return 0;
-            }
-
-            if ($query['order'] === 'asc') {
-                return $diff > 0;
-            }
-
-            return $diff < 0;
-        });
     }
 
     /**

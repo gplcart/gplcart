@@ -353,22 +353,21 @@ class Product extends FrontendController
     protected function buildCategoryBreadcrumbsProduct($category_id,
             array &$breadcrumbs)
     {
-        if (empty($this->data_categories[$category_id]['parents'])) {
-            return null;
+        if (!empty($this->data_categories[$category_id]['parents'])) {
+
+            $parent = reset($this->data_categories[$category_id]['parents']);
+            $category = $this->data_categories[$category_id];
+
+            $url = empty($category['alias']) ? "category/$category_id" : $category['alias'];
+
+            $breadcrumb = array(
+                'url' => $this->url($url),
+                'text' => $category['title']
+            );
+
+            array_unshift($breadcrumbs, $breadcrumb);
+            $this->buildCategoryBreadcrumbsProduct($parent, $breadcrumbs);
         }
-
-        $parent = reset($this->data_categories[$category_id]['parents']);
-        $category = $this->data_categories[$category_id];
-
-        $url = empty($category['alias']) ? "category/$category_id" : $category['alias'];
-
-        $breadcrumb = array(
-            'url' => $this->url($url),
-            'text' => $category['title']
-        );
-
-        array_unshift($breadcrumbs, $breadcrumb);
-        $this->buildCategoryBreadcrumbsProduct($parent, $breadcrumbs);
     }
 
     /**

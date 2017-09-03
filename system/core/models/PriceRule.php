@@ -94,7 +94,7 @@ class PriceRule extends Model
 
         if (isset($data['value'])) {
             $sql .= ' AND p.value = ?';
-            $where[] = (int) $data['value'];
+            $where[] = (int)$data['value'];
         }
 
         if (isset($data['value_type'])) {
@@ -104,7 +104,7 @@ class PriceRule extends Model
 
         if (isset($data['status'])) {
             $sql .= ' AND p.status = ?';
-            $where[] = (int) $data['status'];
+            $where[] = (int)$data['status'];
         }
 
         if (isset($data['currency'])) {
@@ -129,7 +129,7 @@ class PriceRule extends Model
         );
 
         if ((isset($data['sort']) && isset($sorts[$data['sort']]))//
-                && (isset($data['order']) && in_array($data['order'], $orders, true))) {
+            && (isset($data['order']) && in_array($data['order'], $orders, true))) {
             $sql .= " ORDER BY {$sorts[$data['sort']]} {$data['order']}";
         } else {
             $sql .= ' ORDER BY p.weight ASC';
@@ -140,7 +140,7 @@ class PriceRule extends Model
         }
 
         if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $where);
+            return (int)$this->db->fetchColumn($sql, $where);
         }
 
         $list = $this->db->fetchAll($sql, $where, array('index' => 'price_rule_id'));
@@ -181,14 +181,14 @@ class PriceRule extends Model
         $this->hook->attach('price.rule.add.before', $data, $result, $this);
 
         if (isset($result)) {
-            return (int) $result;
+            return (int)$result;
         }
 
         $data['created'] = $data['modified'] = GC_TIME;
         $result = $data['price_rule_id'] = $this->db->insert('price_rule', $data);
 
         $this->hook->attach('price.rule.add.after', $data, $result, $this);
-        return (int) $result;
+        return (int)$result;
     }
 
     /**
@@ -203,14 +203,14 @@ class PriceRule extends Model
         $this->hook->attach('price.rule.update.before', $price_rule_id, $data, $result, $this);
 
         if (isset($result)) {
-            return (bool) $result;
+            return (bool)$result;
         }
 
         $data['modified'] = GC_TIME;
-        $result = (bool) $this->db->update('price_rule', $data, array('price_rule_id' => $price_rule_id));
+        $result = (bool)$this->db->update('price_rule', $data, array('price_rule_id' => $price_rule_id));
 
         $this->hook->attach('price.rule.update.after', $price_rule_id, $data, $result, $this);
-        return (bool) $result;
+        return (bool)$result;
     }
 
     /**
@@ -221,7 +221,7 @@ class PriceRule extends Model
     public function setUsed($price_rule_id)
     {
         $sql = 'UPDATE price_rule SET used=used + 1 WHERE price_rule_id=?';
-        return (bool) $this->db->run($sql, array($price_rule_id))->rowCount();
+        return (bool)$this->db->run($sql, array($price_rule_id))->rowCount();
     }
 
     /**
@@ -233,10 +233,10 @@ class PriceRule extends Model
     public function codeMatches($price_rule_id, $code)
     {
         $sql = 'SELECT price_rule_id'
-                . ' FROM price_rule'
-                . ' WHERE code=? AND price_rule_id=? AND status=?';
+            . ' FROM price_rule'
+            . ' WHERE code=? AND price_rule_id=? AND status=?';
 
-        return (bool) $this->db->fetchColumn($sql, array($code, $price_rule_id, 1));
+        return (bool)$this->db->fetchColumn($sql, array($code, $price_rule_id, 1));
     }
 
     /**
@@ -250,13 +250,13 @@ class PriceRule extends Model
         $this->hook->attach('price.rule.delete.before', $price_rule_id, $result, $this);
 
         if (isset($result)) {
-            return (bool) $result;
+            return (bool)$result;
         }
 
-        $result = (bool) $this->db->delete('price_rule', array('price_rule_id' => $price_rule_id));
+        $result = (bool)$this->db->delete('price_rule', array('price_rule_id' => $price_rule_id));
 
         $this->hook->attach('price.rule.delete.after', $price_rule_id, $result, $this);
-        return (bool) $result;
+        return (bool)$result;
     }
 
     /**
@@ -300,7 +300,7 @@ class PriceRule extends Model
         }
 
         if ($rule['value_type'] === 'percent') {
-            $value = $amount * ((float) $rule['value'] / 100);
+            $value = $amount * ((float)$rule['value'] / 100);
             $components[$rule_id] = array('rule' => $rule, 'price' => $value);
             $amount += $value;
             return $amount;
@@ -320,6 +320,7 @@ class PriceRule extends Model
 
     /**
      * Returns an array of suitable rules for a given context
+     * @param array $options
      * @param array $data
      * @return array
      */
@@ -334,7 +335,7 @@ class PriceRule extends Model
         $coupons = 0;
         $results = array();
 
-        foreach ((array) $this->getList($options) as $id => $rule) {
+        foreach ((array)$this->getList($options) as $id => $rule) {
 
             if ($rule['code'] !== '') {
                 $coupons++;

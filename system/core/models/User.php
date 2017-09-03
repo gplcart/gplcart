@@ -214,19 +214,19 @@ class User extends Model
     }
 
     /**
-     * Whether the user is superadmin
+     * Whether the user is super admin
      * @param integer|null $user_id
      * @return boolean
      */
     public function isSuperadmin($user_id = null)
     {
-        $superadmin_id = $this->config->get('user_superadmin', 1);
+        $super_admin_user_id = $this->config->get('user_superadmin', 1);
 
         if (isset($user_id)) {
-            return $superadmin_id == $user_id;
+            return ($super_admin_user_id == $user_id);
         }
 
-        return $superadmin_id == $this->getId();
+        return ($super_admin_user_id == $this->getId());
     }
 
     /**
@@ -492,6 +492,7 @@ class User extends Model
 
     /**
      * Returns the current user from the session
+     * @param array|string $key
      * @return mixed
      */
     public function getSession($key = null)

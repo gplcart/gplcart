@@ -394,6 +394,7 @@ class Checkout extends FrontendController
 
     /**
      * Prepare payment and shipping methods
+     * @param array $methods
      * @return array
      */
     protected function prepareMethodsCheckout(array $methods)
@@ -927,18 +928,17 @@ class Checkout extends FrontendController
      */
     protected function finishAddOrderCheckout(array $result)
     {
-        if (empty($result['order']['order_id'])) {
-            return null;
+        if (!empty($result['order']['order_id'])) {
+
+            $vars = array(
+                '@num' => $result['order']['order_id'],
+                '@name' => $result['order']['user_name'],
+                '@status' => $this->order->getStatusName($result['order']['status'])
+            );
+
+            $message = $this->text('Order #@num has been created for user @name. Order status: @status', $vars);
+            $this->redirect("admin/sale/order/{$result['order']['order_id']}", $message, 'success');
         }
-
-        $vars = array(
-            '@num' => $result['order']['order_id'],
-            '@name' => $result['order']['user_name'],
-            '@status' => $this->order->getStatusName($result['order']['status'])
-        );
-
-        $message = $this->text('Order #@num has been created for user @name. Order status: @status', $vars);
-        $this->redirect("admin/sale/order/{$result['order']['order_id']}", $message, 'success');
     }
 
     /**
@@ -947,26 +947,25 @@ class Checkout extends FrontendController
      */
     protected function finishCloneOrderCheckout(array $result)
     {
-        if (empty($result['order']['order_id'])) {
-            return null;
+        if (!empty($result['order']['order_id'])) {
+
+            $log = array(
+                'user_id' => $this->uid,
+                'order_id' => $this->data_order['order_id'],
+                'text' => $this->text('Cloned into order #@num', array('@num' => $result['order']['order_id']))
+            );
+
+            $this->order->addLog($log);
+
+            $vars = array(
+                '@num' => $this->data_order['order_id'],
+                '@url' => $this->url("admin/sale/order/{$this->order_id}"),
+                '@status' => $this->order->getStatusName($result['order']['status'])
+            );
+
+            $message = $this->text('Order has been cloned from order <a href="@url">@num</a>. Order status: @status', $vars);
+            $this->redirect("admin/sale/order/{$result['order']['order_id']}", $message, 'success');
         }
-
-        $log = array(
-            'user_id' => $this->uid,
-            'order_id' => $this->data_order['order_id'],
-            'text' => $this->text('Cloned into order #@num', array('@num' => $result['order']['order_id']))
-        );
-
-        $this->order->addLog($log);
-
-        $vars = array(
-            '@num' => $this->data_order['order_id'],
-            '@url' => $this->url("admin/sale/order/{$this->order_id}"),
-            '@status' => $this->order->getStatusName($result['order']['status'])
-        );
-
-        $message = $this->text('Order has been cloned from order <a href="@url">@num</a>. Order status: @status', $vars);
-        $this->redirect("admin/sale/order/{$result['order']['order_id']}", $message, 'success');
     }
 
     /**

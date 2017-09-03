@@ -24,20 +24,19 @@ trait OrderComponent
     protected function prepareOrderComponentCartTrait(&$order, $controller,
             $price_model)
     {
-        if (empty($order['data']['components']['cart']['items'])) {
-            return null;
-        }
+        if (!empty($order['data']['components']['cart']['items'])) {
 
-        foreach ($order['data']['components']['cart']['items'] as $sku => $component) {
-            if ($order['cart'][$sku]['product_store_id'] != $order['store_id']) {
-                $order['cart'][$sku]['product_status'] = 0;
+            foreach ($order['data']['components']['cart']['items'] as $sku => $component) {
+                if ($order['cart'][$sku]['product_store_id'] != $order['store_id']) {
+                    $order['cart'][$sku]['product_status'] = 0;
+                }
+
+                $order['cart'][$sku]['price_formatted'] = $price_model->format($component['price'], $order['currency']);
             }
 
-            $order['cart'][$sku]['price_formatted'] = $price_model->format($component['price'], $order['currency']);
+            $html = $controller->render('backend|sale/order/panes/components/cart', array('order' => $order));
+            $order['data']['components']['cart']['rendered'] = $html;
         }
-
-        $html = $controller->render('backend|sale/order/panes/components/cart', array('order' => $order));
-        $order['data']['components']['cart']['rendered'] = $html;
     }
 
     /**
@@ -51,24 +50,23 @@ trait OrderComponent
     protected function prepareOrderComponentShippingMethodTrait(&$order,
             $controller, $price_model, $shipping_model, $order_model)
     {
-        if (!isset($order['data']['components']['shipping']['price'])) {
-            return null;
+        if (isset($order['data']['components']['shipping']['price'])) {
+
+            $method = $shipping_model->get($order['shipping']);
+            $value = $order['data']['components']['shipping']['price'];
+
+            if (abs($value) == 0) {
+                $value = 0;
+            }
+
+            $component_types = $order_model->getComponentTypes();
+
+            $method['price_formatted'] = $price_model->format($value, $order['currency']);
+            $data = array('method' => $method, 'title' => $component_types['shipping']);
+
+            $html = $controller->render('backend|sale/order/panes/components/method', $data);
+            $order['data']['components']['shipping']['rendered'] = $html;
         }
-
-        $method = $shipping_model->get($order['shipping']);
-        $value = $order['data']['components']['shipping']['price'];
-
-        if (abs($value) == 0) {
-            $value = 0;
-        }
-
-        $component_types = $order_model->getComponentTypes();
-
-        $method['price_formatted'] = $price_model->format($value, $order['currency']);
-        $data = array('method' => $method, 'title' => $component_types['shipping']);
-
-        $html = $controller->render('backend|sale/order/panes/components/method', $data);
-        $order['data']['components']['shipping']['rendered'] = $html;
     }
 
     /**
@@ -82,24 +80,23 @@ trait OrderComponent
     protected function prepareOrderComponentPaymentMethodTrait(&$order,
             $controller, $price_model, $payment_model, $order_model)
     {
-        if (!isset($order['data']['components']['payment']['price'])) {
-            return null;
+        if (isset($order['data']['components']['payment']['price'])) {
+
+            $method = $payment_model->get($order['payment']);
+            $value = $order['data']['components']['payment']['price'];
+
+            if (abs($value) == 0) {
+                $value = 0;
+            }
+
+            $component_types = $order_model->getComponentTypes();
+
+            $method['price_formatted'] = $price_model->format($value, $order['currency']);
+            $data = array('method' => $method, 'title' => $component_types['payment']);
+
+            $html = $controller->render('backend|sale/order/panes/components/method', $data);
+            $order['data']['components']['payment']['rendered'] = $html;
         }
-
-        $method = $payment_model->get($order['payment']);
-        $value = $order['data']['components']['payment']['price'];
-
-        if (abs($value) == 0) {
-            $value = 0;
-        }
-
-        $component_types = $order_model->getComponentTypes();
-
-        $method['price_formatted'] = $price_model->format($value, $order['currency']);
-        $data = array('method' => $method, 'title' => $component_types['payment']);
-
-        $html = $controller->render('backend|sale/order/panes/components/method', $data);
-        $order['data']['components']['payment']['rendered'] = $html;
     }
 
     /**

@@ -107,7 +107,7 @@ class Compare extends Model
                 'redirect' => '',
                 'severity' => 'success',
                 'quantity' => $quantity,
-                'message' => $this->language->text('Product has been added to <a href="!href">comparison</a>', array('!href' => $href))
+                'message' => $this->language->text('Product has been added to <a href="@url">comparison</a>', array('@url' => $href))
             );
         }
 

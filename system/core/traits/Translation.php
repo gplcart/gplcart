@@ -24,19 +24,18 @@ trait Translation
      */
     protected function attachTranslationTrait($db, &$data, $entity, $language)
     {
-        if (empty($data)) {
-            return null;
-        }
+        if (!empty($data)) {
 
-        $data['language'] = 'und';
-        $translations = $this->getTranslationTrait($db, $data["{$entity}_id"], $entity);
+            $data['language'] = 'und';
+            $translations = $this->getTranslationTrait($db, $data["{$entity}_id"], $entity);
 
-        foreach ($translations as $translation) {
-            $data['translation'][$translation['language']] = $translation;
-        }
+            foreach ($translations as $translation) {
+                $data['translation'][$translation['language']] = $translation;
+            }
 
-        if (isset($language) && isset($data['translation'][$language])) {
-            $data = $data['translation'][$language] + $data;
+            if (isset($language) && isset($data['translation'][$language])) {
+                $data = $data['translation'][$language] + $data;
+            }
         }
     }
 

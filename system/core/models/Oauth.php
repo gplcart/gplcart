@@ -46,7 +46,7 @@ class Oauth extends Model
      * @param UrlHelper $url
      */
     public function __construct(CurlHelper $curl, SessionHelper $session,
-            UrlHelper $url)
+                                UrlHelper $url)
     {
         parent::__construct();
 
@@ -241,8 +241,8 @@ class Oauth extends Model
         $token = $this->getToken($provider_id);
 
         return isset($token['access_token'])//
-                && isset($token['expires'])//
-                && GC_TIME < $token['expires'];
+            && isset($token['expires'])//
+            && GC_TIME < $token['expires'];
     }
 
     /**
@@ -278,7 +278,7 @@ class Oauth extends Model
         $this->hook->attach('oauth.request.token.before', $provider, $query, $result, $this);
 
         if (isset($result)) {
-            return $result;
+            return (array) $result;
         }
 
         try {
@@ -407,10 +407,11 @@ class Oauth extends Model
      * Returns an array of requested token for "server-to-server" authorization
      * @param array $provider
      * @param array $jwt
-     * @return boolean
+     * @return mixed
+     * @throws OauthAuthorizationException
      * @link https://developers.google.com/accounts/docs/OAuth2ServiceAccount
      */
-    public function exchangeTokenServer($provider, array $jwt)
+    public function exchangeTokenServer($provider, $jwt)
     {
         if ($this->isValidToken($provider['id'])) {
             return $this->getToken($provider['id']);

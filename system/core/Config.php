@@ -118,7 +118,7 @@ class Config
         }
 
         if (!isset($key)) {
-            return (array) $modules[$module_id]['settings'];
+            return (array)$modules[$module_id]['settings'];
         }
 
         $value = gplcart_array_get($modules[$module_id]['settings'], $key);
@@ -163,7 +163,7 @@ class Config
      */
     public function reset($key)
     {
-        return (bool) $this->db->delete('settings', array('id' => $key));
+        return (bool)$this->db->delete('settings', array('id' => $key));
     }
 
     /**
@@ -191,7 +191,7 @@ class Config
      */
     public function tokenValid($token)
     {
-        return gplcart_string_equals($this->token(), (string) $token);
+        return gplcart_string_equals($this->token(), (string)$token);
     }
 
     /**
@@ -297,16 +297,15 @@ class Config
 
     /**
      * Returns an array of module data from module.json
-     * @staticvar array $infos
      * @param string $module_id
      * @return array
      */
     public function getModuleInfo($module_id)
     {
-        static $infos = array();
+        static $information = array();
 
-        if (isset($infos[$module_id])) {
-            return $infos[$module_id];
+        if (isset($information[$module_id])) {
+            return $information[$module_id];
         }
 
         $file = GC_MODULE_DIR . "/$module_id/module.json";
@@ -319,12 +318,12 @@ class Config
         if (is_array($decoded)) {
             // @todo - remove id key everywhere
             $decoded['id'] = $decoded['module_id'] = $module_id;
-            $infos[$module_id] = $decoded;
+            $information[$module_id] = $decoded;
         } else {
-            $infos[$module_id] = array();
+            $information[$module_id] = array();
         }
 
-        return $infos[$module_id];
+        return $information[$module_id];
     }
 
     /**
@@ -361,10 +360,10 @@ class Config
      */
     public function getModuleClassNamespace($module_id)
     {
-        $classname = $this->getModuleClassName($module_id);
-        $basenamespace = $this->getModuleBaseNamespace($module_id);
+        $class_name = $this->getModuleClassName($module_id);
+        $base_namespace = $this->getModuleBaseNamespace($module_id);
 
-        return "$basenamespace\\$classname";
+        return "$base_namespace\\$class_name";
     }
 
     /**
@@ -413,7 +412,8 @@ class Config
 
     /**
      * Initializes system config
-     * @return boolean
+     * @return bool
+     * @throws DatabaseException
      */
     protected function init()
     {

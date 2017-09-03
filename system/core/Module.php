@@ -47,7 +47,7 @@ abstract class Module
 
     /**
      * Returns a class instance
-     * @param $string Either module ID or namespaced class name
+     * @param $string
      * @return object
      */
     protected function getInstance($string)
@@ -71,8 +71,8 @@ abstract class Module
             return $this->getInstance("gplcart\\core\\models\\$model");
         }
 
-        $basenamespace = $this->config->getModuleBaseNamespace($module_id);
-        return $this->getInstance("$basenamespace\\models\\$model");
+        $base_namespace = $this->config->getModuleBaseNamespace($module_id);
+        return $this->getInstance("$base_namespace\\models\\$model");
     }
 
     /**
@@ -87,8 +87,8 @@ abstract class Module
             return $this->getInstance("gplcart\\core\\helpers\\$helper");
         }
 
-        $basenamespace = $this->config->getModuleBaseNamespace($module_id);
-        return $this->getInstance("$basenamespace\\helpers\\$helper");
+        $base_namespace = $this->config->getModuleBaseNamespace($module_id);
+        return $this->getInstance("$base_namespace\\helpers\\$helper");
     }
 
     /**

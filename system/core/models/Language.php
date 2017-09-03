@@ -557,14 +557,12 @@ class Language extends Model
         $merge_translations = $this->loadTranslation($merge_file);
         $common_translations = $this->loadTranslation($common_file);
 
-        if (empty($merge_translations)) {
-            return null;
-        }
-
-        foreach ($merge_translations as $source => $translation) {
-            if (!isset($common_translations[$source])) {
-                array_unshift($translation, $source);
-                gplcart_file_csv($common_file, $translation);
+        if (!empty($merge_translations)) {
+            foreach ($merge_translations as $source => $translation) {
+                if (!isset($common_translations[$source])) {
+                    array_unshift($translation, $source);
+                    gplcart_file_csv($common_file, $translation);
+                }
             }
         }
     }

@@ -41,17 +41,17 @@ class Sku extends Model
      */
     public function getByProduct($product_id)
     {
-        $skus = (array) $this->getList(array('product_id' => $product_id));
+        $codes = (array) $this->getList(array('product_id' => $product_id));
 
         $results = array('base' => '');
 
-        foreach ($skus as $sku) {
-            if (empty($sku['combination_id'])) {
-                $results['base'] = $sku['sku'];
+        foreach ($codes as $code) {
+            if (empty($code['combination_id'])) {
+                $results['base'] = $code['sku'];
                 continue;
             }
 
-            $results['combinations'][$sku['combination_id']] = $sku['sku'];
+            $results['combinations'][$code['combination_id']] = $code['sku'];
         }
 
         return $results;

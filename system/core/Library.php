@@ -77,6 +77,7 @@ class Library
     /**
      * Whether the given library exists
      * @param string $library_id
+     * @return bool
      */
     public function exists($library_id)
     {
@@ -256,12 +257,17 @@ class Library
      */
     public function getVersionJson($file)
     {
-        if (pathinfo($file, PATHINFO_EXTENSION) === 'json') {
-            $data = $this->getJsonData($file);
-            if (isset($data['version'])) {
-                return preg_replace('/^[\D\\s]+/', '', $data['version']);
-            }
+        if (pathinfo($file, PATHINFO_EXTENSION) !== 'json') {
+            return null;
         }
+
+        $data = $this->getJsonData($file);
+
+        if (!isset($data['version'])) {
+            return null;
+        }
+
+        return preg_replace('/^[\D\\s]+/', '', $data['version']);
     }
 
     /**
@@ -344,7 +350,7 @@ class Library
     }
 
     /**
-     * Returns an array of loaded libraies
+     * Returns an array of loaded libraries
      * @return array
      */
     public function getLoaded()

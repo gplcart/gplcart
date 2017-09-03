@@ -75,6 +75,7 @@ class Base extends Handler
     /**
      * Sets a value to an array of submitted values
      * @param string $key
+     * @param mixed $value
      */
     public function setSubmitted($key, $value)
     {
@@ -152,7 +153,7 @@ class Base extends Handler
             $this->options['parents'] = explode('.', $this->options['parents']);
         }
 
-        return array_merge((array) $this->options['parents'], (array) $key);
+        return array_merge((array)$this->options['parents'], (array)$key);
     }
 
     /**
@@ -260,6 +261,8 @@ class Base extends Handler
      * Set "Length must be between min and max" error
      * @param string $field
      * @param string $label
+     * @param int $min
+     * @param int $max
      * @return array
      */
     protected function setErrorLengthRange($field, $label, $min = 1, $max = 255)

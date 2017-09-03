@@ -34,6 +34,7 @@ trait Dependency
      * @param array $items
      * @param array $item
      * @param bool $enabled
+     * @return null
      */
     protected function validateDependencyTrait($items, &$item, $enabled = false)
     {
@@ -73,6 +74,8 @@ trait Dependency
                 $item['errors'][] = array('Requires incompatible version of @name', array('@name' => $id));
             }
         }
+
+        return null;
     }
 
     /**

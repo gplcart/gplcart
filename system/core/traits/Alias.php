@@ -21,6 +21,7 @@ trait Alias
      * @param array $data
      * @param string $entity
      * @param boolean $update
+     * @return mixed
      */
     protected function setAliasTrait($model, $data, $entity, $update = true)
     {
@@ -36,7 +37,7 @@ trait Alias
             $data['alias'] = $model->generateEntity($data, $entity);
         }
 
-        $model->add("{$entity}_id", $data["{$entity}_id"], $data['alias']);
+        return $model->add("{$entity}_id", $data["{$entity}_id"], $data['alias']);
     }
 
 }

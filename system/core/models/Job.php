@@ -281,11 +281,10 @@ class Job extends Model
     /**
      * Sets a job to the session
      * @param array $job
-     * @return boolean
      */
     protected function setSession(array $job)
     {
-        return $this->session->set(self::SESSION_KEY . ".{$job['id']}", $job);
+        $this->session->set(self::SESSION_KEY . ".{$job['id']}", $job);
     }
 
     /**
@@ -316,16 +315,17 @@ class Job extends Model
      * Sets finish redirect and message
      * @param array $result
      * @param array $job
-     * @return null|bool
      */
     protected function setFinishData(array &$result, array &$job)
     {
         $result['message'] = $job['message']['finish'];
 
         if (empty($job['errors'])) {
+
             if (!empty($job['redirect']['finish'])) {
                 $result['redirect'] = $job['redirect']['finish'];
             }
+
             if (empty($job['redirect_message']['finish'])) {
                 $message = $this->language->text('Successfully processed %total items', array('%total' => $job['total']));
             } else {
@@ -334,27 +334,28 @@ class Job extends Model
                     '%inserted' => $job['inserted'],
                     '%updated' => $job['updated']));
             }
+
             $this->session->setMessage($message, 'success');
-            return null;
-        }
-
-        if (!empty($job['redirect']['errors'])) {
-            $result['redirect'] = $job['redirect']['errors'];
-        }
-
-        if (empty($job['redirect_message']['errors'])) {
-            $message = $this->language->text('Processed %total items, errors: %errors', array(
-                '%total' => $job['total'],
-                '%errors' => $job['errors']));
         } else {
-            $message = $this->language->text($job['redirect_message']['errors'], array(
-                '%total' => $job['total'],
-                '%errors' => $job['errors'],
-                '%inserted' => $job['inserted'],
-                '%updated' => $job['updated']));
-        }
 
-        return $this->session->setMessage($message, 'danger');
+            if (!empty($job['redirect']['errors'])) {
+                $result['redirect'] = $job['redirect']['errors'];
+            }
+
+            if (empty($job['redirect_message']['errors'])) {
+                $message = $this->language->text('Processed %total items, errors: %errors', array(
+                    '%total' => $job['total'],
+                    '%errors' => $job['errors']));
+            } else {
+                $message = $this->language->text($job['redirect_message']['errors'], array(
+                    '%total' => $job['total'],
+                    '%errors' => $job['errors'],
+                    '%inserted' => $job['inserted'],
+                    '%updated' => $job['updated']));
+            }
+
+            $this->session->setMessage($message, 'danger');
+        }
     }
 
     /**

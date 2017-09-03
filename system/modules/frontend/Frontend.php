@@ -37,26 +37,25 @@ class Frontend extends Module
      */
     public function hookTheme($controller)
     {
-        if (!$controller->isCurrentTheme('frontend')) {
-            return null;
+        if ($controller->isCurrentTheme('frontend')) {
+
+            $controller->addAssetLibrary('bootstrap');
+            $controller->addAssetLibrary('html5shiv', array('aggregate' => false, 'condition' => 'if lt IE 9'));
+            $controller->addAssetLibrary('respond', array('aggregate' => false, 'condition' => 'if lt IE 9'));
+            $controller->addAssetLibrary('font_awesome');
+
+            if ($controller->isInstall()) {
+                $controller->setCss($this->getAsset('frontend', 'install.css'));
+            } else {
+                $controller->setCss($this->getAsset('frontend', 'style.css'));
+                $controller->addAssetLibrary('jquery_match_height');
+                $controller->setJs($this->getAsset('frontend', 'common.js'));
+            }
+
+            $controller->setMeta(array('charset' => 'utf-8'));
+            $controller->setMeta(array('http-equiv' => 'X-UA-Compatible', 'content' => 'IE=edge'));
+            $controller->setMeta(array('name' => 'viewport', 'content' => 'width=device-width, initial-scale=1'));
         }
-
-        $controller->addAssetLibrary('bootstrap');
-        $controller->addAssetLibrary('html5shiv', array('aggregate' => false, 'condition' => 'if lt IE 9'));
-        $controller->addAssetLibrary('respond', array('aggregate' => false, 'condition' => 'if lt IE 9'));
-        $controller->addAssetLibrary('font_awesome');
-
-        if ($controller->isInstall()) {
-            $controller->setCss($this->getAsset('frontend', 'install.css'));
-        } else {
-            $controller->setCss($this->getAsset('frontend', 'style.css'));
-            $controller->addAssetLibrary('jquery_match_height');
-            $controller->setJs($this->getAsset('frontend', 'common.js'));
-        }
-
-        $controller->setMeta(array('charset' => 'utf-8'));
-        $controller->setMeta(array('http-equiv' => 'X-UA-Compatible', 'content' => 'IE=edge'));
-        $controller->setMeta(array('name' => 'viewport', 'content' => 'width=device-width, initial-scale=1'));
     }
 
 }

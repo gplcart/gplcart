@@ -65,7 +65,7 @@ class Alias extends Model
      * Returns an alias
      * @param string $id_key
      * @param null|integer $id_value
-     * @return string
+     * @return string|array
      */
     public function get($id_key, $id_value = null)
     {
@@ -269,7 +269,7 @@ class Alias extends Model
             }
         }
 
-        return $this->getByPath($path);
+        return (bool) $this->getByPath($path);
     }
 
     /**
