@@ -292,7 +292,6 @@ td.required:before {
 .address-book.filled:not(.active) .panel-body td input,
 .address-book.filled:not(.active) .panel-body td select {
     border: transparent;
-    appearance:none;
     -moz-appearance:none;
     -webkit-appearance:none;
 }
@@ -330,7 +329,7 @@ td.required:before {
 
     .navbar-nav {
         float: none!important;
-        margin: 7.5px -15px;
+        margin: 8px -15px;
     }
 
     .navbar-nav>li {
