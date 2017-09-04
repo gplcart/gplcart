@@ -139,41 +139,41 @@ class Route
     {
         $languages = $this->config->get('languages', array());
 
-        if (empty($languages)) {
-            return null;
-        }
+        if (!empty($languages)) {
 
-        $segments = $this->url->segments(true);
-        $default = $this->config->get('language', '');
+            $segments = $this->url->segments(true);
+            $default = $this->config->get('language', '');
 
-        $found = !empty($languages[$segments[0]]['status']);
-        $this->langcode = $found ? $segments[0] : $default;
-        $is_default = ($this->langcode === $default);
+            $found = !empty($languages[$segments[0]]['status']);
+            $this->langcode = $found ? $segments[0] : $default;
+            $is_default = ($this->langcode === $default);
 
-        $suffix = $is_default ? '' : $this->langcode;
-        $this->request->setLangcode($suffix);
+            $suffix = $is_default ? '' : $this->langcode;
+            $this->request->setLangcode($suffix);
 
-        if ($found && $is_default && $this->config->get('redirect_default_langcode', 1)) {
-            unset($segments[0]);
-            $path = $this->request->base(true) . implode('/', $segments);
-            $this->url->redirect($path, $this->request->get(), true);
+            if ($found && $is_default && $this->config->get('redirect_default_langcode', 1)) {
+                unset($segments[0]);
+                $path = $this->request->base(true) . implode('/', $segments);
+                $this->url->redirect($path, $this->request->get(), true);
+            }
         }
     }
 
     /**
      * Finds an alias by the path
+     * @return bool
      */
     protected function seekAlias()
     {
-        if (empty($this->db)) {
-            return null;
+        if (!$this->db instanceof Database) {
+            return false;
         }
 
         $info = $this->getAliasByPath($this->path);
 
         if (!isset($info['id_key'])) {
             $this->seekEntityAlias();
-            return null;
+            return false;
         }
 
         $entity = substr($info['id_key'], 0, -3);
@@ -187,9 +187,11 @@ class Route
             $segments = explode('/', $pattern);
             if ($segments[$route['alias'][0]] === $entity) {
                 $this->callController($pattern, $route, array($info['id_value']));
-                return null;
+                return true;
             }
         }
+
+        return false;
     }
 
     /**
@@ -282,6 +284,7 @@ class Route
 
     /**
      * Find an appropriate controller for the current URL
+     * @return bool
      */
     protected function seekRoute()
     {
@@ -290,9 +293,11 @@ class Route
             $arguments = gplcart_parse_path($this->path, $pattern);
             if (is_array($arguments)) {
                 $this->callController($pattern, $route, $arguments);
-                break;
+                return true;
             }
         }
+
+        return false;
     }
 
     /**
