@@ -80,16 +80,14 @@ class Graph
      */
     public function sort(array $ids, array $list)
     {
-        $data = array_flip(array_values($ids));
-
-        while (list($key) = each($data)) {
+        $data = array();
+        foreach ($ids as $key) {
 
             if (!isset($list[$key])) {
                 return array();
             }
 
             $data[$key] = $list[$key]['sort'];
-
             foreach (array_keys($list[$key]['requires']) as $dependency) {
                 if (!isset($data[$dependency])) {
                     $data[$dependency] = 0;
@@ -122,7 +120,7 @@ class Graph
             if (!isset($component_weights[$component])) {
                 $component_weights[$component] = 0;
             }
-            $this->graph[$vertex]['weight'] = $component_weights[$component] --;
+            $this->graph[$vertex]['weight'] = $component_weights[$component]--;
         }
     }
 
