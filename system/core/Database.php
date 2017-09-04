@@ -481,7 +481,7 @@ class Database
      */
     public function tableExists($table)
     {
-        $result = $this->query("SHOW TABLES LIKE " . $this->quote($table));
+        $result = $this->query("SHOW TABLES LIKE " . $this->pdo->quote($table));
         return $result->rowCount() > 0;
     }
 
