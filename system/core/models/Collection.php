@@ -11,6 +11,7 @@ namespace gplcart\core\models;
 
 use gplcart\core\Model;
 use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\traits\Translation as TranslationTrait;
 
 /**
  * Manages basic behaviors and data related to collections
@@ -18,7 +19,7 @@ use gplcart\core\models\Language as LanguageModel;
 class Collection extends Model
 {
 
-    use \gplcart\core\traits\Translation;
+    use TranslationTrait;
 
     /**
      * Language model instance
@@ -55,12 +56,12 @@ class Collection extends Model
 
         if (isset($data['status'])) {
             $sql .= ' AND status = ?';
-            $where[] = (int) $data['status'];
+            $where[] = (int)$data['status'];
         }
 
         if (isset($data['store_id'])) {
             $sql .= ' AND store_id = ?';
-            $where[] = (int) $data['store_id'];
+            $where[] = (int)$data['store_id'];
         }
 
         if (isset($data['type'])) {
@@ -77,7 +78,7 @@ class Collection extends Model
         $allowed_sort = array('title', 'status', 'type', 'store_id', 'collection_id');
 
         if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort))//
-                && (isset($data['order']) && in_array($data['order'], $allowed_order))
+            && (isset($data['order']) && in_array($data['order'], $allowed_order))
         ) {
             $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         }
@@ -87,7 +88,7 @@ class Collection extends Model
         }
 
         if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $where);
+            return (int)$this->db->fetchColumn($sql, $where);
         }
 
         $options = array('index' => 'collection_id');
@@ -108,14 +109,14 @@ class Collection extends Model
         $this->hook->attach('collection.add.before', $data, $result, $this);
 
         if (isset($result)) {
-            return (int) $result;
+            return (int)$result;
         }
 
         $result = $data['collection_id'] = $this->db->insert('collection', $data);
         $this->setTranslationTrait($this->db, $data, 'collection', false);
 
         $this->hook->attach('collection.add.after', $data, $result, $this);
-        return (int) $result;
+        return (int)$result;
     }
 
     /**
@@ -153,7 +154,7 @@ class Collection extends Model
         $this->hook->attach('collection.delete.before', $collection_id, $result, $this);
 
         if (isset($result)) {
-            return (bool) $result;
+            return (bool)$result;
         }
 
         if (!$this->canDelete($collection_id)) {
@@ -168,7 +169,7 @@ class Collection extends Model
         }
 
         $this->hook->attach('collection.delete.after', $collection_id, $result, $this);
-        return (bool) $result;
+        return (bool)$result;
     }
 
     /**
@@ -179,8 +180,8 @@ class Collection extends Model
     public function canDelete($collection_id)
     {
         $sql = 'SELECT collection_item_id'
-                . ' FROM collection_item'
-                . ' WHERE collection_id=?';
+            . ' FROM collection_item'
+            . ' WHERE collection_id=?';
 
         $result = $this->db->fetchColumn($sql, array($collection_id));
         return empty($result);
@@ -198,7 +199,7 @@ class Collection extends Model
         $this->hook->attach('collection.update.before', $collection_id, $data, $result, $this);
 
         if (isset($result)) {
-            return (bool) $result;
+            return (bool)$result;
         }
 
         unset($data['type']); // Cannot change item type!
@@ -207,12 +208,12 @@ class Collection extends Model
 
         $data['collection_id'] = $collection_id;
 
-        $updated += (int) $this->setTranslationTrait($this->db, $data, 'collection');
+        $updated += (int)$this->setTranslationTrait($this->db, $data, 'collection');
 
         $result = $updated > 0;
 
         $this->hook->attach('collection.update.after', $collection_id, $data, $result, $this);
-        return (bool) $result;
+        return (bool)$result;
     }
 
     /**
@@ -229,7 +230,7 @@ class Collection extends Model
 
         $handlers = require GC_CONFIG_COLLECTION;
 
-        array_walk($handlers, function(&$handler) {
+        array_walk($handlers, function (&$handler) {
             $handler['title'] = $this->language->text($handler['title']);
         });
 

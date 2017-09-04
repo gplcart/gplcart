@@ -14,6 +14,7 @@ use gplcart\core\helpers\Url as UrlHelper,
     gplcart\core\helpers\Curl as CurlHelper;
 use gplcart\core\models\Language as LanguageModel,
     gplcart\core\models\Validator as ValidatorModel;
+use gplcart\core\traits\Translation as TranslationTrait;
 
 /**
  * Manages basic behaviors and data related to files
@@ -21,7 +22,7 @@ use gplcart\core\models\Language as LanguageModel,
 class File extends Model
 {
 
-    use \gplcart\core\traits\Translation;
+    use TranslationTrait;
 
     /**
      * Language model instance
@@ -78,7 +79,7 @@ class File extends Model
      * @param CurlHelper $curl
      */
     public function __construct(LanguageModel $language,
-            ValidatorModel $validator, UrlHelper $url, CurlHelper $curl)
+                                ValidatorModel $validator, UrlHelper $url, CurlHelper $curl)
     {
         parent::__construct();
 
@@ -99,7 +100,7 @@ class File extends Model
         $this->hook->attach('file.add.before', $data, $result, $this);
 
         if (isset($result)) {
-            return (int) $result;
+            return (int)$result;
         }
 
         if (empty($data['mime_type'])) {
@@ -121,7 +122,7 @@ class File extends Model
         $this->setTranslationTrait($this->db, $data, 'file', false);
 
         $this->hook->attach('file.add.after', $data, $result, $this);
-        return (int) $result;
+        return (int)$result;
     }
 
     /**
@@ -136,19 +137,19 @@ class File extends Model
         $this->hook->attach('file.update.before', $file_id, $data, $result, $this);
 
         if (isset($result)) {
-            return (bool) $result;
+            return (bool)$result;
         }
 
         $updated = $this->db->update('file', $data, array('file_id' => $file_id));
 
         $data['file_id'] = $file_id;
 
-        $updated += (int) $this->setTranslationTrait($this->db, $data, 'file');
+        $updated += (int)$this->setTranslationTrait($this->db, $data, 'file');
 
         $result = $updated > 0;
 
         $this->hook->attach('file.update.after', $file_id, $data, $result, $this);
-        return (bool) $result;
+        return (bool)$result;
     }
 
     /**
@@ -184,7 +185,7 @@ class File extends Model
         $this->hook->attach('file.delete.before', $file_id, $result, $this);
 
         if (isset($result)) {
-            return (bool) $result;
+            return (bool)$result;
         }
 
         if (!$this->canDelete($file_id)) {
@@ -192,14 +193,14 @@ class File extends Model
         }
 
         $conditions = array('file_id' => $file_id);
-        $result = (bool) $this->db->delete('file', $conditions);
+        $result = (bool)$this->db->delete('file', $conditions);
 
         if ($result) {
             $this->db->delete('file_translation', $conditions);
         }
 
         $this->hook->attach('file.delete.after', $file_id, $result, $this);
-        return (bool) $result;
+        return (bool)$result;
     }
 
     /**
@@ -210,8 +211,8 @@ class File extends Model
     public function deleteMultiple($options)
     {
         $deleted = 0;
-        foreach ((array) $this->getList($options) as $file) {
-            $deleted += (int) $this->delete($file['file_id']);
+        foreach ((array)$this->getList($options) as $file) {
+            $deleted += (int)$this->delete($file['file_id']);
         }
 
         return $deleted > 0;
@@ -225,9 +226,9 @@ class File extends Model
     public function canDelete($file_id)
     {
         $sql = 'SELECT NOT EXISTS (SELECT file_id FROM field_value WHERE file_id=:id)'
-                . ' AND NOT EXISTS (SELECT file_id FROM product_sku WHERE file_id=:id)';
+            . ' AND NOT EXISTS (SELECT file_id FROM product_sku WHERE file_id=:id)';
 
-        return (bool) $this->db->fetchColumn($sql, array('id' => $file_id));
+        return (bool)$this->db->fetchColumn($sql, array('id' => $file_id));
     }
 
     /**
@@ -240,7 +241,7 @@ class File extends Model
         $extensions = array();
         foreach ($this->getHandlers() as $handler) {
             if (!empty($handler['extensions'])) {
-                $extensions += array_merge($extensions, (array) $handler['extensions']);
+                $extensions += array_merge($extensions, (array)$handler['extensions']);
             }
         }
 
@@ -291,7 +292,7 @@ class File extends Model
             if (empty($handler['extensions'])) {
                 continue;
             }
-            foreach ((array) $handler['extensions'] as $allowed_extension) {
+            foreach ((array)$handler['extensions'] as $allowed_extension) {
                 if ($extension === $allowed_extension) {
                     return $handler;
                 }
@@ -343,8 +344,8 @@ class File extends Model
         $params = array($language);
 
         $sql .= 'COALESCE(NULLIF(ft.title, ""), f.title) AS title'
-                . ' FROM file f'
-                . ' LEFT JOIN file_translation ft ON(ft.file_id = f.file_id AND ft.language=?)';
+            . ' FROM file f'
+            . ' LEFT JOIN file_translation ft ON(ft.file_id = f.file_id AND ft.language=?)';
 
         if (!empty($data['file_id'])) {
             settype($data['file_id'], 'array');
@@ -364,7 +365,7 @@ class File extends Model
 
         if (isset($data['created'])) {
             $sql .= ' AND f.created = ?';
-            $params[] = (int) $data['created'];
+            $params[] = (int)$data['created'];
         }
 
         if (isset($data['id_key'])) {
@@ -409,7 +410,7 @@ class File extends Model
             'weight' => 'f.weight', 'mime_type' => 'f.mime_type');
 
         if (isset($data['sort']) && isset($allowed_sort[$data['sort']])//
-                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+            && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
         } else {
             $sql .= " ORDER BY f.created DESC";
@@ -420,7 +421,7 @@ class File extends Model
         }
 
         if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $params);
+            return (int)$this->db->fetchColumn($sql, $params);
         }
 
         $files = $this->db->fetchAll($sql, $params, array('index' => 'file_id'));
@@ -562,7 +563,7 @@ class File extends Model
             if ($result === true) {
                 $return[$key]['transferred'] = $this->getTransferred($relative);
             } else {
-                $return[$key]['errors'] = (string) $result;
+                $return[$key]['errors'] = (string)$result;
             }
         }
         return $return;

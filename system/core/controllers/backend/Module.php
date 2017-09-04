@@ -11,6 +11,7 @@ namespace gplcart\core\controllers\backend;
 
 use gplcart\core\helpers\Graph as GraphHelper;
 use gplcart\core\models\Module as ModuleModel;
+use gplcart\core\traits\Dependency as DependencyTrait;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -19,7 +20,7 @@ use gplcart\core\controllers\backend\Controller as BackendController;
 class Module extends BackendController
 {
 
-    use \gplcart\core\traits\Dependency;
+    use DependencyTrait;
 
     /**
      * Module model instance
@@ -129,8 +130,8 @@ class Module extends BackendController
             $this->redirect('', $message, 'danger');
         }
 
-        foreach ((array) $result as $error) {
-            $this->setMessage((string) $error, 'danger', true);
+        foreach ((array)$result as $error) {
+            $this->setMessage((string)$error, 'danger', true);
         }
 
         $this->redirect();

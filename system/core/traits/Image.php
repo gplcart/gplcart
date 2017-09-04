@@ -15,7 +15,7 @@ namespace gplcart\core\traits;
 trait Image
 {
 
-    use \gplcart\core\traits\Translation;
+    use Translation;
 
     /**
      * Adds images to an entity

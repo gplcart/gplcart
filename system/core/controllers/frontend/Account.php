@@ -15,6 +15,8 @@ use gplcart\core\models\Order as OrderModel,
     gplcart\core\models\UserRole as UserRoleModel,
     gplcart\core\models\Shipping as ShippingModel,
     gplcart\core\models\PriceRule as PriceRuleModel;
+use gplcart\core\traits\Order as OrderTrait,
+    gplcart\core\traits\OrderComponent as OrderComponentTrait;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
@@ -23,8 +25,7 @@ use gplcart\core\controllers\frontend\Controller as FrontendController;
 class Account extends FrontendController
 {
 
-    use \gplcart\core\traits\Order;
-    use \gplcart\core\traits\OrderComponent;
+    use OrderTrait, OrderComponentTrait;
 
     /**
      * Address model instance
@@ -89,8 +90,8 @@ class Account extends FrontendController
      * @param ShippingModel $shipping
      */
     public function __construct(AddressModel $address, OrderModel $order,
-            UserRoleModel $role, PriceRuleModel $pricerule,
-            PaymentModel $payment, ShippingModel $shipping)
+                                UserRoleModel $role, PriceRuleModel $pricerule,
+                                PaymentModel $payment, ShippingModel $shipping)
     {
         parent::__construct();
 
@@ -285,8 +286,8 @@ class Account extends FrontendController
             'count' => true,
             'user_id' => $this->data_user['user_id']
         );
-        
-        $this->total = (int) $this->order->getList($options);
+
+        $this->total = (int)$this->order->getList($options);
     }
 
     /**
@@ -296,12 +297,12 @@ class Account extends FrontendController
     protected function getListOrderAccount()
     {
         $conditions = array(
-            'order' => 'desc',
-            'sort' => 'created',
-            'limit' => $this->limit) + $this->query_filter;
+                'order' => 'desc',
+                'sort' => 'created',
+                'limit' => $this->limit) + $this->query_filter;
 
         $conditions['user_id'] = $this->data_user['user_id'];
-        $orders = (array) $this->order->getList($conditions);
+        $orders = (array)$this->order->getList($conditions);
 
         foreach ($orders as &$order) {
             $this->prepareOrderAccount($order);

@@ -12,6 +12,7 @@ namespace gplcart\core\models;
 use gplcart\core\Model;
 use gplcart\core\models\File as FileModel,
     gplcart\core\models\Language as LanguageModel;
+use gplcart\core\traits\Translation as TranslationTrait;
 
 /**
  * Manages basic behaviors and data related to field values
@@ -19,7 +20,7 @@ use gplcart\core\models\File as FileModel,
 class FieldValue extends Model
 {
 
-    use \gplcart\core\traits\Translation;
+    use TranslationTrait;
 
     /**
      * File model instance

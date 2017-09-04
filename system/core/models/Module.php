@@ -12,14 +12,14 @@ namespace gplcart\core\models;
 use gplcart\core\Model,
     gplcart\core\Hook;
 use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\traits\Dependency as DependencyTrait;
 
 /**
  * Manages basic behaviors and data related to modules
  */
 class Module extends Model
 {
-
-    use \gplcart\core\traits\Dependency;
+    use DependencyTrait;
 
     /**
      * Language model instance
@@ -540,7 +540,7 @@ class Module extends Model
      */
     public function getMaxWeight()
     {
-        return (int) $this->db->fetchColumn('SELECT COUNT(*) FROM module', array());
+        return (int)$this->db->fetchColumn('SELECT COUNT(*) FROM module', array());
     }
 
     /**

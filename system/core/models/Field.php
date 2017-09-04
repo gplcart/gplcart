@@ -11,6 +11,7 @@ namespace gplcart\core\models;
 
 use gplcart\core\Model;
 use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\traits\Translation as TranslationTrait;
 
 /**
  * Manages basic behaviors and data related to product fields
@@ -18,7 +19,7 @@ use gplcart\core\models\Language as LanguageModel;
 class Field extends Model
 {
 
-    use \gplcart\core\traits\Translation;
+    use TranslationTrait;
 
     /**
      * Language model instance
