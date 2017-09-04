@@ -161,7 +161,7 @@ class Hook
             &$c = null, &$d = null, &$e = null)
     {
         try {
-            $instance = Container::get(array($namespace, $method));
+            $instance = Container::get($namespace);
             $instance->{$method}($a, $b, $c, $d, $e);
             $this->setCalled($method, $namespace);
         } catch (\Exception $exc) {
