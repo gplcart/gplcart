@@ -60,7 +60,7 @@ class Database extends PDO
     /**
      * Executes an SQL statement, returning a result set as a PDOStatement object
      * @param string $statement
-     * @return PDOStatement
+     * @return \PDOStatement|false
      */
     public function query($statement)
     {

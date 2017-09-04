@@ -103,10 +103,10 @@ class Product extends Model
      * @param RequestHelper $request
      */
     public function __construct(AliasModel $alias, FileModel $file,
-            PriceModel $price, PriceRuleModel $pricerule,
-            LanguageModel $language, SkuModel $sku, SearchModel $search,
-            ProductFieldModel $product_field, Cache $cache,
-            RequestHelper $request)
+                                PriceModel $price, PriceRuleModel $pricerule,
+                                LanguageModel $language, SkuModel $sku, SearchModel $search,
+                                ProductFieldModel $product_field, Cache $cache,
+                                RequestHelper $request)
     {
         parent::__construct();
 
@@ -133,7 +133,7 @@ class Product extends Model
         $this->hook->attach('product.add.before', $data, $result, $this);
 
         if (isset($result)) {
-            return (int) $result;
+            return (int)$result;
         }
 
         $data['created'] = $data['modified'] = GC_TIME;
@@ -159,7 +159,7 @@ class Product extends Model
         $this->search->index('product', $data);
 
         $this->hook->attach('product.add.after', $data, $result, $this);
-        return (int) $result;
+        return (int)$result;
     }
 
     /**
@@ -174,7 +174,7 @@ class Product extends Model
         $this->hook->attach('product.update.before', $product_id, $data, $result, $this);
 
         if (isset($result)) {
-            return (bool) $result;
+            return (bool)$result;
         }
 
         $data['modified'] = GC_TIME;
@@ -185,14 +185,14 @@ class Product extends Model
         $conditions = array('product_id' => $product_id);
         $updated = $this->db->update('product', $data, $conditions);
 
-        $updated += (int) $this->setSku($data);
-        $updated += (int) $this->setTranslationTrait($this->db, $data, 'product');
-        $updated += (int) $this->setImagesTrait($this->file, $data, 'product');
-        $updated += (int) $this->setAliasTrait($this->alias, $data, 'product');
-        $updated += (int) $this->setSkuCombinations($data);
-        $updated += (int) $this->setOptions($data);
-        $updated += (int) $this->setAttributes($data);
-        $updated += (int) $this->setRelated($data);
+        $updated += (int)$this->setSku($data);
+        $updated += (int)$this->setTranslationTrait($this->db, $data, 'product');
+        $updated += (int)$this->setImagesTrait($this->file, $data, 'product');
+        $updated += (int)$this->setAliasTrait($this->alias, $data, 'product');
+        $updated += (int)$this->setSkuCombinations($data);
+        $updated += (int)$this->setOptions($data);
+        $updated += (int)$this->setAttributes($data);
+        $updated += (int)$this->setRelated($data);
 
         $result = $updated > 0;
 
@@ -202,7 +202,7 @@ class Product extends Model
         }
 
         $this->hook->attach('product.update.after', $product_id, $data, $result, $this);
-        return (bool) $result;
+        return (bool)$result;
     }
 
     /**
@@ -239,7 +239,7 @@ class Product extends Model
             return false;
         }
 
-        foreach ((array) $data['related'] as $id) {
+        foreach ((array)$data['related'] as $id) {
             $this->db->insert('product_related', array('product_id' => $product_id, 'related_product_id' => $id));
             $this->db->insert('product_related', array('product_id' => $id, 'related_product_id' => $product_id));
         }
@@ -320,12 +320,12 @@ class Product extends Model
         }
 
         $sql = 'SELECT p.*, COALESCE(NULLIF(pt.title, ""), p.title) AS title,'
-                . ' ps.sku, ps.price, ps.stock, ps.file_id'
-                . ' FROM product p'
-                . ' LEFT JOIN product_sku ps ON(p.product_id=ps.product_id)'
-                . ' LEFT JOIN product_translation pt ON(p.product_id=pt.product_id'
-                . ' AND pt.language=:language)'
-                . ' WHERE ps.sku=:sku AND ps.store_id=:store_id';
+            . ' ps.sku, ps.price, ps.stock, ps.file_id'
+            . ' FROM product p'
+            . ' LEFT JOIN product_sku ps ON(p.product_id=ps.product_id)'
+            . ' LEFT JOIN product_translation pt ON(p.product_id=pt.product_id'
+            . ' AND pt.language=:language)'
+            . ' WHERE ps.sku=:sku AND ps.store_id=:store_id';
 
         $conditions = array(
             'sku' => $sku,
@@ -342,54 +342,59 @@ class Product extends Model
     /**
      * Adds fields to the product
      * @param array $product
-     * @return null
+     * @return array
      */
     protected function attachFields(array &$product)
     {
         if (empty($product)) {
-            return null;
+            return $product;
         }
 
         $product['field'] = $this->product_field->getList($product['product_id']);
 
         if (empty($product['field']['option'])) {
-            return null;
+            return $product;
         }
 
         // Remove repeating field values
         foreach ($product['field']['option'] as &$field_values) {
             $field_values = array_unique($field_values);
         }
+
+        return $product;
     }
 
     /**
      * Adds option combinations to the product
      * @param array $product
+     * @return array
      */
     protected function attachSku(array &$product)
     {
         if (empty($product)) {
-            return null;
+            return $product;
         }
 
-        $skus = (array) $this->sku->getList(array('product_id' => $product['product_id']));
-
         $product['default_field_values'] = array();
+        $codes = (array)$this->sku->getList(array('product_id' => $product['product_id']));
 
-        foreach ($skus as $sku) {
+        foreach ($codes as $code) {
 
-            if ($sku['combination_id'] !== '') {
-                $product['combination'][$sku['combination_id']] = $sku;
-                if (!empty($sku['is_default'])) {
-                    $product['default_field_values'] = $sku['fields'];
-                }
+            if ($code['combination_id'] === '') {
+                $product['sku'] = $code['sku'];
+                $product['price'] = $code['price'];
+                $product['stock'] = $code['stock'];
                 continue;
             }
 
-            $product['sku'] = $sku['sku'];
-            $product['price'] = $sku['price'];
-            $product['stock'] = $sku['stock'];
+            $product['combination'][$code['combination_id']] = $code;
+
+            if (!empty($code['is_default'])) {
+                $product['default_field_values'] = $code['fields'];
+            }
         }
+
+        return $product;
     }
 
     /**
@@ -403,7 +408,7 @@ class Product extends Model
         $this->hook->attach('product.delete.before', $product_id, $result, $this);
 
         if (isset($result)) {
-            return (bool) $result;
+            return (bool)$result;
         }
 
         if (!$this->canDelete($product_id)) {
@@ -413,7 +418,7 @@ class Product extends Model
         $conditions = array('product_id' => $product_id);
         $conditions2 = array('id_key' => 'product_id', 'id_value' => $product_id);
 
-        $result = (bool) $this->db->delete('product', $conditions);
+        $result = (bool)$this->db->delete('product', $conditions);
 
         if ($result) {
 
@@ -430,15 +435,15 @@ class Product extends Model
             $this->db->delete('search_index', $conditions2);
 
             $sql = 'DELETE ci'
-                    . ' FROM collection_item ci'
-                    . ' INNER JOIN collection c ON(ci.collection_id = c.collection_id)'
-                    . ' WHERE c.type = ? AND ci.value = ?';
+                . ' FROM collection_item ci'
+                . ' INNER JOIN collection c ON(ci.collection_id = c.collection_id)'
+                . ' WHERE c.type = ? AND ci.value = ?';
 
             $this->db->run($sql, array('product', $product_id));
         }
 
         $this->hook->attach('product.delete.after', $product_id, $result, $this);
-        return (bool) $result;
+        return (bool)$result;
     }
 
     /**
@@ -449,8 +454,8 @@ class Product extends Model
     public function canDelete($product_id)
     {
         $sql = 'SELECT cart_id'
-                . ' FROM cart'
-                . ' WHERE product_id=? AND order_id > 0';
+            . ' FROM cart'
+            . ' WHERE product_id=? AND order_id > 0';
 
         $result = $this->db->fetchColumn($sql, array($product_id));
         return empty($result);
@@ -515,7 +520,7 @@ class Product extends Model
             $list = $this->getList($data);
         }
 
-        return (array) $list;
+        return (array)$list;
     }
 
     /**
@@ -526,17 +531,17 @@ class Product extends Model
     public function getList(array $data = array())
     {
         $sql = 'SELECT p.*, a.alias, COALESCE(NULLIF(pt.title, ""), p.title) AS title,'
-                . 'pt.language, ps.sku, ps.price, ps.stock, ps.file_id, u.role_id';
+            . 'pt.language, ps.sku, ps.price, ps.stock, ps.file_id, u.role_id';
 
         if (!empty($data['count'])) {
             $sql = 'SELECT COUNT(p.product_id)';
         }
 
         $sql .= ' FROM product p'
-                . ' LEFT JOIN product_translation pt ON(p.product_id = pt.product_id AND pt.language=?)'
-                . ' LEFT JOIN alias a ON(a.id_key=? AND a.id_value=p.product_id)'
-                . ' LEFT JOIN user u ON(u.user_id=p.user_id)'
-                . ' LEFT JOIN product_sku ps ON(p.product_id = ps.product_id AND LENGTH(ps.combination_id) = 0)';
+            . ' LEFT JOIN product_translation pt ON(p.product_id = pt.product_id AND pt.language=?)'
+            . ' LEFT JOIN alias a ON(a.id_key=? AND a.id_value=p.product_id)'
+            . ' LEFT JOIN user u ON(u.user_id=p.user_id)'
+            . ' LEFT JOIN product_sku ps ON(p.product_id = ps.product_id AND LENGTH(ps.combination_id) = 0)';
 
         $language = $this->language->current();
         $where = array($language, 'product_id');
@@ -574,7 +579,7 @@ class Product extends Model
 
         if (isset($data['price']) && isset($data['currency'])) {
             $sql .= ' AND ps.price = ?';
-            $where[] = $this->price->amount((int) $data['price'], $data['currency']);
+            $where[] = $this->price->amount((int)$data['price'], $data['currency']);
         }
 
         if (isset($data['currency'])) {
@@ -584,28 +589,28 @@ class Product extends Model
 
         if (isset($data['stock'])) {
             $sql .= ' AND ps.stock = ?';
-            $where[] = (int) $data['stock'];
+            $where[] = (int)$data['stock'];
         }
 
         if (isset($data['category_id'])) {
             $sql .= ' AND p.category_id = ?';
-            $where[] = (int) $data['category_id'];
+            $where[] = (int)$data['category_id'];
         }
 
         if (isset($data['status'])) {
             $sql .= ' AND p.status = ?';
-            $where[] = (int) $data['status'];
+            $where[] = (int)$data['status'];
         }
 
         if (isset($data['store_id'])) {
             $sql .= ' AND p.store_id = ?';
-            $where[] = (int) $data['store_id'];
+            $where[] = (int)$data['store_id'];
         }
 
         if (empty($data['count'])) {
             $sql .= ' GROUP BY p.product_id,'
-                    // Additional group by to prevent errors wnen sql_mode=only_full_group_by
-                    . 'a.alias, pt.title, ps.sku, ps.price, ps.stock, ps.file_id';
+                // Additional group by to prevent errors wnen sql_mode=only_full_group_by
+                . 'a.alias, pt.title, ps.sku, ps.price, ps.stock, ps.file_id';
         }
 
         $allowed_order = array('asc', 'desc');
@@ -618,7 +623,7 @@ class Product extends Model
         );
 
         if (isset($data['sort']) && isset($allowed_sort[$data['sort']])//
-                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+            && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
         } else {
             $sql .= " ORDER BY p.modified DESC";
@@ -629,7 +634,7 @@ class Product extends Model
         }
 
         if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $where);
+            return (int)$this->db->fetchColumn($sql, $where);
         }
 
         $list = $this->db->fetchAll($sql, $where, array('index' => 'product_id'));
@@ -706,14 +711,14 @@ class Product extends Model
 
         if ($update) {
             $this->sku->delete($data['product_id'], array('base' => true));
-            return (bool) $this->sku->add($data);
+            return (bool)$this->sku->add($data);
         }
 
         if (empty($data['sku'])) {
             $data['sku'] = $this->createSku($data);
         }
 
-        return (bool) $this->sku->add($data);
+        return (bool)$this->sku->add($data);
     }
 
     /**
@@ -866,7 +871,7 @@ class Product extends Model
     protected function addAttributes(array $data)
     {
         foreach ($data['field']['attribute'] as $field_id => $field_value_ids) {
-            foreach ((array) $field_value_ids as $field_value_id) {
+            foreach ((array)$field_value_ids as $field_value_id) {
 
                 $options = array(
                     'type' => 'attribute',

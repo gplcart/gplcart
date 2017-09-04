@@ -34,7 +34,7 @@ trait Product
      * @param array $product
      * @param array $fields
      * @param string $type
-     * @param \gplcart\core\Controller $controller
+     * @param \gplcart\core\controllers\frontend\Controller $controller
      * @return null
      */
     protected function prepareProductFieldsTrait(array &$product, array $fields,

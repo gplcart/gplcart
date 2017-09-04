@@ -185,14 +185,13 @@ abstract class Controller
 
     /**
      * The current HTML filter
-     * @var array|false FALSE means disabled XSS filter, i.e raw output
+     * @var array|false
      */
     protected $current_filter;
 
     /**
      * Array of the current theme module info
      * @var array
-     * @see \gplcart\modules\example\Example::info()
      */
     protected $theme_settings = array();
 
@@ -542,11 +541,11 @@ abstract class Controller
     /**
      * Returns a value on a error
      * @param string|array $key
-     * @param mixed $has_error A value to be returned when a error(s) found
-     * @param mixed $no_error A value to be returned when no error(s) found
+     * @param mixed $return_error
+     * @param mixed $return_no_error
      * @return mixed
      */
-    public function error($key = null, $has_error = null, $no_error = '')
+    public function error($key = null, $return_error = null, $return_no_error = '')
     {
         if (isset($key)) {
             $result = gplcart_array_get($this->errors, $key);
@@ -555,10 +554,10 @@ abstract class Controller
         }
 
         if (isset($result)) {
-            return isset($has_error) ? $has_error : $result;
+            return isset($return_error) ? $return_error : $result;
         }
 
-        return $no_error;
+        return $return_no_error;
     }
 
     /**
@@ -754,6 +753,7 @@ abstract class Controller
             $parts = $this->explodeText($text);
             $summary = reset($parts);
         }
+
         if ($summary !== '' && $xss) {
             $summary = $this->filter($summary, $filter);
         }
@@ -1575,7 +1575,8 @@ abstract class Controller
 
         if ($content !== '') {
             $weight = isset($this->data["region_$region"]) ? count($this->data["region_$region"]) : 0;
-            $this->data["region_$region"][] = array('rendered' => $content, 'weight' => $weight++);
+            $weight++;
+            $this->data["region_$region"][] = array('rendered' => $content, 'weight' => $weight);
         }
     }
 
@@ -1820,7 +1821,7 @@ abstract class Controller
                 continue;
             }
 
-            $part = "gc-$part"; // Add refix to prevent conflicts
+            $part = "gc-$part"; // Add prefix to prevent conflicts
         }
 
         $this->data['_classes'] = $parts;
