@@ -260,7 +260,7 @@ class Config
 
             if (!empty($info['status'])) {
                 $instance = $this->getModuleInstance($module_id);
-                if ($instance instanceof \gplcart\core\Module) {
+                if ($instance instanceof Module) {
                     $info['hooks'] = $this->getModuleHooks($instance);
                     $info['class'] = get_class($instance);
                 }

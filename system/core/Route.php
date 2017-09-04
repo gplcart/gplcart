@@ -250,7 +250,7 @@ class Route
 
         $handler = Handler::get($route, null, 'controller');
 
-        if (empty($handler[0]) || !$handler[0] instanceof \gplcart\core\Controller) {
+        if (empty($handler[0]) || !$handler[0] instanceof Controller) {
             throw new RouteException('Controller must be instance of \gplcart\core\Controller');
         }
 
