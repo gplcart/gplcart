@@ -24,7 +24,7 @@ class User extends Model
 
     /**
      * Address model instance
-     * @var \gplcart\core\models\Address $address;
+     * @var \gplcart\core\models\Address $address ;
      */
     protected $address;
 
@@ -60,7 +60,7 @@ class User extends Model
      * @param SessionHelper $session
      */
     public function __construct(AddressModel $address, UserRoleModel $role,
-            MailModel $mail, LanguageModel $language, SessionHelper $session)
+                                MailModel $mail, LanguageModel $language, SessionHelper $session)
     {
         parent::__construct();
 
@@ -82,7 +82,7 @@ class User extends Model
         $this->hook->attach('user.add.before', $data, $result, $this);
 
         if (isset($result)) {
-            return (int) $result;
+            return (int)$result;
         }
 
         if (empty($data['name'])) {
@@ -96,7 +96,7 @@ class User extends Model
         $this->setAddress($data);
 
         $this->hook->attach('user.add.after', $data, $result, $this);
-        return (int) $result;
+        return (int)$result;
     }
 
     /**
@@ -136,7 +136,7 @@ class User extends Model
         $this->hook->attach('user.update.before', $user_id, $data, $result, $this);
 
         if (isset($result)) {
-            return (bool) $result;
+            return (bool)$result;
         }
 
         $data['modified'] = GC_TIME;
@@ -153,12 +153,12 @@ class User extends Model
 
         $data['user_id'] = $user_id;
 
-        $updated += (int) $this->setAddress($data);
+        $updated += (int)$this->setAddress($data);
 
         $result = $updated > 0;
 
         $this->hook->attach('user.update.after', $user_id, $data, $result, $this);
-        return (bool) $result;
+        return (bool)$result;
     }
 
     /**
@@ -172,7 +172,7 @@ class User extends Model
         $this->hook->attach('user.delete.before', $user_id, $result, $this);
 
         if (isset($result)) {
-            return (bool) $result;
+            return (bool)$result;
         }
 
         if (!$this->canDelete($user_id)) {
@@ -180,7 +180,7 @@ class User extends Model
         }
 
         $conditions = array('user_id' => $user_id);
-        $result = (bool) $this->db->delete('user', $conditions);
+        $result = (bool)$this->db->delete('user', $conditions);
 
         if ($result) {
             $this->db->delete('cart', $conditions);
@@ -193,7 +193,7 @@ class User extends Model
         }
 
         $this->hook->attach('user.delete.after', $user_id, $result, $this);
-        return (bool) $result;
+        return (bool)$result;
     }
 
     /**
@@ -235,7 +235,13 @@ class User extends Model
      */
     public function getId()
     {
-        return (int) $this->getSession('user_id');
+        static $uid = null;
+
+        if (!isset($uid)) {
+            $uid = (int)$this->getSession('user_id');
+        }
+
+        return $uid;
     }
 
     /**
@@ -244,7 +250,7 @@ class User extends Model
      */
     public function getRoleId()
     {
-        return (int) $this->getSession('role_id');
+        return (int)$this->getSession('role_id');
     }
 
     /**
@@ -299,7 +305,7 @@ class User extends Model
             return array();
         }
 
-        return (array) $role['permissions'];
+        return (array)$role['permissions'];
     }
 
     /**
@@ -313,7 +319,7 @@ class User extends Model
         $result = &gplcart_static(__METHOD__ . $user_id);
 
         if (isset($result)) {
-            return (array) $result;
+            return (array)$result;
         }
 
         $this->hook->attach('user.get.before', $user_id, $store_id, $result, $this);
@@ -328,9 +334,9 @@ class User extends Model
         }
 
         $sql = 'SELECT u.*, r.status AS role_status, r.name AS role_name, r.permissions AS role_permissions'
-                . ' FROM user u'
-                . ' LEFT JOIN role r ON (u.role_id = r.role_id)'
-                . ' WHERE u.user_id=?';
+            . ' FROM user u'
+            . ' LEFT JOIN role r ON (u.role_id = r.role_id)'
+            . ' WHERE u.user_id=?';
 
         $where = array($user_id);
 
@@ -358,7 +364,7 @@ class User extends Model
         $this->hook->attach('user.login.before', $data, $check_password, $result, $this);
 
         if (!empty($result)) {
-            return (array) $result;
+            return (array)$result;
         }
 
         $result = array(
@@ -405,7 +411,7 @@ class User extends Model
         );
 
         $this->hook->attach('user.login.after', $data, $check_password, $result, $this);
-        return (array) $result;
+        return (array)$result;
     }
 
     /**
@@ -419,7 +425,7 @@ class User extends Model
         $this->hook->attach('user.register.before', $data, $result, $this);
 
         if (!empty($result)) {
-            return (array) $result;
+            return (array)$result;
         }
 
         $result = array(
@@ -457,7 +463,7 @@ class User extends Model
         }
 
         $this->hook->attach('user.register.after', $data, $result, $this);
-        return (array) $result;
+        return (array)$result;
     }
 
     /**
@@ -483,9 +489,9 @@ class User extends Model
     public function getByEmail($email)
     {
         $sql = 'SELECT u.*, r.redirect AS role_redirect, r.status AS role_status'
-                . ' FROM user u'
-                . ' LEFT JOIN role r ON(u.role_id=r.role_id)'
-                . ' WHERE u.email=?';
+            . ' FROM user u'
+            . ' LEFT JOIN role r ON(u.role_id=r.role_id)'
+            . ' WHERE u.email=?';
 
         return $this->db->fetch($sql, array($email), array('unserialize' => 'data'));
     }
@@ -518,7 +524,7 @@ class User extends Model
         $this->hook->attach('user.logout.before', $user_id, $result, $this);
 
         if (!empty($result)) {
-            return (array) $result;
+            return (array)$result;
         }
 
         if (empty($user_id)) {
@@ -537,7 +543,7 @@ class User extends Model
         );
 
         $this->hook->attach('user.logout.after', $user_id, $result, $this);
-        return (array) $result;
+        return (array)$result;
     }
 
     /**
@@ -551,7 +557,7 @@ class User extends Model
         $this->hook->attach('user.reset.password.before', $data, $result, $this);
 
         if (!empty($result)) {
-            return (array) $result;
+            return (array)$result;
         }
 
         if (empty($data['user']['user_id'])) {
@@ -567,7 +573,7 @@ class User extends Model
         $this->session->regenerate(true);
 
         $this->hook->attach('user.reset.password.after', $data, $result, $this);
-        return (array) $result;
+        return (array)$result;
     }
 
     /**
@@ -577,7 +583,7 @@ class User extends Model
      */
     protected function resetPasswordStart(array $user)
     {
-        $lifetime = (int) $this->config->get('user_reset_password_lifespan', 24*60*60);
+        $lifetime = (int)$this->config->get('user_reset_password_lifespan', 24 * 60 * 60);
 
         $user['data']['reset_password'] = array(
             'token' => gplcart_string_random(),
@@ -644,17 +650,17 @@ class User extends Model
 
         if (isset($data['role_id'])) {
             $sql .= ' AND role_id = ?';
-            $where[] = (int) $data['role_id'];
+            $where[] = (int)$data['role_id'];
         }
 
         if (isset($data['store_id'])) {
             $sql .= ' AND store_id = ?';
-            $where[] = (int) $data['store_id'];
+            $where[] = (int)$data['store_id'];
         }
 
         if (isset($data['status'])) {
             $sql .= ' AND status = ?';
-            $where[] = (int) $data['status'];
+            $where[] = (int)$data['status'];
         }
 
         $allowed_order = array('asc', 'desc');
@@ -662,9 +668,9 @@ class User extends Model
             'store_id', 'status', 'created', 'user_id');
 
         if (isset($data['sort'])//
-                && in_array($data['sort'], $allowed_sort)//
-                && isset($data['order'])//
-                && in_array($data['order'], $allowed_order)) {
+            && in_array($data['sort'], $allowed_sort)//
+            && isset($data['order'])//
+            && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
             $sql .= " ORDER BY modified DESC";
@@ -675,7 +681,7 @@ class User extends Model
         }
 
         if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $where);
+            return (int)$this->db->fetchColumn($sql, $where);
         }
 
         $options = array('index' => 'user_id', 'unserialize' => 'data');
