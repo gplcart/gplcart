@@ -122,7 +122,7 @@
      * @param {String} type
      * @returns {undefined}
      */
-    var setAlert = function (message, id, type = 'info') {
+    var setAlert = function (message, id, type) {
         $('body').append(htmlAlert(message, id, type));
         setTimeout(function () {
             $('#' + id + '.popup.alert').remove();
