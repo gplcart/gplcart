@@ -118,7 +118,7 @@ class Config
         }
 
         if (!isset($key)) {
-            return (array) $modules[$module_id]['settings'];
+            return (array)$modules[$module_id]['settings'];
         }
 
         $value = gplcart_array_get($modules[$module_id]['settings'], $key);
@@ -163,7 +163,7 @@ class Config
      */
     public function reset($key)
     {
-        return (bool) $this->db->delete('settings', array('id' => $key));
+        return (bool)$this->db->delete('settings', array('id' => $key));
     }
 
     /**
@@ -191,7 +191,7 @@ class Config
      */
     public function tokenValid($token)
     {
-        return gplcart_string_equals($this->token(), (string) $token);
+        return gplcart_string_equals($this->token(), (string)$token);
     }
 
     /**
@@ -333,13 +333,14 @@ class Config
      */
     public function getModuleInstance($module_id)
     {
-        $class = $this->getModuleClassNamespace($module_id);
+        $namespace = $this->getModuleClassNamespace($module_id);
 
         try {
-            $instance = Container::get($class);
+            $instance = Container::get($namespace);
         } catch (\ReflectionException $exc) {
             return null;
         }
+
         return $instance;
     }
 
@@ -490,9 +491,14 @@ class Config
      */
     public function getModuleHooks($class)
     {
-        return array_filter(get_class_methods($class), function ($method) {
-            return strpos($method, 'hook') === 0;
-        });
+        $hooks = array();
+        foreach (get_class_methods($class) as $method) {
+            if (strpos($method, 'hook') === 0) {
+                $hooks[] = $method;
+            }
+        }
+
+        return $hooks;
     }
 
     /**
