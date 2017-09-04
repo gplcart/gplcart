@@ -237,9 +237,9 @@ class Job extends Model
             return false;
         }
 
-        $class = $handlers[$job['id']]['handlers']['process'];
-        $instance = Container::get($class);
-        call_user_func_array(array($instance, $class[1]), array(&$job));
+        $callable = $handlers[$job['id']]['handlers']['process'];
+        $instance = Container::get($callable[0]);
+        call_user_func_array(array($instance, $callable[1]), array(&$job));
         return true;
     }
 

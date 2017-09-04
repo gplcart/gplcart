@@ -54,9 +54,9 @@ class Validator extends Model
         $handlers = $this->getHandlers();
 
         if (!empty($handlers[$handler_id]['handlers']['validate'])) {
-            $class = $handlers[$handler_id]['handlers']['validate'];
-            $instance = Container::get($class);
-            $result = call_user_func_array(array($instance, $class[1]), array(&$submitted, $options));
+            $callable = $handlers[$handler_id]['handlers']['validate'];
+            $instance = Container::get($callable[0]);
+            $result = call_user_func_array(array($instance, $callable[1]), array(&$submitted, $options));
         }
 
         $this->hook->attach('validator.run.after', $submitted, $options, $result, $this);

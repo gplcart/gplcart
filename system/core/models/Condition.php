@@ -88,10 +88,10 @@ class Condition extends Model
                 continue;
             }
 
-            $class = $handlers[$condition['id']]['handlers']['process'];
-            $instance = Container::get($class);
+            $callable = $handlers[$condition['id']]['handlers']['process'];
+            $instance = Container::get($callable[0]);
 
-            $result = call_user_func_array(array($instance, $class[1]), array($condition, $data, $this));
+            $result = call_user_func_array(array($instance, $callable[1]), array($condition, $data, $this));
             $this->setProcessed($condition['id'], $result);
 
             if ($result !== true) {
