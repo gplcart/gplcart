@@ -185,7 +185,8 @@ class Install extends Model
     public function connectDb(array $settings)
     {
         try {
-            $this->database = new Database($settings);
+            $this->database = new Database;
+            $this->database->set($settings);
         } catch (\Exception $e) {
             $this->database = null;
             return $this->language->text($e->getMessage());
