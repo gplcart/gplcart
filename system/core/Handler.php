@@ -74,11 +74,11 @@ class Handler
             $handler = $handlers['handlers'][$name];
         }
 
-        if (is_object($handler) && $handler instanceof \Closure) {
+        if ($handler instanceof \Closure) {
             return $handler;
         }
 
-        $handler[0] = Container::get($handler);
+        $handler[0] = Container::get($handler[0]);
         return $handler;
     }
 
