@@ -9,8 +9,6 @@
 
 namespace gplcart\core;
 
-use gplcart\core\Config;
-
 /**
  * Provides methods to work with system hooks (event system)
  */

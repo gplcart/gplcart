@@ -9,8 +9,6 @@
 
 namespace gplcart\core;
 
-use gplcart\core\Container;
-
 /**
  * Provides methods to work with various system handlers
  */

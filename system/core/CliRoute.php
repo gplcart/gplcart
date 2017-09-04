@@ -9,8 +9,6 @@
 
 namespace gplcart\core;
 
-use gplcart\core\Hook,
-    gplcart\core\Handler;
 use gplcart\core\helpers\Cli as CliHelper;
 
 /**

@@ -9,9 +9,6 @@
 
 namespace gplcart\core;
 
-use gplcart\core\Hook,
-    gplcart\core\Route,
-    gplcart\core\Config;
 use gplcart\core\helpers\Url as UrlHelper,
     gplcart\core\helpers\Session as SessionHelper;
 

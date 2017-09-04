@@ -9,8 +9,6 @@
 
 namespace gplcart\core;
 
-use gplcart\core\Container;
-
 /**
  * Parent class for modules
  */

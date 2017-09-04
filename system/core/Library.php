@@ -9,17 +9,15 @@
 
 namespace gplcart\core;
 
-use gplcart\core\Hook,
-    gplcart\core\Cache;
 use gplcart\core\helpers\Graph as GraphHelper;
+use gplcart\core\traits\Dependency as DependencyTrait;
 
 /**
  * Provides methods to work with 3-d party libraries
  */
 class Library
 {
-
-    use \gplcart\core\traits\Dependency;
+    use DependencyTrait;
 
     /**
      * Cache instance
@@ -94,14 +92,14 @@ class Library
         $libraries = &gplcart_static(__METHOD__);
 
         if (isset($libraries)) {
-            return (array) $libraries;
+            return (array)$libraries;
         }
 
         $cached = $this->cache->get('libraries');
 
         if (!empty($cached)) {
             $libraries = $cached;
-            return (array) $libraries;
+            return (array)$libraries;
         }
 
         $libraries = require GC_CONFIG_LIBRARY;
@@ -109,7 +107,7 @@ class Library
 
         $libraries = $this->prepareList($libraries);
         $this->cache->set('libraries', $libraries);
-        return (array) $libraries;
+        return (array)$libraries;
     }
 
     /**
@@ -182,7 +180,7 @@ class Library
         $readable = 0;
         foreach ($library['files'] as $path) {
             $file = $library['basepath'] . "/$path";
-            $readable += (int) (is_file($file) && is_readable($file));
+            $readable += (int)(is_file($file) && is_readable($file));
         }
 
         return count($library['files']) == $readable;
@@ -243,7 +241,7 @@ class Library
                 return preg_replace('/^[\D\\s]+/', '', $version[1]);
             }
 
-            $library['version_source']['lines'] --;
+            $library['version_source']['lines']--;
         }
 
         fclose($handle);
@@ -284,7 +282,7 @@ class Library
         }
 
         $data = json_decode(trim($json), true);
-        return empty($data) ? array() : (array) $data;
+        return empty($data) ? array() : (array)$data;
     }
 
     /**
@@ -379,7 +377,7 @@ class Library
         $prepared = array();
         foreach ($ids as $id) {
             $library = $libraries[$id];
-            array_walk($library['files'], function(&$file) use($library) {
+            array_walk($library['files'], function (&$file) use ($library) {
                 $file = "{$library['basepath']}/$file";
             });
             $prepared = array_merge($prepared, $library['files']);
