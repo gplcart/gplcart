@@ -118,7 +118,7 @@ class Config
         }
 
         if (!isset($key)) {
-            return (array)$modules[$module_id]['settings'];
+            return (array) $modules[$module_id]['settings'];
         }
 
         $value = gplcart_array_get($modules[$module_id]['settings'], $key);
@@ -163,7 +163,7 @@ class Config
      */
     public function reset($key)
     {
-        return (bool)$this->db->delete('settings', array('id' => $key));
+        return (bool) $this->db->delete('settings', array('id' => $key));
     }
 
     /**
@@ -191,7 +191,7 @@ class Config
      */
     public function tokenValid($token)
     {
-        return gplcart_string_equals($this->token(), (string)$token);
+        return gplcart_string_equals($this->token(), (string) $token);
     }
 
     /**
@@ -433,7 +433,9 @@ class Config
             return true;
         }
 
-        $this->db = Container::get('gplcart\\core\\Database', array($this->config['database']));
+        $this->db = Container::get('gplcart\\core\\Database');
+        $this->db->set($this->config['database']);
+
         $this->config = array_merge($this->config, $this->select());
         $this->key = $this->get('private_key', '');
 

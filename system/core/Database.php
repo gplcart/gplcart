@@ -14,10 +14,16 @@ use PDOException;
 use gplcart\core\exceptions\Database as DatabaseException;
 
 /**
- * Provides wrappers for PDO methods
+ * Provides methods to work with the database
  */
-class Database extends PDO
+class Database
 {
+
+    /**
+     * PDO class instance
+     * @var \PDO $pdo
+     */
+    protected $pdo;
 
     /**
      * An array of collected queries
@@ -32,20 +38,57 @@ class Database extends PDO
     protected $scheme = array();
 
     /**
+     * Set up database connection
      * @param array $config
      * @throws DatabaseException
+     * @return \PDO
      */
-    public function __construct(array $config)
+    public function set(array $config)
     {
+        if (isset($this->pdo)) {
+            return $this->pdo;
+        }
+
         $dns = "{$config['type']}:host={$config['host']};"
                 . "port={$config['port']};dbname={$config['name']}";
 
         try {
-            parent::__construct($dns, $config['user'], $config['password']);
-            $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->pdo = new PDO($dns, $config['user'], $config['password']);
+            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $exc) {
             throw new DatabaseException('Could not connect to database');
         }
+
+        return $this->pdo;
+    }
+
+    /**
+     * Try to call a PDO method when invoking an inaccessible method in the class
+     * @param string $method
+     * @param array $params
+     * @return mixed
+     * @throws DatabaseException
+     */
+    public function __call($method, $params)
+    {
+        if (!is_callable(array($this->pdo, $method))) {
+            throw new DatabaseException("Method $method does not exist in \PDO class");
+        }
+
+        try {
+            return call_user_func_array(array($this->pdo, $method), $params);
+        } catch (PDOException $ex) {
+            throw new DatabaseException($ex->getMessage());
+        }
+    }
+
+    /**
+     * Returns PDO instance
+     * @return \PDO
+     */
+    public function getPdo()
+    {
+        return $this->pdo;
     }
 
     /**
@@ -64,7 +107,7 @@ class Database extends PDO
      */
     public function query($statement)
     {
-        $result = parent::query($statement);
+        $result = $this->pdo->query($statement);
         $this->logs[] = $statement;
         return $result;
     }
@@ -76,7 +119,7 @@ class Database extends PDO
      */
     public function exec($statement)
     {
-        $result = parent::exec($statement);
+        $result = $this->pdo->exec($statement);
         $this->logs[] = $statement;
         return $result;
     }
@@ -90,8 +133,7 @@ class Database extends PDO
      */
     public function fetchColumn($sql, array $params = array(), $pos = 0)
     {
-        $sth = $this->run($sql, $params);
-        return $sth->fetchColumn($pos);
+        return $this->run($sql, $params)->fetchColumn($pos);
     }
 
     /**
@@ -102,7 +144,7 @@ class Database extends PDO
      */
     public function run($sql, array $params = array())
     {
-        $sth = $this->prepare($sql);
+        $sth = $this->pdo->prepare($sql);
 
         foreach ($params as $key => $value) {
             $key = is_numeric($key) ? $key + 1 : ":$key";
@@ -123,8 +165,7 @@ class Database extends PDO
      */
     public function fetchColumnAll($sql, array $params = array(), $pos = 0)
     {
-        $sth = $this->run($sql, $params);
-        return $sth->fetchAll(PDO::FETCH_COLUMN, $pos);
+        return $this->run($sql, $params)->fetchAll(PDO::FETCH_COLUMN, $pos);
     }
 
     /**
@@ -144,7 +185,7 @@ class Database extends PDO
     }
 
     /**
-     * Prepares a single result, e.g unserialize serialized data
+     * Prepares a single result
      * @param mixed $data
      * @param array $options
      */
@@ -166,8 +207,7 @@ class Database extends PDO
      */
     public function fetchAll($sql, array $params, array $options = array())
     {
-        $sth = $this->run($sql, $params);
-        $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+        $result = $this->run($sql, $params)->fetchAll(PDO::FETCH_ASSOC);
         $this->prepareResults($result, $options);
         return empty($result) ? array() : (array) $result;
     }
@@ -215,14 +255,14 @@ class Database extends PDO
         $fields = implode(',', $keys);
         $values = ':' . implode(',:', $keys);
 
-        $sth = $this->prepare("INSERT INTO $table ($fields) VALUES ($values)");
+        $sth = $this->pdo->prepare("INSERT INTO $table ($fields) VALUES ($values)");
 
         foreach ($data as $key => $value) {
             $sth->bindValue(":$key", $value);
         }
 
         $sth->execute();
-        return $this->lastInsertId();
+        return $this->pdo->lastInsertId();
     }
 
     /**
@@ -383,7 +423,7 @@ class Database extends PDO
         }
 
         $where = implode(' AND ', $carray);
-        $stmt = $this->prepare("UPDATE $table SET $fields WHERE $where");
+        $stmt = $this->pdo->prepare("UPDATE $table SET $fields WHERE $where");
 
         foreach ($data as $key => $value) {
             $stmt->bindValue(":$key", $value);
@@ -415,7 +455,7 @@ class Database extends PDO
         }
 
         $where = implode(' AND ', $carray);
-        $stmt = $this->prepare("DELETE FROM $table WHERE $where");
+        $stmt = $this->pdo->prepare("DELETE FROM $table WHERE $where");
 
         foreach ($conditions as $key => $value) {
             $stmt->bindValue(":$key", $value);
