@@ -32,12 +32,11 @@ class Container
      */
     public static function get($namespace)
     {
-        static::overrideClass($namespace);
+        static::override($namespace);
 
-        $registered = static::registered($namespace);
-
-        if (!empty($registered)) {
-            return $registered;
+        $key = strtolower($namespace);
+        if (isset(static::$instances[$key])) {
+            return static::$instances[$key];
         }
 
         if (!class_exists($namespace)) {
@@ -52,7 +51,7 @@ class Container
      * @param string $namespace
      * @return object
      */
-    protected static function getInstance($namespace)
+    public static function getInstance($namespace)
     {
         $reflection = new ReflectionClass($namespace);
 
@@ -84,10 +83,10 @@ class Container
     }
 
     /**
-     * Tries to override a class namespace
+     * Override a class namespace
      * @param string $namespace
      */
-    protected static function overrideClass(&$namespace)
+    protected static function override(&$namespace)
     {
         static $map = null;
 
@@ -129,19 +128,13 @@ class Container
     }
 
     /**
-     * Returns a registered class instance
+     * Whether the namepace already registered
      * @param string $namespace
-     * @return object|bool
+     * @return bool
      */
     public static function registered($namespace)
     {
-        $key = strtolower($namespace);
-
-        if (isset(static::$instances[$key])) {
-            return static::$instances[$key];
-        }
-
-        return false;
+        return isset(static::$instances[strtolower($namespace)]);
     }
 
 }
