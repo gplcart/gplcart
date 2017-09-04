@@ -24,7 +24,7 @@ function gplcart_version($major = false)
  */
 function gplcart_to_bytes($value)
 {
-    $bytes = (int) $value;
+    $bytes = (int)$value;
     $unit = strtolower(substr($value, -1, 1));
 
     switch ($unit) {
@@ -64,10 +64,10 @@ function gplcart_json_encode($data, $pretty = false)
 function gplcart_is_valid_domain($domain)
 {
     $pattern = '/^(?!\-)'
-            . '(?:[a-zA-Z\d\-]{0,62}[a-zA-Z\d]\.)'
-            . '{1,126}(?!\d+)[a-zA-Z\d]{1,63}$/';
+        . '(?:[a-zA-Z\d\-]{0,62}[a-zA-Z\d]\.)'
+        . '{1,126}(?!\d+)[a-zA-Z\d]{1,63}$/';
 
-    return (bool) preg_match($pattern, $domain);
+    return (bool)preg_match($pattern, $domain);
 }
 
 /**
@@ -82,7 +82,7 @@ function gplcart_is_absolute_url($url)
         (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
         (?:[\w#!:\.\?\+=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
 
-    return (bool) preg_match($pattern, $url);
+    return (bool)preg_match($pattern, $url);
 }
 
 /**
@@ -245,10 +245,11 @@ function gplcart_cache_key($data)
     }
 
     if (!is_array($data)) {
-        return (string) $data;
+        return (string)$data;
     }
 
-    list($key, $hash) = each($data);
+    $hash = reset($data);
+    $key = key($data);
 
     settype($hash, 'array');
     ksort($hash);
