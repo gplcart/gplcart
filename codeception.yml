@@ -1,0 +1,8 @@
+actor: Tester
+paths:
+    tests: tests/codeception
+    data: tests/codeception/data
+    support: tests/codeception/support
+settings:
+    bootstrap: bootstrap.php
+    colors: true

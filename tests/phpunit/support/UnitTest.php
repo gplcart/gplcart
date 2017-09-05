@@ -7,7 +7,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace gplcart\tests\resources;
+namespace gplcart\tests\phpunit\support;
 
 use ReflectionClass;
 use ReflectionException;

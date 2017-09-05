@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit bootstrap="system/bootstrap.php" colors="true">
+<phpunit bootstrap="tests/phpunit/bootstrap.php" colors="true">
     <testsuites>
         <testsuite name="GplCart Test Suite">
-            <directory>tests/unit</directory>
+            <directory>tests/phpunit</directory>
         </testsuite>
     </testsuites>
 </phpunit>
