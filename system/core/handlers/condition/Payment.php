@@ -73,6 +73,7 @@ class Payment extends BaseHandler
         if (isset($data['data']['order']['payment_address'])) {
             return $this->checkZoneIdByAddressId($condition, $data);
         }
+
         return $this->checkZoneIdByAddressData($condition, $data);
     }
 
@@ -167,6 +168,7 @@ class Payment extends BaseHandler
         }
 
         $ids = $this->getAddressZoneId($data['data']['order']['address']);
+
         return $this->compare($ids, $condition['value'], $condition['operator']);
     }
 

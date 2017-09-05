@@ -36,6 +36,7 @@ class Order extends BaseHandler
         if (!isset($data['order']['shipping'])) {
             return false;
         }
+
         return $this->compare($data['order']['shipping'], $condition['value'], $condition['operator']);
     }
 
@@ -50,6 +51,7 @@ class Order extends BaseHandler
         if (!isset($data['order']['payment'])) {
             return false;
         }
+
         return $this->compare($data['order']['payment'], $condition['value'], $condition['operator']);
     }
 

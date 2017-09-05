@@ -33,12 +33,7 @@ class Date extends BaseHandler
     public function date(array $condition)
     {
         $value = strtotime(reset($condition['value']));
-
-        if (empty($value)) {
-            return false;
-        }
-
-        return $this->compare(GC_TIME, $value, $condition['operator']);
+        return empty($value) ? false : $this->compare(GC_TIME, $value, $condition['operator']);
     }
 
 }

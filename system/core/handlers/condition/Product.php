@@ -36,6 +36,7 @@ class Product extends BaseHandler
         if (empty($data['product_id'])) {
             return false;
         }
+
         return $this->compare($data['product_id'], $condition['value'], $condition['operator']);
     }
 
@@ -50,6 +51,7 @@ class Product extends BaseHandler
         if (empty($data['product_id']) || empty($data['category_id'])) {
             return false;
         }
+
         return $this->compare($data['category_id'], $condition['value'], $condition['operator']);
     }
 
@@ -64,6 +66,7 @@ class Product extends BaseHandler
         if (empty(empty($data['product_id']) || $data['brand_category_id'])) {
             return false;
         }
+
         return $this->compare($data['brand_category_id'], $condition['value'], $condition['operator']);
     }
 

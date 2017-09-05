@@ -73,6 +73,7 @@ class Shipping extends BaseHandler
         if (isset($data['data']['order']['shipping_address'])) {
             return $this->checkZoneIdByAddressId($condition, $data);
         }
+
         return $this->checkZoneIdByAddressData($condition, $data);
     }
 

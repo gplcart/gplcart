@@ -64,6 +64,7 @@ class Cart extends BaseHandler
 
         $condition_value[0] = $this->price->amount($condition_value[0], $condition_currency);
         $value = $this->currency->convert($condition_value[0], $condition_currency, $data['cart']['currency']);
+
         return $this->compare($data['cart']['total'], $value, $condition['operator']);
     }
 
@@ -98,6 +99,7 @@ class Cart extends BaseHandler
         if (empty($data['cart']['items']) || !in_array($condition['operator'], array('=', '!='))) {
             return false;
         }
+
         return $this->compare(array_keys($data['cart']['items']), $condition['value'], $condition['operator']);
     }
 

@@ -36,6 +36,7 @@ class PriceRule extends BaseHandler
         if (!isset($data['rule']['used'])) {
             return false;
         }
+
         return $this->compare($data['rule']['used'], $condition['value'], $condition['operator']);
     }
 
