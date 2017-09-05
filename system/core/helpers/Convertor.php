@@ -141,23 +141,23 @@ class Convertor
      */
     public function from($value, $unit)
     {
-        $unit = strtolower($unit);
+        $key = strtolower($unit);
 
-        if (empty($this->units[$unit]['base'])) {
+        if (empty($this->units[$key]['base'])) {
             throw new UnexpectedValueException('Unit does not exist');
         }
 
-        if (!isset($this->units[$unit]['conversion'])) {
+        if (!isset($this->units[$key]['conversion'])) {
             throw new UnexpectedValueException("Conversion is not set for unit $unit");
         }
 
-        $this->base_unit = $this->units[$unit]['base'];
-        $this->value = $this->convertToBase($value, $this->units[$unit]);
+        $this->base_unit = $this->units[$key]['base'];
+        $this->value = $this->convertToBase($value, $this->units[$key]);
     }
 
     /**
      * Convert from value to new unit
-     * @param string $unit
+     * @param string|array $unit
      * @param null|integer $decimals
      * @param bool $round
      * @return mixed
@@ -165,8 +165,6 @@ class Convertor
      */
     public function to($unit, $decimals = null, $round = true)
     {
-        $unit = strtolower($unit);
-
         if (!isset($this->value)) {
             throw new UnexpectedValueException('From value not set');
         }
@@ -175,22 +173,24 @@ class Convertor
             return $this->toMany($unit, $decimals, $round);
         }
 
-        if (empty($this->units[$unit]['base'])) {
+        $key = strtolower($unit);
+
+        if (empty($this->units[$key]['base'])) {
             throw new UnexpectedValueException('Unit does not exist');
         }
 
         if (!isset($this->base_unit)) {
-            $this->base_unit = $this->units[$unit]['base'];
+            $this->base_unit = $this->units[$key]['base'];
         }
 
-        if ($this->units[$unit]['base'] != $this->base_unit) {
+        if ($this->units[$key]['base'] != $this->base_unit) {
             throw new UnexpectedValueException('Cannot convert between units of different types');
         }
 
-        if (is_callable($this->units[$unit]['conversion'])) {
+        if (is_callable($this->units[$key]['conversion'])) {
             $result = $this->units[$unit]['conversion']($this->value, true);
         } else {
-            $result = $this->value / $this->units[$unit]['conversion'];
+            $result = $this->value / $this->units[$key]['conversion'];
         }
 
         if (!isset($decimals)) {
@@ -212,17 +212,18 @@ class Convertor
      * @param bool $round
      * @return array
      */
-    protected function toMany($units, $decimals = null, $round = true)
+    protected function toMany(array $units, $decimals = null, $round = true)
     {
         $results = array();
         foreach ($units as $key) {
             $results[$key] = $this->to($key, $decimals, $round);
         }
+
         return $results;
     }
 
     /**
-     * Convert from value to all compatable units
+     * Convert from value to all compatible units
      * @param number $decimals
      * @param bool $round
      * @return array
@@ -271,7 +272,7 @@ class Convertor
     }
 
     /**
-     * Remove conversion unit
+     * Remove a conversion unit
      * @param string $unit
      * @return array
      */
@@ -345,6 +346,7 @@ class Convertor
             trigger_error($ex->getMessage());
             $result = null;
         }
+
         return $result;
     }
 
