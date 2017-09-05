@@ -101,7 +101,7 @@
         <?php foreach ($_messages as $type => $strings) { ?>
         <div class="alert alert-<?php echo $type; ?> alert-dismissible fade in" role="alert">
           <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">×</span>
+            <span>×</span>
           </button>
           <?php foreach ($strings as $string) { ?>
           <?php echo $this->filter($string); ?><br>

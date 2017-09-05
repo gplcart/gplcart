@@ -74,7 +74,7 @@
 
         html += '<div id="' + id + '" class="popup alert alert-' + type + ' alert-dismissible" role="alert">';
         html += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-        html += '<span aria-hidden="true">&times;</span></button>';
+        html += '<span>&times;</span></button>';
         html += message;
         html += '</div>';
 

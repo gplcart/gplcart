@@ -163,6 +163,7 @@ class Module extends BackendController
         }
 
         $this->outputHttpStatus(403);
+        return null;
     }
 
     /**
