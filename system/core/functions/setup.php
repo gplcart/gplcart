@@ -76,14 +76,13 @@ function gplcart_setup_autoload()
 {
     return spl_autoload_register(function($namespace) {
 
-        $path = str_replace('\\', '/', $namespace);
-
-        if (strpos($path, 'gplcart/') !== 0) {
+        // Skip foreign namespaces
+        if (strpos($namespace, 'gplcart\\') !== 0) {
             return false;
         }
 
-        // Remove "gplcart/" from the path
-        $path = substr($path, 8);
+        // Flip slashes and remove "gplcart/" from the beginning
+        $path = substr(str_replace('\\', '/', $namespace), 8);
         $file = strpos($path, 'tests') === 0 ? GC_ROOT_DIR : GC_SYSTEM_DIR;
         $file .= "/$path.php";
 
