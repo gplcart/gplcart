@@ -18,7 +18,7 @@ class Compressor
 
     /**
      * Request class instance
-     * @var \gplcart\core\helpers\Request $request 
+     * @var \gplcart\core\helpers\Request $request
      */
     protected $request;
 

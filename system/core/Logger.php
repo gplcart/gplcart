@@ -75,7 +75,7 @@ class Logger
 
         $values = array(
             'text' => $message,
-            'data' => (array)$data,
+            'data' => (array) $data,
             'translatable' => $translatable,
             'type' => mb_substr($type, 0, 255, 'UTF-8'),
             'severity' => mb_substr($severity, 0, 255, 'UTF-8')
@@ -97,10 +97,12 @@ class Logger
         );
 
         try {
-            return (bool)$this->db->insert('log', $data);
+            $result = (bool) $this->db->insert('log', $data);
         } catch (\Exception $ex) {
-            return false;
+            $result = false;
         }
+
+        return $result;
     }
 
     /**

@@ -225,7 +225,7 @@ class Cli
     }
 
     /**
-     * Executes a Shell command using php exec()
+     * Executes a Shell command using exec() function
      * @param string $command
      * @param boolean $message
      * @param boolean $output
