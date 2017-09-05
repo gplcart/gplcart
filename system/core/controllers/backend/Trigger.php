@@ -81,9 +81,7 @@ class Trigger extends BackendController
      */
     protected function actionListTrigger()
     {
-        $value = $this->getPosted('value', '', true, 'string');
-        $action = $this->getPosted('action', '', true, 'string');
-        $selected = $this->getPosted('selected', array(), true, 'array');
+        list($selected, $action, $value) = $this->getPostedAction();
 
         if (empty($action)) {
             return null;
@@ -229,17 +227,12 @@ class Trigger extends BackendController
     {
         if ($this->isPosted('delete')) {
             $this->deleteTrigger();
-            return null;
-        }
-
-        if (!$this->isPosted('save') || !$this->validateEditTrigger()) {
-            return null;
-        }
-
-        if (isset($this->data_trigger['trigger_id'])) {
-            $this->updateTrigger();
-        } else {
-            $this->addTrigger();
+        } else if ($this->isPosted('save') && $this->validateEditTrigger()) {
+            if (isset($this->data_trigger['trigger_id'])) {
+                $this->updateTrigger();
+            } else {
+                $this->addTrigger();
+            }
         }
     }
 
@@ -265,15 +258,12 @@ class Trigger extends BackendController
     protected function deleteTrigger()
     {
         $this->controlAccess('trigger_delete');
-        $deleted = $this->trigger->delete($this->data_trigger['trigger_id']);
 
-        if (empty($deleted)) {
-            $message = $this->text('Unable to delete');
-            $this->redirect('', $message, 'warning');
+        if ($this->trigger->delete($this->data_trigger['trigger_id'])) {
+            $this->redirect('admin/settings/trigger', $this->text('Trigger has been deleted'), 'success');
         }
 
-        $message = $this->text('Trigger has been deleted');
-        $this->redirect('admin/settings/trigger', $message, 'success');
+        $this->redirect('', $this->text('Unable to delete'), 'warning');
     }
 
     /**
@@ -282,12 +272,8 @@ class Trigger extends BackendController
     protected function updateTrigger()
     {
         $this->controlAccess('trigger_edit');
-        $submitted = $this->getSubmitted();
-
-        $this->trigger->update($this->data_trigger['trigger_id'], $submitted);
-
-        $message = $this->text('Trigger has been updated');
-        $this->redirect('admin/settings/trigger', $message, 'success');
+        $this->trigger->update($this->data_trigger['trigger_id'], $this->getSubmitted());
+        $this->redirect('admin/settings/trigger', $this->text('Trigger has been updated'), 'success');
     }
 
     /**
@@ -297,15 +283,11 @@ class Trigger extends BackendController
     {
         $this->controlAccess('trigger_add');
 
-        $result = $this->trigger->add($this->getSubmitted());
-
-        if (empty($result)) {
-            $message = $this->text('Trigger has not been added');
-            $this->redirect('', $message, 'warning');
+        if ($this->trigger->add($this->getSubmitted())) {
+            $this->redirect('admin/settings/trigger', $this->text('Trigger has been added'), 'success');
         }
 
-        $message = $this->text('Trigger has been added');
-        $this->redirect('admin/settings/trigger', $message, 'success');
+        $this->redirect('', $this->text('Trigger has not been added'), 'warning');
     }
 
     /**
@@ -336,11 +318,11 @@ class Trigger extends BackendController
      */
     protected function setTitleEditTrigger()
     {
-        $title = $this->text('Add trigger');
-
         if (isset($this->data_trigger['name'])) {
             $vars = array('%name' => $this->data_trigger['name']);
             $title = $this->text('Edit trigger %name', $vars);
+        } else {
+            $title = $this->text('Add trigger');
         }
 
         $this->setTitle($title);

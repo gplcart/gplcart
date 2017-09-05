@@ -30,13 +30,13 @@ class Config
     protected $key;
 
     /**
-     * Config array
+     * An array of configuration options
      * @var array
      */
     protected $config = array();
 
     /**
-     * Whether the config file exists
+     * Whether the runtime configuration file exists
      * @var boolean
      */
     protected $exists = false;
@@ -55,7 +55,7 @@ class Config
     }
 
     /**
-     * Sets system error level
+     * Sets a system error level
      */
     protected function setErrorReportingLevel()
     {
@@ -84,7 +84,7 @@ class Config
     }
 
     /**
-     * Returns a config value
+     * Returns a value from an array of configuration options
      * @param string $key
      * @param mixed $default
      * @return mixed
@@ -103,7 +103,7 @@ class Config
     }
 
     /**
-     * Returns a module config value
+     * Returns a module configuration value
      * @param string $module_id
      * @param string $key
      * @param mixed $default
@@ -118,7 +118,7 @@ class Config
         }
 
         if (!isset($key)) {
-            return (array)$modules[$module_id]['settings'];
+            return (array) $modules[$module_id]['settings'];
         }
 
         $value = gplcart_array_get($modules[$module_id]['settings'], $key);
@@ -126,7 +126,7 @@ class Config
     }
 
     /**
-     * Saves a config value in the database
+     * Saves a configuration value in the database (overrides defaults)
      * @param string $key
      * @param mixed $value
      * @return boolean
@@ -157,13 +157,13 @@ class Config
     }
 
     /**
-     * Deletes a config value from the database
+     * Deletes a configuration value from the database
      * @param string $key
      * @return boolean
      */
     public function reset($key)
     {
-        return (bool)$this->db->delete('settings', array('id' => $key));
+        return (bool) $this->db->delete('settings', array('id' => $key));
     }
 
     /**
@@ -176,7 +176,7 @@ class Config
     }
 
     /**
-     * Whether the config file exists
+     * Whether the runtime configuration file exists
      * @return boolean
      */
     public function exists()
@@ -191,7 +191,7 @@ class Config
      */
     public function tokenValid($token)
     {
-        return gplcart_string_equals($this->token(), (string)$token);
+        return gplcart_string_equals($this->token(), (string) $token);
     }
 
     /**
@@ -275,7 +275,7 @@ class Config
     }
 
     /**
-     * Returns a module
+     * Returns a module data
      * @param string $module_id
      * @return array
      */
@@ -296,7 +296,7 @@ class Config
     }
 
     /**
-     * Returns an array of module data from module.json
+     * Returns an array of module JSON definition
      * @param string $module_id
      * @return array
      */
@@ -345,7 +345,7 @@ class Config
     }
 
     /**
-     * Returns a string containing base name space for the given module ID
+     * Returns a string containing base namespace for the given module ID
      * @param string $module_id
      * @return string
      */
@@ -412,7 +412,7 @@ class Config
     }
 
     /**
-     * Initializes system config
+     * Initializes the system configuration
      * @return bool
      * @throws DatabaseException
      */

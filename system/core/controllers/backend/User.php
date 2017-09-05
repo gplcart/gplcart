@@ -85,9 +85,7 @@ class User extends BackendController
      */
     protected function actionListUser()
     {
-        $value = $this->getPosted('value', '', true, 'string');
-        $action = $this->getPosted('action', '', true, 'string');
-        $selected = $this->getPosted('selected', array(), true, 'array');
+        list($selected, $action, $value) = $this->getPostedAction();
 
         if (empty($action)) {
             return null;
@@ -251,17 +249,12 @@ class User extends BackendController
     {
         if ($this->isPosted('delete')) {
             $this->deleteUser();
-            return null;
-        }
-
-        if (!$this->isPosted('save') || !$this->validateEditUser()) {
-            return null;
-        }
-
-        if (isset($this->data_user['user_id'])) {
-            $this->updateUser();
-        } else {
-            $this->addUser();
+        } else if ($this->isPosted('save') && $this->validateEditUser()) {
+            if (isset($this->data_user['user_id'])) {
+                $this->updateUser();
+            } else {
+                $this->addUser();
+            }
         }
     }
 
@@ -287,15 +280,11 @@ class User extends BackendController
     {
         $this->controlAccess('user_delete');
 
-        $deleted = $this->user->delete($this->data_user['user_id']);
-
-        if ($deleted) {
-            $message = $this->text('User has been deleted');
-            $this->redirect('admin/user/list', $message, 'success');
+        if ($this->user->delete($this->data_user['user_id'])) {
+            $this->redirect('admin/user/list', $this->text('User has been deleted'), 'success');
         }
 
-        $message = $this->text('Unable to delete');
-        $this->redirect('admin/user/list', $message, 'danger');
+        $this->redirect('admin/user/list', $this->text('Unable to delete'), 'danger');
     }
 
     /**
@@ -315,9 +304,7 @@ class User extends BackendController
     {
         $this->controlAccess('user_add');
         $this->user->add($this->getSubmitted());
-
-        $message = $this->text('User has been added');
-        $this->redirect('admin/user/list', $message, 'success');
+        $this->redirect('admin/user/list', $this->text('User has been added'), 'success');
     }
 
     /**
@@ -325,10 +312,10 @@ class User extends BackendController
      */
     protected function setTitleEditUser()
     {
-        $title = $this->text('Add user');
-
         if (isset($this->data_user['name'])) {
             $title = $this->text('Edit user %name', array('%name' => $this->data_user['name']));
+        } else {
+            $title = $this->text('Add user');
         }
 
         $this->setTitle($title);

@@ -143,9 +143,7 @@ class Product extends BackendController
      */
     protected function actionListProduct()
     {
-        $value = $this->getPosted('value', '', true, 'string');
-        $action = $this->getPosted('action', '', true, 'string');
-        $selected = $this->getPosted('selected', array(), true, 'array');
+        list($selected, $action, $value) = $this->getPostedAction();
 
         if (empty($action)) {
             return null;
@@ -309,6 +307,7 @@ class Product extends BackendController
         if (is_numeric($product_id)) {
 
             $product = $this->product->get($product_id);
+
             if (empty($product)) {
                 $this->outputHttpStatus(404);
             }
@@ -342,7 +341,9 @@ class Product extends BackendController
         }
 
         foreach ($product['combination'] as &$combination) {
+
             $combination['path'] = $combination['thumb'] = '';
+
             if (!empty($product['images'][$combination['file_id']])) {
                 $combination['path'] = $product['images'][$combination['file_id']]['path'];
                 $this->attachThumb($combination);
@@ -378,19 +379,13 @@ class Product extends BackendController
     {
         if ($this->isPosted('delete')) {
             $this->deleteProduct();
-            return null;
-        }
-
-        if (!$this->isPosted('save') || !$this->validateEditProduct()) {
-            return null;
-        }
-
-        $this->deleteImages($this->data_product, 'product');
-
-        if (isset($this->data_product['product_id'])) {
-            $this->updateProduct();
-        } else {
-            $this->addProduct();
+        } else if ($this->isPosted('save') && $this->validateEditProduct()) {
+            $this->deleteImages($this->data_product, 'product');
+            if (isset($this->data_product['product_id'])) {
+                $this->updateProduct();
+            } else {
+                $this->addProduct();
+            }
         }
     }
 
@@ -401,15 +396,11 @@ class Product extends BackendController
     {
         $this->controlAccess('product_delete');
 
-        $deleted = $this->product->delete($this->data_product['product_id']);
-
-        if ($deleted) {
-            $message = $this->text('Product has been deleted');
-            $this->redirect('admin/content/product', $message, 'success');
+        if ($this->product->delete($this->data_product['product_id'])) {
+            $this->redirect('admin/content/product', $this->text('Product has been deleted'), 'success');
         }
 
-        $message = $this->text('Unable to delete');
-        $this->redirect('admin/content/product', $message, 'danger');
+        $this->redirect('admin/content/product', $this->text('Unable to delete'), 'danger');
     }
 
     /**
@@ -447,12 +438,8 @@ class Product extends BackendController
     protected function updateProduct()
     {
         $this->controlAccess('product_edit');
-
-        $submitted = $this->getSubmitted();
-        $this->product->update($this->data_product['product_id'], $submitted);
-
-        $message = $this->text('Product has been updated');
-        $this->redirect('admin/content/product', $message, 'success');
+        $this->product->update($this->data_product['product_id'], $this->getSubmitted());
+        $this->redirect('admin/content/product', $this->text('Product has been updated'), 'success');
     }
 
     /**
@@ -462,9 +449,7 @@ class Product extends BackendController
     {
         $this->controlAccess('product_add');
         $this->product->add($this->getSubmitted());
-
-        $message = $this->text('Product has been added');
-        $this->redirect('admin/content/product', $message, 'success');
+        $this->redirect('admin/content/product', $this->text('Product has been added'), 'success');
     }
 
     /**
@@ -557,11 +542,11 @@ class Product extends BackendController
      */
     protected function setTitleEditProduct()
     {
-        $title = $this->text('Add product');
-
         if (isset($this->data_product['product_id'])) {
             $vars = array('%name' => $this->data_product['title']);
             $title = $this->text('Edit product %name', $vars);
+        } else {
+            $title = $this->text('Add product');
         }
 
         $this->setTitle($title);

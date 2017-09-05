@@ -119,8 +119,7 @@ class FieldValue extends BackendController
      */
     protected function actionListFieldValue()
     {
-        $action = $this->getPosted('action', '', true, 'string');
-        $selected = $this->getPosted('selected', array(), true, 'array');
+        list($selected, $action) = $this->getPostedAction();
 
         if (empty($action)) {
             return null;
@@ -192,11 +191,13 @@ class FieldValue extends BackendController
     protected function prepareFieldValues(array $values)
     {
         $imagestyle = $this->config('image_style_ui', 2);
+
         foreach ($values as &$value) {
             if (!empty($value['path'])) {
                 $value['thumb'] = $this->image($value['path'], $imagestyle);
             }
         }
+
         return $values;
     }
 
@@ -206,8 +207,7 @@ class FieldValue extends BackendController
     protected function setTitleListFieldValue()
     {
         $vars = array('%name' => $this->truncate($this->data_field['title']));
-        $text = $this->text('Values of %name', $vars);
-        $this->setTitle($text);
+        $this->setTitle($this->text('Values of %name', $vars));
     }
 
     /**
@@ -263,25 +263,17 @@ class FieldValue extends BackendController
     {
         if ($this->isPosted('delete')) {
             $this->deleteFieldValue();
-            return null;
-        }
+        } else if ($this->isPosted('save') && $this->validateEditFieldValue()) {
 
-        if (!$this->isPosted('save')) {
-            return null;
-        }
+            if ($this->isPosted('delete_image')) {
+                $this->deleteImageFieldValue();
+            }
 
-        if ($this->isPosted('delete_image')) {
-            $this->deleteImageFieldValue();
-        }
-
-        if (!$this->validateEditFieldValue()) {
-            return null;
-        }
-
-        if (isset($this->data_field_value['field_value_id'])) {
-            $this->updateFieldValue();
-        } else {
-            $this->addFieldValue();
+            if (isset($this->data_field_value['field_value_id'])) {
+                $this->updateFieldValue();
+            } else {
+                $this->addFieldValue();
+            }
         }
     }
 
@@ -321,16 +313,12 @@ class FieldValue extends BackendController
     {
         $this->controlAccess('field_value_delete');
 
-        $deleted = $this->field_value->delete($this->data_field_value['field_value_id']);
-
-        if ($deleted) {
+        if ($this->field_value->delete($this->data_field_value['field_value_id'])) {
             $url = "admin/content/field/value/{$this->data_field['field_id']}";
-            $message = $this->text('Field value has been deleted');
-            $this->redirect($url, $message, 'success');
+            $this->redirect($url, $this->text('Field value has been deleted'), 'success');
         }
 
-        $message = $this->text('Unable to delete');
-        $this->redirect('', $message, 'warning');
+        $this->redirect('', $this->text('Unable to delete'), 'warning');
     }
 
     /**
@@ -339,12 +327,9 @@ class FieldValue extends BackendController
     protected function deleteImageFieldValue()
     {
         $this->controlAccess('field_value_edit');
-
         $this->field_value->update($this->data_field_value['field_value_id'], array('file_id' => 0));
-        $file = $this->file->get($this->data_field_value['file_id']);
-
         $this->file->delete($this->data_field_value['file_id']);
-        $this->file->deleteFromDisk($file);
+        $this->file->deleteFromDisk($this->file->get($this->data_field_value['file_id']));
     }
 
     /**
@@ -353,13 +338,9 @@ class FieldValue extends BackendController
     protected function updateFieldValue()
     {
         $this->controlAccess('field_value_edit');
-
-        $submitted = $this->getSubmitted();
-        $this->field_value->update($this->data_field_value['field_value_id'], $submitted);
-
+        $this->field_value->update($this->data_field_value['field_value_id'], $this->getSubmitted());
         $url = "admin/content/field/value/{$this->data_field['field_id']}";
-        $message = $this->text('Field value has been updated');
-        $this->redirect($url, $message, 'success');
+        $this->redirect($url, $this->text('Field value has been updated'), 'success');
     }
 
     /**
@@ -368,12 +349,9 @@ class FieldValue extends BackendController
     protected function addFieldValue()
     {
         $this->controlAccess('field_value_add');
-
         $this->field_value->add($this->getSubmitted());
-
         $url = "admin/content/field/value/{$this->data_field['field_id']}";
-        $message = $this->text('Field value has been added');
-        $this->redirect($url, $message, 'success');
+        $this->redirect($url, $this->text('Field value has been added'), 'success');
     }
 
     /**
@@ -394,12 +372,12 @@ class FieldValue extends BackendController
      */
     protected function setTitleEditFieldValue()
     {
-        $vars = array('%name' => $this->truncate($this->data_field['title']));
-        $title = $this->text('Add value for field %name', $vars);
-
         if (isset($this->data_field_value['field_value_id'])) {
             $vars = array('%name' => $this->truncate($this->data_field_value['title']));
             $title = $this->text('Edit field value %name', $vars);
+        } else {
+            $vars = array('%name' => $this->truncate($this->data_field['title']));
+            $title = $this->text('Add value for field %name', $vars);
         }
 
         $this->setTitle($title);

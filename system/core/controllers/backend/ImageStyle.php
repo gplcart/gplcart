@@ -25,7 +25,7 @@ class ImageStyle extends BackendController
     protected $file;
 
     /**
-     * An array of imagestyle data
+     * An array of image style data
      * @var array
      */
     protected $data_imagestyle = array('actions' => array());
@@ -41,7 +41,7 @@ class ImageStyle extends BackendController
     }
 
     /**
-     * Displays the imagestyle overview page
+     * Displays the image style overview page
      */
     public function listImageStyle()
     {
@@ -77,7 +77,7 @@ class ImageStyle extends BackendController
     }
 
     /**
-     * Sets breadcrumbs on the imagestyle overview page
+     * Sets breadcrumbs on the image style overview page
      */
     protected function setBreadcrumbListImageStyle()
     {
@@ -85,7 +85,7 @@ class ImageStyle extends BackendController
     }
 
     /**
-     * Render and output the imagestyle page
+     * Render and output the image style page
      */
     protected function outputListImageStyle()
     {
@@ -133,17 +133,12 @@ class ImageStyle extends BackendController
     {
         if ($this->isPosted('delete')) {
             $this->deleteImageStyle();
-            return null;
-        }
-
-        if (!$this->isPosted('save') || !$this->validateEditImageStyle()) {
-            return null;
-        }
-
-        if (isset($this->data_imagestyle['imagestyle_id'])) {
-            $this->updateImageStyle();
-        } else {
-            $this->addImageStyle();
+        } else if ($this->isPosted('save') && $this->validateEditImageStyle()) {
+            if (isset($this->data_imagestyle['imagestyle_id'])) {
+                $this->updateImageStyle();
+            } else {
+                $this->addImageStyle();
+            }
         }
     }
 
@@ -153,7 +148,6 @@ class ImageStyle extends BackendController
     protected function deleteImageStyle()
     {
         $this->controlAccess('image_style_delete');
-
         $this->image->deleteStyle($this->data_imagestyle['imagestyle_id']);
         $this->image->clearCache($this->data_imagestyle['imagestyle_id']);
 
@@ -189,13 +183,9 @@ class ImageStyle extends BackendController
     protected function updateImageStyle()
     {
         $this->controlAccess('image_style_edit');
-
-        $submitted = $this->getSubmitted();
-        $this->image->updateStyle($this->data_imagestyle['imagestyle_id'], $submitted);
+        $this->image->updateStyle($this->data_imagestyle['imagestyle_id'], $this->getSubmitted());
         $this->image->clearCache($this->data_imagestyle['imagestyle_id']);
-
-        $message = $this->text('Image style has been updated');
-        $this->redirect('admin/settings/imagestyle', $message, 'success');
+        $this->redirect('admin/settings/imagestyle', $this->text('Image style has been updated'), 'success');
     }
 
     /**
@@ -204,12 +194,8 @@ class ImageStyle extends BackendController
     protected function addImageStyle()
     {
         $this->controlAccess('image_style_add');
-
-        $submitted = $this->getSubmitted();
-        $this->image->addStyle($submitted);
-
-        $message = $this->text('Image style has been added');
-        $this->redirect('admin/settings/imagestyle', $message, 'success');
+        $this->image->addStyle($this->getSubmitted());
+        $this->redirect('admin/settings/imagestyle', $this->text('Image style has been added'), 'success');
     }
 
     /**
@@ -248,11 +234,11 @@ class ImageStyle extends BackendController
      */
     protected function setTitleEditImageStyle()
     {
-        $title = $this->text('Add image style');
-
         if (isset($this->data_imagestyle['imagestyle_id'])) {
             $vars = array('%name' => $this->data_imagestyle['name']);
             $title = $this->text('Edit image style %name', $vars);
+        } else {
+            $title = $this->text('Add image style');
         }
 
         $this->setTitle($title);

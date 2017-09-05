@@ -84,6 +84,7 @@ class CategoryGroup extends BackendController
     {
         $query = $this->query_filter;
         $query['limit'] = $this->limit;
+
         return $this->category_group->getList($query);
     }
 
@@ -162,17 +163,13 @@ class CategoryGroup extends BackendController
     {
         if ($this->isPosted('delete')) {
             $this->deleteCategoryGroup();
-            return null;
-        }
+        } else if ($this->isPosted('save') && $this->validateEditCategoryGroup()) {
 
-        if (!$this->isPosted('save') || !$this->validateEditCategoryGroup()) {
-            return null;
-        }
-
-        if (isset($this->data_category_group['category_group_id'])) {
-            $this->updateCategoryGroup();
-        } else {
-            $this->addCategoryGroup();
+            if (isset($this->data_category_group['category_group_id'])) {
+                $this->updateCategoryGroup();
+            } else {
+                $this->addCategoryGroup();
+            }
         }
     }
 
@@ -196,15 +193,11 @@ class CategoryGroup extends BackendController
     {
         $this->controlAccess('category_group_delete');
 
-        $deleted = $this->category_group->delete($this->data_category_group['category_group_id']);
-
-        if ($deleted) {
-            $message = $this->text('Category group has been deleted');
-            $this->redirect('admin/content/category-group', $message, 'success');
+        if ($this->category_group->delete($this->data_category_group['category_group_id'])) {
+            $this->redirect('admin/content/category-group', $this->text('Category group has been deleted'), 'success');
         }
 
-        $message = $this->text('Unable to delete');
-        $this->redirect('', $message, 'danger');
+        $this->redirect('', $this->text('Unable to delete'), 'danger');
     }
 
     /**
@@ -213,12 +206,8 @@ class CategoryGroup extends BackendController
     protected function updateCategoryGroup()
     {
         $this->controlAccess('category_group_edit');
-
-        $values = $this->getSubmitted();
-        $this->category_group->update($this->data_category_group['category_group_id'], $values);
-
-        $message = $this->text('Category group has been updated');
-        $this->redirect('admin/content/category-group', $message, 'success');
+        $this->category_group->update($this->data_category_group['category_group_id'], $this->getSubmitted());
+        $this->redirect('admin/content/category-group', $this->text('Category group has been updated'), 'success');
     }
 
     /**
@@ -227,12 +216,8 @@ class CategoryGroup extends BackendController
     protected function addCategoryGroup()
     {
         $this->controlAccess('category_group_add');
-
-        $values = $this->getSubmitted();
-        $this->category_group->add($values);
-
-        $message = $this->text('Category group has been added');
-        $this->redirect('admin/content/category-group', $message, 'success');
+        $this->category_group->add($this->getSubmitted());
+        $this->redirect('admin/content/category-group', $this->text('Category group has been added'), 'success');
     }
 
     /**
@@ -240,11 +225,11 @@ class CategoryGroup extends BackendController
      */
     protected function setTitleEditCategoryGroup()
     {
-        $title = $this->text('Add category group');
-
         if (isset($this->data_category_group['category_group_id'])) {
             $vars = array('%name' => $this->data_category_group['title']);
             $title = $this->text('Edit category group %name', $vars);
+        } else {
+            $title = $this->text('Add category group');
         }
 
         $this->setTitle($title);

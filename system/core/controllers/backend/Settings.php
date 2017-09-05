@@ -113,8 +113,7 @@ class Settings extends BackendController
             $this->config->set($key, $value);
         }
 
-        $message = $this->text('Settings have been updated');
-        $this->redirect('', $message, 'success');
+        $this->redirect('', $this->text('Settings have been updated'), 'success');
     }
 
     /**

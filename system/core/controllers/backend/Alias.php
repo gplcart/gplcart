@@ -19,7 +19,7 @@ class Alias extends BackendController
 {
 
     /**
-     * Url model instance
+     * URL model instance
      * @var \gplcart\core\models\Alias $alias
      */
     protected $alias;
@@ -67,23 +67,21 @@ class Alias extends BackendController
      */
     protected function actionListAlias()
     {
-        $action = $this->getPosted('action', '', true, 'string');
-        $selected = $this->getPosted('selected', array(), true, 'array');
+        list($selected, $action) = $this->getPostedAction();
 
-        if (empty($action)) {
-            return null;
-        }
+        if (!empty($action)) {
 
-        $deleted = 0;
-        foreach ($selected as $id) {
-            if ($action === 'delete' && $this->access('alias_delete')) {
-                $deleted += (int) $this->alias->delete($id);
+            $deleted = 0;
+            foreach ($selected as $id) {
+                if ($action === 'delete' && $this->access('alias_delete')) {
+                    $deleted += (int) $this->alias->delete($id);
+                }
             }
-        }
 
-        if ($deleted > 0) {
-            $message = $this->text('Deleted %num items', array('%num' => $deleted));
-            $this->setMessage($message, 'success', true);
+            if ($deleted > 0) {
+                $message = $this->text('Deleted %num items', array('%num' => $deleted));
+                $this->setMessage($message, 'success', true);
+            }
         }
     }
 

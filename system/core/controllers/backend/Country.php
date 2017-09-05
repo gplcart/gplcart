@@ -81,9 +81,7 @@ class Country extends BackendController
      */
     protected function actionListCountry()
     {
-        $value = $this->getPosted('value', '', true, 'string');
-        $action = $this->getPosted('action', '', true, 'string');
-        $selected = $this->getPosted('selected', array(), true, 'array');
+        list($selected, $action, $value) = $this->getPostedAction();
 
         if (empty($action)) {
             return null;
@@ -149,6 +147,7 @@ class Country extends BackendController
     {
         $query = $this->query_filter;
         $query['limit'] = $this->limit;
+
         return (array) $this->country->getList($query);
     }
 
@@ -237,17 +236,12 @@ class Country extends BackendController
     {
         if ($this->isPosted('delete')) {
             $this->deleteCountry();
-            return null;
-        }
-
-        if (!$this->isPosted('save') || !$this->validateEditCountry()) {
-            return null;
-        }
-
-        if (isset($this->data_country['code'])) {
-            $this->updateCountry();
-        } else {
-            $this->addCountry();
+        } else if ($this->isPosted('save') && $this->validateEditCountry()) {
+            if (isset($this->data_country['code'])) {
+                $this->updateCountry();
+            } else {
+                $this->addCountry();
+            }
         }
     }
 
@@ -273,15 +267,11 @@ class Country extends BackendController
     {
         $this->controlAccess('country_delete');
 
-        $deleted = $this->country->delete($this->data_country['code']);
-
-        if ($deleted) {
-            $message = $this->text('Country has been deleted');
-            $this->redirect('admin/settings/country', $message, 'success');
+        if ($this->country->delete($this->data_country['code'])) {
+            $this->redirect('admin/settings/country', $this->text('Country has been deleted'), 'success');
         }
 
-        $message = $this->text('UUnable to delete');
-        $this->redirect('', $message, 'danger');
+        $this->redirect('', $this->text('UUnable to delete'), 'danger');
     }
 
     /**
@@ -290,12 +280,8 @@ class Country extends BackendController
     protected function updateCountry()
     {
         $this->controlAccess('country_edit');
-
-        $submitted = $this->getSubmitted();
-        $this->country->update($this->data_country['code'], $submitted);
-
-        $message = $this->text('Country has been updated');
-        $this->redirect('admin/settings/country', $message, 'success');
+        $this->country->update($this->data_country['code'], $this->getSubmitted());
+        $this->redirect('admin/settings/country', $this->text('Country has been updated'), 'success');
     }
 
     /**
@@ -304,11 +290,8 @@ class Country extends BackendController
     protected function addCountry()
     {
         $this->controlAccess('country_add');
-
         $this->country->add($this->getSubmitted());
-
-        $message = $this->text('Country has been added');
-        $this->redirect('admin/settings/country', $message, 'success');
+        $this->redirect('admin/settings/country', $this->text('Country has been added'), 'success');
     }
 
     /**
@@ -316,11 +299,11 @@ class Country extends BackendController
      */
     protected function setTitleEditCountry()
     {
-        $title = $this->text('Add country');
-
         if (isset($this->data_country['name'])) {
             $vars = array('%name' => $this->data_country['name']);
             $title = $this->text('Edit country %name', $vars);
+        } else {
+            $title = $this->text('Add country');
         }
 
         $this->setTitle($title);
@@ -401,9 +384,7 @@ class Country extends BackendController
         }
 
         $this->country->update($this->data_country['code'], array('format' => $format));
-
-        $message = $this->text('Country has been updated');
-        $this->redirect('admin/settings/country', $message, 'success');
+        $this->redirect('admin/settings/country', $this->text('Country has been updated'), 'success');
     }
 
     /**
@@ -412,8 +393,7 @@ class Country extends BackendController
     protected function setTitleFormatCountry()
     {
         $vars = array('%name' => $this->data_country['name']);
-        $text = $this->text('Address format of %name', $vars);
-        $this->setTitle($text);
+        $this->setTitle($this->text('Address format of %name', $vars));
     }
 
     /**

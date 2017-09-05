@@ -117,11 +117,14 @@ class Module extends BackendController
     protected function finishActionModule($action, $result)
     {
         if ($result === true) {
+
             $message = $this->text('Module has been updated');
+
             if ($action === 'backup') {
                 $vars = array('@url' => $this->url('admin/tool/backup'));
                 $message = $this->text('Backup has been <a href="@url">created</a>', $vars);
             }
+
             $this->redirect('', $message, 'success');
         }
 
@@ -130,8 +133,8 @@ class Module extends BackendController
             $this->redirect('', $message, 'danger');
         }
 
-        foreach ((array)$result as $error) {
-            $this->setMessage((string)$error, 'danger', true);
+        foreach ((array) $result as $error) {
+            $this->setMessage((string) $error, 'danger', true);
         }
 
         $this->redirect();
@@ -160,7 +163,6 @@ class Module extends BackendController
         }
 
         $this->outputHttpStatus(403);
-        return null;
     }
 
     /**
@@ -170,7 +172,6 @@ class Module extends BackendController
     protected function getListModule()
     {
         $modules = $this->module->getList();
-
         $this->checkDependenciesListModule($modules);
 
         $this->sortListModule($modules);
@@ -220,8 +221,7 @@ class Module extends BackendController
             return stripos($module[$field], $term) !== false;
         });
 
-        $modules = $filtered;
-        return $modules;
+        return $modules = $filtered;
     }
 
     /**
@@ -239,6 +239,7 @@ class Module extends BackendController
     /**
      * Sort modules by a field
      * @param array $modules
+     * @return array
      */
     protected function sortListModule(array &$modules)
     {
@@ -255,22 +256,30 @@ class Module extends BackendController
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('type', 'name', 'version', 'id');
 
-        if (in_array($query['order'], $allowed_order) && in_array($query['sort'], $allowed_sort)) {
-
-            uasort($modules, function ($a, $b) use ($query) {
-                if (empty($a[$query['sort']]) || empty($b[$query['sort']])) {
-                    return 0;
-                }
-                $diff = strcmp($a[$query['sort']], $b[$query['sort']]);
-                if ($diff === 0) {
-                    return 0;
-                }
-                if ($query['order'] === 'asc') {
-                    return $diff > 0;
-                }
-                return $diff < 0;
-            });
+        if (!in_array($query['order'], $allowed_order) || !in_array($query['sort'], $allowed_sort)) {
+            return $modules;
         }
+
+        uasort($modules, function ($a, $b) use ($query) {
+
+            if (empty($a[$query['sort']]) || empty($b[$query['sort']])) {
+                return 0;
+            }
+
+            $diff = strcmp($a[$query['sort']], $b[$query['sort']]);
+
+            if ($diff === 0) {
+                return 0;
+            }
+
+            if ($query['order'] === 'asc') {
+                return $diff > 0;
+            }
+
+            return $diff < 0;
+        });
+
+        return $modules;
     }
 
     /**

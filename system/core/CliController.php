@@ -16,7 +16,7 @@ class CliController
 {
 
     /**
-     * Cli helper class instance
+     * CLI helper class instance
      * @var \gplcart\core\helpers\Cli $cli
      */
     protected $cli;
@@ -116,14 +116,14 @@ class CliController
     /**
      * Handle calls to non-existing static methods
      * @param string $method
-     * @param array $args
+     * @param array $arguments
      */
-    public static function __callStatic($method, $args)
+    public static function __callStatic($method, $arguments)
     {
         if (strpos($method, 'composer') === 0 && defined('GC_VERSION')) {
             /* @var $hook \gplcart\core\Hook */
             $hook = Container::get('gplcart\\core\\Hook');
-            $hook->attach('cli.composer', $method, $args);
+            $hook->attach('cli.composer', $method, $arguments);
         }
     }
 
@@ -155,13 +155,14 @@ class CliController
     /**
      * Returns a property
      * @param string $name
-     * @return object
+     * @return mixed
      */
     public function getProperty($name)
     {
         if (property_exists($this, $name)) {
             return $this->$name;
         }
+
         throw new \InvalidArgumentException("Property $name does not exist");
     }
 
@@ -184,7 +185,7 @@ class CliController
      * @return array
      */
     public function setSubmittedMapped(array $map, $arguments = null,
-            $default = array())
+            array $default = array())
     {
         $mapped = $this->mapArguments($map, $arguments);
         $merged = gplcart_array_merge($default, $mapped);
@@ -219,6 +220,7 @@ class CliController
             $value = gplcart_array_get($this->submitted, $key);
             return isset($value) ? $value : $default;
         }
+
         return $this->submitted;
     }
 
@@ -243,7 +245,7 @@ class CliController
     }
 
     /**
-     * Returns the CLI command
+     * Returns the current CLI command
      * @return string
      */
     public function getCommand()
@@ -252,14 +254,14 @@ class CliController
     }
 
     /**
-     * Whether a error is set
+     * Whether a error exists
      * @param null|string $key
      * @return boolean
      */
     public function isError($key = null)
     {
         $value = $this->getError($key);
-        return !empty($value);
+        return is_array($value) ? !empty($value) : isset($value);
     }
 
     /**
@@ -284,25 +286,27 @@ class CliController
             gplcart_array_set($this->errors, $key, $error);
             return $this->errors;
         }
+
         return $this->errors = (array) $error;
     }
 
     /**
      * Returns a single error or an array of all defined errors
      * @param null|string $key
-     * @return string|array
+     * @return mixed
      */
     public function getError($key = null)
     {
         if (isset($key)) {
             return gplcart_array_get($this->errors, $key);
         }
+
         return $this->errors;
     }
 
     /**
-     * Outputs and clears all existing errors
-     * @param null|string|array $errors
+     * Output and clear up all existing errors
+     * @param mixed $errors
      * @param boolean $abort
      */
     public function outputErrors($errors = null, $abort = false)
@@ -353,6 +357,7 @@ class CliController
     public function outputCommandHelpMessage()
     {
         $output = false;
+
         if (!empty($this->current_route['help']['description'])) {
             $output = true;
             $this->line($this->text($this->current_route['help']['description']));
@@ -380,7 +385,9 @@ class CliController
         $this->line($this->text('List of available commands. To see help for a certain command use --help option'));
 
         foreach ($this->route->getList() as $command => $info) {
+
             $description = $this->text('No description available');
+
             if (!empty($info['help']['description'])) {
                 $description = $this->text($info['help']['description']);
             }
@@ -393,9 +400,9 @@ class CliController
     }
 
     /**
-     * Map command line options to an array of submitted data to be passed to validators
+     * Map the command line options to an array of submitted data to be passed to validators
      * @param array $map An array of pairs "options-name" => "some.array.value", e.g 'db-name' => 'database.name'
-     * which turns --db-name command option into nested array $submitted['database']['name']
+     * which turns --db-name command option into the nested array $submitted['database']['name']
      * @param null|array $arguments
      * @return array
      */
@@ -416,7 +423,7 @@ class CliController
     }
 
     /**
-     * Validates a submitted set of data
+     * Validates a submitted data
      * @param string $handler_id
      * @param array $options
      * @return mixed
@@ -424,6 +431,7 @@ class CliController
     public function validateComponent($handler_id, array $options = array())
     {
         $result = $this->validator->run($handler_id, $this->submitted, $options);
+
         if ($result === true) {
             return true;
         }
@@ -433,7 +441,7 @@ class CliController
     }
 
     /**
-     * Whether an input passed a field validation
+     * Whether an input passed the field validation
      * @param string $input
      * @param string $field
      * @param string $handler_id
@@ -442,12 +450,11 @@ class CliController
     public function isValidInput($input, $field, $handler_id)
     {
         $this->setSubmitted($field, $input);
-        $result = $this->validateComponent($handler_id, array('field' => $field));
-        return $result === true;
+        return $this->validateComponent($handler_id, array('field' => $field)) === true;
     }
 
     /**
-     * Output a error message
+     * Output an error message
      * @param string $text
      * @return $this
      */
@@ -469,7 +476,7 @@ class CliController
     }
 
     /**
-     * Output a line with an optional text
+     * Output a text line
      * @param string $text
      * @return $this
      */

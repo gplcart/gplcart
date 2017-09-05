@@ -74,9 +74,7 @@ class Collection extends BackendController
      */
     protected function actionListCollection()
     {
-        $value = $this->getPosted('value', '', true, 'string');
-        $action = $this->getPosted('action', '', true, 'string');
-        $selected = $this->getPosted('selected', array(), true, 'array');
+        list($selected, $action, $value) = $this->getPostedAction();
 
         if (empty($action)) {
             return null;
@@ -124,6 +122,7 @@ class Collection extends BackendController
     {
         $query = $this->query_filter;
         $query['limit'] = $this->limit;
+
         return (array) $this->collection->getList($query);
     }
 
@@ -177,17 +176,12 @@ class Collection extends BackendController
     {
         if ($this->isPosted('delete')) {
             $this->deleteCollection();
-            return null;
-        }
-
-        if (!$this->isPosted('save') || !$this->validateEditCollection()) {
-            return null;
-        }
-
-        if (isset($this->data_collection['collection_id'])) {
-            $this->updateCollection();
-        } else {
-            $this->addCollection();
+        } else if ($this->isPosted('save') && $this->validateEditCollection()) {
+            if (isset($this->data_collection['collection_id'])) {
+                $this->updateCollection();
+            } else {
+                $this->addCollection();
+            }
         }
     }
 
@@ -237,15 +231,12 @@ class Collection extends BackendController
     protected function deleteCollection()
     {
         $this->controlAccess('collection_delete');
-        $result = $this->collection->delete($this->data_collection['collection_id']);
 
-        if (empty($result)) {
-            $message = $this->text('Failed to delete this collection. Is it empty?');
-            $this->redirect('', $message, 'danger');
+        if ($this->collection->delete($this->data_collection['collection_id'])) {
+            $this->redirect('admin/content/collection', $this->text('Collection has been deleted'), 'success');
         }
 
-        $message = $this->text('Collection has been deleted');
-        $this->redirect('admin/content/collection', $message, 'success');
+        $this->redirect('', $this->text('Unable to delete'), 'danger');
     }
 
     /**
@@ -255,16 +246,11 @@ class Collection extends BackendController
     {
         $this->controlAccess('collection_edit');
 
-        $submitted = $this->getSubmitted();
-        $result = $this->collection->update($this->data_collection['collection_id'], $submitted);
-
-        if (empty($result)) {
-            $message = $this->text('Collection has not been updated');
-            $this->redirect('', $message, 'danger');
+        if ($this->collection->update($this->data_collection['collection_id'], $this->getSubmitted())) {
+            $this->redirect('admin/content/collection', $this->text('Collection has been updated'), 'success');
         }
 
-        $message = $this->text('Collection has been updated');
-        $this->redirect('admin/content/collection', $message, 'success');
+        $this->redirect('', $this->text('Collection has not been updated'), 'danger');
     }
 
     /**
@@ -274,16 +260,11 @@ class Collection extends BackendController
     {
         $this->controlAccess('collection_add');
 
-        $submitted = $this->getSubmitted();
-        $result = $this->collection->add($submitted);
-
-        if (empty($result)) {
-            $message = $this->text('Collection has not been added');
-            $this->redirect('', $message, 'danger');
+        if ($this->collection->add($this->getSubmitted())) {
+            $this->redirect('admin/content/collection', $this->text('Collection has been added'), 'success');
         }
 
-        $message = $this->text('Collection has been added');
-        $this->redirect('admin/content/collection', $message, 'success');
+        $this->redirect('', $this->text('Collection has not been added'), 'danger');
     }
 
     /**
@@ -291,11 +272,11 @@ class Collection extends BackendController
      */
     protected function setTitleEditCollection()
     {
-        $title = $this->text('Add collection');
-
         if (isset($this->data_collection['title'])) {
             $vars = array('%name' => $this->data_collection['title']);
             $title = $this->text('Edit collection %name', $vars);
+        } else {
+            $title = $this->text('Add collection');
         }
 
         $this->setTitle($title);

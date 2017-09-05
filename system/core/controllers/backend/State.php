@@ -127,9 +127,7 @@ class State extends BackendController
      */
     protected function actionListState()
     {
-        $value = $this->getPosted('value', '', true, 'string');
-        $action = $this->getPosted('action', '', true, 'string');
-        $selected = $this->getPosted('selected', array(), true, 'array');
+        list($selected, $action, $value) = $this->getPostedAction();
 
         if (empty($action)) {
             return null;
@@ -183,8 +181,7 @@ class State extends BackendController
     protected function setTitleListState()
     {
         $vars = array('%name' => $this->data_country['name']);
-        $text = $this->text('Country states of %name', $vars);
-        $this->setTitle($text);
+        $this->setTitle($this->text('Country states of %name', $vars));
     }
 
     /**
@@ -259,17 +256,12 @@ class State extends BackendController
     {
         if ($this->isPosted('delete')) {
             $this->deleteState();
-            return null;
-        }
-
-        if (!$this->isPosted('save') || !$this->validateEditState()) {
-            return null;
-        }
-
-        if (isset($this->data_state['state_id'])) {
-            $this->updateState();
-        } else {
-            $this->addState();
+        } else if ($this->isPosted('save') && $this->validateEditState()) {
+            if (isset($this->data_state['state_id'])) {
+                $this->updateState();
+            } else {
+                $this->addState();
+            }
         }
     }
 
@@ -295,18 +287,13 @@ class State extends BackendController
     protected function deleteState()
     {
         $this->controlAccess('state_delete');
-
-        $deleted = $this->state->delete($this->data_state['state_id']);
-
         $url = "admin/settings/states/{$this->data_country['code']}";
 
-        if ($deleted) {
-            $message = $this->text('Country state has been deleted');
-            $this->redirect($url, $message, 'success');
+        if ($this->state->delete($this->data_state['state_id'])) {
+            $this->redirect($url, $this->text('Country state has been deleted'), 'success');
         }
 
-        $message = $this->text('Unable to delete');
-        $this->redirect($url, $message, 'danger');
+        $this->redirect($url, $this->text('Unable to delete'), 'danger');
     }
 
     /**
@@ -315,9 +302,7 @@ class State extends BackendController
     protected function updateState()
     {
         $this->controlAccess('state_edit');
-
-        $submitted = $this->getSubmitted();
-        $this->state->update($this->data_state['state_id'], $submitted);
+        $this->state->update($this->data_state['state_id'], $this->getSubmitted());
 
         $message = $this->text('Country state has been updated');
         $this->redirect("admin/settings/states/{$this->data_country['code']}", $message, 'success');
@@ -329,9 +314,7 @@ class State extends BackendController
     protected function addState()
     {
         $this->controlAccess('state_add');
-
-        $submitted = $this->getSubmitted();
-        $this->state->add($submitted);
+        $this->state->add($this->getSubmitted());
 
         $message = $this->text('Country state has been added');
         $this->redirect("admin/settings/states/{$this->data_country['code']}", $message, 'success');
@@ -342,12 +325,12 @@ class State extends BackendController
      */
     protected function setTitleEditState()
     {
-        $vars = array('%name' => $this->data_country['name']);
-        $title = $this->text('Add country state for %name', $vars);
-
         if (isset($this->data_state['state_id'])) {
             $vars = array('%name' => $this->data_state['name']);
             $title = $this->text('Edit country state %name', $vars);
+        } else {
+            $vars = array('%name' => $this->data_country['name']);
+            $title = $this->text('Add country state for %name', $vars);
         }
 
         $this->setTitle($title);

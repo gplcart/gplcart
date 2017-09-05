@@ -80,10 +80,7 @@ class Language extends BackendController
     {
         if ($this->isPosted('delete')) {
             $this->deleteLanguage();
-            return null;
-        }
-
-        if ($this->isPosted('save') && $this->validateLanguage()) {
+        } else if ($this->isPosted('save') && $this->validateLanguage()) {
             if (isset($this->data_language['code'])) {
                 $this->updateLanguage();
             } else {
@@ -99,15 +96,11 @@ class Language extends BackendController
     {
         $this->controlAccess('language_delete');
 
-        $deleted = $this->language->delete($this->data_language['code']);
-
-        if ($deleted) {
-            $message = $this->text('Language has been deleted');
-            $this->redirect('admin/settings/language', $message, 'success');
+        if ($this->language->delete($this->data_language['code'])) {
+            $this->redirect('admin/settings/language', $this->text('Language has been deleted'), 'success');
         }
 
-        $message = $this->text('Unable to delete');
-        $this->redirect('', $message, 'danger');
+        $this->redirect('', $this->text('Unable to delete'), 'danger');
     }
 
     /**
@@ -132,15 +125,9 @@ class Language extends BackendController
     protected function updateLanguage()
     {
         $this->controlAccess('language_edit');
-
-        $submitted = $this->getSubmitted();
-        $this->language->update($this->data_language['code'], $submitted);
-
-        $message = $this->text('Language has been updated');
-
-        // Redirect to a path without language code to avoid "Page not found"
-        // if the current language has been disabled
-        $this->redirect('admin/settings/language', $message, 'success', true);
+        $this->language->update($this->data_language['code'], $this->getSubmitted());
+        // Redirect to a path without language code to avoid "Page not found" if the current language has been disabled
+        $this->redirect('admin/settings/language', $this->text('Language has been updated'), 'success', true);
     }
 
     /**
@@ -149,11 +136,8 @@ class Language extends BackendController
     protected function addLanguage()
     {
         $this->controlAccess('language_add');
-
         $this->language->add($this->getSubmitted());
-
-        $message = $this->text('Language has been added');
-        $this->redirect('admin/settings/language', $message, 'success');
+        $this->redirect('admin/settings/language', $this->text('Language has been added'), 'success');
     }
 
     /**
@@ -161,11 +145,11 @@ class Language extends BackendController
      */
     protected function setTitleEditLanguage()
     {
-        $title = $this->text('Add language');
-
         if (isset($this->data_language['code'])) {
             $vars = array('%name' => $this->data_language['native_name']);
             $title = $this->text('Edit language %name', $vars);
+        } else {
+            $title = $this->text('Add language');
         }
 
         $this->setTitle($title);

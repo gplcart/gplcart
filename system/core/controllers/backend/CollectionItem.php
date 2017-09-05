@@ -87,9 +87,7 @@ class CollectionItem extends BackendController
      */
     protected function actionListCollectionItem()
     {
-        $value = $this->getPosted('value', '', true, 'string');
-        $action = $this->getPosted('action', '', true, 'string');
-        $selected = $this->getPosted('selected', array(), true, 'array');
+        list($selected, $action, $value) = $this->getPostedAction();
 
         if (empty($action)) {
             return null;
@@ -157,8 +155,7 @@ class CollectionItem extends BackendController
     protected function setTitleListCollectionItem()
     {
         $vars = array('%name' => $this->data_collection['title']);
-        $title = $this->text('Items of collection %name', $vars);
-        $this->setTitle($title);
+        $this->setTitle($this->text('Items of collection %name', $vars));
     }
 
     /**
@@ -253,16 +250,12 @@ class CollectionItem extends BackendController
     {
         $this->controlAccess('collection_item_add');
 
-        $added = $this->collection_item->add($this->getSubmitted());
-
-        if (empty($added)) {
-            $message = $this->text('Collection item has not been added');
-            $this->redirect('', $message, 'warning');
+        if ($this->collection_item->add($this->getSubmitted())) {
+            $url = "admin/content/collection-item/{$this->data_collection['collection_id']}";
+            $this->redirect($url, $this->text('Collection item has been added'), 'success');
         }
 
-        $url = "admin/content/collection-item/{$this->data_collection['collection_id']}";
-        $message = $this->text('Collection item has been added');
-        $this->redirect($url, $message, 'success');
+        $this->redirect('', $this->text('Collection item has not been added'), 'warning');
     }
 
     /**
@@ -279,8 +272,7 @@ class CollectionItem extends BackendController
     protected function setTitleEditCollectionItem()
     {
         $vars = array('%name' => $this->data_collection['title']);
-        $title = $this->text('Add item to collection %name', $vars);
-        $this->setTitle($title);
+        $this->setTitle($this->text('Add item to collection %name', $vars));
     }
 
     /**

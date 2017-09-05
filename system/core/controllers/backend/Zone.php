@@ -81,9 +81,7 @@ class Zone extends BackendController
      */
     protected function actionListZone()
     {
-        $value = $this->getPosted('value', '', true, 'string');
-        $action = $this->getPosted('action', '', true, 'string');
-        $selected = $this->getPosted('selected', array(), true, 'array');
+        list($selected, $action, $value) = $this->getPostedAction();
 
         if (empty($action)) {
             return null;
@@ -198,17 +196,13 @@ class Zone extends BackendController
     {
         if ($this->isPosted('delete')) {
             $this->deleteZone();
-            return null;
-        }
+        } else if ($this->isPosted('save') && $this->validateEditZone()) {
 
-        if (!$this->isPosted('save') || !$this->validateEditZone()) {
-            return null;
-        }
-
-        if (isset($this->data_zone['zone_id'])) {
-            $this->updateZone();
-        } else {
-            $this->addZone();
+            if (isset($this->data_zone['zone_id'])) {
+                $this->updateZone();
+            } else {
+                $this->addZone();
+            }
         }
     }
 
@@ -234,15 +228,11 @@ class Zone extends BackendController
     {
         $this->controlAccess('zone_delete');
 
-        $deleted = $this->zone->delete($this->data_zone['zone_id']);
-
-        if ($deleted) {
-            $message = $this->text('Zone has been deleted');
-            $this->redirect('admin/settings/zone', $message, 'success');
+        if ($this->zone->delete($this->data_zone['zone_id'])) {
+            $this->redirect('admin/settings/zone', $this->text('Zone has been deleted'), 'success');
         }
 
-        $message = $this->text('Unable to delete');
-        $this->redirect('', $message, 'danger');
+        $this->redirect('', $this->text('Unable to delete'), 'danger');
     }
 
     /**
@@ -251,12 +241,8 @@ class Zone extends BackendController
     protected function updateZone()
     {
         $this->controlAccess('zone_edit');
-
-        $values = $this->getSubmitted();
-        $this->zone->update($this->data_zone['zone_id'], $values);
-
-        $message = $this->text('Zone has been updated');
-        $this->redirect('admin/settings/zone', $message, 'success');
+        $this->zone->update($this->data_zone['zone_id'], $this->getSubmitted());
+        $this->redirect('admin/settings/zone', $this->text('Zone has been updated'), 'success');
     }
 
     /**
@@ -266,9 +252,7 @@ class Zone extends BackendController
     {
         $this->controlAccess('zone_add');
         $this->zone->add($this->getSubmitted());
-
-        $message = $this->text('Zone has been added');
-        $this->redirect('admin/settings/zone', $message, 'success');
+        $this->redirect('admin/settings/zone', $this->text('Zone has been added'), 'success');
     }
 
     /**
@@ -276,11 +260,11 @@ class Zone extends BackendController
      */
     protected function setTitleEditZone()
     {
-        $title = $this->text('Add zone');
-
         if (isset($this->data_zone['zone_id'])) {
             $vars = array('%name' => $this->data_zone['title']);
             $title = $this->text('Edit zone %name', $vars);
+        } else {
+            $title = $this->text('Add zone');
         }
 
         $this->setTitle($title);

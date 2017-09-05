@@ -24,7 +24,7 @@ class CliRoute
     protected $hook;
 
     /**
-     * Cli class instance
+     * CLI class instance
      * @var \gplcart\core\helpers\Cli $cli
      */
     protected $cli;
@@ -58,7 +58,7 @@ class CliRoute
     }
 
     /**
-     * Returns the current route
+     * Returns the current CLI route
      * @return array
      */
     public function get()
@@ -101,7 +101,7 @@ class CliRoute
     }
 
     /**
-     * Processes the current command
+     * Processes the current CLI command
      */
     public function process()
     {

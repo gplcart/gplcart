@@ -85,6 +85,7 @@ class Page extends BackendController
     {
         $allowed = array('title', 'store_id', 'page_id',
             'status', 'created', 'email');
+
         $this->setFilter($allowed);
     }
 
@@ -93,9 +94,7 @@ class Page extends BackendController
      */
     protected function actionPage()
     {
-        $value = $this->getPosted('value', '', true, 'string');
-        $action = $this->getPosted('action', '', true, 'string');
-        $selected = $this->getPosted('selected', array(), true, 'array');
+        list($selected, $action, $value) = $this->getPostedAction();
 
         if (empty($action)) {
             return null;
@@ -199,7 +198,6 @@ class Page extends BackendController
 
         $this->setTitleEditPage();
         $this->setBreadcrumbEditPage();
-
         $this->setData('page', $this->data_page);
 
         $this->submitEditPage();
@@ -217,10 +215,13 @@ class Page extends BackendController
     protected function setPage($page_id)
     {
         if (is_numeric($page_id)) {
+
             $page = $this->page->get($page_id);
+
             if (empty($page)) {
                 $this->outputHttpStatus(404);
             }
+
             $this->data_page = $this->preparePage($page);
         }
     }
@@ -235,6 +236,7 @@ class Page extends BackendController
         $user = $this->user->get($page['user_id']);
         $page['author'] = isset($user['email']) ? $user['email'] : $this->text('Unknown');
         $page['alias'] = $this->alias->get('page_id', $page['page_id']);
+
         return $page;
     }
 
@@ -245,19 +247,15 @@ class Page extends BackendController
     {
         if ($this->isPosted('delete')) {
             $this->deletePage();
-            return null;
-        }
+        } else if ($this->isPosted('save') && $this->validateEditPage()) {
 
-        if (!$this->isPosted('save') || !$this->validateEditPage()) {
-            return null;
-        }
+            $this->deleteImages($this->data_page, 'page');
 
-        $this->deleteImages($this->data_page, 'page');
-
-        if (isset($this->data_page['page_id'])) {
-            $this->updatePage();
-        } else {
-            $this->addPage();
+            if (isset($this->data_page['page_id'])) {
+                $this->updatePage();
+            } else {
+                $this->addPage();
+            }
         }
     }
 
@@ -287,11 +285,8 @@ class Page extends BackendController
     protected function deletePage()
     {
         $this->controlAccess('page_delete');
-
         $this->page->delete($this->data_page['page_id']);
-
-        $message = $this->text('Page has been deleted');
-        $this->redirect('admin/content/page', $message, 'success');
+        $this->redirect('admin/content/page', $this->text('Page has been deleted'), 'success');
     }
 
     /**
@@ -300,12 +295,8 @@ class Page extends BackendController
     protected function updatePage()
     {
         $this->controlAccess('page_edit');
-
-        $submitted = $this->getSubmitted();
-        $this->page->update($this->data_page['page_id'], $submitted);
-
-        $message = $this->text('Page has been updated');
-        $this->redirect('admin/content/page', $message, 'success');
+        $this->page->update($this->data_page['page_id'], $this->getSubmitted());
+        $this->redirect('admin/content/page', $this->text('Page has been updated'), 'success');
     }
 
     /**
@@ -314,11 +305,8 @@ class Page extends BackendController
     protected function addPage()
     {
         $this->controlAccess('page_add');
-
         $this->page->add($this->getSubmitted());
-
-        $message = $this->text('Page has been added');
-        $this->redirect('admin/content/page', $message, 'success');
+        $this->redirect('admin/content/page', $this->text('Page has been added'), 'success');
     }
 
     /**
@@ -348,11 +336,11 @@ class Page extends BackendController
      */
     protected function setTitleEditPage()
     {
-        $title = $this->text('Add page');
-
         if (isset($this->data_page['page_id'])) {
             $vars = array('%name' => $this->data_page['title']);
             $title = $this->text('Edit page %name', $vars);
+        } else {
+            $title = $this->text('Add page');
         }
 
         $this->setTitle($title);

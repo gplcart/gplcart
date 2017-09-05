@@ -33,7 +33,7 @@ class Category extends BackendController
     protected $category_group;
 
     /**
-     * Url model instance
+     * URL model instance
      * @var \gplcart\core\models\Alias $alias
      */
     protected $alias;
@@ -102,21 +102,19 @@ class Category extends BackendController
      */
     protected function actionListCategory()
     {
-        $value = $this->getPosted('value', '', true, 'string');
-        $action = $this->getPosted('action', '', true, 'string');
-        $categories = $this->getPosted('selected', array(), true, 'array');
+        list($selected, $action, $value) = $this->getPostedAction();
 
         if (empty($action)) {
             return null;
         }
 
         if ($action === 'weight' && $this->access('category_edit')) {
-            $this->updateWeightCategory($categories);
+            $this->updateWeightCategory($selected);
             return null;
         }
 
         $updated = $deleted = 0;
-        foreach ($categories as $category_id) {
+        foreach ($selected as $category_id) {
 
             if ($action === 'status' && $this->access('category_edit')) {
                 $updated += (int) $this->category->update($category_id, array('status' => $value));
@@ -148,8 +146,7 @@ class Category extends BackendController
             $this->category->update($category_id, array('weight' => $weight));
         }
 
-        $message = $this->text('Items have been reordered');
-        $this->response->json(array('success' => $message));
+        $this->response->json(array('success' => $this->text('Items have been reordered')));
     }
 
     /**
@@ -158,7 +155,9 @@ class Category extends BackendController
      */
     protected function getListCategory()
     {
-        $options = array('category_group_id' => $this->data_category_group['category_group_id']);
+        $options = array(
+            'category_group_id' => $this->data_category_group['category_group_id']);
+
         $categories = $this->category->getTree($options);
 
         return $this->prepareListCategory($categories);
@@ -201,8 +200,7 @@ class Category extends BackendController
     protected function setTitleListCategory()
     {
         $vars = array('%name' => $this->data_category_group['title']);
-        $text = $this->text('Categories of group %name', $vars);
-        $this->setTitle($text);
+        $this->setTitle($this->text('Categories of group %name', $vars));
     }
 
     /**
@@ -292,19 +290,15 @@ class Category extends BackendController
     {
         if ($this->isPosted('delete')) {
             $this->deleteCategory();
-            return null;
-        }
+        } else if ($this->isPosted('save') && $this->validateEditCategory()) {
 
-        if (!$this->isPosted('save') || !$this->validateEditCategory()) {
-            return null;
-        }
+            $this->deleteImages($this->data_category, 'category');
 
-        $this->deleteImages($this->data_category, 'category');
-
-        if (isset($this->data_category['category_id'])) {
-            $this->updateCategory();
-        } else {
-            $this->addCategory();
+            if (isset($this->data_category['category_id'])) {
+                $this->updateCategory();
+            } else {
+                $this->addCategory();
+            }
         }
     }
 
@@ -337,16 +331,12 @@ class Category extends BackendController
     {
         $this->controlAccess('category_delete');
 
-        $deleted = $this->category->delete($this->data_category['category_id']);
-
-        if ($deleted) {
-            $message = $this->text('Category has been deleted');
+        if ($this->category->delete($this->data_category['category_id'])) {
             $url = "admin/content/category/{$this->data_category_group['category_group_id']}";
-            $this->redirect($url, $message, 'success');
+            $this->redirect($url, $this->text('Category has been deleted'), 'success');
         }
 
-        $message = $this->text('Unable to delete');
-        $this->redirect('', $message, 'danger');
+        $this->redirect('', $this->text('Unable to delete'), 'danger');
     }
 
     /**
@@ -355,15 +345,9 @@ class Category extends BackendController
     protected function updateCategory()
     {
         $this->controlAccess('category_edit');
-
-        $submitted = $this->getSubmitted();
-
-        $this->category->update($this->data_category['category_id'], $submitted);
-
-        $message = $this->text('Category has been updated');
+        $this->category->update($this->data_category['category_id'], $this->getSubmitted());
         $url = "admin/content/category/{$this->data_category_group['category_group_id']}";
-
-        $this->redirect($url, $message, 'success');
+        $this->redirect($url, $this->text('Category has been updated'), 'success');
     }
 
     /**
@@ -372,13 +356,9 @@ class Category extends BackendController
     protected function addCategory()
     {
         $this->controlAccess('category_add');
-
         $this->category->add($this->getSubmitted());
-
-        $message = $this->text('Category has been added');
         $url = "admin/content/category/{$this->data_category_group['category_group_id']}";
-
-        $this->redirect($url, $message, 'success');
+        $this->redirect($url, $this->text('Category has been added'), 'success');
     }
 
     /**
@@ -388,27 +368,26 @@ class Category extends BackendController
     {
         $category_id = $this->getData('category.category_id');
 
-        if (!isset($category_id)) {
-            return null;
+        if (isset($category_id)) {
+
+            $category_group_id = $this->getData('category_group.category_group_id');
+
+            $options = array(
+                'parent_id' => $category_id,
+                'category_group_id' => $category_group_id
+            );
+
+            $children = $this->category->getTree($options);
+
+            $exclude = array($category_id);
+            foreach ($children as $child) {
+                $exclude[] = $child['category_id'];
+            }
+
+            $categories = $this->getData('categories');
+            $modified = array_diff_key($categories, array_flip($exclude));
+            $this->setData('categories', $modified);
         }
-
-        $category_group_id = $this->getData('category_group.category_group_id');
-
-        $options = array(
-            'parent_id' => $category_id,
-            'category_group_id' => $category_group_id
-        );
-
-        $children = $this->category->getTree($options);
-
-        $exclude = array($category_id);
-        foreach ($children as $child) {
-            $exclude[] = $child['category_id'];
-        }
-
-        $categories = $this->getData('categories');
-        $modified = array_diff_key($categories, array_flip($exclude));
-        $this->setData('categories', $modified);
     }
 
     /**
@@ -426,12 +405,12 @@ class Category extends BackendController
      */
     protected function setTitleEditCategory()
     {
-        $vars = array('%name' => $this->data_category_group['title']);
-        $title = $this->text('Add category to %name', $vars);
-
         if (isset($this->data_category['category_id'])) {
             $vars = array('%name' => $this->data_category['title']);
             $title = $this->text('Edit category %name', $vars);
+        } else {
+            $vars = array('%name' => $this->data_category_group['title']);
+            $title = $this->text('Add category to %name', $vars);
         }
 
         $this->setTitle($title);

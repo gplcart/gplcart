@@ -132,6 +132,7 @@ class Dashboard extends BackendController
         foreach ($dashboard['data'] as &$item) {
             $item['rendered'] = $this->render($item['template'], array('content' => $item));
         }
+
         return $dashboard;
     }
 
@@ -148,14 +149,11 @@ class Dashboard extends BackendController
      */
     protected function submitEditDashboard()
     {
-        if ($this->isPosted('delete') && isset($this->data_dashboard['dashboard_id'])) {
-            $this->deleteDashboard();
-            return null;
-        }
-
         if ($this->isPosted('save')) {
             $this->validateEditDashboard();
             $this->saveDashboard();
+        } else if ($this->isPosted('delete') && isset($this->data_dashboard['dashboard_id'])) {
+            $this->deleteDashboard();
         }
     }
 

@@ -24,7 +24,9 @@ use gplcart\core\traits\Order as OrderTrait,
  */
 class Order extends BackendController
 {
-    use OrderTrait, OrderComponentTrait;
+
+    use OrderTrait,
+        OrderComponentTrait;
 
     /**
      * Code of successfully sent notification
@@ -92,8 +94,8 @@ class Order extends BackendController
      * @param ShippingModel $shipping
      */
     public function __construct(OrderModel $order, AddressModel $address,
-                                PriceModel $price, PriceRuleModel $pricerule, PaymentModel $payment,
-                                ShippingModel $shipping)
+            PriceModel $price, PriceRuleModel $pricerule, PaymentModel $payment,
+            ShippingModel $shipping)
     {
         parent::__construct();
 
@@ -163,8 +165,7 @@ class Order extends BackendController
         $this->controlAccess('order_delete');
 
         if ($this->order->delete($this->data_order['order_id'])) {
-            $message = $this->text('Order has been deleted');
-            $this->redirect('admin/sale/order', $message, 'success');
+            $this->redirect('admin/sale/order', $this->text('Order has been deleted'), 'success');
         }
 
         $this->redirect('', $this->text('Unable to delete'), 'warning');
@@ -222,7 +223,7 @@ class Order extends BackendController
             'order_id' => $this->data_order['order_id']
         );
 
-        return (bool)$this->order->addLog($log);
+        return (bool) $this->order->addLog($log);
     }
 
     /**
@@ -289,7 +290,7 @@ class Order extends BackendController
             'order_id' => $this->data_order['order_id']
         );
 
-        return (int)$this->order->getLogList($options);
+        return (int) $this->order->getLogList($options);
     }
 
     /**
@@ -304,7 +305,7 @@ class Order extends BackendController
             'order_id' => $this->data_order['order_id']
         );
 
-        return (array)$this->order->getLogList($options);
+        return (array) $this->order->getLogList($options);
     }
 
     /**
@@ -321,8 +322,7 @@ class Order extends BackendController
     protected function setTitleIndexOrder()
     {
         $vars = array('@order_id' => $this->data_order['order_id']);
-        $title = $this->text('Order #@order_id', $vars);
-        $this->setTitle($title);
+        $this->setTitle($this->text('Order #@order_id', $vars));
     }
 
     /**
@@ -379,7 +379,7 @@ class Order extends BackendController
         }
 
         $options = array('count' => true, 'user_id' => $order['user_id']);
-        $order['user']['total_orders'] = (int)$this->order->getList($options);
+        $order['user']['total_orders'] = (int) $this->order->getList($options);
 
         $order['customer'] = $this->text('Anonymous');
         $order['creator_formatted'] = $this->text('Customer');
@@ -517,7 +517,7 @@ class Order extends BackendController
     {
         $query = $this->query_filter;
         $query['count'] = true;
-        $this->total = (int)$this->order->getList($query);
+        $this->total = (int) $this->order->getList($query);
     }
 
     /**
@@ -525,9 +525,7 @@ class Order extends BackendController
      */
     protected function actionListOrder()
     {
-        $value = $this->getPosted('value', '', true, 'string');
-        $action = $this->getPosted('action', '', true, 'string');
-        $selected = $this->getPosted('selected', array(), true, 'array');
+        list($selected, $action, $value) = $this->getPostedAction();
 
         if (empty($action)) {
             return null;
@@ -539,15 +537,18 @@ class Order extends BackendController
         foreach ($selected as $id) {
 
             if ($action === 'status' && $this->access('order_edit')) {
-                $updated = (bool)$this->order->update($id, array('status' => $value));
+
+                $updated = (bool) $this->order->update($id, array('status' => $value));
+
                 if ($updated && $this->setNotificationUpdateOrder($id) == static::NOTIFICATION_ERROR) {
                     $failed_notifications[] = $id;
                 }
+
                 $updated++;
             }
 
             if ($action === 'delete' && $this->access('order_delete')) {
-                $deleted += (int)$this->order->delete($id);
+                $deleted += (int) $this->order->delete($id);
             }
         }
 
@@ -600,7 +601,7 @@ class Order extends BackendController
     {
         $query = $this->query_filter;
         $query['limit'] = $this->limit;
-        $orders = (array)$this->order->getList($query);
+        $orders = (array) $this->order->getList($query);
 
         return $this->prepareListOrder($orders);
     }

@@ -90,8 +90,7 @@ class Transaction extends BackendController
      */
     protected function actionListTransaction()
     {
-        $action = $this->getPosted('action', '', true, 'string');
-        $selected = $this->getPosted('selected', array(), true, 'array');
+        list($selected, $action) = $this->getPostedAction();
 
         if (empty($action)) {
             return null;
@@ -119,6 +118,7 @@ class Transaction extends BackendController
     {
         $query = $this->query_filter;
         $query['limit'] = $this->limit;
+
         return (array) $this->transaction->getList($query);
     }
 

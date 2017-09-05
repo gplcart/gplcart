@@ -545,7 +545,8 @@ abstract class Controller
      * @param mixed $return_no_error
      * @return mixed
      */
-    public function error($key = null, $return_error = null, $return_no_error = '')
+    public function error($key = null, $return_error = null,
+            $return_no_error = '')
     {
         if (isset($key)) {
             $result = gplcart_array_get($this->errors, $key);

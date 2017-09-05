@@ -66,8 +66,7 @@ class Controller extends BaseController
     public function renderJob($job = null)
     {
         if (!isset($job)) {
-            $job_id = $this->getQuery('job_id', '');
-            $job = $this->job->get($job_id);
+            $job = $this->job->get($this->getQuery('job_id', ''));
         }
 
         if (empty($job['status'])) {
@@ -79,7 +78,7 @@ class Controller extends BaseController
     }
 
     /**
-     * Adds JS code to call cron URL
+     * Adds JS code to call CRON URL
      */
     protected function setJsCron()
     {
@@ -249,6 +248,19 @@ class Controller extends BaseController
         ksort($items);
         $options += array('items' => $items);
         return $this->renderMenu($options);
+    }
+
+    /**
+     * Returns an array of posted parameters for various bulk actions
+     * @return array
+     */
+    protected function getPostedAction()
+    {
+        return array(
+            $this->getPosted('selected', array(), true, 'array'),
+            $this->getPosted('action', '', true, 'string'),
+            $this->getPosted('value', '', true, 'string')
+        );
     }
 
 }

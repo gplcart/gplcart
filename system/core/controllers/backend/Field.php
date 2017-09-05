@@ -74,8 +74,7 @@ class Field extends BackendController
      */
     protected function actionListField()
     {
-        $action = $this->getPosted('action', '', true, 'string');
-        $selected = $this->getPosted('selected', array(), true, 'array');
+        list($selected, $action) = $this->getPostedAction();
 
         if (empty($action)) {
             return null;
@@ -112,6 +111,7 @@ class Field extends BackendController
     {
         $query = $this->query_filter;
         $query['limit'] = $this->limit;
+
         return $this->field->getList($query);
     }
 
@@ -166,17 +166,12 @@ class Field extends BackendController
     {
         if ($this->isPosted('delete')) {
             $this->deleteField();
-            return null;
-        }
-
-        if (!$this->isPosted('save') || !$this->validateEditField()) {
-            return null;
-        }
-
-        if (isset($this->data_field['field_id'])) {
-            $this->updateField();
-        } else {
-            $this->addField();
+        } else if ($this->isPosted('save') && $this->validateEditField()) {
+            if (isset($this->data_field['field_id'])) {
+                $this->updateField();
+            } else {
+                $this->addField();
+            }
         }
     }
 
@@ -212,13 +207,10 @@ class Field extends BackendController
     protected function setField($field_id)
     {
         if (is_numeric($field_id)) {
-            $field = $this->field->get($field_id);
-
-            if (empty($field)) {
+            $this->data_field = $this->field->get($field_id);
+            if (empty($this->data_field)) {
                 $this->outputHttpStatus(404);
             }
-
-            $this->data_field = $field;
         }
     }
 
@@ -229,15 +221,11 @@ class Field extends BackendController
     {
         $this->controlAccess('field_delete');
 
-        $deleted = $this->field->delete($this->data_field['field_id']);
-
-        if ($deleted) {
-            $message = $this->text('Field has been deleted');
-            $this->redirect('admin/content/field', $message, 'success');
+        if ($this->field->delete($this->data_field['field_id'])) {
+            $this->redirect('admin/content/field', $this->text('Field has been deleted'), 'success');
         }
 
-        $message = $this->text('Unable to delete');
-        $this->redirect('', $message, 'danger');
+        $this->redirect('', $this->text('Unable to delete'), 'danger');
     }
 
     /**
@@ -246,12 +234,8 @@ class Field extends BackendController
     protected function updateField()
     {
         $this->controlAccess('field_edit');
-
-        $values = $this->getSubmitted();
-        $this->field->update($this->data_field['field_id'], $values);
-
-        $message = $this->text('Field has been updated');
-        $this->redirect('admin/content/field', $message, 'success');
+        $this->field->update($this->data_field['field_id'], $this->getSubmitted());
+        $this->redirect('admin/content/field', $this->text('Field has been updated'), 'success');
     }
 
     /**
@@ -260,11 +244,8 @@ class Field extends BackendController
     protected function addField()
     {
         $this->controlAccess('field_add');
-
         $this->field->add($this->getSubmitted());
-
-        $message = $this->text('Field has been added');
-        $this->redirect('admin/content/field', $message, 'success');
+        $this->redirect('admin/content/field', $this->text('Field has been added'), 'success');
     }
 
     /**
@@ -272,11 +253,10 @@ class Field extends BackendController
      */
     protected function setTitleEditField()
     {
-        $title = $this->text('Add field');
-
         if (isset($this->data_field['field_id'])) {
-            $vars = array('%name' => $this->data_field['title']);
-            $title = $this->text('Edit field %name', $vars);
+            $title = $this->text('Edit field %name', array('%name' => $this->data_field['title']));
+        } else {
+            $title = $this->text('Add field');
         }
 
         $this->setTitle($title);

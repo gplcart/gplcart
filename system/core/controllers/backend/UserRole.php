@@ -66,12 +66,7 @@ class UserRole extends BackendController
     protected function getPermissionsUserRole($chunked = false)
     {
         $permissions = $this->role->getPermissions();
-
-        if ($chunked) {
-            $permissions = gplcart_array_split($permissions, 3);
-        }
-
-        return $permissions;
+        return $chunked ? gplcart_array_split($permissions, 3) : $permissions;
     }
 
     /**
@@ -95,17 +90,12 @@ class UserRole extends BackendController
     {
         if ($this->isPosted('delete')) {
             $this->deleteUserRole();
-            return null;
-        }
-
-        if (!$this->isPosted('save') || !$this->validateEditUserRole()) {
-            return null;
-        }
-
-        if (isset($this->data_role['role_id'])) {
-            $this->updateUserRole();
-        } else {
-            $this->addUserRole();
+        } else if ($this->isPosted('save') && $this->validateEditUserRole()) {
+            if (isset($this->data_role['role_id'])) {
+                $this->updateUserRole();
+            } else {
+                $this->addUserRole();
+            }
         }
     }
 
@@ -137,15 +127,11 @@ class UserRole extends BackendController
     {
         $this->controlAccess('user_role_delete');
 
-        $deleted = $this->role->delete($this->data_role['role_id']);
-
-        if ($deleted) {
-            $message = $this->text('Role has been deleted');
-            $this->redirect('admin/user/role', $message, 'success');
+        if ($this->role->delete($this->data_role['role_id'])) {
+            $this->redirect('admin/user/role', $this->text('Role has been deleted'), 'success');
         }
 
-        $message = $this->text('Unable to delete');
-        $this->redirect('', $message, 'danger');
+        $this->redirect('', $this->text('Unable to delete'), 'danger');
     }
 
     /**
@@ -154,12 +140,8 @@ class UserRole extends BackendController
     protected function updateUserRole()
     {
         $this->controlAccess('user_role_edit');
-
-        $values = $this->getSubmitted();
-        $this->role->update($this->data_role['role_id'], $values);
-
-        $message = $this->text('Role has been updated');
-        $this->redirect('admin/user/role', $message, 'success');
+        $this->role->update($this->data_role['role_id'], $this->getSubmitted());
+        $this->redirect('admin/user/role', $this->text('Role has been updated'), 'success');
     }
 
     /**
@@ -169,9 +151,7 @@ class UserRole extends BackendController
     {
         $this->controlAccess('user_role_add');
         $this->role->add($this->getSubmitted());
-
-        $message = $this->text('Role has been added');
-        $this->redirect('admin/user/role', $message, 'success');
+        $this->redirect('admin/user/role', $this->text('Role has been added'), 'success');
     }
 
     /**
@@ -179,11 +159,11 @@ class UserRole extends BackendController
      */
     protected function setTitleEditUserRole()
     {
-        $title = $this->text('Add role');
-
         if (isset($this->data_role['role_id'])) {
             $vars = array('%name' => $this->data_role['name']);
             $title = $this->text('Edit role %name', $vars);
+        } else {
+            $title = $this->text('Add role');
         }
 
         $this->setTitle($title);
@@ -253,9 +233,7 @@ class UserRole extends BackendController
      */
     protected function actionListUserRole()
     {
-        $value = $this->getPosted('value', '', true, 'string');
-        $action = $this->getPosted('action', '', true, 'string');
-        $selected = $this->getPosted('selected', array(), true, 'array');
+        list($selected, $action, $value) = $this->getPostedAction();
 
         if (empty($action)) {
             return null;

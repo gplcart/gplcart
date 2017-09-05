@@ -101,9 +101,7 @@ class Store extends BackendController
      */
     protected function actionListStore()
     {
-        $value = $this->getPosted('value', '', true, 'string');
-        $action = $this->getPosted('action', '', true, 'string');
-        $selected = $this->getPosted('selected', array(), true, 'array');
+        list($selected, $action, $value) = $this->getPostedAction();
 
         if (empty($action)) {
             return null;
@@ -140,6 +138,7 @@ class Store extends BackendController
     {
         $query = $this->query_filter;
         $query['limit'] = $this->limit;
+
         return $this->store->getList($query);
     }
 
@@ -229,13 +228,13 @@ class Store extends BackendController
      */
     protected function setStore($store_id)
     {
+        $this->data_store = array('data' => $this->store->defaultConfig());
+
         if (is_numeric($store_id)) {
             $this->data_store = $this->store->get($store_id);
             if (empty($this->data_store)) {
                 $this->outputHttpStatus(404);
             }
-        } else {
-            $this->data_store = array('data' => $this->store->defaultConfig());
         }
     }
 
@@ -283,17 +282,12 @@ class Store extends BackendController
     {
         if ($this->isPosted('delete')) {
             $this->deleteStore();
-            return null;
-        }
-
-        if (!$this->isPosted('save') || !$this->validateEditStore()) {
-            return null;
-        }
-
-        if (isset($this->data_store['store_id'])) {
-            $this->updateStore();
-        } else {
-            $this->addStore();
+        } else if ($this->isPosted('save') && $this->validateEditStore()) {
+            if (isset($this->data_store['store_id'])) {
+                $this->updateStore();
+            } else {
+                $this->addStore();
+            }
         }
     }
 
@@ -324,15 +318,11 @@ class Store extends BackendController
     {
         $this->controlAccess('store_delete');
 
-        $deleted = $this->store->delete($this->data_store['store_id']);
-
-        if ($deleted) {
-            $message = $this->text('Store has been deleted');
-            $this->redirect('admin/settings/store', $message, 'success');
+        if ($this->store->delete($this->data_store['store_id'])) {
+            $this->redirect('admin/settings/store', $this->text('Store has been deleted'), 'success');
         }
 
-        $message = $this->text('Unable to delete');
-        $this->redirect('', $message, 'danger');
+        $this->redirect('', $this->text('Unable to delete'), 'danger');
     }
 
     /**
@@ -341,12 +331,8 @@ class Store extends BackendController
     protected function updateStore()
     {
         $this->controlAccess('store_edit');
-
-        $submitted = $this->getSubmitted();
-        $this->store->update($this->data_store['store_id'], $submitted);
-
-        $message = $this->text('Store has been updated');
-        $this->redirect('admin/settings/store', $message, 'success');
+        $this->store->update($this->data_store['store_id'], $this->getSubmitted());
+        $this->redirect('admin/settings/store', $this->text('Store has been updated'), 'success');
     }
 
     /**
@@ -356,9 +342,7 @@ class Store extends BackendController
     {
         $this->controlAccess('store_add');
         $this->store->add($this->getSubmitted());
-
-        $message = $this->text('Store has been added');
-        $this->redirect('admin/settings/store', $message, 'success');
+        $this->redirect('admin/settings/store', $this->text('Store has been added'), 'success');
     }
 
     /**
@@ -396,11 +380,11 @@ class Store extends BackendController
      */
     protected function seTitleEditStore()
     {
-        $title = $this->text('Add store');
-
         if (isset($this->data_store['store_id'])) {
             $vars = array('%name' => $this->data_store['name']);
             $title = $this->text('Edit store %name', $vars);
+        } else {
+            $title = $this->text('Add store');
         }
 
         $this->setTitle($title);
