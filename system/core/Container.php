@@ -32,43 +32,41 @@ class Container
      */
     public static function get($namespace)
     {
-        static::override($namespace);
-
         $key = strtolower($namespace);
+
         if (isset(static::$instances[$key])) {
             return static::$instances[$key];
         }
+
+        static::override($namespace);
 
         if (!class_exists($namespace)) {
             throw new ReflectionException("Class $namespace does not exist");
         }
 
-        return static::getInstance($namespace);
+        $instance = static::getInstance($namespace);
+        static::register($namespace, $instance);
+        return $instance;
     }
 
     /**
-     * Returns a registered instance using its namespace and arguments
+     * Returns an instance using its namespace
      * @param string $namespace
      * @return object
      */
     public static function getInstance($namespace)
     {
         $reflection = new ReflectionClass($namespace);
-
         $constructor = $reflection->getConstructor();
 
         if (empty($constructor)) {
-            $instance = new $namespace;
-            static::register($namespace, $instance);
-            return $instance;
+            return new $namespace;
         }
 
         $parameters = $constructor->getParameters();
 
         if (empty($parameters)) {
-            $instance = new $namespace;
-            static::register($namespace, $instance);
-            return $instance;
+            return new $namespace;
         }
 
         $dependencies = array();
@@ -77,9 +75,7 @@ class Container
             $dependencies[] = static::get($parameter_class->getName());
         }
 
-        $instance = $reflection->newInstanceArgs($dependencies);
-        static::register($namespace, $instance);
-        return $instance;
+        return $reflection->newInstanceArgs($dependencies);
     }
 
     /**
@@ -128,7 +124,7 @@ class Container
     }
 
     /**
-     * Whether the namepace already registered
+     * Whether the namespace already registered
      * @param string $namespace
      * @return bool
      */
