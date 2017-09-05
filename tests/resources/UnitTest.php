@@ -69,9 +69,7 @@ class UnitTest extends PHPUnit_Framework_TestCase
         $dependencies = array();
         foreach ($parameters as $parameter) {
             $parameter_class = $parameter->getClass();
-            if (!empty($parameter_class)) {
-                $dependencies[] = $this->getInstance($parameter_class->getName());
-            }
+            $dependencies[] = $this->getInstance($parameter_class->getName());
         }
 
         return $reflection->newInstanceArgs($dependencies);
