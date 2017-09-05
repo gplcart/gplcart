@@ -595,7 +595,7 @@ abstract class Controller
      */
     public function getCss()
     {
-        $css = $this->asset->getCss();
+        $css = $this->asset->get('css', 'top');
         $this->compressAssets($css, 'css');
         return $css;
     }
@@ -607,7 +607,7 @@ abstract class Controller
      */
     public function getJs($position)
     {
-        $js = $this->asset->getJs($position);
+        $js = $this->asset->get('js', $position);
         $this->compressAssets($js, 'js');
         return $js;
     }
@@ -1850,7 +1850,10 @@ abstract class Controller
      */
     public function setJs($script, array $data = array())
     {
-        return $this->asset->setJs($script, $data);
+        $data['type'] = 'js';
+        $data['asset'] = $script;
+
+        return $this->asset->set($data);
     }
 
     /**
@@ -1861,7 +1864,10 @@ abstract class Controller
      */
     public function setCss($css, array $data = array())
     {
-        return $this->asset->setCss($css, $data);
+        $data['asset'] = $css;
+        $data['type'] = 'css';
+
+        return $this->asset->set($data);
     }
 
     /**

@@ -33,47 +33,6 @@ class Asset
     protected $groups = array();
 
     /**
-     * Adds a JS file
-     * @param string $script
-     * @param array $data
-     * @return bool|array
-     */
-    public function setJs($script, $data = array())
-    {
-        $data += array(
-            'type' => 'js',
-            'asset' => $script,
-            'position' => 'top'
-        );
-
-        if (!isset($data['weight'])) {
-            $data['weight'] = $this->getNextWeight('js', $data['position']);
-        }
-
-        return $this->set($data);
-    }
-
-    /**
-     * Adds a CSS file
-     * @param string $css
-     * @param array $data
-     * @return bool|array
-     */
-    public function setCss($css, $data = array())
-    {
-        $data += array(
-            'asset' => $css,
-            'type' => 'css',
-        );
-
-        if (!isset($data['weight'])) {
-            $data['weight'] = $this->getNextWeight('css', 'top');
-        }
-
-        return $this->set($data);
-    }
-
-    /**
      * Sets groups of assets
      * @param string $key
      * @param array $data
@@ -93,25 +52,6 @@ class Asset
         }
 
         return $this->set($data);
-    }
-
-    /**
-     * Returns an array of added JS asset
-     * @param string $pos Either "top" or "bottom"
-     * @return array
-     */
-    public function getJs($pos)
-    {
-        return $this->get('js', $pos);
-    }
-
-    /**
-     * Returns an array of added CSS assets
-     * @return array
-     */
-    public function getCss()
-    {
-        return $this->get('css', 'top');
     }
 
     /**
@@ -143,7 +83,7 @@ class Asset
      * @param string $position
      * @return array
      */
-    protected function get($type, $position)
+    public function get($type, $position)
     {
         if (empty($this->assets[$type][$position])) {
             return array();
@@ -154,12 +94,12 @@ class Asset
 
     /**
      * Sets an asset
-     * @param array $asset
+     * @param array $data
      * @return bool|array
      */
-    protected function set(array $asset)
+    public function set(array $data)
     {
-        $build = $this->build($asset);
+        $build = $this->build($data);
 
         if (empty($build['asset'])) {
             return false;
@@ -195,6 +135,10 @@ class Asset
             'file' => '',
             'aggregate' => $type !== 'external'
         );
+
+        if (!isset($data['weight'])) {
+            $data['weight'] = $this->getNextWeight($data['type'], $data['position']);
+        }
 
         if (!in_array($data['type'], array('css', 'js'))) {
             $data['text'] = true;
