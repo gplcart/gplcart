@@ -191,10 +191,15 @@ class Job extends Model
 
         $progress = 0;
         $start_time = microtime(true);
+        $handlers = $this->getHandlers();
 
         while (round((microtime(true) - $start_time) * 1000, 2) < self::MAX_TIME) {
 
-            $this->call($job);
+            $handler = Handler::get($handlers, $job['id'], 'process');
+
+            if (!empty($handler)) {
+                call_user_func_array($handler, array(&$job));
+            }
 
             if (empty($job['status'])) {
                 break;
@@ -222,25 +227,6 @@ class Job extends Model
 
         $this->hook->attach('job.process.after', $job, $result, $response, $this);
         return $response;
-    }
-
-    /**
-     * Calls a job processor
-     * @param array $job
-     * @return boolean
-     */
-    protected function call(array &$job)
-    {
-        $handlers = $this->getHandlers();
-
-        if (empty($handlers[$job['id']]['handlers']['process'])) {
-            return false;
-        }
-
-        $callable = $handlers[$job['id']]['handlers']['process'];
-        $instance = Container::get($callable[0]);
-        call_user_func_array(array($instance, $callable[1]), array(&$job));
-        return true;
     }
 
     /**
