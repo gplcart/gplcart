@@ -160,6 +160,10 @@ class Hook
     protected function call($namespace, $method, &$a = null, &$b = null,
             &$c = null, &$d = null, &$e = null)
     {
+        if (!is_callable(array($namespace, $method))) {
+            return false;
+        }
+
         try {
             $instance = Container::get($namespace);
             $instance->{$method}($a, $b, $c, $d, $e);
