@@ -10,6 +10,7 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Model,
+    gplcart\core\Handler,
     gplcart\core\Container;
 use gplcart\core\models\Language as LanguageModel;
 
@@ -52,11 +53,10 @@ class Validator extends Model
         }
 
         $handlers = $this->getHandlers();
+        $handler = Handler::get($handlers, $handler_id, 'validate');
 
-        if (!empty($handlers[$handler_id]['handlers']['validate'])) {
-            $callable = $handlers[$handler_id]['handlers']['validate'];
-            $instance = Container::get($callable[0]);
-            $result = call_user_func_array(array($instance, $callable[1]), array(&$submitted, $options));
+        if (!empty($handler)) {
+            $result = call_user_func_array($handler, array(&$submitted, $options));
         }
 
         $this->hook->attach('validator.run.after', $submitted, $options, $result, $this);
