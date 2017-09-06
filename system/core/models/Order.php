@@ -365,7 +365,7 @@ class Order extends Model
             return true; // Record already exists
         }
 
-        $lifespan = $this->config->get('history_lifespan', 30*24*60*60);
+        $lifespan = $this->config->get('history_lifespan', 30 * 24 * 60 * 60);
 
         // Do not mark again old orders.
         // Their history records probably have been removed by cron
@@ -404,7 +404,7 @@ class Order extends Model
      */
     public function isNew(array $order)
     {
-        $lifespan = $this->config->get('history_lifespan', 30*24*60*60);
+        $lifespan = $this->config->get('history_lifespan', 30 * 24 * 60 * 60);
 
         if (empty($order['viewed'])) {
             return !((GC_TIME - $order['created']) > $lifespan);
