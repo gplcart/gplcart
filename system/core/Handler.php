@@ -73,6 +73,10 @@ class Handler
             }
             $handler = $handlers['handlers'][$name];
         }
+        
+        if (!is_callable($handler)) {
+            throw new \InvalidArgumentException(implode('::', $handler) . ' is not callable');
+        }
 
         if ($handler instanceof \Closure) {
             return $handler;
