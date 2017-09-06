@@ -36,7 +36,7 @@
           </label>
         </div>
         <div class="help-block">
-          <?php echo $this->text('Disabled products will not be available for frontend users and search engines'); ?>
+          <?php echo $this->text('Disabled products will not be available to frontend users'); ?>
         </div>
       </div>
     </div>
@@ -46,7 +46,7 @@
         <input name="product[title]" maxlength="255" class="form-control" value="<?php echo isset($product['title']) ? $this->e($product['title']) : ''; ?>" autofocus>
         <div class="help-block">
           <?php echo $this->error('title'); ?>
-          <div class="text-muted"><?php echo $this->text('Required. The title will be used on the product page and menu'); ?></div>
+          <div class="text-muted"><?php echo $this->text('The title will be used on the product page and menu'); ?></div>
         </div>
       </div>
     </div>
@@ -56,7 +56,7 @@
         <textarea class="form-control" data-wysiwyg="true" rows="10" name="product[description]"><?php echo isset($product['description']) ? $this->filter($product['description']) : ''; ?></textarea>
         <div class="help-block">
           <?php echo $this->error('description'); ?>
-          <div class="text-muted"><?php echo $this->text('Required. You can use any HTML but user can see only allowed tags'); ?></div>
+          <div class="text-muted"><?php echo $this->text('You can use any HTML but user can see only allowed tags'); ?></div>
         </div>
       </div>
     </div>
@@ -180,7 +180,7 @@
           <?php } ?>
         </select>
         <div class="help-block">
-          <?php echo $this->text('Select a store where to display this product'); ?>
+          <?php echo $this->text('Select a store where to display this item'); ?>
         </div>
       </div>
     </div>
@@ -220,7 +220,7 @@
           <?php } ?>
         </select>
         <div class="help-block">
-          <?php echo $this->text('Catalog category for this product. Multiple categories are not supported'); ?>
+          <?php echo $this->text('Catalog category for this product'); ?>
         </div>
       </div>
     </div>
@@ -341,7 +341,7 @@
         <div class="help-block">
           <?php echo $this->error('width'); ?>
           <div class="text-muted">
-            <?php echo $this->text('A physical width of the product. Used to calculate shipping cost'); ?>
+            <?php echo $this->text('Physical width of the product. Used to calculate shipping cost'); ?>
           </div>
         </div>
       </div>
@@ -353,7 +353,7 @@
         <div class="help-block">
           <?php echo $this->error('height'); ?>
           <div class="text-muted">
-            <?php echo $this->text('A physical height of the product. Used to calculate shipping cost'); ?>
+            <?php echo $this->text('Physical height of the product. Used to calculate shipping cost'); ?>
           </div>
         </div>
       </div>
@@ -365,7 +365,7 @@
         <div class="help-block">
           <?php echo $this->error('length'); ?>
           <div class="text-muted">
-            <?php echo $this->text('A physical length of the product. Used to calculate shipping cost'); ?>
+            <?php echo $this->text('Physical length of the product. Used to calculate shipping cost'); ?>
           </div>
         </div>
       </div>
@@ -394,7 +394,7 @@
         <div class="help-block">
           <?php echo $this->error('weight'); ?>
           <div class="text-muted">
-            <?php echo $this->text('A physical weight of the product. Used to calculate shipping cost'); ?>
+            <?php echo $this->text('Physical weight of the product. Used to calculate shipping cost'); ?>
           </div>
         </div>
       </div>

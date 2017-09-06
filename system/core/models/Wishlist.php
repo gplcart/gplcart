@@ -114,7 +114,7 @@ class Wishlist extends Model
         $result = array(
             'redirect' => '',
             'severity' => 'warning',
-            'message' => $this->language->text('Unable to add to wishlist')
+            'message' => $this->language->text('Unable to add product')
         );
 
         $href = $this->url->get('wishlist');
@@ -170,7 +170,7 @@ class Wishlist extends Model
         $result = array(
             'redirect' => '',
             'severity' => 'warning',
-            'message' => $this->language->text('Unable to delete from wishlist')
+            'message' => $this->language->text('Unable to delete')
         );
 
         if ($this->delete($data)) {

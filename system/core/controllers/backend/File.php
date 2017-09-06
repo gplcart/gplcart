@@ -256,7 +256,7 @@ class File extends BackendController
             $this->redirect('admin/content/file', $this->text('File has been deleted from database and disk'), 'success');
         }
 
-        $this->redirect('admin/content/file', $this->text('An error occurred while deleting the file'), 'warning');
+        $this->redirect('admin/content/file', $this->text('Unable to delete'), 'warning');
     }
 
     /**
@@ -279,7 +279,8 @@ class File extends BackendController
     {
         $this->controlAccess('file_edit');
         $this->file->update($this->data_file['file_id'], $this->getSubmitted());
-        $this->redirect('admin/content/file', $this->text('File has been updated'), 'success');
+        $message = $this->text('@item has been updated', array('@item' => $this->text('File')));
+        $this->redirect('admin/content/file', $message, 'success');
     }
 
     /**
@@ -290,10 +291,12 @@ class File extends BackendController
         $this->controlAccess('file_add');
 
         if ($this->file->add($this->getSubmitted())) {
-            $this->redirect('admin/content/file', $this->text('File has been added'), 'success');
+            $message = $this->text('@item has been added', array('@item' => $this->text('File')));
+            $this->redirect('admin/content/file', $message, 'success');
         }
 
-        $this->redirect('admin/content/file', $this->text('File has not been added'), 'warning');
+        $message = $this->text('@item has not been added', array('@item' => $this->text('File')));
+        $this->redirect('admin/content/file', $message, 'warning');
     }
 
     /**
@@ -302,7 +305,7 @@ class File extends BackendController
     protected function setTitleEditFile()
     {
         if (isset($this->data_file['file_id'])) {
-            $title = $this->text('Edit file %name', array('%name' => $this->data_file['title']));
+            $title = $this->text('Edit %name', array('%name' => $this->data_file['title']));
         } else {
             $title = $this->text('Add file');
         }

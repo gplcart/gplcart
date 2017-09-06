@@ -50,7 +50,7 @@
       <div class="help-block">
         <?php echo $this->error('code'); ?>
         <div class="text-muted">
-          <?php echo $this->text('Required. A language code according to ISO 639-1. Culture names also accepted'); ?>
+          <?php echo $this->text('Language code according to ISO 639-1. Culture names also accepted'); ?>
         </div>
       </div>
     </div>
@@ -74,7 +74,7 @@
       <div class="help-block">
         <?php echo $this->error('native_name'); ?>
         <div class="text-muted">
-          <?php echo $this->text('A local name of the language, e.g 中文'); ?>
+          <?php echo $this->text('Local name of the language, e.g 中文'); ?>
         </div>
       </div>
     </div>
@@ -86,7 +86,7 @@
       <div class="help-block">
         <?php echo $this->error('weight'); ?>
         <div class="text-muted">
-          <?php echo $this->text('Languages are sorted in lists by the weight value. Lower value means higher position'); ?>
+          <?php echo $this->text('Items are sorted in lists by the weight value. Lower value means higher position'); ?>
         </div>
       </div>
     </div>

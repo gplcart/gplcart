@@ -197,7 +197,6 @@ class Zone extends BackendController
         if ($this->isPosted('delete')) {
             $this->deleteZone();
         } else if ($this->isPosted('save') && $this->validateEditZone()) {
-
             if (isset($this->data_zone['zone_id'])) {
                 $this->updateZone();
             } else {
@@ -229,7 +228,8 @@ class Zone extends BackendController
         $this->controlAccess('zone_delete');
 
         if ($this->zone->delete($this->data_zone['zone_id'])) {
-            $this->redirect('admin/settings/zone', $this->text('Zone has been deleted'), 'success');
+            $message = $this->text('@item has been deleted', array('@item' => $this->text('Zone')));
+            $this->redirect('admin/settings/zone', $message, 'success');
         }
 
         $this->redirect('', $this->text('Unable to delete'), 'danger');
@@ -242,7 +242,8 @@ class Zone extends BackendController
     {
         $this->controlAccess('zone_edit');
         $this->zone->update($this->data_zone['zone_id'], $this->getSubmitted());
-        $this->redirect('admin/settings/zone', $this->text('Zone has been updated'), 'success');
+        $message = $this->text('@item has been updated', array('@item' => $this->text('Zone')));
+        $this->redirect('admin/settings/zone', $message, 'success');
     }
 
     /**
@@ -252,7 +253,8 @@ class Zone extends BackendController
     {
         $this->controlAccess('zone_add');
         $this->zone->add($this->getSubmitted());
-        $this->redirect('admin/settings/zone', $this->text('Zone has been added'), 'success');
+        $message = $this->text('@item has been added', array('@item' => $this->text('Zone')));
+        $this->redirect('admin/settings/zone', $message, 'success');
     }
 
     /**
@@ -262,7 +264,7 @@ class Zone extends BackendController
     {
         if (isset($this->data_zone['zone_id'])) {
             $vars = array('%name' => $this->data_zone['title']);
-            $title = $this->text('Edit zone %name', $vars);
+            $title = $this->text('Edit %name', $vars);
         } else {
             $title = $this->text('Add zone');
         }

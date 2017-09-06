@@ -24,7 +24,7 @@
             <?php echo $this->text('Disabled'); ?>
           </label>
         </div>
-        <div class="help-block"><?php echo $this->text('Disabled roles will not be available for users'); ?></div>
+        <div class="help-block"><?php echo $this->text('Disabled roles will not be available to users'); ?></div>
       </div>
     </div>
     <div class="form-group required<?php echo $this->error('name', ' has-error'); ?>">
@@ -34,7 +34,7 @@
         <div class="help-block">
           <?php echo $this->error('name'); ?>
           <div class="text-muted">
-            <?php echo $this->text('Required. A descriptive name of the role, e.g Boss, Manager etc'); ?>
+            <?php echo $this->text('Descriptive name of the role, e.g Boss, Manager etc'); ?>
           </div>
         </div>
       </div>
@@ -46,7 +46,7 @@
         <div class="help-block">
           <?php echo $this->error('redirect'); ?>
           <div class="text-muted">
-            <?php echo $this->text('A destination that a user is redirected to after logging in'); ?>
+            <?php echo $this->text('A destination that a user is redirected to after logged in'); ?>
           </div>
         </div>
       </div>

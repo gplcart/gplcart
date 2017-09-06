@@ -238,7 +238,8 @@ class ProductClass extends BackendController
         $deleted = $this->product_class->delete($this->data_product_class['product_class_id']);
 
         if ($deleted) {
-            $this->redirect('admin/content/product-class', $this->text('Product class has been deleted'), 'success');
+            $message = $this->text('@item has been deleted', array('@item' => $this->text('Product class')));
+            $this->redirect('admin/content/product-class', $message, 'success');
         }
 
         $this->redirect('', $this->text('Unable to delete'), 'danger');
@@ -251,7 +252,8 @@ class ProductClass extends BackendController
     {
         $this->controlAccess('product_class_edit');
         $this->product_class->update($this->data_product_class['product_class_id'], $this->getSubmitted());
-        $this->redirect('admin/content/product-class', $this->text('Product class has been updated'), 'success');
+        $message = $this->text('@item has been updated', array('@item' => $this->text('Product class')));
+        $this->redirect('admin/content/product-class', $message, 'success');
     }
 
     /**
@@ -261,7 +263,8 @@ class ProductClass extends BackendController
     {
         $this->controlAccess('product_class_add');
         $this->product_class->add($this->getSubmitted());
-        $this->redirect('admin/content/product-class', $this->text('Product class has been added'), 'success');
+        $message = $this->text('@item has been added', array('@item' => $this->text('Product class')));
+        $this->redirect('admin/content/product-class', $message, 'success');
     }
 
     /**
@@ -271,7 +274,7 @@ class ProductClass extends BackendController
     {
         if (isset($this->data_product_class['product_class_id'])) {
             $vars = array('%name' => $this->data_product_class['title']);
-            $title = $this->text('Edit product class %name', $vars);
+            $title = $this->text('Edit %name', $vars);
         } else {
             $title = $this->text('Add product class');
         }
@@ -395,7 +398,8 @@ class ProductClass extends BackendController
             }
         }
 
-        $this->redirect('', $this->text('Product class has been updated'), 'success');
+        $message = $this->text('@item has been updated', array('@item' => $this->text('Product class')));
+        $this->redirect('', $message, 'success');
     }
 
     /**
@@ -484,7 +488,8 @@ class ProductClass extends BackendController
             $this->product_class->addField($field);
         }
 
-        $this->redirect("admin/content/product-class/field/$id", $this->text('Product class has been updated'), 'success');
+        $message = $this->text('@item has been updated', array('@item' => $this->text('Product class')));
+        $this->redirect("admin/content/product-class/field/$id", $message, 'success');
     }
 
     /**

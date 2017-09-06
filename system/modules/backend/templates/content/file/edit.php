@@ -16,7 +16,7 @@
       <input maxlength="255" name="file[title]" class="form-control" value="<?php echo isset($file['title']) ? $this->e($file['title']) : ''; ?>" autofocus>
       <div class="help-block">
         <?php echo $this->error('title', ''); ?>
-        <div class="text-muted"><?php echo $this->text('A short description of the file'); ?></div>
+        <div class="text-muted"><?php echo $this->text('Short description of the file'); ?></div>
       </div>
     </div>
   </div>
@@ -84,7 +84,7 @@
       <div class="help-block">
         <?php echo $this->error('weight'); ?>
         <div class="text-muted">
-        <?php echo $this->text('Files are sorted in lists by the weight value. Lower value means higher position'); ?>
+        <?php echo $this->text('Items are sorted in lists by the weight value. Lower value means higher position'); ?>
         </div>
       </div>
     </div>

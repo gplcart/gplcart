@@ -16,7 +16,7 @@
       <input name="user[name]" maxlength="255" class="form-control" value="<?php echo isset($user['name']) ? $this->e($user['name']) : ''; ?>">
       <div class="help-block">
         <?php echo $this->error('name'); ?>
-        <div class="text-muted"><?php echo $this->text('Required. A user name, e.g John Smith'); ?></div>
+        <div class="text-muted"><?php echo $this->text('User name, e.g John Smith'); ?></div>
       </div>
     </div>
   </div>
@@ -26,7 +26,7 @@
       <input name="user[email]" class="form-control" value="<?php echo isset($user['email']) ? $this->e($user['email']) : ''; ?>">
       <div class="help-block">
         <?php echo $this->error('email'); ?>
-        <div class="text-muted"><?php echo $this->text('Required. A unique E-mail for this user'); ?></div>
+        <div class="text-muted"><?php echo $this->text('Unique E-mail for this user'); ?></div>
       </div>
     </div>
   </div>
@@ -36,7 +36,7 @@
       <input name="user[password]" class="form-control" value="<?php echo isset($user['password']) ? $user['password'] : ''; ?>">
       <div class="help-block">
         <?php echo $this->error('password'); ?>
-        <div class="text-muted"><?php echo $this->text('Required. A password to log in this user'); ?></div>
+        <div class="text-muted"><?php echo $this->text('Password to log in this user'); ?></div>
       </div>
     </div>
   </div>

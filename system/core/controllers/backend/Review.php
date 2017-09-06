@@ -260,7 +260,8 @@ class Review extends BackendController
     {
         $this->controlAccess('review_delete');
         $this->review->delete($this->data_review['review_id']);
-        $this->redirect('admin/content/review', $this->text('Review has been deleted'), 'success');
+        $message = $this->text('@item has been deleted', array('@item' => $this->text('Review')));
+        $this->redirect('admin/content/review', $message, 'success');
     }
 
     /**
@@ -270,7 +271,8 @@ class Review extends BackendController
     {
         $this->controlAccess('review_edit');
         $this->review->update($this->data_review['review_id'], $this->getSubmitted());
-        $this->redirect('admin/content/review', $this->text('Review has been updated'), 'success');
+        $message = $this->text('@item has been updated', array('@item' => $this->text('Review')));
+        $this->redirect('admin/content/review', $message, 'success');
     }
 
     /**
@@ -280,7 +282,8 @@ class Review extends BackendController
     {
         $this->controlAccess('review_add');
         $this->review->add($this->getSubmitted());
-        $this->redirect('admin/content/review', $this->text('Review has been added'), 'success');
+        $message = $this->text('@item has been added', array('@item' => $this->text('Review')));
+        $this->redirect('admin/content/review', $message, 'success');
     }
 
     /**
@@ -306,7 +309,7 @@ class Review extends BackendController
     protected function setTitleEditReview()
     {
         if (isset($this->data_review['review_id'])) {
-            $title = $this->text('Edit review');
+            $title = $this->text('Edit %name', array('%name' => $this->text('Review')));
         } else {
             $title = $this->text('Add review');
         }

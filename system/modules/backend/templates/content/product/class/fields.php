@@ -106,7 +106,7 @@
   </div>
 </form>
 <?php } else { ?>
-<?php echo $this->text('This product class has no fields'); ?>&nbsp;
+<?php echo $this->text('There are no items yet'); ?>&nbsp;
 <a class="btn btn-default" href="<?php echo $this->url("admin/content/product-class/field/{$product_class['product_class_id']}/add"); ?>">
   <?php echo $this->text('Add'); ?>
 </a>

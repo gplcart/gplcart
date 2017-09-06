@@ -403,7 +403,7 @@ class Account extends FrontendController
     {
         $this->controlAccessEditAccount();
         $this->user->update($this->data_user['user_id'], $this->getSubmitted());
-        $this->redirect('', $this->text('Account has been updated'), 'success');
+        $this->redirect('', $this->text('@item has been updated', array('@item' => $this->text('Account'))), 'success');
     }
 
     /**
@@ -496,7 +496,7 @@ class Account extends FrontendController
         $deleted = $this->address->delete($address_id);
 
         if ($deleted) {
-            $message = $this->text('Address has been deleted');
+            $message = $this->text('@item has been deleted', array('@item' => $this->text('Address')));
             $this->redirect('', $message, 'success');
         }
 

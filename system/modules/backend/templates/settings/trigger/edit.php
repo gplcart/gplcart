@@ -37,7 +37,7 @@
           <div class="help-block">
             <?php echo $this->error('name'); ?>
             <div class="text-muted">
-              <?php echo $this->text('Required. The name will be shown to administrators'); ?>
+              <?php echo $this->text('The name will be shown to administrators'); ?>
             </div>
           </div>
         </div>
@@ -68,7 +68,7 @@
           <div class="help-block">
             <?php echo $this->error('weight'); ?>
             <div class="text-muted">
-              <?php echo $this->text('A position of the trigger among other enabled triggers. Triggers with lower weight are invoked earlier'); ?>
+              <?php echo $this->text('Position of the trigger among other enabled triggers. Triggers with lower weight are invoked earlier'); ?>
             </div>
           </div>
         </div>
@@ -80,7 +80,7 @@
           <div class="help-block">
             <?php echo $this->error('data.conditions'); ?>
             <div class="text-muted">
-              <?php echo $this->text('Required. Which conditions must be met to invoke the trigger. One condition per line. See the legend. Conditions are checked from the top to bottom. Format: [condition ID][space][operator][space][parameter(s)]'); ?>
+              <?php echo $this->text('Which conditions must be met to invoke the trigger. One condition per line. See the legend. Conditions are checked from the top to bottom. Format: [condition ID][space][operator][space][parameter(s)]'); ?>
             </div>
           </div>
         </div>

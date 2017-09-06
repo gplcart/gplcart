@@ -222,7 +222,8 @@ class Field extends BackendController
         $this->controlAccess('field_delete');
 
         if ($this->field->delete($this->data_field['field_id'])) {
-            $this->redirect('admin/content/field', $this->text('Field has been deleted'), 'success');
+            $message = $this->text('@item has been deleted', array('@item' => $this->text('Field')));
+            $this->redirect('admin/content/field', $message, 'success');
         }
 
         $this->redirect('', $this->text('Unable to delete'), 'danger');
@@ -235,7 +236,8 @@ class Field extends BackendController
     {
         $this->controlAccess('field_edit');
         $this->field->update($this->data_field['field_id'], $this->getSubmitted());
-        $this->redirect('admin/content/field', $this->text('Field has been updated'), 'success');
+        $message = $this->text('@item has been updated', array('@item' => $this->text('Field')));
+        $this->redirect('admin/content/field', $message, 'success');
     }
 
     /**
@@ -245,7 +247,8 @@ class Field extends BackendController
     {
         $this->controlAccess('field_add');
         $this->field->add($this->getSubmitted());
-        $this->redirect('admin/content/field', $this->text('Field has been added'), 'success');
+        $message = $this->text('@item has been added', array('@item' => $this->text('Field')));
+        $this->redirect('admin/content/field', $message, 'success');
     }
 
     /**
@@ -254,7 +257,7 @@ class Field extends BackendController
     protected function setTitleEditField()
     {
         if (isset($this->data_field['field_id'])) {
-            $title = $this->text('Edit field %name', array('%name' => $this->data_field['title']));
+            $title = $this->text('Edit %name', array('%name' => $this->data_field['title']));
         } else {
             $title = $this->text('Add field');
         }

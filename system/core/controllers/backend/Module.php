@@ -92,7 +92,7 @@ class Module extends BackendController
         if (!empty($action) && !empty($module_id)) {
             $this->setModule($module_id);
             $result = $this->startActionModule($action);
-            $this->finishActionModule($action, $result);
+            $this->finishActionModule($result);
         }
     }
 
@@ -111,21 +111,12 @@ class Module extends BackendController
 
     /**
      * Finishes module action
-     * @param string $action
      * @param mixed $result
      */
-    protected function finishActionModule($action, $result)
+    protected function finishActionModule($result)
     {
         if ($result === true) {
-
-            $message = $this->text('Module has been updated');
-
-            if ($action === 'backup') {
-                $vars = array('@url' => $this->url('admin/tool/backup'));
-                $message = $this->text('Backup has been <a href="@url">created</a>', $vars);
-            }
-
-            $this->redirect('', $message, 'success');
+            $this->redirect('', $this->text('Module has been updated'), 'success');
         }
 
         if (is_string($result)) {

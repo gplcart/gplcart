@@ -194,7 +194,8 @@ class CategoryGroup extends BackendController
         $this->controlAccess('category_group_delete');
 
         if ($this->category_group->delete($this->data_category_group['category_group_id'])) {
-            $this->redirect('admin/content/category-group', $this->text('Category group has been deleted'), 'success');
+            $message = $this->text('@item has been deleted', array('@item' => $this->text('Category group')));
+            $this->redirect('admin/content/category-group', $message, 'success');
         }
 
         $this->redirect('', $this->text('Unable to delete'), 'danger');
@@ -207,7 +208,8 @@ class CategoryGroup extends BackendController
     {
         $this->controlAccess('category_group_edit');
         $this->category_group->update($this->data_category_group['category_group_id'], $this->getSubmitted());
-        $this->redirect('admin/content/category-group', $this->text('Category group has been updated'), 'success');
+        $message = $this->text('@item has been updated', array('@item' => $this->text('Category group')));
+        $this->redirect('admin/content/category-group', $message, 'success');
     }
 
     /**
@@ -217,7 +219,8 @@ class CategoryGroup extends BackendController
     {
         $this->controlAccess('category_group_add');
         $this->category_group->add($this->getSubmitted());
-        $this->redirect('admin/content/category-group', $this->text('Category group has been added'), 'success');
+        $message = $this->text('@item has been added', array('@item' => $this->text('Category group')));
+        $this->redirect('admin/content/category-group', $message, 'success');
     }
 
     /**
@@ -227,7 +230,7 @@ class CategoryGroup extends BackendController
     {
         if (isset($this->data_category_group['category_group_id'])) {
             $vars = array('%name' => $this->data_category_group['title']);
-            $title = $this->text('Edit category group %name', $vars);
+            $title = $this->text('Edit %name', $vars);
         } else {
             $title = $this->text('Add category group');
         }

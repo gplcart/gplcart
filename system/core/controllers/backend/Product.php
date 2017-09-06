@@ -397,7 +397,8 @@ class Product extends BackendController
         $this->controlAccess('product_delete');
 
         if ($this->product->delete($this->data_product['product_id'])) {
-            $this->redirect('admin/content/product', $this->text('Product has been deleted'), 'success');
+            $message = $this->text('@item has been deleted', array('@item' => $this->text('Product')));
+            $this->redirect('admin/content/product', $message, 'success');
         }
 
         $this->redirect('admin/content/product', $this->text('Unable to delete'), 'danger');
@@ -439,7 +440,8 @@ class Product extends BackendController
     {
         $this->controlAccess('product_edit');
         $this->product->update($this->data_product['product_id'], $this->getSubmitted());
-        $this->redirect('admin/content/product', $this->text('Product has been updated'), 'success');
+        $message = $this->text('@item has been updated', array('@item' => $this->text('Product')));
+        $this->redirect('admin/content/product', $message, 'success');
     }
 
     /**
@@ -449,7 +451,8 @@ class Product extends BackendController
     {
         $this->controlAccess('product_add');
         $this->product->add($this->getSubmitted());
-        $this->redirect('admin/content/product', $this->text('Product has been added'), 'success');
+        $message = $this->text('@item has been added', array('@item' => $this->text('Product')));
+        $this->redirect('admin/content/product', $message, 'success');
     }
 
     /**
@@ -544,7 +547,7 @@ class Product extends BackendController
     {
         if (isset($this->data_product['product_id'])) {
             $vars = array('%name' => $this->data_product['title']);
-            $title = $this->text('Edit product %name', $vars);
+            $title = $this->text('Edit %name', $vars);
         } else {
             $title = $this->text('Add product');
         }

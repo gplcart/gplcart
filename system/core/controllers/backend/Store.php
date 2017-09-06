@@ -319,7 +319,8 @@ class Store extends BackendController
         $this->controlAccess('store_delete');
 
         if ($this->store->delete($this->data_store['store_id'])) {
-            $this->redirect('admin/settings/store', $this->text('Store has been deleted'), 'success');
+            $message = $this->text('@item has been deleted', array('@item' => $this->text('Store')));
+            $this->redirect('admin/settings/store', $message, 'success');
         }
 
         $this->redirect('', $this->text('Unable to delete'), 'danger');
@@ -332,7 +333,8 @@ class Store extends BackendController
     {
         $this->controlAccess('store_edit');
         $this->store->update($this->data_store['store_id'], $this->getSubmitted());
-        $this->redirect('admin/settings/store', $this->text('Store has been updated'), 'success');
+        $message = $this->text('@item has been updated', array('@item' => $this->text('Store')));
+        $this->redirect('admin/settings/store', $message, 'success');
     }
 
     /**
@@ -342,7 +344,8 @@ class Store extends BackendController
     {
         $this->controlAccess('store_add');
         $this->store->add($this->getSubmitted());
-        $this->redirect('admin/settings/store', $this->text('Store has been added'), 'success');
+        $message = $this->text('@item has been added', array('@item' => $this->text('Store')));
+        $this->redirect('admin/settings/store', $message, 'success');
     }
 
     /**
@@ -382,7 +385,7 @@ class Store extends BackendController
     {
         if (isset($this->data_store['store_id'])) {
             $vars = array('%name' => $this->data_store['name']);
-            $title = $this->text('Edit store %name', $vars);
+            $title = $this->text('Edit %name', $vars);
         } else {
             $title = $this->text('Add store');
         }

@@ -25,7 +25,7 @@
           </label>
         </div>
         <div class="help-block">
-          <?php echo $this->text('Disabled categories will not be available for frontend users and search engines'); ?>
+          <?php echo $this->text('Disabled categories will not be available to frontend users and search engines'); ?>
         </div>
       </div>
     </div>
@@ -36,7 +36,7 @@
         <div class="help-block">
           <?php echo $this->error('title'); ?>
           <div class="text-muted">
-            <?php echo $this->text('Required. The title will be used on the category page and menu'); ?>
+            <?php echo $this->text('The title will be used on the category page and menu'); ?>
           </div>
         </div>
       </div>

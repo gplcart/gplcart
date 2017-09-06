@@ -64,7 +64,7 @@
       <div class="help-block">
         <?php echo $this->error('code'); ?>
         <div class="text-muted">
-          <?php echo $this->text('A unique code you want to associate with this price rule. The code (i.e coupon) must be specified by a customer during checkout'); ?>
+          <?php echo $this->text('Unique code you want to associate with this price rule. The code must be specified by a customer during checkout'); ?>
         </div>
       </div>
     </div>
@@ -78,7 +78,7 @@
       <div class="help-block">
         <?php echo $this->error('value'); ?>
         <div class="text-muted">
-          <?php echo $this->text('A numeric value to be added to the original price when the rule is applied. To substract use negative numbers'); ?>
+          <?php echo $this->text('Numeric value to be added to the original price when the rule is applied. To substract use negative numbers'); ?>
         </div>
       </div>
     </div>
@@ -117,7 +117,7 @@
       <div class="help-block">
         <?php echo $this->error('weight'); ?>
         <div class="text-muted">
-          <?php echo $this->text('A position of the rule among other enabled rules. Rules with lower weight are applied earlier'); ?>
+          <?php echo $this->text('Position of the rule among other enabled rules. Rules with lower weight are applied earlier'); ?>
         </div>
       </div>
     </div>

@@ -56,7 +56,7 @@
           <div class="dropdown pull-left navbar-text">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <?php if (empty($_languages[$_langcode]['status'])) { ?>
-              <?php echo $this->text('select language'); ?>
+              <?php echo $this->text('Select language'); ?>
               <?php } else { ?>
               <?php echo $this->e($_languages[$_langcode]['native_name']); ?>
               <?php } ?>

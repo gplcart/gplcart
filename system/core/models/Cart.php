@@ -289,7 +289,7 @@ class Cart extends Model
         $result = array(
             'redirect' => '',
             'severity' => 'warning',
-            'message' => $this->language->text('Unable to add this product')
+            'message' => $this->language->text('Unable to add product')
         );
 
         $data += array(

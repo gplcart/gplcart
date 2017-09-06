@@ -22,7 +22,7 @@
         </label>
       </div>
       <div class="help-block">
-        <?php echo $this->text('Disabled states will not be displayed to customers'); ?>
+        <?php echo $this->text('Disabled states will not be displayed to frontend users'); ?>
       </div>
     </div>
   </div>
@@ -33,7 +33,7 @@
       <div class="help-block">
         <?php echo $this->error('name'); ?>
         <div class="text-muted">
-          <?php echo $this->text('Required. An official name of the state'); ?>
+          <?php echo $this->text('An official name of the state'); ?>
         </div>
       </div>
     </div>
@@ -45,7 +45,7 @@
       <div class="help-block">
         <?php echo $this->error('code'); ?>
         <div class="text-muted">
-          <?php echo $this->text('Required. A code / abbreviation used to represent the state in the country, e.g NY for New York'); ?>
+          <?php echo $this->text('Code or abbreviation used to represent the state in the country, e.g NY for New York'); ?>
         </div>
       </div>
     </div>

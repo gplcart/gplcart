@@ -91,7 +91,7 @@
 <?php echo $_pager; ?>
 <?php } ?>
 <?php } else { ?>
-<?php echo $this->text('This field has no values yet'); ?>&nbsp;
+<?php echo $this->text('There are no items yet'); ?>&nbsp;
 <?php if ($this->access('field_value_add')) { ?>
 <a class="btn btn-default" href="<?php echo $this->url("admin/content/field/value/{$field['field_id']}/add"); ?>">
   <?php echo $this->text('Add'); ?>

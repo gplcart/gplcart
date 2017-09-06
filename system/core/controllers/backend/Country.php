@@ -268,10 +268,11 @@ class Country extends BackendController
         $this->controlAccess('country_delete');
 
         if ($this->country->delete($this->data_country['code'])) {
-            $this->redirect('admin/settings/country', $this->text('Country has been deleted'), 'success');
+            $message = $this->text('@item has been deleted', array('@item' => $this->text('Country')));
+            $this->redirect('admin/settings/country', $message, 'success');
         }
 
-        $this->redirect('', $this->text('UUnable to delete'), 'danger');
+        $this->redirect('', $this->text('Unable to delete'), 'danger');
     }
 
     /**
@@ -281,7 +282,8 @@ class Country extends BackendController
     {
         $this->controlAccess('country_edit');
         $this->country->update($this->data_country['code'], $this->getSubmitted());
-        $this->redirect('admin/settings/country', $this->text('Country has been updated'), 'success');
+        $message = $this->text('@item has been updated', array('@item' => $this->text('Country')));
+        $this->redirect('admin/settings/country', $message, 'success');
     }
 
     /**
@@ -291,7 +293,8 @@ class Country extends BackendController
     {
         $this->controlAccess('country_add');
         $this->country->add($this->getSubmitted());
-        $this->redirect('admin/settings/country', $this->text('Country has been added'), 'success');
+        $message = $this->text('@item has been added', array('@item' => $this->text('Country')));
+        $this->redirect('admin/settings/country', $message, 'success');
     }
 
     /**
@@ -301,7 +304,7 @@ class Country extends BackendController
     {
         if (isset($this->data_country['name'])) {
             $vars = array('%name' => $this->data_country['name']);
-            $title = $this->text('Edit country %name', $vars);
+            $title = $this->text('Edit %name', $vars);
         } else {
             $title = $this->text('Add country');
         }
@@ -384,7 +387,8 @@ class Country extends BackendController
         }
 
         $this->country->update($this->data_country['code'], array('format' => $format));
-        $this->redirect('admin/settings/country', $this->text('Country has been updated'), 'success');
+        $message = $this->text('@item has been updated', array('@item' => $this->text('Country')));
+        $this->redirect('admin/settings/country', $message, 'success');
     }
 
     /**

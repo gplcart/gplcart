@@ -16,7 +16,7 @@
       <input maxlength="255" name="field_value[title]" class="form-control" value="<?php echo (isset($field_value['title'])) ? $this->e($field_value['title']) : ''; ?>" autofocus>
       <div class="help-block">
         <?php echo $this->error('title'); ?>
-        <div class="text-muted"><?php echo $this->text('Required. The title will be displayed to customers on product pages'); ?></div>
+        <div class="text-muted"><?php echo $this->text('The title will be displayed to customers on product pages'); ?></div>
       </div>
     </div>
   </div>
@@ -90,7 +90,7 @@
       <div class="help-block">
         <?php echo $this->error('weight'); ?>
         <div class="text-muted">
-        <?php echo $this->text('Field values are sorted in lists by the weight value. Lower value means higher position'); ?>
+        <?php echo $this->text('Items are sorted in lists by the weight value. Lower value means higher position'); ?>
         </div>
       </div>
     </div>

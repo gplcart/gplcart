@@ -35,7 +35,7 @@
           <div class="help-block">
             <?php echo $this->error('name'); ?>
             <div class="text-muted">
-              <?php echo $this->text('Required. A descriptive name of the image style for administrators'); ?>
+              <?php echo $this->text('Descriptive name of the image style for administrators'); ?>
             </div>
           </div>
         </div>
@@ -47,7 +47,7 @@
           <div class="help-block">
             <?php echo $this->error('actions'); ?>
             <div class="text-muted">
-              <?php echo $this->text('Required. A list of actions to be applied from the top to bottom. One action per line. See the legend'); ?>
+              <?php echo $this->text('List of actions to be applied from the top to bottom. One action per line. See the legend'); ?>
             </div>
           </div>
         </div>

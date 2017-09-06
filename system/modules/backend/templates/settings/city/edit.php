@@ -24,7 +24,7 @@
         </label>
       </div>
       <div class="help-block">
-        <?php echo $this->text('Disabled cities will not be displayed to customers'); ?>
+        <?php echo $this->text('Disabled cities will not be displayed to frontend users'); ?>
       </div>
     </div>
   </div>
@@ -34,7 +34,7 @@
       <input maxlength="255" name="city[name]" class="form-control" value="<?php echo isset($city['name']) ? $this->e($city['name']) : ''; ?>" autofocus>
       <div class="help-block">
         <?php echo $this->error('name'); ?>
-        <div class="text-muted"><?php echo $this->text('Required. Native name of the city'); ?></div>
+        <div class="text-muted"><?php echo $this->text('Native name of the city'); ?></div>
       </div>
     </div>
   </div>

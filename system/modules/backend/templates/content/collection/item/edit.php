@@ -25,7 +25,7 @@
         </label>
       </div>
       <div class="help-block">
-      <?php echo $this->text('Only enabled items will be shown publicly'); ?>
+      <?php echo $this->text('Only enabled items will be available publicly'); ?>
       </div>
     </div>
   </div>
@@ -38,7 +38,7 @@
       <div class="help-block">
         <?php echo $this->error('value'); ?>
         <div class="text-muted">
-          <?php echo $this->text('Required. Start to type in the field an entity title to get suggestions or enter a numeric entity ID'); ?>
+          <?php echo $this->text('Start to type in the field an entity title to get suggestions or enter a numeric entity ID'); ?>
           <?php if($this->access('file_add') && $this->access('file_upload')) { ?>
           <a href="<?php echo $this->url('admin/content/file/add'); ?>"><?php echo $this->text('Upload new file'); ?></a>
           <?php } ?>
@@ -65,7 +65,7 @@
       <div class="help-block">
         <?php echo $this->error('weight'); ?>
         <div class="text-muted">
-          <?php echo $this->text('Required. Position of the item. Items with lower weight go first'); ?>
+          <?php echo $this->text('Position of the item. Items with lower weight go first'); ?>
         </div>
       </div>
     </div>

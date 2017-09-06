@@ -315,7 +315,8 @@ class FieldValue extends BackendController
 
         if ($this->field_value->delete($this->data_field_value['field_value_id'])) {
             $url = "admin/content/field/value/{$this->data_field['field_id']}";
-            $this->redirect($url, $this->text('Field value has been deleted'), 'success');
+            $message = $this->text('@item has been deleted', array('@item' => $this->text('Field value')));
+            $this->redirect($url, $message, 'success');
         }
 
         $this->redirect('', $this->text('Unable to delete'), 'warning');
@@ -327,6 +328,7 @@ class FieldValue extends BackendController
     protected function deleteImageFieldValue()
     {
         $this->controlAccess('field_value_edit');
+
         $this->field_value->update($this->data_field_value['field_value_id'], array('file_id' => 0));
         $this->file->delete($this->data_field_value['file_id']);
         $this->file->deleteFromDisk($this->file->get($this->data_field_value['file_id']));
@@ -339,8 +341,10 @@ class FieldValue extends BackendController
     {
         $this->controlAccess('field_value_edit');
         $this->field_value->update($this->data_field_value['field_value_id'], $this->getSubmitted());
+
         $url = "admin/content/field/value/{$this->data_field['field_id']}";
-        $this->redirect($url, $this->text('Field value has been updated'), 'success');
+        $message = $this->text('@item has been updated', array('@item' => $this->text('Field value')));
+        $this->redirect($url, $message, 'success');
     }
 
     /**
@@ -350,8 +354,10 @@ class FieldValue extends BackendController
     {
         $this->controlAccess('field_value_add');
         $this->field_value->add($this->getSubmitted());
+
         $url = "admin/content/field/value/{$this->data_field['field_id']}";
-        $this->redirect($url, $this->text('Field value has been added'), 'success');
+        $message = $this->text('@item has been added', array('@item' => $this->text('Field value')));
+        $this->redirect($url, $message, 'success');
     }
 
     /**
@@ -374,7 +380,7 @@ class FieldValue extends BackendController
     {
         if (isset($this->data_field_value['field_value_id'])) {
             $vars = array('%name' => $this->truncate($this->data_field_value['title']));
-            $title = $this->text('Edit field value %name', $vars);
+            $title = $this->text('Edit %name', $vars);
         } else {
             $vars = array('%name' => $this->truncate($this->data_field['title']));
             $title = $this->text('Add value for field %name', $vars);

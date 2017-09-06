@@ -44,11 +44,11 @@
           <div class="notify">
             <?php if(isset($item['data']['notify'])) { ?>
             <?php if($item['data']['notify'] == 0) { ?>
-            <span class="label label-warning"><?php echo $this->text('Customer not notified'); ?></span>
+            <span class="label label-warning"><?php echo $this->text('Customer is not notified'); ?></span>
             <?php } else if($item['data']['notify'] == 1){ ?>
             <span class="label label-danger"><?php echo $this->text('Failed to notify customer'); ?></span>
             <?php } else if($item['data']['notify'] == 2) { ?>
-            <span class="label label-success"><?php echo $this->text('Customer notified'); ?></span>
+            <span class="label label-success"><?php echo $this->text('Customer is notified'); ?></span>
             <?php } ?>
             <?php } ?>
           </div>

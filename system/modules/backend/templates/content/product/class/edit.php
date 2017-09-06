@@ -22,7 +22,7 @@
         </label>
       </div>
       <div class="text-muted">
-        <?php echo $this->text('Disabled product classes will not be available for administrators'); ?>
+        <?php echo $this->text('Disabled product classes will not be available to administrators'); ?>
       </div>
     </div>
   </div>
@@ -33,7 +33,7 @@
       <div class="help-block">
         <?php echo $this->error('title'); ?>
         <div class="text-muted">
-          <?php echo $this->text('Required. The name of product class for administrators'); ?>
+          <?php echo $this->text('The name of product class for administrators'); ?>
         </div>
       </div>
     </div>

@@ -44,7 +44,7 @@
       </a>
     </div>
     <?php } else { ?>
-    <?php echo $this->text('There no items yet'); ?>
+    <?php echo $this->text('There are no items yet'); ?>
     <?php } ?>
   </div>
 </div>

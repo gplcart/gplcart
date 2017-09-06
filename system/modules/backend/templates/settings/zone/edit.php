@@ -22,7 +22,7 @@
         </label>
       </div>
       <div class="text-muted">
-        <?php echo $this->text('Disabled zones will not be available for users'); ?>
+        <?php echo $this->text('Disabled zones will not be available to users'); ?>
       </div>
     </div>
   </div>
@@ -33,7 +33,7 @@
       <div class="help-block">
         <?php echo $this->error('title'); ?>
         <div class="text-muted">
-           <?php echo $this->text('A name for administrators'); ?>
+           <?php echo $this->text('Name for administrators'); ?>
         </div>
       </div>
     </div>

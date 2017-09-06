@@ -165,7 +165,8 @@ class Order extends BackendController
         $this->controlAccess('order_delete');
 
         if ($this->order->delete($this->data_order['order_id'])) {
-            $this->redirect('admin/sale/order', $this->text('Order has been deleted'), 'success');
+            $message = $this->text('@item has been deleted', array('@item' => $this->text('Order')));
+            $this->redirect('admin/sale/order', $message, 'success');
         }
 
         $this->redirect('', $this->text('Unable to delete'), 'warning');

@@ -23,7 +23,7 @@
           </label>
         </div>
         <div class="help-block">
-          <?php echo $this->text('Only enabled stores are available publicly'); ?>
+          <?php echo $this->text('Only enabled stores will be available publicly'); ?>
         </div>
       </div>
     </div>
@@ -36,7 +36,7 @@
         <input maxlength="255" name="store[name]" class="form-control" value="<?php echo isset($store['name']) ? $this->e($store['name']) : ''; ?>">
         <div class="help-block">
           <?php echo $this->error('name'); ?>
-          <div class="text-muted"><?php echo $this->text('Required. A short name for administrators'); ?></div>
+          <div class="text-muted"><?php echo $this->text('Short name for administrators'); ?></div>
         </div>
       </div>
     </div>
@@ -49,7 +49,7 @@
         <div class="help-block">
           <?php echo $this->error('domain'); ?>
           <div class="text-muted">
-            <?php echo $this->text('Required. A domain name by which this store can be accessed'); ?>
+            <?php echo $this->text('Domain name by which this store can be accessed'); ?>
           </div>
         </div>
       </div>
@@ -73,7 +73,7 @@
         <input type="text" maxlength="70" name="store[data][title]" class="form-control" value="<?php echo $this->e($store['data']['title']); ?>">
         <div class="help-block">
           <?php echo $this->error('data.title'); ?>
-          <div class="text-muted"><?php echo $this->text('Required. The default site name'); ?></div>
+          <div class="text-muted"><?php echo $this->text('The default site name'); ?></div>
         </div>
       </div>
     </div>
@@ -84,7 +84,7 @@
         <div class="help-block">
           <?php echo $this->error('data.email'); ?>
           <div class="text-muted">
-            <?php echo $this->text('A list of e-mails, one per line'); ?>
+            <?php echo $this->text('List of e-mails, one per line'); ?>
           </div>
         </div>
       </div>
@@ -96,7 +96,7 @@
         <div class="help-block">
           <?php echo $this->error('data.owner'); ?>
           <div class="text-muted">
-            <?php echo $this->text('A name of the company that owns this store'); ?>
+            <?php echo $this->text('Name of the company that owns this store'); ?>
           </div>
         </div>
       </div>
@@ -221,7 +221,7 @@
             <div class="help-block">
               <?php echo $this->error('data.address'); ?>
               <div class="text-muted">
-                <?php echo $this->text('A physical address of the store'); ?>
+                <?php echo $this->text('Physical address of the store'); ?>
               </div>
             </div>
           </div>
@@ -245,7 +245,7 @@
             <div class="help-block">
               <?php echo $this->error('data.phone'); ?>
               <div class="text-muted">
-                <?php echo $this->text('A list of phone numbers, one per line'); ?>
+                <?php echo $this->text('List of phone numbers, one per line'); ?>
               </div>
             </div>
           </div>
@@ -257,7 +257,7 @@
             <div class="help-block">
               <?php echo $this->error('data.fax'); ?>
               <div class="text-muted">
-                <?php echo $this->text('A list of fax numbers, one per line'); ?>
+                <?php echo $this->text('List of fax numbers, one per line'); ?>
               </div>
             </div>
           </div>
@@ -324,7 +324,7 @@
       <div class="col-md-6">
         <textarea name="store[data][js]" rows="10" class="form-control"><?php echo $this->e($store['data']['js']); ?></textarea>
         <div class="help-block">
-           <?php echo $this->text('A .js code without script tags to add on each public, non-admin and non-internal page, e.g Google Analytics tracking code'); ?>
+           <?php echo $this->text('Java-Script code without script tags to add on each public, non-admin and non-internal page, e.g Google Analytics tracking code'); ?>
         </div>
       </div>
     </div>

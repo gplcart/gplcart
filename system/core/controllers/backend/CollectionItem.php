@@ -252,10 +252,12 @@ class CollectionItem extends BackendController
 
         if ($this->collection_item->add($this->getSubmitted())) {
             $url = "admin/content/collection-item/{$this->data_collection['collection_id']}";
-            $this->redirect($url, $this->text('Collection item has been added'), 'success');
+            $message = $this->text('@item has been added', array('@item' => $this->text('Collection item')));
+            $this->redirect($url, $message, 'success');
         }
 
-        $this->redirect('', $this->text('Collection item has not been added'), 'warning');
+        $message = $this->text('@item has not been added', array('@item' => $this->text('Collection item')));
+        $this->redirect('', $message, 'warning');
     }
 
     /**

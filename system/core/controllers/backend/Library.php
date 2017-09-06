@@ -64,7 +64,7 @@ class Library extends BackendController
 
         if ($this->isQuery($key)) {
             $this->library->clearCache();
-            $this->redirect('', $this->text('Cache has been cleared'), 'success');
+            $this->redirect('', $this->text('@item has been deleted', array('@item' => $this->text('Cache'))), 'success');
         }
     }
 

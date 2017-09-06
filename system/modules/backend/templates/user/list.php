@@ -194,7 +194,7 @@
               <?php if ($this->access('order_add')) { ?>
               <li>
                 <a href="<?php echo $this->url("checkout/add/$id"); ?>">
-                  <?php echo $this->text('add order'); ?>
+                  <?php echo $this->lower($this->text('Add order')); ?>
                 </a>
               </li>
               <?php } ?>

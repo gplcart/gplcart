@@ -22,7 +22,7 @@
         </label>
       </div>
       <div class="help-block">
-        <?php echo $this->text('Disabled countries will not be available for frontend users'); ?>
+        <?php echo $this->text('Disabled countries will not be available to frontend users'); ?>
       </div>
     </div>
   </div>
@@ -39,7 +39,7 @@
       <div class="help-block">
         <?php echo $this->error('code'); ?>
         <div class="text-muted">
-          <?php echo $this->text('Required. A code according to ISO 3166-2 standard, e.g US'); ?>
+          <?php echo $this->text('ISO 3166-2 code, e.g US'); ?>
         </div>
       </div>
     </div>
@@ -51,7 +51,7 @@
       <div class="help-block">
         <?php echo $this->error('name'); ?>
         <div class="text-muted">
-        <?php echo $this->text('Required. An international english name of the country according to ISO 3166-2 standard'); ?>
+        <?php echo $this->text('An international english name of the country according to ISO 3166-2 standard'); ?>
         </div>
       </div>
     </div>
@@ -63,7 +63,7 @@
       <div class="help-block">
         <?php echo $this->error('native_name'); ?>
         <div class="text-muted">
-          <?php echo $this->text('Required. A local name of the country, e.g 中国'); ?>
+          <?php echo $this->text('Local name of the country, e.g 中国'); ?>
         </div>
       </div>
     </div>

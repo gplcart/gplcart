@@ -274,7 +274,7 @@ class Sku extends Model
 
         if (empty($product['status'])) {
             $result['severity'] = 'danger';
-            $result['message'] = $this->language->text('Unavailable product');
+            $result['message'] = $this->language->text('Unavailable');
 
             $this->hook->attach('sku.select.combination.after', $product, $field_value_ids, $result, $this);
             return (array) $result;

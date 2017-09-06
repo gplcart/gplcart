@@ -74,7 +74,7 @@
         <?php } ?>
       </select>
       <div class="help-block">
-        <?php echo $this->text('Select a store where to display this category group'); ?>
+        <?php echo $this->text('Select a store where to display this item'); ?>
       </div>
     </div>
   </div>

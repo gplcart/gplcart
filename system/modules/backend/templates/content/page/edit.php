@@ -36,7 +36,7 @@
           </label>
         </div>
         <div class="help-block">
-          <?php echo $this->text('Disabled pages will not be available for frontend users and search engines'); ?>
+          <?php echo $this->text('Disabled pages will not be available to frontend users and search engines'); ?>
         </div>
       </div>
     </div>
@@ -46,7 +46,7 @@
         <input maxlength="255" name="page[title]" class="form-control" value="<?php echo (isset($page['title'])) ? $this->e($page['title']) : ''; ?>" autofocus>
         <div class="help-block">
           <?php echo $this->error('title'); ?>
-          <div class="text-muted"><?php echo $this->text('Required. The title will be used on the page and menu'); ?></div>
+          <div class="text-muted"><?php echo $this->text('The title will be used on the page and menu'); ?></div>
         </div>
       </div>
     </div>
@@ -57,7 +57,7 @@
         <div class="help-block">
           <?php echo $this->error('description'); ?>
           <div class="text-muted">
-            <?php echo $this->text('Required. You can use any HTML but user can see only allowed tags'); ?>
+            <?php echo $this->text('You can use any HTML but user can see only allowed tags'); ?>
           </div>
         </div>
       </div>
@@ -107,7 +107,7 @@
         </select>
         <div class="help-block">
           <?php echo $this->error('store_id'); ?>
-          <div class="text-muted"><?php echo $this->text('Select a store where to display this page'); ?></div>
+          <div class="text-muted"><?php echo $this->text('Select a store where to display this item'); ?></div>
         </div>
       </div>
     </div>

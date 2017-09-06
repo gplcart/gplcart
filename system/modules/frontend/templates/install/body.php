@@ -14,7 +14,7 @@
     <form method="post">
       <?php if (!empty($languages) && count($languages) > 1) { ?>
       <div class="select-language clearfix">
-        <?php echo $this->text('Select a language'); ?>:
+        <?php echo $this->text('Select language'); ?>:
         <?php foreach ($languages as $code => $data) { ?>
         <?php $language_query = ($code === 'en') ? array() : array('lang' => $code); ?>
         <a class="<?php echo $code === $language ? ' active' : ''; ?>" href="<?php echo $this->url('', $language_query); ?>">
@@ -102,7 +102,7 @@
           <tr class="required<?php echo $this->error('database.name', ' has-error'); ?>">
             <td class="col-md-6">
               <div class="name"><?php echo $this->text('Database name'); ?></div>
-              <div class="text-muted description"><?php echo $this->text('A name of the database you want to connect to'); ?></div>
+              <div class="text-muted description"><?php echo $this->text('Name of the database you want to connect to'); ?></div>
             </td>
             <td class="middle col-md-6">
               <input name="settings[database][name]" class="form-control" value="<?php echo isset($settings['database']['name']) ? $this->e($settings['database']['name']) : ''; ?>">
@@ -125,7 +125,7 @@
             <td>
               <div class="name"><?php echo $this->text('Database password'); ?></div>
               <div class="text-muted description">
-                <?php echo $this->text('A password to access the database. Can be empty'); ?>
+                <?php echo $this->text('Password to access the database. Can be empty'); ?>
               </div>
             </td>
             <td>
@@ -141,7 +141,7 @@
           <tr class="required<?php echo $this->error('user.email', ' has-error'); ?>">
             <td class="col-md-6">
               <div class="name"><?php echo $this->text('E-mail'); ?></div>
-              <div class="text-muted description"><?php echo $this->text('An E-mail for superadmin'); ?></div>
+              <div class="text-muted email"><?php echo $this->text('E-mail for superadmin'); ?></div>
             </td>
             <td class="col-md-6">
               <input name="settings[user][email]" class="form-control" value="<?php echo isset($settings['user']['email']) ? $this->e($settings['user']['email']) : ''; ?>">
@@ -151,7 +151,7 @@
           <tr class="required<?php echo $this->error('user.password', ' has-error'); ?>">
             <td>
               <div class="name"><?php echo $this->text('Password'); ?></div>
-              <div class="text-muted description"><?php echo $this->text('A password for superadmin'); ?></div>
+              <div class="text-muted description"><?php echo $this->text('Password for superadmin'); ?></div>
             </td>
             <td>
               <input type="password" name="settings[user][password]" class="form-control" value="<?php echo isset($settings['user']['password']) ? $this->e($settings['user']['password']) : ''; ?>">
@@ -161,7 +161,7 @@
           <tr class="required<?php echo $this->error('store.title', ' has-error'); ?>">
             <td>
               <div class="name"><?php echo $this->text('Store title'); ?></div>
-              <div class="text-muted description"><?php echo $this->text('A name of the store'); ?></div>
+              <div class="text-muted title"><?php echo $this->text('Name of the store'); ?></div>
             </td>
             <td>
               <input name="settings[store][title]" class="form-control" value="<?php echo isset($settings['store']['title']) ? $this->e($settings['store']['title']) : 'GPL Cart'; ?>">

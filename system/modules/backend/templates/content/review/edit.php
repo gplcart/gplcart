@@ -23,7 +23,7 @@
         </label>
       </div>
       <div class="help-block">
-        <?php echo $this->text('Disabled reviews will not be available for frontend users and search engines'); ?>
+        <?php echo $this->text('Disabled reviews will not be available to frontend users and search engines'); ?>
       </div>
     </div>
   </div>
@@ -33,7 +33,7 @@
       <input data-datepicker="true" data-datepicker-settings='{}' name="review[created]" class="form-control" value="<?php echo empty($review['created']) ? $this->date(null, false) : $this->date($review['created'], false); ?>">
       <div class="help-block">
         <?php echo $this->error('created'); ?>
-        <div class="text-muted"><?php echo $this->text('A date when the review was created'); ?></div>
+        <div class="text-muted"><?php echo $this->text('Date when the review was created'); ?></div>
       </div>
     </div>
   </div>
@@ -43,7 +43,7 @@
       <input name="review[email]" data-autocomplete-source="user" class="form-control" value="<?php echo isset($review['email']) ? $this->e($review['email']) : ''; ?>">
       <div class="help-block">
         <?php echo $this->error('email'); ?>
-        <div class="text-muted"><?php echo $this->text('Required. Autocomplete field. Reviewer\'s E-mail'); ?></div>
+        <div class="text-muted"><?php echo $this->text('Autocomplete field. Reviewer\'s E-mail'); ?></div>
       </div>
     </div>
   </div>
@@ -53,7 +53,7 @@
       <input name="review[product]" data-autocomplete-source="product" class="form-control" value="<?php echo isset($review['product']) ? $this->e($review['product']) : ''; ?>">
       <div class="help-block">
         <?php echo $this->error('product_id'); ?>
-        <div class="text-muted"><?php echo $this->text('Required. Autocomplete field. Select a product that is related to this review'); ?></div>
+        <div class="text-muted"><?php echo $this->text('Autocomplete field. Select a product that is related to this review'); ?></div>
       </div>
     </div>
   </div>
@@ -63,7 +63,7 @@
       <textarea name="review[text]" rows="8" class="form-control"><?php echo isset($review['text']) ? $this->e($review['text']) : ''; ?></textarea>
       <div class="help-block">
         <?php echo $this->error('text'); ?>
-        <div class="text-muted"><?php echo $this->text('Required. A text of the review. HTML not allowed'); ?></div>
+        <div class="text-muted"><?php echo $this->text('Text of the review. HTML tags are not allowed'); ?></div>
       </div>
     </div>
   </div>

@@ -97,7 +97,8 @@ class Language extends BackendController
         $this->controlAccess('language_delete');
 
         if ($this->language->delete($this->data_language['code'])) {
-            $this->redirect('admin/settings/language', $this->text('Language has been deleted'), 'success');
+            $message = $this->text('@item has been deleted', array('@item' => $this->text('Language')));
+            $this->redirect('admin/settings/language', $message, 'success');
         }
 
         $this->redirect('', $this->text('Unable to delete'), 'danger');
@@ -127,7 +128,8 @@ class Language extends BackendController
         $this->controlAccess('language_edit');
         $this->language->update($this->data_language['code'], $this->getSubmitted());
         // Redirect to a path without language code to avoid "Page not found" if the current language has been disabled
-        $this->redirect('admin/settings/language', $this->text('Language has been updated'), 'success', true);
+        $message = $this->text('@item has been updated', array('@item' => $this->text('Language')));
+        $this->redirect('admin/settings/language', $message, 'success', true);
     }
 
     /**
@@ -137,7 +139,8 @@ class Language extends BackendController
     {
         $this->controlAccess('language_add');
         $this->language->add($this->getSubmitted());
-        $this->redirect('admin/settings/language', $this->text('Language has been added'), 'success');
+        $message = $this->text('@item has been added', array('@item' => $this->text('Language')));
+        $this->redirect('admin/settings/language', $message, 'success');
     }
 
     /**
@@ -147,7 +150,7 @@ class Language extends BackendController
     {
         if (isset($this->data_language['code'])) {
             $vars = array('%name' => $this->data_language['native_name']);
-            $title = $this->text('Edit language %name', $vars);
+            $title = $this->text('Edit %name', $vars);
         } else {
             $title = $this->text('Add language');
         }
@@ -204,7 +207,8 @@ class Language extends BackendController
         if (!empty($code)) {
             $this->controlAccess('language_edit');
             $this->language->refresh($code);
-            $this->redirect('', $this->text('Cache has been deleted'), 'success');
+            $message = $this->text('@item has been deleted', array('@item' => $this->text('Cache')));
+            $this->redirect('', $message, 'success');
         }
     }
 

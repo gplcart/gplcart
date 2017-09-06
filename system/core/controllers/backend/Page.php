@@ -33,7 +33,7 @@ class Page extends BackendController
     protected $category;
 
     /**
-     * Url model instance
+     * URL model instance
      * @var \gplcart\core\models\Alias $alias
      */
     protected $alias;
@@ -215,13 +215,10 @@ class Page extends BackendController
     protected function setPage($page_id)
     {
         if (is_numeric($page_id)) {
-
             $page = $this->page->get($page_id);
-
             if (empty($page)) {
                 $this->outputHttpStatus(404);
             }
-
             $this->data_page = $this->preparePage($page);
         }
     }
@@ -286,7 +283,8 @@ class Page extends BackendController
     {
         $this->controlAccess('page_delete');
         $this->page->delete($this->data_page['page_id']);
-        $this->redirect('admin/content/page', $this->text('Page has been deleted'), 'success');
+        $message = $this->text('@item has been deleted', array('@item' => $this->text('Page')));
+        $this->redirect('admin/content/page', $message, 'success');
     }
 
     /**
@@ -296,7 +294,8 @@ class Page extends BackendController
     {
         $this->controlAccess('page_edit');
         $this->page->update($this->data_page['page_id'], $this->getSubmitted());
-        $this->redirect('admin/content/page', $this->text('Page has been updated'), 'success');
+        $message = $this->text('@item has been updated', array('@item' => $this->text('Page')));
+        $this->redirect('admin/content/page', $message, 'success');
     }
 
     /**
@@ -306,7 +305,8 @@ class Page extends BackendController
     {
         $this->controlAccess('page_add');
         $this->page->add($this->getSubmitted());
-        $this->redirect('admin/content/page', $this->text('Page has been added'), 'success');
+        $message = $this->text('@item has been added', array('@item' => $this->text('Page')));
+        $this->redirect('admin/content/page', $message, 'success');
     }
 
     /**
@@ -338,7 +338,7 @@ class Page extends BackendController
     {
         if (isset($this->data_page['page_id'])) {
             $vars = array('%name' => $this->data_page['title']);
-            $title = $this->text('Edit page %name', $vars);
+            $title = $this->text('Edit %name', $vars);
         } else {
             $title = $this->text('Add page');
         }

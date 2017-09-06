@@ -333,7 +333,8 @@ class Category extends BackendController
 
         if ($this->category->delete($this->data_category['category_id'])) {
             $url = "admin/content/category/{$this->data_category_group['category_group_id']}";
-            $this->redirect($url, $this->text('Category has been deleted'), 'success');
+            $message = $this->text('@item has been deleted', array('@item' => $this->text('Category')));
+            $this->redirect($url, $message, 'success');
         }
 
         $this->redirect('', $this->text('Unable to delete'), 'danger');
@@ -347,7 +348,8 @@ class Category extends BackendController
         $this->controlAccess('category_edit');
         $this->category->update($this->data_category['category_id'], $this->getSubmitted());
         $url = "admin/content/category/{$this->data_category_group['category_group_id']}";
-        $this->redirect($url, $this->text('Category has been updated'), 'success');
+        $message = $this->text('@item has been updated', array('@item' => $this->text('Category')));
+        $this->redirect($url, $message, 'success');
     }
 
     /**
@@ -358,7 +360,8 @@ class Category extends BackendController
         $this->controlAccess('category_add');
         $this->category->add($this->getSubmitted());
         $url = "admin/content/category/{$this->data_category_group['category_group_id']}";
-        $this->redirect($url, $this->text('Category has been added'), 'success');
+        $message = $this->text('@item has been added', array('@item' => $this->text('Category')));
+        $this->redirect($url, $message, 'success');
     }
 
     /**
@@ -407,7 +410,7 @@ class Category extends BackendController
     {
         if (isset($this->data_category['category_id'])) {
             $vars = array('%name' => $this->data_category['title']);
-            $title = $this->text('Edit category %name', $vars);
+            $title = $this->text('Edit %name', $vars);
         } else {
             $vars = array('%name' => $this->data_category_group['title']);
             $title = $this->text('Add category to %name', $vars);

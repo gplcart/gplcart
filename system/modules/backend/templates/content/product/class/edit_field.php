@@ -22,7 +22,7 @@
       <div class="help-block">
         <?php echo $this->error('values'); ?>
         <div class="text-muted">
-          <?php echo $this->text('Required. Assign one or more fields to the product class'); ?>
+          <?php echo $this->text('Assign one or more fields to the product class'); ?>
         </div>
       </div>
     </div>

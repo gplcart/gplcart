@@ -99,7 +99,7 @@ class Settings extends BackendController
         gplcart_file_delete_recursive(GC_COMPRESSED_ASSET_DIR . "/js");
         gplcart_file_delete_recursive(GC_COMPRESSED_ASSET_DIR . "/css");
 
-        $this->redirect('', $this->text('Cache has been cleared'), 'success');
+        $this->redirect('', $this->text('@item has been deleted', array('@item' => $this->text('Cache'))), 'success');
     }
 
     /**
