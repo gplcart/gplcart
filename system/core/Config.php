@@ -337,7 +337,7 @@ class Config
 
         try {
             $instance = Container::get($namespace);
-        } catch (\ReflectionException $exc) {
+        } catch (\Exception $exc) {
             return null;
         }
 
