@@ -10,6 +10,7 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Model,
+    gplcart\core\Handler,
     gplcart\core\Container;
 use gplcart\core\models\Language as LanguageModel;
 
@@ -84,14 +85,13 @@ class Condition extends Model
 
         foreach ($trigger['data']['conditions'] as $condition) {
 
-            if (empty($handlers[$condition['id']]['handlers']['process'])) {
+            $handler = Handler::get($handlers, $condition['id'], 'process');
+
+            if(empty($handler)){
                 continue;
             }
 
-            $callable = $handlers[$condition['id']]['handlers']['process'];
-            $instance = Container::get($callable[0]);
-
-            $result = call_user_func_array(array($instance, $callable[1]), array($condition, $data, $this));
+            $result = call_user_func_array($handler, array($condition, $data, $this));
             $this->setProcessed($condition['id'], $result);
 
             if ($result !== true) {
