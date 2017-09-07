@@ -10,8 +10,7 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Model,
-    gplcart\core\Handler,
-    gplcart\core\Container;
+    gplcart\core\Handler;
 use gplcart\core\models\Language as LanguageModel;
 
 /**
@@ -52,12 +51,7 @@ class Validator extends Model
             return $result;
         }
 
-        $handlers = $this->getHandlers();
-        $handler = Handler::get($handlers, $handler_id, 'validate');
-
-        if (!empty($handler)) {
-            $result = call_user_func_array($handler, array(&$submitted, $options));
-        }
+        $result = $this->call($handler_id, $submitted, $options);
 
         $this->hook->attach('validator.run.after', $submitted, $options, $result, $this);
 
@@ -65,8 +59,28 @@ class Validator extends Model
             return true;
         }
 
-        if (empty($result)) {
-            return $this->language->text('Failed validation');
+        return empty($result) ? $this->language->text('Failed validation') : $result;
+    }
+
+    /**
+     * Call a validation handler
+     * @param string $handler_id
+     * @param array $submitted
+     * @param array $options
+     * @return mixed
+     */
+    protected function call($handler_id, array &$submitted, array $options)
+    {
+        $result = null;
+
+        try {
+            $handlers = $this->getHandlers();
+            $handler = Handler::get($handlers, $handler_id, 'validate');
+            if (!empty($handler)) {
+                $result = call_user_func_array($handler, array(&$submitted, $options));
+            }
+        } catch (\Exception $ex) {
+            trigger_error($ex->getMessage());
         }
 
         return $result;

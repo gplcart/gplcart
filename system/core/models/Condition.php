@@ -10,8 +10,7 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Model,
-    gplcart\core\Handler,
-    gplcart\core\Container;
+    gplcart\core\Handler;
 use gplcart\core\models\Language as LanguageModel;
 
 /**
@@ -43,16 +42,6 @@ class Condition extends Model
     }
 
     /**
-     * Sets a condition ID is processed
-     * @param string $condition_id
-     * @param mixed $result
-     */
-    public function setProcessed($condition_id, $result = true)
-    {
-        $this->processed[$condition_id] = $result;
-    }
-
-    /**
      * Returns an array of processed condition results
      * @return array
      */
@@ -80,28 +69,39 @@ class Condition extends Model
             return false;
         }
 
-        $met = true;
-        $handlers = $this->getHandlers();
-
+        $met = false;
         foreach ($trigger['data']['conditions'] as $condition) {
-
-            $handler = Handler::get($handlers, $condition['id'], 'process');
-
-            if(empty($handler)){
-                continue;
-            }
-
-            $result = call_user_func_array($handler, array($condition, $data, $this));
-            $this->setProcessed($condition['id'], $result);
-
-            if ($result !== true) {
-                $met = false;
+            if ($this->call($condition, $data) === true) {
+                $met = true;
                 break;
             }
         }
 
         $this->hook->attach('condition.met.after', $trigger, $data, $met, $this);
         return (bool) $met;
+    }
+
+    /**
+     * Call a condition handler
+     * @param array $condition
+     * @param array $data
+     * @return boolean
+     */
+    protected function call(array $condition, array $data)
+    {
+        try {
+            $handlers = $this->getHandlers();
+            $handler = Handler::get($handlers, $condition['id'], 'process');
+            if (empty($handler)) {
+                return false;
+            }
+            $result = call_user_func_array($handler, array($condition, $data, $this));
+        } catch (\Exception $ex) {
+            trigger_error($ex->getMessage());
+            return false;
+        }
+
+        return $this->processed[$condition['id']] = $result;
     }
 
     /**

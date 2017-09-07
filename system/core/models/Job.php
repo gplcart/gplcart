@@ -10,8 +10,7 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Model,
-    gplcart\core\Handler,
-    gplcart\core\Container;
+    gplcart\core\Handler;
 use gplcart\core\helpers\Url as UrlHelper,
     gplcart\core\helpers\Session as SessionHelper;
 use gplcart\core\models\Language as LanguageModel;
@@ -191,15 +190,10 @@ class Job extends Model
 
         $progress = 0;
         $start_time = microtime(true);
-        $handlers = $this->getHandlers();
 
         while (round((microtime(true) - $start_time) * 1000, 2) < self::MAX_TIME) {
 
-            $handler = Handler::get($handlers, $job['id'], 'process');
-
-            if (!empty($handler)) {
-                call_user_func_array($handler, array(&$job));
-            }
+            $this->call($job);
 
             if (empty($job['status'])) {
                 break;
@@ -227,6 +221,24 @@ class Job extends Model
 
         $this->hook->attach('job.process.after', $job, $result, $response, $this);
         return $response;
+    }
+
+    /**
+     * Call a handler processor
+     * @param array $job
+     */
+    protected function call(array &$job)
+    {
+        try {
+            $handlers = $this->getHandlers();
+            $handler = Handler::get($handlers, $job['id'], 'process');
+            if (!empty($handler)) {
+                call_user_func_array($handler, array(&$job));
+            }
+        } catch (\Exception $ex) {
+            $job['status'] = false;
+            $job['errors'][] = $ex->getMessage();
+        }
     }
 
     /**
