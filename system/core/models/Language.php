@@ -511,7 +511,7 @@ class Language extends Model
      */
     public function loadTranslation($file)
     {
-        $translations = &gplcart_static(__METHOD__ . $file);
+        $translations = &gplcart_static(__METHOD__ . "$file");
 
         if (isset($translations)) {
             return (array) $translations;

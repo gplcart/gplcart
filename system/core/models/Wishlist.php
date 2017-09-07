@@ -215,7 +215,7 @@ class Wishlist extends Model
         );
 
         $existing = $this->getList($conditions);
-        
+
         return count($existing) < $limit;
     }
 

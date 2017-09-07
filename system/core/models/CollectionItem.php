@@ -257,7 +257,7 @@ class CollectionItem extends Model
     }
 
     /**
-     * Returns an array of autocomplete suggestion for the given collection type
+     * Returns an array of auto-complete suggestion for the given collection type
      * @param array $collection
      * @param array $options
      * @return array

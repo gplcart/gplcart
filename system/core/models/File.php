@@ -37,7 +37,7 @@ class File extends Model
     protected $validator;
 
     /**
-     * Url class instance
+     * URL class instance
      * @var \gplcart\core\helpers\Url $url
      */
     protected $url;

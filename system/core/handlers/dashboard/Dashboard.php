@@ -109,9 +109,9 @@ class Dashboard extends Handler
      * @param PriceRuleModel $pricerule
      */
     public function __construct(CartModel $cart, UserModel $user,
-                                ProductModel $product, LanguageModel $language, PriceModel $price,
-                                OrderModel $order, ReportModel $report, ReviewModel $review,
-                                TransactionModel $transaction, PriceRuleModel $pricerule)
+            ProductModel $product, LanguageModel $language, PriceModel $price,
+            OrderModel $order, ReportModel $report, ReviewModel $review,
+            TransactionModel $transaction, PriceRuleModel $pricerule)
     {
         parent::__construct();
 
@@ -264,14 +264,14 @@ class Dashboard extends Handler
                 'limit' => array(0, $this->limit)
             );
 
-            $events = (array)$this->report->getList($options);
+            $events = (array) $this->report->getList($options);
 
             if (empty($events)) {
                 continue;
             }
 
             foreach ($events as &$event) {
-                $variables = empty($event['data']['variables']) ? array() : (array)$event['data']['variables'];
+                $variables = empty($event['data']['variables']) ? array() : (array) $event['data']['variables'];
                 $message = empty($event['translatable']) ? $event['text'] : $this->language->text($event['text'], $variables);
                 $event['message'] = strip_tags($message);
             }

@@ -85,7 +85,7 @@ class Currency extends Model
      */
     public function getList($enabled = false, $cache = true)
     {
-        $currencies = &gplcart_static(__METHOD__ . $enabled);
+        $currencies = &gplcart_static(__METHOD__ . "$enabled");
 
         if ($cache && isset($currencies)) {
             return $currencies;
@@ -226,7 +226,7 @@ class Currency extends Model
      */
     public function get($code = null)
     {
-        $currency = &gplcart_static(__METHOD__ . $code);
+        $currency = &gplcart_static(__METHOD__ . "$code");
 
         if (isset($currency)) {
             return $currency;

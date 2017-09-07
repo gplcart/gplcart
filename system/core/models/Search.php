@@ -200,7 +200,7 @@ class Search extends Model
     }
 
     /**
-     * Filters out stopwords for a given language
+     * Filters out stop-words for a given language
      * @param string $string
      * @param string $language
      * @return string

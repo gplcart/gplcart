@@ -52,7 +52,7 @@ class State extends Model
      */
     public function get($state_id)
     {
-        $result = &gplcart_static(__METHOD__ . $state_id);
+        $result = &gplcart_static(__METHOD__ . "$state_id");
 
         if (isset($result)) {
             return $result;

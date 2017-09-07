@@ -129,7 +129,7 @@ class Store extends Model
             return array();
         }
 
-        $result = &gplcart_static(__METHOD__ . $store_id);
+        $result = &gplcart_static(__METHOD__ . "$store_id");
 
         if (isset($result)) {
             return $result;

@@ -133,7 +133,7 @@ class City extends Model
      */
     public function get($city_id)
     {
-        $result = &gplcart_static(__METHOD__ . $city_id);
+        $result = &gplcart_static(__METHOD__ . "$city_id");
 
         if (isset($result)) {
             return $result;

@@ -199,7 +199,7 @@ class UserRole extends Model
      */
     public function get($role_id)
     {
-        $result = &gplcart_static(__METHOD__ . $role_id);
+        $result = &gplcart_static(__METHOD__ . "$role_id");
 
         if (isset($result)) {
             return $result;

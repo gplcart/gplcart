@@ -67,7 +67,7 @@ class Country extends Model
      */
     public function get($code)
     {
-        $result = &gplcart_static(__METHOD__ . $code);
+        $result = &gplcart_static(__METHOD__ . "$code");
 
         if (isset($result)) {
             return $result;
