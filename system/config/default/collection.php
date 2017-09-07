@@ -8,7 +8,7 @@
  */
 return array(
     'product' => array(
-        'title' => 'Product',
+        'title' => /* @text */'Product',
         'id_key' => 'product_id',
         'handlers' => array(
             'list' => array('gplcart\\core\\models\\Product', 'getList'),
@@ -20,7 +20,7 @@ return array(
         ),
     ),
     'file' => array(
-        'title' => 'File',
+        'title' => /* @text */'File',
         'id_key' => 'file_id',
         'handlers' => array(
             'list' => array('gplcart\\core\\models\\File', 'getList'),
@@ -32,7 +32,7 @@ return array(
         )
     ),
     'page' => array(
-        'title' => 'Page',
+        'title' => /* @text */'Page',
         'id_key' => 'page_id',
         'handlers' => array(
             'list' => array('gplcart\\core\\models\\Page', 'getList'),

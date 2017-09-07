@@ -9,7 +9,7 @@
 return array(
     
     'order' => array(
-        'title' => 'Recent orders',
+        'title' => /* @text */'Recent orders',
         'status' => true,
         'weight' => 0,
         'template' => 'dashboard/panels/orders',
@@ -18,7 +18,7 @@ return array(
         )
     ),
     'cart' => array(
-        'title' => 'Recent cart items',
+        'title' => /* @text */'Recent cart items',
         'status' => true,
         'weight' => 1,
         'template' => 'dashboard/panels/cart',
@@ -27,7 +27,7 @@ return array(
         )
     ),
     'transaction' => array(
-        'title' => 'Recent transactions',
+        'title' => /* @text */'Recent transactions',
         'status' => true,
         'weight' => 2,
         'template' => 'dashboard/panels/transactions',
@@ -36,7 +36,7 @@ return array(
         )
     ),
     'pricerule' => array(
-        'title' => 'Active price rules',
+        'title' => /* @text */'Active price rules',
         'status' => true,
         'weight' => 3,
         'template' => 'dashboard/panels/pricerules',
@@ -45,7 +45,7 @@ return array(
         )
     ),
     'summary' => array(
-        'title' => 'Summary',
+        'title' => /* @text */'Summary',
         'status' => true,
         'weight' => 4,
         'template' => 'dashboard/panels/summary',
@@ -54,7 +54,7 @@ return array(
         )
     ),
     'review' => array(
-        'title' => 'Recent reviews',
+        'title' => /* @text */'Recent reviews',
         'status' => true,
         'weight' => 5,
         'template' => 'dashboard/panels/reviews',
@@ -63,7 +63,7 @@ return array(
         )
     ),
     'user' => array(
-        'title' => 'Recent users',
+        'title' => /* @text */'Recent users',
         'status' => true,
         'weight' => 6,
         'template' => 'dashboard/panels/users',
@@ -72,7 +72,7 @@ return array(
         )
     ),
     'event' => array(
-        'title' => 'Recent events',
+        'title' => /* @text */'Recent events',
         'status' => true,
         'weight' => 7,
         'template' => 'dashboard/panels/events',

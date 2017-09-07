@@ -55,44 +55,17 @@ class Base extends Handler
      */
     protected function getSignature(array $options)
     {
+        $signature = /* @text */"\r\n\r\n-------------------------------------\r\n@owner\r\n@address\r\n@phone\r\n@fax\r\n@store_email\r\n@map";
+
         $replacements = array();
-        $signature = array("\r\n\r\n-------------------------------------");
+        $replacements['@owner'] = empty($options['owner']) ? '' : $options['owner'];
+        $replacements['@address'] = empty($options['address']) ? '' : $options['address'];
+        $replacements['@phone'] = empty($options['phone']) ? '' : $this->language->text('Tel: @phone', array('@phone' => implode(',', $options['phone'])));
+        $replacements['@fax'] = empty($options['fax']) ? '' : $this->language->text('Fax: @fax', array('@fax' => implode(',', $options['fax'])));
+        $replacements['@store_email'] = empty($options['email']) ? '' : $this->language->text('E-mail: @store_email', array('@store_email' => implode(',', $options['email'])));
+        $replacements['@map'] = empty($options['map']) ? '' : $this->language->text('Find us on Google Maps: @map', array('@map' => 'http://maps.google.com/?q=' . implode(',', $options['map'])));
 
-        if (!empty($options['owner'])) {
-            $signature[] = '@owner';
-            $replacements['@owner'] = $options['owner'];
-        }
-
-        if (!empty($options['address'])) {
-            $signature[] = '@address';
-            $replacements['@address'] = $options['address'];
-        }
-
-        if (!empty($options['phone'])) {
-            $signature[] = $this->language->text('Tel: @phone');
-            $replacements['@phone'] = implode(',', $options['phone']);
-        }
-
-        if (!empty($options['fax'])) {
-            $signature[] = $this->language->text('Fax: @fax');
-            $replacements['@fax'] = implode(',', $options['fax']);
-        }
-
-        if (!empty($options['email'])) {
-            $signature[] = $this->language->text('E-mail: @store_email');
-            $replacements['@store_email'] = implode(',', $options['email']);
-        }
-
-        if (!empty($options['map'])) {
-            $signature[] = $this->language->text('Find us on Google Maps: @map');
-            $replacements['@map'] = 'http://maps.google.com/?q=' . implode(',', $options['map']);
-        }
-
-        if (empty($signature)) {
-            return '';
-        }
-
-        return gplcart_string_format(implode("\r\n", $signature), $replacements);
+        return rtrim(gplcart_string_format($signature, $replacements), "\t\n\r\0\x0B-");
     }
 
 }

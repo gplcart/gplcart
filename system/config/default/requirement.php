@@ -11,61 +11,61 @@ return array(
         'gd' => array(
             'status' => extension_loaded('gd'),
             'severity' => 'danger',
-            'message' => 'GD extension installed',
+            'message' => /* @text */'GD extension installed',
         ),
         'pdo' => array(
             'status' => extension_loaded('pdo'),
             'severity' => 'danger',
-            'message' => 'PDO extension installed'
+            'message' => /* @text */'PDO extension installed'
         ),
         'spl' => array(
             'status' => extension_loaded('spl'),
             'severity' => 'danger',
-            'message' => 'SPL extension installed'
+            'message' => /* @text */'SPL extension installed'
         ),
         'curl' => array(
             'status' => extension_loaded('curl'),
             'severity' => 'danger',
-            'message' => 'CURL extension installed'
+            'message' => /* @text */'CURL extension installed'
         ),
         'fileinfo' => array(
             'status' => extension_loaded('fileinfo'),
             'severity' => 'danger',
-            'message' => 'FileInfo extension installed'
+            'message' => /* @text */'FileInfo extension installed'
         ),
         'openssl' => array(
             'status' => extension_loaded('openssl'),
             'severity' => 'danger',
-            'message' => 'OpenSSL extension installed'
+            'message' => /* @text */'OpenSSL extension installed'
         ),
         'ctype' => array(
             'status' => extension_loaded('ctype'),
             'severity' => 'danger',
-            'message' => 'Ctype extension installed'
+            'message' => /* @text */'Ctype extension installed'
         ),
         'json' => array(
             'status' => function_exists('json_decode'),
             'severity' => 'danger',
-            'message' => 'JSON extension installed'
+            'message' => /* @text */'JSON extension installed'
         ),
     ),
     'php' => array(
         'allow_url_fopen' => array(
             'status' => !ini_get('allow_url_fopen'),
             'severity' => 'warning',
-            'message' => '"allow_url_fopen" directive disabled'
+            'message' => /* @text */'"allow_url_fopen" directive disabled'
         )
     ),
     'files' => array(
         'system_directory' => array(
-            'status' => is_writable(GC_CONFIG_DIR . '/runtime'),
+            'status' => is_writable(GC_CONFIG_RUNTIME_DIR),
             'severity' => 'danger',
-            'message' => '"/system/config/runtime" directory exists and writable'
+            'message' => /* @text */'"/system/config/runtime" directory exists and writable'
         ),
         'cache_directory' => array(
             'status' => is_writable(GC_CACHE_DIR),
             'severity' => 'danger',
-            'message' => '"/cache" directory exists and writable'
+            'message' => /* @text */'"/cache" directory exists and writable'
         )
     )
 );

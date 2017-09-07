@@ -633,7 +633,7 @@ class Order extends Model
      */
     protected function getCompleteMessageLoggedIn(array $order)
     {
-        $default = 'Thank you for your order! Order ID: @num, status: @status';
+        $default = /* @text */'Thank you for your order! Order ID: @num, status: @status';
         $message = $this->config->get('order_complete_message', $default);
 
         $variables = array(
@@ -651,7 +651,7 @@ class Order extends Model
      */
     protected function getCompleteMessageAnonymous(array $order)
     {
-        $default = 'Thank you for your order! Order ID: @num, status: @status';
+        $default = /* @text */'Thank you for your order! Order ID: @num, status: @status';
         $message = $this->config->get('order_complete_message_anonymous', $default);
 
         $variables = array(

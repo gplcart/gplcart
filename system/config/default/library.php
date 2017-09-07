@@ -8,8 +8,8 @@
  */
 return array(
     'jquery' => array(
-        'name' => 'Jquery',
-        'description' => 'jQuery JavaScript Library',
+        'name' => /* @text */'Jquery',
+        'description' => /* @text */'jQuery JavaScript Library',
         'type' => 'asset',
         'url' => 'https://github.com/jquery/jquery',
         'download' => 'https://code.jquery.com/jquery-2.2.4.min.js',
@@ -23,8 +23,8 @@ return array(
         )
     ),
     'cookie' => array(
-        'name' => 'Cookie',
-        'description' => 'A simple, lightweight JavaScript API for handling browser cookies',
+        'name' => /* @text */'Cookie',
+        'description' => /* @text */'A simple, lightweight JavaScript API for handling browser cookies',
         'type' => 'asset',
         'url' => 'https://github.com/js-cookie/js-cookie',
         'download' => 'https://github.com/js-cookie/js-cookie/archive/v2.1.3.zip',
@@ -37,8 +37,8 @@ return array(
         )
     ),
     'jquery_match_height' => array(
-        'name' => 'jQuery Match Height',
-        'description' => 'A responsive equal heights plugin for jQuery',
+        'name' => /* @text */'jQuery Match Height',
+        'description' => /* @text */'A responsive equal heights plugin for jQuery',
         'type' => 'asset',
         'url' => 'https://github.com/liabru/jquery-match-height',
         'download' => 'https://github.com/liabru/jquery-match-height/archive/0.7.0.zip',
@@ -54,8 +54,8 @@ return array(
         )
     ),
     'jquery_ui' => array(
-        'name' => 'jQuery UI',
-        'description' => 'jQuery user interface library',
+        'name' => /* @text */'jQuery UI',
+        'description' => /* @text */'jQuery user interface library',
         'type' => 'asset',
         'url' => 'https://jqueryui.com',
         'download' => 'https://jqueryui.com/resources/download/jquery-ui-1.12.1.zip',
@@ -72,8 +72,8 @@ return array(
         )
     ),
     'font_awesome' => array(
-        'name' => 'Font Awesome',
-        'description' => 'The iconic font and CSS toolkit',
+        'name' => /* @text */'Font Awesome',
+        'description' => /* @text */'The iconic font and CSS toolkit',
         'type' => 'asset',
         'url' => 'https://github.com/FortAwesome/Font-Awesome',
         'download' => 'https://github.com/FortAwesome/Font-Awesome/archive/v4.7.0.zip',
@@ -86,8 +86,8 @@ return array(
         )
     ),
     'html5shiv' => array(
-        'name' => 'HTML5 Shiv',
-        'description' => 'The HTML5 Shiv enables use of HTML5 sectioning elements in legacy Internet Explorer and provides basic HTML5 styling for Internet Explorer 6-9, Safari 4.x (and iPhone 3.x), and Firefox 3.x.',
+        'name' => /* @text */'HTML5 Shiv',
+        'description' => /* @text */'The HTML5 Shiv enables use of HTML5 sectioning elements in legacy Internet Explorer and provides basic HTML5 styling for Internet Explorer 6-9, Safari 4.x (and iPhone 3.x), and Firefox 3.x.',
         'type' => 'asset',
         'url' => 'https://github.com/aFarkas/html5shiv',
         'download' => 'https://github.com/aFarkas/html5shiv/archive/3.7.3.zip',
@@ -100,8 +100,8 @@ return array(
         )
     ),
     'respond' => array(
-        'name' => 'Respond',
-        'description' => 'A fast & lightweight polyfill for min/max-width CSS3 Media Queries (for IE 6-8, and more)',
+        'name' => /* @text */'Respond',
+        'description' => /* @text */'A fast & lightweight polyfill for min/max-width CSS3 Media Queries (for IE 6-8, and more)',
         'type' => 'asset',
         'url' => 'https://github.com/scottjehl/Respond',
         'download' => 'https://github.com/scottjehl/Respond/archive/1.4.2.zip',
@@ -114,8 +114,8 @@ return array(
         )
     ),
     'bootstrap' => array(
-        'name' => 'Bootstrap',
-        'description' => 'HTML, CSS, and JavaScript framework for developing responsive, mobile first layouts',
+        'name' => /* @text */'Bootstrap',
+        'description' => /* @text */'HTML, CSS, and JavaScript framework for developing responsive, mobile first layouts',
         'type' => 'asset',
         'url' => 'https://github.com/twbs/bootstrap',
         'download' => 'https://github.com/twbs/bootstrap/archive/v3.3.7.zip',
@@ -132,8 +132,8 @@ return array(
         )
     ),
     'bootstrap_select' => array(
-        'name' => 'Bootstrap Select',
-        'description' => 'A jQuery plugin that utilizes Bootstrap\'s dropdown.js to style and bring additional functionality to standard select elements',
+        'name' => /* @text */'Bootstrap Select',
+        'description' => /* @text */'A jQuery plugin that utilizes Bootstrap\'s dropdown.js to style and bring additional functionality to standard select elements',
         'type' => 'asset',
         'url' => 'https://github.com/silviomoreto/bootstrap-select',
         'download' => 'https://github.com/silviomoreto/bootstrap-select/archive/v1.12.1.zip',
