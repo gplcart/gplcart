@@ -42,6 +42,12 @@ class Config
     protected $exists = false;
 
     /**
+     * The current global context
+     * @var string
+     */
+    protected $context;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -52,6 +58,24 @@ class Config
 
         $this->setErrorReportingLevel();
         $this->setErrorHandlers();
+    }
+
+    /**
+     * Sets the current global context
+     * @param string $context
+     */
+    public function setContext($context)
+    {
+        $this->context = $context;
+    }
+
+    /**
+     * Returns the current global context
+     * @return string
+     */
+    public function getContext()
+    {
+        return $this->context;
     }
 
     /**

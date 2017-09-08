@@ -397,6 +397,8 @@ abstract class Controller
         $this->langcode = $this->route->getLangcode();
         $this->current_route = $this->route->getCurrent();
 
+        $this->setContext();
+
         $this->urn = $this->request->urn();
         $this->base = $this->request->base();
         $this->host = $this->request->host();
@@ -404,6 +406,28 @@ abstract class Controller
         $this->is_ajax = $this->request->isAjax();
         $this->uri = $this->scheme . $this->host . $this->urn;
         $this->query = (array) $this->request->get(null, array(), 'array');
+    }
+
+    /**
+     * Sets the current global context
+     * @param null|string $context
+     */
+    public function setContext($context = null)
+    {
+        if (!isset($context) && isset($this->current_route['pattern'])) {
+            $context = preg_replace(array('@\(.*?\)@', '/\//'), array('*', '.'), $this->current_route['pattern']);
+        }
+
+        $this->config->setContext($context);
+    }
+
+    /**
+     * Returns the current global context
+     * @return string
+     */
+    public function getContext()
+    {
+        return $this->config->getContext();
     }
 
     /**
@@ -1574,7 +1598,7 @@ abstract class Controller
             $content = trim($item);
         }
 
-        if ($content !== '') {
+        if ($content !== '' && isset($this->templates["region_$region"])) {
             $weight = isset($this->data["region_$region"]) ? count($this->data["region_$region"]) : 0;
             $weight++;
             $this->data["region_$region"][] = array('rendered' => $content, 'weight' => $weight);
@@ -1804,28 +1828,21 @@ abstract class Controller
     }
 
     /**
-     * Sets an array of body css classes
+     * Sets an array of body CSS classes
      */
     protected function setClasses()
     {
-        if (empty($this->current_route['handlers']['controller'][0])) {
-            $this->data['_classes'] = array();
-            return null;
-        }
-
-        $parts = explode('\\', strtolower($this->current_route['handlers']['controller'][0]));
-
-        foreach ($parts as $i => &$part) {
-
-            if (in_array($part, array('gplcart', 'controllers'))) {
-                unset($parts[$i]);
-                continue;
+        $classes = array();
+        if (isset($this->current_route['pattern'])) {
+            $pattern = $this->current_route['pattern'] ? $this->current_route['pattern'] : 'front';
+            foreach (explode('/', $pattern) as $part) {
+                if (strpos($part, '(') === false) {
+                    $classes[] = "gc-$part"; // Add prefix to prevent conflicts
+                }
             }
-
-            $part = "gc-$part"; // Add prefix to prevent conflicts
         }
 
-        $this->data['_classes'] = $parts;
+        $this->data['_classes'] = $classes;
     }
 
     /**
@@ -2233,18 +2250,14 @@ abstract class Controller
      * @param array $options
      * @return string
      */
-    protected function renderMenu(array $options)
+    public function renderMenu(array $options)
     {
-        if (empty($options['items'])) {
-            return '';
-        }
-
         $options += array(
             'depth' => 0,
             'template' => 'common/menu'
         );
 
-        return $this->render($options['template'], $options);
+        return empty($options['items']) ? '' : $this->render($options['template'], $options);
     }
 
     /**
