@@ -24,5 +24,12 @@
         "image_style_collection_file": 7,
         "image_style_collection_page": 3,
         "image_style_collection_product": 3
+    },
+    "data": {
+        "templates": {
+            "region_left": "layout/region_left",
+            "region_right": "layout/region_right",
+            "region_top": "layout/region_top"
+        }
     }
 }

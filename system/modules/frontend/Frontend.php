@@ -33,28 +33,71 @@ class Frontend extends Module
 
     /**
      * Implements hook "theme"
-     * @param \gplcart\core\controllers\frontend\Controller $controller
+     * @param \gplcart\core\Controller $controller
      */
     public function hookTheme($controller)
     {
         if ($controller->isCurrentTheme('frontend')) {
+            $this->setThemeAssets($controller);
+            $this->setThemeMetaTags($controller);
+        }
+    }
 
-            $controller->addAssetLibrary('bootstrap');
-            $controller->addAssetLibrary('html5shiv', array('aggregate' => false, 'condition' => 'if lt IE 9'));
-            $controller->addAssetLibrary('respond', array('aggregate' => false, 'condition' => 'if lt IE 9'));
-            $controller->addAssetLibrary('font_awesome');
+    /**
+     * Implements hook "construct.controller.frontend"
+     * @param \gplcart\core\controllers\frontend\Controller $controller
+     */
+    public function hookConstructControllerFrontend($controller)
+    {
+        $this->setThemeRegions($controller);
+    }
 
-            if ($controller->isInstall()) {
-                $controller->setCss($this->getAsset('frontend', 'install.css'));
-            } else {
-                $controller->setCss($this->getAsset('frontend', 'style.css'));
-                $controller->addAssetLibrary('jquery_match_height');
-                $controller->setJs($this->getAsset('frontend', 'common.js'));
+    /**
+     * Sets all required assets
+     * @param \gplcart\core\Controller $controller
+     */
+    protected function setThemeAssets($controller)
+    {
+        $controller->addAssetLibrary('bootstrap');
+        $controller->addAssetLibrary('html5shiv', array('aggregate' => false, 'condition' => 'if lt IE 9'));
+        $controller->addAssetLibrary('respond', array('aggregate' => false, 'condition' => 'if lt IE 9'));
+        $controller->addAssetLibrary('font_awesome');
+
+        if ($controller->isInstall()) {
+            $controller->setCss($this->getAsset('frontend', 'install.css'));
+        } else {
+            $controller->setCss($this->getAsset('frontend', 'style.css'));
+            $controller->addAssetLibrary('jquery_match_height');
+            $controller->setJs($this->getAsset('frontend', 'common.js'));
+        }
+    }
+
+    /**
+     * Sets meta-tags
+     * @param \gplcart\core\Controller $controller
+     */
+    protected function setThemeMetaTags($controller)
+    {
+        $controller->setMeta(array('charset' => 'utf-8'));
+        $controller->setMeta(array('http-equiv' => 'X-UA-Compatible', 'content' => 'IE=edge'));
+        $controller->setMeta(array('name' => 'viewport', 'content' => 'width=device-width, initial-scale=1'));
+    }
+
+    /**
+     * Set theme regions
+     * @param \gplcart\core\controllers\frontend\Controller $controller
+     */
+    protected function setThemeRegions($controller)
+    {
+        $context = $controller->getContext();
+
+        // Add left menu depending on the current context
+        if (in_array($context, array('category.*', 'wishlist', 'compare'))) {
+            $categories = $controller->getCategories();
+            if (!empty($categories)) {
+                $options = array('template' => 'category/menu', 'items' => $categories);
+                $controller->setRegion('left', $controller->renderMenu($options));
             }
-
-            $controller->setMeta(array('charset' => 'utf-8'));
-            $controller->setMeta(array('http-equiv' => 'X-UA-Compatible', 'content' => 'IE=edge'));
-            $controller->setMeta(array('name' => 'viewport', 'content' => 'width=device-width, initial-scale=1'));
         }
     }
 
