@@ -192,10 +192,8 @@ class CategoryGroup extends BackendController
     protected function deleteCategoryGroup()
     {
         $this->controlAccess('category_group_delete');
-
         if ($this->category_group->delete($this->data_category_group['category_group_id'])) {
-            $message = $this->text('@item has been deleted', array('@item' => $this->text('Category group')));
-            $this->redirect('admin/content/category-group', $message, 'success');
+            $this->redirect('admin/content/category-group', $this->text('Category group has been deleted'), 'success');
         }
 
         $this->redirect('', $this->text('Unable to delete'), 'danger');
@@ -208,8 +206,7 @@ class CategoryGroup extends BackendController
     {
         $this->controlAccess('category_group_edit');
         $this->category_group->update($this->data_category_group['category_group_id'], $this->getSubmitted());
-        $message = $this->text('@item has been updated', array('@item' => $this->text('Category group')));
-        $this->redirect('admin/content/category-group', $message, 'success');
+        $this->redirect('admin/content/category-group', $this->text('Category group has been updated'), 'success');
     }
 
     /**
@@ -219,8 +216,7 @@ class CategoryGroup extends BackendController
     {
         $this->controlAccess('category_group_add');
         $this->category_group->add($this->getSubmitted());
-        $message = $this->text('@item has been added', array('@item' => $this->text('Category group')));
-        $this->redirect('admin/content/category-group', $message, 'success');
+        $this->redirect('admin/content/category-group', $this->text('Category group has been added'), 'success');
     }
 
     /**

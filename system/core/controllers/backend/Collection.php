@@ -231,12 +231,9 @@ class Collection extends BackendController
     protected function deleteCollection()
     {
         $this->controlAccess('collection_delete');
-
         if ($this->collection->delete($this->data_collection['collection_id'])) {
-            $message = $this->text('@item has been deleted', array('@item' => $this->text('Collection')));
-            $this->redirect('admin/content/collection', $message, 'success');
+            $this->redirect('admin/content/collection', $this->text('Collection has been deleted'), 'success');
         }
-
         $this->redirect('', $this->text('Unable to delete'), 'danger');
     }
 
@@ -246,14 +243,10 @@ class Collection extends BackendController
     protected function updateCollection()
     {
         $this->controlAccess('collection_edit');
-
         if ($this->collection->update($this->data_collection['collection_id'], $this->getSubmitted())) {
-            $message = $this->text('@item has been updated', array('@item' => $this->text('Collection')));
-            $this->redirect('admin/content/collection', $message, 'success');
+            $this->redirect('admin/content/collection', $this->text('Collection has been updated'), 'success');
         }
-
-        $message = $this->text('@item has not been updated', array('@item' => $this->text('Collection')));
-        $this->redirect('', $message, 'danger');
+        $this->redirect('', $this->text('Collection has not been updated'), 'danger');
     }
 
     /**
@@ -262,14 +255,10 @@ class Collection extends BackendController
     protected function addCollection()
     {
         $this->controlAccess('collection_add');
-
         if ($this->collection->add($this->getSubmitted())) {
-            $message = $this->text('@item has been added', array('@item' => $this->text('Collection')));
-            $this->redirect('admin/content/collection', $message, 'success');
+            $this->redirect('admin/content/collection', $this->text('Collection has been added'), 'success');
         }
-
-        $message = $this->text('@item has not been added', array('@item' => $this->text('Collection')));
-        $this->redirect('', $message, 'danger');
+        $this->redirect('', $this->text('Collection has not been added'), 'danger');
     }
 
     /**

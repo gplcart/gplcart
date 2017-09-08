@@ -288,12 +288,9 @@ class State extends BackendController
     {
         $this->controlAccess('state_delete');
         $url = "admin/settings/states/{$this->data_country['code']}";
-
         if ($this->state->delete($this->data_state['state_id'])) {
-            $message = $this->text('@item has been deleted', array('@item' => $this->text('Country state')));
-            $this->redirect($url, $message, 'success');
+            $this->redirect($url, $this->text('Country state has been deleted'), 'success');
         }
-
         $this->redirect($url, $this->text('Unable to delete'), 'danger');
     }
 
@@ -304,8 +301,8 @@ class State extends BackendController
     {
         $this->controlAccess('state_edit');
         $this->state->update($this->data_state['state_id'], $this->getSubmitted());
-        $message = $this->text('@item has been updated', array('@item' => $this->text('Country state')));
-        $this->redirect("admin/settings/states/{$this->data_country['code']}", $message, 'success');
+        $url = "admin/settings/states/{$this->data_country['code']}";
+        $this->redirect($url, $this->text('Country state has been updated'), 'success');
     }
 
     /**
@@ -315,8 +312,8 @@ class State extends BackendController
     {
         $this->controlAccess('state_add');
         $this->state->add($this->getSubmitted());
-        $message = $this->text('@item has been added', array('@item' => $this->text('Country state')));
-        $this->redirect("admin/settings/states/{$this->data_country['code']}", $message, 'success');
+        $url = "admin/settings/states/{$this->data_country['code']}";
+        $this->redirect($url, $this->text('Country state has been added'), 'success');
     }
 
     /**

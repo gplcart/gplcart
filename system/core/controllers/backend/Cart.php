@@ -105,7 +105,7 @@ class Cart extends BackendController
      */
     protected function setTitleListCart()
     {
-        $this->setTitle($this->text('Shopping carts'));
+        $this->setTitle($this->text('Shopping cart items'));
     }
 
     /**

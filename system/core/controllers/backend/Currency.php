@@ -161,12 +161,9 @@ class Currency extends BackendController
     protected function deleteCurrency()
     {
         $this->controlAccess('currency_delete');
-
         if ($this->currency->delete($this->data_currency['code'])) {
-            $message = $this->text('@item has been deleted', array('@item' => $this->text('Currency')));
-            $this->redirect('admin/settings/currency', $message, 'success');
+            $this->redirect('admin/settings/currency', $this->text('Currency has been deleted'), 'success');
         }
-
         $this->redirect('', $this->text('Unable to delete'), 'danger');
     }
 
@@ -177,8 +174,7 @@ class Currency extends BackendController
     {
         $this->controlAccess('currency_edit');
         $this->currency->update($this->data_currency['code'], $this->getSubmitted());
-        $message = $this->text('@item has been updated', array('@item' => $this->text('Currency')));
-        $this->redirect('admin/settings/currency', $message, 'success');
+        $this->redirect('admin/settings/currency', $this->text('Currency has been updated'), 'success');
     }
 
     /**
@@ -188,8 +184,7 @@ class Currency extends BackendController
     {
         $this->controlAccess('currency_add');
         $this->currency->add($this->getSubmitted());
-        $message = $this->text('@item has been added', array('@item' => $this->text('Currency')));
-        $this->redirect('admin/settings/currency', $message, 'success');
+        $this->redirect('admin/settings/currency', $this->text('Currency has been added'), 'success');
     }
 
     /**

@@ -305,13 +305,10 @@ class Product extends BackendController
     protected function setProduct($product_id)
     {
         if (is_numeric($product_id)) {
-
             $product = $this->product->get($product_id);
-
             if (empty($product)) {
                 $this->outputHttpStatus(404);
             }
-
             $this->data_product = $this->prepareProduct($product);
         }
     }
@@ -341,14 +338,11 @@ class Product extends BackendController
         }
 
         foreach ($product['combination'] as &$combination) {
-
             $combination['path'] = $combination['thumb'] = '';
-
             if (!empty($product['images'][$combination['file_id']])) {
                 $combination['path'] = $product['images'][$combination['file_id']]['path'];
                 $this->attachThumb($combination);
             }
-
             $combination['price'] = $this->price->decimal($combination['price'], $product['currency']);
         }
 
@@ -367,8 +361,8 @@ class Product extends BackendController
 
         $options = array('store_id' => $this->data_product['store_id']);
         $products = $this->product->getRelated($this->data_product['product_id'], true, $options);
-
         $this->attachEntityUrl($products, 'product');
+
         return $products;
     }
 
@@ -395,12 +389,9 @@ class Product extends BackendController
     protected function deleteProduct()
     {
         $this->controlAccess('product_delete');
-
         if ($this->product->delete($this->data_product['product_id'])) {
-            $message = $this->text('@item has been deleted', array('@item' => $this->text('Product')));
-            $this->redirect('admin/content/product', $message, 'success');
+            $this->redirect('admin/content/product', $this->text('Product has been deleted'), 'success');
         }
-
         $this->redirect('admin/content/product', $this->text('Unable to delete'), 'danger');
     }
 
@@ -440,8 +431,7 @@ class Product extends BackendController
     {
         $this->controlAccess('product_edit');
         $this->product->update($this->data_product['product_id'], $this->getSubmitted());
-        $message = $this->text('@item has been updated', array('@item' => $this->text('Product')));
-        $this->redirect('admin/content/product', $message, 'success');
+        $this->redirect('admin/content/product', $this->text('Product has been updated'), 'success');
     }
 
     /**
@@ -451,8 +441,7 @@ class Product extends BackendController
     {
         $this->controlAccess('product_add');
         $this->product->add($this->getSubmitted());
-        $message = $this->text('@item has been added', array('@item' => $this->text('Product')));
-        $this->redirect('admin/content/product', $message, 'success');
+        $this->redirect('admin/content/product', $this->text('Product has been added'), 'success');
     }
 
     /**

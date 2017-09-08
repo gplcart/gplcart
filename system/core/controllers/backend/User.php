@@ -279,12 +279,9 @@ class User extends BackendController
     protected function deleteUser()
     {
         $this->controlAccess('user_delete');
-
         if ($this->user->delete($this->data_user['user_id'])) {
-            $message = $this->text('@item has been deleted', array('@item' => $this->text('User')));
-            $this->redirect('admin/user/list', $message, 'success');
+            $this->redirect('admin/user/list', $this->text('User has been deleted'), 'success');
         }
-
         $this->redirect('admin/user/list', $this->text('Unable to delete'), 'danger');
     }
 
@@ -295,9 +292,7 @@ class User extends BackendController
     {
         $this->controlAccess('user_edit');
         $this->user->update($this->data_user['user_id'], $this->getSubmitted());
-
-        $message = $this->text('@item has been updated', array('@item' => $this->text('User')));
-        $this->redirect('admin/user/list', $message, 'success');
+        $this->redirect('admin/user/list', $this->text('User has been updated'), 'success');
     }
 
     /**
@@ -307,9 +302,7 @@ class User extends BackendController
     {
         $this->controlAccess('user_add');
         $this->user->add($this->getSubmitted());
-
-        $message = $this->text('@item has been added', array('@item' => $this->text('User')));
-        $this->redirect('admin/user/list', $message, 'success');
+        $this->redirect('admin/user/list', $this->text('User has been added'), 'success');
     }
 
     /**

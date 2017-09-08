@@ -64,7 +64,7 @@ class ImageStyle extends BackendController
 
         $style_id = $this->getQuery($key);
         if (!empty($style_id) && $this->image->clearCache($style_id)) {
-            $this->redirect('', $this->text('@item has been deleted', array('@item' => $this->text('Cache'))), 'success');
+            $this->redirect('', $this->text('Cache has been deleted'), 'success');
         }
     }
 
@@ -154,7 +154,7 @@ class ImageStyle extends BackendController
         $message = $this->text('Settings have been reset to default values');
 
         if (empty($this->data_imagestyle['default'])) {
-            $message = $this->text('@item has been deleted', array('@item' => $this->text('Image style')));
+            $message = $this->text('Image style has been deleted');
         }
 
         $this->redirect('admin/settings/imagestyle', $message, 'success');
@@ -185,8 +185,7 @@ class ImageStyle extends BackendController
         $this->controlAccess('image_style_edit');
         $this->image->updateStyle($this->data_imagestyle['imagestyle_id'], $this->getSubmitted());
         $this->image->clearCache($this->data_imagestyle['imagestyle_id']);
-        $message = $this->text('@item has been updated', array('@item' => $this->text('Image style')));
-        $this->redirect('admin/settings/imagestyle', $message, 'success');
+        $this->redirect('admin/settings/imagestyle', $this->text('Image style has been updated'), 'success');
     }
 
     /**
@@ -196,8 +195,7 @@ class ImageStyle extends BackendController
     {
         $this->controlAccess('image_style_add');
         $this->image->addStyle($this->getSubmitted());
-        $message = $this->text('@item has been added', array('@item' => $this->text('Image style')));
-        $this->redirect('admin/settings/imagestyle', $message, 'success');
+        $this->redirect('admin/settings/imagestyle', $this->text('Image style has been added'), 'success');
     }
 
     /**

@@ -12,7 +12,6 @@ return array(
     'address_delete' => /* @text */'Address: delete',
     'cart' => /* @text */'Cart items: access',
     'cart_delete' => /* @text */'Cart items: delete',
-    'cli' => /* @text */'Console emulator: access',
     'dashboard' => /* @text */'Dashboard: access',
     'dashboard_edit' => /* @text */'Dashboard: edit',
     'product' => /* @text */'Product: access',

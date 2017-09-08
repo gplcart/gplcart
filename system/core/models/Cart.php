@@ -544,7 +544,7 @@ class Cart extends Model
             'user' => $user,
             'redirect' => 'checkout',
             'severity' => 'success',
-            'message' => $this->language->text('Hello, %name. Now you\'re logged in', array(
+            'message' => $this->language->text('Hello, %name. Now you are logged in', array(
                 '%name' => $user['name']
             ))
         );

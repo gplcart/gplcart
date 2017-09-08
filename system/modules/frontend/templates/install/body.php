@@ -37,7 +37,7 @@
       <?php } ?>
       <?php if ($severity === 'danger' || $severity === 'warning') { ?>
       <div class="alert alert-<?php echo $severity; ?> alert-dismissible fade in">
-        <?php echo $this->text('There are some issues in your environment:'); ?>
+        <?php echo $this->text('There are some issues in your environment'); ?>:
         <ol>
           <?php foreach ($requirements as $section => $items) { ?>
           <?php foreach ($items as $info) { ?>
@@ -67,7 +67,7 @@
       </div>
       <?php } ?>
       <?php if ($severity === 'danger') { ?>
-      <p><?php echo $this->text('Please fix all critical errors in your environment before continue'); ?></p>
+      <p><?php echo $this->text('Please fix all critical errors in your environment'); ?></p>
       <?php } else { ?>
       <?php if(count($handlers) > 1) { ?>
       <table class="table table-striped">
@@ -113,7 +113,7 @@
             <td>
               <div class="name"><?php echo $this->text('Database user'); ?></div>
               <div class="text-muted description">
-                <?php echo $this->text('An existing username to access the database'); ?>
+                <?php echo $this->text('Existing username to access the database'); ?>
               </div>
             </td>
             <td>

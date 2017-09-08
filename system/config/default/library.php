@@ -133,7 +133,7 @@ return array(
     ),
     'bootstrap_select' => array(
         'name' => /* @text */'Bootstrap Select',
-        'description' => /* @text */'A jQuery plugin that utilizes Bootstrap\'s dropdown.js to style and bring additional functionality to standard select elements',
+        'description' => /* @text */"A jQuery plugin that utilizes Bootstrap's dropdown.js to style and bring additional functionality to standard select elements",
         'type' => 'asset',
         'url' => 'https://github.com/silviomoreto/bootstrap-select',
         'download' => 'https://github.com/silviomoreto/bootstrap-select/archive/v1.12.1.zip',

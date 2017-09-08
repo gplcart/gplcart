@@ -46,7 +46,7 @@
       <div class="col-md-8">
         <textarea class="form-control" data-wysiwyg="true" rows="10" name="category[description_1]"><?php echo isset($category['description_1']) ? $this->filter($category['description_1']) : ''; ?></textarea>
         <div class="help-block">
-          <?php echo $this->text('Optional. A text that usually placed at the top of the category page'); ?>
+          <?php echo $this->text('Text that usually placed at the top of the category page'); ?>
         </div>
       </div>
     </div>
@@ -55,7 +55,7 @@
       <div class="col-md-8">
         <textarea class="form-control" data-wysiwyg="true" rows="10" name="category[description_2]"><?php echo isset($category['description_2']) ? $this->filter($category['description_2']) : ''; ?></textarea>
         <div class="help-block">
-          <?php echo $this->text('Optional. A text that usually placed at the bottom of the category page'); ?>
+          <?php echo $this->text('Text that usually placed at the bottom of the category page'); ?>
         </div>
       </div>
     </div>
@@ -118,7 +118,7 @@
         <div class="help-block">
           <?php echo $this->error('alias'); ?>
           <div class="text-muted">
-            <?php echo $this->text('An alternative path by which this category can be accessed. Leave empty to generate it automatically'); ?>
+            <?php echo $this->text('Alternative path by which the entity item can be accessed. Leave empty to generate it automatically'); ?>
           </div>
         </div>
       </div>
@@ -139,7 +139,7 @@
         <div class="help-block">
           <?php echo $this->error('meta_title'); ?>
           <div class="help-block">
-            <?php echo $this->text('An optional text to be placed between %tags tags. Important for SEO', array('%tags' => '<title>')); ?>
+            <?php echo $this->text('Optional text to be placed between %tags tags', array('%tags' => '<title>')); ?>
           </div>
         </div>
       </div>
@@ -149,7 +149,7 @@
       <div class="col-md-8">
         <textarea maxlength="160" class="form-control" name="category[meta_description]"><?php echo isset($category['meta_description']) ? $this->e($category['meta_description']) : ''; ?></textarea>
         <div class="help-block">
-          <?php echo $this->text('An optional text to be used in meta description tag. The tag is commonly used on search engine result pages (SERPs) to display preview snippets for a given page. Important for SEO'); ?>
+          <?php echo $this->text('Optional text to be used in meta description tag. The tag is commonly used on search engine result pages (SERPs) to display preview snippets for a given page. Important for SEO'); ?>
         </div>
       </div>
     </div>

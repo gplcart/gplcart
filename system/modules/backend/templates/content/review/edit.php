@@ -43,7 +43,7 @@
       <input name="review[email]" data-autocomplete-source="user" class="form-control" value="<?php echo isset($review['email']) ? $this->e($review['email']) : ''; ?>">
       <div class="help-block">
         <?php echo $this->error('email'); ?>
-        <div class="text-muted"><?php echo $this->text('Autocomplete field. Reviewer\'s E-mail'); ?></div>
+        <div class="text-muted"><?php echo $this->text('Autocomplete field. An E-mail of the person who will be author of the review'); ?></div>
       </div>
     </div>
   </div>

@@ -134,7 +134,7 @@
         <div class="help-block">
           <?php echo $this->error('alias'); ?>
           <div class="text-muted">
-            <?php echo $this->text('An alternative path by which this page can be accessed. Leave empty to generate it automatically'); ?>
+            <?php echo $this->text('Alternative path by which the entity item can be accessed. Leave empty to generate it automatically'); ?>
           </div>
         </div>
       </div>
@@ -155,7 +155,7 @@
         <div class="help-block">
           <?php echo $this->error('meta_title'); ?>
           <div class="help-block">
-            <?php echo $this->text('An optional text to be placed between %tags tags. Important for SEO', array('%tags' => '<title>')); ?>
+            <?php echo $this->text('Optional text to be placed between %tags tags', array('%tags' => '<title>')); ?>
           </div>
         </div>
       </div>
@@ -165,7 +165,7 @@
       <div class="col-md-10">
         <textarea maxlength="160" class="form-control" name="page[meta_description]"><?php echo (isset($page['meta_description'])) ? $this->e($page['meta_description']) : ''; ?></textarea>
         <div class="help-block">
-          <?php echo $this->text('An optional text to be used in meta description tag. The tag is commonly used on search engine result pages (SERPs) to display preview snippets for a given page. Important for SEO'); ?>
+          <?php echo $this->text('Optional text to be used in meta description tag. The tag is commonly used on search engine result pages (SERPs) to display preview snippets for a given page. Important for SEO'); ?>
         </div>
       </div>
     </div>

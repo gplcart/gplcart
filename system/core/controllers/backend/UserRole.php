@@ -106,14 +106,12 @@ class UserRole extends BackendController
     protected function validateEditUserRole()
     {
         $this->setSubmitted('role');
-        $permissions = $this->getSubmitted('permissions');
-
-        if (empty($permissions)) {
-            $this->setSubmitted('permissions', array());
-        }
-
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $this->data_role);
+
+        if (!$this->getSubmitted('permissions')) {
+            $this->setSubmitted('permissions', array());
+        }
 
         $this->validateComponent('user_role');
 
@@ -126,12 +124,9 @@ class UserRole extends BackendController
     protected function deleteUserRole()
     {
         $this->controlAccess('user_role_delete');
-
         if ($this->role->delete($this->data_role['role_id'])) {
-            $message = $this->text('@item has been deleted', array('@item' => $this->text('Role')));
-            $this->redirect('admin/user/role', $message, 'success');
+            $this->redirect('admin/user/role', $this->text('Role has been deleted'), 'success');
         }
-
         $this->redirect('', $this->text('Unable to delete'), 'danger');
     }
 
@@ -142,8 +137,7 @@ class UserRole extends BackendController
     {
         $this->controlAccess('user_role_edit');
         $this->role->update($this->data_role['role_id'], $this->getSubmitted());
-        $message = $this->text('@item has been updated', array('@item' => $this->text('Role')));
-        $this->redirect('admin/user/role', $message, 'success');
+        $this->redirect('admin/user/role', $this->text('Role has been updated'), 'success');
     }
 
     /**
@@ -153,8 +147,7 @@ class UserRole extends BackendController
     {
         $this->controlAccess('user_role_add');
         $this->role->add($this->getSubmitted());
-        $message = $this->text('@item has been added', array('@item' => $this->text('Role')));
-        $this->redirect('admin/user/role', $message, 'success');
+        $this->redirect('admin/user/role', $this->text('Role has been added'), 'success');
     }
 
     /**

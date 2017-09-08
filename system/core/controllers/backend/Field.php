@@ -220,12 +220,9 @@ class Field extends BackendController
     protected function deleteField()
     {
         $this->controlAccess('field_delete');
-
         if ($this->field->delete($this->data_field['field_id'])) {
-            $message = $this->text('@item has been deleted', array('@item' => $this->text('Field')));
-            $this->redirect('admin/content/field', $message, 'success');
+            $this->redirect('admin/content/field', $this->text('Field has been deleted'), 'success');
         }
-
         $this->redirect('', $this->text('Unable to delete'), 'danger');
     }
 
@@ -236,8 +233,7 @@ class Field extends BackendController
     {
         $this->controlAccess('field_edit');
         $this->field->update($this->data_field['field_id'], $this->getSubmitted());
-        $message = $this->text('@item has been updated', array('@item' => $this->text('Field')));
-        $this->redirect('admin/content/field', $message, 'success');
+        $this->redirect('admin/content/field', $this->text('Field has been updated'), 'success');
     }
 
     /**
@@ -247,8 +243,7 @@ class Field extends BackendController
     {
         $this->controlAccess('field_add');
         $this->field->add($this->getSubmitted());
-        $message = $this->text('@item has been added', array('@item' => $this->text('Field')));
-        $this->redirect('admin/content/field', $message, 'success');
+        $this->redirect('admin/content/field', $this->text('Field has been added'), 'success');
     }
 
     /**

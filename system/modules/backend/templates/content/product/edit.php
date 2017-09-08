@@ -77,7 +77,7 @@
           <div class="help-block">
             <?php echo $this->error("translation.$code.title"); ?>
             <div class="text-muted">
-              <?php echo $this->text('An optional translation for language %name', array('%name' => $info['name'])); ?>
+              <?php echo $this->text('Optional translation for language %name', array('%name' => $info['name'])); ?>
             </div>
           </div>
         </div>
@@ -89,7 +89,7 @@
           <div class="help-block">
             <?php echo $this->error("translation.$code.description"); ?>
             <div class="text-muted">
-              <?php echo $this->text('An optional translation for language %name', array('%name' => $info['name'])); ?>
+              <?php echo $this->text('Optional translation for language %name', array('%name' => $info['name'])); ?>
             </div>
           </div>
         </div>
@@ -231,7 +231,7 @@
         <div class="help-block">
           <?php echo $this->error('alias'); ?>
           <div class="text-muted">
-            <?php echo $this->text('An alternative path by which this product can be accessed. Leave empty to generate it automatically'); ?>
+            <?php echo $this->text('Alternative path by which the entity item can be accessed. Leave empty to generate it automatically'); ?>
           </div>
         </div>
       </div>
@@ -283,7 +283,7 @@
         <div class="help-block">
           <?php echo $this->error('meta_title'); ?>
           <div class="text-muted">
-            <?php echo $this->text('An optional text to be placed between %tags tags. Important for SEO', array('%tags' => '<title>')); ?>
+            <?php echo $this->text('Optional text to be placed between %tags tags', array('%tags' => '<title>')); ?>
           </div>
         </div>
       </div>
@@ -295,7 +295,7 @@
         <div class="help-block">
           <?php echo $this->error('meta_description'); ?>
           <div class="text-muted">
-            <?php echo $this->text('An optional text to be used in meta description tag. The tag is commonly used on search engine result pages (SERPs) to display preview snippets for a given page. Important for SEO'); ?>
+            <?php echo $this->text('Optional text to be used in meta description tag. The tag is commonly used on search engine result pages (SERPs) to display preview snippets for a given page. Important for SEO'); ?>
           </div>
         </div>
       </div>

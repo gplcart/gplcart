@@ -283,8 +283,7 @@ class Page extends BackendController
     {
         $this->controlAccess('page_delete');
         $this->page->delete($this->data_page['page_id']);
-        $message = $this->text('@item has been deleted', array('@item' => $this->text('Page')));
-        $this->redirect('admin/content/page', $message, 'success');
+        $this->redirect('admin/content/page', $this->text('Page has been deleted'), 'success');
     }
 
     /**
@@ -294,8 +293,7 @@ class Page extends BackendController
     {
         $this->controlAccess('page_edit');
         $this->page->update($this->data_page['page_id'], $this->getSubmitted());
-        $message = $this->text('@item has been updated', array('@item' => $this->text('Page')));
-        $this->redirect('admin/content/page', $message, 'success');
+        $this->redirect('admin/content/page', $this->text('Page has been updated'), 'success');
     }
 
     /**
@@ -305,8 +303,7 @@ class Page extends BackendController
     {
         $this->controlAccess('page_add');
         $this->page->add($this->getSubmitted());
-        $message = $this->text('@item has been added', array('@item' => $this->text('Page')));
-        $this->redirect('admin/content/page', $message, 'success');
+        $this->redirect('admin/content/page', $this->text('Page has been added'), 'success');
     }
 
     /**

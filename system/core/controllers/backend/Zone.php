@@ -226,12 +226,9 @@ class Zone extends BackendController
     protected function deleteZone()
     {
         $this->controlAccess('zone_delete');
-
         if ($this->zone->delete($this->data_zone['zone_id'])) {
-            $message = $this->text('@item has been deleted', array('@item' => $this->text('Zone')));
-            $this->redirect('admin/settings/zone', $message, 'success');
+            $this->redirect('admin/settings/zone', $this->text('Zone has been deleted'), 'success');
         }
-
         $this->redirect('', $this->text('Unable to delete'), 'danger');
     }
 
@@ -242,8 +239,7 @@ class Zone extends BackendController
     {
         $this->controlAccess('zone_edit');
         $this->zone->update($this->data_zone['zone_id'], $this->getSubmitted());
-        $message = $this->text('@item has been updated', array('@item' => $this->text('Zone')));
-        $this->redirect('admin/settings/zone', $message, 'success');
+        $this->redirect('admin/settings/zone', $this->text('Zone has been updated'), 'success');
     }
 
     /**
@@ -253,8 +249,7 @@ class Zone extends BackendController
     {
         $this->controlAccess('zone_add');
         $this->zone->add($this->getSubmitted());
-        $message = $this->text('@item has been added', array('@item' => $this->text('Zone')));
-        $this->redirect('admin/settings/zone', $message, 'success');
+        $this->redirect('admin/settings/zone', $this->text('Zone has been added'), 'success');
     }
 
     /**

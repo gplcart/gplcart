@@ -51,7 +51,7 @@
       <div class="help-block">
         <?php echo $this->error('color'); ?>
         <div class="text-muted">
-        <?php echo $this->text('Specify a HEX color code. It\'s applicable only for fields with color widgets'); ?>
+        <?php echo $this->text("Specify a HEX color code. It's applicable only for fields with color widgets"); ?>
         </div>
       </div>
     </div>
@@ -64,7 +64,7 @@
       <div class="help-block">
         <?php echo $this->error('file'); ?>
         <div class="text-muted">
-        <?php echo $this->text('Upload an image. It\'s applicable only for fields with image widgets'); ?>
+        <?php echo $this->text("Upload an image. It's applicable only for fields with image widgets"); ?>
         </div>
       </div>
     </div>

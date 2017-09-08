@@ -91,7 +91,7 @@
         <option value="fixed"<?php echo isset($price_rule['value_type']) && $price_rule['value_type'] == 'fixed' ? ' selected' : ''; ?>><?php echo $this->text('Fixed'); ?></option>
       </select>
       <div class="help-block">
-        <?php echo $this->text('Select how to add/subtract the price rule value. I.e for discount 10% use "Percent"'); ?>
+        <?php echo $this->text('Select how to apply the price rule value, e.g for discount 10% use "Percent"'); ?>
       </div>
     </div>
   </div>

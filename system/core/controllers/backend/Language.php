@@ -95,12 +95,9 @@ class Language extends BackendController
     protected function deleteLanguage()
     {
         $this->controlAccess('language_delete');
-
         if ($this->language->delete($this->data_language['code'])) {
-            $message = $this->text('@item has been deleted', array('@item' => $this->text('Language')));
-            $this->redirect('admin/settings/language', $message, 'success');
+            $this->redirect('admin/settings/language', $this->text('Language has been deleted'), 'success');
         }
-
         $this->redirect('', $this->text('Unable to delete'), 'danger');
     }
 
@@ -128,8 +125,7 @@ class Language extends BackendController
         $this->controlAccess('language_edit');
         $this->language->update($this->data_language['code'], $this->getSubmitted());
         // Redirect to a path without language code to avoid "Page not found" if the current language has been disabled
-        $message = $this->text('@item has been updated', array('@item' => $this->text('Language')));
-        $this->redirect('admin/settings/language', $message, 'success', true);
+        $this->redirect('admin/settings/language', $this->text('Language has been updated'), 'success', true);
     }
 
     /**
@@ -139,8 +135,7 @@ class Language extends BackendController
     {
         $this->controlAccess('language_add');
         $this->language->add($this->getSubmitted());
-        $message = $this->text('@item has been added', array('@item' => $this->text('Language')));
-        $this->redirect('admin/settings/language', $message, 'success');
+        $this->redirect('admin/settings/language', $this->text('Language has been added'), 'success');
     }
 
     /**
@@ -207,7 +202,7 @@ class Language extends BackendController
         if (!empty($code)) {
             $this->controlAccess('language_edit');
             $this->language->refresh($code);
-            $message = $this->text('@item has been deleted', array('@item' => $this->text('Cache')));
+            $message = $this->text('Cache has been deleted');
             $this->redirect('', $message, 'success');
         }
     }

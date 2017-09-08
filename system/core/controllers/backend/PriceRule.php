@@ -299,8 +299,7 @@ class PriceRule extends BackendController
     {
         $this->controlAccess('price_rule_delete');
         $this->rule->delete($this->data_rule['price_rule_id']);
-        $message = $this->text('@item has been deleted', array('@item' => $this->text('Price rule')));
-        $this->redirect('admin/sale/price', $message, 'success');
+        $this->redirect('admin/sale/price', $this->text('Price rule has been deleted'), 'success');
     }
 
     /**
@@ -310,8 +309,7 @@ class PriceRule extends BackendController
     {
         $this->controlAccess('price_rule_edit');
         $this->rule->update($this->data_rule['price_rule_id'], $this->getSubmitted());
-        $message = $this->text('@item has been updated', array('@item' => $this->text('Price rule')));
-        $this->redirect('admin/sale/price', $message, 'success');
+        $this->redirect('admin/sale/price', $this->text('Price rule has been updated'), 'success');
     }
 
     /**
@@ -321,8 +319,7 @@ class PriceRule extends BackendController
     {
         $this->controlAccess('price_rule_add');
         $this->rule->add($this->getSubmitted());
-        $message = $this->text('@item has been added', array('@item' => $this->text('Price rule')));
-        $this->redirect('admin/sale/price', $message, 'success');
+        $this->redirect('admin/sale/price', $this->text('Price rule has been added'), 'success');
     }
 
     /**

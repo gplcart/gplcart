@@ -266,12 +266,9 @@ class Country extends BackendController
     protected function deleteCountry()
     {
         $this->controlAccess('country_delete');
-
         if ($this->country->delete($this->data_country['code'])) {
-            $message = $this->text('@item has been deleted', array('@item' => $this->text('Country')));
-            $this->redirect('admin/settings/country', $message, 'success');
+            $this->redirect('admin/settings/country', $this->text('Country has been deleted'), 'success');
         }
-
         $this->redirect('', $this->text('Unable to delete'), 'danger');
     }
 
@@ -282,8 +279,7 @@ class Country extends BackendController
     {
         $this->controlAccess('country_edit');
         $this->country->update($this->data_country['code'], $this->getSubmitted());
-        $message = $this->text('@item has been updated', array('@item' => $this->text('Country')));
-        $this->redirect('admin/settings/country', $message, 'success');
+        $this->redirect('admin/settings/country', $this->text('Country has been updated'), 'success');
     }
 
     /**
@@ -293,8 +289,7 @@ class Country extends BackendController
     {
         $this->controlAccess('country_add');
         $this->country->add($this->getSubmitted());
-        $message = $this->text('@item has been added', array('@item' => $this->text('Country')));
-        $this->redirect('admin/settings/country', $message, 'success');
+        $this->redirect('admin/settings/country', $this->text('Country has been added'), 'success');
     }
 
     /**
@@ -387,8 +382,7 @@ class Country extends BackendController
         }
 
         $this->country->update($this->data_country['code'], array('format' => $format));
-        $message = $this->text('@item has been updated', array('@item' => $this->text('Country')));
-        $this->redirect('admin/settings/country', $message, 'success');
+        $this->redirect('admin/settings/country', $this->text('Country has been updated'), 'success');
     }
 
     /**

@@ -62,7 +62,7 @@
       <div class="help-block">
         <?php echo $this->error('name'); ?>
         <div class="text-muted">
-          <?php echo $this->text('An international english name of the language according to ISO 639 standard'); ?>
+          <?php echo $this->text('International english name of the language according to ISO 639 standard'); ?>
         </div>
       </div>
     </div>

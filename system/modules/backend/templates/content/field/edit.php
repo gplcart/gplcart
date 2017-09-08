@@ -80,7 +80,7 @@
         <?php } ?>
       </select>
       <div class="help-block">
-        <?php echo $this->text('Select how to represent the field to customers. This is for options only'); ?>
+        <?php echo $this->text('Select how to display the field on product pages. This is for options only'); ?>
       </div>
     </div>
   </div>

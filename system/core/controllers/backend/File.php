@@ -251,11 +251,9 @@ class File extends BackendController
     {
         $this->controlAccess('file_delete');
         $result = $this->file->deleteAll($this->data_file['file_id']);
-
         if (array_sum($result) == 2) {
             $this->redirect('admin/content/file', $this->text('File has been deleted from database and disk'), 'success');
         }
-
         $this->redirect('admin/content/file', $this->text('Unable to delete'), 'warning');
     }
 
@@ -279,8 +277,7 @@ class File extends BackendController
     {
         $this->controlAccess('file_edit');
         $this->file->update($this->data_file['file_id'], $this->getSubmitted());
-        $message = $this->text('@item has been updated', array('@item' => $this->text('File')));
-        $this->redirect('admin/content/file', $message, 'success');
+        $this->redirect('admin/content/file', $this->text('File has been updated'), 'success');
     }
 
     /**
@@ -289,14 +286,10 @@ class File extends BackendController
     protected function addFile()
     {
         $this->controlAccess('file_add');
-
         if ($this->file->add($this->getSubmitted())) {
-            $message = $this->text('@item has been added', array('@item' => $this->text('File')));
-            $this->redirect('admin/content/file', $message, 'success');
+            $this->redirect('admin/content/file', $this->text('File has been added'), 'success');
         }
-
-        $message = $this->text('@item has not been added', array('@item' => $this->text('File')));
-        $this->redirect('admin/content/file', $message, 'warning');
+        $this->redirect('admin/content/file', $this->text('File has not been added'), 'warning');
     }
 
     /**

@@ -47,13 +47,13 @@
     </div>
   </div>
   <div class="form-group<?php echo $this->error('data.url', ' has-error'); ?>">
-    <label class="col-md-2 control-label"><?php echo $this->text('Url'); ?></label>
+    <label class="col-md-2 control-label"><?php echo $this->text('URL'); ?></label>
     <div class="col-md-6">
       <input name="collection_item[data][url]" class="form-control" value="<?php echo isset($collection_item['data']['url']) ? $this->e($collection_item['data']['url']) : ''; ?>">
       <div class="help-block">
         <?php echo $this->error('data.url'); ?>
         <div class="text-muted">
-          <?php echo $this->text('Optional. Enter a referring URL. You can use either absolute (with http://) or relative URLs'); ?>
+          <?php echo $this->text('Enter a referring URL. You can use either absolute (with http://) or relative URLs'); ?>
         </div>
       </div>
     </div>
@@ -65,7 +65,7 @@
       <div class="help-block">
         <?php echo $this->error('weight'); ?>
         <div class="text-muted">
-          <?php echo $this->text('Position of the item. Items with lower weight go first'); ?>
+          <?php echo $this->text('Items are sorted in lists by the weight value. Lower value means higher position'); ?>
         </div>
       </div>
     </div>

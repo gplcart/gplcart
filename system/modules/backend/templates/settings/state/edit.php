@@ -33,7 +33,7 @@
       <div class="help-block">
         <?php echo $this->error('name'); ?>
         <div class="text-muted">
-          <?php echo $this->text('An official name of the state'); ?>
+          <?php echo $this->text('Official name of the state'); ?>
         </div>
       </div>
     </div>

@@ -79,7 +79,7 @@
       <div class="help-block">
         <?php echo $this->error('code'); ?>
         <div class="text-muted">
-          <?php echo $this->text('Three-letter upper-case code according to ISO 4217 standard, e.g USD.'); ?> <?php echo $this->text('Template placeholder: %name', array('%name' => '%code')); ?>
+          <?php echo $this->text('Three-letter upper-case code according to ISO 4217 standard, e.g USD'); ?> <?php echo $this->text('Template placeholder: %name', array('%name' => '%code')); ?>
         </div>
       </div>
     </div>
@@ -127,7 +127,7 @@
       <div class="help-block">
         <?php echo $this->error('minor_unit'); ?>
         <div class="text-muted">
-          <?php echo $this->text('Name of the lowest valued currency unit. Usually it\'s 1/100 of the major unit, e.g Cent.'); ?> <?php echo $this->text('Template placeholder: %name', array('%name' => '%minor_unit')); ?>
+          <?php echo $this->text("Name of the lowest valued currency unit. Usually it's 1/100 of the major unit, e.g Cent."); ?> <?php echo $this->text('Template placeholder: %name', array('%name' => '%minor_unit')); ?>
         </div>
       </div>
     </div>

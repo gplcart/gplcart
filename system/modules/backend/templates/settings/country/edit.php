@@ -51,7 +51,7 @@
       <div class="help-block">
         <?php echo $this->error('name'); ?>
         <div class="text-muted">
-        <?php echo $this->text('An international english name of the country according to ISO 3166-2 standard'); ?>
+        <?php echo $this->text('International english name of the country according to ISO 3166-2 standard'); ?>
         </div>
       </div>
     </div>

@@ -274,7 +274,7 @@ class Controller extends BaseController
         $result = array(
             'redirect' => '',
             'severity' => 'success',
-            'message' => $this->text('@item has been deleted', array('@item' => $this->text('Cart item'))),
+            'message' => $this->text('Product has been deleted from cart'),
             'quantity' => empty($cart['quantity']) ? 0 : $cart['quantity']
         );
 

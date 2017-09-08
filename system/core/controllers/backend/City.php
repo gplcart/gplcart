@@ -341,8 +341,7 @@ class City extends BackendController
 
         if ($this->city->delete($this->data_city['city_id'])) {
             $url = "admin/settings/cities/{$this->data_country['code']}/{$this->data_state['state_id']}";
-            $message = $this->text('@item has been deleted', array('@item' => $this->text('City')));
-            $this->redirect($url, $message, 'success');
+            $this->redirect($url, $this->text('City has been deleted'), 'success');
         }
 
         $this->redirect('', $this->text('Unable to delete'), 'warning');
@@ -356,8 +355,7 @@ class City extends BackendController
         $this->controlAccess('city_edit');
         $this->city->update($this->data_city['city_id'], $this->getSubmitted());
         $url = "admin/settings/cities/{$this->data_country['code']}/{$this->data_state['state_id']}";
-        $message = $this->text('@item has been updated', array('@item' => $this->text('City')));
-        $this->redirect($url, $message, 'success');
+        $this->redirect($url, $this->text('City has been updated'), 'success');
     }
 
     /**
@@ -368,8 +366,7 @@ class City extends BackendController
         $this->controlAccess('city_add');
         $this->city->add($this->getSubmitted());
         $url = "admin/settings/cities/{$this->data_country['code']}/{$this->data_state['state_id']}";
-        $message = $this->text('@item has been added', array('@item' => $this->text('City')));
-        $this->redirect($url, $message, 'success');
+        $this->redirect($url, $this->text('City has been added'), 'success');
     }
 
     /**

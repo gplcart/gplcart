@@ -317,12 +317,9 @@ class Store extends BackendController
     protected function deleteStore()
     {
         $this->controlAccess('store_delete');
-
         if ($this->store->delete($this->data_store['store_id'])) {
-            $message = $this->text('@item has been deleted', array('@item' => $this->text('Store')));
-            $this->redirect('admin/settings/store', $message, 'success');
+            $this->redirect('admin/settings/store', $this->text('Store has been deleted'), 'success');
         }
-
         $this->redirect('', $this->text('Unable to delete'), 'danger');
     }
 
@@ -333,8 +330,7 @@ class Store extends BackendController
     {
         $this->controlAccess('store_edit');
         $this->store->update($this->data_store['store_id'], $this->getSubmitted());
-        $message = $this->text('@item has been updated', array('@item' => $this->text('Store')));
-        $this->redirect('admin/settings/store', $message, 'success');
+        $this->redirect('admin/settings/store', $this->text('Store has been updated'), 'success');
     }
 
     /**
@@ -344,8 +340,7 @@ class Store extends BackendController
     {
         $this->controlAccess('store_add');
         $this->store->add($this->getSubmitted());
-        $message = $this->text('@item has been added', array('@item' => $this->text('Store')));
-        $this->redirect('admin/settings/store', $message, 'success');
+        $this->redirect('admin/settings/store', $this->text('Store has been added'), 'success');
     }
 
     /**

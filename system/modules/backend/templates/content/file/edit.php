@@ -26,7 +26,7 @@
       <textarea name="file[description]" class="form-control"><?php echo isset($file['description']) ? $this->e($file['description']) : ''; ?></textarea>
       <div class="help-block">
         <?php echo $this->error('description'); ?>
-        <div class="text-muted"><?php echo $this->text('An optional detailed description of the file'); ?></div>
+        <div class="text-muted"><?php echo $this->text('Optional detailed description of the file'); ?></div>
       </div>
     </div>
   </div>

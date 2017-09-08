@@ -11,7 +11,7 @@
 <div id="cart-preview">
   <?php if (empty($cart['items'])) { ?>
   <div class="row">
-    <div class="col-md-12"><?php echo $this->text('Shopping cart is empty.'); ?></div>
+    <div class="col-md-12"><?php echo $this->text('Shopping cart is empty'); ?></div>
   </div>
   <?php } else { ?>
   <div class="items">

@@ -235,13 +235,9 @@ class ProductClass extends BackendController
     protected function deleteProductClass()
     {
         $this->controlAccess('product_class_delete');
-        $deleted = $this->product_class->delete($this->data_product_class['product_class_id']);
-
-        if ($deleted) {
-            $message = $this->text('@item has been deleted', array('@item' => $this->text('Product class')));
-            $this->redirect('admin/content/product-class', $message, 'success');
+        if ($this->product_class->delete($this->data_product_class['product_class_id'])) {
+            $this->redirect('admin/content/product-class', $this->text('Product class has been deleted'), 'success');
         }
-
         $this->redirect('', $this->text('Unable to delete'), 'danger');
     }
 
@@ -252,8 +248,7 @@ class ProductClass extends BackendController
     {
         $this->controlAccess('product_class_edit');
         $this->product_class->update($this->data_product_class['product_class_id'], $this->getSubmitted());
-        $message = $this->text('@item has been updated', array('@item' => $this->text('Product class')));
-        $this->redirect('admin/content/product-class', $message, 'success');
+        $this->redirect('admin/content/product-class', $this->text('Product class has been updated'), 'success');
     }
 
     /**
@@ -263,8 +258,7 @@ class ProductClass extends BackendController
     {
         $this->controlAccess('product_class_add');
         $this->product_class->add($this->getSubmitted());
-        $message = $this->text('@item has been added', array('@item' => $this->text('Product class')));
-        $this->redirect('admin/content/product-class', $message, 'success');
+        $this->redirect('admin/content/product-class', $this->text('Product class has been added'), 'success');
     }
 
     /**
@@ -355,10 +349,12 @@ class ProductClass extends BackendController
      */
     protected function prepareFieldsProductClass(array $fields)
     {
+        $types = $this->field->getTypes();
+
         $unique = array();
         foreach ((array) $this->field->getList() as $field) {
             if (empty($fields[$field['field_id']])) {
-                $type = $field['type'] === 'option' ? $this->text('Option') : $this->text('Attribute');
+                $type = empty($types[$field['type']]) ? $this->text('Unknown') : $types[$field['type']];
                 $unique[$field['field_id']] = "{$field['title']} ($type)";
             }
         }
@@ -398,8 +394,7 @@ class ProductClass extends BackendController
             }
         }
 
-        $message = $this->text('@item has been updated', array('@item' => $this->text('Product class')));
-        $this->redirect('', $message, 'success');
+        $this->redirect('', $this->text('Product class has been updated'), 'success');
     }
 
     /**
@@ -480,16 +475,13 @@ class ProductClass extends BackendController
     protected function addFieldProductClass()
     {
         $this->controlAccess('product_class_edit');
-
         $id = $this->data_product_class['product_class_id'];
-
         foreach (array_values($this->getSubmitted('values')) as $field_id) {
             $field = array('field_id' => $field_id, 'product_class_id' => $id);
             $this->product_class->addField($field);
         }
 
-        $message = $this->text('@item has been updated', array('@item' => $this->text('Product class')));
-        $this->redirect("admin/content/product-class/field/$id", $message, 'success');
+        $this->redirect("admin/content/product-class/field/$id", $this->text('Product class has been updated'), 'success');
     }
 
     /**

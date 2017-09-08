@@ -61,7 +61,7 @@
         <div class="help-block">
           <?php echo $this->error('basepath'); ?>
           <div class="text-muted">
-            <?php echo $this->text('An optional path if the store is not installed in the domain root'); ?>
+            <?php echo $this->text('Optional path if the store is not installed in the domain root'); ?>
           </div>
         </div>
       </div>
@@ -111,7 +111,7 @@
         <div class="help-block">
           <?php echo $this->error('data.meta_title'); ?>
           <div class="text-muted">
-            <?php echo $this->text('An optional text to be placed between %tags tags', array('%tags' => '<title>')); ?>
+            <?php echo $this->text('Optional text to be placed between %tags tags', array('%tags' => '<title>')); ?>
           </div>
         </div>
       </div>
@@ -348,7 +348,7 @@
           <?php } ?>
         </select>
         <div class="help-block">
-          <?php echo $this->text('Select a <a href="@url">collection</a> to be used for banner slideshow on the front page', array('@url' => $this->url('admin/content/collection'))); ?>
+          <?php echo $this->text('Select a <a href="@url">collection</a> to be used for banner slideshow on front page', array('@url' => $this->url('admin/content/collection'))); ?>
         </div>
       </div>
     </div>
@@ -368,7 +368,7 @@
           <?php } ?>
         </select>
         <div class="help-block">
-          <?php echo $this->text('Select a <a href="@url">collection</a> to be used for list of featured products on the front page', array('@url' => $this->url('admin/content/collection'))); ?>
+          <?php echo $this->text('Select a <a href="@url">collection</a> to be used for list of featured products on front page', array('@url' => $this->url('admin/content/collection'))); ?>
         </div>
       </div>
     </div>
@@ -388,7 +388,7 @@
           <?php } ?>
         </select>
         <div class="help-block">
-          <?php echo $this->text('Select a <a href="@url">collection</a> to be used for list of articles/news on the front page', array('@url' => $this->url('admin/content/collection'))); ?>
+          <?php echo $this->text('Select a <a href="@url">collection</a> to be used for list of articles/news on front page', array('@url' => $this->url('admin/content/collection'))); ?>
         </div>
       </div>
     </div>

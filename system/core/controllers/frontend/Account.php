@@ -25,7 +25,8 @@ use gplcart\core\controllers\frontend\Controller as FrontendController;
 class Account extends FrontendController
 {
 
-    use OrderTrait, OrderComponentTrait;
+    use OrderTrait,
+        OrderComponentTrait;
 
     /**
      * Address model instance
@@ -90,8 +91,8 @@ class Account extends FrontendController
      * @param ShippingModel $shipping
      */
     public function __construct(AddressModel $address, OrderModel $order,
-                                UserRoleModel $role, PriceRuleModel $pricerule,
-                                PaymentModel $payment, ShippingModel $shipping)
+            UserRoleModel $role, PriceRuleModel $pricerule,
+            PaymentModel $payment, ShippingModel $shipping)
     {
         parent::__construct();
 
@@ -287,7 +288,7 @@ class Account extends FrontendController
             'user_id' => $this->data_user['user_id']
         );
 
-        $this->total = (int)$this->order->getList($options);
+        $this->total = (int) $this->order->getList($options);
     }
 
     /**
@@ -297,12 +298,12 @@ class Account extends FrontendController
     protected function getListOrderAccount()
     {
         $conditions = array(
-                'order' => 'desc',
-                'sort' => 'created',
-                'limit' => $this->limit) + $this->query_filter;
+            'order' => 'desc',
+            'sort' => 'created',
+            'limit' => $this->limit) + $this->query_filter;
 
         $conditions['user_id'] = $this->data_user['user_id'];
-        $orders = (array)$this->order->getList($conditions);
+        $orders = (array) $this->order->getList($conditions);
 
         foreach ($orders as &$order) {
             $this->prepareOrderAccount($order);
@@ -403,7 +404,7 @@ class Account extends FrontendController
     {
         $this->controlAccessEditAccount();
         $this->user->update($this->data_user['user_id'], $this->getSubmitted());
-        $this->redirect('', $this->text('@item has been updated', array('@item' => $this->text('Account'))), 'success');
+        $this->redirect('', $this->text('Account has been updated'), 'success');
     }
 
     /**
@@ -493,10 +494,8 @@ class Account extends FrontendController
 
         $this->controlAccessEditAccount();
 
-        $deleted = $this->address->delete($address_id);
-
-        if ($deleted) {
-            $message = $this->text('@item has been deleted', array('@item' => $this->text('Address')));
+        if ($this->address->delete($address_id)) {
+            $message = $this->text('Address has been deleted');
             $this->redirect('', $message, 'success');
         }
 

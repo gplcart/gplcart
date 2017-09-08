@@ -228,7 +228,7 @@ class Module extends Model
     public function canUninstall($module_id)
     {
         if ($this->isActiveTheme($module_id)) {
-            return $this->language->text('Active theme modules cannot be disabled/uninstalled');
+            return $this->language->text('Active themes cannot be disabled/uninstalled');
         }
 
         if ($this->isLocked($module_id)) {
@@ -273,7 +273,7 @@ class Module extends Model
         }
 
         if (isset($module['type']) && $module['type'] === 'installer') {
-            return $this->language->text('Cannot install/enable installer modules on runtime');
+            return $this->language->text('Installers cannot be installed/enabled when system is set up');
         }
 
         return $this->checkDependenciesModule($module_id);
