@@ -83,7 +83,8 @@ class Cart extends BackendController
      */
     protected function setTotalListCart()
     {
-        $options = array('count' => true) + $this->query_filter;
+        $options = $this->query_filter;
+        $options['count'] = true;
         $this->total = (int) $this->cart->getList($options, 'cart_id');
     }
 
@@ -93,7 +94,9 @@ class Cart extends BackendController
      */
     protected function getListCart()
     {
-        $options = array('limit' => $this->limit) + $this->query_filter;
+        $options = $this->query_filter;
+        $options['limit'] = $this->limit;
+
         $list = (array) $this->cart->getList($options, 'cart_id');
 
         $this->attachEntityUrl($list, 'product');

@@ -90,9 +90,9 @@ class Alias extends BackendController
      */
     protected function setTotalListAlias()
     {
-        $query = $this->query_filter;
-        $query['count'] = true;
-        $this->total = (int) $this->alias->getList($query);
+        $options = $this->query_filter;
+        $options['count'] = true;
+        $this->total = (int) $this->alias->getList($options);
     }
 
     /**
@@ -101,14 +101,15 @@ class Alias extends BackendController
      */
     protected function getListAlias()
     {
-        $query = $this->query_filter;
-        $query['limit'] = $this->limit;
-        $aliases = (array) $this->alias->getList($query);
+        $options = $this->query_filter;
+        $options['limit'] = $this->limit;
+        $aliases = (array) $this->alias->getList($options);
 
         foreach ($aliases as &$alias) {
             $entity = preg_replace('/_id$/', '', $alias['id_key']);
             $alias['entity'] = $this->text(ucfirst($entity));
         }
+
         return $aliases;
     }
 

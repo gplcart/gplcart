@@ -152,7 +152,7 @@ class Controller extends BaseController
      * Returns an array of fired triggers for the current context
      * @return array
      */
-    protected function getFiredTriggers()
+    public function getFiredTriggers()
     {
         $conditions = array('status' => 1, 'store_id' => $this->store_id);
         return $this->trigger->getFired($conditions);
@@ -300,7 +300,7 @@ class Controller extends BaseController
      * @param array $options
      * @return array
      */
-    protected function getCategories($conditions = array(), $options = array())
+    public function getCategories($conditions = array(), $options = array())
     {
         $conditions += array(
             'status' => 1,
@@ -341,7 +341,7 @@ class Controller extends BaseController
      * @param array $cart
      * @return array
      */
-    public function prepareCart(array $cart)
+    protected function prepareCart(array $cart)
     {
         foreach ($cart['items'] as &$item) {
             $item['currency'] = $cart['currency'];
@@ -518,7 +518,7 @@ class Controller extends BaseController
      * @param array $options
      * @return array
      */
-    protected function getProducts($conditions = array(), $options = array())
+    public function getProducts($conditions = array(), $options = array())
     {
         $options += array('entity' => 'product');
         $conditions += array('status' => 1, 'store_id' => $this->store_id);
@@ -537,7 +537,7 @@ class Controller extends BaseController
      * @param array $options
      * @return array
      */
-    protected function getCollectionItems(array $conditions, array $options)
+    public function getCollectionItems(array $conditions, array $options)
     {
         $conditions += array('status' => 1, 'store_id' => $this->store_id);
         $items = $this->collection_item->getItems($conditions);

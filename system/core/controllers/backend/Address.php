@@ -91,9 +91,9 @@ class Address extends BackendController
      */
     protected function setTotalListAddress()
     {
-        $query = $this->query_filter;
-        $query['count'] = true;
-        $this->total = (int) $this->address->getList($query);
+        $options = $this->query_filter;
+        $options['count'] = true;
+        $this->total = (int) $this->address->getList($options);
     }
 
     /**
@@ -102,9 +102,9 @@ class Address extends BackendController
      */
     protected function getListAddress()
     {
-        $query = $this->query_filter;
-        $query['limit'] = $this->limit;
-        $addresses = (array) $this->address->getList($query);
+        $options = $this->query_filter;
+        $options['limit'] = $this->limit;
+        $addresses = (array) $this->address->getList($options);
 
         return $this->prepareListAddress($addresses);
     }

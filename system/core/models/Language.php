@@ -37,7 +37,7 @@ class Language extends Model
     protected $langcode = '';
 
     /**
-     * The current context
+     * The current translation context
      * @var string
      */
     protected $context;

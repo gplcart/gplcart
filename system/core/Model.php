@@ -68,11 +68,11 @@ abstract class Model
      */
     public function getProperty($name)
     {
-        if (!property_exists($this, $name)) {
-            throw new \InvalidArgumentException("Property $name does not exist");
+        if (property_exists($this, $name)) {
+            return $this->{$name};
         }
 
-        return $this->{$name};
+        throw new \InvalidArgumentException("Property $name does not exist");
     }
 
 }

@@ -11,6 +11,8 @@ namespace gplcart\core\models;
 
 use gplcart\core\Model,
     gplcart\core\Cache;
+use gplcart\core\traits\Image as ImageTrait,
+    gplcart\core\traits\Alias as AliasTrait;
 use gplcart\core\models\Sku as SkuModel,
     gplcart\core\models\File as FileModel,
     gplcart\core\models\Alias as AliasModel,
@@ -27,8 +29,8 @@ use gplcart\core\helpers\Request as RequestHelper;
 class Product extends Model
 {
 
-    use \gplcart\core\traits\Image,
-        \gplcart\core\traits\Alias;
+    use ImageTrait,
+        AliasTrait;
 
     /**
      * Cache instance
@@ -530,6 +532,7 @@ class Product extends Model
      */
     public function getList(array $data = array())
     {
+
         $sql = 'SELECT p.*, a.alias, COALESCE(NULLIF(pt.title, ""), p.title) AS title,'
                 . 'pt.language, ps.sku, ps.price, ps.stock, ps.file_id, u.role_id';
 
