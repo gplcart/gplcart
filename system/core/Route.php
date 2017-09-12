@@ -289,8 +289,8 @@ class Route
     protected function seekRoute()
     {
         foreach ($this->getList() as $pattern => $route) {
-            $pattern = trim($pattern, '/');
-            $arguments = gplcart_parse_path($this->path, $pattern);
+            $path = empty($this->path) ? '/' : $this->path;
+            $arguments = gplcart_parse_path($path, $pattern);
             if (is_array($arguments)) {
                 $this->callController($pattern, $route, $arguments);
                 return true;
