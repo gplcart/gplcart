@@ -13,7 +13,7 @@
   <div class="col-md-12">
     <?php echo $this->text('Shopping cart is empty. <a href="@url">Shop now</a>', array('@url' => $this->url('catalog'))); ?>
     <?php if ($this->access('order_add')) { ?>
-    <p><?php echo $this->text('If you want to add a new order for a customer, add all needed products to your cart then add an order for a <a href="@url">user</a>. Your cart items will be assigned to that user.', array('@url' => $this->url('admin/user/list'))); ?></p>
+    <p><?php echo $this->text('If you want to add a new order for a user, add all needed products to your cart then add an order for the <a href="@url">user</a>. Your cart items will be assigned to that user.', array('@url' => $this->url('admin/user/list'))); ?></p>
     <?php } ?>
   </div>
 </div>
@@ -22,7 +22,7 @@
   <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <noscript>
   <div class="alert alert-warning">
-    <?php echo $this->text('Your browser seems to have JavaScript disabled. You should press <button title="@title" class="btn btn-default btn-xs" name="update" value="1"><i class="fa fa-refresh"></i></button> each time you make changes in the form', array('@title' => $this->text('Update'))); ?>
+    <?php echo $this->text('Your browser seems to have Java-Script disabled. You should press "Update" button each time you make changes in the form', array('@title' => $this->text('Update'))); ?>
   </div>
   </noscript>
   <div class="row">

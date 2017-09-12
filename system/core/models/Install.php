@@ -102,7 +102,7 @@ class Install extends Model
                 'module' => '',
                 'id' => 'default',
                 'title' => $this->language->text('Default'),
-                'description' => $this->language->text('Default system installer'),
+                'description' => $this->language->text('Default'),
                 'handlers' => array(
                     'install' => array('gplcart\\core\\handlers\\install\\DefaultProfile', 'install')
                 )

@@ -240,7 +240,7 @@ class Review extends FrontendController
         $message = $this->text('Review has been updated');
 
         if (empty($submitted['status'])) {
-            $message = $this->text('Review has been updated and will be visible after approval');
+            $message = $this->text('Review has been updated and will be published after approval');
         }
 
         $this->redirect("product/{$this->data_product['product_id']}", $message, 'success');
@@ -262,7 +262,7 @@ class Review extends FrontendController
         $message = $this->text('Review has been added');
 
         if (empty($submitted['status'])) {
-            $message = $this->text('Review has been added and will be visible after approval');
+            $message = $this->text('Review has been added and will be published after approval');
         }
 
         $this->redirect("product/{$this->data_product['product_id']}", $message, 'success');

@@ -36,7 +36,7 @@
           </label>
         </div>
         <div class="help-block">
-          <?php echo $this->text('Disabled products will not be available to frontend users'); ?>
+          <?php echo $this->text('Disabled products will not be available to customers and search engines'); ?>
         </div>
       </div>
     </div>

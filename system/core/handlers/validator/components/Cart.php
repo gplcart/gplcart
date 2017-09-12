@@ -325,7 +325,7 @@ class Cart extends ComponentValidator
         $combination_id = $this->sku->getCombinationId($options, $product['product_id']);
 
         if (empty($product['combination'][$combination_id]['status'])) {
-            $error = $this->language->text('Invalid option combination');
+            $error = $this->language->text('Invalid combination');
             $this->setError('options', $error);
             return false;
         }

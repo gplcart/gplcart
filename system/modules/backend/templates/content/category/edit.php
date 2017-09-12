@@ -46,7 +46,7 @@
       <div class="col-md-8">
         <textarea class="form-control" data-wysiwyg="true" rows="10" name="category[description_1]"><?php echo isset($category['description_1']) ? $this->filter($category['description_1']) : ''; ?></textarea>
         <div class="help-block">
-          <?php echo $this->text('Text that usually placed at the top of the category page'); ?>
+          <?php echo $this->text('Text that usually placed at the top of a category page'); ?>
         </div>
       </div>
     </div>
@@ -55,7 +55,7 @@
       <div class="col-md-8">
         <textarea class="form-control" data-wysiwyg="true" rows="10" name="category[description_2]"><?php echo isset($category['description_2']) ? $this->filter($category['description_2']) : ''; ?></textarea>
         <div class="help-block">
-          <?php echo $this->text('Text that usually placed at the bottom of the category page'); ?>
+          <?php echo $this->text('Text that usually placed at the bottom of a category page'); ?>
         </div>
       </div>
     </div>

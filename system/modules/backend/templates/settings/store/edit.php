@@ -23,7 +23,7 @@
           </label>
         </div>
         <div class="help-block">
-          <?php echo $this->text('Only enabled stores will be available publicly'); ?>
+          <?php echo $this->text('Disabled stores will be closed and show maintenance status'); ?>
         </div>
       </div>
     </div>
@@ -61,7 +61,7 @@
         <div class="help-block">
           <?php echo $this->error('basepath'); ?>
           <div class="text-muted">
-            <?php echo $this->text('Optional path if the store is not installed in the domain root'); ?>
+            <?php echo $this->text('Specify a subdirectory if the store is not installed in the domain root directory'); ?>
           </div>
         </div>
       </div>
@@ -315,7 +315,7 @@
           </label>
         </div>
         <div class="help-block">
-          <?php echo $this->text('If disabled customers must log in before checkout'); ?>
+          <?php echo $this->text('Whether or not anonymous customers should log in before checkout'); ?>
         </div>
       </div>
     </div>

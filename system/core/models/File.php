@@ -800,7 +800,7 @@ class File extends Model
     protected function validateHandler($file, $extension = null)
     {
         if (empty($this->handler['validator'])) {
-            $this->error = $this->language->text('Missing validator');
+            $this->error = $this->language->text('Unknown handler');
             return false;
         }
 

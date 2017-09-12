@@ -226,7 +226,7 @@ class City extends BackendController
 
         $breadcrumbs[] = array(
             'url' => $this->url("admin/settings/states/{$this->data_country['code']}"),
-            'text' => $this->text('Country states of %name', array('%name' => $this->data_country['name']))
+            'text' => $this->text('States of %name', array('%name' => $this->data_country['name']))
         );
 
         $this->setBreadcrumbs($breadcrumbs);
@@ -400,7 +400,7 @@ class City extends BackendController
 
         $breadcrumbs[] = array(
             'url' => $this->url("admin/settings/states/{$this->data_country['code']}"),
-            'text' => $this->text('Country states of %name', array('%name' => $this->data_country['name']))
+            'text' => $this->text('States of %name', array('%name' => $this->data_country['name']))
         );
 
         $breadcrumbs[] = array(

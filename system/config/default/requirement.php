@@ -53,19 +53,19 @@ return array(
         'allow_url_fopen' => array(
             'status' => !ini_get('allow_url_fopen'),
             'severity' => 'warning',
-            'message' => /* @text */'"allow_url_fopen" directive disabled'
+            'message' => /* @text */'Directive "allow_url_fopen" is disabled'
         )
     ),
     'files' => array(
         'system_directory' => array(
             'status' => is_writable(GC_CONFIG_RUNTIME_DIR),
             'severity' => 'danger',
-            'message' => /* @text */'"/system/config/runtime" directory exists and writable'
+            'message' => /* @text */'Directory "/system/config/runtime" exists and writable'
         ),
         'cache_directory' => array(
             'status' => is_writable(GC_CACHE_DIR),
             'severity' => 'danger',
-            'message' => /* @text */'"/cache" directory exists and writable'
+            'message' => /* @text */'Directory "/cache" exists and writable'
         )
     )
 );

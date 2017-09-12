@@ -42,7 +42,7 @@
         </label>
       </div>
       <div class="help-block">
-        <?php echo $this->text('Only enabled currencies will be available publicly'); ?>
+        <?php echo $this->text('Disabled currencies will not be available to customers'); ?>
       </div>
     </div>
   </div>

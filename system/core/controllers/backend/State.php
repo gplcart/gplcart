@@ -181,7 +181,7 @@ class State extends BackendController
     protected function setTitleListState()
     {
         $vars = array('%name' => $this->data_country['name']);
-        $this->setTitle($this->text('Country states of %name', $vars));
+        $this->setTitle($this->text('States of %name', $vars));
     }
 
     /**
@@ -348,7 +348,7 @@ class State extends BackendController
 
         $breadcrumbs[] = array(
             'url' => $this->url("admin/settings/states/{$this->data_country['code']}"),
-            'text' => $this->text('Country states of %name', array('%name' => $this->data_country['code']))
+            'text' => $this->text('States of %name', array('%name' => $this->data_country['code']))
         );
 
         $this->setBreadcrumbs($breadcrumbs);

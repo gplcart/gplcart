@@ -22,7 +22,7 @@
         </label>
       </div>
       <div class="text-muted">
-        <?php echo $this->text('Disabled product classes will not be available to administrators'); ?>
+        <?php echo $this->text('Disabled product classes will not be available to customers and administrators while editing products'); ?>
       </div>
     </div>
   </div>

@@ -141,7 +141,7 @@ class Install extends BaseController
      */
     protected function setTitleEditInstall()
     {
-        $this->setTitle($this->text('Install GPL Cart'));
+        $this->setTitle($this->text('Installing GPL Cart'));
     }
 
     /**

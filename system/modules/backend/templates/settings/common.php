@@ -51,7 +51,7 @@
         </option>
       </select>
       <div class="help-block">
-        <?php echo $this->text('Select which PHP errors are reported. You must disable reporting on production for security reason'); ?>
+        <?php echo $this->text('Select which PHP errors are reported'); ?>
       </div>
     </div>
   </div>

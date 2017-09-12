@@ -22,7 +22,7 @@
         </label>
       </div>
       <div class="help-block">
-        <?php echo $this->text('Disabled countries will not be available to frontend users'); ?>
+        <?php echo $this->text('Disabled countries will not be available to customers'); ?>
       </div>
     </div>
   </div>
@@ -96,7 +96,7 @@
       <div class="help-block">
         <?php echo $this->error('weight'); ?>
         <div class="text-muted">
-          <?php echo $this->text('Countries are sorted in lists by the weight value. Lower value means higher position'); ?>
+          <?php echo $this->text('Items are sorted in lists by the weight value. Lower value means higher position'); ?>
         </div>
       </div>
     </div>

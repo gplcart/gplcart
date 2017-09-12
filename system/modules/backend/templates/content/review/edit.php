@@ -23,7 +23,7 @@
         </label>
       </div>
       <div class="help-block">
-        <?php echo $this->text('Disabled reviews will not be available to frontend users and search engines'); ?>
+        <?php echo $this->text('Disabled reviews will not be available to customers and search engines'); ?>
       </div>
     </div>
   </div>

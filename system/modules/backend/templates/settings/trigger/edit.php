@@ -57,7 +57,7 @@
             <?php } ?>
           </select>
           <div class="help-block">
-            <?php echo $this->text('Select a store where to invoke this trigger'); ?>
+            <?php echo $this->text('Select a store that is associated with this trigger'); ?>
           </div>
         </div>
       </div>

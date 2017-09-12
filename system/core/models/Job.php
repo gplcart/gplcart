@@ -134,9 +134,9 @@ class Job extends Model
             ),
             'data' => array(),
             'message' => array(
-                'start' => $this->language->text('Starting'),
+                'start' => $this->language->text('Starting...'),
                 'finish' => $this->language->text('Finished'),
-                'process' => $this->language->text('Processing')
+                'process' => $this->language->text('Processing...')
             ),
             'redirect' => array(
                 'finish' => $this->url->get(),

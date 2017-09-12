@@ -24,7 +24,7 @@
         </label>
       </div>
       <div class="help-block">
-        <?php echo $this->text('Disabled cities will not be displayed to frontend users'); ?>
+        <?php echo $this->text('Disabled cities will not be displayed to customers'); ?>
       </div>
     </div>
   </div>

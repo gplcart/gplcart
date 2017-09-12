@@ -19,6 +19,7 @@ use gplcart\core\traits\Dependency as DependencyTrait;
  */
 class Module extends Model
 {
+
     use DependencyTrait;
 
     /**
@@ -170,7 +171,7 @@ class Module extends Model
         }
 
         if ($this->isInstaller($module_id)) {
-            return $this->language->text('Installers cannot be enabled');
+            return $this->language->text('Modules that are installers cannot be enabled');
         }
 
         // Test module class
@@ -196,7 +197,7 @@ class Module extends Model
         }
 
         if ($this->isInstaller($module_id)) {
-            return $this->language->text('Installers cannot be installed');
+            return $this->language->text('Modules that are installers cannot be installed when system is set up');
         }
 
         // Test module class
@@ -228,7 +229,7 @@ class Module extends Model
     public function canUninstall($module_id)
     {
         if ($this->isActiveTheme($module_id)) {
-            return $this->language->text('Active themes cannot be disabled/uninstalled');
+            return $this->language->text('Modules that are active themes cannot be disabled/uninstalled');
         }
 
         if ($this->isLocked($module_id)) {
@@ -273,7 +274,7 @@ class Module extends Model
         }
 
         if (isset($module['type']) && $module['type'] === 'installer') {
-            return $this->language->text('Installers cannot be installed/enabled when system is set up');
+            return $this->language->text('Modules that are installers cannot be installed/enabled when system is set up');
         }
 
         return $this->checkDependenciesModule($module_id);
@@ -540,7 +541,7 @@ class Module extends Model
      */
     public function getMaxWeight()
     {
-        return (int)$this->db->fetchColumn('SELECT COUNT(*) FROM module', array());
+        return (int) $this->db->fetchColumn('SELECT COUNT(*) FROM module', array());
     }
 
     /**

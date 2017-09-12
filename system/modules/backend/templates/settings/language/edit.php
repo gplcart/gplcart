@@ -39,7 +39,7 @@
       </div>
       <div class="help-block">
         <?php echo $this->error('status'); ?>
-        <div class="text-muted"><?php echo $this->text('Only enabled languages will be available to users'); ?></div>
+        <div class="text-muted"><?php echo $this->text('Disabled languages will not be available to customers'); ?></div>
       </div>
     </div>
   </div>
