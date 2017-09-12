@@ -9,6 +9,9 @@
 
 namespace gplcart\core;
 
+use Exception;
+use InvalidArgumentException;
+
 /**
  * Provides methods to work with various system handlers
  */
@@ -42,12 +45,12 @@ class Handler
     {
         try {
             $handler = static::get($handlers, $handler_id, $method);
-        } catch (\Exception $ex) {
-            throw new \InvalidArgumentException($ex->getMessage());
+        } catch (Exception $ex) {
+            throw new InvalidArgumentException($ex->getMessage());
         }
 
         if (empty($handler)) {
-            throw new \InvalidArgumentException('Invalid handler instance');
+            throw new InvalidArgumentException('Invalid handler instance');
         }
 
         return call_user_func_array($handler, $args);
@@ -73,9 +76,9 @@ class Handler
             }
             $handler = $handlers['handlers'][$name];
         }
-        
+
         if (!is_callable($handler)) {
-            throw new \InvalidArgumentException(implode('::', $handler) . ' is not callable');
+            throw new InvalidArgumentException(implode('::', $handler) . ' is not callable');
         }
 
         if ($handler instanceof \Closure) {
