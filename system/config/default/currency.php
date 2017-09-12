@@ -632,7 +632,7 @@ return array(
         'symbol' => 'MDL',
         'name' => /* @text */'Moldovan leu',
         'numeric_code' => '498',
-        'minor_unit' => /* @text */'bani',
+        'minor_unit' => /* @text */'Bani',
         'major_unit' => /* @text */'Lei',
     ),
     'MKD' => array(
@@ -864,7 +864,7 @@ return array(
         'symbol' => 'LSd',
         'name' => /* @text */'Old Sudanese Dinar',
         'numeric_code' => '736',
-        'minor_unit' => /* @text */'None',
+        'minor_unit' => /* @text */'',
         'major_unit' => /* @text */'Dinar',
     ),
     'SEK' => array(
