@@ -89,10 +89,9 @@ class Frontend extends Module
      */
     protected function setThemeRegions($controller)
     {
-        $context = $controller->getContext();
+        $pattern = $controller->getRoutePattern();
 
-        // Add left menu depending on the current context
-        if (in_array($context, array('category.*', 'wishlist', 'compare'))) {
+        if (in_array($pattern, array('wishlist', 'compare', 'category/*'))) {
             $categories = $controller->getCategories();
             if (!empty($categories)) {
                 $options = array('template' => 'category/menu', 'items' => $categories);
