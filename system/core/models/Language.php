@@ -434,7 +434,7 @@ class Language extends Model
             return $this->processed[$string];
         }
 
-        if (empty($this->langcode)) {
+        if (empty($this->langcode) || empty($this->context)) {
             return $this->processed[$string] = $this->formatString($string, $arguments);
         }
 
@@ -442,21 +442,22 @@ class Language extends Model
         $context_translations = $this->loadTranslation($context_file);
 
         if (isset($context_translations[$string])) {
-            $this->addJsTranslation($string, $context_translations);
+            $this->addTranslationJs($string, $context_translations);
             return $this->processed[$string] = $this->formatString($string, $arguments, $context_translations[$string]);
         }
-
-        $this->toTranslate($string, $context_file);
 
         $common_file = $this->getFileCommon($this->langcode);
         $common_translations = $this->loadTranslation($common_file);
 
         if (isset($common_translations[$string])) {
-            $this->addJsTranslation($string, $common_translations);
+            $this->addTranslation($string, $common_translations, $context_file);
+            $this->addTranslationJs($string, $common_translations);
             return $this->processed[$string] = $this->formatString($string, $arguments, $common_translations[$string]);
         }
 
-        $this->toTranslate($string, $common_file);
+        $this->addTranslation($string, $common_translations, $context_file);
+        $this->addTranslation($string, $common_translations, $common_file);
+
         return $this->processed[$string] = $this->formatString($string, $arguments);
     }
 
@@ -570,12 +571,20 @@ class Language extends Model
     /**
      * Append a string to be translated to the translation file
      * @param string $string
+     * @param array $translations
      * @param string $file
      */
-    protected function toTranslate($string, $file)
+    protected function addTranslation($string, array $translations, $file)
     {
         if (!isset($this->processed[$string])) {
-            gplcart_file_csv($file, array($string));
+
+            $data = array($string);
+            if (isset($translations[$string][0]) && $translations[$string][0] !== '') {
+                $data = $translations[$string];
+                array_unshift($data, $string);
+            }
+
+            gplcart_file_csv($file, $data);
         }
     }
 
@@ -584,7 +593,7 @@ class Language extends Model
      * @param string $string
      * @param array $translations
      */
-    protected function addJsTranslation($string, array $translations)
+    protected function addTranslationJs($string, array $translations)
     {
         if (!isset($this->processed[$string]) && isset($translations[$string][0]) && $translations[$string][0] !== '') {
             $key = gplcart_json_encode($string);
