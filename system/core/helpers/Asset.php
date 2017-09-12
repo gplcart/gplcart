@@ -9,11 +9,19 @@
 
 namespace gplcart\core\helpers;
 
+use gplcart\core\helpers\Compressor as CompressorHelper;
+
 /**
  * Helpers to work with CSS/JS files
  */
 class Asset
 {
+
+    /**
+     * Compressor helper class instance
+     * @var \gplcart\core\helpers\Compressor $compressor
+     */
+    protected $compressor;
 
     /**
      * Default weight to add to the the next asset
@@ -31,6 +39,59 @@ class Asset
      * @var array
      */
     protected $groups = array();
+
+    /**
+     * @param CompressorHelper $compressor
+     */
+    public function __construct(CompressorHelper $compressor)
+    {
+        $this->compressor = $compressor;
+    }
+
+    /**
+     * Compresses and aggregates assets
+     * @param array $assets
+     * @param string $type
+     * @param string $directory
+     * @return array
+     */
+    public function compress(array $assets, $type, $directory)
+    {
+        $group = 0;
+        $groups = $results = array();
+        foreach ($assets as $key => $asset) {
+            $exclude = isset($asset['aggregate']) && empty($asset['aggregate']);
+            if (!empty($asset['text']) || $exclude) {
+                $groups["__$group"] = $asset;
+                $group++;
+                continue;
+            }
+            if (!empty($asset['asset'])) {
+                $groups[$group][$key] = $asset['asset'];
+            }
+        }
+
+        foreach ($groups as $group => $content) {
+
+            if (strpos($group, '__') === 0) {
+                $results[$group] = $content;
+                continue;
+            }
+
+            if ($type === 'js') {
+                $aggregated = $this->compressor->compressJs($content, $directory);
+            } else if ($type === 'css') {
+                $aggregated = $this->compressor->compressCss($content, $directory);
+            }
+
+            if (!empty($aggregated)) {
+                $asset = $this->build(array('asset' => $aggregated, 'version' => false));
+                $results[$asset['key']] = $asset;
+            }
+        }
+
+        return $results;
+    }
 
     /**
      * Sets groups of assets
@@ -118,7 +179,7 @@ class Asset
      * @param array $data
      * @return array
      */
-    public function build(array $data)
+    protected function build(array $data)
     {
         if (strpos($data['asset'], 'http') === 0) {
             $type = 'external';
