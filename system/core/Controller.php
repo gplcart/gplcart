@@ -397,7 +397,9 @@ abstract class Controller
         $this->langcode = $this->route->getLangcode();
         $this->current_route = $this->route->getCurrent();
 
-        $this->setContext();
+        if (isset($this->current_route['handlers']['controller'][0])) {
+            $this->language->setContext($this->current_route['handlers']['controller'][0]);
+        }
 
         $this->urn = $this->request->urn();
         $this->base = $this->request->base();
@@ -409,25 +411,31 @@ abstract class Controller
     }
 
     /**
-     * Sets the current global context
-     * @param null|string $context
+     * Returns the current route
+     * @return array
      */
-    public function setContext($context = null)
+    public function getRoute()
     {
-        if (!isset($context) && isset($this->current_route['pattern'])) {
-            $context = preg_replace(array('@\(.*?\)@', '/\//'), array('*', '.'), $this->current_route['pattern']);
-        }
-
-        $this->config->setContext($context);
+        return $this->current_route;
     }
 
     /**
-     * Returns the current global context
+     * Returns the current route pattern
+     * @param bool $simplified
      * @return string
      */
-    public function getContext()
+    public function getRoutePattern($simplified = true)
     {
-        return $this->config->getContext();
+        $pattern = '';
+        if (isset($this->current_route['pattern'])) {
+            $pattern = $this->current_route['pattern'];
+        }
+
+        if ($pattern && $simplified) {
+            $pattern = preg_replace('@\(.*?\)@', '*', $pattern);
+        }
+
+        return $pattern;
     }
 
     /**
@@ -454,7 +462,6 @@ abstract class Controller
     protected function setStoreProperties()
     {
         $this->current_store = $this->store->getCurrent();
-
         if (isset($this->current_store['store_id'])) {
             $this->store_id = $this->current_store['store_id'];
         }
@@ -465,8 +472,8 @@ abstract class Controller
      */
     protected function setDefaultJsAssets()
     {
-        $this->addAssetLibrary('jquery');
-        $this->setJs('files/assets/system/js/common.js');
+        $this->addAssetLibrary('jquery', array('aggregate' => false));
+        $this->setJs('files/assets/system/js/common.js', array('aggregate' => false));
     }
 
     /**
@@ -558,8 +565,7 @@ abstract class Controller
      */
     public function text($string = null, array $arguments = array())
     {
-        $context = $this->current_route['handlers']['controller'][0];
-        return $this->language->setContext($context)->text($string, $arguments);
+        return $this->language->text($string, $arguments);
     }
 
     /**
@@ -620,8 +626,7 @@ abstract class Controller
     public function getCss()
     {
         $css = $this->asset->get('css', 'top');
-        $this->compressAssets($css, 'css');
-        return $css;
+        return $this->compressAssets($css, 'css');
     }
 
     /**
@@ -632,8 +637,7 @@ abstract class Controller
     public function getJs($position)
     {
         $js = $this->asset->get('js', $position);
-        $this->compressAssets($js, 'js');
-        return $js;
+        return $this->compressAssets($js, 'js');
     }
 
     /**
@@ -1279,8 +1283,7 @@ abstract class Controller
      */
     protected function controlAccessUpload()
     {
-        $file = $this->request->file();
-        if (!empty($file) && !$this->access('file_upload')) {
+        if ($this->request->file() && !$this->access('file_upload')) {
             $this->response->error403();
         }
     }
@@ -1300,17 +1303,11 @@ abstract class Controller
      */
     protected function controlCsrf()
     {
-        if (!$this->isPosted()) {
-            return null;
-        }
-
-        if (isset($this->current_route['token'])//
-                && empty($this->current_route['token'])) {
-            return null;
-        }
-
-        if (!gplcart_string_equals($this->request->post('token', '', false, 'string'), $this->token)) {
-            $this->response->error403();
+        if ($this->isPosted() && (!isset($this->current_route['token']) || !empty($this->current_route['token']))) {
+            $token = $this->request->post('token', '', false, 'string');
+            if (!gplcart_string_equals($token, $this->token)) {
+                $this->response->error403();
+            }
         }
     }
 
@@ -1320,12 +1317,7 @@ abstract class Controller
      */
     protected function controlToken($key = null)
     {
-        if (isset($key)) {
-            $control = isset($this->query[$key]);
-        } else {
-            $control = !empty($this->query);
-        }
-
+        $control = isset($key) ? isset($this->query[$key]) : !empty($this->query);
         if ($control && (empty($this->query['token']) || !$this->config->tokenValid($this->query['token']))) {
             $this->response->error403();
         }
@@ -1336,16 +1328,15 @@ abstract class Controller
      */
     protected function controlAccessAdmin()
     {
-        if (!$this->is_backend || $this->isSuperadmin()) {
-            return null;
-        }
+        if ($this->is_backend && !$this->isSuperadmin()) {
 
-        if (empty($this->current_user['role_status']) || !$this->access('admin')) {
-            $this->redirect('/', $this->text('No access'), 'warning');
-        }
+            if (empty($this->current_user['role_status']) || !$this->access('admin')) {
+                $this->redirect('/', $this->text('No access'), 'warning');
+            }
 
-        if (isset($this->current_route['access']) && !$this->access($this->current_route['access'])) {
-            $this->setHttpStatus(403);
+            if (isset($this->current_route['access']) && !$this->access($this->current_route['access'])) {
+                $this->setHttpStatus(403);
+            }
         }
     }
 
@@ -1508,8 +1499,8 @@ abstract class Controller
      */
     protected function renderOutput($templates)
     {
-        if (is_string($templates)) {
-            $templates = array('region_content' => $templates);
+        if (!is_array($templates)) {
+            $templates = array('region_content' => (string) $templates);
         }
 
         $templates = array_merge($this->templates, $templates);
@@ -1626,57 +1617,13 @@ abstract class Controller
      * @param string $type
      * @return array
      */
-    protected function compressAssets(array &$assets, $type)
+    protected function compressAssets(array $assets, $type)
     {
-        if (!$this->config("compress_$type", 0)) {
-            return $assets;
+        if ($this->config("compress_$type", 0)) {
+            $directory = GC_COMPRESSED_ASSET_DIR . "/$type";
+            return $this->asset->compress($assets, $type, $directory);
         }
 
-        $directory = GC_COMPRESSED_ASSET_DIR . "/$type";
-
-        $group = 0;
-        $groups = $results = array();
-        foreach ($assets as $key => $asset) {
-
-            $exclude = isset($asset['aggregate']) && empty($asset['aggregate']);
-
-            if (!empty($asset['text']) || $exclude) {
-                // Add underscore to make the key not numeric
-                // We check it later to define which assets should be aggregated
-                $groups["_$group"] = $asset;
-                $group++;
-                continue;
-            }
-
-            if (!empty($asset['asset'])) {
-                $groups[$group][$key] = $asset['asset'];
-            }
-        }
-
-        foreach ($groups as $group => $content) {
-
-            if (!is_numeric($group)) {
-                $results[$group] = $content;
-                continue;
-            }
-
-            $aggregated = '';
-
-            if ($type == 'js') {
-                $aggregated = $this->compressor->compressJs($content, $directory);
-            } else if ($type == 'css') {
-                $aggregated = $this->compressor->compressCss($content, $directory);
-            }
-
-            if (empty($aggregated)) {
-                continue;
-            }
-
-            $asset = $this->asset->build(array('asset' => $aggregated, 'version' => false));
-            $results[$asset['key']] = $asset;
-        }
-
-        $assets = $results;
         return $assets;
     }
 
@@ -1690,7 +1637,7 @@ abstract class Controller
     {
         extract($data, EXTR_SKIP);
 
-        unset($data); // Kill duplicate
+        unset($data); // Kill duplicates
 
         ob_start();
         include $template;
@@ -1735,14 +1682,14 @@ abstract class Controller
      */
     protected function setDefaultJsTranslation()
     {
-        $classes = array(
-            'gplcart\\core\\models\\Language', // text() called in modules
-            $this->current_route['handlers']['controller'][0]
-        );
-
-        foreach ($classes as $class) {
-            $filename = strtolower(str_replace('\\', '-', $class));
-            $this->setJs(GC_LOCALE_JS_DIR . "/{$this->langcode}/$filename.js");
+        if ($this->langcode) {
+            $options = array('aggregate' => false);
+            $context = 'gplcart\\core\\models\\Language';
+            $this->setJs($this->language->getFileContext($context, $this->langcode, true), $options);
+            if (isset($this->current_route['handlers']['controller'][0])) {
+                $context = $this->current_route['handlers']['controller'][0];
+                $this->setJs($this->language->getFileContext($context, $this->langcode, true), $options);
+            }
         }
     }
 
@@ -1836,7 +1783,7 @@ abstract class Controller
         if (isset($this->current_route['pattern'])) {
             $pattern = $this->current_route['pattern'] ? $this->current_route['pattern'] : 'front';
             foreach (explode('/', $pattern) as $part) {
-                if (strpos($part, '(') === false) {
+                if (ctype_alpha($part)) {
                     $classes[] = "gc-$part"; // Add prefix to prevent conflicts
                 }
             }
@@ -1896,7 +1843,6 @@ abstract class Controller
     public function addAssetLibrary($library_id, array $data = array())
     {
         $added = array();
-
         foreach ($this->library->getFiles($library_id) as $file) {
 
             $extension = pathinfo($file, PATHINFO_EXTENSION);
@@ -2001,6 +1947,7 @@ abstract class Controller
         if (isset($this->form_source)) {
             $this->setData($this->form_source, $this->submitted);
         }
+
         return true;
     }
 
@@ -2066,10 +2013,9 @@ abstract class Controller
 
             if ($once) {
                 $this->session->setMessage($message, $severity);
-                continue;
+            } else {
+                $this->data['_messages'][$severity][] = $message;
             }
-
-            $this->data['_messages'][$severity][] = $message;
         }
     }
 
@@ -2103,7 +2049,6 @@ abstract class Controller
         foreach ($allowed as $filter) {
 
             $this->data["filter_$filter"] = '';
-
             if (isset($this->query[$filter])) {
                 $this->data['_filtering'] = true;
                 $this->data["filter_$filter"] = (string) $this->query[$filter];
@@ -2117,7 +2062,6 @@ abstract class Controller
         }
 
         $this->query_filter = array_filter($query, 'is_string');
-
         if (isset($this->query_filter['sort']) && isset($this->query_filter['order'])) {
             $this->data['_sort'] = "{$this->query_filter['sort']}-{$this->query_filter['order']}";
         }
@@ -2132,10 +2076,9 @@ abstract class Controller
     public function getFilterQuery(array $default = array(), $allowed = array())
     {
         $query = $this->query;
-
         foreach ($query as $key => $value) {
 
-            if (!is_string($value)) {
+            if (is_string($value)) {
                 continue;
             }
 
@@ -2239,7 +2182,6 @@ abstract class Controller
         }
 
         $data['query'][$key] = '%num';
-
         $pager = $this->pager->build($data)->get();
 
         return $this->render('common/pager', array('pager' => $pager));
