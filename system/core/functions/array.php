@@ -77,7 +77,7 @@ function gplcart_array_merge(array &$array1, array &$array2)
  * @param string $glue
  * @return mixed
  */
-function gplcart_array_get(array &$array, $parents, $glue = '.')
+function gplcart_array_get(&$array, $parents, $glue = '.')
 {
     if (is_string($parents)) {
         $parents = explode($glue, $parents);
@@ -102,7 +102,7 @@ function gplcart_array_get(array &$array, $parents, $glue = '.')
  * @param mixed $value
  * @param string $glue
  */
-function gplcart_array_set(array &$array, $parents, $value, $glue = '.')
+function gplcart_array_set(&$array, $parents, $value, $glue = '.')
 {
     if (is_string($parents)) {
         $parents = explode($glue, $parents);
