@@ -1,5 +1,7 @@
 <?php
 
+use gplcart\core\Container;
+
 /**
  * @package GPL Cart core
  * @author Iurii Makukh <gplcart.software@gmail.com>
@@ -8,4 +10,7 @@
  */
 require 'system/bootstrap.php';
 
-\gplcart\core\Container::get('gplcart\\core\\Facade')->route();
+/* @var $facade \gplcart\core\Facade */
+$facade = Container::get('gplcart\\core\\Facade');
+$facade->route();
+
