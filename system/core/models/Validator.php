@@ -65,11 +65,11 @@ class Validator extends Model
     /**
      * Call a validation handler
      * @param string $handler_id
-     * @param array $submitted
+     * @param mixed $submitted
      * @param array $options
      * @return mixed
      */
-    protected function call($handler_id, array &$submitted, array $options)
+    protected function call($handler_id, &$submitted, array $options)
     {
         $result = null;
 
