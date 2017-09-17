@@ -28,14 +28,6 @@ body {
     padding-left: 15px;
 }
 
-body.js .hidden-js {
-    display: none !important;
-}
-
-body:not(.js) .hidden-non-js {
-    display: none !important;
-}
-
 .footer {
     position: absolute;
     bottom: 0;

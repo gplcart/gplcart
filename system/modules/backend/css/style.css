@@ -10,10 +10,6 @@ body {
     font-family: 'Open Sans', sans-serif;
 }
 
-body.js .hidden-js {
-    display: none !important;
-}
-
 .breadcrumbs {
     padding-top: 20px;
     padding-bottom: 10px;
@@ -90,7 +86,6 @@ ol.breadcrumb {
     margin: 0 !important;
     padding:0 !important;
 }
-
 
 label {
     font-weight: normal;
@@ -217,7 +212,6 @@ td .list-inline {
     margin: 0;
 }
 
-
 td div.view img {
     height:30px;
     width:30px;
@@ -302,6 +296,7 @@ td.required:before {
         position: static !important;
     }
 }
+
 @media (min-width: 768px) {
     .table-responsive {
         overflow: visible;
