@@ -36,6 +36,7 @@ class Controller extends BaseController
         $this->processCurrentJob();
         $this->setJsCron();
         $this->setDefaultDataBackend();
+        $this->getBulkAction();
 
         $this->hook->attach('construct.controller.backend', $this);
         $this->controlHttpStatus();
@@ -261,6 +262,37 @@ class Controller extends BaseController
             $this->getPosted('action', '', true, 'string'),
             $this->getPosted('value', '', true, 'string')
         );
+    }
+
+    /**
+     * Returns an array of submitted bulk action
+     * @param bool $message
+     * @return array
+     */
+    protected function getBulkAction($message = true)
+    {
+        $action = $this->getPosted('bulk-action', array(), true, 'array');
+
+        if (!empty($action)) {
+
+            if (empty($action['name'])) {
+                $error = $this->text('An error occurred');
+            } else if (empty($action['confirm'])) {
+                $error = $this->text('Please confirm the selected action');
+            } else if (empty($action['items'])) {
+                $error = $this->text('Please select at least one item');
+            } else {
+                $parts = explode('|', $action['name'], 2);
+                $action['value'] = isset($parts[1]) ? $parts[1] : null;
+                return $action;
+            }
+
+            if (isset($error) && $message) {
+                $this->setMessage($error, 'warning');
+            }
+        }
+
+        return array();
     }
 
 }
