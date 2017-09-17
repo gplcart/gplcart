@@ -42,7 +42,7 @@ class Zip
      * @throws InvalidArgumentException
      * @return $this
      */
-    public function set($path, $create = true)
+    public function set($path, $create = false)
     {
         $zip = $this->zip;
         $flag = $create ? $zip::CREATE : null;
@@ -79,7 +79,7 @@ class Zip
             return false;
         }
 
-        $this->set($destination);
+        $this->set($destination, true);
 
         $added = 0;
         foreach ($files as $file) {
@@ -109,7 +109,7 @@ class Zip
     {
         settype($source, 'array');
 
-        $this->set($destination);
+        $this->set($destination, true);
 
         $added = 0;
         foreach ($source as $file) {
@@ -151,11 +151,12 @@ class Zip
      */
     public function getList()
     {
-        $files = array();
+        $items = array();
         for ($i = 0; $i < $this->zip->numFiles; $i++) {
-            $files[] = $this->zip->getNameIndex($i);
+            $items[] = $this->zip->getNameIndex($i);
         }
-        return $files;
+
+        return $items;
     }
 
     /**
