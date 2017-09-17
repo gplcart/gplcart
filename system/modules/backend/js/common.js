@@ -189,16 +189,6 @@
     };
 
     /**
-     * Check / uncheck multiple checkboxes
-     * @returns {undefined}
-     */
-    GplCart.onload.selectAll = function () {
-        $('#select-all').click(function () {
-            $('.select-all').prop('checked', $(this).is(':checked'));
-        });
-    };
-
-    /**
      * Prevent submitting empty inputs
      * @returns {undefined}
      */
