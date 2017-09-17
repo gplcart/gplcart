@@ -338,7 +338,7 @@ abstract class Controller
         $this->setUserProperties();
         $this->setStoreProperties();
 
-        $this->setDefaultJsAssets();
+        $this->setDefaultAssets();
         $this->setThemeProperties();
 
         $this->setDefaultData();
@@ -468,12 +468,13 @@ abstract class Controller
     }
 
     /**
-     * Sets global system JS files
+     * Sets global system asset files
      */
-    protected function setDefaultJsAssets()
+    protected function setDefaultAssets()
     {
         $this->addAssetLibrary('jquery', array('aggregate' => false));
         $this->setJs('files/assets/system/js/common.js', array('aggregate' => false));
+        $this->setCss('files/assets/system/css/common.css', array('aggregate' => false));
     }
 
     /**
