@@ -552,6 +552,10 @@ class Config
      */
     public function validModuleId($id)
     {
+        if (in_array($id, array('core', 'gplcart'))) {
+            return false;
+        }
+
         return preg_match('/^[a-z][a-z0-9_]+$/', $id) === 1;
     }
 
