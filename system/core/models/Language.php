@@ -519,6 +519,11 @@ class Language extends Model
         }
 
         $translations = array();
+
+        if (!is_file($file)) {
+            return array();
+        }
+
         foreach ($this->parseCsv($file) as $row) {
             $key = array_shift($row);
             $translations[$key] = $row;
@@ -534,17 +539,8 @@ class Language extends Model
      */
     public function parseCsv($file)
     {
-        if (!is_file($file)) {
-            return array();
-        }
-
         $content = file($file);
-
-        if (empty($content)) {
-            return array();
-        }
-
-        return array_map('str_getcsv', $content);
+        return empty($content) ? array() : array_map('str_getcsv', $content);
     }
 
     /**
