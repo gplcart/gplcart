@@ -126,4 +126,51 @@ var GplCart = GplCart || {settings: {}, translations: {}, onload: {}, modules: {
         });
     };
 
+    /**
+     * OnChange handler for a bulk action selector
+     * @param {Object} e
+     * @returns {undefined}
+     */
+    GplCart.action = function (e) {
+
+        var form, conf, selected = [], el = $(e.target),
+                button = '[name="bulk-action[submit]"]',
+                input = '[name="bulk-action[confirm]"]',
+                items = '[name="bulk-action[items][]"]';
+
+        if (el.val()) {
+
+            $(items).each(function () {
+                if ($(this).is(':checked')) {
+                    selected.push($(this).val());
+                }
+            });
+
+            if (selected.length) {
+
+                form = el.closest('form');
+                conf = el.find(':selected').data('confirm');
+
+                if (!conf || confirm(conf)) {
+                    form.find(input).prop('checked', true);
+                    form.find(button).click();
+                }
+
+            } else {
+                el.val('');
+                alert(GplCart.text('Please select at least one item'));
+            }
+        }
+    };
+
+    /**
+     * Check / uncheck multiple checkboxes
+     * @returns {undefined}
+     */
+    GplCart.onload.selectAll = function () {
+        $('#select-all').click(function () {
+            $('.select-all').prop('checked', $(this).is(':checked'));
+        });
+    };
+
 })(jQuery, GplCart);
