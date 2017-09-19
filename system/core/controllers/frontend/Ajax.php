@@ -22,7 +22,7 @@ class Ajax extends FrontendController
 {
 
     /**
-     * Sku model instance
+     * SKU model instance
      * @var \gplcart\core\models\Sku $sku
      */
     protected $sku;
@@ -63,7 +63,7 @@ class Ajax extends FrontendController
     }
 
     /**
-     * Main ajax callback
+     * Main AJAX callback
      */
     public function responseAjax()
     {
@@ -132,6 +132,22 @@ class Ajax extends FrontendController
             'limit' => array(0, $this->config('autocomplete_limit', 10)));
 
         return $this->user->getList($options);
+    }
+
+    /**
+     * Returns an array of store categories
+     * @return array
+     */
+    public function getStoreCategoriesAjax()
+    {
+        if (!$this->access('category')) {
+            return array('error' => $this->text('No access'));
+        }
+
+        $default = $this->store->getDefault();
+        $store_id = $this->getPosted('store_id', $default, true, 'integer');
+
+        return $this->category->getOptionListByStore($store_id);
     }
 
     /**
