@@ -133,14 +133,17 @@ var GplCart = GplCart || {settings: {}, translations: {}, onload: {}, modules: {
      */
     GplCart.action = function (e) {
 
-        var form, conf, selected = [], el = $(e.target),
-                button = '[name="bulk-action[submit]"]',
-                input = '[name="bulk-action[confirm]"]',
-                items = '[name="bulk-action[items][]"]';
+        var conf, selected = [], el = $(e.target);
+
+        var submit = function () {
+            var form = el.closest('form');
+            form.find('[name="action[confirm]"]').prop('checked', true);
+            form.find('[name="action[submit]"]').click();
+        };
 
         if (el.val()) {
 
-            $(items).each(function () {
+            $('[name="action[items][]"]').each(function () {
                 if ($(this).is(':checked')) {
                     selected.push($(this).val());
                 }
@@ -148,12 +151,14 @@ var GplCart = GplCart || {settings: {}, translations: {}, onload: {}, modules: {
 
             if (selected.length) {
 
-                form = el.closest('form');
                 conf = el.find(':selected').data('confirm');
 
-                if (!conf || confirm(conf)) {
-                    form.find(input).prop('checked', true);
-                    form.find(button).click();
+                if (!conf) {
+                    submit();
+                } else if (confirm(conf)) {
+                    submit();
+                } else {
+                    el.val('');
                 }
 
             } else {
