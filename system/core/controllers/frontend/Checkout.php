@@ -996,7 +996,11 @@ class Checkout extends FrontendController
 
         foreach ($submitted['data']['components'] as $id => &$component) {
 
-            if ($component['price'] == 0) {
+            if (!isset($component['price'])) {
+                continue;
+            }
+
+            if (empty($component['price'])) {
                 unset($submitted['data']['components'][$id]);
                 continue;
             }
