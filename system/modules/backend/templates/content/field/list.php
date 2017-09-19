@@ -9,23 +9,23 @@
  */
 ?>
 <?php if (!empty($fields) || $_filtering) { ?>
-<form data-filter-empty="true">
+<form method="post">
+  <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <?php if ($this->access('field_delete') || $this->access('field_add')) { ?>
-  <div class="btn-toolbar actions">
+  <div class="form-inline bulk-actions">
     <?php $access_options = false; ?>
     <?php if ($this->access('field_delete')) { ?>
     <?php $access_options = true; ?>
-    <div class="btn-group">
-      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-        <?php echo $this->text('With selected'); ?> <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu">
-        <li>
-          <a data-action="delete" data-action-confirm="<?php echo $this->text('Are you sure? It cannot be undone!'); ?>" href="#">
-            <?php echo $this->text('Delete'); ?>
-          </a>
-        </li>
-      </ul>
+    <div class="input-group">
+      <select name="action[name]" class="form-control" onchange="GplCart.action(event);">
+        <option value=""><?php echo $this->text('With selected'); ?></option>
+        <option value="delete" data-confirm="<?php echo $this->text('Are you sure? It cannot be undone!'); ?>">
+          <?php echo $this->text('Delete'); ?>
+        </option>
+      </select>
+      <span class="input-group-btn hidden-js">
+        <button class="btn btn-default" name="action[submit]" value="1"><?php echo $this->text('OK'); ?></button>
+      </span>
     </div>
     <?php } ?>
     <?php if ($this->access('field_add')) { ?>
@@ -46,7 +46,7 @@
           <th><a href="<?php echo $sort_widget; ?>"><?php echo $this->text('Widget'); ?> <i class="fa fa-sort"></i></a></th>
           <th></th>
         </tr>
-        <tr class="filters active">
+        <tr class="filters active hidden-no-js">
           <th></th>
           <th></th>
           <th class="middle">
@@ -95,7 +95,7 @@
         <?php foreach ($fields as $field) { ?>
         <tr>
           <td class="middle">
-            <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $field['field_id']; ?>"<?php echo $access_options ? '' : ' disabled'; ?>>
+            <input type="checkbox" class="select-all" name="action[items][]" value="<?php echo $field['field_id']; ?>"<?php echo $access_options ? '' : ' disabled'; ?>>
           </td>
           <td class="middle"><?php echo $field['field_id']; ?></td>
           <td class="middle"><?php echo $this->e($field['title']); ?></td>

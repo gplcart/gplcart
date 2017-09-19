@@ -9,22 +9,22 @@
  */
 ?>
 <?php if (!empty($carts) || $_filtering) { ?>
-<form data-filter-empty="true">
+<form method="post">
+  <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <?php $access_actions = false; ?>
   <?php if ($this->access('cart_delete')) { ?>
   <?php $access_actions = true; ?>
-  <div class="btn-toolbar actions">
-    <div class="btn-group">
-      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-        <?php echo $this->text('With selected'); ?> <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu">
-        <li>
-          <a data-action="delete" data-action-confirm="<?php echo $this->text('Are you sure? It cannot be undone!'); ?>" href="#">
-            <?php echo $this->text('Delete'); ?>
-          </a>
-        </li>
-      </ul>
+  <div class="form-inline bulk-actions">
+    <div class="input-group">
+      <select name="action[name]" class="form-control" onchange="GplCart.action(event);">
+        <option value=""><?php echo $this->text('With selected'); ?></option>
+        <option value="delete" data-confirm="<?php echo $this->text('Are you sure? It cannot be undone!'); ?>">
+          <?php echo $this->text('Delete'); ?>
+        </option>
+      </select>
+      <span class="input-group-btn hidden-js">
+        <button class="btn btn-default" name="action[submit]" value="1"><?php echo $this->text('OK'); ?></button>
+      </span>
     </div>
   </div>
   <?php } ?>
@@ -65,7 +65,7 @@
           </th>
           <th></th>
         </tr>
-        <tr class="filters active">
+        <tr class="filters active hidden-no-js">
           <th></th>
           <th>
             <input class="form-control" data-autocomplete-source="user" name="user_email" value="<?php echo $filter_user_email; ?>" placeholder="<?php echo $this->text('Any'); ?>">
@@ -108,7 +108,7 @@
         <?php foreach ($carts as $cart_id => $cart) { ?>
         <tr>
           <td class="middle">
-            <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $cart_id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>>
+            <input type="checkbox" class="select-all" name="action[items][]" value="<?php echo $cart_id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>>
           </td>
           <td class="middle">
             <?php if (empty($cart['user_id'])) { ?>

@@ -44,13 +44,13 @@
         <div>
           <div class="input-group">
             <span class="input-group-btn">
-              <button type="button" class="btn btn-default hidden-non-js" data-spinner="-">
+              <button type="button" class="btn btn-default hidden-no-js" data-spinner="-">
                 <span class="fa fa-minus"></span>
               </button>
             </span>
             <input data-min="1" data-max="99" class="form-control text-center quantity" name="order[cart][items][<?php echo $this->e($sku); ?>][quantity]" value="<?php echo $this->e($item['quantity']); ?>">
             <span class="input-group-btn">
-              <button type="button" class="btn btn-default hidden-non-js" data-spinner="+">
+              <button type="button" class="btn btn-default hidden-no-js" data-spinner="+">
                 <span class="fa fa-plus"></span>
               </button>
             </span>

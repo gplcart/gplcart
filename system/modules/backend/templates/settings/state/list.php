@@ -9,37 +9,33 @@
  */
 ?>
 <?php if (!empty($states) || $_filtering) { ?>
-<form data-filter-empty="true">
+<form method="post">
+  <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <?php if ($this->access('state_edit') || $this->access('state_delete') || $this->access('state_add')) { ?>
-  <div class="btn-toolbar actions">
+  <div class="form-inline bulk-actions">
     <?php $access_actions = false; ?>
     <?php if ($this->access('state_edit') || $this->access('state_delete')) { ?>
     <?php $access_actions = true; ?>
-    <div class="btn-group">
-      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-        <?php echo $this->text('With selected'); ?> <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu">
+    <div class="input-group">
+      <select name="action[name]" class="form-control" onchange="GplCart.action(event);">
+        <option value=""><?php echo $this->text('With selected'); ?></option>
         <?php if ($this->access('state_edit')) { ?>
-        <li>
-          <a data-action="status" data-action-value="1" data-action-confirm="<?php echo $this->text('Are you sure?'); ?>" href="#">
-            <?php echo $this->text('Status'); ?>: <?php echo $this->text('Enabled'); ?>
-          </a>
-        </li>
-        <li>
-          <a data-action="status" data-action-value="0" data-action-confirm="<?php echo $this->text('Are you sure?'); ?>" href="#">
-            <?php echo $this->text('Status'); ?>: <?php echo $this->text('Disabled'); ?>
-          </a>
-        </li>
+        <option value="status|1" data-confirm="<?php echo $this->text('Are you sure?'); ?>">
+          <?php echo $this->text('Status'); ?>: <?php echo $this->text('Enabled'); ?>
+        </option>
+        <option value="status|0" data-confirm="<?php echo $this->text('Are you sure?'); ?>">
+          <?php echo $this->text('Status'); ?>: <?php echo $this->text('Disabled'); ?>
+        </option>
         <?php } ?>
         <?php if ($this->access('state_delete')) { ?>
-        <li>
-          <a data-action="delete" data-action-confirm="<?php echo $this->text('Are you sure? It cannot be undone!'); ?>" href="#">
-            <?php echo $this->text('Delete'); ?>
-          </a>
-        </li>
+        <option value="delete" data-confirm="<?php echo $this->text('Are you sure? It cannot be undone!'); ?>">
+          <?php echo $this->text('Delete'); ?>
+        </option>
         <?php } ?>
-      </ul>
+      </select>
+      <span class="input-group-btn hidden-js">
+        <button class="btn btn-default" name="action[submit]" value="1"><?php echo $this->text('OK'); ?></button>
+      </span>
     </div>
     <?php } ?>
     <?php if ($this->access('state_add')) { ?>
@@ -60,7 +56,7 @@
           <th><a href="<?php echo $sort_status; ?>"><?php echo $this->text('Enabled'); ?> <i class="fa fa-sort"></i></a></th>
           <th></th>
         </tr>
-        <tr class="filters active">
+        <tr class="filters active hidden-no-js">
           <th></th>
           <th></th>
           <th class="middle">
@@ -101,7 +97,7 @@
         <?php } ?>
         <?php foreach ($states as $state_id => $state) { ?>
         <tr>
-          <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $state_id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>></td>
+          <td class="middle"><input type="checkbox" class="select-all" name="action[items][]" value="<?php echo $state_id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>></td>
           <td class="middle"><?php echo $state_id; ?></td>
           <td class="middle"><?php echo $this->e($state['name']); ?></td>
           <td class="middle"><?php echo $this->e($state['code']); ?></td>
@@ -114,7 +110,7 @@
           </td>
           <td class="middle">
             <ul class="list-inline">
-             <?php if ($this->access('state_edit')) { ?>
+              <?php if ($this->access('state_edit')) { ?>
               <li>
                 <a href="<?php echo $this->url("admin/settings/state/edit/{$country['code']}/$state_id"); ?>">
                   <?php echo $this->lower($this->text('Edit')); ?>

@@ -9,37 +9,33 @@
  */
 ?>
 <?php if (!empty($zones) || $_filtering) { ?>
-<form data-filter-empty="true">
+<form method="post">
+  <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <?php if ($this->access('zone_edit') || $this->access('zone_delete') || $this->access('zone_add')) { ?>
-  <div class="btn-toolbar actions">
+  <div class="form-inline bulk-actions">
     <?php $access_actions = false; ?>
     <?php if ($this->access('zone_edit') || $this->access('zone_delete')) { ?>
     <?php $access_actions = true; ?>
-    <div class="btn-group">
-      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-        <?php echo $this->text('With selected'); ?> <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu">
+    <div class="input-group">
+      <select name="action[name]" class="form-control" onchange="GplCart.action(event);">
+        <option value=""><?php echo $this->text('With selected'); ?></option>
         <?php if ($this->access('zone_edit')) { ?>
-        <li>
-          <a data-action="status" data-action-value="1" data-action-confirm="<?php echo $this->text('Are you sure?'); ?>" href="#">
-            <?php echo $this->text('Status'); ?>: <?php echo $this->text('Enabled'); ?>
-          </a>
-        </li>
-        <li>
-          <a data-action="status" data-action-value="0" data-action-confirm="<?php echo $this->text('Are you sure?'); ?>" href="#">
-            <?php echo $this->text('Status'); ?>: <?php echo $this->text('Disabled'); ?>
-          </a>
-        </li>
+        <option value="status|1" data-confirm="<?php echo $this->text('Are you sure?'); ?>">
+          <?php echo $this->text('Status'); ?>: <?php echo $this->text('Enabled'); ?>
+        </option>
+        <option value="status|0" data-confirm="<?php echo $this->text('Are you sure?'); ?>">
+          <?php echo $this->text('Status'); ?>: <?php echo $this->text('Disabled'); ?>
+        </option>
         <?php } ?>
         <?php if ($this->access('zone_delete')) { ?>
-        <li>
-          <a data-action="delete" data-action-confirm="<?php echo $this->text('Are you sure? It cannot be undone!'); ?>" href="#">
-            <?php echo $this->text('Delete'); ?>
-          </a>
-        </li>
+        <option value="delete" data-confirm="<?php echo $this->text('Are you sure? It cannot be undone!'); ?>">
+          <?php echo $this->text('Delete'); ?>
+        </option>
         <?php } ?>
-      </ul>
+      </select>
+      <span class="input-group-btn hidden-js">
+        <button class="btn btn-default" name="action[submit]" value="1"><?php echo $this->text('OK'); ?></button>
+      </span>
     </div>
     <?php } ?>
     <?php if ($this->access('zone_add')) { ?>
@@ -59,7 +55,7 @@
           <th><a href="<?php echo $sort_status; ?>"><?php echo $this->text('Enabled'); ?> <i class="fa fa-sort"></i></a></th>
           <th></th>
         </tr>
-        <tr class="filters active">
+        <tr class="filters active hidden-no-js">
           <th></th>
           <th></th>
           <th>
@@ -69,10 +65,10 @@
             <select class="form-control" name="status">
               <option value=""><?php echo $this->text('Any'); ?></option>
               <option value="1"<?php echo $filter_status === '1' ? ' selected' : ''; ?>>
-              <?php echo $this->text('Enabled'); ?>
+                  <?php echo $this->text('Enabled'); ?>
               </option>
               <option value="0"<?php echo $filter_status === '0' ? ' selected' : ''; ?>>
-              <?php echo $this->text('Disabled'); ?>
+                  <?php echo $this->text('Disabled'); ?>
               </option>
             </select>
           </th>
@@ -98,7 +94,7 @@
         <?php foreach ($zones as $zone) { ?>
         <tr>
           <td class="middle">
-            <input type="checkbox" class="select-all" name="selected[]" value="<?php echo $zone['zone_id']; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>>
+            <input type="checkbox" class="select-all" name="action[items][]" value="<?php echo $zone['zone_id']; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>>
           </td>
           <td class="middle"><?php echo $this->e($zone['zone_id']); ?></td>
           <td class="middle"><?php echo $this->e($zone['title']); ?></td>

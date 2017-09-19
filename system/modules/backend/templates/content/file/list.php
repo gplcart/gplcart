@@ -9,23 +9,23 @@
  */
 ?>
 <?php if (!empty($files) || $_filtering) { ?>
-<form data-filter-empty="true">
+<form method="post">
+  <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <?php if (($this->access('file_add') && $this->access('file_upload')) || $this->access('file_delete')) { ?>
-  <div class="btn-toolbar actions">
+  <div class="form-inline bulk-actions">
     <?php $access_actions = false; ?>
     <?php if ($this->access('file_delete')) { ?>
     <?php $access_actions = true; ?>
-    <div class="btn-group">
-      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-        <?php echo $this->text('With selected'); ?> <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu">
-        <li>
-          <a data-action="delete" data-action-confirm="<?php echo $this->text('Are you sure? It cannot be undone!'); ?>" href="#">
-            <?php echo $this->text('Delete from database and disk'); ?>
-          </a>
-        </li>
-      </ul>
+    <div class="input-group">
+      <select name="action[name]" class="form-control" onchange="GplCart.action(event);">
+        <option value=""><?php echo $this->text('With selected'); ?></option>
+        <option value="delete" data-confirm="<?php echo $this->text('Are you sure? It cannot be undone!'); ?>">
+          <?php echo $this->text('Delete from database and disk'); ?>
+        </option>
+      </select>
+      <span class="input-group-btn hidden-js">
+        <button class="btn btn-default" name="action[submit]" value="1"><?php echo $this->text('OK'); ?></button>
+      </span>
     </div>
     <?php } ?>
     <?php if ($this->access('file_add') && $this->access('file_upload')) { ?>
@@ -67,7 +67,7 @@
           </th>
           <th></th>
         </tr>
-        <tr class="filters active">
+        <tr class="filters active hidden-no-js">
           <th></th>
           <th></th>
           <th><input class="form-control" name="title" value="<?php echo $filter_title; ?>" placeholder="<?php echo $this->text('Any'); ?>"></th>
@@ -95,7 +95,7 @@
         <?php } else { ?>
         <?php foreach ($files as $id => $file) { ?>
         <tr>
-          <td class="middle"><input type="checkbox" class="select-all" name="selected[]" value="<?php echo $id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>></td>
+          <td class="middle"><input type="checkbox" class="select-all" name="action[items][]" value="<?php echo $id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>></td>
           <td class="middle"><?php echo $id; ?></td>
           <td class="middle"><?php echo $this->e($this->truncate($file['title'], 30)); ?></td>
           <td class="middle"><?php echo $this->e($this->truncate($file['mime_type'])); ?></td>

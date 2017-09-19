@@ -10,7 +10,7 @@
 ?>
 <?php if (!empty($products) && count($products) > 1) { ?>
 <?php if (!empty($fields)) { ?>
-<div class="row hidden-non-js">
+<div class="row hidden-no-js">
   <div class="col-md-12">
     <label>
       <input type="checkbox" id="compare-difference"> <?php echo $this->text('Show only difference'); ?>
