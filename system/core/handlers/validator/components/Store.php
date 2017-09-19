@@ -118,9 +118,7 @@ class Store extends ComponentValidator
             return true;
         }
 
-        $invalid = (filter_var($value, FILTER_VALIDATE_IP) === false || !gplcart_is_valid_domain($value));
-
-        if ($invalid) {
+        if (filter_var($value, FILTER_VALIDATE_IP) === false && !gplcart_is_valid_domain($value)) {
             $this->setErrorInvalid($field, $label);
             return false;
         }
