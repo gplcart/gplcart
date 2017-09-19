@@ -47,7 +47,7 @@ class Facade
             UrlHelper $url, SessionHelper $session)
     {
         $session->start();
-        
+
         $this->url = $url;
         $this->route = $route;
         $this->config = $config;
@@ -57,31 +57,21 @@ class Facade
     }
 
     /**
-     * Routes incoming requests
-     */
-    public function route()
-    {
-        if (GC_CLI) {
-            $this->routeCli();
-        } else {
-            $this->routeHttp();
-        }
-    }
-
-    /**
      * Routes command line requests
      */
-    protected function routeCli()
+    public function routeCli()
     {
         if ($this->config->get('cli_status', 1)) {
             Container::get('gplcart\\core\\CliRoute')->process();
+        } else {
+            exit('CLI access is disabled!');
         }
     }
 
     /**
      * Routes HTTP requests
      */
-    protected function routeHttp()
+    public function routeHttp()
     {
         if ($this->config->exists() || $this->url->isInstall()) {
             $this->route->process();
