@@ -278,6 +278,10 @@ class Product extends Model
 
         $this->hook->attach('product.get.before', $product_id, $options, $result, $this);
 
+        if (empty($product_id)) {
+            return $result = array();
+        }
+
         if (isset($result)) {
             return $result;
         }
