@@ -49,7 +49,7 @@ function gplcart_setup_server()
 }
 
 /**
- * Sets up PHP ini options
+ * Sets up PHP INI options
  */
 function gplcart_setup_php()
 {
@@ -59,6 +59,8 @@ function gplcart_setup_php()
         if ($limit != -1 && $bytes < 1024 * 1024 * 1024) {
             ini_set('memory_limit', '1G');
         }
+
+        ini_set('html_errors', 'off');
     } else {
         ini_set('session.use_cookies', '1');
         ini_set('session.use_only_cookies', '1');
