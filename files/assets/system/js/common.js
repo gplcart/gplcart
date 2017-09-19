@@ -1,7 +1,7 @@
-/* global GplCart */
+/* global window, jQuery, GplCart */
 var GplCart = GplCart || {settings: {}, translations: {}, onload: {}, modules: {}};
 
-(function ($, GplCart) {
+(function (window, $, GplCart) {
 
     $(function () {
         $('body').addClass('js');
@@ -20,11 +20,9 @@ var GplCart = GplCart || {settings: {}, translations: {}, onload: {}, modules: {
      */
     GplCart.text = function (text, options) {
         options = options || {};
-
         if (options) {
             text = GplCart.formatString(text, options);
         }
-
         return text;
     };
 
@@ -93,35 +91,28 @@ var GplCart = GplCart || {settings: {}, translations: {}, onload: {}, modules: {
             data: {process_job: job.id},
             dataType: 'json',
             success: function (data) {
+                if (typeof data === 'object' && !$.isEmptyObject(data)) {
 
-                if (typeof data !== 'object' || $.isEmptyObject(data)) {
-                    console.warn(arguments);
-                    return false;
+                    if (data.redirect) {
+                        window.location.replace(data.redirect);
+                    }
+
+                    if (data.finish) {
+                        widget.find('.progress-bar').css('width', '100%');
+                        widget.hide();
+                    } else {
+
+                        if ('progress' in data) {
+                            widget.find('.progress-bar').css('width', data.progress + '%');
+                        }
+
+                        if (data.message) {
+                            widget.find('.message').html(data.message);
+                        }
+
+                        GplCart.job(settings);
+                    }
                 }
-
-                if ('redirect' in data && data.redirect) {
-                    window.location.replace(data.redirect);
-                }
-
-                if ('finish' in data && data.finish) {
-                    widget.find('.progress-bar').css('width', '100%');
-                    widget.hide();
-                    return false;
-                }
-
-                if ('progress' in data) {
-                    widget.find('.progress-bar').css('width', data.progress + '%');
-                }
-
-                if ('message' in data) {
-                    widget.find('.message').html(data.message);
-                }
-
-                GplCart.job(settings);
-
-            },
-            error: function () {
-                console.warn(arguments);
             }
         });
     };
@@ -133,13 +124,7 @@ var GplCart = GplCart || {settings: {}, translations: {}, onload: {}, modules: {
      */
     GplCart.action = function (e) {
 
-        var conf, selected = [], el = $(e.target);
-
-        var submit = function () {
-            var form = el.closest('form');
-            form.find('[name="action[confirm]"]').prop('checked', true);
-            form.find('[name="action[submit]"]').click();
-        };
+        var conf, form, selected = [], el = $(e.target);
 
         if (el.val()) {
 
@@ -150,13 +135,11 @@ var GplCart = GplCart || {settings: {}, translations: {}, onload: {}, modules: {
             });
 
             if (selected.length) {
-
                 conf = el.find(':selected').data('confirm');
-
-                if (!conf) {
-                    submit();
-                } else if (confirm(conf)) {
-                    submit();
+                if (conf === undefined || confirm(conf)) {
+                    form = el.closest('form');
+                    form.find('[name="action[confirm]"]').prop('checked', true);
+                    form.find('[name="action[submit]"]').click();
                 } else {
                     el.val('');
                 }
@@ -178,4 +161,4 @@ var GplCart = GplCart || {settings: {}, translations: {}, onload: {}, modules: {
         });
     };
 
-})(jQuery, GplCart);
+})(window, jQuery, GplCart);
