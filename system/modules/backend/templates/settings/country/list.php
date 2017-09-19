@@ -12,7 +12,7 @@
 <form method="post">
   <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <?php if ($this->access('country_edit') || $this->access('country_delete') || $this->access('country_add')) { ?>
-  <div class="form-inline bulk-actions">
+  <div class="form-inline actions">
     <?php $access_options = false; ?>
     <?php if ($this->access('country_edit') || $this->access('country_delete')) { ?>
     <?php $access_options = true; ?>

@@ -11,7 +11,7 @@
 <form method="post">
   <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <?php if ($this->access('store_delete') || $this->access('store_edit') || $this->access('store_add')) { ?>
-  <div class="form-inline bulk-actions">
+  <div class="form-inline actions">
     <?php $access_actions = false; ?>
     <?php if ($this->access('store_edit') || $this->access('store_delete')) { ?>
     <?php $access_actions = true; ?>

@@ -12,7 +12,7 @@
 <form method="post">
   <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <?php if ($this->access('price_rule_edit') || $this->access('price_rule_delete') || $this->access('price_rule_add')) { ?>
-  <div class="form-inline bulk-actions">
+  <div class="form-inline actions">
     <?php $access_actions = false; ?>
     <?php if ($this->access('price_rule_edit') || $this->access('price_rule_delete')) { ?>
     <?php $access_actions = true; ?>

@@ -14,7 +14,7 @@
   <?php $access_actions = false; ?>
   <?php if ($this->access('address_delete')) { ?>
   <?php $access_actions = true; ?>
-  <div class="form-inline bulk-actions">
+  <div class="form-inline actions">
     <div class="input-group">
       <select name="action[name]" class="form-control" onchange="GplCart.action(event);">
         <option value=""><?php echo $this->text('With selected'); ?></option>

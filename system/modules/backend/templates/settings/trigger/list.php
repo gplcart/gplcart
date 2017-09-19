@@ -12,7 +12,7 @@
 <form method="post">
   <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <?php if ($this->access('trigger_edit') || $this->access('trigger_delete') || $this->access('trigger_add')) { ?>
-  <div class="form-inline bulk-actions">
+  <div class="form-inline actions">
     <?php $access_actions = false; ?>
     <?php if ($this->access('trigger_edit') || $this->access('trigger_delete')) { ?>
     <?php $access_actions = true; ?>

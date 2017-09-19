@@ -12,7 +12,7 @@
 <form method="post">
   <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <?php if (($this->access('file_add') && $this->access('file_upload')) || $this->access('file_delete')) { ?>
-  <div class="form-inline bulk-actions">
+  <div class="form-inline actions">
     <?php $access_actions = false; ?>
     <?php if ($this->access('file_delete')) { ?>
     <?php $access_actions = true; ?>

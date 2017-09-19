@@ -12,7 +12,7 @@
 <form method="post">
   <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <?php if ($this->access('transaction_delete')) { ?>
-  <div class="form-inline bulk-actions">
+  <div class="form-inline actions">
     <div class="input-group">
       <select name="action[name]" class="form-control" onchange="GplCart.action(event);">
         <option value=""><?php echo $this->text('With selected'); ?></option>
