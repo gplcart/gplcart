@@ -80,7 +80,7 @@ class Alias extends BackendController
 
             if ($deleted > 0) {
                 $message = $this->text('Deleted %num items', array('%num' => $deleted));
-                $this->setMessage($message, 'success', true);
+                $this->setMessage($message, 'success');
             }
         }
     }

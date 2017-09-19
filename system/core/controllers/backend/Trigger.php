@@ -20,16 +20,16 @@ class Trigger extends BackendController
 {
 
     /**
-     * Condition model instance
-     * @var \gplcart\core\models\Condition $condition
-     */
-    protected $condition;
-
-    /**
      * Trigger model instance
      * @var \gplcart\core\models\Trigger $trigger
      */
     protected $trigger;
+
+    /**
+     * Condition model instance
+     * @var \gplcart\core\models\Condition $condition
+     */
+    protected $condition;
 
     /**
      * The current trigger
@@ -83,10 +83,6 @@ class Trigger extends BackendController
     {
         list($selected, $action, $value) = $this->getPostedAction();
 
-        if (empty($action)) {
-            return null;
-        }
-
         $deleted = $updated = 0;
 
         foreach ($selected as $id) {
@@ -102,12 +98,12 @@ class Trigger extends BackendController
 
         if ($updated > 0) {
             $message = $this->text('Updated %num items', array('%num' => $updated));
-            $this->setMessage($message, 'success', true);
+            $this->setMessage($message, 'success');
         }
 
         if ($deleted > 0) {
             $message = $this->text('Deleted %num items', array('%num' => $deleted));
-            $this->setMessage($message, 'success', true);
+            $this->setMessage($message, 'success');
         }
     }
 
@@ -118,6 +114,7 @@ class Trigger extends BackendController
     {
         $query = $this->query_filter;
         $query['count'] = true;
+
         $this->total = (int) $this->trigger->getList($query);
     }
 
@@ -258,9 +255,11 @@ class Trigger extends BackendController
     protected function deleteTrigger()
     {
         $this->controlAccess('trigger_delete');
+
         if ($this->trigger->delete($this->data_trigger['trigger_id'])) {
             $this->redirect('admin/settings/trigger', $this->text('Trigger has been deleted'), 'success');
         }
+
         $this->redirect('', $this->text('Unable to delete'), 'warning');
     }
 
@@ -280,9 +279,11 @@ class Trigger extends BackendController
     protected function addTrigger()
     {
         $this->controlAccess('trigger_add');
+
         if ($this->trigger->add($this->getSubmitted())) {
             $this->redirect('admin/settings/trigger', $this->text('Trigger has been added'), 'success');
         }
+
         $this->redirect('', $this->text('Trigger has not been added'), 'warning');
     }
 

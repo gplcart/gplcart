@@ -36,7 +36,7 @@ class Controller extends BaseController
         $this->processCurrentJob();
         $this->setJsCron();
         $this->setDefaultDataBackend();
-        $this->getBulkAction();
+        $this->getPostedAction();
 
         $this->hook->attach('construct.controller.backend', $this);
         $this->controlHttpStatus();
@@ -252,39 +252,23 @@ class Controller extends BaseController
     }
 
     /**
-     * Returns an array of posted parameters for various bulk actions
-     * @return array
-     */
-    protected function getPostedAction()
-    {
-        return array(
-            $this->getPosted('selected', array(), true, 'array'),
-            $this->getPosted('action', '', true, 'string'),
-            $this->getPosted('value', '', true, 'string')
-        );
-    }
-
-    /**
      * Returns an array of submitted bulk action
      * @param bool $message
      * @return array
      */
-    protected function getBulkAction($message = true)
+    protected function getPostedAction($message = true)
     {
-        $action = $this->getPosted('bulk-action', array(), true, 'array');
+        $action = $this->getPosted('action', array(), true, 'array');
 
         if (!empty($action)) {
 
             if (empty($action['name'])) {
                 $error = $this->text('An error occurred');
-            } else if (empty($action['confirm'])) {
-                $error = $this->text('Please confirm the selected action');
             } else if (empty($action['items'])) {
                 $error = $this->text('Please select at least one item');
             } else {
                 $parts = explode('|', $action['name'], 2);
-                $action['value'] = isset($parts[1]) ? $parts[1] : null;
-                return $action;
+                return array($action['items'], $parts[0], isset($parts[1]) ? $parts[1] : null);
             }
 
             if (isset($error) && $message) {
@@ -292,7 +276,7 @@ class Controller extends BaseController
             }
         }
 
-        return array();
+        return array(array(), null, null);
     }
 
 }

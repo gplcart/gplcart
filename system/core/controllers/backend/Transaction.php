@@ -20,23 +20,23 @@ class Transaction extends BackendController
 {
 
     /**
-     * Transaction model instance
-     * @var \gplcart\core\models\Transaction $transaction
-     */
-    protected $transaction;
-
-    /**
      * Payment model instance
      * @var \gplcart\core\models\Payment $payment
      */
     protected $payment;
 
     /**
-     * @param TransactionModel $transaction
-     * @param PaymentModel $payment
+     * Transaction model instance
+     * @var \gplcart\core\models\Transaction $transaction
      */
-    public function __construct(TransactionModel $transaction,
-            PaymentModel $payment)
+    protected $transaction;
+
+    /**
+     * @param PaymentModel $payment
+     * @param TransactionModel $transaction
+     */
+    public function __construct(PaymentModel $payment,
+            TransactionModel $transaction)
     {
         parent::__construct();
 
@@ -58,8 +58,8 @@ class Transaction extends BackendController
         $this->setTotalListTransaction();
         $this->setPagerLimit();
 
-        $this->setData('payment_methods', $this->payment->getList());
         $this->setData('transactions', $this->getListTransaction());
+        $this->setData('payment_methods', $this->payment->getList());
 
         $this->outputListTransaction();
     }
@@ -92,10 +92,6 @@ class Transaction extends BackendController
     {
         list($selected, $action) = $this->getPostedAction();
 
-        if (empty($action)) {
-            return null;
-        }
-
         $deleted = 0;
         foreach ($selected as $id) {
 
@@ -106,7 +102,7 @@ class Transaction extends BackendController
 
         if ($deleted > 0) {
             $message = $this->text('Deleted %num items', array('%num' => $deleted));
-            $this->setMessage($message, 'success', true);
+            $this->setMessage($message, 'success');
         }
     }
 

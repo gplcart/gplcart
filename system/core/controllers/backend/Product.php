@@ -145,10 +145,6 @@ class Product extends BackendController
     {
         list($selected, $action, $value) = $this->getPostedAction();
 
-        if (empty($action)) {
-            return null;
-        }
-
         $deleted = $updated = 0;
         foreach ($selected as $id) {
 
@@ -163,12 +159,12 @@ class Product extends BackendController
 
         if ($updated > 0) {
             $message = $this->text('Updated %num items', array('%num' => $updated));
-            $this->setMessage($message, 'success', true);
+            $this->setMessage($message, 'success');
         }
 
         if ($deleted > 0) {
             $message = $this->text('Deleted %num items', array('%num' => $deleted));
-            $this->setMessage($message, 'success', true);
+            $this->setMessage($message, 'success');
         }
     }
 
@@ -231,8 +227,6 @@ class Product extends BackendController
      */
     public function editProduct($product_id = null)
     {
-        $this->outputCategoriesEditProduct();
-
         $this->setProduct($product_id);
 
         $this->setTitleEditProduct();
@@ -265,19 +259,6 @@ class Product extends BackendController
     protected function getClassesProduct()
     {
         return $this->product_class->getList(array('status' => 1));
-    }
-
-    /**
-     * Output a JSON string containing brand and catalog categories
-     */
-    protected function outputCategoriesEditProduct()
-    {
-        $store_id = $this->getQuery('store_id');
-
-        if (!empty($store_id) && $this->isAjax()) {
-            $response = $this->getListCategoryProduct($store_id);
-            $this->response->json($response);
-        }
     }
 
     /**

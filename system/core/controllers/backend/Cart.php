@@ -62,19 +62,16 @@ class Cart extends BackendController
     {
         list($selected, $action) = $this->getPostedAction();
 
-        if (!empty($action)) {
-
-            $deleted = 0;
-            foreach ($selected as $id) {
-                if ($action === 'delete' && $this->access('cart_delete')) {
-                    $deleted += (int) $this->cart->delete($id);
-                }
+        $deleted = 0;
+        foreach ($selected as $id) {
+            if ($action === 'delete' && $this->access('cart_delete')) {
+                $deleted += (int) $this->cart->delete($id);
             }
+        }
 
-            if ($deleted > 0) {
-                $message = $this->text('Deleted %num items', array('%num' => $deleted));
-                $this->setMessage($message, 'success', true);
-            }
+        if ($deleted > 0) {
+            $message = $this->text('Deleted %num items', array('%num' => $deleted));
+            $this->setMessage($message, 'success');
         }
     }
 

@@ -124,9 +124,11 @@ class UserRole extends BackendController
     protected function deleteUserRole()
     {
         $this->controlAccess('user_role_delete');
+
         if ($this->role->delete($this->data_role['role_id'])) {
             $this->redirect('admin/user/role', $this->text('Role has been deleted'), 'success');
         }
+
         $this->redirect('', $this->text('Unable to delete'), 'danger');
     }
 
@@ -231,10 +233,6 @@ class UserRole extends BackendController
     {
         list($selected, $action, $value) = $this->getPostedAction();
 
-        if (empty($action)) {
-            return null;
-        }
-
         $deleted = $updated = 0;
         foreach ($selected as $role_id) {
 
@@ -249,12 +247,12 @@ class UserRole extends BackendController
 
         if ($updated > 0) {
             $text = $this->text('Updated %num items', array('%num' => $updated));
-            $this->setMessage($text, 'success', true);
+            $this->setMessage($text, 'success');
         }
 
         if ($deleted > 0) {
             $text = $this->text('Deleted %num items', array('%num' => $deleted));
-            $this->setMessage($text, 'success', true);
+            $this->setMessage($text, 'success');
         }
     }
 

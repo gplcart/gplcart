@@ -96,14 +96,6 @@ class Page extends BackendController
     {
         list($selected, $action, $value) = $this->getPostedAction();
 
-        if (empty($action)) {
-            return null;
-        }
-
-        if ($action === 'categories') {
-            $this->outputCategoriesPage();
-        }
-
         $deleted = $updated = 0;
         foreach ($selected as $page_id) {
 
@@ -118,25 +110,13 @@ class Page extends BackendController
 
         if ($updated > 0) {
             $message = $this->text('Updated %num items', array('%num' => $updated));
-            $this->setMessage($message, 'success', true);
+            $this->setMessage($message, 'success');
         }
 
         if ($deleted > 0) {
             $message = $this->text('Deleted %num items', array('%num' => $deleted));
-            $this->setMessage($message, 'success', true);
+            $this->setMessage($message, 'success');
         }
-    }
-
-    /**
-     * Outputs JSON string with categories
-     */
-    protected function outputCategoriesPage()
-    {
-        $default = $this->store->getDefault();
-        $store_id = $this->getPosted('store_id', $default, true, 'integer');
-
-        $categories = $this->category->getOptionListByStore($store_id);
-        $this->response->json($categories);
     }
 
     /**
@@ -194,7 +174,6 @@ class Page extends BackendController
     public function editPage($page_id = null)
     {
         $this->setPage($page_id);
-        $this->actionPage();
 
         $this->setTitleEditPage();
         $this->setBreadcrumbEditPage();

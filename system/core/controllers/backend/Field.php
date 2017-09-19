@@ -76,10 +76,6 @@ class Field extends BackendController
     {
         list($selected, $action) = $this->getPostedAction();
 
-        if (empty($action)) {
-            return null;
-        }
-
         $deleted = 0;
         foreach ($selected as $field_id) {
             if ($action === 'delete' && $this->access('field_delete')) {
@@ -89,7 +85,7 @@ class Field extends BackendController
 
         if ($deleted > 0) {
             $message = $this->text('Deleted %num items', array('%num' => $deleted));
-            $this->setMessage($message, 'success', true);
+            $this->setMessage($message, 'success');
         }
     }
 

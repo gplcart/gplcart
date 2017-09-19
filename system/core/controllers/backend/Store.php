@@ -15,7 +15,7 @@ use gplcart\core\models\Module as ModuleModel,
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
- * Handles incoming requests and outputs data related to multistore functionality
+ * Handles incoming requests and outputs data related to multi-store functionality
  */
 class Store extends BackendController
 {
@@ -73,8 +73,9 @@ class Store extends BackendController
         $this->setTotalListStore();
         $this->setPagerLimit();
 
-        $this->setData('default_store', $this->store->getDefault());
         $this->setData('stores', $this->getListStore());
+        $this->setData('default_store', $this->store->getDefault());
+
         $this->outputListStore();
     }
 
@@ -103,10 +104,6 @@ class Store extends BackendController
     {
         list($selected, $action, $value) = $this->getPostedAction();
 
-        if (empty($action)) {
-            return null;
-        }
-
         $updated = $deleted = 0;
         foreach ($selected as $id) {
 
@@ -121,12 +118,12 @@ class Store extends BackendController
 
         if ($updated > 0) {
             $message = $this->text('Updated %num items', array('%num' => $updated));
-            $this->setMessage($message, 'success', true);
+            $this->setMessage($message, 'success');
         }
 
         if ($deleted > 0) {
             $message = $this->text('Deleted %num items', array('%num' => $deleted));
-            $this->setMessage($message, 'success', true);
+            $this->setMessage($message, 'success');
         }
     }
 
@@ -317,9 +314,11 @@ class Store extends BackendController
     protected function deleteStore()
     {
         $this->controlAccess('store_delete');
+
         if ($this->store->delete($this->data_store['store_id'])) {
             $this->redirect('admin/settings/store', $this->text('Store has been deleted'), 'success');
         }
+
         $this->redirect('', $this->text('Unable to delete'), 'danger');
     }
 

@@ -72,8 +72,7 @@ class Country extends BackendController
      */
     protected function setFilterListCountry()
     {
-        $allowed = array('name', 'native_name', 'code', 'status', 'weight');
-        $this->setFilter($allowed);
+        $this->setFilter(array('name', 'native_name', 'code', 'status', 'weight'));
     }
 
     /**
@@ -82,15 +81,6 @@ class Country extends BackendController
     protected function actionListCountry()
     {
         list($selected, $action, $value) = $this->getPostedAction();
-
-        if (empty($action)) {
-            return null;
-        }
-
-        if ($action === 'weight' && $this->access('country_edit')) {
-            $this->updateWeightCountry($selected);
-            return null;
-        }
 
         $updated = $deleted = 0;
         foreach ($selected as $code) {
@@ -106,27 +96,13 @@ class Country extends BackendController
 
         if ($updated > 0) {
             $message = $this->text('Updated %num items', array('%num' => $updated));
-            $this->setMessage($message, 'success', true);
+            $this->setMessage($message, 'success');
         }
 
         if ($deleted > 0) {
             $message = $this->text('Deleted %num items', array('%num' => $deleted));
-            $this->setMessage($message, 'success', true);
+            $this->setMessage($message, 'success');
         }
-    }
-
-    /**
-     * Updates an array of country weights
-     * @param array $items
-     */
-    protected function updateWeightCountry(array $items)
-    {
-        foreach ($items as $code => $weight) {
-            $this->country->update($code, array('weight' => $weight));
-        }
-
-        $response = array('success' => $this->text('Items have been reordered'));
-        $this->response->json($response);
     }
 
     /**
@@ -266,9 +242,11 @@ class Country extends BackendController
     protected function deleteCountry()
     {
         $this->controlAccess('country_delete');
+
         if ($this->country->delete($this->data_country['code'])) {
             $this->redirect('admin/settings/country', $this->text('Country has been deleted'), 'success');
         }
+
         $this->redirect('', $this->text('Unable to delete'), 'danger');
     }
 

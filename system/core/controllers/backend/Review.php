@@ -87,10 +87,6 @@ class Review extends BackendController
     {
         list($selected, $action, $value) = $this->getPostedAction();
 
-        if (empty($action)) {
-            return null;
-        }
-
         $updated = $deleted = 0;
         foreach ($selected as $id) {
 
@@ -105,12 +101,12 @@ class Review extends BackendController
 
         if ($updated > 0) {
             $message = $this->text('Updated %num items', array('%num' => $updated));
-            $this->setMessage($message, 'success', true);
+            $this->setMessage($message, 'success');
         }
 
         if ($deleted > 1) {
             $message = $this->text('Deleted %num items', array('%num' => $deleted));
-            $this->setMessage($message, 'success', true);
+            $this->setMessage($message, 'success');
         }
     }
 
@@ -197,7 +193,6 @@ class Review extends BackendController
     public function editReview($review_id = null)
     {
         $this->setReview($review_id);
-
         $this->setTitleEditReview();
         $this->setBreadcrumbEditReview();
 
@@ -291,13 +286,17 @@ class Review extends BackendController
         $user_id = $this->getData('review.user_id');
         $product_id = $this->getData('review.product_id');
 
-        $user = $this->user->get($user_id);
-        $email = isset($user['email']) ? $user['email'] : '';
-        $this->setData('review.email', $email);
+        if (!empty($user_id)) {
+            $user = $this->user->get($user_id);
+            $email = isset($user['email']) ? $user['email'] : '';
+            $this->setData('review.email', $email);
+        }
 
-        $product = $this->product->get($product_id);
-        $title = isset($product['title']) ? $product['title'] : '';
-        $this->setData('review.product', $title);
+        if (!empty($product_id)) {
+            $product = $this->product->get($product_id);
+            $title = isset($product['title']) ? $product['title'] : '';
+            $this->setData('review.product', $title);
+        }
     }
 
     /**

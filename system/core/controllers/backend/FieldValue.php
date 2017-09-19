@@ -121,10 +121,6 @@ class FieldValue extends BackendController
     {
         list($selected, $action) = $this->getPostedAction();
 
-        if (empty($action)) {
-            return null;
-        }
-
         if ($action === 'weight' && $this->access('field_value_edit')) {
             $this->updateWeightFieldValue($selected);
             return null;
@@ -139,7 +135,7 @@ class FieldValue extends BackendController
 
         if ($deleted > 0) {
             $message = $this->text('Deleted %num items', array('%num' => $deleted));
-            $this->setMessage($message, 'success', true);
+            $this->setMessage($message, 'success');
         }
     }
 
@@ -312,10 +308,12 @@ class FieldValue extends BackendController
     protected function deleteFieldValue()
     {
         $this->controlAccess('field_value_delete');
+
         if ($this->field_value->delete($this->data_field_value['field_value_id'])) {
             $url = "admin/content/field/value/{$this->data_field['field_id']}";
             $this->redirect($url, $this->text('Field value has been deleted'), 'success');
         }
+
         $this->redirect('', $this->text('Unable to delete'), 'warning');
     }
 

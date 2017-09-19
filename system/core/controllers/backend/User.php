@@ -87,10 +87,6 @@ class User extends BackendController
     {
         list($selected, $action, $value) = $this->getPostedAction();
 
-        if (empty($action)) {
-            return null;
-        }
-
         $deleted = $updated = 0;
         foreach ($selected as $uid) {
 
@@ -109,12 +105,12 @@ class User extends BackendController
 
         if ($updated > 0) {
             $text = $this->text('Updated %num items', array('%num' => $updated));
-            $this->setMessage($text, 'success', true);
+            $this->setMessage($text, 'success');
         }
 
         if ($deleted > 0) {
             $text = $this->text('Deleted %num items', array('%num' => $deleted));
-            $this->setMessage($text, 'success', true);
+            $this->setMessage($text, 'success');
         }
     }
 
@@ -279,9 +275,11 @@ class User extends BackendController
     protected function deleteUser()
     {
         $this->controlAccess('user_delete');
+
         if ($this->user->delete($this->data_user['user_id'])) {
             $this->redirect('admin/user/list', $this->text('User has been deleted'), 'success');
         }
+
         $this->redirect('admin/user/list', $this->text('Unable to delete'), 'danger');
     }
 

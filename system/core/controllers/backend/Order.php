@@ -163,9 +163,11 @@ class Order extends BackendController
     protected function deleteOrder()
     {
         $this->controlAccess('order_delete');
+
         if ($this->order->delete($this->data_order['order_id'])) {
             $this->redirect('admin/sale/order', $this->text('Order has been deleted'), 'success');
         }
+
         $this->redirect('', $this->text('Unable to delete'), 'warning');
     }
 
@@ -525,23 +527,16 @@ class Order extends BackendController
     {
         list($selected, $action, $value) = $this->getPostedAction();
 
-        if (empty($action)) {
-            return null;
-        }
-
         $deleted = $updated = 0;
         $failed_notifications = array();
 
         foreach ($selected as $id) {
 
             if ($action === 'status' && $this->access('order_edit')) {
-
                 $updated = (bool) $this->order->update($id, array('status' => $value));
-
                 if ($updated && $this->setNotificationUpdateOrder($id) == static::NOTIFICATION_ERROR) {
-                    $failed_notifications[] = $id;
+                    $failed_notifications[] = $this->text('<a href="@url">@text</a>', array('@url' => $this->url("admin/sale/order/$id"), '@text' => $id));
                 }
-
                 $updated++;
             }
 
@@ -552,18 +547,18 @@ class Order extends BackendController
 
         if ($updated > 0) {
             $message = $this->text('Updated %num items', array('%num' => $updated));
-            $this->setMessage($message, 'success', true);
+            $this->setMessage($message, 'success');
         }
 
         if (!empty($failed_notifications)) {
-            $vars = array('@list' => implode(',', $failed_notifications));
-            $message = $this->text('Failed to notify customers in orders: @list', $vars);
-            $this->setMessage($message, 'warning', true);
+            $vars = array('!list' => implode(', ', $failed_notifications));
+            $message = $this->text('Failed to notify customers in orders: !list', $vars);
+            $this->setMessage($message, 'warning');
         }
 
         if ($deleted > 0) {
             $message = $this->text('Deleted %num items', array('%num' => $deleted));
-            $this->setMessage($message, 'success', true);
+            $this->setMessage($message, 'success');
         }
     }
 

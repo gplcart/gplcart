@@ -87,10 +87,6 @@ class File extends BackendController
     {
         list($selected, $action) = $this->getPostedAction();
 
-        if (empty($action)) {
-            return null;
-        }
-
         $deleted_disk = $deleted_database = 0;
 
         foreach ($selected as $file_id) {
@@ -101,9 +97,11 @@ class File extends BackendController
             }
         }
 
-        $vars = array('%db' => $deleted_database, '%disk' => $deleted_disk);
-        $message = $this->text('Deleted from database: %db, disk: %disk', $vars);
-        $this->setMessage($message, 'success', true);
+        if ($deleted_disk > 0 || $deleted_database > 0) {
+            $vars = array('%db' => $deleted_database, '%disk' => $deleted_disk);
+            $message = $this->text('Deleted from database: %db, disk: %disk', $vars);
+            $this->setMessage($message, 'success');
+        }
     }
 
     /**
@@ -251,9 +249,11 @@ class File extends BackendController
     {
         $this->controlAccess('file_delete');
         $result = $this->file->deleteAll($this->data_file['file_id']);
+
         if (array_sum($result) == 2) {
             $this->redirect('admin/content/file', $this->text('File has been deleted from database and disk'), 'success');
         }
+
         $this->redirect('admin/content/file', $this->text('Unable to delete'), 'warning');
     }
 
@@ -286,9 +286,11 @@ class File extends BackendController
     protected function addFile()
     {
         $this->controlAccess('file_add');
+
         if ($this->file->add($this->getSubmitted())) {
             $this->redirect('admin/content/file', $this->text('File has been added'), 'success');
         }
+
         $this->redirect('admin/content/file', $this->text('File has not been added'), 'warning');
     }
 

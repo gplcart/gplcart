@@ -147,10 +147,6 @@ class City extends BackendController
     {
         list($selected, $action, $value) = $this->getPostedAction();
 
-        if (empty($action)) {
-            return null;
-        }
-
         $deleted = $updated = 0;
         foreach ($selected as $id) {
 
@@ -165,12 +161,12 @@ class City extends BackendController
 
         if ($updated > 0) {
             $message = $this->text('Updated %num items', array('%num' => $updated));
-            $this->setMessage($message, 'success', true);
+            $this->setMessage($message, 'success');
         }
 
         if ($deleted > 0) {
             $message = $this->text('Deleted %num items', array('%num' => $deleted));
-            $this->setMessage($message, 'success', true);
+            $this->setMessage($message, 'success');
         }
     }
 
@@ -354,6 +350,7 @@ class City extends BackendController
     {
         $this->controlAccess('city_edit');
         $this->city->update($this->data_city['city_id'], $this->getSubmitted());
+
         $url = "admin/settings/cities/{$this->data_country['code']}/{$this->data_state['state_id']}";
         $this->redirect($url, $this->text('City has been updated'), 'success');
     }
@@ -365,6 +362,7 @@ class City extends BackendController
     {
         $this->controlAccess('city_add');
         $this->city->add($this->getSubmitted());
+
         $url = "admin/settings/cities/{$this->data_country['code']}/{$this->data_state['state_id']}";
         $this->redirect($url, $this->text('City has been added'), 'success');
     }
