@@ -130,252 +130,6 @@
     };
 
     /**
-     * Updates order view form
-     * @returns {undefined}
-     */
-    GplCart.onload.updateOrder = function () {
-        $('[name="order[status]"]').change(function () {
-            if (confirm(GplCart.text('Do you want to change order status?'))) {
-                $(this).closest('form').find('[name="status"]:submit').click();
-            }
-        });
-    };
-
-    /**
-     * Handles bulk actions
-     * @returns {undefined}
-     */
-    GplCart.onload.bulkAction = function () {
-
-        var selected = [];
-
-        $('[data-action]').click(function () {
-
-            $('input[name^="selected"]').each(function () {
-                if ($(this).is(':checked')) {
-                    selected.push($(this).val());
-                }
-            });
-
-            if (selected.length < 1) {
-                return false;
-            }
-
-            if (confirm($(this).data('action-confirm'))) {
-                $.ajax({
-                    method: 'POST',
-                    url: GplCart.settings.urn,
-                    data: {
-                        selected: selected,
-                        action: $(this).data('action'),
-                        token: GplCart.settings.token,
-                        value: $(this).data('action-value')
-                    },
-                    success: function () {
-                        // Skip page numbers
-                        window.location = window.location.href.split("?")[0];
-                    },
-                    beforeSend: function () {
-                        setLoading(true);
-                    },
-                    complete: function () {
-                        setLoading(false);
-                    }
-                });
-            }
-
-            return false;
-        });
-    };
-
-    /**
-     * Prevent submitting empty inputs
-     * @returns {undefined}
-     */
-    GplCart.onload.filterEmptyInputs = function () {
-        $('[data-filter-empty="true"]').submit(function () {
-            $(this).find(':input[name]').filter(function () {
-                return this.value === "";
-            }).prop('name', '');
-        });
-    };
-
-    /**
-     * Delete uploaded images
-     * @returns {undefined}
-     */
-    GplCart.onload.deleteUploadedImages = function () {
-        $(document).on('click', '[name="delete_images[]"]', function () {
-            if (!$(this).val()) {
-                $(this).closest('div.thumb').remove();
-                return false;
-            }
-        });
-    };
-
-    /**
-     * Makes uploaded images sortable
-     * @returns {undefined}
-     */
-    GplCart.onload.handleSortableImages = function () {
-
-        var settings = {
-            items: '> div > div',
-            handle: '.handle',
-            stop: function () {
-                $('input[name$="[weight]"]').each(function (i, v) {
-                    $(this).val(i);
-                });
-            }
-        };
-
-        $(image_container).sortable(settings);
-    };
-
-    /**
-     * Makes sortable table rows containing weigth value
-     * @returns {undefined}
-     */
-    GplCart.onload.handleSortableTableWeigth = function () {
-
-        var weight = {}, selector = $('table[data-sortable-weight="true"] tbody');
-
-        if (selector.length) {
-            selector.sortable({
-                cursor: 'n-resize',
-                handle: '.handle',
-                stop: function () {
-
-                    selector.find('tr').each(function (i) {
-                        weight[$(this).attr('data-id')] = i;
-                    });
-
-                    $.ajax({
-                        type: 'POST',
-                        url: GplCart.settings.urn,
-                        data: {
-                            action: 'weight',
-                            selected: weight,
-                            token: GplCart.settings.token
-                        },
-                        success: function (data) {
-                            if (typeof data === 'object' && data.success) {
-                                setAlert(data.success, 'weight-updating-success');
-                                $.each(weight, function (i, v) {
-                                    $('tr[data-id=' + i + ']').find('td .weight').text(v);
-                                });
-                            }
-                        },
-                        beforeSend: function () {
-                            setLoading(true);
-                        },
-                        complete: function () {
-                            setLoading(false);
-                        }
-                    });
-                }
-            });
-        }
-    };
-
-    /**
-     * Makes sortable table rows containing weigth input
-     * @returns {undefined}
-     */
-    GplCart.onload.handleSortableTableWeigthInput = function () {
-
-        var selector = $('table[data-sortable-input-weight="true"] tbody'),
-                text = GplCart.text('Changes will not be saved until the form is submitted');
-
-        if (selector.length) {
-            selector.sortable({
-                handle: '.handle',
-                stop: function () {
-                    $('input[name$="[weight]"]').each(function (i) {
-                        $(this).val(i);
-                        $(this).closest('tr').find('td .weight').text(i);
-                    });
-                    setAlert(text, 'sort-weigth-input-warning', 'warning');
-                }
-            });
-        }
-    };
-
-    /**
-     * Checks status checkbox when the corresponding "required" checkbox is checked
-     * @returns {undefined}
-     */
-    GplCart.onload.ensureCountryRequiredStatus = function () {
-        $('table.country-format input[name$="[required]"]').click(function () {
-            if ($(this).is(':checked')) {
-                $(this).closest('tr').find('input[name$="[status]"]').prop('checked', true);
-            }
-        });
-    };
-
-    /**
-     * Updates categories depending on chosen store
-     * @returns {undefined}
-     */
-    GplCart.onload.handleUpdateCategories = function () {
-
-        var i, g, cats, options,
-                store = $('select[name$="[store_id]"]'),
-                category = $('select[name$="[category_id]"]');
-
-        store.change(function () {
-            $.ajax({
-                url: GplCart.settings.urn,
-                method: 'POST',
-                dataType: 'json',
-                data: {
-                    action: 'categories',
-                    token: GplCart.settings.token,
-                    store_id: $(this).find('option:selected').val()
-                },
-                beforeSend: function () {
-                    store.prop('disabled', true);
-                    category.prop('disabled', true);
-                },
-                success: function (response) {
-                    options = '';
-                    if (typeof response === 'object') {
-                        for (g in response) {
-                            options += '<optgroup label="' + g + '">';
-                            cats = response[g];
-                            for (i in cats) {
-                                options += '<option value="' + i + '">' + cats[i] + '</option>';
-                            }
-                        }
-                        category.html(options).selectpicker('refresh');
-                    }
-                },
-                complete: function () {
-                    store.prop('disabled', false).selectpicker('refresh');
-                    category.prop('disabled', false).selectpicker('refresh');
-                }
-            });
-        });
-    };
-
-    /**
-     * Adds a datepicker popup to the field
-     * @returns {undefined}
-     */
-    GplCart.onload.handleDatepicker = function () {
-
-        var el = $('[data-datepicker="true"]');
-        var settings = {dateFormat: 'dd.mm.yy'},
-                inline_settings = el.data('datepicker-settings') || {};
-
-        if (typeof inline_settings === 'object') {
-            settings = $.extend(settings, inline_settings);
-        }
-
-        el.datepicker(settings);
-    };
-
-    /**
      * Loads product fields via AJAX
      * @param {String} id
      * @returns {undefined}
@@ -410,8 +164,7 @@
     };
 
     /**
-     * Check if the button already has an image.
-     * If so, remove it
+     * Check if the button already has an image. If so, remove it
      * @param {Object} button
      * @returns {Boolean}
      */
@@ -424,44 +177,6 @@
         button.html('<i class="fa fa-image"></i>');
         button.siblings('input').val('');
         return true;
-    };
-
-    /**
-     * Updates product fields when product class was changed
-     * @returns {undefined}
-     */
-    GplCart.onload.updateProductClassFields = function () {
-        var val;
-        $('[name$="[product_class_id]"]').change(function () {
-
-            val = $(this).val();
-            loadProductFields(val);
-
-            if (val) {
-                $('body,html').animate({scrollTop: $('#option-form-wrapper').offset().top - 60});
-            }
-        });
-    };
-
-    /**
-     * Updates product fields on demand
-     * @returns {undefined}
-     */
-    GplCart.onload.updateProductFields = function () {
-        $(document).on('click', '.refresh-fields', function () {
-            loadProductFields($('[name$="[product_class_id]"]').val());
-            return false;
-        });
-    };
-
-    /**
-     * Removes a product field
-     * @returns {undefined}
-     */
-    GplCart.onload.removeProductField = function () {
-        $(document).on('click', '#product-class-fields input[name$="[remove]"]', function () {
-            $(this).closest('tr').toggleClass('danger', this.checked);
-        });
     };
 
     /**
@@ -878,6 +593,256 @@
                 return $("<li>").append("<a>" + item.label + "</a>").appendTo(ul);
             };
         }
+    };
+
+    /**
+     * Updates product fields when product class was changed
+     * @returns {undefined}
+     */
+    GplCart.onload.updateProductClassFields = function () {
+        var val;
+        $('[name$="[product_class_id]"]').change(function () {
+
+            val = $(this).val();
+            loadProductFields(val);
+
+            if (val) {
+                $('body,html').animate({scrollTop: $('#option-form-wrapper').offset().top - 60});
+            }
+        });
+    };
+
+    /**
+     * Updates product fields on demand
+     * @returns {undefined}
+     */
+    GplCart.onload.updateProductFields = function () {
+        $(document).on('click', '.refresh-fields', function () {
+            loadProductFields($('[name$="[product_class_id]"]').val());
+            return false;
+        });
+    };
+
+    /**
+     * Removes a product field
+     * @returns {undefined}
+     */
+    GplCart.onload.removeProductField = function () {
+        $(document).on('click', '#product-class-fields input[name$="[remove]"]', function () {
+            $(this).closest('tr').toggleClass('danger', this.checked);
+        });
+    };
+
+
+    /**
+     * Updates order view form
+     * @returns {undefined}
+     */
+    GplCart.onload.updateOrder = function () {
+        $('[name="order[status]"]').change(function () {
+            if (confirm(GplCart.text('Do you want to change order status?'))) {
+                $(this).closest('form').find('[name="status"]:submit').click();
+            }
+        });
+    };
+
+    /**
+     * Delete uploaded images
+     * @returns {undefined}
+     */
+    GplCart.onload.deleteUploadedImages = function () {
+        $(document).on('click', '[name="delete_images[]"]', function () {
+            if (!$(this).val()) {
+                $(this).closest('div.thumb').remove();
+                return false;
+            }
+        });
+    };
+
+    /**
+     * Makes uploaded images sortable
+     * @returns {undefined}
+     */
+    GplCart.onload.handleSortableImages = function () {
+
+        var settings = {
+            items: '> div > div',
+            handle: '.handle',
+            stop: function () {
+                $('input[name$="[weight]"]').each(function (i, v) {
+                    $(this).val(i);
+                });
+            }
+        };
+
+        $(image_container).sortable(settings);
+    };
+
+    /**
+     * Makes sortable table rows containing weigth value
+     * @returns {undefined}
+     */
+    GplCart.onload.handleSortableTableWeigth = function () {
+
+        var weight = {}, selector = $('table[data-sortable-weight="true"] tbody');
+
+        if (selector.length) {
+            selector.sortable({
+                cursor: 'n-resize',
+                handle: '.handle',
+                stop: function () {
+
+                    selector.find('tr').each(function (i) {
+                        weight[$(this).attr('data-id')] = i;
+                    });
+
+                    $.ajax({
+                        type: 'POST',
+                        url: GplCart.settings.urn,
+                        data: {
+                            token: GplCart.settings.token,
+                            action: {items: weight, name: 'weight'}
+                        },
+                        success: function (data) {
+                            if (typeof data === 'object' && data.success) {
+                                setAlert(data.success, 'weight-updating-success', 'success');
+                                $.each(weight, function (i, v) {
+                                    $('tr[data-id=' + i + ']').find('td .weight').text(v);
+                                });
+                            }
+                        },
+                        beforeSend: function () {
+                            setLoading(true);
+                        },
+                        complete: function () {
+                            setLoading(false);
+                        }
+                    });
+                }
+            });
+        }
+    };
+
+    /**
+     * Makes sortable table rows containing weigth input
+     * @returns {undefined}
+     */
+    GplCart.onload.handleSortableTableWeigthInput = function () {
+
+        var selector = $('table[data-sortable-input-weight="true"] tbody'),
+                text = GplCart.text('Changes will not be saved until the form is submitted');
+
+        if (selector.length) {
+            selector.sortable({
+                handle: '.handle',
+                stop: function () {
+                    $('input[name$="[weight]"]').each(function (i) {
+                        $(this).val(i);
+                        $(this).closest('tr').find('td .weight').text(i);
+                    });
+                    setAlert(text, 'sort-weigth-input-warning', 'warning');
+                }
+            });
+        }
+    };
+
+    /**
+     * Checks status checkbox when the corresponding "required" checkbox is checked
+     * @returns {undefined}
+     */
+    GplCart.onload.ensureCountryRequiredStatus = function () {
+        $('table.country-format input[name$="[required]"]').click(function () {
+            if ($(this).is(':checked')) {
+                $(this).closest('tr').find('input[name$="[status]"]').prop('checked', true);
+            }
+        });
+    };
+
+    /**
+     * Updates categories depending on chosen store
+     * @returns {undefined}
+     */
+    GplCart.onload.handleUpdateCategories = function () {
+
+        var i, g, cats, options,
+                store = $('select[name$="[store_id]"]'),
+                category = $('select[name$="[category_id]"]');
+
+        store.change(function () {
+            $.ajax({
+                url: GplCart.settings.base + 'ajax',
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    action: 'getStoreCategoriesAjax',
+                    token: GplCart.settings.token,
+                    store_id: $(this).find('option:selected').val()
+                },
+                beforeSend: function () {
+                    store.prop('disabled', true);
+                    category.prop('disabled', true);
+                },
+                success: function (response) {
+                    options = '';
+                    if (typeof response === 'object') {
+                        for (g in response) {
+                            options += '<optgroup label="' + g + '">';
+                            cats = response[g];
+                            for (i in cats) {
+                                options += '<option value="' + i + '">' + cats[i] + '</option>';
+                            }
+                        }
+                        category.html(options).selectpicker('refresh');
+                    }
+                },
+                complete: function () {
+                    store.prop('disabled', false).selectpicker('refresh');
+                    category.prop('disabled', false).selectpicker('refresh');
+                }
+            });
+        });
+    };
+
+    /**
+     * Adds a datepicker popup to the field
+     * @returns {undefined}
+     */
+    GplCart.onload.handleDatepicker = function () {
+
+        var el = $('[data-datepicker="true"]');
+        var settings = {dateFormat: 'dd.mm.yy'},
+                inline = el.data('datepicker-settings') || {};
+
+        if (typeof inline === 'object') {
+            settings = $.extend(settings, inline);
+        }
+
+        el.datepicker(settings);
+    };
+
+    /**
+     * Handles filters
+     * @returns {undefined}
+     */
+    GplCart.onload.handleFilter = function () {
+
+        var redirect, params;
+
+        // Emulate GET request for forms with post method
+        $('thead :submit').click(function () {
+            params = $(this).closest('thead').find(':input[name]').filter(function () {
+                return this.value !== "";
+            }).serialize();
+
+            redirect = window.location.href.split('?')[0];
+
+            if (params) {
+                redirect += '?' + params;
+            }
+
+            window.location = redirect;
+            return false;
+        });
     };
 
 })(window, document, GplCart, jQuery);
