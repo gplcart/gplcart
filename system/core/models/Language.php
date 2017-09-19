@@ -430,10 +430,6 @@ class Language extends Model
      */
     public function text($string, array $arguments = array())
     {
-        if (isset($this->processed[$string])) {
-            return $this->processed[$string];
-        }
-
         if (empty($this->langcode) || empty($this->context)) {
             return $this->processed[$string] = $this->formatString($string, $arguments);
         }
