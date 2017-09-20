@@ -84,7 +84,7 @@ class Field extends BackendController
         }
 
         if ($deleted > 0) {
-            $message = $this->text('Deleted %num items', array('%num' => $deleted));
+            $message = $this->text('Deleted %num item(s)', array('%num' => $deleted));
             $this->setMessage($message, 'success');
         }
     }

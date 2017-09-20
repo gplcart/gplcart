@@ -246,12 +246,12 @@ class UserRole extends BackendController
         }
 
         if ($updated > 0) {
-            $text = $this->text('Updated %num items', array('%num' => $updated));
+            $text = $this->text('Updated %num item(s)', array('%num' => $updated));
             $this->setMessage($text, 'success');
         }
 
         if ($deleted > 0) {
-            $text = $this->text('Deleted %num items', array('%num' => $deleted));
+            $text = $this->text('Deleted %num item(s)', array('%num' => $deleted));
             $this->setMessage($text, 'success');
         }
     }
