@@ -1,7 +1,7 @@
 {
     "name": "gplcart/gplcart",
     "type": "project",
-    "description": "GplCart",
+    "description": "GPLCart",
     "keywords": ["gplcart", "ecommerce", "shopping cart", "opensource shopping cart"],
     "homepage": "http://www.gplcart.com",
     "license": "GPL-3.0",
