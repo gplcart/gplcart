@@ -246,6 +246,14 @@ class Report extends Model
             'weight' => 8,
         );
 
+        $statuses['search_index'] = array(
+            'title' => $this->language->text('Search index'),
+            'description' => '',
+            'severity' => 'info',
+            'status' => $this->language->text('@num rows', array('@num' => $this->countSearchIndex())),
+            'weight' => 9,
+        );
+
         $this->hook->attach('report.statuses', $statuses, $this);
 
         gplcart_array_sort($statuses);
@@ -253,7 +261,7 @@ class Report extends Model
     }
 
     /**
-     * Checks filesystem. Returns true if no issues found or an array of errors
+     * Checks file system
      * @return boolean|array
      */
     public function checkFilesystem()
@@ -284,6 +292,15 @@ class Report extends Model
 
         $vars = array('%name' => $file, '%perm' => $permissions);
         return $this->language->text('File %name is not secure. The file permissions must be %perm', $vars);
+    }
+
+    /**
+     * Returns the total number of rows in the search index table
+     * @return integer
+     */
+    protected function countSearchIndex()
+    {
+        return $this->db->run('SELECT COUNT(*) FROM search_index')->fetchColumn();
     }
 
 }
