@@ -535,8 +535,19 @@ class Language extends Model
      */
     public function parseCsv($file)
     {
-        $content = file($file);
-        return empty($content) ? array() : array_map('str_getcsv', $content);
+        $handle = fopen($file, 'r');
+
+        if ($handle === false) {
+            return array();
+        }
+
+        $content = array();
+        while (($data = fgetcsv($handle)) !== false) {
+            $content[] = $data;
+        }
+
+        fclose($handle);
+        return $content;
     }
 
     /**
