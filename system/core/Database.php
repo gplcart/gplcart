@@ -86,7 +86,7 @@ class Database
      * Returns PDO instance
      * @return \PDO
      */
-    public function getPdo()
+    public function pdo()
     {
         return $this->pdo;
     }
