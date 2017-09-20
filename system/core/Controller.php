@@ -1703,7 +1703,7 @@ abstract class Controller
     public function setJsSettings($key, array $data, $weight = null)
     {
         $json = gplcart_json_encode($data);
-        $var = rtrim("GplCart.settings.$key", '.');
+        $var = rtrim("Gplcart.settings.$key", '.');
 
         $asset = array(
             'type' => 'js',

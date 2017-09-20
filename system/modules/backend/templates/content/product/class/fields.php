@@ -12,7 +12,7 @@
 <form method="post" class="form-horizontal">
   <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <div class="btn-toolbar actions">
-    <button class="btn btn-default save" name="save" value="1" onclick="return confirm(GplCart.text('Are you sure?'));">
+    <button class="btn btn-default save" name="save" value="1" onclick="return confirm(Gplcart.text('Are you sure?'));">
       <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
     </button>
     <a class="btn btn-default add" href="<?php echo $this->url("admin/content/product-class/field/{$product_class['product_class_id']}/add"); ?>">

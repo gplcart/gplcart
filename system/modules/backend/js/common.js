@@ -1,5 +1,5 @@
-/* global window, document, GplCart, jQuery*/
-(function (window, document, GplCart, $) {
+/* global window, document, Gplcart, jQuery*/
+(function (window, document, Gplcart, $) {
 
     "use strict";
 
@@ -137,14 +137,14 @@
     var loadProductFields = function (id) {
         $.ajax({
             dataType: 'html',
-            url: GplCart.settings.urn + '?product_class_id=' + id,
+            url: Gplcart.settings.urn + '?product_class_id=' + id,
             success: function (data) {
                 $('#attribute-form-wrapper').html($(data).find('div#attribute-form').html());
                 $('#option-form-wrapper').html($(data).find('#option-form').html());
                 $('.selectpicker').selectpicker('show');
             },
             error: function () {
-                alert(GplCart.text('Unable to load product class fields'));
+                alert(Gplcart.text('Unable to load product class fields'));
             }
         });
     };
@@ -198,7 +198,7 @@
         });
 
         html += '<td>';
-        html += '<input maxlength="255" class="form-control" name="product[combination][' + index + '][sku]" value="" placeholder="' + GplCart.text('Generate automatically') + '">';
+        html += '<input maxlength="255" class="form-control" name="product[combination][' + index + '][sku]" value="" placeholder="' + Gplcart.text('Generate automatically') + '">';
         html += '</td>';
         html += '<td>';
         html += '<input class="form-control" name="product[combination][' + index + '][price]" value="">';
@@ -295,7 +295,7 @@
      * Adds one more combination row to the table
      * @returns {undefined}
      */
-    GplCart.onload.handleProductAddCombination = function () {
+    Gplcart.onload.handleProductAddCombination = function () {
         $(document).on('click', '#option-form-wrapper .add-option-combination', function () {
             $('#option-form-wrapper table tbody').append(htmlProductCombinationRow());
             $('.selectpicker').selectpicker();
@@ -307,7 +307,7 @@
      * Ensure that only one combination default radio button is selected
      * @returns {undefined}
      */
-    GplCart.onload.checkDefaultProductCombination = function () {
+    Gplcart.onload.checkDefaultProductCombination = function () {
 
         var radio = '.option input[name$="[is_default]"]';
 
@@ -325,7 +325,7 @@
      * Deletes an option combination
      * @returns {undefined}
      */
-    GplCart.onload.deleteProductCombination = function () {
+    Gplcart.onload.deleteProductCombination = function () {
         $(document).on('click', '#option-form-wrapper .remove-option-combination', function () {
             $(this).closest('tr').remove();
             return false;
@@ -336,7 +336,7 @@
      * Highlight rows with disabled option combinations
      * @returns {undefined}
      */
-    GplCart.onload.markProductCombinationStatus = function () {
+    Gplcart.onload.markProductCombinationStatus = function () {
         $(document).on('change', '#option-form-wrapper input[name$="[status]"]', function () {
             if ($(this).not(':checked')) {
                 $(this).closest('tr').toggleClass('bg-danger');
@@ -348,7 +348,7 @@
      * Select an option combination image
      * @returns {undefined}
      */
-    GplCart.onload.selectProductCombinationImage = function () {
+    Gplcart.onload.selectProductCombinationImage = function () {
 
         var modal, html;
 
@@ -374,7 +374,7 @@
      * Sets a selected option combination image
      * @returns {undefined}
      */
-    GplCart.onload.setProductCombinationImage = function () {
+    Gplcart.onload.setProductCombinationImage = function () {
 
         var e, src, path, pos;
 
@@ -396,7 +396,7 @@
      * Removes a related product item
      * @returns {undefined}
      */
-    GplCart.onload.removeRelated = function () {
+    Gplcart.onload.removeRelated = function () {
         $(document).on('click', '.related-product-item .remove', function () {
             $(this).closest('.related-product-item').remove();
         });
@@ -406,7 +406,7 @@
      * Adds a hash to pager links inside panels
      * @returns {undefined}
      */
-    GplCart.onload.addPagerHash = function () {
+    Gplcart.onload.addPagerHash = function () {
 
         var links, id, href;
         $('.panel').each(function () {
@@ -428,7 +428,7 @@
      * Adds autocomplete functionality to the related products input
      * @returns {undefined}
      */
-    GplCart.onload.handleAutocompleteRelatedProducts = function () {
+    Gplcart.onload.handleAutocompleteRelatedProducts = function () {
 
         var params, input = $('.related-product');
 
@@ -441,11 +441,11 @@
                         status: 1,
                         term: request.term,
                         action: 'getProductsAjax',
-                        token: GplCart.settings.token,
+                        token: Gplcart.settings.token,
                         store_id: $('select[name$="[store_id]"] option:selected').val()
                     };
 
-                    $.post(GplCart.settings.base + 'ajax', params, function (data) {
+                    $.post(Gplcart.settings.base + 'ajax', params, function (data) {
                         response($.map(data, function (value, key) {
                             return {
                                 url: value.url,
@@ -470,13 +470,13 @@
      * Adds autocomplete functionality to collection item fields
      * @returns {undefined}
      */
-    GplCart.onload.handleAutocompleteCollectionItem = function () {
+    Gplcart.onload.handleAutocompleteCollectionItem = function () {
 
         var params = {},
                 input = $('form#edit-collection-item input[name$="[input]"]'),
                 value = $('form#edit-collection-item input[name$="[value]"]');
 
-        if (input.length === 0 || !GplCart.settings.collection) {
+        if (input.length === 0 || !Gplcart.settings.collection) {
             return;
         }
 
@@ -486,12 +486,12 @@
 
                 params = {
                     term: request.term,
-                    token: GplCart.settings.token,
+                    token: Gplcart.settings.token,
                     action: 'getCollectionItemAjax',
-                    collection_id: GplCart.settings.collection.collection_id
+                    collection_id: Gplcart.settings.collection.collection_id
                 };
 
-                $.post(GplCart.settings.base + 'ajax', params, function (data) {
+                $.post(Gplcart.settings.base + 'ajax', params, function (data) {
                     response($.map(data, function (value, key) {
                         return {
                             value: key,
@@ -517,7 +517,7 @@
      * Adds autocomplete functionality to a user input
      * @returns {undefined}
      */
-    GplCart.onload.handleAutocompleteUser = function () {
+    Gplcart.onload.handleAutocompleteUser = function () {
 
         var params, input = $('[data-autocomplete-source="user"]');
 
@@ -529,10 +529,10 @@
                     params = {
                         term: request.term,
                         action: 'getUsersAjax',
-                        token: GplCart.settings.token
+                        token: Gplcart.settings.token
                     };
 
-                    $.post(GplCart.settings.base + 'ajax', params, function (data) {
+                    $.post(Gplcart.settings.base + 'ajax', params, function (data) {
                         response($.map(data, function (value, key) {
                             return {
                                 value: value.email,
@@ -555,7 +555,7 @@
      * Adds autocomplete functionality to a product input
      * @returns {undefined}
      */
-    GplCart.onload.handleAutocompleteProduct = function () {
+    Gplcart.onload.handleAutocompleteProduct = function () {
 
         var params,
                 input = $('[data-autocomplete-source="product"]'),
@@ -569,10 +569,10 @@
                     params = {
                         term: request.term,
                         action: 'getProductsAjax',
-                        token: GplCart.settings.token
+                        token: Gplcart.settings.token
                     };
 
-                    $.post(GplCart.settings.base + 'ajax', params, function (data) {
+                    $.post(Gplcart.settings.base + 'ajax', params, function (data) {
                         response($.map(data, function (value, key) {
                             return {
                                 value: value.product_id,
@@ -599,7 +599,7 @@
      * Updates product fields when product class was changed
      * @returns {undefined}
      */
-    GplCart.onload.updateProductClassFields = function () {
+    Gplcart.onload.updateProductClassFields = function () {
         var val;
         $('[name$="[product_class_id]"]').change(function () {
 
@@ -616,7 +616,7 @@
      * Updates product fields on demand
      * @returns {undefined}
      */
-    GplCart.onload.updateProductFields = function () {
+    Gplcart.onload.updateProductFields = function () {
         $(document).on('click', '.refresh-fields', function () {
             loadProductFields($('[name$="[product_class_id]"]').val());
             return false;
@@ -627,7 +627,7 @@
      * Removes a product field
      * @returns {undefined}
      */
-    GplCart.onload.removeProductField = function () {
+    Gplcart.onload.removeProductField = function () {
         $(document).on('click', '#product-class-fields input[name$="[remove]"]', function () {
             $(this).closest('tr').toggleClass('danger', this.checked);
         });
@@ -638,9 +638,9 @@
      * Updates order view form
      * @returns {undefined}
      */
-    GplCart.onload.updateOrder = function () {
+    Gplcart.onload.updateOrder = function () {
         $('[name="order[status]"]').change(function () {
-            if (confirm(GplCart.text('Do you want to change order status?'))) {
+            if (confirm(Gplcart.text('Do you want to change order status?'))) {
                 $(this).closest('form').find('[name="status"]:submit').click();
             }
         });
@@ -650,7 +650,7 @@
      * Delete uploaded images
      * @returns {undefined}
      */
-    GplCart.onload.deleteUploadedImages = function () {
+    Gplcart.onload.deleteUploadedImages = function () {
         $(document).on('click', '[name="delete_images[]"]', function () {
             if (!$(this).val()) {
                 $(this).closest('div.thumb').remove();
@@ -663,7 +663,7 @@
      * Makes uploaded images sortable
      * @returns {undefined}
      */
-    GplCart.onload.handleSortableImages = function () {
+    Gplcart.onload.handleSortableImages = function () {
 
         var settings = {
             items: '> div > div',
@@ -682,7 +682,7 @@
      * Makes sortable table rows containing weigth value
      * @returns {undefined}
      */
-    GplCart.onload.handleSortableTableWeigth = function () {
+    Gplcart.onload.handleSortableTableWeigth = function () {
 
         var weight = {}, selector = $('table[data-sortable-weight="true"] tbody');
 
@@ -698,9 +698,9 @@
 
                     $.ajax({
                         type: 'POST',
-                        url: GplCart.settings.urn,
+                        url: Gplcart.settings.urn,
                         data: {
-                            token: GplCart.settings.token,
+                            token: Gplcart.settings.token,
                             action: {items: weight, name: 'weight'}
                         },
                         success: function (data) {
@@ -727,10 +727,10 @@
      * Makes sortable table rows containing weigth input
      * @returns {undefined}
      */
-    GplCart.onload.handleSortableTableWeigthInput = function () {
+    Gplcart.onload.handleSortableTableWeigthInput = function () {
 
         var selector = $('table[data-sortable-input-weight="true"] tbody'),
-                text = GplCart.text('Changes will not be saved until the form is submitted');
+                text = Gplcart.text('Changes will not be saved until the form is submitted');
 
         if (selector.length) {
             selector.sortable({
@@ -750,7 +750,7 @@
      * Checks status checkbox when the corresponding "required" checkbox is checked
      * @returns {undefined}
      */
-    GplCart.onload.ensureCountryRequiredStatus = function () {
+    Gplcart.onload.ensureCountryRequiredStatus = function () {
         $('table.country-format input[name$="[required]"]').click(function () {
             if ($(this).is(':checked')) {
                 $(this).closest('tr').find('input[name$="[status]"]').prop('checked', true);
@@ -762,7 +762,7 @@
      * Updates categories depending on chosen store
      * @returns {undefined}
      */
-    GplCart.onload.handleUpdateCategories = function () {
+    Gplcart.onload.handleUpdateCategories = function () {
 
         var i, g, cats, options,
                 store = $('select[name$="[store_id]"]'),
@@ -770,12 +770,12 @@
 
         store.change(function () {
             $.ajax({
-                url: GplCart.settings.base + 'ajax',
+                url: Gplcart.settings.base + 'ajax',
                 method: 'POST',
                 dataType: 'json',
                 data: {
                     action: 'getStoreCategoriesAjax',
-                    token: GplCart.settings.token,
+                    token: Gplcart.settings.token,
                     store_id: $(this).find('option:selected').val()
                 },
                 beforeSend: function () {
@@ -807,7 +807,7 @@
      * Adds a datepicker popup to the field
      * @returns {undefined}
      */
-    GplCart.onload.handleDatepicker = function () {
+    Gplcart.onload.handleDatepicker = function () {
 
         var el = $('[data-datepicker="true"]');
         var settings = {dateFormat: 'dd.mm.yy'},
@@ -824,7 +824,7 @@
      * Handles filters
      * @returns {undefined}
      */
-    GplCart.onload.handleFilter = function () {
+    Gplcart.onload.handleFilter = function () {
 
         var redirect, params;
 
@@ -845,4 +845,4 @@
         });
     };
 
-})(window, document, GplCart, jQuery);
+})(window, document, Gplcart, jQuery);

@@ -56,7 +56,7 @@
         <div class="col-md-10 col-md-offset-2">
           <div class="btn-toolbar">
             <?php if (isset($imagestyle['imagestyle_id']) && $this->access('image_style_delete')) { ?>
-            <button class="btn btn-danger delete" name="delete" value="1" onclick="return confirm(GplCart.text('Are you sure?'));">
+            <button class="btn btn-danger delete" name="delete" value="1" onclick="return confirm(Gplcart.text('Are you sure?'));">
               <?php if (empty($imagestyle['default'])) { ?>
               <?php echo $this->text('Delete'); ?>
               <?php } else { ?>

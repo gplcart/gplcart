@@ -16,7 +16,7 @@
     <?php if ($this->access('store_edit') || $this->access('store_delete')) { ?>
     <?php $access_actions = true; ?>
     <div class="input-group">
-      <select name="action[name]" class="form-control" onchange="GplCart.action(this);">
+      <select name="action[name]" class="form-control" onchange="Gplcart.action(this);">
         <option value=""><?php echo $this->text('With selected'); ?></option>
         <?php if ($this->access('store_edit')) { ?>
         <option value="status|1" data-confirm="<?php echo $this->text('Are you sure?'); ?>">
@@ -48,7 +48,7 @@
     <table class="table stores">
       <thead>
         <tr>
-          <th><input type="checkbox" onchange="GplCart.selectAll(this);"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
+          <th><input type="checkbox" onchange="Gplcart.selectAll(this);"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
           <th><?php echo $this->text('ID'); ?></th>
           <th class="middle">
             <a href="<?php echo $sort_name; ?>"><?php echo $this->text('Name'); ?> <i class="fa fa-sort"></i></a>

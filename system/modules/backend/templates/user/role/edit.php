@@ -60,7 +60,7 @@
           <div class="col-md-12">
             <div class="checkbox">
               <label>
-                <input type="checkbox" onchange="GplCart.selectAll(this, 'role[permissions][]');"><?php echo $this->text('Select/unselect all'); ?>
+                <input type="checkbox" onchange="Gplcart.selectAll(this, 'role[permissions][]');"><?php echo $this->text('Select/unselect all'); ?>
               </label>
             </div>
           </div>
@@ -87,7 +87,7 @@
   <div class="form-group">
     <div class="col-md-10 col-md-offset-2">
       <?php if (isset($role['role_id']) && $this->access('user_role_delete')) { ?>
-      <button class="btn btn-danger delete" name="delete" value="1" onclick="return confirm(GplCart.text('Are you sure? It cannot be undone!'));">
+      <button class="btn btn-danger delete" name="delete" value="1" onclick="return confirm(Gplcart.text('Are you sure? It cannot be undone!'));">
         <?php echo $this->text('Delete'); ?>
       </button>
       <?php } ?>

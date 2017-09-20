@@ -37,5 +37,5 @@
 </div>
 <div class="modal-backdrop fade in"></div>
 <script>
-    GplCart.job();
+    Gplcart.job();
 </script>

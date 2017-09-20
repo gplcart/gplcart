@@ -1,5 +1,5 @@
-/* global window, document, GplCart, jQuery */
-(function (window, document, GplCart, $) {
+/* global window, document, Gplcart, jQuery */
+(function (window, document, Gplcart, $) {
 
     "use strict";
 
@@ -57,7 +57,7 @@
     var htmlBtnInCompare = function () {
 
         var html = '';
-        html += '<a title="' + GplCart.text('Already in comparison') + '" href="' + GplCart.settings.base + 'compare" class="btn btn-default active">';
+        html += '<a title="' + Gplcart.text('Already in comparison') + '" href="' + Gplcart.settings.base + 'compare" class="btn btn-default active">';
         html += '<i class="fa fa-balance-scale"></i>';
         html += '</a>';
         return html;
@@ -70,8 +70,8 @@
     var htmlBtnInWishlist = function () {
 
         var html = '',
-                url = GplCart.settings.base + 'wishlist',
-                title = GplCart.text('Already in wishlist');
+                url = Gplcart.settings.base + 'wishlist',
+                title = Gplcart.text('Already in wishlist');
 
         html += '<a title="' + title + '" href="' + url + '" class="btn btn-default active">';
         html += '<i class="fa fa-heart"></i></a>';
@@ -86,7 +86,7 @@
      */
     var htmlBtnSelectedOptions = function (fid, title) {
         var btn = '';
-        btn += '<span title="' + GplCart.text('Remove') + '" data-reset-field-id="' + fid + '" class="btn btn-default btn-xs">';
+        btn += '<span title="' + Gplcart.text('Remove') + '" data-reset-field-id="' + fid + '" class="btn btn-default btn-xs">';
         btn += title;
         btn += '<span class="fa fa-times"></span>';
         btn += '</span>';
@@ -232,7 +232,7 @@
     var setSelectedMessage = function (data) {
         var text = '';
         if (!$.isEmptyObject(data.titles)) {
-            text = GplCart.text('Selected: !combination', {'!combination': data.titles.join(' ')});
+            text = Gplcart.text('Selected: !combination', {'!combination': data.titles.join(' ')});
         }
         $('.selected-combination').html(text);
     };
@@ -262,10 +262,10 @@
                     action: 'searchCityAjax',
                     country: country.val(),
                     state_id: state_id.val(),
-                    token: GplCart.settings.token
+                    token: Gplcart.settings.token
                 };
 
-                $.post(GplCart.settings.base + 'ajax', params, function (data) {
+                $.post(Gplcart.settings.base + 'ajax', params, function (data) {
                     response($.map(data, function (value, key) {
                         return {name: value.name};
                     }));
@@ -300,7 +300,7 @@
      * Fix equal height of items
      * @returns {undefined}
      */
-    GplCart.onload.equalHeight = function () {
+    Gplcart.onload.equalHeight = function () {
         if ($.fn.matchHeight) {
             $('[data-equal-height="true"]').matchHeight();
         }
@@ -310,7 +310,7 @@
      * Adds hash to pager links inside panels
      * @returns {undefined}
      */
-    GplCart.onload.addPagerHash = function () {
+    Gplcart.onload.addPagerHash = function () {
 
         var links, id, href;
         $('.panel').each(function () {
@@ -332,21 +332,21 @@
      * Loads cart preview on demand
      * @returns {undefined}
      */
-    GplCart.onload.cartPreview = function () {
+    Gplcart.onload.cartPreview = function () {
 
         $('#cart-link').click(function () {
 
             $.ajax({
                 type: 'POST',
-                url: GplCart.settings.base + 'ajax',
+                url: Gplcart.settings.base + 'ajax',
                 dataType: 'json',
                 data: {
                     action: 'getCartPreviewAjax',
-                    token: GplCart.settings.token
+                    token: Gplcart.settings.token
                 },
                 success: function (data) {
                     if (typeof data === 'object' && data.preview) {
-                        setModal(data.preview, 'cart-preview', GplCart.text('Cart'));
+                        setModal(data.preview, 'cart-preview', Gplcart.text('Cart'));
                     }
                 },
                 error: function (xhr) {
@@ -362,7 +362,7 @@
      * Handles various submit events
      * @returns {undefined}
      */
-    GplCart.onload.submit = function () {
+    Gplcart.onload.submit = function () {
 
         var button, action, header;
 
@@ -380,7 +380,7 @@
             $.ajax({
                 type: 'POST',
                 dataType: 'json',
-                url: GplCart.settings.urn,
+                url: Gplcart.settings.urn,
                 data: button.closest('form').serialize() + '&' + action + '=1',
                 success: function (data) {
 
@@ -389,13 +389,13 @@
                     }
 
                     if (data.redirect) {
-                        window.location.replace(GplCart.settings.base + data.redirect);
+                        window.location.replace(Gplcart.settings.base + data.redirect);
                         return false;
                     }
 
                     if ('modal' in data) {
                         if (action === 'add_to_cart') {
-                            header = GplCart.text('Cart');
+                            header = Gplcart.text('Cart');
                         }
                         setModal(data.modal, action + '-content-modal', header);
                     } else if (data.message) {
@@ -423,7 +423,7 @@
      * Handles changing product options
      * @returns {undefined}
      */
-    GplCart.onload.updateOption = function () {
+    Gplcart.onload.updateOption = function () {
 
         var athumb, amain, selected = getSelectedOptions(), message = $('.add-to-cart .message');
 
@@ -445,12 +445,12 @@
             $.ajax({
                 method: 'POST',
                 dataType: 'json',
-                url: GplCart.settings.base + 'ajax',
+                url: Gplcart.settings.base + 'ajax',
                 data: {
                     values: selected.values,
                     action: 'switchProductOptionsAjax',
-                    token: GplCart.settings.token,
-                    product_id: GplCart.settings.product.product_id
+                    token: Gplcart.settings.token,
+                    product_id: Gplcart.settings.product.product_id
                 },
                 success: function (data) {
 
@@ -501,7 +501,7 @@
                 },
                 beforeSend: function () {
                     $('[data-field-id]').prop('disabled', true);
-                    message.html('<span class="loading">' + GplCart.text('Checking availability...') + '</span>');
+                    message.html('<span class="loading">' + Gplcart.text('Checking availability...') + '</span>');
                 },
                 complete: function () {
                     $('[data-field-id]').prop('disabled', false);
@@ -515,7 +515,7 @@
      * Reset selected field options
      * @returns {undefined}
      */
-    GplCart.onload.resetFieldOptions = function () {
+    Gplcart.onload.resetFieldOptions = function () {
         var fid;
         $(document).on('click', '[data-reset-field-id]', function () {
             fid = $(this).data('reset-field-id');
@@ -530,7 +530,7 @@
      * Shows only rows with different values
      * @returns {undefined}
      */
-    GplCart.onload.compareDiff = function () {
+    Gplcart.onload.compareDiff = function () {
 
         var row, togglable, values, count;
 
@@ -562,7 +562,7 @@
      * Blocks submit for empty imputs
      * @returns {undefined}
      */
-    GplCart.onload.blockEmptyInput = function () {
+    Gplcart.onload.blockEmptyInput = function () {
         var input;
         $(document).on('click', '[data-block-if-empty]', function () {
             input = $('[name="' + $(this).data('block-if-empty') + '"]');
@@ -576,7 +576,7 @@
      * Add state change listener that updates city autocomplete field
      * @returns {undefined}
      */
-    GplCart.onload.setCityAutocomplete = function () {
+    Gplcart.onload.setCityAutocomplete = function () {
         $(document).on('change', '[name="address[state_id]"]', function () {
             setCityAutocomplete();
         });
@@ -586,7 +586,7 @@
      * Handles checkout form submits
      * @returns {undefined}
      */
-    GplCart.onload.submitCheckout = function () {
+    Gplcart.onload.submitCheckout = function () {
 
         var clicked;
 
@@ -614,7 +614,7 @@
             $.ajax({
                 type: 'POST',
                 dataType: 'html',
-                url: GplCart.settings.urn,
+                url: Gplcart.settings.urn,
                 data: $('form#checkout').serialize(),
                 success: function (data) {
                     if (data.length) {
@@ -635,7 +635,7 @@
      * Adds + - spinner functionality
      * @returns {undefined}
      */
-    GplCart.onload.plusMinusInput = function () {
+    Gplcart.onload.plusMinusInput = function () {
 
         var btn, group, type, input, val, min, max;
 
@@ -681,7 +681,7 @@
      * Handles simple image gallery
      * @returns {undefined}
      */
-    GplCart.onload.gallery = function () {
+    Gplcart.onload.gallery = function () {
         var el, id, target, a;
 
         $('[data-gallery]').on('click', function () {
@@ -710,4 +710,4 @@
         });
     };
 
-})(window, document, GplCart, jQuery);
+})(window, document, Gplcart, jQuery);

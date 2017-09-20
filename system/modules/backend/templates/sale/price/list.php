@@ -17,7 +17,7 @@
     <?php if ($this->access('price_rule_edit') || $this->access('price_rule_delete')) { ?>
     <?php $access_actions = true; ?>
     <div class="input-group">
-      <select name="action[name]" class="form-control" onchange="GplCart.action(this);">
+      <select name="action[name]" class="form-control" onchange="Gplcart.action(this);">
         <option value=""><?php echo $this->text('With selected'); ?></option>
         <?php if ($this->access('price_rule_edit')) { ?>
         <option value="status|1" data-confirm="<?php echo $this->text('Are you sure?'); ?>">
@@ -49,7 +49,7 @@
     <table class="table price-rules">
       <thead>
         <tr>
-          <th><input type="checkbox" onchange="GplCart.selectAll(this);"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
+          <th><input type="checkbox" onchange="Gplcart.selectAll(this);"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
           <th>
             <a href="<?php echo $sort_name; ?>">
               <?php echo $this->text('Name'); ?> <i class="fa fa-sort"></i>

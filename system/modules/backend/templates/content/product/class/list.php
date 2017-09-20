@@ -17,7 +17,7 @@
     <?php if ($this->access('product_class_edit') || $this->access('product_class_delete')) { ?>
     <?php $access_actions = true; ?>
     <div class="input-group">
-      <select name="action[name]" class="form-control" onchange="GplCart.action(this);">
+      <select name="action[name]" class="form-control" onchange="Gplcart.action(this);">
         <option value=""><?php echo $this->text('With selected'); ?></option>
         <?php if ($this->access('product_class_edit')) { ?>
         <option value="status|1" data-confirm="<?php echo $this->text('Are you sure?'); ?>">
@@ -49,7 +49,7 @@
     <table class="table product-classes">
       <thead>
         <tr>
-          <th><input type="checkbox" onchange="GplCart.selectAll(this);"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
+          <th><input type="checkbox" onchange="Gplcart.selectAll(this);"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
           <th><a href="<?php echo $sort_product_class_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_title; ?>"><?php echo $this->text('Title'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_status; ?>"><?php echo $this->text('Enabled'); ?> <i class="fa fa-sort"></i></a></th>

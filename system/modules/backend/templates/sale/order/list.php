@@ -15,7 +15,7 @@
   <div class="form-inline actions">
     <?php if ($this->access('order_edit') || $this->access('order_delete')) { ?>
     <div class="input-group">
-      <select name="action[name]" class="form-control" onchange="GplCart.action(this);">
+      <select name="action[name]" class="form-control" onchange="Gplcart.action(this);">
         <option value=""><?php echo $this->text('With selected'); ?></option>
         <?php if ($this->access('order_edit')) { ?>
         <optgroup label="<?php echo $this->text('Status'); ?>">
@@ -49,7 +49,7 @@
       <thead>
         <tr>
           <th>
-            <input type="checkbox" onchange="GplCart.selectAll(this);">
+            <input type="checkbox" onchange="Gplcart.selectAll(this);">
           </th>
           <th>
             <a href="<?php echo $sort_order_id; ?>">

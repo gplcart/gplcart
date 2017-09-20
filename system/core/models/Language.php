@@ -602,7 +602,7 @@ class Language extends Model
             $key = gplcart_json_encode($string);
             $translation = gplcart_json_encode($translations[$string]);
             $file = $this->getFileContext($this->context, $this->langcode, true);
-            file_put_contents($file, "GplCart.translations[$key]=$translation;\n", FILE_APPEND);
+            file_put_contents($file, "Gplcart.translations[$key]=$translation;\n", FILE_APPEND);
         }
     }
 

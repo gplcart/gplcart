@@ -81,7 +81,7 @@
   <div class="row">
     <div class="col-md-2">
       <?php if ($can_delete) { ?>
-      <button class="btn btn-danger delete" name="delete" value="1" onclick="return confirm(GplCart.text('Are you sure? It cannot be undone!'));">
+      <button class="btn btn-danger delete" name="delete" value="1" onclick="return confirm(Gplcart.text('Are you sure? It cannot be undone!'));">
         <i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?>
       </button>
       <?php } ?>

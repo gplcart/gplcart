@@ -17,7 +17,7 @@
     <?php if ($this->access('field_delete')) { ?>
     <?php $access_options = true; ?>
     <div class="input-group">
-      <select name="action[name]" class="form-control" onchange="GplCart.action(this);">
+      <select name="action[name]" class="form-control" onchange="Gplcart.action(this);">
         <option value=""><?php echo $this->text('With selected'); ?></option>
         <option value="delete" data-confirm="<?php echo $this->text('Are you sure? It cannot be undone!'); ?>">
           <?php echo $this->text('Delete'); ?>
@@ -39,7 +39,7 @@
     <table class="table fields">
       <thead>
         <tr>
-          <th class="middle"><input type="checkbox" onchange="GplCart.selectAll(this);"<?php echo $access_options ? '' : ' disabled'; ?>></th>
+          <th class="middle"><input type="checkbox" onchange="Gplcart.selectAll(this);"<?php echo $access_options ? '' : ' disabled'; ?>></th>
           <th><a href="<?php echo $sort_field_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_title; ?>"><?php echo $this->text('Name'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_type; ?>"><?php echo $this->text('Type'); ?> <i class="fa fa-sort"></i></a></th>

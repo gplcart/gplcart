@@ -1,11 +1,11 @@
-/* global window, jQuery, GplCart */
-var GplCart = GplCart || {settings: {}, translations: {}, onload: {}, modules: {}};
+/* global window, jQuery, Gplcart */
+var Gplcart = Gplcart || {settings: {}, translations: {}, onload: {}, modules: {}};
 
-(function (window, $, GplCart) {
+(function (window, $, Gplcart) {
 
     $(function () {
         $('body').addClass('js');
-        $.each(GplCart.onload, function () {
+        $.each(Gplcart.onload, function () {
             if ($.isFunction(this)) {
                 this.call();
             }
@@ -18,10 +18,10 @@ var GplCart = GplCart || {settings: {}, translations: {}, onload: {}, modules: {
      * @param {Object} options
      * @returns {String}
      */
-    GplCart.text = function (text, options) {
+    Gplcart.text = function (text, options) {
         options = options || {};
         if (options) {
-            text = GplCart.formatString(text, options);
+            text = Gplcart.formatString(text, options);
         }
         return text;
     };
@@ -32,12 +32,12 @@ var GplCart = GplCart || {settings: {}, translations: {}, onload: {}, modules: {
      * @param {Object} args
      * @returns {String}
      */
-    GplCart.formatString = function (str, args) {
+    Gplcart.formatString = function (str, args) {
 
         for (var key in args) {
             switch (key.charAt(0)) {
                 case '@':
-                    args[key] = GplCart.escape(args[key]);
+                    args[key] = Gplcart.escape(args[key]);
                     break;
                 case '!':
                     break;
@@ -58,7 +58,7 @@ var GplCart = GplCart || {settings: {}, translations: {}, onload: {}, modules: {
      * @param {String} str
      * @returns {String}
      */
-    GplCart.escape = function (str) {
+    Gplcart.escape = function (str) {
 
         var character, regex,
                 replace = {'&': '&amp;', '"': '&quot;', '<': '&lt;', '>': '&gt;'};
@@ -80,10 +80,10 @@ var GplCart = GplCart || {settings: {}, translations: {}, onload: {}, modules: {
      * @param {Object} settings
      * @returns {undefined}
      */
-    GplCart.job = function (settings) {
+    Gplcart.job = function (settings) {
 
-        var job = settings || GplCart.settings.job;
-        var selector = GplCart.settings.job.selector || '#job-widget-' + GplCart.settings.job.id;
+        var job = settings || Gplcart.settings.job;
+        var selector = Gplcart.settings.job.selector || '#job-widget-' + Gplcart.settings.job.id;
         var widget = $(selector);
 
         $.ajax({
@@ -110,7 +110,7 @@ var GplCart = GplCart || {settings: {}, translations: {}, onload: {}, modules: {
                             widget.find('.message').html(data.message);
                         }
 
-                        GplCart.job(settings);
+                        Gplcart.job(settings);
                     }
                 }
             }
@@ -122,7 +122,7 @@ var GplCart = GplCart || {settings: {}, translations: {}, onload: {}, modules: {
      * @param {Object} el
      * @returns {undefined}
      */
-    GplCart.action = function (el) {
+    Gplcart.action = function (el) {
 
         el = $(el);
         var conf, form, selected = [];
@@ -147,7 +147,7 @@ var GplCart = GplCart || {settings: {}, translations: {}, onload: {}, modules: {
 
             } else {
                 el.val('');
-                alert(GplCart.text('Please select at least one item'));
+                alert(Gplcart.text('Please select at least one item'));
             }
         }
     };
@@ -158,7 +158,7 @@ var GplCart = GplCart || {settings: {}, translations: {}, onload: {}, modules: {
      * @param {String} els
      * @returns {undefined}
      */
-    GplCart.selectAll = function (el, els) {
+    Gplcart.selectAll = function (el, els) {
 
         el = $(el);
 
@@ -171,4 +171,4 @@ var GplCart = GplCart || {settings: {}, translations: {}, onload: {}, modules: {
         els.prop('checked', el.is(':checked'));
     };
 
-})(window, jQuery, GplCart);
+})(window, jQuery, Gplcart);
