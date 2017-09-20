@@ -17,7 +17,7 @@
     <?php if ($this->access('zone_edit') || $this->access('zone_delete')) { ?>
     <?php $access_actions = true; ?>
     <div class="input-group">
-      <select name="action[name]" class="form-control" onchange="GplCart.action(event);">
+      <select name="action[name]" class="form-control" onchange="GplCart.action(this);">
         <option value=""><?php echo $this->text('With selected'); ?></option>
         <?php if ($this->access('zone_edit')) { ?>
         <option value="status|1" data-confirm="<?php echo $this->text('Are you sure?'); ?>">
@@ -49,7 +49,7 @@
     <table class="table zones">
       <thead>
         <tr>
-          <th><input type="checkbox" id="select-all" value="1"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
+          <th><input type="checkbox" onchange="GplCart.selectAll(this);"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
           <th><?php echo $this->text('ID'); ?></th>
           <th><a href="<?php echo $sort_title; ?>"><?php echo $this->text('Title'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_status; ?>"><?php echo $this->text('Enabled'); ?> <i class="fa fa-sort"></i></a></th>

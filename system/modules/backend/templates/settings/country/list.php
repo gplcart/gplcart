@@ -17,7 +17,7 @@
     <?php if ($this->access('country_edit') || $this->access('country_delete')) { ?>
     <?php $access_options = true; ?>
     <div class="input-group">
-      <select name="action[name]" class="form-control" onchange="GplCart.action(event);">
+      <select name="action[name]" class="form-control" onchange="GplCart.action(this);">
         <option value=""><?php echo $this->text('With selected'); ?></option>
         <?php if ($this->access('country_edit')) { ?>
         <option value="status|1" data-confirm="<?php echo $this->text('Are you sure?'); ?>">
@@ -49,7 +49,7 @@
     <table class="table countries">
       <thead>
         <tr>
-          <th><input type="checkbox" id="select-all" value="1"<?php echo $access_options ? '' : ' disabled'; ?>></th>
+          <th><input type="checkbox" onchange="GplCart.selectAll(this);"<?php echo $access_options ? '' : ' disabled'; ?>></th>
           <th><a href="<?php echo $sort_name; ?>"><?php echo $this->text('Name'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_native_name; ?>"><?php echo $this->text('Native name'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_code; ?>"><?php echo $this->text('Code'); ?> <i class="fa fa-sort"></i></a></th>

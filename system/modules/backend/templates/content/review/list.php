@@ -17,7 +17,7 @@
     <?php if ($this->access('review_edit') || $this->access('review_delete')) { ?>
     <?php $access_actions = true; ?>
     <div class="input-group">
-      <select name="action[name]" class="form-control" onchange="GplCart.action(event);">
+      <select name="action[name]" class="form-control" onchange="GplCart.action(this);">
         <option value=""><?php echo $this->text('With selected'); ?></option>
         <?php if ($this->access('review_edit')) { ?>
         <option value="status|1" data-confirm="<?php echo $this->text('Are you sure?'); ?>">
@@ -49,7 +49,7 @@
     <table class="table reviews">
       <thead>
         <tr>
-          <th class="middle"><input type="checkbox" id="select-all" value="1"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
+          <th class="middle"><input type="checkbox" onchange="GplCart.selectAll(this);"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
           <th class="middle"><a href="<?php echo $sort_review_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a></th>
           <th class="middle"><a href="<?php echo $sort_text; ?>"><?php echo $this->text('Text'); ?> <i class="fa fa-sort"></i></a></th>
           <th class="middle"><a href="<?php echo $sort_product_id; ?>"><?php echo $this->text('Product'); ?> <i class="fa fa-sort"></i></a></th>

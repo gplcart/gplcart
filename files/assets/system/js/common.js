@@ -119,12 +119,13 @@ var GplCart = GplCart || {settings: {}, translations: {}, onload: {}, modules: {
 
     /**
      * OnChange handler for a bulk action selector
-     * @param {Object} e
+     * @param {Object} el
      * @returns {undefined}
      */
-    GplCart.action = function (e) {
+    GplCart.action = function (el) {
 
-        var conf, form, selected = [], el = $(e.target);
+        el = $(el);
+        var conf, form, selected = [];
 
         if (el.val()) {
 
@@ -153,12 +154,21 @@ var GplCart = GplCart || {settings: {}, translations: {}, onload: {}, modules: {
 
     /**
      * Check / uncheck multiple checkboxes
+     * @param {Object} el
+     * @param {String} els
      * @returns {undefined}
      */
-    GplCart.onload.selectAll = function () {
-        $('#select-all').click(function () {
-            $('.select-all').prop('checked', $(this).is(':checked'));
-        });
+    GplCart.selectAll = function (el, els) {
+
+        el = $(el);
+
+        if (els === undefined) {
+            els = el.closest('table').find('tbody tr').find('td:eq(0) input:checkbox');
+        } else {
+            els = $('input[type="checkbox"][name="' + els + '"]');
+        }
+
+        els.prop('checked', el.is(':checked'));
     };
 
 })(window, jQuery, GplCart);

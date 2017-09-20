@@ -14,9 +14,8 @@
   <?php if ($this->access('alias_delete')) { ?>
   <div class="form-inline actions">
     <div class="input-group">
-      <span class="input-group-addon"><?php echo $this->text('With selected'); ?></span>
-      <select name="action[name]" class="form-control" onchange="GplCart.action(event);">
-        <option value=""><?php echo $this->text('- do action -'); ?></option>
+      <select name="action[name]" class="form-control" onchange="GplCart.action(this);">
+        <option value=""><?php echo $this->text('With selected'); ?></option>
         <option value="delete" data-confirm="<?php echo $this->text('Are you sure? It cannot be undone!'); ?>">
           <?php echo $this->text('Delete'); ?>
         </option>
@@ -32,7 +31,7 @@
       <thead>
         <tr>
           <th>
-            <input type="checkbox" id="select-all" value="1">
+            <input type="checkbox" onchange="GplCart.selectAll(this);">
           </th>
           <th>
             <a href="<?php echo $sort_alias_id; ?>">

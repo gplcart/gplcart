@@ -60,7 +60,7 @@
           <div class="col-md-12">
             <div class="checkbox">
               <label>
-                <input type="checkbox" id="select-all" autocomplete="off"><?php echo $this->text('Select/unselect all'); ?>
+                <input type="checkbox" onchange="GplCart.selectAll(this, 'role[permissions][]');"><?php echo $this->text('Select/unselect all'); ?>
               </label>
             </div>
           </div>
