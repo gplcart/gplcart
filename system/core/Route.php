@@ -50,7 +50,7 @@ class Route
     protected $path;
 
     /**
-     * The current language code from the url
+     * The language code from the current URL
      * @var string
      */
     protected $langcode = '';
@@ -180,6 +180,10 @@ class Route
 
         foreach ($this->getList() as $pattern => $route) {
 
+            if (isset($route['status']) && empty($route['status'])) {
+                continue;
+            }
+
             if (!isset($route['alias'][0])) {
                 continue;
             }
@@ -202,6 +206,10 @@ class Route
         $segments = $this->url->segments();
 
         foreach ($this->getList() as $pattern => $route) {
+
+            if (isset($route['status']) && empty($route['status'])) {
+                continue;
+            }
 
             if (empty($route['alias'])) {
                 continue;
@@ -246,6 +254,7 @@ class Route
     protected function callController($pattern, $route, $arguments = array())
     {
         $route += array('arguments' => array(), 'pattern' => $pattern);
+        $route['simple_pattern'] = preg_replace('@\(.*?\)@', '*', $pattern);
         $route['arguments'] += $arguments;
 
         $this->route = $route;
@@ -289,6 +298,11 @@ class Route
     protected function seekRoute()
     {
         foreach ($this->getList() as $pattern => $route) {
+
+            if (isset($route['status']) && empty($route['status'])) {
+                continue;
+            }
+
             $path = empty($this->path) ? '/' : $this->path;
             $arguments = gplcart_parse_path($path, $pattern);
             if (is_array($arguments)) {
@@ -305,17 +319,9 @@ class Route
      */
     protected function outputNotFound()
     {
+        $routes = $this->getList();
         $section = $this->url->isBackend() ? 'backend' : 'frontend';
-
-        $route = array(
-            'handlers' => array(
-                'controller' => array(
-                    "gplcart\\core\\controllers\\$section\\Controller",
-                    'outputHttpStatus'))
-        );
-
-        Handler::call($route, null, 'controller', array(404));
-        throw new RouteException('An error occurred while processing the route');
+        $this->callController("status-$section", $routes["status-$section"], array(404));
     }
 
     /**
