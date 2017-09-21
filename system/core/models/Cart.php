@@ -31,7 +31,7 @@ class Cart extends Model
     protected $product;
 
     /**
-     * Sku model instance
+     * SKU model instance
      * @var \gplcart\core\models\Sku $sku
      */
     protected $sku;
@@ -343,8 +343,9 @@ class Cart extends Model
             return $cookie_user_id;
         }
 
-        $user_id = '_' . gplcart_string_random(6); // Add prefix to prevent from being "numeric"
-        $this->request->setCookie($cookie_name, $user_id, $this->config->get('cart_cookie_lifespan', 365*24*60*60));
+        $user_id = '_' . gplcart_string_random(6);
+        $lifespan = $this->config->get('cart_cookie_lifespan', 365 * 24 * 60 * 60);
+        $this->request->setCookie($cookie_name, $user_id, $lifespan);
         return $user_id;
     }
 
