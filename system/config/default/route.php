@@ -12,6 +12,18 @@ return array(
             'controller' => array('gplcart\\core\\controllers\\frontend\\Front', 'indexFront')
         )
     ),
+    'status-backend' => array(
+        'status' => false,
+        'handlers' => array(
+            'controller' => array('gplcart\\core\\controllers\\backend\\Controller', 'outputHttpStatus')
+        )
+    ),
+    'status-frontend' => array(
+        'status' => false,
+        'handlers' => array(
+            'controller' => array('gplcart\\core\\controllers\\frontend\\Controller', 'outputHttpStatus')
+        )
+    ),
     'oauth' => array(
         'internal' => true, // Exclude from statistic etc
         'handlers' => array(
