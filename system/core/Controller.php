@@ -333,6 +333,9 @@ abstract class Controller
     public function __construct()
     {
         $this->setInstanceProperties();
+
+        $this->token = $this->config->token();
+
         $this->setRouteProperties();
 
         $this->setUserProperties();
@@ -388,18 +391,13 @@ abstract class Controller
      */
     protected function setRouteProperties()
     {
-        $this->token = $this->config->token();
-
         $this->path = $this->url->path();
         $this->is_backend = $this->url->isBackend();
         $this->is_install = $this->url->isInstall();
 
         $this->langcode = $this->route->getLangcode();
         $this->current_route = $this->route->getCurrent();
-
-        if (isset($this->current_route['handlers']['controller'][0])) {
-            $this->language->setContext($this->current_route['handlers']['controller'][0]);
-        }
+        $this->language->setContext($this->getRoute('simple_pattern'));
 
         $this->urn = $this->request->urn();
         $this->base = $this->request->base();
@@ -411,31 +409,18 @@ abstract class Controller
     }
 
     /**
-     * Returns the current route
-     * @return array
+     * Returns the current route data
+     * @param string|null $key
+     * @param mixed $default
+     * @return mixed
      */
-    public function getRoute()
+    public function getRoute($key = null, $default = null)
     {
+        if (isset($key)) {
+            return isset($this->current_route[$key]) ? $this->current_route[$key] : $default;
+        }
+
         return $this->current_route;
-    }
-
-    /**
-     * Returns the current route pattern
-     * @param bool $simplified
-     * @return string
-     */
-    public function getRoutePattern($simplified = true)
-    {
-        $pattern = '';
-        if (isset($this->current_route['pattern'])) {
-            $pattern = $this->current_route['pattern'];
-        }
-
-        if ($pattern && $simplified) {
-            $pattern = preg_replace('@\(.*?\)@', '*', $pattern);
-        }
-
-        return $pattern;
     }
 
     /**
@@ -567,6 +552,31 @@ abstract class Controller
     public function text($string = null, array $arguments = array())
     {
         return $this->language->text($string, $arguments);
+    }
+
+    /**
+     * Prints and/or returns JS array code with translations
+     * @param string|array $strings
+     * @param bool $print
+     * @return string
+     */
+    public function jstext($strings, $print = true)
+    {
+        $code = '';
+        foreach ((array) $strings as $string) {
+            $text = $this->language->text($string, array(), false);
+            if (isset($text[0]) && $text[0] !== '') {
+                $key = gplcart_json_encode($string);
+                $translation = gplcart_json_encode($text);
+                $code .= "Gplcart.translations[$key]=$translation;\n";
+            }
+        }
+
+        if ($print && $code) {
+            echo "<script>$code</script>";
+        }
+
+        return $code;
     }
 
     /**
@@ -1250,7 +1260,7 @@ abstract class Controller
      */
     public function controlSpam()
     {
-        if ($this->request->post('url', '', true, 'string') !== '') {
+        if ($this->request->post('url', '', false, 'string') !== '') {
             $this->response->error403(false);
         }
     }
@@ -1260,20 +1270,17 @@ abstract class Controller
      */
     protected function controlAccessCredentials()
     {
-        if (!isset($this->current_user['hash']) || empty($this->current_user['status'])) {
+        if (empty($this->current_user['hash']) || empty($this->current_user['status'])) {
             $this->session->delete();
             $this->url->redirect('login');
         }
 
-        $session_role_id = $this->user->getRoleId();
-        $session_hash = $this->user->getSession('hash');
-
-        if (!gplcart_string_equals($this->current_user['hash'], $session_hash)) {
+        if (!gplcart_string_equals($this->current_user['hash'], $this->user->getSession('hash'))) {
             $this->session->delete();
             $this->url->redirect('login');
         }
 
-        if ($this->current_user['role_id'] != $session_role_id) {
+        if ($this->current_user['role_id'] != $this->user->getRoleId()) {
             $this->session->delete();
             $this->url->redirect('login');
         }
@@ -1457,9 +1464,23 @@ abstract class Controller
 
         $this->prepareDataOutput();
         $this->prepareOutput($templates, $options);
+        $this->response->html($this->renderOutput($templates), $options);
+    }
 
-        $html = $this->renderOutput($templates);
-        $this->response->html($html, $options);
+    /**
+     * Extracts translatable strings from JS files and creates translation
+     * @param array $scripts
+     */
+    protected function setJsTranslation(array $scripts)
+    {
+        if (!empty($this->langcode) && !is_file($this->language->getFileJs())) {
+            foreach ($scripts as $key => $script) {
+                if (strpos($key, 'system/modules/') === 0 && strpos($key, '/vendor/') === false && !empty($script['file'])) {
+                    $string = file_get_contents($script['file']);
+                    $this->language->createJsTranslation($string);
+                }
+            }
+        }
     }
 
     /**
@@ -1483,8 +1504,11 @@ abstract class Controller
     protected function prepareDataOutput()
     {
         $this->data['_css'] = $this->getCss();
-        $this->data['_js_top'] = $this->getJs('top');
-        $this->data['_js_bottom'] = $this->getJs('bottom');
+
+        foreach (array('top', 'bottom') as $position) {
+            $this->data["_js_$position"] = $this->getJs($position);
+            $this->setJsTranslation($this->data["_js_$position"]);
+        }
 
         $this->hook->attach('template.data', $this->data, $this);
 
@@ -1646,23 +1670,12 @@ abstract class Controller
     }
 
     /**
-     * Adds required java-scripts
+     * Adds required JS
      */
     protected function setDefaultJs()
     {
         $this->setDefaultJsSettings();
         $this->setDefaultJsTranslation();
-        $this->setDefaultJsStore();
-    }
-
-    /**
-     * Set per-store JS (Google Analytics etc)
-     */
-    protected function setDefaultJsStore()
-    {
-        if (!empty($this->current_store['data']['js']) && !$this->isBackend() && empty($this->current_route['internal'])) {
-            $this->setJs($this->current_store['data']['js'], array('position' => 'bottom', 'aggregate' => false));
-        }
     }
 
     /**
@@ -1679,19 +1692,12 @@ abstract class Controller
     }
 
     /**
-     * Adds context translation JS files
+     * Adds JS translations
      */
     protected function setDefaultJsTranslation()
     {
-        if ($this->langcode) {
-            $options = array('aggregate' => false);
-            $context = 'gplcart\\core\\models\\Language';
-            $this->setJs($this->language->getFileContext($context, $this->langcode, true), $options);
-            if (isset($this->current_route['handlers']['controller'][0])) {
-                $context = $this->current_route['handlers']['controller'][0];
-                $this->setJs($this->language->getFileContext($context, $this->langcode, true), $options);
-            }
-        }
+        $translations = $this->language->loadTranslationJs();
+        $this->setJsSettings('translations', $translations);
     }
 
     /**

@@ -22,7 +22,7 @@ class Language extends Model
      * Array of processed translations
      * @var array
      */
-    protected $processed = array();
+    protected $written = array();
 
     /**
      * Route class instance
@@ -50,7 +50,11 @@ class Language extends Model
         parent::__construct();
 
         $this->route = $route;
-        $this->context = __CLASS__;
+
+        $current_route = $this->route->getCurrent();
+        if (isset($current_route['simple_pattern'])) {
+            $this->context = $current_route['simple_pattern'];
+        }
 
         $this->set($this->route->getLangcode());
     }
@@ -92,26 +96,21 @@ class Language extends Model
      */
     protected function prepareFiles()
     {
-        $csv = $this->getDirectoryCompiled($this->langcode);
-        $js = $this->getDirectoryCompiled($this->langcode, true);
+        $dir = $this->getDirectoryCompiled();
 
-        if (!file_exists($csv)) {
-            mkdir($csv, 0775, true);
+        if (!file_exists($dir)) {
+            mkdir($dir, 0775, true);
         }
 
-        if (!file_exists($js)) {
-            mkdir($js, 0775, true);
-        }
-
-        $this->copyFile($this->langcode);
+        $this->copyFile();
     }
 
     /**
      * Create common compiled file using primary translation as a source
-     * @param string $langcode
+     * @param string|null $langcode
      * @return boolean
      */
-    protected function copyFile($langcode)
+    protected function copyFile($langcode = null)
     {
         $main_file = $this->getFile($langcode);
         $common_file = $this->getFileCommon($langcode);
@@ -236,24 +235,30 @@ class Language extends Model
 
     /**
      * Returns a language directory
-     * @param string $langcode
-     * @param bool $js
+     * @param string|null $langcode
      * @return string
      */
-    public function getDirectory($langcode, $js = false)
+    public function getDirectory($langcode = null)
     {
-        $base = $js ? GC_LOCALE_JS_DIR : GC_LOCALE_DIR;
-        return "$base/$langcode";
+        if (!isset($langcode)) {
+            $langcode = $this->langcode;
+        }
+
+        return GC_LOCALE_DIR . "/$langcode";
     }
 
     /**
      * Returns a path to a translation file
-     * @param string $langcode
+     * @param string|null $langcode
      * @param string $module_id
      * @return string
      */
-    public function getFile($langcode, $module_id = '')
+    public function getFile($langcode = null, $module_id = '')
     {
+        if (!isset($langcode)) {
+            $langcode = $this->langcode;
+        }
+
         if (empty($module_id)) {
             $directory = $this->getDirectory($langcode);
         } else {
@@ -276,11 +281,15 @@ class Language extends Model
 
     /**
      * Returns the path to a common translation file
-     * @param string $langcode
+     * @param string|null $langcode
      * @return string
      */
-    public function getFileCommon($langcode)
+    public function getFileCommon($langcode = null)
     {
+        if (!isset($langcode)) {
+            $langcode = $this->langcode;
+        }
+
         $directory = $this->getDirectoryCompiled($langcode);
         return "$directory/$langcode.csv";
     }
@@ -426,63 +435,82 @@ class Language extends Model
      * Translates a string
      * @param string $string
      * @param array $arguments
+     * @param bool $format
      * @return string
      */
-    public function text($string, array $arguments = array())
+    public function text($string, array $arguments = array(), $format = true)
     {
         if (empty($this->langcode) || empty($this->context)) {
-            return $this->processed[$string] = $this->formatString($string, $arguments);
+            return $format ? $this->formatString($string, $arguments) : array();
         }
 
-        $context_file = $this->getFileContext($this->context, $this->langcode);
+        $context_file = $this->getFileContext();
         $context_translations = $this->loadTranslation($context_file);
 
         if (isset($context_translations[$string])) {
-            $this->addTranslationJs($string, $context_translations);
-            return $this->processed[$string] = $this->formatString($string, $arguments, $context_translations[$string]);
+            return $format ? $this->formatString($string, $arguments, $context_translations[$string]) : $context_translations[$string];
         }
 
-        $common_file = $this->getFileCommon($this->langcode);
+        $common_file = $this->getFileCommon();
         $common_translations = $this->loadTranslation($common_file);
 
         if (isset($common_translations[$string])) {
             $this->addTranslation($string, $common_translations, $context_file);
-            $this->addTranslationJs($string, $common_translations);
-            return $this->processed[$string] = $this->formatString($string, $arguments, $common_translations[$string]);
+            return $format ? $this->formatString($string, $arguments, $common_translations[$string]) : $common_translations[$string];
         }
 
         $this->addTranslation($string, $common_translations, $context_file);
         $this->addTranslation($string, $common_translations, $common_file);
 
-        return $this->processed[$string] = $this->formatString($string, $arguments);
+        return $format ? $this->formatString($string, $arguments) : $string;
     }
 
     /**
      * Returns a context translation file
-     * @param string $context
-     * @param string $langcode
-     * @param bool $js
+     * @param string|null $context
+     * @param string|null $langcode
      * @return string
      */
-    public function getFileContext($context, $langcode, $js = false)
+    public function getFileContext($context = null, $langcode = null)
     {
-        $extension = $js ? 'js' : 'csv';
-        $filename = strtolower(str_replace('\\', '-', $context));
-        $directory = $this->getDirectoryCompiled($langcode, $js);
+        $filename = $this->getFilenameFromContext($context);
+        $directory = $this->getDirectoryCompiled($langcode);
 
-        return "$directory/$filename.$extension";
+        return "$directory/$filename.csv";
+    }
+
+    /**
+     * Returns the path to a compiled JS translation file
+     * @param string|null $langcode
+     * @return string
+     */
+    public function getFileJs($langcode = null)
+    {
+        return $this->getFileContext('js', $langcode);
+    }
+
+    /**
+     * Converts context into filename
+     * @param string|null $context
+     * @return string
+     */
+    protected function getFilenameFromContext($context = null)
+    {
+        if (!isset($context)) {
+            $context = $this->context;
+        }
+
+        return strtolower(str_replace(array('\\', '/', '-*'), array('-', '-', '~'), $context));
     }
 
     /**
      * Returns a path to a directory containing compiled translations
-     * @param string $langcode
-     * @param bool $js
+     * @param string|null $langcode
      * @return string
      */
-    public function getDirectoryCompiled($langcode, $js = false)
+    public function getDirectoryCompiled($langcode = null)
     {
-        $directory = $this->getDirectory($langcode, $js);
-        return "$directory/compiled";
+        return $this->getDirectory($langcode) . '/compiled';
     }
 
     /**
@@ -517,12 +545,31 @@ class Language extends Model
         $translations = array();
 
         if (!is_file($file)) {
-            return array();
+            return $translations = array();
         }
 
         foreach ($this->parseCsv($file) as $row) {
             $key = array_shift($row);
             $translations[$key] = $row;
+        }
+
+        return $translations;
+    }
+
+    /**
+     * Returns an array of JS translations
+     * @param string|null $langcode
+     * @return array
+     */
+    public function loadTranslationJs($langcode = null)
+    {
+        $strings = $this->loadTranslation($this->getFileJs($langcode));
+
+        $translations = array();
+        foreach ($strings as $source => $translation) {
+            if (isset($translation[0]) && $translation[0] !== '') {
+                $translations[$source] = $translation;
+            }
         }
 
         return $translations;
@@ -551,11 +598,11 @@ class Language extends Model
     }
 
     /**
-     * Add translations from a file to the common file
+     * Merge two translations
      * @param string $merge_file
-     * @param string $langcode
+     * @param string|null $langcode
      */
-    protected function mergeTranslation($merge_file, $langcode)
+    protected function mergeTranslation($merge_file, $langcode = null)
     {
         $common_file = $this->getFileCommon($langcode);
         $merge_translations = $this->loadTranslation($merge_file);
@@ -572,14 +619,14 @@ class Language extends Model
     }
 
     /**
-     * Append a string to be translated to the translation file
+     * Append the string to the translation file
      * @param string $string
      * @param array $translations
      * @param string $file
      */
     protected function addTranslation($string, array $translations, $file)
     {
-        if (!isset($this->processed[$string])) {
+        if (!isset($this->written[$file][$string])) {
 
             $data = array($string);
             if (isset($translations[$string][0]) && $translations[$string][0] !== '') {
@@ -588,53 +635,67 @@ class Language extends Model
             }
 
             gplcart_file_csv($file, $data);
+            $this->written[$file][$string] = true;
         }
     }
 
     /**
-     * Writes one line of JS code to JS translation file
-     * @param string $string
-     * @param array $translations
-     */
-    protected function addTranslationJs($string, array $translations)
-    {
-        if (!isset($this->processed[$string]) && isset($translations[$string][0]) && $translations[$string][0] !== '') {
-            $key = gplcart_json_encode($string);
-            $translation = gplcart_json_encode($translations[$string]);
-            $file = $this->getFileContext($this->context, $this->langcode, true);
-            file_put_contents($file, "Gplcart.translations[$key]=$translation;\n", FILE_APPEND);
-        }
-    }
-
-    /**
-     * Returns an array of compiled translations for the given language
-     * @param string $langcode
+     * Extracts strings wrapped in Gplcart.text()
+     * @param string $content
      * @return array
      */
-    public function getCompiledFiles($langcode)
+    public function parseJs($content)
     {
-        $directory = $this->getDirectoryCompiled($langcode);
-        return is_dir($directory) ? gplcart_file_scan($directory, array('csv')) : array();
+        $matches = array();
+        $pattern = '~[^\w]Gplcart\s*\.\s*text\s*\(\s*((?:(?:\'(?:\\\\\'|[^\'])*\'|"(?:\\\\"|[^"])*")(?:\s*\+\s*)?)+)\s*[,\)]~s';
+        preg_match_all($pattern, $content, $matches);
+
+        $results = array();
+        foreach ($matches[1] as $key => $strings) {
+            foreach ((array) $strings as $key => $string) {
+                $results[] = implode('', preg_split('~(?<!\\\\)[\'"]\s*\+\s*[\'"]~s', substr($string, 1, -1)));
+            }
+        }
+
+        return $results;
+    }
+
+    /**
+     * Creates context JS translation
+     * @param string $content
+     * @param string $langcode
+     * @return boolean
+     */
+    public function createJsTranslation($content, $langcode = null)
+    {
+        $extracted = $this->parseJs($content);
+
+        if (!empty($extracted)) {
+            $file = $this->getFileJs($langcode);
+            $translations = $this->loadTranslation($this->getFileCommon($langcode));
+            foreach ($extracted as $string) {
+                $this->addTranslation($string, $translations, $file);
+            }
+        }
     }
 
     /**
      * Removes cached translation files
-     * @param string $langcode
+     * @param string|null $langcode
      */
-    public function refresh($langcode)
+    public function refresh($langcode = null)
     {
         gplcart_file_delete($this->getDirectoryCompiled($langcode), array('csv'));
-        gplcart_file_delete($this->getDirectoryCompiled($langcode, true), array('js'));
 
         $this->copyFile($langcode);
         $this->mergeModuleTranslations($langcode);
     }
 
     /**
-     * Add translations from all enabled modules to the common file
-     * @param string $langcode
+     * Add translations from all enabled modules to common file
+     * @param string|null $langcode
      */
-    protected function mergeModuleTranslations($langcode)
+    protected function mergeModuleTranslations($langcode = null)
     {
         $modules = $this->config->getEnabledModules();
 
