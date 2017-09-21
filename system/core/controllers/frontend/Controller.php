@@ -94,6 +94,7 @@ class Controller extends BaseController
         $this->setFrontendInstancies();
         $this->setFrontendProperties();
         $this->setDefaultDataFrontend();
+        $this->setDefaultJsStoreFrontend();
 
         $this->submitCart();
         $this->submitCompare();
@@ -119,6 +120,16 @@ class Controller extends BaseController
         $this->data['_comparison'] = $this->getComparison();
         $this->data['_languages'] = $this->language->getList(true);
         $this->data['_currency'] = $currencies[$this->current_currency];
+    }
+
+    /**
+     * Set per-store JS (Google Analytics etc)
+     */
+    protected function setDefaultJsStoreFrontend()
+    {
+        if (!empty($this->current_store['data']['js']) && empty($this->current_route['internal'])) {
+            $this->setJs($this->current_store['data']['js'], array('position' => 'bottom', 'aggregate' => false));
+        }
     }
 
     /**
