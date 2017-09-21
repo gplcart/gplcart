@@ -194,7 +194,7 @@ class Asset
             'version' => '',
             'text' => false,
             'file' => '',
-            'aggregate' => $type !== 'external'
+            'aggregate' => ($type !== 'external')
         );
 
         if (!isset($data['weight'])) {
