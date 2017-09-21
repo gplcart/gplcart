@@ -3,6 +3,8 @@ var Gplcart = Gplcart || {settings: {}, translations: {}, onload: {}, modules: {
 
 (function (window, $, Gplcart) {
 
+    "use strict";
+
     $(function () {
         $('body').addClass('js');
         $.each(Gplcart.onload, function () {
@@ -19,10 +21,17 @@ var Gplcart = Gplcart || {settings: {}, translations: {}, onload: {}, modules: {
      * @returns {String}
      */
     Gplcart.text = function (text, options) {
+
         options = options || {};
+
+        if (Gplcart.translations[text]) {
+            text = Gplcart.translations[text];
+        }
+
         if (options) {
             text = Gplcart.formatString(text, options);
         }
+
         return text;
     };
 
@@ -147,7 +156,6 @@ var Gplcart = Gplcart || {settings: {}, translations: {}, onload: {}, modules: {
 
             } else {
                 el.val('');
-                alert(Gplcart.text('Please select at least one item'));
             }
         }
     };
