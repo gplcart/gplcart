@@ -17,7 +17,7 @@
     </button>
     <?php } ?>
     <button class="btn btn-default save" name="save" value="1">
-      <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
+      <?php echo $this->text('Save'); ?>
     </button>
   </div>
   <table class="table table-condensed" data-sortable-input-weight="true">

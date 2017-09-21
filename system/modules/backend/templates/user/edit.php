@@ -95,7 +95,7 @@
     <div class="col-md-10 col-md-offset-2">
       <div class="btn-toolbar">
         <?php if ($can_delete) { ?>
-        <button class="btn btn-danger delete" name="delete" value="1" onclick="return confirm(Gplcart.text('Are you sure? It cannot be undone!'));">
+        <button class="btn btn-danger delete" name="delete" value="1" onclick="return confirm('<?php echo $this->text('Are you sure? It cannot be undone!'); ?>');">
           <?php echo $this->text('Delete'); ?>
         </button>
         <?php } ?>
@@ -103,7 +103,7 @@
           <?php echo $this->text('Cancel'); ?>
         </a>
         <button class="btn btn-default save" name="save" value="1">
-          <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
+          <?php echo $this->text('Save'); ?>
         </button>
       </div>
     </div>

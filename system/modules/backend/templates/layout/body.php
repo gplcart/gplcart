@@ -19,10 +19,10 @@
           <span class="icon-bar"></span>
         </button>
         <?php if ($this->path('^admin$')) { ?>
-        <span class="navbar-brand">GPL Cart</span>
+        <span class="navbar-brand">GPLcart</span>
         <?php } else { ?>
         <a class="navbar-brand" href="<?php echo $this->url('admin'); ?>" title="<?php echo $this->text('Dashboard'); ?>">
-        GPL Cart
+        GPLCart
         </a>
         <?php } ?>
       </div>

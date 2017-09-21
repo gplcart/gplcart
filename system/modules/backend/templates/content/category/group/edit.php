@@ -81,7 +81,7 @@
   <div class="row">
     <div class="col-md-2">
       <?php if ($can_delete) { ?>
-      <button class="btn btn-danger delete" name="delete" value="1" onclick="return confirm(Gplcart.text('Are you sure? It cannot be undone!'));">
+      <button class="btn btn-danger delete" name="delete" value="1" onclick="return confirm('<?php echo $this->text('Are you sure? It cannot be undone!'); ?>');">
         <i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?>
       </button>
       <?php } ?>
@@ -93,7 +93,7 @@
         </a>
         <?php if ($this->access('category_group_add') || $this->access('category_group_edit')) { ?>
         <button class="btn btn-default save" name="save" value="1">
-          <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
+          <?php echo $this->text('Save'); ?>
         </button>
         <?php } ?>
       </div>

@@ -15,7 +15,7 @@
   <?php $access_actions = true; ?>
   <div class="btn-toolbar actions">
     <button class="btn btn-default save" name="save" value="1">
-      <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
+      <?php echo $this->text('Save'); ?>
     </button>
   </div>
   <?php } ?>

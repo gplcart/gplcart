@@ -56,7 +56,7 @@
         <div class="col-md-10 col-md-offset-2">
           <div class="btn-toolbar">
             <?php if (isset($imagestyle['imagestyle_id']) && $this->access('image_style_delete')) { ?>
-            <button class="btn btn-danger delete" name="delete" value="1" onclick="return confirm(Gplcart.text('Are you sure?'));">
+            <button class="btn btn-danger delete" name="delete" value="1" onclick="return confirm('<?php echo $this->text('Are you sure?'); ?>');">
               <?php if (empty($imagestyle['default'])) { ?>
               <?php echo $this->text('Delete'); ?>
               <?php } else { ?>
@@ -69,7 +69,7 @@
             </a>
             <?php if ($this->access('image_style_edit') || $this->access('image_style_add')) { ?>
             <button class="btn btn-default save" name="save" value="1">
-              <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
+              <?php echo $this->text('Save'); ?>
             </button>
             <?php } ?>
           </div>

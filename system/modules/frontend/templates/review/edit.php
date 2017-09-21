@@ -25,7 +25,7 @@
       <div class="form-group">
         <div class="col-md-2">
           <?php if($can_delete) { ?>
-          <button class="btn btn-danger" name="delete" value="1" onclick="return confirm(Gplcart.text('Are you sure?'));"><?php echo $this->text('Delete'); ?></button>
+          <button class="btn btn-danger" name="delete" value="1" onclick="return confirm('<?php echo $this->text('Are you sure?'); ?>');"><?php echo $this->text('Delete'); ?></button>
           <?php } ?>
         </div>
         <div class="col-md-10 text-right">

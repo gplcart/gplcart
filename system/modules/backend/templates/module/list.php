@@ -75,7 +75,7 @@
             <?php } ?>
             <?php if ($this->access('module_uninstall') && empty($info['lock'])) { ?>
             <li>
-              <a onclick="return confirm(Gplcart.text('Are you sure? This action may permanently delete some data managed by this module'))" href="<?php echo $this->url(false, array('action' => 'uninstall', 'module_id' => $module_id, 'token' => $_token)); ?>">
+              <a onclick="return confirm('<?php echo $this->text('Are you sure? This action may permanently delete some data managed by this module'); ?>');" href="<?php echo $this->url(false, array('action' => 'uninstall', 'module_id' => $module_id, 'token' => $_token)); ?>">
                 <?php echo $this->lower($this->text('Uninstall')); ?>
               </a>
             </li>

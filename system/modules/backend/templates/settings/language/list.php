@@ -8,6 +8,7 @@
  * To see available variables <?php print_r(get_defined_vars()); ?>
  */
 ?>
+<?php $this->jstext('Are you sure?'); ?>
 <?php if (empty($languages)) { ?>
 <?php echo $this->text('There are no items yet'); ?>
 <?php if ($this->access('language_add')) { ?>
@@ -64,7 +65,7 @@
               </a>
             </li>
             <li>
-              <a href="<?php echo $this->url('', array('refresh' => $code, 'token' => $_token)); ?>" onclick="return confirm(Gplcart.text('Are you sure?'));">
+              <a href="<?php echo $this->url('', array('refresh' => $code, 'token' => $_token)); ?>" onclick="return confirm('<?php echo $this->text('Are you sure?'); ?>');">
                 <?php echo $this->lower($this->text('Clear cache')); ?>
               </a>
             </li>

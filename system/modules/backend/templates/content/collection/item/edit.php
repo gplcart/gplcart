@@ -78,7 +78,7 @@
         </a>
         <?php if ($this->access('collection_item_add')) { ?>
         <button class="btn btn-default save" name="save" value="1">
-          <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
+          <?php echo $this->text('Save'); ?>
         </button>
         <?php } ?>
       </div>

@@ -90,11 +90,11 @@
   <div class="form-group">
     <div class="col-md-6 col-md-offset-2">
       <div class="btn-toolbar">
-        <button class="btn btn-default" name="delete_cached_assets" value="1" onclick="return confirm(Gplcart.text('Are you sure?'));">
+        <button class="btn btn-default" name="delete_cached_assets" value="1" onclick="return confirm('<?php echo $this->text('Are you sure?'); ?>');">
           <?php echo $this->text('Delete cached assets'); ?>
         </button>
         <button class="btn btn-default" name="save" value="1">
-          <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
+          <?php echo $this->text('Save'); ?>
         </button>
       </div>
     </div>

@@ -185,13 +185,13 @@
     <div class="col-md-10 col-md-offset-2">
       <div class="btn-toolbar">
         <?php if ($can_delete) { ?>
-        <button class="btn btn-danger delete-currency" name="delete" value="1" onclick="return confirm(Gplcart.text('Are you sure? It cannot be undone!'));">
+        <button class="btn btn-danger delete-currency" name="delete" value="1" onclick="return confirm('<?php echo $this->text('Are you sure? It cannot be undone!'); ?>');">
           <?php echo $this->text('Delete'); ?>
         </button>
         <?php } ?>
         <a href="<?php echo $this->url('admin/settings/currency'); ?>" class="btn btn-default"><?php echo $this->text('Cancel'); ?></a>
         <?php if ($this->access('currency_edit') || $this->access('currency_add')) { ?>
-        <button class="btn btn-default save" name="save" value="1"><i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?></button>
+        <button class="btn btn-default save" name="save" value="1"><?php echo $this->text('Save'); ?></button>
         <?php } ?>
       </div>
     </div>

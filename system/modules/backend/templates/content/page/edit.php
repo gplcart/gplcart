@@ -202,7 +202,7 @@
     <div class="col-md-10 col-md-offset-2">
       <div class="btn-toolbar">
         <?php if (isset($page['page_id']) && $this->access('page_delete')) { ?>
-        <button name="delete" value="1" class="btn btn-danger" onclick="return confirm(Gplcart.text('Are you sure? It cannot be undone!'));">
+        <button name="delete" value="1" class="btn btn-danger" onclick="return confirm('<?php echo $this->text('Are you sure? It cannot be undone!'); ?>');">
           <?php echo $this->text('Delete'); ?>
         </button>
         <?php } ?>
@@ -211,7 +211,7 @@
         </a>
         <?php if ($this->access('page_edit') || $this->access('page_add')) { ?>
         <button class="btn btn-default save" name="save" value="1">
-          <i class="fa fa-floppy-o"></i> <?php echo $this->text('Save'); ?>
+          <?php echo $this->text('Save'); ?>
         </button>
         <?php } ?>
       </div>
