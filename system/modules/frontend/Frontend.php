@@ -89,7 +89,7 @@ class Frontend extends Module
      */
     protected function setThemeRegions($controller)
     {
-        $pattern = $controller->getRoutePattern();
+        $pattern = $controller->getRoute('simple_pattern');
 
         if (in_array($pattern, array('wishlist', 'compare', 'category/*'))) {
             $categories = $controller->getCategories();
