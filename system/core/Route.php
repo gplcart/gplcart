@@ -11,6 +11,7 @@ namespace gplcart\core;
 
 use gplcart\core\helpers\Url as UrlHelper,
     gplcart\core\helpers\Request as RequestHelper;
+use Exception;
 use gplcart\core\exceptions\Route as RouteException;
 
 /**
@@ -83,7 +84,6 @@ class Route
         $this->db = $config->getDb();
 
         $this->setLangcode();
-
         $this->path = $this->url->path();
     }
 
@@ -109,9 +109,9 @@ class Route
      */
     public function process()
     {
-        $this->seekAlias();
-        $this->seekRoute();
-        $this->outputNotFound();
+        $this->outputAlias();
+        $this->outputRoute();
+        $this->output404();
     }
 
     /**
@@ -161,23 +161,22 @@ class Route
 
     /**
      * Finds an alias by the path
-     * @return bool
+     * @param string|null $path
      */
-    protected function seekAlias()
+    public function outputAlias($path = null)
     {
         if (!$this->db instanceof Database) {
-            return false;
+            return null;
         }
 
-        $info = $this->getAliasByPath($this->path);
+        $info = $this->getAliasByPath($path);
 
         if (!isset($info['id_key'])) {
-            $this->seekEntityAlias();
-            return false;
+            $this->redirectToAlias();
+            return null;
         }
 
         $entity = substr($info['id_key'], 0, -3);
-
         foreach ($this->getList() as $pattern => $route) {
 
             if (isset($route['status']) && empty($route['status'])) {
@@ -190,18 +189,15 @@ class Route
 
             $segments = explode('/', $pattern);
             if ($segments[$route['alias'][0]] === $entity) {
-                $this->callController($pattern, $route, array($info['id_value']));
-                return true;
+                $this->call($pattern, array($info['id_value']));
             }
         }
-
-        return false;
     }
 
     /**
      * Finds an alias by a route pattern and redirects to it
      */
-    protected function seekEntityAlias()
+    protected function redirectToAlias()
     {
         $segments = $this->url->segments();
 
@@ -235,7 +231,6 @@ class Route
 
             $value = $segments[$route['alias'][1]];
             $key = $segments[$route['alias'][0]] . '_id';
-
             $alias = $this->getAliasByEntity($key, $value);
 
             if ($alias !== '') {
@@ -247,26 +242,44 @@ class Route
     /**
      * Call a route controller
      * @param string $pattern
-     * @param array $route
      * @param array $arguments
      * @throws RouteException
      */
-    protected function callController($pattern, $route, $arguments = array())
+    public function call($pattern, array $arguments = array())
     {
+        $list = $this->getList();
+        $route = $list[$pattern];
+
         $route += array('arguments' => array(), 'pattern' => $pattern);
         $route['simple_pattern'] = preg_replace('@\(.*?\)@', '*', $pattern);
         $route['arguments'] += $arguments;
 
         $this->route = $route;
-
-        $handler = Handler::get($route, null, 'controller');
-
-        if (empty($handler[0]) || !$handler[0] instanceof Controller) {
-            throw new RouteException('Controller must be instance of \gplcart\core\Controller');
-        }
+        $handler = $this->getHandler($route);
 
         call_user_func_array($handler, $this->route['arguments']); // We should stop here
         throw new RouteException('An error occurred while processing the route');
+    }
+
+    /**
+     * Returns route handler
+     * @param array $route
+     * @return \gplcart\core\Controller
+     * @throws RouteException
+     */
+    public function getHandler(array $route)
+    {
+        try {
+            $handler = Handler::get($route, null, 'controller');
+        } catch (Exception $ex) {
+            throw new RouteException($ex->getMessage());
+        }
+
+        if (!$handler[0] instanceof Controller) {
+            throw new RouteException('Controller must be instance of \gplcart\core\Controller');
+        }
+
+        return $handler;
     }
 
     /**
@@ -283,11 +296,15 @@ class Route
 
     /**
      * Returns an array of alias info using the current URL path
-     * @param string $path
+     * @param string|null $path
      * @return array
      */
-    protected function getAliasByPath($path)
+    protected function getAliasByPath($path = null)
     {
+        if (!isset($path)) {
+            $path = $this->path;
+        }
+
         return $this->db->fetch('SELECT id_key, id_value FROM alias WHERE alias=?', array($path));
     }
 
@@ -295,33 +312,26 @@ class Route
      * Find an appropriate controller for the current URL
      * @return bool
      */
-    protected function seekRoute()
+    public function outputRoute()
     {
         foreach ($this->getList() as $pattern => $route) {
-
-            if (isset($route['status']) && empty($route['status'])) {
-                continue;
-            }
-
-            $path = empty($this->path) ? '/' : $this->path;
-            $arguments = gplcart_parse_path($path, $pattern);
-            if (is_array($arguments)) {
-                $this->callController($pattern, $route, $arguments);
-                return true;
+            if (!isset($route['status']) || !empty($route['status'])) {
+                $path = empty($this->path) ? '/' : $this->path;
+                $arguments = gplcart_parse_path($path, $pattern);
+                if (is_array($arguments)) {
+                    $this->call($pattern, $arguments);
+                }
             }
         }
-
-        return false;
     }
 
     /**
      * Displays 404 Not Found Page
      */
-    protected function outputNotFound()
+    public function output404()
     {
-        $routes = $this->getList();
-        $section = $this->url->isBackend() ? 'backend' : 'frontend';
-        $this->callController("status-$section", $routes["status-$section"], array(404));
+        $pattern = $this->url->isBackend() ? 'status-backend' : 'status-frontend';
+        $this->call($pattern, array(404));
     }
 
     /**
