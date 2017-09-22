@@ -300,7 +300,7 @@ class Report extends Model
      */
     protected function countSearchIndex()
     {
-        return $this->db->run('SELECT COUNT(*) FROM search_index')->fetchColumn();
+        return $this->db->fetchColumn('SELECT COUNT(*) FROM search_index');
     }
 
 }

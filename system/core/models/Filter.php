@@ -95,6 +95,7 @@ class Filter extends Model
                 return $filter;
             }
         }
+
         return array();
     }
 

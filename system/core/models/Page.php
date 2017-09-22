@@ -139,9 +139,7 @@ class Page extends Model
         }
 
         $data['modified'] = GC_TIME;
-
         $updated = $this->db->update('page', $data, array('page_id' => $page_id));
-
         $data['page_id'] = $page_id;
 
         $updated += (int) $this->setImagesTrait($this->file, $data, 'page');
@@ -151,7 +149,6 @@ class Page extends Model
         $this->cache->clear("page.$page_id");
 
         $result = $updated > 0;
-
         $this->hook->attach('page.update.after', $page_id, $data, $result, $this);
         return (bool) $result;
     }
