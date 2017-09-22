@@ -213,7 +213,7 @@ class Sku extends Model
     }
 
     /**
-     * Returns an array of field value Ids from a combination ID
+     * Returns an array of field value IDs from a combination ID
      * @param string $combination_id
      * @return array
      */
@@ -334,25 +334,28 @@ class Sku extends Model
      * Loads a SKU
      * @param string $sku
      * @param integer|null $store_id
-     * @param integer|null $exclude_product_id
      * @return array
      */
-    public function get($sku, $store_id = null, $exclude_product_id = null)
+    public function get($sku, $store_id = null)
     {
-        $options = array('sku' => $sku, 'store_id' => $store_id);
+        $result = null;
+        $this->hook->attach('sku.get.before', $sku, $store_id, $result, $this);
 
-        foreach ((array) $this->getList($options) as $result) {
-
-            if (isset($exclude_product_id) && $result['product_id'] == $exclude_product_id) {
-                continue;
-            }
-
-            if ($result['sku'] === $sku) {
-                return $result;
-            }
+        if (isset($result)) {
+            return $result;
         }
 
-        return array();
+        $conditions = array($sku);
+        $sql = 'SELECT * FROM product_sku WHERE sku=?';
+
+        if (isset($store_id)) {
+            $sql .= ' AND store_id=?';
+            $conditions[] = $store_id;
+        }
+
+        $result = $this->db->fetch($sql, $conditions);
+        $this->hook->attach('sku.get.after', $sku, $store_id, $result, $this);
+        return $result;
     }
 
 }
