@@ -8,6 +8,9 @@
  * To see available variables <?php print_r(get_defined_vars()); ?>
  */
 ?>
+<?php if(empty($product['status'])) { ?>
+<div class="alert alert-warning"><?php echo $this->text('This product is disabled'); ?></div>
+<?php } ?>
 <div class="row section product-main">
   <?php if(!empty($images)) { ?>
   <div class="col-md-5 left">
