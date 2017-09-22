@@ -37,20 +37,13 @@ class DefaultProfile extends BaseInstall
         $this->data = $data;
 
         $this->start();
-
         $result = $this->process();
 
         if ($result !== true) {
             return $result;
         }
 
-        $this->finish();
-
-        return array(
-            'redirect' => 'login',
-            'severity' => 'success',
-            'message' => $this->getSuccessMessage()
-        );
+        return $this->finish();
     }
 
 }
