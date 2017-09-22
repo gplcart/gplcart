@@ -424,7 +424,7 @@ class Product extends FrontendController
         }
 
         if (empty($product['status']) && !$this->access('product')) {
-            $this->outputHttpStatus(403);
+            $this->outputHttpStatus(404);
         }
 
         $this->data_product = $this->prepareProduct($product);
