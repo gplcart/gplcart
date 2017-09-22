@@ -224,9 +224,7 @@ class Page extends BackendController
         if ($this->isPosted('delete')) {
             $this->deletePage();
         } else if ($this->isPosted('save') && $this->validateEditPage()) {
-
             $this->deleteImages($this->data_page, 'page');
-
             if (isset($this->data_page['page_id'])) {
                 $this->updatePage();
             } else {
@@ -242,9 +240,9 @@ class Page extends BackendController
     protected function validateEditPage()
     {
         $this->setSubmitted('page', null, false);
-        $this->setSubmittedBool('form');
-        $this->setSubmittedBool('status');
+        $this->setSubmitted('form', true);
         $this->setSubmitted('update', $this->data_page);
+        $this->setSubmittedBool('status');
 
         if (empty($this->data_page['page_id'])) {
             $this->setSubmitted('user_id', $this->uid);
