@@ -10,6 +10,8 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Model;
+use gplcart\core\traits\Image as ImageTrait,
+    gplcart\core\traits\Alias as AliasTrait;
 use gplcart\core\models\File as FileModel,
     gplcart\core\models\Alias as AliasModel,
     gplcart\core\models\Language as LanguageModel,
@@ -21,8 +23,8 @@ use gplcart\core\models\File as FileModel,
 class Category extends Model
 {
 
-    use \gplcart\core\traits\Image,
-        \gplcart\core\traits\Alias;
+    use ImageTrait,
+        AliasTrait;
 
     /**
      * Category group model instance

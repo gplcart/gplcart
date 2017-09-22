@@ -436,7 +436,7 @@ class Language extends Model
      * @param string $string
      * @param array $arguments
      * @param bool $format
-     * @return string
+     * @return string|array
      */
     public function text($string, array $arguments = array(), $format = true)
     {

@@ -14,6 +14,8 @@ use gplcart\core\Model,
 use gplcart\core\models\File as FileModel,
     gplcart\core\models\Alias as AliasModel,
     gplcart\core\models\Language as LanguageModel;
+use gplcart\core\traits\Image as ImageTrait,
+    gplcart\core\traits\Alias as AliasTrait;
 
 /**
  * Manages basic behaviors and data related to pages
@@ -21,8 +23,8 @@ use gplcart\core\models\File as FileModel,
 class Page extends Model
 {
 
-    use \gplcart\core\traits\Image,
-        \gplcart\core\traits\Alias;
+    use ImageTrait,
+        AliasTrait;
 
     /**
      * Cache instance
