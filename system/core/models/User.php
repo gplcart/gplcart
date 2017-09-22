@@ -220,13 +220,20 @@ class User extends Model
      */
     public function isSuperadmin($user_id = null)
     {
-        $super_admin_user_id = $this->config->get('user_superadmin', 1);
-
         if (isset($user_id)) {
-            return ($super_admin_user_id == $user_id);
+            return $this->getSuperadminId() == $user_id;
         }
 
-        return ($super_admin_user_id == $this->getId());
+        return $this->getSuperadminId() == $this->getId();
+    }
+
+    /**
+     * Returns UID for super-admin
+     * @return int
+     */
+    public function getSuperadminId()
+    {
+        return (int) $this->config->get('user_superadmin', 1);
     }
 
     /**
