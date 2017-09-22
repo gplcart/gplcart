@@ -375,30 +375,17 @@ class Base extends Handler
 
     /**
      * Finishes installation
+     * @return array
      */
     protected function finish()
     {
-        $this->uninstallInstaller();
         $this->session->delete('install');
-    }
 
-    /**
-     * Disable installer module
-     * @return boolean|string
-     */
-    protected function uninstallInstaller()
-    {
-        $installer = $this->session->get('install.data.installer');
-
-        if ($installer === 'default') {
-            return true;
-        }
-
-        $handler = $this->install->getHandler($installer);
-
-        /* @var $model \gplcart\core\models\Module */
-        $model = Container::get('gplcart\\core\\models\\Module');
-        return $model->uninstall($handler['module']);
+        return array(
+            'redirect' => 'login',
+            'severity' => 'success',
+            'message' => $this->getSuccessMessage()
+        );
     }
 
     /**
