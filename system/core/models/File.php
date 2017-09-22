@@ -177,18 +177,19 @@ class File extends Model
     /**
      * Deletes a file from the database
      * @param integer $file_id
+     * @param bool $check
      * @return boolean
      */
-    public function delete($file_id)
+    public function delete($file_id, $check = true)
     {
         $result = null;
-        $this->hook->attach('file.delete.before', $file_id, $result, $this);
+        $this->hook->attach('file.delete.before', $file_id, $check, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
         }
 
-        if (!$this->canDelete($file_id)) {
+        if ($check && !$this->canDelete($file_id)) {
             return false;
         }
 
@@ -199,7 +200,7 @@ class File extends Model
             $this->db->delete('file_translation', $conditions);
         }
 
-        $this->hook->attach('file.delete.after', $file_id, $result, $this);
+        $this->hook->attach('file.delete.after', $file_id, $check, $result, $this);
         return (bool) $result;
     }
 

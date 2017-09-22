@@ -426,18 +426,19 @@ class Category extends Model
     /**
      * Deletes a category
      * @param integer $category_id
+     * @param bool $check
      * @return boolean
      */
-    public function delete($category_id)
+    public function delete($category_id, $check = true)
     {
         $result = null;
-        $this->hook->attach('category.delete.before', $category_id, $result, $this);
+        $this->hook->attach('category.delete.before', $category_id, $check, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
         }
 
-        if (!$this->canDelete($category_id)) {
+        if ($check && !$this->canDelete($category_id)) {
             return false;
         }
 
@@ -451,7 +452,7 @@ class Category extends Model
         $this->db->delete('alias', $conditions2);
 
         $result = true;
-        $this->hook->attach('category.delete.after', $category_id, $result, $this);
+        $this->hook->attach('category.delete.after', $category_id, $check, $result, $this);
         return (bool) $result;
     }
 

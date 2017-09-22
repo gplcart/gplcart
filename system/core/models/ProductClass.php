@@ -148,18 +148,19 @@ class ProductClass extends Model
     /**
      * Deletes a product class
      * @param integer $product_class_id
+     * @param bool $check
      * @return boolean
      */
-    public function delete($product_class_id)
+    public function delete($product_class_id, $check = true)
     {
         $result = null;
-        $this->hook->attach('product.class.delete.before', $product_class_id, $result, $this);
+        $this->hook->attach('product.class.delete.before', $product_class_id, $check, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
         }
 
-        if (!$this->canDelete($product_class_id)) {
+        if ($check && !$this->canDelete($product_class_id)) {
             return false;
         }
 
@@ -170,7 +171,7 @@ class ProductClass extends Model
             $this->db->delete('product_class_field', $conditions);
         }
 
-        $this->hook->attach('product.class.delete.after', $product_class_id, $result, $this);
+        $this->hook->attach('product.class.delete.after', $product_class_id, $check, $result, $this);
         return (bool) $result;
     }
 

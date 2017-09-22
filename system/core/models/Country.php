@@ -160,18 +160,19 @@ class Country extends Model
     /**
      * Deletes a country
      * @param string $code
+     * @param bool $check
      * @return boolean
      */
-    public function delete($code)
+    public function delete($code, $check = true)
     {
         $result = null;
-        $this->hook->attach('country.delete.before', $code, $result, $this);
+        $this->hook->attach('country.delete.before', $code, $check, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
         }
 
-        if (!$this->canDelete($code)) {
+        if ($check && !$this->canDelete($code)) {
             return false;
         }
 
@@ -183,7 +184,7 @@ class Country extends Model
             $this->db->delete('state', $conditions);
         }
 
-        $this->hook->attach('country.delete.after', $code, $result, $this);
+        $this->hook->attach('country.delete.after', $code, $check, $result, $this);
         return (bool) $result;
     }
 

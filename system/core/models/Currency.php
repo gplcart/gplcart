@@ -153,18 +153,19 @@ class Currency extends Model
     /**
      * Deletes a currency
      * @param string $code
+     * @param bool $check
      * @return boolean
      */
-    public function delete($code)
+    public function delete($code, $check = true)
     {
         $result = null;
-        $this->hook->attach('currency.delete.before', $code, $result, $this);
+        $this->hook->attach('currency.delete.before', $code, $check, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
         }
 
-        if (!$this->canDelete($code)) {
+        if ($check && !$this->canDelete($code)) {
             return false;
         }
 
@@ -175,7 +176,7 @@ class Currency extends Model
         $this->config->set('currencies', $currencies);
 
         $result = true;
-        $this->hook->attach('currency.delete.after', $code, $result, $this);
+        $this->hook->attach('currency.delete.after', $code, $check, $result, $this);
         return (bool) $result;
     }
 
@@ -259,7 +260,7 @@ class Currency extends Model
      */
     public function setCookie($code)
     {
-        $lifespan = $this->config->get('currency_cookie_lifespan', 365*24*60*60);
+        $lifespan = $this->config->get('currency_cookie_lifespan', 365 * 24 * 60 * 60);
         $this->request->setCookie(self::COOKIE_KEY, $code, $lifespan);
     }
 

@@ -221,18 +221,19 @@ class FieldValue extends Model
     /**
      * Deletes a field value
      * @param integer $field_value_id
+     * @param bool $check
      * @return boolean
      */
-    public function delete($field_value_id)
+    public function delete($field_value_id, $check = true)
     {
         $result = null;
-        $this->hook->attach('field.value.delete.before', $field_value_id, $result, $this);
+        $this->hook->attach('field.value.delete.before', $field_value_id, $check, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
         }
 
-        if (!$this->canDelete($field_value_id)) {
+        if ($check && !$this->canDelete($field_value_id)) {
             return false;
         }
 
@@ -247,7 +248,7 @@ class FieldValue extends Model
             $this->db->delete('field_value_translation', $conditions);
         }
 
-        $this->hook->attach('field.value.delete.after', $field_value_id, $result, $this);
+        $this->hook->attach('field.value.delete.after', $field_value_id, $check, $result, $this);
         return (bool) $result;
     }
 

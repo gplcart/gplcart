@@ -154,24 +154,25 @@ class City extends Model
     /**
      * Deletes a city
      * @param integer $city_id
+     * @param bool $check
      * @return boolean
      */
-    public function delete($city_id)
+    public function delete($city_id, $check = true)
     {
         $result = null;
-        $this->hook->attach('city.delete.before', $city_id, $result, $this);
+        $this->hook->attach('city.delete.before', $city_id, $check, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
         }
 
-        if (!$this->canDelete($city_id)) {
+        if ($check && !$this->canDelete($city_id)) {
             return false;
         }
 
         $result = (bool) $this->db->delete('city', array('city_id' => $city_id));
 
-        $this->hook->attach('city.delete.after', $city_id, $result, $this);
+        $this->hook->attach('city.delete.after', $city_id, $check, $result, $this);
         return (bool) $result;
     }
 

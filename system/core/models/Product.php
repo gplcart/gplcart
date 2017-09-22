@@ -406,18 +406,19 @@ class Product extends Model
     /**
      * Deletes a product
      * @param integer $product_id
+     * @param bool $check
      * @return boolean
      */
-    public function delete($product_id)
+    public function delete($product_id, $check = true)
     {
         $result = null;
-        $this->hook->attach('product.delete.before', $product_id, $result, $this);
+        $this->hook->attach('product.delete.before', $product_id, $check, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
         }
 
-        if (!$this->canDelete($product_id)) {
+        if ($check && !$this->canDelete($product_id)) {
             return false;
         }
 
@@ -448,7 +449,7 @@ class Product extends Model
             $this->db->run($sql, array('product', $product_id));
         }
 
-        $this->hook->attach('product.delete.after', $product_id, $result, $this);
+        $this->hook->attach('product.delete.after', $product_id, $check, $result, $this);
         return (bool) $result;
     }
 

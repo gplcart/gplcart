@@ -288,18 +288,19 @@ class Store extends Model
     /**
      * Deletes a store
      * @param integer $store_id
+     * @param bool $check
      * @return boolean
      */
-    public function delete($store_id)
+    public function delete($store_id, $check = true)
     {
         $result = null;
-        $this->hook->attach('store.delete.before', $store_id, $result, $this);
+        $this->hook->attach('store.delete.before', $store_id, $check, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
         }
 
-        if (!$this->canDelete($store_id)) {
+        if ($check && !$this->canDelete($store_id)) {
             return false;
         }
 
@@ -313,7 +314,7 @@ class Store extends Model
             $this->db->delete('product_sku', $conditions);
         }
 
-        $this->hook->attach('store.delete.after', $store_id, $result, $this);
+        $this->hook->attach('store.delete.after', $store_id, $check, $result, $this);
         return (bool) $result;
     }
 
@@ -340,7 +341,7 @@ class Store extends Model
     }
 
     /**
-     * Returns a translatable store config item
+     * Returns a translatable store configuration item
      * @param string $item
      * @param string $langcode
      * @param mixed $store

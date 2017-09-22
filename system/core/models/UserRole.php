@@ -117,24 +117,25 @@ class UserRole extends Model
     /**
      * Deletes a role
      * @param integer $role_id
+     * @param bool $check
      * @return boolean
      */
-    public function delete($role_id)
+    public function delete($role_id, $check = true)
     {
         $result = null;
-        $this->hook->attach('user.role.delete.before', $role_id, $result, $this);
+        $this->hook->attach('user.role.delete.before', $role_id, $check, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
         }
 
-        if (!$this->canDelete($role_id)) {
+        if ($check && !$this->canDelete($role_id)) {
             return false;
         }
 
         $result = $this->db->delete('role', array('role_id' => $role_id));
 
-        $this->hook->attach('user.role.delete.after', $role_id, $result, $this);
+        $this->hook->attach('user.role.delete.after', $role_id, $check, $result, $this);
         return (bool) $result;
     }
 
@@ -166,7 +167,6 @@ class UserRole extends Model
         }
 
         $result = $this->db->insert('role', $data);
-
         $this->hook->attach('user.role.add.after', $data, $result, $this);
         return (int) $result;
     }
@@ -187,7 +187,6 @@ class UserRole extends Model
         }
 
         $result = (bool) $this->db->update('role', $data, array('role_id' => $role_id));
-
         $this->hook->attach('user.role.update.after', $role_id, $data, $result, $this);
         return (bool) $result;
     }
@@ -211,9 +210,8 @@ class UserRole extends Model
             return $result;
         }
 
-        $sql = 'SELECT * FROM role WHERE role_id=?';
         $options = array('unserialize' => 'permissions');
-        $result = $this->db->fetch($sql, array($role_id), $options);
+        $result = $this->db->fetch('SELECT * FROM role WHERE role_id=?', array($role_id), $options);
 
         $this->hook->attach('user.role.get.after', $role_id, $result, $this);
         return $result;

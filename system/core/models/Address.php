@@ -385,24 +385,25 @@ class Address extends Model
     /**
      * Deletes an address
      * @param integer $address_id
+     * @param bool $check
      * @return boolean
      */
-    public function delete($address_id)
+    public function delete($address_id, $check = true)
     {
         $result = null;
-        $this->hook->attach('address.delete.before', $address_id, $result, $this);
+        $this->hook->attach('address.delete.before', $address_id, $check, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
         }
 
-        if (!$this->canDelete($address_id)) {
+        if ($check && !$this->canDelete($address_id)) {
             return false;
         }
 
         $result = (bool) $this->db->delete('address', array('address_id' => $address_id));
 
-        $this->hook->attach('address.delete.after', $address_id, $result, $this);
+        $this->hook->attach('address.delete.after', $address_id, $check, $result, $this);
         return (bool) $result;
     }
 

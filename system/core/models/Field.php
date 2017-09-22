@@ -198,18 +198,19 @@ class Field extends Model
     /**
      * Deletes a field
      * @param integer $field_id
+     * @param bool $check
      * @return boolean
      */
-    public function delete($field_id)
+    public function delete($field_id, $check = true)
     {
         $result = null;
-        $this->hook->attach('field.delete.before', $field_id, $result, $this);
+        $this->hook->attach('field.delete.before', $field_id, $check, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
         }
 
-        if (!$this->canDelete($field_id)) {
+        if ($check && !$this->canDelete($field_id)) {
             return false;
         }
 
@@ -233,7 +234,7 @@ class Field extends Model
             $this->db->delete('product_class_field', $conditions);
         }
 
-        $this->hook->attach('field.delete.after', $field_id, $result, $this);
+        $this->hook->attach('field.delete.after', $field_id, $check, $result, $this);
         return (bool) $result;
     }
 
@@ -272,7 +273,6 @@ class Field extends Model
         $updated += (int) $this->setTranslationTrait($this->db, $data, 'field');
 
         $result = $updated > 0;
-
         $this->hook->attach('field.update.after', $field_id, $data, $result, $this);
         return (bool) $result;
     }

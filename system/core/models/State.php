@@ -145,18 +145,19 @@ class State extends Model
     /**
      * Deletes a country state
      * @param integer $state_id
+     * @param bool $check
      * @return boolean
      */
-    public function delete($state_id)
+    public function delete($state_id, $check = true)
     {
         $result = null;
-        $this->hook->attach('state.delete.before', $state_id, $result, $this);
+        $this->hook->attach('state.delete.before', $state_id, $check, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
         }
 
-        if (!$this->canDelete($state_id)) {
+        if ($check && !$this->canDelete($state_id)) {
             return false;
         }
 
@@ -167,7 +168,7 @@ class State extends Model
             $this->db->delete('city', $conditions);
         }
 
-        $this->hook->attach('state.delete.after', $state_id, $result, $this);
+        $this->hook->attach('state.delete.after', $state_id, $check, $result, $this);
         return (bool) $result;
     }
 

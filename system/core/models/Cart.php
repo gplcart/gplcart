@@ -557,18 +557,19 @@ class Cart extends Model
     /**
      * Deletes a cart record from the database
      * @param integer $cart_id
+     * @param bool $check
      * @return boolean
      */
-    public function delete($cart_id)
+    public function delete($cart_id, $check = true)
     {
         $result = null;
-        $this->hook->attach('cart.delete.before', $cart_id, $result, $this);
+        $this->hook->attach('cart.delete.before', $cart_id, $check, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
         }
 
-        if (!$this->canDelete($cart_id)) {
+        if ($check && !$this->canDelete($cart_id)) {
             return false;
         }
 
@@ -576,7 +577,7 @@ class Cart extends Model
 
         gplcart_static_clear();
 
-        $this->hook->attach('cart.delete.after', $cart_id, $result, $this);
+        $this->hook->attach('cart.delete.after', $cart_id, $check, $result, $this);
 
         return (bool) $result;
     }
@@ -612,6 +613,7 @@ class Cart extends Model
     {
         $sql = 'SELECT order_id FROM cart WHERE cart_id=?';
         $result = $this->db->fetchColumn($sql, array($cart_id));
+
         return empty($result);
     }
 

@@ -89,24 +89,24 @@ class Zone extends Model
     /**
      * Deletes a zone
      * @param integer $zone_id
+     * @param bool $check
      * @return boolean
      */
-    public function delete($zone_id)
+    public function delete($zone_id, $check = true)
     {
         $result = null;
-        $this->hook->attach('zone.delete.before', $zone_id, $result, $this);
+        $this->hook->attach('zone.delete.before', $zone_id, $check, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
         }
 
-        if (!$this->canDelete($zone_id)) {
+        if ($check && !$this->canDelete($zone_id)) {
             return false;
         }
 
         $result = (bool) $this->db->delete('zone', array('zone_id' => $zone_id));
-
-        $this->hook->attach('zone.delete.after', $zone_id, $result, $this);
+        $this->hook->attach('zone.delete.after', $zone_id, $check, $result, $this);
         return (bool) $result;
     }
 

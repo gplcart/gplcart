@@ -164,18 +164,19 @@ class User extends Model
     /**
      * Deletes a user
      * @param integer $user_id
+     * @param bool $check
      * @return boolean
      */
-    public function delete($user_id)
+    public function delete($user_id, $check = true)
     {
         $result = null;
-        $this->hook->attach('user.delete.before', $user_id, $result, $this);
+        $this->hook->attach('user.delete.before', $user_id, $check, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
         }
 
-        if (!$this->canDelete($user_id)) {
+        if ($check && !$this->canDelete($user_id)) {
             return false;
         }
 
@@ -192,7 +193,7 @@ class User extends Model
             $this->db->delete('dashboard', $conditions);
         }
 
-        $this->hook->attach('user.delete.after', $user_id, $result, $this);
+        $this->hook->attach('user.delete.after', $user_id, $check, $result, $this);
         return (bool) $result;
     }
 
