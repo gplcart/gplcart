@@ -1473,7 +1473,7 @@ abstract class Controller
      */
     protected function setJsTranslation(array $scripts)
     {
-        if (!empty($this->langcode) && !is_file($this->language->getFileJs())) {
+        if (!empty($this->langcode) && !is_file($this->language->getContextJsFile())) {
             foreach ($scripts as $key => $script) {
                 if (strpos($key, 'system/modules/') === 0 && strpos($key, '/vendor/') === false && !empty($script['file'])) {
                     $string = file_get_contents($script['file']);
@@ -1696,7 +1696,7 @@ abstract class Controller
      */
     protected function setDefaultJsTranslation()
     {
-        $translations = $this->language->loadTranslationJs();
+        $translations = $this->language->loadJsTranslation();
         $json = gplcart_json_encode($translations);
         $this->setJs("Gplcart.translations=$json");
     }
