@@ -470,9 +470,10 @@ class File extends Model
     /**
      * Deletes a file both from database and disk
      * @param integer|array $file
+     * @param bool $check
      * @return array
      */
-    public function deleteAll($file)
+    public function deleteAll($file, $check = true)
     {
         if (is_numeric($file)) {
             $file = $this->get($file);
@@ -482,7 +483,7 @@ class File extends Model
             return array('database' => 0, 'disk' => 0);
         }
 
-        $deleted_database = $this->delete($file['file_id']);
+        $deleted_database = $this->delete($file['file_id'], $check);
 
         if (empty($deleted_database)) {
             return array('database' => 0, 'disk' => 0);
@@ -668,7 +669,7 @@ class File extends Model
         $pathinfo = $upload ? pathinfo($to) : pathinfo($directory);
 
         if ($upload) {
-            $filename = $this->getSecureFileName($pathinfo['filename'], $pathinfo['extension']);
+            $filename = $this->prepareFileName($pathinfo['filename'], $pathinfo['extension']);
         } else {
             $filename = $pathinfo['basename'];
             $directory = $pathinfo['dirname'];
@@ -716,31 +717,19 @@ class File extends Model
     }
 
     /**
-     * Clean up a file name
-     * @param string $filename
-     * @return string
-     */
-    protected function cleanFileName($filename)
-    {
-        $clean = preg_replace('/[^A-Za-z0-9.]/', '', $filename);
-
-        if ($this->config->get('file_upload_translit', 1) && preg_match('/[^A-Za-z0-9_.-]/', $clean) === 1) {
-            $clean = $this->language->translit($clean, null);
-        }
-
-        return $clean;
-    }
-
-    /**
-     * Build a secure filename
+     * Sanitize and transliterate a filename
      * @param string $filename
      * @param string $extension
      * @return string
      */
-    protected function getSecureFileName($filename, $extension)
+    protected function prepareFileName($filename, $extension)
     {
         $suffix = gplcart_string_random(6);
-        $clean = $this->cleanFileName($filename);
+        $clean = gplcart_file_name_clean($filename);
+
+        if ($this->config->get('file_upload_translit', 1)) {
+            $clean = $this->language->translit($clean, null);
+        }
 
         return "$clean-$suffix.$extension";
     }
