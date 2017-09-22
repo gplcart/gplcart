@@ -146,4 +146,16 @@ abstract class Module
         return true;
     }
 
+    /**
+     * Returns a module template path without extension
+     * @param string $module_id
+     * @param string $template
+     * @return string
+     */
+    protected function getTemplate($module_id, $template)
+    {
+        $directory = $this->config->getModuleDirectory($module_id);
+        return "$directory/templates/$template";
+    }
+
 }
