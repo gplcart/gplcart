@@ -182,3 +182,17 @@ function gplcart_file_size($size, $precision = 2)
 
     return round($size, $precision) . $units[$i];
 }
+
+/**
+ * Sanitize file name
+ * @param string $name
+ * @param string $replace
+ * @return string
+ */
+function gplcart_file_name_clean($name, $replace = '')
+{
+    // Remove unsafe characters
+    $safe = preg_replace('/[^0-9a-zA-Z-.,_]/', $replace, $name);
+    // Remove multiple consecutive non-alphabetical characters
+    return preg_replace('/(_)_+|(\.)\.+|(-)-+/', '\\1\\2\\3', $safe);
+}
