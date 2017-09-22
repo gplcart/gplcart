@@ -1697,7 +1697,8 @@ abstract class Controller
     protected function setDefaultJsTranslation()
     {
         $translations = $this->language->loadTranslationJs();
-        $this->setJsSettings('translations', $translations);
+        $json = gplcart_json_encode($translations);
+        $this->setJs("Gplcart.translations=$json");
     }
 
     /**
