@@ -43,6 +43,23 @@
       </div>
     </div>
   </div>
+  <div class="form-group<?php echo $this->error('rtl', ' has-error'); ?>">
+    <label class="col-md-2 control-label"><?php echo $this->text('Right-to-left'); ?></label>
+    <div class="col-md-6">
+      <div class="btn-group" data-toggle="buttons">
+        <label class="btn btn-default<?php echo empty($language['rtl']) ? '' : ' active'; ?>">
+          <input name="language[rtl]" type="radio" autocomplete="off" value="1"<?php echo empty($language['rtl']) ? '' : ' checked'; ?>><?php echo $this->text('Yes'); ?>
+        </label>
+        <label class="btn btn-default<?php echo empty($language['rtl']) ? ' active' : ''; ?>">
+          <input name="language[rtl]" type="radio" autocomplete="off" value="0"<?php echo empty($language['rtl']) ? ' checked' : ''; ?>><?php echo $this->text('No'); ?>
+        </label>
+      </div>
+      <div class="help-block">
+        <?php echo $this->error('rtl'); ?>
+        <div class="text-muted"><?php echo $this->text('Whether the language is written in right-to-left (RTL) script'); ?></div>
+      </div>
+    </div>
+  </div>
   <div class="form-group required<?php echo $this->error('code', ' has-error'); ?>">
     <label class="col-md-2 control-label"><?php echo $this->text('Code'); ?></label>
     <div class="col-md-4">
