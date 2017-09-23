@@ -93,12 +93,16 @@ class Controller extends BaseController
 
         $this->setFrontendInstancies();
         $this->setFrontendProperties();
-        $this->setDefaultDataFrontend();
-        $this->setDefaultJsStoreFrontend();
 
-        $this->submitCart();
-        $this->submitCompare();
-        $this->submitWishlist();
+        if (empty($this->current_route['internal'])) {
+
+            $this->setDefaultDataFrontend();
+            $this->setDefaultJsStoreFrontend();
+
+            $this->submitCart();
+            $this->submitCompare();
+            $this->submitWishlist();
+        }
 
         $this->hook->attach('construct.controller.frontend', $this);
 
@@ -127,7 +131,7 @@ class Controller extends BaseController
      */
     protected function setDefaultJsStoreFrontend()
     {
-        if (!empty($this->current_store['data']['js']) && empty($this->current_route['internal'])) {
+        if (!empty($this->current_store['data']['js'])) {
             $this->setJs($this->current_store['data']['js'], array('position' => 'bottom', 'aggregate' => false));
         }
     }
@@ -153,8 +157,12 @@ class Controller extends BaseController
     protected function setFrontendProperties()
     {
         if (!$this->isInstall()) {
-            $this->triggered = $this->getFiredTriggers();
-            $this->data_categories = $this->getCategories();
+
+            if (empty($this->current_route['internal'])) {
+                $this->triggered = $this->getFiredTriggers();
+                $this->data_categories = $this->getCategories();
+            }
+
             $this->current_currency = (string) $this->currency->get();
         }
     }
@@ -426,8 +434,6 @@ class Controller extends BaseController
 
     /**
      * Controls redirect after a product has been deleted from comparison
-     * If the result redirect is empty and the current location is "compare/1,2,3"
-     * It removes the deleted product ID (e.g 3) and sets redirect to "compare/1,2"
      * @param array $result
      * @param integer $product_id
      */
