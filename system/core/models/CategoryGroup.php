@@ -79,7 +79,7 @@ class CategoryGroup extends Model
                 . ' ON(cg.category_group_id = cgt.category_group_id AND cgt.language = ?)'
                 . ' WHERE cg.category_group_id > 0';
 
-        $language = $this->language->current();
+        $language = $this->language->getLangcode();
         $where = array($language);
 
         if (isset($data['title'])) {

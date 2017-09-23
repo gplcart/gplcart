@@ -194,7 +194,7 @@ class Cart extends Model
                 . ' LEFT JOIN user u ON(c.user_id = u.user_id)'
                 . ' WHERE cart_id > 0';
 
-        $where = array($this->language->current());
+        $where = array($this->language->getLangcode());
 
         if (isset($data['user_id'])) {
             $sql .= ' AND c.user_id=?';

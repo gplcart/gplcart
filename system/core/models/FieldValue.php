@@ -64,7 +64,7 @@ class FieldValue extends Model
                 . ' LEFT JOIN field_value_translation fvt ON(fv.field_value_id = fvt.field_value_id AND fvt.language=?)'
                 . ' WHERE fv.field_value_id > 0';
 
-        $language = $this->language->current();
+        $language = $this->language->getLangcode();
         $where = array('field_value_id', $language);
 
         if (isset($data['title'])) {

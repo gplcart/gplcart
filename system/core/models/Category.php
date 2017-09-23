@@ -185,7 +185,7 @@ class Category extends Model
                 . ' LEFT JOIN alias a ON(a.id_key=? AND a.id_value=c.category_id)'
                 . ' WHERE c.category_id > 0';
 
-        $language = isset($data['language']) ? $data['language'] : $this->language->current();
+        $language = isset($data['language']) ? $data['language'] : $this->language->getLangcode();
 
         $where = array($language, 'category_id');
 
@@ -333,7 +333,7 @@ class Category extends Model
                 . ' LEFT JOIN category_translation ct ON(c.category_id = ct.category_id AND ct.language = ?)'
                 . ' WHERE c.category_id > 0';
 
-        $language = $this->language->current();
+        $language = $this->language->getLangcode();
         $where = array('category_id', $language);
 
         if (isset($data['title'])) {

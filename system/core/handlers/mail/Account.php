@@ -58,7 +58,7 @@ class Account extends BaseHandler
     {
         $store = $this->store->get($user['store_id']);
         $options = $this->store->config(null, $store);
-        $store_name = $this->store->getTranslation('title', $this->language->current(), $store);
+        $store_name = $this->store->getTranslation('title', $this->language->getLangcode(), $store);
         $base = $this->store->url($store);
 
         $vars = array(
@@ -86,7 +86,7 @@ class Account extends BaseHandler
     {
         $store = $this->store->get($user['store_id']);
         $options = $this->store->config(null, $store);
-        $store_name = $this->store->getTranslation('title', $this->language->current(), $store);
+        $store_name = $this->store->getTranslation('title', $this->language->getLangcode(), $store);
         $base = $this->store->url($store);
 
         $date_format = $this->config->get('date_prefix', 'd.m.Y');
@@ -116,7 +116,7 @@ class Account extends BaseHandler
     {
         $store = $this->store->get($user['store_id']);
         $options = $this->store->config(null, $store);
-        $store_name = $this->store->getTranslation('title', $this->language->current(), $store);
+        $store_name = $this->store->getTranslation('title', $this->language->getLangcode(), $store);
 
         $vars = array('@store' => $store_name, '@name' => $user['name']);
         $subject = $this->language->text('Password has been changed for @name on @store', $vars);

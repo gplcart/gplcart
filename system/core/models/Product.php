@@ -322,7 +322,7 @@ class Product extends Model
         }
 
         if (!isset($language)) {
-            $language = $this->language->current();
+            $language = $this->language->getLangcode();
         }
 
         $sql = 'SELECT p.*, COALESCE(NULLIF(pt.title, ""), p.title) AS title,'
@@ -551,7 +551,7 @@ class Product extends Model
                 . ' LEFT JOIN user u ON(u.user_id=p.user_id)'
                 . ' LEFT JOIN product_sku ps ON(p.product_id = ps.product_id AND LENGTH(ps.combination_id) = 0)';
 
-        $language = $this->language->current();
+        $language = $this->language->getLangcode();
         $where = array($language, 'product_id');
 
         if (!empty($data['product_id'])) {

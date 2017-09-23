@@ -203,7 +203,7 @@ class Page extends Model
             $sql = 'SELECT COUNT(p.page_id)';
         }
 
-        $language = $this->language->current();
+        $language = $this->language->getLangcode();
         $where = array($language, 'page_id');
 
         $sql .= ' FROM page p'

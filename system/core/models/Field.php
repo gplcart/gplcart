@@ -120,7 +120,7 @@ class Field extends Model
                 . ' ON (f.field_id = ft.field_id AND ft.language=?)'
                 . ' WHERE f.field_id > 0';
 
-        $language = $this->language->current();
+        $language = $this->language->getLangcode();
         $where = array($language);
 
         if (!empty($data['field_id'])) {

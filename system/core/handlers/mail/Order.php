@@ -51,7 +51,7 @@ class Order extends BaseHandler
     public function createdToAdmin($order)
     {
         $store = $this->store->get($order['store_id']);
-        $store_name = $this->store->getTranslation('title', $this->language->current(), $store);
+        $store_name = $this->store->getTranslation('title', $this->language->getLangcode(), $store);
         $options = array('from' => $this->store->email($store));
 
         $default = (array) $this->store->getDefault(true);
@@ -81,7 +81,7 @@ class Order extends BaseHandler
         $store = $this->store->get($order['store_id']);
         $url = $this->store->url($store);
         $user = $this->user->get($order['user_id']);
-        $store_name = $this->store->getTranslation('title', $this->language->current(), $store);
+        $store_name = $this->store->getTranslation('title', $this->language->getLangcode(), $store);
 
         $options = $this->store->config(null, $store);
         $options['from'] = $this->store->email($store);
@@ -110,7 +110,7 @@ class Order extends BaseHandler
         $store = $this->store->get($order['store_id']);
         $url = $this->store->url($store);
         $user = $this->user->get($order['user_id']);
-        $store_name = $this->store->getTranslation('title', $this->language->current(), $store);
+        $store_name = $this->store->getTranslation('title', $this->language->getLangcode(), $store);
 
         $options = $this->store->config(null, $store);
         $options['from'] = $this->store->email($store);

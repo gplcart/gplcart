@@ -297,7 +297,7 @@ class ProductClass extends Model
                 . ' LEFT JOIN field_translation ft ON(pcf.field_id = ft.field_id AND ft.language=?)'
                 . ' WHERE pcf.product_class_field_id IS NOT NULL';
 
-        $conditions = array($this->language->current());
+        $conditions = array($this->language->getLangcode());
 
         if (isset($data['product_class_id'])) {
             $sql .= ' AND pcf.product_class_id=?';
