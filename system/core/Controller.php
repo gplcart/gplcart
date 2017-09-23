@@ -262,6 +262,12 @@ abstract class Controller
     protected $langcode;
 
     /**
+     * Current language data
+     * @var array
+     */
+    protected $current_language;
+
+    /**
      * URL class instance
      * @var \gplcart\core\helpers\Url $url
      */
@@ -337,6 +343,7 @@ abstract class Controller
         $this->token = $this->config->token();
 
         $this->setRouteProperties();
+        $this->setLanguageProperties();
 
         $this->setUserProperties();
         $this->setStoreProperties();
@@ -391,14 +398,10 @@ abstract class Controller
      */
     protected function setRouteProperties()
     {
+        $this->current_route = $this->route->getCurrent();
         $this->path = $this->url->path();
         $this->is_backend = $this->url->isBackend();
         $this->is_install = $this->url->isInstall();
-
-        $this->langcode = $this->route->getLangcode();
-        $this->current_route = $this->route->getCurrent();
-        $this->language->setContext($this->getRoute('simple_pattern'));
-
         $this->urn = $this->request->urn();
         $this->base = $this->request->base();
         $this->host = $this->request->host();
@@ -406,6 +409,21 @@ abstract class Controller
         $this->is_ajax = $this->request->isAjax();
         $this->uri = $this->scheme . $this->host . $this->urn;
         $this->query = (array) $this->request->get(null, array(), 'array');
+    }
+
+    /**
+     * Sets the current language data
+     */
+    protected function setLanguageProperties()
+    {
+        if (empty($this->current_route['internal'])) {
+            $this->langcode = $this->route->getLangcode();
+            if ($this->langcode) {
+                $this->current_language = $this->language->get($this->langcode);
+                $this->language->setLangcode($this->langcode);
+                $this->language->setContext($this->current_route['simple_pattern']);
+            }
+        }
     }
 
     /**
@@ -457,9 +475,11 @@ abstract class Controller
      */
     protected function setDefaultAssets()
     {
-        $this->addAssetLibrary('jquery', array('aggregate' => false));
-        $this->setJs('files/assets/system/js/common.js', array('aggregate' => false));
-        $this->setCss('files/assets/system/css/common.css', array('aggregate' => false));
+        if (empty($this->current_route['internal'])) {
+            $this->addAssetLibrary('jquery', array('aggregate' => false));
+            $this->setJs('files/assets/system/js/common.js', array('aggregate' => false));
+            $this->setCss('files/assets/system/css/common.css', array('aggregate' => false));
+        }
     }
 
     /**
@@ -1767,6 +1787,7 @@ abstract class Controller
         $this->data['_help'] = '';
         $this->data['_user'] = $this->current_user;
         $this->data['_store'] = $this->current_store;
+        $this->data['_language'] = $this->current_language;
         $this->data['_messages'] = $this->session->getMessage();
         $this->data['_store_title'] = $this->store->getTranslation('title', $this->langcode);
 
@@ -2051,6 +2072,17 @@ abstract class Controller
             $query = $this->getFilterQuery();
         }
 
+        $this->setFilterData($allowed, $query);
+        $this->query_filter = array_filter($query, 'is_string');
+    }
+
+    /**
+     * 
+     * @param array $allowed
+     * @param array $query
+     */
+    protected function setFilterData(array $allowed, array $query)
+    {
         $this->data['_filtering'] = false;
         $order = isset($this->query['order']) ? $this->query['order'] : '';
 
@@ -2068,17 +2100,12 @@ abstract class Controller
 
             $this->data["sort_$filter"] = $this->url('', $sort);
         }
-
-        $this->query_filter = array_filter($query, 'is_string');
-        if (isset($this->query_filter['sort']) && isset($this->query_filter['order'])) {
-            $this->data['_sort'] = "{$this->query_filter['sort']}-{$this->query_filter['order']}";
-        }
     }
 
     /**
      * Returns an array of prepared GET values used for filtering and sorting
      * @param array $default
-     * @param array $allowed An array of allowed keys in the GET query
+     * @param array $allowed
      * @return array
      */
     public function getFilterQuery(array $default = array(), $allowed = array())
@@ -2086,7 +2113,7 @@ abstract class Controller
         $query = $this->query;
         foreach ($query as $key => $value) {
 
-            if (is_string($value)) {
+            if (!is_string($value)) {
                 continue;
             }
 
