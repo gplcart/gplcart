@@ -178,7 +178,7 @@ class Category extends FrontendController
     }
 
     /**
-     * Sets the category navbar
+     * Sets navigation bar on the category page
      */
     protected function setDataNavbarIndexCategory()
     {
