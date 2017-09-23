@@ -9,7 +9,7 @@
  */
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo $this->e($_langcode); ?>">
+<html dir="<?php echo empty($_language['rtl']) ? 'ltr' : 'rtl'; ?>" lang="<?php echo $_langcode; ?>">
   <?php echo $_head; ?>
   <?php echo $_body; ?>
 </html>
