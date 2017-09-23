@@ -110,7 +110,7 @@ class Curl
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_USERAGENT => 'GPL Cart'
+            CURLOPT_USERAGENT => 'GPLCart'
         );
     }
 

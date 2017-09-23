@@ -13,7 +13,7 @@
 function gplcart_setup_requirements()
 {
     if (version_compare(PHP_VERSION, '5.4.0') < 0) {
-        exit('Your PHP installation is too old. GPL Cart requires at least PHP 5.4.0');
+        exit('Your PHP installation is too old. GPLCart requires at least PHP 5.4.0');
     }
 
     if (!function_exists('mb_internal_encoding')) {

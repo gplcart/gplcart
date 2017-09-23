@@ -46,7 +46,7 @@ class Backend extends Module
             $controller->setMeta(array('charset' => 'utf-8'));
             $controller->setMeta(array('http-equiv' => 'X-UA-Compatible', 'content' => 'IE=edge'));
             $controller->setMeta(array('name' => 'viewport', 'content' => 'width=device-width, initial-scale=1'));
-            $controller->setMeta(array('name' => 'author', 'content' => 'GPL Cart'));
+            $controller->setMeta(array('name' => 'author', 'content' => 'GPLCart'));
         }
     }
 
