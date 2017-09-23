@@ -229,7 +229,7 @@ class Install extends CliController
             $this->validateInputLanguageInstall();
         } else {
             $this->langcode = (string) $selected;
-            $this->language->set($this->langcode);
+            $this->language->setLangcode($this->langcode);
         }
     }
 
@@ -271,7 +271,7 @@ class Install extends CliController
      */
     protected function validateInputTitleInstall()
     {
-        $input = $this->prompt($this->text('Store title'), 'GPL Cart');
+        $input = $this->prompt($this->text('Store title'), 'GPLCart');
 
         if (!$this->isValidInput($input, 'store.title', 'install')) {
             $this->outputErrors();
