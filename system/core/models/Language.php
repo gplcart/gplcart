@@ -9,8 +9,7 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Route,
-    gplcart\core\Model;
+use gplcart\core\Model;
 
 /**
  * Manages basic behaviors and data related to languages and their translations
@@ -25,12 +24,6 @@ class Language extends Model
     protected $written = array();
 
     /**
-     * Route class instance
-     * @var \gplcart\core\Route $route
-     */
-    protected $route;
-
-    /**
      * The current language code
      * @var string
      */
@@ -43,26 +36,17 @@ class Language extends Model
     protected $context;
 
     /**
-     * Whether translation files are set up
+     * Whether translation files are prepared
      * @var bool
      */
     protected $prepared = false;
 
     /**
-     * @param Route $route
+     * Constructor
      */
-    public function __construct(Route $route)
+    public function __construct()
     {
         parent::__construct();
-
-        $this->route = $route;
-
-        $current_route = $this->route->getCurrent();
-        if (isset($current_route['simple_pattern'])) {
-            $this->context = $current_route['simple_pattern'];
-        }
-
-        $this->set($this->route->getLangcode());
     }
 
     /**
@@ -84,22 +68,30 @@ class Language extends Model
     {
         return $this->context;
     }
+    
+    /**
+     * Returns the current language code
+     * @return string
+     */
+    public function getLangcode()
+    {
+        return $this->langcode;
+    }
 
     /**
      * Set a language code
      * @param string $langcode
      */
-    public function set($langcode)
+    public function setLangcode($langcode)
     {
-        if ($langcode && $this->get($langcode)) {
-            $this->langcode = $langcode;
-            $this->prepareFiles($langcode);
-        }
+        $this->langcode = $langcode;
+        $this->prepareFiles($langcode);
     }
 
     /**
      * Prepare all necessary files for the language
      * @param string $langcode
+     * @return bool
      */
     protected function prepareFiles($langcode)
     {
@@ -137,7 +129,7 @@ class Language extends Model
         }
 
         $default = $this->getDefault();
-        $available = $this->getAvailable();
+        $available = $this->getScanned();
         $saved = $this->config->get('languages', $this->getDefaultList());
         $languages = gplcart_array_merge($available, $saved);
 
@@ -200,25 +192,21 @@ class Language extends Model
      * Scans language folders and returns an array of available languages
      * @return array
      */
-    public function getAvailable()
+    public function getScanned()
     {
         $iso = $this->getIso();
 
         $languages = array();
         foreach (scandir(GC_LOCALE_DIR) as $langcode) {
 
-            if (preg_match('/^[a-z]{2}(_[A-Z]{2})?$/', $langcode) !== 1) {
+            if (empty($iso[$langcode]['name'])) {
                 continue;
             }
 
-            $name = $native_name = $langcode;
+            $name = $native_name = $iso[$langcode]['name'];
 
-            if (!empty($iso[$langcode][0])) {
-                $name = $native_name = $iso[$langcode][0];
-            }
-
-            if (!empty($iso[$langcode][1])) {
-                $native_name = $iso[$langcode][1];
+            if (!empty($iso[$langcode]['native_name'])) {
+                $native_name = $iso[$langcode]['native_name'];
             }
 
             $languages[$langcode] = array(
@@ -227,7 +215,8 @@ class Language extends Model
                 'status' => false,
                 'default' => false,
                 'code' => $langcode,
-                'native_name' => $native_name
+                'native_name' => $native_name,
+                'rtl' => !empty($iso[$langcode]['rtl'])
             );
         }
 
@@ -323,17 +312,18 @@ class Language extends Model
         $iso = $this->getIso($data['code']);
         $native_name = $name = $data['code'];
 
-        if (empty($data['name']) && !empty($iso[0])) {
-            $native_name = $name = $iso[0];
+        if (empty($data['name']) && !empty($iso['name'])) {
+            $native_name = $name = $iso['name'];
         }
 
-        if (empty($data['native_name']) && !empty($iso[1])) {
-            $native_name = $iso[1];
+        if (empty($data['native_name']) && !empty($iso['native_name'])) {
+            $native_name = $iso['native_name'];
         }
 
         $values = array(
             'name' => $name,
             'code' => $data['code'],
+            'rtl' => !empty($data['rtl']),
             'native_name' => $native_name,
             'status' => !empty($data['status']),
             'default' => !empty($data['default']),
@@ -716,15 +706,6 @@ class Language extends Model
                 $this->mergeTranslation($file, $langcode);
             }
         }
-    }
-
-    /**
-     * Returns the current language
-     * @return string
-     */
-    public function current()
-    {
-        return $this->langcode;
     }
 
     /**
