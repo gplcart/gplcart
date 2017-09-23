@@ -202,8 +202,8 @@
           <label class="col-md-4 control-label"><?php echo $this->text('Country'); ?></label>
           <div class="col-md-8">
             <select name="store[data][country]" class="form-control">
-              <?php foreach ($countries as $code => $name) { ?>
-              <option value="<?php echo $this->e($code); ?>"<?php echo $store['data']['country'] == $code ? ' selected' : ''; ?>><?php echo $this->e($name); ?></option>
+              <?php foreach ($countries as $code => $country) { ?>
+              <option value="<?php echo $this->e($code); ?>"<?php echo $store['data']['country'] == $code ? ' selected' : ''; ?>><?php echo $this->e($country['name']); ?></option>
               <?php } ?>
             </select>
             <div class="help-block">

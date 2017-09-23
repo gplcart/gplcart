@@ -19,10 +19,10 @@
           <span class="icon-bar"></span>
         </button>
         <?php if ($this->path('^admin$')) { ?>
-        <span class="navbar-brand">GPLcart</span>
+        <span class="navbar-brand"><?php echo $this->text('GPLCart'); ?></span>
         <?php } else { ?>
         <a class="navbar-brand" href="<?php echo $this->url('admin'); ?>" title="<?php echo $this->text('Dashboard'); ?>">
-        GPLCart
+        <?php echo $this->text('GPLCart'); ?>
         </a>
         <?php } ?>
       </div>
@@ -39,7 +39,7 @@
               <?php foreach ($_stores as $store) { ?>
               <li>
                 <a target="_blank" href="<?php echo $this->e("http://{$store['domain']}/{$store['basepath']}"); ?>">
-                  <i class="fa fa-external-link"></i> <?php echo $this->e($store['name']); ?>
+                  <?php echo $this->e("www.{$store['domain']}/{$store['basepath']}"); ?>
                 </a>
               </li>
               <?php } ?>
@@ -47,18 +47,37 @@
           </li>
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <i class="fa fa-user"></i> <?php echo $this->e($_user['name']); ?>
+              <i class="fa fa-user"></i>
             </a>
             <ul class="dropdown-menu dropdown-menu-right">
               <li>
                 <a href="<?php echo $this->url("account/$_uid"); ?>"><?php echo $this->text('Account'); ?></a>
               </li>
-              <li class="divider"></li>
               <li>
-                <a href="<?php echo $this->url('logout'); ?>"><i class="fa fa-sign-out"></i> <?php echo $this->text('Log out'); ?></a>
+                <a href="<?php echo $this->url('logout'); ?>"><?php echo $this->text('Log out'); ?></a>
               </li>
             </ul>
           </li>
+          <?php if(count($_languages) > 1) { ?>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <?php if (empty($_languages[$_langcode]['status'])) { ?>
+              <?php echo $this->text('Select language'); ?>
+              <?php } else { ?>
+              <?php echo $this->e($_languages[$_langcode]['native_name']); ?>
+              <?php } ?>
+            </a>
+            <ul class="dropdown-menu">
+              <?php foreach ($_languages as $language) { ?>
+              <?php if ($language['code'] !== $_langcode) { ?>
+              <li>
+                <a href="<?php echo $this->lurl($language['code'], '', $_query); ?>"><?php echo $this->e($language['native_name']); ?></a>
+              </li>
+              <?php } ?>
+              <?php } ?>
+            </ul>
+          </li>
+          <?php } ?>
         </ul>
       </div>
     </div>

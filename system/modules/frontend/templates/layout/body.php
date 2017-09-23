@@ -256,7 +256,7 @@
           <?php if(!empty($_store['data']['owner'])) { ?>
           <?php echo $this->e($_store['data']['owner']); ?>
           <?php } ?>
-          &copy; 2015 - <?php echo date('Y'); ?> <a href="http://gplcart.com">GPL Cart</a>
+          &copy; 2015 - <?php echo date('Y'); ?> <a href="http://gplcart.com"><?php echo $this->text('GPLCart'); ?></a>
         </div>
       </div>
     </div>

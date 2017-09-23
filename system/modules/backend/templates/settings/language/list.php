@@ -31,6 +31,7 @@
         <th><?php echo $this->text('Name'); ?></th>
         <th><?php echo $this->text('Native name'); ?></th>
         <th><?php echo $this->text('Code'); ?></th>
+        <th><?php echo $this->text('Right-to-left'); ?></th>
         <th><?php echo $this->text('Default'); ?></th>
         <th><?php echo $this->text('Enabled'); ?></th>
         <th></th>
@@ -42,6 +43,13 @@
         <td class="middle"><?php echo $this->e($language['name']); ?></td>
         <td class="middle"><?php echo $this->e($language['native_name']); ?></td>
         <td class="middle"><?php echo $this->e($code); ?></td>
+        <td class="middle">
+          <?php if (empty($language['rtl'])) { ?>
+          <i class="fa fa-square-o"></i>
+          <?php } else { ?>
+          <i class="fa fa-check-square-o"></i>
+          <?php } ?>
+        </td>
         <td class="middle">
           <?php if (empty($language['default'])) { ?>
           <i class="fa fa-square-o"></i>

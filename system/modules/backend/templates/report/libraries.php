@@ -9,7 +9,7 @@
  */
 ?>
 <div class="btn-toolbar actions">
-  <a class="btn btn-default" href="<?php echo $this->url('', array('refresh' => 1, 'token' => $_token)); ?>" onclick="return confirm('<?php echo $this->text('Are you sure?'); ?>');" class="refresh">
+  <a class="btn btn-default" href="<?php echo $this->url('', array('refresh' => 1, 'token' => $_token)); ?>" class="refresh">
     <?php echo $this->text('Clear cache'); ?>
   </a>
 </div>
@@ -65,7 +65,7 @@
             </li>
             <?php } ?>
             <?php if (!empty($library['download'])) { ?>
-            <li><a onclick="return confirm('<?php echo $this->text('You are about to download the library from an external site. Continue?'); ?>');" href="<?php echo $this->e($library['download']); ?>">
+            <li><a href="<?php echo $this->e($library['download']); ?>">
               <?php echo $this->text('Download'); ?></a>
             </li>
             <?php } ?>

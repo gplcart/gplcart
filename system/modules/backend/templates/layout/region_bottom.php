@@ -14,7 +14,7 @@
       <div class="col-md-6">
         <p class="text-muted small">
           &copy; <?php echo date('Y') == 2015 ? date('Y') : '2015 - ' . date('Y'); ?>
-          <a href="http://gplcart.com">GPL Cart</a> v<?php echo gplcart_version(); ?>
+          <a href="http://gplcart.com"><?php echo $this->text('GPLCart'); ?></a> v<?php echo gplcart_version(); ?>
         </p>
       </div>
     </div>
