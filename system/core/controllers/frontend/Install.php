@@ -48,7 +48,7 @@ class Install extends BaseController
     {
         $this->controlAccessInstall();
 
-        $this->language->set($this->install_language);
+        $this->language->setLangcode($this->install_language);
 
         $this->setTitleEditInstall();
 
@@ -141,7 +141,7 @@ class Install extends BaseController
      */
     protected function setTitleEditInstall()
     {
-        $this->setTitle($this->text('Installing GPL Cart'));
+        $this->setTitle($this->text('Installing GPLCart'));
     }
 
     /**
