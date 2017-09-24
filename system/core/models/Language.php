@@ -68,7 +68,7 @@ class Language extends Model
     {
         return $this->context;
     }
-    
+
     /**
      * Returns the current language code
      * @return string
@@ -682,10 +682,23 @@ class Language extends Model
      */
     public function refresh($langcode = null)
     {
+        $result = null;
+        $this->hook->attach('language.refresh.before', $langcode, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
         gplcart_file_delete($this->getCompiledDirectory($langcode), array('csv'));
+
+        gplcart_static_clear();
 
         $this->prepareFiles($langcode);
         $this->mergeModuleTranslations($langcode);
+
+        $result = true;
+        $this->hook->attach('language.refresh.after', $langcode, $result, $this);
+        return $result;
     }
 
     /**
@@ -717,17 +730,18 @@ class Language extends Model
     public function translit($string, $language)
     {
         $result = null;
-        $this->hook->attach('language.translit', $string, $language, $result, $this);
+        $this->hook->attach('language.translit.before', $string, $language, $result, $this);
 
         if (isset($result)) {
             return $result;
         }
 
         if (function_exists('transliterator_transliterate')) {
-            return transliterator_transliterate('Any-Latin; Latin-ASCII; [\u0100-\u7fff] remove', $string);
+            $result = transliterator_transliterate('Any-Latin; Latin-ASCII; [\u0100-\u7fff] remove', $string);
         }
 
-        return $string;
+        $this->hook->attach('language.translit.after', $string, $language, $result, $this);
+        return $result;
     }
 
     /**
