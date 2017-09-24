@@ -32,7 +32,7 @@
     <tbody>
       <?php foreach ($currencies as $code => $currency) { ?>
       <tr>
-        <td class="middle"><?php echo $this->e($currency['name']); ?></td>
+        <td class="middle"><?php echo $this->text($currency['name']); ?></td>
         <td class="middle"><?php echo $this->e($code); ?></td>
         <td class="middle"><?php echo $this->e($currency['symbol']); ?></td>
         <td class="middle"><?php echo $this->e($currency['conversion_rate']); ?></td>
