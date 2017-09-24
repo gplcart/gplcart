@@ -73,8 +73,8 @@
               </a>
             </li>
             <li>
-              <a href="<?php echo $this->url('', array('refresh' => $code, 'token' => $_token)); ?>" onclick="return confirm('<?php echo $this->text('Are you sure?'); ?>');">
-                <?php echo $this->lower($this->text('Clear cache')); ?>
+              <a href="<?php echo $this->url('', array('refresh' => $code, 'token' => $_token)); ?>" onclick="return confirm('<?php echo $this->text('Are you sure? All compiled translations for this language will be re-created, their existing translations will be lost!'); ?>');">
+                <?php echo $this->lower($this->text('Refresh')); ?>
               </a>
             </li>
             <?php } ?>
