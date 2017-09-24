@@ -100,7 +100,7 @@
         <?php foreach ($countries as $code => $country) { ?>
         <tr>
           <td class="middle"><input type="checkbox" class="select-all" name="action[items][]" value="<?php echo $code; ?>"<?php echo $access_options ? '' : ' disabled'; ?>></td>
-          <td class="middle"><?php echo $this->e($country['name']); ?></td>
+          <td class="middle"><?php echo $this->text($country['name']); ?></td>
           <td class="middle"><?php echo $this->e($country['native_name']); ?></td>
           <td class="middle"><?php echo $this->e($code); ?></td>
           <td class="middle">
