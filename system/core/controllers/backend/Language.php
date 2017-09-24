@@ -195,15 +195,10 @@ class Language extends BackendController
      */
     protected function refreshLanguage()
     {
-        $key = 'refresh';
-        $this->controlToken($key);
-        $code = $this->getQuery($key);
-
-        if (!empty($code)) {
-            $this->controlAccess('language_edit');
-            $this->language->refresh($code);
-            $message = $this->text('Cache has been deleted');
-            $this->redirect('', $message, 'success');
+        $this->controlToken('refresh');
+        $code = $this->getQuery('refresh');
+        if (!empty($code) && $this->access('language_edit') && $this->language->refresh($code)) {
+            $this->redirect('', $this->text('Language has been refreshed'), 'success');
         }
     }
 
