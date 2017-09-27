@@ -17,13 +17,8 @@ use gplcart\core\traits\Dependency as DependencyTrait;
  */
 class Library
 {
-    use DependencyTrait;
 
-    /**
-     * Cache instance
-     * @var \gplcart\core\Cache $cache
-     */
-    protected $cache;
+    use DependencyTrait;
 
     /**
      * Hook instance
@@ -44,15 +39,12 @@ class Library
     protected $loaded = array();
 
     /**
-     * Constructor
-     * @param Cache $cache
      * @param Hook $hook
      * @param GraphHelper $graph
      */
-    public function __construct(Cache $cache, Hook $hook, GraphHelper $graph)
+    public function __construct(Hook $hook, GraphHelper $graph)
     {
         $this->hook = $hook;
-        $this->cache = $cache;
         $this->graph = $graph;
     }
 
@@ -92,22 +84,20 @@ class Library
         $libraries = &gplcart_static(__METHOD__);
 
         if (isset($libraries)) {
-            return (array)$libraries;
+            return (array) $libraries;
         }
 
-        $cached = $this->cache->get('libraries');
-
-        if (!empty($cached)) {
-            $libraries = $cached;
-            return (array)$libraries;
+        if (is_file(GC_CONFIG_COMPILED_LIBRARY)) {
+            $libraries = require GC_CONFIG_COMPILED_LIBRARY;
+            return $libraries;
         }
 
         $libraries = require GC_CONFIG_LIBRARY;
         $this->hook->attach('library.list', $libraries, $this);
 
         $libraries = $this->prepareList($libraries);
-        $this->cache->set('libraries', $libraries);
-        return (array)$libraries;
+        gplcart_file_config(GC_CONFIG_COMPILED_LIBRARY, $libraries);
+        return (array) $libraries;
     }
 
     /**
@@ -115,7 +105,8 @@ class Library
      */
     public function clearCache()
     {
-        $this->cache->clear('libraries');
+        chmod(GC_CONFIG_COMPILED_LIBRARY, 0644);
+        return unlink(GC_CONFIG_COMPILED_LIBRARY);
     }
 
     /**
@@ -180,7 +171,7 @@ class Library
         $readable = 0;
         foreach ($library['files'] as $path) {
             $file = $library['basepath'] . "/$path";
-            $readable += (int)(is_file($file) && is_readable($file));
+            $readable += (int) (is_file($file) && is_readable($file));
         }
 
         return count($library['files']) == $readable;
@@ -241,7 +232,7 @@ class Library
                 return preg_replace('/^[\D\\s]+/', '', $version[1]);
             }
 
-            $library['version_source']['lines']--;
+            $library['version_source']['lines'] --;
         }
 
         fclose($handle);
@@ -282,7 +273,7 @@ class Library
         }
 
         $data = json_decode(trim($json), true);
-        return empty($data) ? array() : (array)$data;
+        return empty($data) ? array() : (array) $data;
     }
 
     /**
@@ -376,10 +367,12 @@ class Library
     {
         $prepared = array();
         foreach ($ids as $id) {
+
             $library = $libraries[$id];
             array_walk($library['files'], function (&$file) use ($library) {
                 $file = "{$library['basepath']}/$file";
             });
+
             $prepared = array_merge($prepared, $library['files']);
         }
         return $prepared;
