@@ -196,3 +196,24 @@ function gplcart_file_name_clean($name, $replace = '')
     // Remove multiple consecutive non-alphabetical characters
     return preg_replace('/(_)_+|(\.)\.+|(-)-+/', '\\1\\2\\3', $safe);
 }
+
+/**
+ * Saves PHP configuration in a file
+ * @param string $file
+ * @param mixed $data
+ */
+function gplcart_file_config($file, $data)
+{
+    if (file_exists($file)) {
+        chmod($file, 0644);
+    }
+
+    $result = file_put_contents($file, '<?php return ' . var_export($data, true) . ';');
+
+    if ($result !== false) {
+        chmod($file, 0444);
+        return true;
+    }
+
+    return false;
+}

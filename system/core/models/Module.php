@@ -572,16 +572,7 @@ class Module extends Model
      */
     protected function setOverrideConfig()
     {
-        $map = $this->getOverrideMap();
-
-        if (file_exists(GC_CONFIG_OVERRIDE)) {
-            chmod(GC_CONFIG_OVERRIDE, 0644);
-        }
-
-        file_put_contents(GC_CONFIG_OVERRIDE, '<?php return ' . var_export($map, true) . ';');
-        chmod(GC_CONFIG_OVERRIDE, 0444);
-
-        return true;
+        return gplcart_file_config(GC_CONFIG_OVERRIDE, $this->getOverrideMap());
     }
 
     /**
