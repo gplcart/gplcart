@@ -59,12 +59,14 @@ class ImageStyle extends BackendController
      */
     protected function clearCacheImageStyle()
     {
-        $key = 'clear';
-        $this->controlToken($key);
+        $this->controlToken('clear');
+        $style_id = $this->getQuery('clear');
 
-        $style_id = $this->getQuery($key);
-        if (!empty($style_id) && $this->image->clearCache($style_id)) {
-            $this->redirect('', $this->text('Cache has been deleted'), 'success');
+        if (!empty($style_id)) {
+            if ($this->image->clearCache($style_id)) {
+                $this->redirect('', $this->text('Cache has been deleted'), 'success');
+            }
+            $this->redirect('', $this->text('Cache has not been deleted'), 'warning');
         }
     }
 
@@ -104,12 +106,24 @@ class ImageStyle extends BackendController
         $this->setBreadcrumbEditImageStyle();
 
         $this->setData('imagestyle', $this->data_imagestyle);
-        $this->setData('action_handlers', $this->image->getActionHandlers());
+        $this->setData('can_delete', $this->canDeleteImageStyle());
+        $this->setData('actions', $this->image->getActionHandlers());
 
         $this->submitEditImageStyle();
         $this->setDataEditImageStyle();
 
         $this->outputEditImageStyle();
+    }
+
+    /**
+     * Whether an image style can be deleted
+     * @return bool
+     */
+    public function canDeleteImageStyle()
+    {
+        return isset($this->data_imagestyle['imagestyle_id'])//
+                && $this->access('image_style_delete')//
+                && $this->image->canDeleteImageStyle($this->data_imagestyle['imagestyle_id']);
     }
 
     /**
@@ -147,17 +161,11 @@ class ImageStyle extends BackendController
      */
     protected function deleteImageStyle()
     {
-        $this->controlAccess('image_style_delete');
-        $this->image->deleteStyle($this->data_imagestyle['imagestyle_id']);
-        $this->image->clearCache($this->data_imagestyle['imagestyle_id']);
-
-        $message = $this->text('Settings have been reset to default values');
-
-        if (empty($this->data_imagestyle['default'])) {
-            $message = $this->text('Image style has been deleted');
+        if ($this->canDeleteImageStyle()) {
+            $this->image->deleteStyle($this->data_imagestyle['imagestyle_id']);
+            $this->image->clearCache($this->data_imagestyle['imagestyle_id']);
+            $this->redirect('admin/settings/imagestyle', $this->text('Image style has been deleted'), 'success');
         }
-
-        $this->redirect('admin/settings/imagestyle', $message, 'success');
     }
 
     /**
