@@ -67,11 +67,6 @@ class Image extends Model
         }
 
         $handlers = require GC_CONFIG_IMAGE_ACTION;
-
-        array_walk($handlers, function(&$handler) {
-            $handler['name'] = $this->language->text($handler['name']);
-        });
-
         $this->hook->attach('imagestyle.action.handlers', $handlers, $this);
         return (array) $handlers;
     }
@@ -97,8 +92,12 @@ class Image extends Model
      */
     public function processAction(&$source, &$target, $handler, &$action)
     {
-        $callback = Handler::get($handler, null, 'process');
-        return call_user_func_array($callback, array(&$source, &$target, &$action));
+        try {
+            $callable = Handler::get($handler, null, 'process');
+            return call_user_func_array($callable, array(&$source, &$target, &$action));
+        } catch (\Exception $ex) {
+            return false;
+        }
     }
 
     /**
@@ -188,13 +187,14 @@ class Image extends Model
             return (array) $imagestyles;
         }
 
-        $default_imagestyles = require GC_CONFIG_IMAGE_STYLE;
-        $saved_imagestyles = $this->config->get('imagestyles', array());
-        $imagestyles = gplcart_array_merge($default_imagestyles, $saved_imagestyles);
+        $default = require GC_CONFIG_IMAGE_STYLE;
+        $saved = $this->config->get('imagestyles', array());
+        $imagestyles = array_replace_recursive($default, $saved);
 
         foreach ($imagestyles as $imagestyle_id => &$imagestyle) {
             $imagestyle['imagestyle_id'] = $imagestyle_id;
-            $imagestyle['default'] = isset($default_imagestyles[$imagestyle_id]);
+            $imagestyle['default'] = isset($default[$imagestyle_id]);
+            $imagestyle['in_database'] = isset($saved[$imagestyle_id]);
         }
 
         $this->hook->attach('imagestyle.list', $imagestyles, $this);
@@ -245,18 +245,17 @@ class Image extends Model
             return (int) $result;
         }
 
-        $imagestyles = $this->getStyleList();
+        $default = $this->getDefaultData();
+        $data += $default;
 
-        $result = $imagestyles ? (int) max(array_keys($imagestyles)) : 0;
-        $result++;
+        $imagestyle_id = count($this->getStyleList()) + 1;
+        $imagestyles = $this->config->get('imagestyles', array());
 
-        $allowed = array('name', 'status', 'actions');
-        $imagestyles[$result] = array_intersect_key($data, array_flip($allowed));
+        $imagestyles[$imagestyle_id] = array_intersect_key($data, $default);
         $this->config->set('imagestyles', $imagestyles);
 
-        $this->hook->attach('imagestyle.add.after', $data, $result, $this);
-
-        return (int) $result;
+        $this->hook->attach('imagestyle.add.after', $data, $imagestyle_id, $this);
+        return (int) $imagestyle_id;
     }
 
     /**
@@ -274,50 +273,65 @@ class Image extends Model
             return (bool) $result;
         }
 
-        $imagestyles = $this->getStyleList();
+        $default = $this->getDefaultData();
+        $data += $default;
 
-        if (empty($imagestyles[$imagestyle_id])) {
-            return false;
-        }
-
-        $allowed = array('name', 'status', 'actions');
-        $imagestyles[$imagestyle_id] = array_intersect_key($data, array_flip($allowed));
+        $imagestyles = $this->config->select('imagestyles', array());
+        $imagestyles[$imagestyle_id] = array_intersect_key($data, $default);
         $this->config->set('imagestyles', $imagestyles);
 
         $result = true;
         $this->hook->attach('imagestyle.update.after', $imagestyle_id, $data, $result, $this);
-
         return (bool) $result;
+    }
+
+    /**
+     * Returns an array of default image style data
+     * @return array
+     */
+    protected function getDefaultData()
+    {
+        return array('name' => '', 'status' => false, 'actions' => array());
     }
 
     /**
      * Deletes an image style
      * @param integer $imagestyle_id
+     * @param bool $check
      * @return boolean
      */
-    public function deleteStyle($imagestyle_id)
+    public function deleteStyle($imagestyle_id, $check = true)
     {
         $result = null;
-        $this->hook->attach('imagestyle.delete.before', $imagestyle_id, $result, $this);
+        $this->hook->attach('imagestyle.delete.before', $imagestyle_id, $check, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
         }
 
-        $imagestyles = $this->getStyleList();
-
-        if (empty($imagestyles[$imagestyle_id])) {
+        if ($check && !$this->canDeleteImageStyle($imagestyle_id)) {
             return false;
         }
 
+        $imagestyles = $this->config->select('imagestyles', array());
         unset($imagestyles[$imagestyle_id]);
-
         $this->config->set('imagestyles', $imagestyles);
 
         $result = true;
-        $this->hook->attach('imagestyle.delete.after', $imagestyle_id, $result, $this);
+        $this->hook->attach('imagestyle.delete.after', $imagestyle_id, $check, $result, $this);
 
         return (bool) $result;
+    }
+
+    /**
+     * Whether the image style can be deleted
+     * @param int $imagestyle_id
+     * @return bool
+     */
+    public function canDeleteImageStyle($imagestyle_id)
+    {
+        $imagestyles = $this->config->select('imagestyles', array());
+        return isset($imagestyles[$imagestyle_id]);
     }
 
     /**
