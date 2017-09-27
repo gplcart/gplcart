@@ -60,7 +60,7 @@
         </div>
       </div>
     </div>
-    <?php if (!empty($_languages)) { ?>
+    <?php if (!empty($languages)) { ?>
     <div class="form-group">
       <div class="col-md-10 col-md-offset-2">
         <a data-toggle="collapse" href="#translations">
@@ -69,7 +69,7 @@
       </div>
     </div>
     <div id="translations" class="collapse translations<?php echo $this->error(null, ' in'); ?>">
-      <?php foreach ($_languages as $code => $info) { ?>
+      <?php foreach ($languages as $code => $info) { ?>
       <div class="form-group<?php echo $this->error("translation.$code.title", ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Title %language', array('%language' => $info['native_name'])); ?></label>
         <div class="col-md-10">
@@ -300,7 +300,7 @@
         </div>
       </div>
     </div>
-    <?php if (!empty($_languages)) { ?>
+    <?php if (!empty($languages)) { ?>
     <div class="form-group">
       <div class="col-md-10 col-md-offset-2">
         <a data-toggle="collapse" href="#meta-translations">
@@ -309,7 +309,7 @@
       </div>
     </div>
     <div id="meta-translations" class="collapse translations<?php echo $this->error(null, ' in'); ?>">
-      <?php foreach ($_languages as $code => $info) { ?>
+      <?php foreach ($languages as $code => $info) { ?>
       <div class="form-group<?php echo $this->error("translation.$code.meta_title", ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Meta title %language', array('%language' => $info['native_name'])); ?></label>
         <div class="col-md-10">
