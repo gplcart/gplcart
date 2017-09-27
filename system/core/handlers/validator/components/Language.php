@@ -93,7 +93,7 @@ class Language extends ComponentValidator
             return false;
         }
 
-        if (preg_match('/^[a-z]{2,3}(?:-[A-Z]{2,3}(?:-[a-zA-Z]{4})?)?$/', $code) !== 1) {
+        if (preg_match('/^[A-Za-z\\-]+$/', $code) !== 1) {
             $this->setErrorInvalid($field, $label);
             return false;
         }
@@ -127,10 +127,11 @@ class Language extends ComponentValidator
             return true; // If not set, code will be used instead
         }
 
-        if (preg_match('/^[A-Za-z]{1,50}$/', $name) !== 1) {
-            $this->setErrorInvalid($field, $label);
+        if (mb_strlen($name) > 50) {
+            $this->setErrorLengthRange($field, $label, 0, 50);
             return false;
         }
+
         return true;
     }
 
