@@ -66,15 +66,16 @@ trait Translation
             return null;
         }
 
-        if ($update) {
-            $this->deleteTranslationTrait($db, $data["{$entity}_id"], $entity);
-        }
-
         if (empty($data['translation'])) {
             return null;
         }
 
         foreach ($data['translation'] as $language => $translation) {
+
+            if ($update) {
+                $this->deleteTranslationTrait($db, $data["{$entity}_id"], $entity, $language);
+            }
+
             $this->addTranslationTrait($db, $data["{$entity}_id"], $entity, $language, $translation);
         }
 
