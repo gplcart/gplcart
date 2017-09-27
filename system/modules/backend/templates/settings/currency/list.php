@@ -25,6 +25,7 @@
         <th><?php echo $this->text('Conversion rate'); ?></th>
         <th><?php echo $this->text('Default'); ?></th>
         <th><?php echo $this->text('Enabled'); ?></th>
+        <th><?php echo $this->text('In database'); ?></th>
         <th><?php echo $this->text('Updated'); ?></th>
         <th></th>
       </tr>
@@ -48,6 +49,13 @@
           <i class="fa fa-check-square-o"></i>
           <?php } else { ?>
           <i class="fa fa-square-o"></i>
+          <?php } ?>
+        </td>
+        <td class="middle">
+          <?php if (empty($currency['in_database'])) { ?>
+          <i class="fa fa-square-o"></i>
+          <?php } else { ?>
+          <i class="fa fa-check-square-o"></i>
           <?php } ?>
         </td>
         <td class="middle"><?php echo empty($currency['modified']) ? '--' : $this->date($currency['modified']); ?></td>

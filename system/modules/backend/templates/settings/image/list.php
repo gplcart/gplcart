@@ -23,6 +23,7 @@
         <th><?php echo $this->text('Name'); ?></th>
         <th><?php echo $this->text('Default'); ?></th>
         <th><?php echo $this->text('Enabled'); ?></th>
+        <th><?php echo $this->text('In database'); ?></th>
         <th></th>
       </tr>
     </thead>
@@ -40,6 +41,13 @@
         </td>
         <td class="middle">
           <?php if (empty($style['status'])) { ?>
+          <i class="fa fa-square-o"></i>
+          <?php } else { ?>
+          <i class="fa fa-check-square-o"></i>
+          <?php } ?>
+        </td>
+        <td class="middle">
+          <?php if (empty($style['in_database'])) { ?>
           <i class="fa fa-square-o"></i>
           <?php } else { ?>
           <i class="fa fa-check-square-o"></i>

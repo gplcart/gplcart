@@ -10,7 +10,7 @@
 ?>
 <form method="post" class="form-horizontal">
   <input type="hidden" name="token" value="<?php echo $_token; ?>">
-  <div class="form-group">
+  <div class="form-group<?php echo $this->error('default', ' has-error'); ?>">
     <label class="col-md-2 control-label"><?php echo $this->text('Default'); ?></label>
     <div class="col-md-6">
       <div class="btn-group" data-toggle="buttons">
@@ -22,6 +22,7 @@
         </label>
       </div>
       <div class="help-block">
+        <?php echo $this->error('default'); ?>
         <div class="text-muted"><?php echo $this->text('If selected the language will be considered as default fallback language'); ?></div>
       </div>
     </div>
@@ -63,7 +64,7 @@
   <div class="form-group required<?php echo $this->error('code', ' has-error'); ?>">
     <label class="col-md-2 control-label"><?php echo $this->text('Code'); ?></label>
     <div class="col-md-4">
-      <input name="language[code]" maxlength="2" class="form-control" value="<?php echo isset($language['code']) ? $this->e($language['code']) : ''; ?>">
+      <input name="language[code]" class="form-control" value="<?php echo isset($language['code']) ? $this->e($language['code']) : ''; ?>">
       <div class="help-block">
         <?php echo $this->error('code'); ?>
         <div class="text-muted">

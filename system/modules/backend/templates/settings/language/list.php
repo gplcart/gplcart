@@ -33,6 +33,7 @@
         <th><?php echo $this->text('Code'); ?></th>
         <th><?php echo $this->text('Right-to-left'); ?></th>
         <th><?php echo $this->text('Default'); ?></th>
+        <th><?php echo $this->text('In database'); ?></th>
         <th><?php echo $this->text('Enabled'); ?></th>
         <th></th>
       </tr>
@@ -40,7 +41,7 @@
     <tbody>
       <?php foreach ($languages as $code => $language) { ?>
       <tr data-code="<?php echo $code; ?>">
-        <td class="middle"><?php echo $this->e($language['name']); ?></td>
+        <td class="middle"><?php echo $this->text($language['name']); ?></td>
         <td class="middle"><?php echo $this->e($language['native_name']); ?></td>
         <td class="middle"><?php echo $this->e($code); ?></td>
         <td class="middle">
@@ -52,6 +53,13 @@
         </td>
         <td class="middle">
           <?php if (empty($language['default'])) { ?>
+          <i class="fa fa-square-o"></i>
+          <?php } else { ?>
+          <i class="fa fa-check-square-o"></i>
+          <?php } ?>
+        </td>
+        <td class="middle">
+          <?php if (empty($language['in_database'])) { ?>
           <i class="fa fa-square-o"></i>
           <?php } else { ?>
           <i class="fa fa-check-square-o"></i>
@@ -72,11 +80,13 @@
                 <?php echo $this->lower($this->text('Edit')); ?>
               </a>
             </li>
+            <?php if(!empty($language['file_exists'])) { ?>
             <li>
               <a href="<?php echo $this->url('', array('refresh' => $code, 'token' => $_token)); ?>" onclick="return confirm('<?php echo $this->text('Are you sure? All compiled translations for this language will be re-created, their existing translations will be lost!'); ?>');">
                 <?php echo $this->lower($this->text('Refresh')); ?>
               </a>
             </li>
+            <?php } ?>
             <?php } ?>
           </ul>
         </td>
