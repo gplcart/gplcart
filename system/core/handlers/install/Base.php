@@ -94,7 +94,7 @@ class Base extends Handler
         $config .= 'return $config;';
         $config .= PHP_EOL;
 
-        if (file_put_contents(GC_CONFIG_COMMON, $config)) {
+        if (file_put_contents(GC_CONFIG_COMMON, $config) !== false) {
             chmod(GC_CONFIG_COMMON, 0444);
             return true;
         }
