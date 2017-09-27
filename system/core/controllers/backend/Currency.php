@@ -48,10 +48,29 @@ class Currency extends BackendController
         $this->setTitleListCurrency();
         $this->setBreadcrumbListCurrency();
 
-        $this->setData('currencies', $this->currency->getList());
+        $this->setData('currencies', $this->getListCurrency());
         $this->setData('default_currency', $this->currency->getDefault());
 
         $this->outputListCurrency();
+    }
+
+    /**
+     * Returns an array of sorted currencies
+     * @return array
+     */
+    protected function getListCurrency()
+    {
+        $currencies = $this->currency->getList();
+
+        $in_database = $codes = $statuses = array();
+        foreach ($currencies as $code => &$currency) {
+            $codes[$code] = $code;
+            $statuses[$code] = !empty($currency['status']);
+            $in_database[$code] = !empty($currency['in_database']);
+        }
+
+        array_multisort($in_database, SORT_DESC, $statuses, SORT_DESC, $codes, SORT_ASC, $currencies);
+        return $currencies;
     }
 
     /**
@@ -137,8 +156,8 @@ class Currency extends BackendController
     {
         return isset($this->data_currency['code'])//
                 && $this->access('currency_delete')//
-                && ($this->currency->getDefault() != $this->data_currency['code'])//
-                && !$this->isPosted();
+                && !$this->isPosted()//
+                && $this->currency->canDelete($this->data_currency['code']);
     }
 
     /**
@@ -148,7 +167,7 @@ class Currency extends BackendController
     protected function setCurrency($code)
     {
         if (!empty($code)) {
-            $this->data_currency = (array) $this->currency->get($code);
+            $this->data_currency = $this->currency->get($code);
             if (empty($this->data_currency)) {
                 $this->outputHttpStatus(404);
             }
