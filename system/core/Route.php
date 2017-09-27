@@ -54,7 +54,7 @@ class Route
      * The language code from the current URL
      * @var string
      */
-    protected $langcode = '';
+    protected $langcode;
 
     /**
      * The current route
@@ -142,13 +142,14 @@ class Route
         if (!empty($languages)) {
 
             $segments = $this->url->segments(true);
-            $default = $this->config->get('language', '');
+            $default = $this->config->get('language', 'en');
 
-            $found = !empty($languages[$segments[0]]['status']);
+            $found = !empty($languages[$segments[0]]['status']) || $segments[0] === 'en';
             $this->langcode = $found ? $segments[0] : $default;
             $is_default = ($this->langcode === $default);
 
             $suffix = $is_default ? '' : $this->langcode;
+
             $this->request->setLangcode($suffix);
 
             if ($found && $is_default && $this->config->get('redirect_default_langcode', 1)) {
