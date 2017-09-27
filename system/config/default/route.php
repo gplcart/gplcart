@@ -554,7 +554,7 @@ return array(
             'controller' => array('gplcart\\core\\controllers\\backend\\Language', 'listLanguage')
         )
     ),
-    'admin/settings/language/edit/(\w+)' => array(
+    'admin/settings/language/edit/([^/]+)' => array(
         'access' => 'language_edit',
         'handlers' => array(
             'controller' => array('gplcart\\core\\controllers\\backend\\Language', 'editLanguage')
