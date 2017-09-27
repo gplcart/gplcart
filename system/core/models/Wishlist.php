@@ -126,7 +126,7 @@ class Wishlist extends Model
 
         if (!$this->canAdd($data['user_id'], $data['store_id'])) {
             $vars = array('%num' => $this->getLimit($data['user_id']));
-            $result['message'] = $this->language->text("You're exceeding %num items", $vars);
+            $result['message'] = $this->language->text("You're exceeding limit of %num items", $vars);
             return $result;
         }
 
