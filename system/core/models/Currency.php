@@ -19,16 +19,6 @@ class Currency extends Model
 {
 
     /**
-     * URL GET key
-     */
-    const URL_KEY = 'currency';
-
-    /**
-     * Cookie key
-     */
-    const COOKIE_KEY = 'currency';
-
-    /**
      * Request class instance
      * @var \gplcart\core\helpers\Request $request
      */
@@ -45,6 +35,79 @@ class Currency extends Model
     }
 
     /**
+     * Returns an array of currencies
+     * @param bool $enabled Return only enabled currencies
+     * @param bool $in_database Return only currencies saved in the database
+     * @return array
+     */
+    public function getList($enabled = false, $in_database = false)
+    {
+        $currencies = &gplcart_static(array(__METHOD__ => array($enabled, $in_database)));
+
+        if (isset($currencies)) {
+            return $currencies;
+        }
+
+        $iso = (array) $this->getIso();
+        $default = $this->getDefaultData();
+        $saved = $this->config->get('currencies', array());
+        $currencies = array_replace_recursive($iso, $saved);
+
+        foreach ($currencies as $code => &$currency) {
+
+            $currency['code'] = $code;
+            $currency += $default;
+            $currency['in_database'] = isset($saved[$code]);
+
+            if ($code === 'USD') {
+                $currency['status'] = $currency['default'] = 1;
+            }
+        }
+
+        unset($currency);
+
+        $this->hook->attach('currency.list', $currencies, $this);
+
+        foreach ($currencies as $code => $currency) {
+            if ($enabled && empty($currency['status'])) {
+                unset($currencies[$code]);
+                continue;
+            }
+
+            if ($in_database && empty($currency['in_database'])) {
+                unset($currencies[$code]);
+            }
+        }
+
+        return $currencies;
+    }
+
+    /**
+     * Returns an array of default currency data
+     * @return array
+     */
+    protected function getDefaultData()
+    {
+        return array(
+            'code' => '',
+            'name' => '',
+            'symbol' => '',
+            'status' => 0,
+            'default' => 0,
+            'modified' => 0,
+            'decimals' => 2,
+            'major_unit' => '',
+            'minor_unit' => '',
+            'numeric_code' => '',
+            'rounding_step' => 0,
+            'conversion_rate' => 1,
+            'decimal_separator' => '.',
+            'thousands_separator' => ',',
+            'template' => '%symbol%price'
+        );
+    }
+
+    /**
      * Adds a currency
      * @param array $data
      * @return boolean
@@ -52,7 +115,7 @@ class Currency extends Model
     public function add(array $data)
     {
         $result = null;
-        $this->hook->attach('currency.get.before', $data, $result, $this);
+        $this->hook->attach('currency.add.before', $data, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -63,52 +126,18 @@ class Currency extends Model
         $default = $this->getDefaultData();
         $data += $default;
 
+        $currencies = $this->config->select('currencies', array());
+        $currencies[$data['code']] = array_intersect_key($data, $default);
+        $this->config->set('currencies', $currencies);
+
         if (!empty($data['default'])) {
             $data['status'] = 1;
             $this->config->set('currency', $data['code']);
         }
 
-        $currencies = $this->getList(false, false);
-        $currencies[$data['code']] = array_intersect_key($data, $default);
-        $this->config->set('currencies', $currencies);
-
         $result = true;
-        $this->hook->attach('currency.get.after', $data, $result, $this);
+        $this->hook->attach('currency.add.after', $data, $result, $this);
         return (bool) $result;
-    }
-
-    /**
-     * Returns an array of currencies
-     * @param bool $enabled
-     * @param bool $cache
-     * @return array
-     */
-    public function getList($enabled = false, $cache = true)
-    {
-        $currencies = &gplcart_static(__METHOD__ . "$enabled");
-
-        if ($cache && isset($currencies)) {
-            return $currencies;
-        }
-
-        $default = $this->getDefaultList();
-
-        if ($cache) {
-            $saved = $this->config->get('currencies', array());
-        } else {
-            $saved = $this->config->select('currencies', array());
-        }
-
-        $currencies = array_merge($default, $saved);
-        $this->hook->attach('currency.list', $currencies, $this);
-
-        if ($enabled) {
-            $currencies = array_filter($currencies, function ($currency) {
-                return !empty($currency['status']);
-            });
-        }
-
-        return $currencies;
     }
 
     /**
@@ -126,12 +155,6 @@ class Currency extends Model
             return (bool) $result;
         }
 
-        $currencies = $this->getList(false, false);
-
-        if (empty($currencies[$code])) {
-            return false;
-        }
-
         $data['modified'] = GC_TIME;
 
         if (!empty($data['default'])) {
@@ -139,10 +162,11 @@ class Currency extends Model
             $this->config->set('currency', $code);
         }
 
-        $data += $currencies[$code];
         $default = $this->getDefaultData();
-        $currencies[$code] = array_intersect_key($data, $default);
+        $data += $default;
 
+        $currencies = $this->config->select('currencies', array());
+        $currencies[$code] = array_intersect_key($data, $default);
         $this->config->set('currencies', $currencies);
 
         $result = true;
@@ -169,10 +193,8 @@ class Currency extends Model
             return false;
         }
 
-        $currencies = $this->getList(false, false);
-
+        $currencies = $this->config->select('currencies', array());
         unset($currencies[$code]);
-
         $this->config->set('currencies', $currencies);
 
         $result = true;
@@ -188,6 +210,12 @@ class Currency extends Model
     public function canDelete($code)
     {
         if ($code == $this->getDefault()) {
+            return false;
+        }
+
+        $currencies = $this->config->select('currencies', array());
+
+        if (!isset($currencies[$code])) {
             return false;
         }
 
@@ -222,24 +250,23 @@ class Currency extends Model
 
     /**
      * Loads a currency from the database
-     * @param null|string $code
-     * @return array|string
+     * @param string $code
+     * @return array
      */
-    public function get($code = null)
+    public function get($code)
     {
-        $currency = &gplcart_static(__METHOD__ . "$code");
-
-        if (isset($currency)) {
-            return $currency;
-        }
-
         $list = $this->getList();
+        return empty($list[$code]) ? array() : $list[$code];
+    }
 
-        if (!empty($code)) {
-            $currency = empty($list[$code]) ? array() : $list[$code];
-            return $currency;
-        }
-
+    /**
+     * Returns the current currency code
+     * @param bool $set
+     * @return string
+     */
+    public function getCode($set = true)
+    {
+        $list = $this->getList();
         $code = $this->getFromUrl();
 
         if (empty($code)) {
@@ -250,8 +277,11 @@ class Currency extends Model
             $code = $this->getDefault();
         }
 
-        $this->setCookie($code);
-        return $currency = $code;
+        if ($set) {
+            $this->setCookie($code);
+        }
+
+        return $code;
     }
 
     /**
@@ -261,7 +291,7 @@ class Currency extends Model
     public function setCookie($code)
     {
         $lifespan = $this->config->get('currency_cookie_lifespan', 365 * 24 * 60 * 60);
-        $this->request->setCookie(self::COOKIE_KEY, $code, $lifespan);
+        $this->request->setCookie('currency', $code, $lifespan);
     }
 
     /**
@@ -270,7 +300,7 @@ class Currency extends Model
      */
     public function getFromCookie()
     {
-        return $this->request->cookie(self::COOKIE_KEY, '', 'string');
+        return $this->request->cookie('currency', '', 'string');
     }
 
     /**
@@ -279,7 +309,7 @@ class Currency extends Model
      */
     public function getFromUrl()
     {
-        return $this->request->get(self::URL_KEY, '', 'string');
+        return $this->request->get('currency', '', 'string');
     }
 
     /**
@@ -302,64 +332,11 @@ class Currency extends Model
 
     /**
      * Returns a default currency
-     * @param boolean $load
-     * @return string|array
+     * @return string
      */
-    public function getDefault($load = false)
+    public function getDefault()
     {
-        $currency = $this->config->get('currency', 'USD');
-
-        if ($load) {
-            $currencies = $this->getList();
-            return empty($currencies[$currency]) ? array() : $currencies[$currency];
-        }
-
-        return $currency;
-    }
-
-    /**
-     * Returns an array of default currencies
-     * @return array
-     */
-    protected function getDefaultList()
-    {
-        $list = (array) $this->getIso();
-        $default = $this->getDefaultData();
-
-        foreach ($list as $code => &$currency) {
-            $currency['code'] = $code;
-            $currency += $default;
-        }
-
-        $list['USD']['status'] = 1;
-        $list['USD']['default'] = 1;
-
-        return $list;
-    }
-
-    /**
-     * Returns an array of default currency data
-     * @return array
-     */
-    protected function getDefaultData()
-    {
-        return array(
-            'code' => '',
-            'name' => '',
-            'symbol' => '',
-            'status' => 0,
-            'default' => 0,
-            'modified' => 0,
-            'decimals' => 2,
-            'major_unit' => '',
-            'minor_unit' => '',
-            'numeric_code' => '',
-            'rounding_step' => 0,
-            'conversion_rate' => 1,
-            'decimal_separator' => '.',
-            'thousands_separator' => ',',
-            'template' => '%symbol%price'
-        );
+        return $this->config->get('currency', 'USD');
     }
 
     /**
