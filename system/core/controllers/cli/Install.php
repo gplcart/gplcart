@@ -211,18 +211,19 @@ class Install extends CliController
     protected function validateInputLanguageInstall()
     {
         $this->langcode = '';
-        $languages = $this->language->getList();
+
+        $languages = array();
+        foreach ($this->language->getList() as $code => $language) {
+            if ($code === 'en' || is_file($this->language->getFile($code))) {
+                $languages[$code] = $language['name'];
+            }
+        }
 
         if (count($languages) < 2) {
             return null;
         }
 
-        $options = array();
-        foreach ($languages as $code => $language) {
-            $options[$code] = $language['name'];
-        }
-
-        $selected = $this->menu($options, 'en', $this->text('Language (enter a number)'));
+        $selected = $this->menu($languages, 'en', $this->text('Language (enter a number)'));
 
         if (empty($languages[$selected])) {
             $this->outputErrors($this->text('Invalid language'));
