@@ -37,7 +37,7 @@
     </div>
   </div>
   <div class="form-group">
-    <label class="col-md-2 control-label"><?php echo $this->text('Display errors'); ?></label>
+    <label class="col-md-2 control-label"><?php echo $this->text('Track errors'); ?></label>
     <div class="col-md-4">
       <select  name="settings[error_level]" class="form-control">
         <option value="0"<?php echo ($settings['error_level'] == 0) ? ' selected' : ''; ?>>
@@ -51,7 +51,7 @@
         </option>
       </select>
       <div class="help-block">
-        <?php echo $this->text('Select which PHP errors are reported'); ?>
+        <?php echo $this->text('Select which PHP errors should be tracked by logging system'); ?>
       </div>
     </div>
   </div>
