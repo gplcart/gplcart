@@ -56,7 +56,9 @@ class Language extends BackendController
      */
     protected function canDeleteLanguage()
     {
-        return isset($this->data_language['code']) && $this->access('language_delete');
+        return isset($this->data_language['code'])//
+                && $this->access('language_delete')//
+                && $this->language->canDelete($this->data_language['code']);
     }
 
     /**
@@ -186,8 +188,28 @@ class Language extends BackendController
         $this->setTitleListLanguage();
         $this->setBreadcrumbListLanguage();
 
-        $this->setData('languages', $this->language->getList());
+        $this->setData('languages', $this->getListLanguage());
         $this->outputListLanguage();
+    }
+
+    /**
+     * Returns an array of prepared languages
+     * @return array
+     */
+    protected function getListLanguage()
+    {
+        $languages = $this->language->getList();
+
+        $in_database = $codes = $statuses = array();
+        foreach ($languages as $code => &$language) {
+            $codes[$code] = $code;
+            $statuses[$code] = !empty($language['status']);
+            $in_database[$code] = !empty($language['in_database']);
+            $language['file_exists'] = is_file($this->language->getFile($code));
+        }
+
+        array_multisort($in_database, SORT_DESC, $statuses, SORT_DESC, $codes, SORT_ASC, $languages);
+        return $languages;
     }
 
     /**
