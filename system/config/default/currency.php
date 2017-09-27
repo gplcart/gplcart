@@ -43,12 +43,6 @@ return array(
         'minor_unit' => /* @text */'Cêntimo',
         'major_unit' => /* @text */'Kwanza',
     ),
-    'ARM' => array(
-        'symbol' => 'm$n',
-        'name' => /* @text */'Argentine Peso Moneda Nacional',
-        'minor_unit' => /* @text */'Centavos',
-        'major_unit' => /* @text */'Peso',
-    ),
     'ARS' => array(
         'symbol' => 'AR$',
         'name' => /* @text */'Argentine Peso',
@@ -244,12 +238,6 @@ return array(
         'numeric_code' => '188',
         'minor_unit' => /* @text */'Céntimo',
         'major_unit' => /* @text */'Colón',
-    ),
-    'CUC' => array(
-        'symbol' => 'CUC$',
-        'name' => /* @text */'Cuban Convertible Peso',
-        'minor_unit' => /* @text */'Centavo',
-        'major_unit' => /* @text */'Peso',
     ),
     'CUP' => array(
         'symbol' => 'CU$',
@@ -911,13 +899,6 @@ return array(
         'name' => /* @text */'Surinamese Dollar',
         'minor_unit' => /* @text */'Cent',
         'major_unit' => /* @text */'Dollar',
-    ),
-    'SRG' => array(
-        'symbol' => 'Sf',
-        'name' => /* @text */'Suriname Guilder',
-        'numeric_code' => '740',
-        'minor_unit' => /* @text */'Cent',
-        'major_unit' => /* @text */'Guilder',
     ),
     'STD' => array(
         'symbol' => 'Db',
