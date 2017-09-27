@@ -122,7 +122,6 @@ class Controller extends BaseController
         $this->data['_menu'] = $this->getCategoryMenu();
         $this->data['_captcha'] = $this->renderCaptcha();
         $this->data['_comparison'] = $this->getComparison();
-        $this->data['_languages'] = $this->language->getList(true);
         $this->data['_currency'] = $currencies[$this->current_currency];
     }
 
@@ -163,7 +162,7 @@ class Controller extends BaseController
                 $this->data_categories = $this->getCategories();
             }
 
-            $this->current_currency = (string) $this->currency->get();
+            $this->current_currency = $this->currency->getCode();
         }
     }
 
