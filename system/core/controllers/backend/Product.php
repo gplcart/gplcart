@@ -112,7 +112,7 @@ class Product extends BackendController
         $this->setPagerLimit();
 
         $this->setData('products', $this->getListProduct());
-        $this->setData('currencies', $this->currency->getList());
+        $this->setData('currencies', $this->currency->getList(true));
 
         $this->outputListProduct();
     }
@@ -239,6 +239,7 @@ class Product extends BackendController
         $this->setData('weight_units', $this->product->getWeightUnits());
         $this->setData('default_currency', $this->currency->getDefault());
         $this->setData('subtract_default', $this->config->get('product_subtract', 0));
+        $this->setData('languages', $this->language->getList(false, true));
 
         $this->submitEditProduct();
 

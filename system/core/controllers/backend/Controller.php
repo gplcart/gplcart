@@ -49,7 +49,6 @@ class Controller extends BaseController
     {
         $this->data['_job'] = $this->renderJob();
         $this->data['_stores'] = $this->store->getList();
-        $this->data['_languages'] = $this->language->getList(false);
         $this->data['_menu'] = $this->renderAdminMenu('admin', array());
 
         foreach ($this->data['_stores'] as &$store) {
@@ -174,7 +173,7 @@ class Controller extends BaseController
         $data = array(
             'images' => $images,
             'name_prefix' => $entity,
-            'languages' => $this->language->getList()
+            'languages' => $this->language->getList(false, true)
         );
 
         $this->setData('attached_images', $this->render('common/image', $data));

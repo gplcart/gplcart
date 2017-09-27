@@ -225,6 +225,7 @@ class Category extends BackendController
         $this->setData('category_group', $this->data_category_group);
         $this->setData('parent_id', $this->getQuery('parent_id'));
         $this->setData('categories', $this->getOptionsCategory($category_group_id));
+        $this->setData('languages', $this->language->getList(false, true));
 
         $this->submitEditCategory();
 

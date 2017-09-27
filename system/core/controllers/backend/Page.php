@@ -177,7 +177,9 @@ class Page extends BackendController
 
         $this->setTitleEditPage();
         $this->setBreadcrumbEditPage();
+        
         $this->setData('page', $this->data_page);
+        $this->setData('languages', $this->language->getList(false, true));
 
         $this->submitEditPage();
 

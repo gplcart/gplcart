@@ -245,6 +245,7 @@ class FieldValue extends BackendController
         $this->setData('field', $this->data_field);
         $this->setData('field_value', $this->data_field_value);
         $this->setData('widget_types', $this->field->getWidgetTypes());
+        $this->setData('languages', $this->language->getList(false, true));
 
         $this->submitEditFieldValue();
         $this->setDataEditFieldValue();

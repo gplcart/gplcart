@@ -150,6 +150,7 @@ class Field extends BackendController
         $this->setData('types', $this->field->getTypes());
         $this->setData('can_delete', $this->canDeleteField());
         $this->setData('widget_types', $this->field->getWidgetTypes());
+        $this->setData('languages', $this->language->getList(false, true));
 
         $this->submitEditField();
         $this->outputEditField();
