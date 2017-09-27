@@ -119,7 +119,7 @@ class Cart extends Model
 
         $result = array(
             'store_id' => $data['store_id'],
-            'currency' => (string) $this->currency->get()
+            'currency' => $this->currency->getCode()
         );
 
         $total = 0;
