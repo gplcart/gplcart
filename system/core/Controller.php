@@ -1789,6 +1789,7 @@ abstract class Controller
         $this->data['_store'] = $this->current_store;
         $this->data['_language'] = $this->current_language;
         $this->data['_messages'] = $this->session->getMessage();
+        $this->data['_languages'] = $this->language->getList(true);
         $this->data['_store_title'] = $this->store->getTranslation('title', $this->langcode);
 
         if (!empty($this->current_store['data']['logo'])) {
