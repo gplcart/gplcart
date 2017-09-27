@@ -60,14 +60,29 @@ class Install extends BaseController
         $this->setData('requirements', $requirements);
         $this->setData('timezones', gplcart_timezones());
         $this->setData('language', $this->install_language);
-        $this->setData('languages', $this->language->getList());
         $this->setData('handlers', $this->install->getHandlers());
-        $this->setData('languages', $this->language->getList(false));
+        $this->setData('languages', $this->getLanguagesInstall());
         $this->setData('severity', $this->getSeverityInstall($issues));
         $this->setData('settings.store.language', $this->install_language);
 
         $this->submitEditInstall();
         $this->outputEditInstall();
+    }
+
+    /**
+     * Returns an array of existing languages
+     * @return array
+     */
+    protected function getLanguagesInstall()
+    {
+        $languages = array();
+        foreach ($this->language->getList() as $code => $language) {
+            if ($code === 'en' || is_file($this->language->getFile($code))) {
+                $languages[$code] = $language;
+            }
+        }
+
+        return $languages;
     }
 
     /**
