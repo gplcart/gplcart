@@ -1,0 +1,1827 @@
+"Displays all available commands","Отображает все доступные команды"
+"Performs full system installation. Simple step-by-step wizard, has no options","Выполняет установку всей системы. Простой пошаговый мастер, не имеет параметров"
+"Allows to perform full system installation at once","Позволяет выполнять установку системы одним махом"
+"Optional. ID of module to be used for this installation process","Необязательно. ID модуля, который будет использован для этого процесса установки"
+"Required. Database name","Обязательно. Имя базы данных"
+"Optional. Database user. Defaults to ""root""","Необязательно. Пользователь базы данных. По умолчанию «root»"
+"Optional. Database host. Defaults to ""localhost""","Необязательно. Сервер (хост) базы данных. По умолчанию ""localhost"""
+"Optional. Database password. Defaults to empty string","Необязательно. Пароль базы данных. По умолчанию пустая строка"
+"Optional. Database type, e.g ""mysql"" or ""sqlite"". Defaults to ""mysql""","Необязательно. Тип базы данных, например ""mysql"" или ""sqlite"". По умолчанию ""mysql"""
+"Optional. Database port. Defaults to ""3306""","Необязательно. Порт базы данных. По умолчанию «3306»"
+"Required. Admin e-mail","Обязательно. E-mail для супер-админа"
+"Required. Admin password","Обязательно. Пароль администратора"
+"Optional. Name of the store. Defaults to ""GPL Cart""","Необязательно. Название магазина. По умолчанию «GPL cart»"
+"Optional. Subfolder name. Defaults to empty string, i.e domain root folder","Необязательно. Название каталога установки. По умолчанию пустая строка, т.е корневая директория домена"
+"Optional. Timezone of the store. Defaults to the current timezone","Необязательно. Часовая зона магазина. По умолчанию текущий часовой пояс сервера"
+"Optional. Domain name e.g ""example.com"" without scheme prefix and slashes. Defaults to the current hostname/IP","Необязательно. Домен, например ""example.com"" без http:// и слэшей. По умолчанию текущий хост/IP"
+Product,Товар
+File,Файл
+Page,Страница
+"System URL route (global)","Системный URL маршрут (глобально)"
+"Parameters: system route pattern. Only = and != operators allowed","Параметры: паттерн системного маршрута. Допускаются только операторы = и !="
+"URL path (global)","Путь URL (глобально)"
+"Parameters: path with regexp pattern. Only = and != operators allowed. Do not use trailing slashes. Example: account/(\d+)","Параметры: путь с регулярным выражением. Допускаются только операторы = и !=. Не используйте слэши на концах. Пример: account/(\d+)"
+"User ID (global)","ID пользователя (глобально)"
+"Parameters: list of ID, separated by comma","Параметры: список ID, разделённых запятыми"
+"User role ID (global)","ID роли пользователя (глобально)"
+"Current date (global)","Текущая дата (глобально)"
+"Parameters: One value in time format. See http://php.net/manual/en/datetime.formats.php","Параметры: Одно значение даты/времени в виде текстового представления. См. http://php.net/manual/en/datetime.formats.php"
+"Number of times a price rule code (coupon) has been used (checkout)","Количество использований кода правила цены (оформление заказа)"
+"Parameters: One numeric value","Параметры: Одно числовое значение"
+"Shipping method (checkout)","Способ доставки (оформление заказа)"
+"Payment method (checkout)","Способ оплаты (чекаут)"
+"Shipping country code (checkout)","Код страны доставки (оформление заказа)"
+"Shipping state ID (checkout)","ID области доставки (оформление заказа)"
+"Shipping address zone ID (checkout)","ID зоны адреса доставки (оформление заказа)"
+"Payment country code (checkout)","Код страны платёжного адреса (оформление заказа)"
+"Payment state ID (checkout)","ID области платёжного адреса (оформление заказа)"
+"Payment address zone ID (checkout)","ID зоны платёжного адреса (оформление заказа)"
+"Cart total (checkout)","Итоговая сумма корзина (оформление заказа)"
+"Parameters: one value in format ""price|currency"". If only price specified, default currency will be used","Параметры: одно значение в формате ""цена|код валюты"". Если указана только цена, будет использована валюта по умолчанию"
+"Cart contains product ID (checkout)","Корзина содержит ID товара (оформление заказа)"
+"Cart contains SKU (checkout)","Корзина содержит артикул товара (оформление заказа)"
+"Parameters: list of SKU, separated by comma","Параметры: список артикулов, разделённых запятыми"
+"Product ID","ID товара"
+"Product category ID","ID категории товара"
+"Product brand category ID","ID категории торговой марки товара"
+Afghanistan,Афганистан
+"Aland Islands","Аландские острова"
+Albania,Албания
+Algeria,Алжир
+"American Samoa","Американское Самоа"
+Andorra,Андорра
+Angola,Ангола
+Anguilla,Ангилья
+Antarctica,Антарктика
+"Antigua and Barbuda","Антигуа и Барбуда"
+Argentina,Аргентина
+Armenia,Армения
+Aruba,Аруба
+Australia,Австралия
+Austria,Австрия
+Azerbaijan,Азербайджан
+Bahamas,"Багамские острова"
+Bahrain,Бахрейн
+Bangladesh,Бангладеш
+Barbados,Барбадос
+Belarus,Беларусь
+Belgium,Бельгия
+Belize,Белиз
+Benin,Бенин
+Bermuda,"Бермудские острова"
+Bhutan,Бутан
+Bolivia,Боливия
+"Bonaire, Saint Eustatius and Saba","Бонайре, Сен-Эстатиус и Саба"
+"Bosnia and Herzegovina","Босния и Герцеговина"
+Botswana,Ботсвана
+"Bouvet Island","Остров Буве"
+Brazil,Бразилия
+"British Indian Ocean Territory","Британская территория в Индийском океане"
+"British Virgin Islands","Британские Виргинские острова"
+Brunei,Бруней
+Bulgaria,Болгария
+"Burkina Faso",Буркина-Фасо
+Burundi,Бурунди
+Cambodia,Камбоджа
+Cameroon,Камерун
+Canada,Канада
+"Cape Verde",Кабо-Верде
+"Cayman Islands","Каймановы острова"
+"Central African Republic","Центральноафриканская Республика"
+Chad,Чад
+Chile,Чили
+China,Китай
+"Christmas Island","Остров Рождества"
+"Cocos Islands","Кокосовые острова"
+Colombia,Колумбия
+Comoros,"Коморские острова"
+"Cook Islands","острова Кука"
+"Costa Rica",Коста-Рика
+Croatia,Хорватия
+Cuba,Куба
+Curacao,Кюрасао
+Cyprus,Кипр
+"Czech Republic","Чешская Республика"
+"Democratic Republic of the Congo","Демократическая Республика Конго"
+Denmark,Дания
+Djibouti,Джибути
+Dominica,Доминика
+"Dominican Republic","Доминиканская Республика"
+"East Timor","Восточный Тимор"
+Ecuador,Эквадор
+Egypt,Египет
+"El Salvador",Сальвадор
+"Equatorial Guinea","Экваториальная Гвинея"
+Eritrea,Эритрея
+Estonia,Эстония
+Ethiopia,Эфиопия
+"Falkland Islands","Фолклендские острова"
+"Faroe Islands","Фарерские острова"
+Fiji,Фиджи
+Finland,Финляндия
+France,Франция
+"French Guiana","Французская Гвиана"
+"French Polynesia","Французская Полинезия"
+"French Southern Territories","Французские Южные территории"
+Gabon,Габон
+Gambia,Гамбия
+Georgia,Грузия
+Germany,Германия
+Ghana,Гана
+Gibraltar,Гибралтар
+Greece,Греция
+Greenland,Гренландия
+Grenada,Гренада
+Guadeloupe,Гваделупа
+Guam,Гуам
+Guatemala,Гватемала
+Guernsey,Гернси
+Guinea,Гвинея
+Guinea-Bissau,Гвинея-Бисау
+Guyana,Гайана
+Haiti,Гаити
+"Heard Island and McDonald Islands","Остров Херд и острова Макдональд"
+Honduras,Гондурас
+"Hong Kong",Гонконг
+Hungary,Венгрия
+Iceland,Исландия
+India,Индия
+Indonesia,Индонезия
+Iran,Иран
+Iraq,Ирак
+Ireland,Ирландия
+"Isle of Man","Остров Мэн"
+Israel,Израиль
+Italy,Италия
+"Ivory Coast",Кот-д’Ивуар
+Jamaica,Ямайка
+Japan,Япония
+Jersey,Джерси
+Jordan,Иордания
+Kazakhstan,Казахстан
+Kenya,Кения
+Kiribati,Кирибати
+Kosovo,Косово
+Kuwait,Кувейт
+Kyrgyzstan,Киргизия
+Laos,Лаос
+Latvia,Латвия
+Lebanon,Ливан
+Lesotho,Лесото
+Liberia,Либерия
+Libya,Ливия
+Liechtenstein,Лихтенштейн
+Lithuania,Литва
+Luxembourg,Люксембург
+Macao,Макао
+Macedonia,Македония
+Madagascar,Мадагаскар
+Malawi,Малави
+Malaysia,Малайзия
+Maldives,"Мальдивские острова"
+Mali,Мали
+Malta,Мальта
+"Marshall Islands","Маршалловы острова"
+Martinique,Мартиника
+Mauritania,Мавритания
+Mauritius,Маврикий
+Mayotte,Майотта
+Mexico,Мексика
+Micronesia,Микронезия
+Moldova,Молдавия
+Monaco,Монако
+Mongolia,Монголия
+Montenegro,Черногория
+Montserrat,Монтсеррат
+Morocco,Морокко
+Mozambique,Мозамбик
+Myanmar,Мьянма
+Namibia,Намибия
+Nauru,Науру
+Nepal,Непал
+Netherlands,Нидерланды
+"New Caledonia","Новая Каледония"
+"New Zealand","Новая Зеландия"
+Nicaragua,Никарагуа
+Niger,Нигер
+Nigeria,Нигерия
+Niue,Ниуэ
+"Norfolk Island","Остров Норфолк"
+"North Korea","Северная Корея"
+"Northern Mariana Islands","Северные Марианские острова"
+Norway,Норвегия
+Oman,Оман
+Pakistan,Пакистан
+Palau,Палау
+"Palestinian Territory","Палестинской территории"
+Panama,Панама
+"Papua New Guinea","Папуа-Новая Гвинея"
+Paraguay,Парагвай
+Peru,Перу
+Philippines,Филиппины
+Pitcairn,Питкэрн
+Poland,Польша
+Portugal,Португалия
+"Puerto Rico",Пуэрто-Рико
+Qatar,Катар
+"Republic of the Congo","Республика Конго"
+Reunion,Реюньон
+Romania,Румыния
+Russia,Россия
+Rwanda,Руанда
+"Saint Barthelemy",Сен-Бартелеми
+"Saint Helena","Остров Святой Елены"
+"Saint Kitts and Nevis","Сент-Китс и Невис"
+"Saint Lucia",Сент-Люсия
+"Saint Martin",Сен-Мартен
+"Saint Pierre and Miquelon","Сен-Пьер и Микелон"
+"Saint Vincent and the Grenadines","Сент-Винсент и Гренадины"
+Samoa,Самоа
+"San Marino",Сан-Марино
+"Sao Tome and Principe","Сан-Томе и Принсипи"
+"Saudi Arabia","Саудовская Аравия"
+Senegal,Сенегал
+Serbia,Сербия
+Seychelles,"Сейшельские острова"
+"Sierra Leone",Сьерра-Леоне
+Singapore,Сингапур
+"Sint Maarten",Синт-Мартен
+Slovakia,Словакия
+Slovenia,Словения
+"Solomon Islands","Соломоновы острова"
+Somalia,Сомали
+"South Africa",ЮАР
+"South Georgia and the South Sandwich Islands","Южная Георгия и Южные Сандвичевы острова"
+"South Korea","Южная Корея"
+"South Sudan","Южный Судан"
+Spain,Испания
+"Sri Lanka",Шри-Ланка
+Sudan,Судан
+Suriname,Суринам
+"Svalbard and Jan Mayen","Шпицберген и Ян Майен"
+Swaziland,Свазиленд
+Sweden,Швеция
+Switzerland,Швейцария
+Syria,Сирия
+Taiwan,Тайвань
+Tajikistan,Таджикистан
+Tanzania,Танзания
+Thailand,Таиланд
+Togo,Того
+Tokelau,Токелау
+Tonga,Тонга
+"Trinidad and Tobago","Тринидад и Тобаго"
+Tunisia,Тунис
+Turkey,Турция
+Turkmenistan,Туркменистан
+"Turks and Caicos Islands","Острова Теркс и Кайкос"
+Tuvalu,Тувалу
+"U.S. Virgin Islands","Американские Виргинские острова"
+Uganda,Уганда
+Ukraine,Украина
+"United Arab Emirates","Объединённые Арабские Эмираты"
+"United Kingdom",Великобритания
+"United States",США
+"United States Minor Outlying Islands","Малые Удаленные Острова США"
+Uruguay,Уругвай
+Uzbekistan,Узбекистан
+Vanuatu,Вануату
+Vatican,Ватикан
+Venezuela,Венесуэла
+Vietnam,Вьетнам
+"Wallis and Futuna","Уоллис и Футуна"
+"Western Sahara","Западная Сахара"
+Yemen,Йемен
+Zambia,Замбия
+Zimbabwe,Зимбабве
+Country,Страна
+State,Область
+City,Город
+Address,Адрес
+"Additional address","Дополнительный адрес"
+Phone,Телефон
+"Post code/ZIP","Почтовый код"
+"First name",Имя
+"Middle name",Отчество
+"Last name",Фамилия
+Company,Компания
+Fax,Факс
+"United States Dollar","Доллар США"
+Cent,Цент
+Dollar,Доллар
+"United Arab Emirates Dirham","Дирхам ОАЭ"
+Fils,Фил
+Dirham,Дирхам
+"Afghan Afghani","Афганский афгани"
+Pul,Пул
+Afghani,Афгани
+"Netherlands Antillean Guilder","Гульден Нидерландских Антильских островов"
+Guilder,Гульден
+"Angolan Kwanza","Ангольская кванза"
+Cêntimo,Сантим
+Kwanza,Кванза
+"Argentine Peso","Аргентинское песо"
+Centavo,Сентаво
+Peso,Песо
+"Australian Dollar","Австралийский доллар"
+"Aruban Florin","Арубанский флорин"
+"Azerbaijanian Manat","Азербайджанский манат"
+Qəpik,Кепик
+"New Manat","Новый манат"
+"Bosnia-Herzegovina Convertible Mark","Марка Боснии и Герцеговины"
+Fening,Фенинг
+"Convertible Marka","Конвертируемая марка"
+"Barbadian Dollar","Барбадосский доллар"
+"Bangladeshi Taka","Бангладешская така"
+Paisa,Пайс
+Taka,Така
+"Bulgarian lev","Болгарский лев"
+Stotinka,Стотинка
+Lev,Лев
+"Bahraini Dinar","Бахрейнский динар"
+Dinar,Динар
+"Burundian Franc","Бурундийский франк"
+Centime,Сантим
+Franc,Франк
+"Bermudan Dollar","Бермудский доллар"
+"Brunei Dollar","Брунейский доллар"
+Sen,Сен
+"Bolivian Boliviano","Боливийский боливиано"
+Bolivianos,Боливиано
+"Brazilian Real","Бразильский реал"
+Reais,Реал
+"Bahamian Dollar","Багамский доллар"
+"Bhutanese Ngultrum","Бутанский нгултрум"
+Chetrum,Четрум
+Ngultrum,Нгултрум
+"Botswanan Pula","Ботсванская пула"
+Thebe,Тхебе
+Pulas,Пул
+"Belarusian ruble","Беларусский рубль"
+Ruble,Рубль
+"Belize Dollar","Белизский доллар"
+"Canadian Dollar","Канадский доллар"
+"Congolese Franc","Конголезский франк"
+"Swiss Franc","Швейцарский франк"
+Rappen,Раппен
+"Chilean Peso","Чилийский песо"
+"Chinese Yuan Renminbi","Китайский юань"
+Fen,Фен
+Yuan,Юань
+"Colombian Peso","Колумбийский песо"
+"Costa Rican Colón","Костариканский колон"
+Céntimo,Сантим
+Colón,Колон
+"Cuban Peso","Кубинское песо"
+"Cape Verdean Escudo","Эскудо Кабо-Верде"
+Escudo,Эскудо
+"Czech Republic Koruna","Чешская крона"
+Haléř,Галер
+Koruna,Крона
+"Djiboutian Franc","Джибутийский франк"
+"Danish Krone","Датская крона"
+Øre,Эре
+Kroner,Крона
+"Dominican Peso","Доминиканское песо"
+"Algerian Dinar","Алжирский динар"
+Santeem,Сантим
+"Estonian Kroon","Эстонская крона"
+Sent,Цент
+Krooni,Круни
+"Egyptian Pound","Египетский фунт"
+Piastr,Пиастр
+Pound,Фунт
+"Eritrean Nakfa","Эритрейская накфа"
+Nakfa,Накфа
+"Ethiopian Birr","Эфиопский быр"
+Santim,Сантим
+Birr,Быр
+Euro,Евро
+"Fijian Dollar","Доллар Фиджи"
+"Falkland Islands Pound","Фунт Фолклендских островов"
+Penny,Пенни
+"British Pound Sterling","Британский фунт стерлингов"
+"Ghanaian Cedi","Ганский седи"
+Pesewa,Песева
+Cedi,Седи
+"Gibraltar Pound","Гибралтарский фунт"
+"Gambian Dalasi","Гамбийский даласи"
+Butut,Бутут
+Dalasis,Даласис
+"Guinean Franc","Гвинейский франк"
+"Guatemalan Quetzal","Гватемальский кетсаль"
+Quetzales,Кетцаль
+"Guyanaese Dollar","Гайянский доллар"
+"Hong Kong Dollar","Гонконгский доллар"
+"Honduran Lempira","Гондурасская лемпира"
+Lempiras,Лемпира
+"Croatian Kuna","Хорватская куна"
+Lipa,Липа
+Kuna,Куна
+"Haitian Gourde","Гаитянский гурд"
+Gourde,Гурд
+"Hungarian Forint","Венгерский форинт"
+Forint,Форинт
+"Indonesian Rupiah","Индонезийская рупия"
+Rupiahs,Рупий
+"Israeli New Shekel","Израильский шекель"
+Agora,Агора
+"New Shekels","Новые шекели"
+"Indian Rupee","Индийская рупия"
+Rupee,Рупия
+"Iranian Rial","Иранский риал"
+Rial,Риал
+Toman,Томан
+"Icelandic Króna","Исландская крона"
+Eyrir,Эйрир
+Kronur,Крон
+"Jamaican Dollar","Ямайский доллар"
+"Jordanian Dinar","Йорданский динар"
+"Japanese Yen","Японская иена"
+Yen,Йен
+"Kenyan Shilling","Кенийский шиллинг"
+Shilling,Шиллинг
+"Kyrgyzstani Som","Киргизский сом"
+Som,Сом
+Tyiyn,Тыйын
+"Comorian Franc","Коморский франк"
+"South Korean Won","Южнокорейский вон"
+Jeon,Чон
+Won,Вон
+"Kuwaiti Dinar","Кувейтский динар"
+"Cayman Islands Dollar","Доллар Каймановых островов"
+"Kazakhstani tenge","Казахстанский тенге"
+Tiyn,Тиын
+Tenge,Тенге
+"Laotian Kip","Лаосский кип"
+Att,Ат
+Kips,Кип
+"Lebanese Pound","Ливанский фунт"
+Piastre,Пиастр
+"Sri Lanka Rupee","Шри-ланкийская рупия"
+"Liberian Dollar","Либерийский доллар"
+"Lesotho Loti","Лоти Лесото"
+Sente,Цент
+Loti,Лоти
+"Lithuanian Litas","Литовский лит"
+Centas,Цент
+Litai,Лит
+"Latvian Lats","Латвийский лат"
+Santims,Сантим
+Lati,Лат
+"Libyan Dinar","Ливийский динар"
+"Moroccan Dirham","Марроканский дирхам"
+Santimat,Сантим
+Dirhams,Дирхам
+"Moldovan leu","Молдавский лей"
+Bani,Бан
+Lei,Лей
+"Macedonian denar","Македонский денар"
+Deni,Ден
+Denari,Денар
+"Myanma Kyat","Мьянманский кьят"
+Pya,Пя
+Kyat,Кьят
+"Mongolian Tugrik","Монгольский тугрик"
+Möngö,Монго
+Tugriks,Тугрик
+"Macanese Pataca","Патака Макао"
+Avo,Аво
+Pataca,Патака
+"Mauritanian Ouguiya","Мавританский угий"
+Khoums,Кумs
+Ouguiya,Угий
+"Maltese Pound","Мальтийский фунт"
+"Mauritian Rupee","Маврикийская рупия"
+"Mexican Peso","Мексиканский песо"
+"Malaysian Ringgit","Малайзийский рингит"
+Ringgits,Рингит
+"Mozambican Metical","Мозамбикский метикал"
+Metical,Метикал
+"Namibian Dollar","Намибийский доллар"
+"Nigerian Naira","Нигерийская найра"
+Kobo,Кобо
+Naira,Наира
+"Nicaraguan Cordoba Oro","Никарагуанская кордоба"
+Cordoba,Кордоба
+"Norwegian Krone","Норвежская крона"
+Krone,Крона
+"Nepalese Rupee","Непальская рупия"
+"New Zealand Dollar","Новозеландский доллар"
+"Panamanian Balboa","Панамский бальбоа"
+Centésimo,Сентесим
+Balboa,Бальбоа
+"Peruvian Nuevo Sol","Перуанский соль"
+"Nuevos Sole",Соль
+"Papua New Guinean Kina","Кина Папуа-Новой Гвинеи"
+Toea,Тое
+Kina,Кина
+"Philippine Peso","Филиппинский песо"
+"Pakistani Rupee","Пакистанская рупия"
+"Polish Złoty","Польский злотый"
+Grosz,Грош
+Złotych,Злотый
+"Paraguayan Guarani","Парагвайский гуарани"
+Guarani,Гуарани
+"Qatari Rial","Катарский риал"
+"Rhodesian Dollar","Родезийский доллар"
+"Romanian Leu","Румынский лей"
+Ban,Бан
+Leu,Лей
+"Serbian Dinar","Сербский динар"
+Para,Пара
+Dinars,Динар
+"Russian Ruble","Российский рубль"
+Kopek,Копейка
+"Saudi Riyal","Саудовский реал"
+Hallallah,Халала
+Riyals,Риал
+"Solomon Islands Dollar","Доллар Соломоновых островов"
+"Seychellois Rupee","Сейшельская рупия"
+"Old Sudanese Dinar","Суданский динар"
+"Swedish Krona","Шведская крона"
+Öre,Эре
+Kronor,Крон
+"Singapore Dollar","Сингапурский доллар"
+"Saint Helena Pound","Фунт острова Святой Елены"
+"Sierra Leonean Leone","Сьерра-леонский леоне"
+Leone,Леоне
+"Somali Shilling","Сомалийский шиллинг"
+"Surinamese Dollar","Суринамский доллар"
+"São Tomé and Príncipe Dobra","Добра Сан-Томе и Принсипи"
+Dobra,Добра
+"Syrian Pound","Сирийский фунт"
+"Swazi Lilangeni","Свазилендский лилангени"
+Lilangeni,Лилангени
+"Thai Baht","Тайский бат"
+Satang,Сатанг
+Baht,Бат
+"Tunisian Dinar","Тунисский динар"
+Millime,Миллим
+"Tongan Paʻanga","Тонганская паанга"
+Senit,Сенит
+Paʻanga,Паанга
+"Turkish Lira","Турецкая лира"
+Kurus,Куру
+Lira,Лира
+"Trinidad and Tobago Dollar","Доллар Тринидада и Тобаго"
+"New Taiwan Dollar","Тайваньский доллар"
+"New Dollar",Доллар
+"Tanzanian Shilling","Танзанийский шиллинг"
+Senti,Сенти
+"Ukrainian Hryvnia","Украинская гривна"
+Kopiyka,Копейка
+Hryvnia,Гривна
+"Ugandan Shilling","Угандский шиллинг"
+"Uruguayan Peso","Уругвайское песо"
+"Venezuelan Bolívar Fuerte","Венесуэльский боливар"
+"Bolivares Fuerte","Боливийский фуэрте"
+"Vietnamese Dong","Вьетнамский донг"
+Hà,Ха
+Dong,Донг
+"Vanuatu Vatu","Вануатский вату"
+Vatu,Вату
+"Samoan Tala","Самоанский тала"
+Sene,Сене
+Tala,Тала
+"CFA Franc BEAC","Франк КФА ВЕАС"
+"East Caribbean Dollar","Восточно-карибский доллар"
+"CFA Franc BCEAO","Франк КФА ВЕАС"
+"CFP Franc","Франк КФП"
+"Yemeni Rial","Йеменский риал"
+"South African Rand","Южноафриканский ранд"
+Rand,Ранд
+"Zambian Kwacha","Замбийская квача"
+Ngwee,Нгви
+Kwacha,Квача
+"Recent orders","Недавние заказы"
+"Recent cart items","Последние товары корзины"
+"Recent transactions","Недавние транзакции"
+"Active price rules","Активные правила цен"
+Summary,Сводка
+"Recent reviews","Последние обзоры"
+"Recent users","Последние пользователи"
+"Recent events","Недавние события"
+Thumbnail,Миниатюра
+"Trim and resize to exact width and height. Parameters: two integers, width and height, separated by comma","Обрезать и изменить размер до точной ширины и высоты. Параметры: два целых числа, ширина и высота, разделённые запятой"
+Crop,Обрезка
+"Crop a portion of image from x1, y1 to x2, y2. Parameters: Four integers, separated by comma","Вырезать часть изображения от x1, y1 до x2, y2. Параметры: 4 целых числа, разделённых запятыми"
+Resize,"Изменение размера"
+"Resize to fixed width and height. Parameters: Two integers, width and height, separated by comma","Изменить размер до фиксированной ширины и высоты. Два целых числа, разделённых запятыми"
+"Fit to width","Уместить по ширине"
+"Shrink to the specified width while maintaining proportion. Parameters: Integer","Сжать до указанной ширины, сохраняя пропорции. Параметры: целое число"
+"Fit to height","Подогнать высоту"
+"Shrink to the specified height while maintaining proportion. Parameters: Integer","Сжать до указанной высоты, сохраняя пропорции. Параметры: целое число"
+50X50,"50 X 50"
+100X100,"100 X 100"
+150X150,"150 X 150"
+200X200,"200 X 200"
+300X300,"300 X 300"
+400X400,"400 X 400"
+1400X500,"1400 X 500"
+Afar,Афарский
+Abkhazian,Абхазский
+Avestan,Авестийский
+Afrikaans,Африкаанс
+Akan,Акан
+Amharic,Амхарский
+Arabic,Арабский
+Assamese,Ассамский
+Asturian,Астурийский
+Avar,Аварский
+Aymara,Аймара
+Azerbaijani,Азербайджанский
+Bashkir,Башкирский
+Belarusian,Беларусский
+Bulgarian,Болгарский
+Bihari,Бихари
+Bislama,Бислама
+Bambara,Бамбарийский
+Bengali,Бенгальский
+Tibetan,Тибетский
+Breton,Бретонский
+Bosnian,Боснийский
+Catalan,Каталанский
+Chechen,Чеченский
+Chamorro,Чаморро
+Corsican,Корсиканский
+Cree,Криийский
+Czech,Чешский
+"Old Slavonic",Старославянский
+Chuvash,Чувашский
+Welsh,Валлийский
+Danish,Датский
+German,Немецкий
+Maldivian,Мальдивский
+Bhutani,Бутани
+Ewe,Эве
+Greek,Греческий
+English,Английский
+Esperanto,Эсперанто
+Spanish,Испанский
+Estonian,Эстонский
+Basque,Баскский
+Persian,Персидский
+Fulah,Фулах
+Finnish,Финский
+Filipino,Филиппинский
+Faeroese,Фарерский
+French,Французский
+Frisian,Фризский
+Irish,Ирландский
+"Scots Gaelic","Шотландский Гэльский"
+Galician,Галисийский
+Gujarati,Гуджарати
+Manx,Манкс
+Hausa,Хауса
+Hebrew,Иврит
+Hindi,Хинди
+"Hiri Motu",Хиримоту
+Croatian,Хорватский
+"Haitian Creole",Гаитянский
+Hungarian,Венгерский
+Armenian,Армянский
+Herero,Гереро
+Interlingua,Интерлингва
+Indonesian,Индонезийский
+Interlingue,Интерлингве
+Igbo,Игбо
+Inupiak,Инупиак
+Icelandic,Исландский
+Italian,Итальянский
+Inuktitut,Инуктитут
+Japanese,Японский
+Javanese,Яванский
+Georgian,Грузинский
+Kongo,Конголезский
+Kikuyu,Кикуйу
+Kwanyama,Кваньяма
+Kazakh,Казахский
+Greenlandic,Гренландский
+Cambodian,Камбоджийский
+Kannada,Каннадский
+Korean,Корейский
+Kanuri,Канури
+Kashmiri,Кашмири
+Kurdish,Курдский
+Komi,Коми
+Cornish,Корнский
+Kyrgyz,Киргизский
+Latin,Латинский
+Luxembourgish,Люксембургский
+Luganda,Лугандский
+Lingala,Лингала
+Laothian,Лаосский
+Lithuanian,Литовский
+Latvian,Латышский
+Malagasy,Малагасийский
+Marshallese,Маршальский
+Māori,Маори
+Macedonian,Македонский
+Malayalam,Малайялам
+Mongolian,Монгольский
+Moldavian,Молдавский
+Marathi,Марати
+Malay,Малайский
+Maltese,Мальтийский
+Burmese,Бирманский
+"North Ndebele","Северный ндебеле"
+Nepali,Непальский
+Ndonga,Ндонга
+Dutch,Голландский
+"Norwegian Bokmål","Норвежский букмол"
+"Norwegian Nynorsk",Новонорвежский
+"South Ndebele","Южный ндебеле"
+Navajo,Навахо
+Chichewa,Чичева
+Occitan,Окситанский
+Oromo,Оромский
+Oriya,Ория
+Ossetian,Осетинский
+Punjabi,Пенджабский
+Pali,Пали
+Polish,Польский
+Pashto,Пушту
+Portuguese,Португальский
+Quechua,Кечуа
+Rhaeto-Romance,Ретороманский
+Kirundi,Кирунди
+Romanian,Румынский
+Russian,Русский
+Kinyarwanda,Киньяруанда
+Sanskrit,Санскрит
+Sardinian,Сардинский
+Scots,Шотландский
+Sindhi,Синдхи
+"Northern Sami",Северносаамский
+Sango,Санго
+Serbo-Croatian,Сербо-хорватский
+Sinhala,Сингальский
+Slovak,Словацкий
+Slovenian,Словенский
+Samoan,Самоа
+Shona,Шона
+Somali,Сомалийский
+Albanian,Албанский
+Serbian,Сербский
+Siswati,Сисвати
+Sesotho,Сесото
+Sudanese,Суданский
+Swedish,Шведский
+Swahili,Суахили
+Tamil,Тамильский
+Telugu,Телугу
+Tajik,Таджикский
+Thai,Тайский
+Tigrinya,Тигринья
+Turkmen,Туркменский
+Tagalog,Тагальский
+Setswana,Сетсвана
+Turkish,Турецкий
+Tsonga,Тсонга
+Tatar,Татарском
+Twi,Тви
+Tahitian,Таитянский
+Uyghur,Уйгурский
+Ukrainian,Украинский
+Urdu,Урду
+Uzbek,Узбекский
+Venda,Венда
+Vietnamese,Вьетнамский
+Wolof,Волоф
+Xhosa,Ксоза
+Yiddish,Идиш
+Yoruba,Йоруба
+Zhuang,Чжуанский
+"Chinese, Simplified","Китайский упрощённый"
+"Chinese, Traditional","Китайский традиционный"
+Zulu,Зулусский
+Jquery,JQuery
+"jQuery JavaScript Library","Библиотека jQuery JavaScript"
+Cookie,Cookie
+"A simple, lightweight JavaScript API for handling browser cookies","Простой, легкий JavaScript API для обработки файлов cookie браузера"
+"jQuery Match Height","jQuery Match Height"
+"A responsive equal heights plugin for jQuery","Плагин jQuery для установки равной высоты элементов"
+"jQuery UI","jQuery UI"
+"jQuery user interface library","Элементы интерфейса jQuery"
+"Font Awesome","Font Awesome"
+"The iconic font and CSS toolkit","Иконические CSS шрифты"
+"HTML5 Shiv","HTML5 Shiv"
+"The HTML5 Shiv enables use of HTML5 sectioning elements in legacy Internet Explorer and provides basic HTML5 styling for Internet Explorer 6-9, Safari 4.x (and iPhone 3.x), and Firefox 3.x.","Позволяет использовать HTML5 в старых версиях браузеров"
+Respond,Respond
+"A fast & lightweight polyfill for min/max-width CSS3 Media Queries (for IE 6-8, and more)","Быстрый и лёгкий полифил для CSS3 Media Queries"
+Bootstrap,Bootstrap
+"HTML, CSS, and JavaScript framework for developing responsive, mobile first layouts","CSS фреймворк для создания отзывчивых, mobile-first страниц"
+"Bootstrap Select","Bootstrap Select"
+"A jQuery plugin that utilizes Bootstrap's dropdown.js to style and bring additional functionality to standard select elements","jQuery плагин для стилизации select элементов. Предназначен для работы с фреймворком Bootstrap"
+"To admin: new order","К администратору: новый заказ"
+"To customer: new order","К клиенту: новый заказ"
+"To customer: order has been updated","К клиенту: заказ был обновлён"
+"To admin: new user","К администратору: новый пользователь"
+"To user: account has been created","К пользователю: учётная запись создана"
+"To user: reset password","К пользователю: сброс пароля"
+"To user: password has been changed","К пользователю: пароль изменён"
+"Admin: access","Администратор: доступ"
+"Address: access","Адрес: доступ"
+"Address: delete","Адрес: удаление"
+"Cart items: access","Содержимое корзины: доступ"
+"Cart items: delete","Содержимое корзины: удаление"
+"Dashboard: access","Панель управления: доступ"
+"Dashboard: edit","Панель управления: настраивать"
+"Product: access","Товар: доступ"
+"Product: add","Товар: добавлять"
+"Product: edit","Товар: редактировать"
+"Product: delete","Товар: удалять"
+"Product class: access","Класс товара: доступ"
+"Product class: add","Класс товара: добавлять"
+"Product class: edit","Класс товара: редактировать"
+"Product class: delete","Класс товара: удалять"
+"Price rule: access","Правило цен: доступ"
+"Price rule: add","Правило цен: добавлять"
+"Price rule: edit","Правило цен: редактировать"
+"Price rule: delete","Правило цен: удалять"
+"Page: access","Страница: доступ"
+"Page: add","Страница: добавлять"
+"Page: edit","Страница: редактировать"
+"Page: delete","Страница: удалять"
+"Review: access","Отзыв: доступ"
+"Review: add","Отзыв: добавлять"
+"Review: edit","Отзыв: редактировать"
+"Review: delete","Отзыв: удалять"
+"Category: access","Категория: доступ"
+"Category: add","Категория: добавлять"
+"Category: edit","Категория: редактировать"
+"Category: delete","Категория: удалять"
+"Category group: access","Группа категорий: доступ"
+"Category group: add","Группа категорий: добавлять"
+"Category group: edit","Группа категорий: редактировать"
+"Category group: delete","Группа категорий: удалять"
+"Collection: access","Коллекция: доступ"
+"Collection: add","Коллекция: добавлять"
+"Collection: edit","Коллекция: редактировать"
+"Collection: delete","Коллекция: удалять"
+"Collection item: access","Элементы коллекции: доступ"
+"Collection item: add","Элемент коллекции: добавлять"
+"Collection item: edit","Элемент коллекции: редактировать"
+"Collection item: delete","Элемент коллекции: удалять"
+"User: access","Пользователь: доступ"
+"User: add","Пользователь: добавлять"
+"User: edit","Пользователь: редактировать"
+"User: delete","Пользователь: удалять"
+"User role: access","Роль пользователя: доступ"
+"User role: add","Роль пользователя: добавлять"
+"User role: edit","Роль пользователя: редактировать"
+"User role: delete","Роль пользователя: удалять"
+"Field: access","Поле: доступ"
+"Field: edit","Поле: редактировать"
+"Field: add","Поле: добавлять"
+"Field: delete","Поле: удалять"
+"Field value: access","Значение поля: доступ"
+"Field value: edit","Значение поля: редактировать"
+"Field value: add","Значение поля: добавлять"
+"Field value: delete","Значение поля: удалять"
+"Order: access","Заказ: доступ"
+"Order: add","Заказ: добавлять"
+"Order: edit","Заказ: редактировать"
+"Order: delete","Заказ: удалять"
+"Maintenance: access","Техническое обслуживание: доступ"
+"Module: access","Модуль: доступ"
+"Module: configure","Модуль: настраивать"
+"Module: install","Модуль: устанавливать"
+"Module: uninstall","Модуль: удалять"
+"Module: enable","Модуль: включать"
+"Module: disable","Модуль: выключать"
+"Store: access","Магазин: доступ"
+"Store: edit","Магазин: редактировать"
+"Store: add","Магазин: добавлять"
+"Store: delete","Магазин: удалять"
+"Image style: access","Стиль изображения: доступ"
+"Image style: edit","Стиль изображения: редактировать"
+"Image style: add","Стиль изображения: добавлять"
+"Image style: delete","Стиль изображения: удалять"
+"Language: access","Язык: доступ"
+"Language: add","Язык: добавлять"
+"Language: edit","Язык: редактировать"
+"Language: delete","Язык: удалять"
+"Currency: access","Валюта: доступ"
+"Currency: add","Валюта: добавлять"
+"Currency: edit","Валюта: редактировать"
+"Currency: delete","Валюта: удалять"
+"Country: access","Страна: доступ"
+"Country: edit","Страна: редактировать"
+"Country: add","Страна: добавлять"
+"Country: delete","Страна: удалять"
+"Country format: access","Формат страны: доступ"
+"Country format: edit","Формат страны: редактировать"
+"Country state: access","Область страны: доступ"
+"Country state: add","Область страны: добавлять"
+"Country state: edit","Область страны: редактировать"
+"Country state: delete","Область страны: удалять"
+"Transaction: access","Трансакция: доступ"
+"Transaction: delete","Трансакция: удалять"
+"Trigger: access","Триггер: доступ"
+"Trigger: add","Триггер: добавлять"
+"Trigger: edit","Триггер: редактировать"
+"Trigger: delete","Триггер: удалять"
+"City: access","Город: доступ"
+"City: add","Город: добавлять"
+"City: edit","Город: редактировать"
+"City: delete","Город: удалять"
+"Report: access","Отчёт: доступ"
+"Report system events: access","Отчёт о системных событиях: доступ"
+"Report system status: access","Отчёт о статусе системы: доступ"
+"Report libraries: access","Отчёт по библиотекам: доступ"
+"File: access","Файл: доступ"
+"File: add","Файл: добавлять"
+"File: edit","Файл: редактировать"
+"File: delete","Файл: удалять"
+"File: upload","Файл: загружать"
+"Settings: access","Настройки: доступ"
+"URL alias: access","URL псевдоним: доступ"
+"URL alias: delete","URL псевдоним: удалить"
+"Zone: access","Зона: доступ"
+"Zone: edit","Зона: редактировать"
+"Zone: add","Зона: добавлять"
+"Zone: delete","Зона: удалять"
+"GD extension installed","Расширение GD установлено"
+"PDO extension installed","Расширение PDO установлено"
+"SPL extension installed","Расширение SPL установлено"
+"CURL extension installed","Расширение CURL установлено"
+"FileInfo extension installed","Расширение FileInfo установлено"
+"OpenSSL extension installed","Расширение OpenSSL установлено"
+"Ctype extension installed","Расширение CType установлено"
+"JSON extension installed","Расширение JSON установлено"
+"Directive ""allow_url_fopen"" is disabled","Директива ""allow_url_fopen"" отключена"
+"Directory ""/system/config/runtime"" exists and writable","Директория ""/system/config/runtime"" доступна для записи"
+"Directory ""/cache"" exists and writable","Директория ""/cache"" доступна для записи"
+Content,Содержимое
+Products,Товары
+"Product classes","Классы товаров"
+Collections,Коллекции
+Tools,Инструменты
+Sales,Продажи
+Orders,Заказы
+Prices,Цены
+Transactions,Трансакции
+Cart,Корзина
+Pages,Страницы
+Files,Файлы
+Users,Пользователи
+Roles,Роли
+Addresses,Адреса
+Fields,Поля
+Aliases,Псевдонимы
+Modules,Модули
+"On site","На сайте"
+Settings,Настройки
+Common,Общие
+Dashboard,"Панель управления"
+Languages,Языки
+Images,Изображения
+Currencies,Валюты
+Countries,Страны
+Triggers,Триггеры
+Store,Магазин
+Zones,Зоны
+Reports,Отчеты
+Events,События
+Status,Статус
+Libraries,Библиотеки
+Routes,Маршруты
+"Payment methods","Способы оплаты"
+"Shipping methods","Способы доставки"
+Options,Опции
+"@option - @description","@option - @description"
+"No description available","Описание недоступно"
+"List of available commands. To see help for a certain command use --help option","Список доступных команд. Чтобы просмотреть справку для определенной команды используйте опцию --help"
+"@command - @description","@command - @description"
+"No access","Нет доступа"
+"One or more errors occurred","Произошла одна или несколько ошибок"
+Field,Поле
+"Table @name already exists","Таблица @name уже существует"
+"An error occurred while importing database table @name","Произошла ошибка при импорте таблицы базы данных @name"
+"Deleted %num item(s)","Удалено %num элемент(ов)"
+"Shopping cart items","Содержимое корзин"
+"Updated %num item(s)","Обновлено %num элемент(ов)"
+"Items have been reordered","Порядок элементов был изменён"
+"Category groups","Группы категорий"
+"Categories of group %name","Категории группы %name"
+"Category has been deleted","Категория была удалена"
+"Unable to delete","Не удается удалить"
+"Category has been updated","Категория была обновлена"
+"Category has been added","Категория была добавлена"
+"Edit %name","Изменить %name"
+"Add category to %name","Добавить категорию в %name"
+"Category group has been deleted","Группа категорий была удалена"
+"Category group has been updated","Группа категорий была обновлена"
+"Category group has been added","Группа категорий была добавлена"
+"Add category group","Добавить группу категорий"
+"Cities of state %name","Города области %name"
+"States of %name","Области %name"
+"City has been deleted","Город был удалён"
+"City has been updated","Город был обновлён"
+"City has been added","Город был добавлен"
+"Add city","Добавить город"
+"Collection has been deleted","Коллекция была удалена"
+"Collection has been updated","Коллекция была обновлена"
+"Collection has not been updated","Коллекция не была обновлена"
+"Collection has been added","Коллекция была добавлена"
+"Collection has not been added","Коллекция не была добавлена"
+"Add collection","Добавить коллекцию"
+"Items of collection %name","Элементы коллекции %name"
+"Collection item has been added","Элемент коллекции был добавлен"
+"Collection item has not been added","Элемент коллекции не был добавлен"
+"Add item to collection %name","Добавить элемент в коллекцию %name"
+"@store (disabled)","@store (отключено)"
+"An error occurred","Произошла ошибка"
+"Please select at least one item","Пожалуйста, выберите по крайней мере один элемент"
+"Country has been deleted","Страна была удалена"
+"Country has been updated","Страна была обновлена"
+"Country has been added","Страна была добавлена"
+"Add country","Добавить страну"
+"Address format of %name","Формат адреса %name"
+"Currency has been deleted","Валюта была удалена"
+"Currency has been updated","Валюта была обновлена"
+"Currency has been added","Валюта была добавлена"
+"Add currency","Добавить валюту"
+"Your dashboard has been updated","Ваша панель управления была обновлена"
+"Your dashboard has been reset to default state","Настройки вашей панели управления были сброшены до значений по умолчанию"
+"Customize dashboard","Настройка панели управления"
+"Field has been deleted","Поле было удалено"
+"Field has been updated","Поле было обновлено"
+"Field has been added","Поле было добавлено"
+"Add field","Добавить поле"
+"Values of %name","Значения %name"
+"Field value has been deleted","Значение поля было удалено"
+"Field value has been updated","Значение поля было обновлено"
+"Field value has been added","Значение поля было добавлено"
+"Add value for field %name","Добавить значение для поля %name"
+"Deleted from database: %db, disk: %disk","Удалены из базы данных: %db, диск: %disk"
+"File has been deleted from database and disk","Файл был удален из базы данных и диска"
+"File has been updated","Файл был обновлен"
+"File has been added","Файл был добавлен"
+"File has not been added","Файл не был добавлен"
+"Add file","Добавить файл"
+"Cache has been deleted","Кэш был удалён"
+"Cache has not been deleted","Кэш не был удалён"
+"Image styles","Стили изображения"
+"Image style has been deleted","Стиль изображения был удалён"
+"Image style has been updated","Стиль изображения был обновлён"
+"Image style has been added","Стиль изображения был добавлен"
+"Add image style","Добавить стиль изображения"
+"Language has been deleted","Язык был удален"
+"Language has been updated","Язык был обновлен"
+"Language has been added","Язык был добавлен"
+"Add language","Добавить язык"
+"Language has been refreshed","Язык был обновлен"
+"Module has been updated","Модуль был обновлён"
+"Operation unavailable","Операция недоступна"
+"Order has been deleted","Заказ был удалён"
+"Update order status to @status","Обновить статус заказа до @status"
+"Order #@order_id","Заказ #@order_id"
+Anonymous,Аноним
+Customer,Клиент
+Unknown,Неизвестно
+"<a href=""@url"">@text</a>","<a href=""@url"">@text</a>"
+"Failed to notify customers in orders: !list","Не удалось уведомить клиентов заказов: !list"
+"Page has been deleted","Страница была удалена"
+"Page has been updated","Страница была обновлена"
+"Page has been added","Страница была добавлена"
+"Add page","Добавить страницу"
+"Price rules","Правила цен"
+"Price rule has been deleted","Правило цены было удалено"
+"Price rule has been updated","Правило цены было обновлено"
+"Price rule has been added","Правило цены было добавлено"
+"Add price rule","Добавить правило цены"
+"Product has been deleted","Товар был удалён"
+"Product has been updated","Товар был обновлён"
+"Product has been added","Товар был добавлен"
+"Add product","Добавить товар"
+"Product class has been deleted","Класс товара был удалён"
+"Product class has been updated","Класс товара был обновлён"
+"Product class has been added","Класс товара был добавлен"
+"Add product class","Добавить класс товара"
+"Fields of %name","Поля %name"
+"Add field to %name","Добавление поля в %name"
+Public,Публично
+Superadmin,Супер-администратор
+"System events","Системные события"
+Reviews,Отзывы
+"Review has been deleted","Отзыв был удален"
+"Review has been updated","Отзыв был обновлен"
+"Review has been added","Отзыв был добавлен"
+Review,Отзыв
+"Add review","Добавить отзыв"
+"Settings have been updated","Настройки были сохранены"
+"Country state has been deleted","Область была удалена"
+"Country state has been updated","Область была обновлена"
+"Country state has been added","Область была добавлена"
+"Add country state for %name","Добавить область для %name"
+Stores,Магазины
+"Store has been deleted","Магазин был удалён"
+"Store has been updated","Магазин был обновлён"
+"Store has been added","Магазин был добавлен"
+"Add store","Добавить магазин"
+"Trigger has been deleted","Триггер был удалён"
+"Trigger has been updated","Триггер был обновлён"
+"Trigger has been added","Триггер был добавлен"
+"Trigger has not been added","Триггер не был добавлен"
+"Add trigger","Добавить триггер"
+"User has been deleted","Пользователь был удален"
+"User has been updated","Пользователь был обновлен"
+"User has been added","Пользователь был добавлен"
+"Add user","Добавить пользователя"
+"Role has been deleted","Роль была удалена"
+"Role has been updated","Роль была обновлена"
+"Role has been added","Роль была добавлена"
+"Add role","Добавить роль"
+"Zone has been deleted","Зона была удалена"
+"Zone has been updated","Зона была обновлена"
+"Zone has been added","Зона была добавлена"
+"Add zone","Добавить зону"
+"System already installed","Система уже установлена"
+"Language (enter a number)","Язык (укажите число)"
+"Invalid language","Недопустимый язык"
+"Installation profile (enter a number)","Установочный профиль (укажите номер)"
+"Store title","Название магазина"
+E-mail,E-mail
+Password,Пароль
+"Installation subdirectory","Директория установки"
+"Database name","Название базы данных"
+"Database user","Пользователь базы данных"
+"Database password","Пароль базы данных"
+"Database port","Порт базы данных"
+"Database host","Сервер базы данных"
+"Database type (enter a number)","Тип базы данных (укажите номер)"
+Shop,Магазин
+"Account has been updated","Учетная запись была обновлена"
+Account,"Учетная запись"
+"Edit account","Редактирование учетной записи"
+"Address has been deleted","Адрес был удален"
+"Missing handler","Отсутствует обработчик"
+Catalog,Каталог
+"Cloning order #@num","Клонирование заказа #@num"
+"Add order for user %name","Добавить заказ для пользователя %name"
+Checkout,"Оформление заказа"
+"Form has been updated","Форма была обновлена"
+"Invalid code","Неверный код"
+"Order #@num has been created for user @name. Order status: @status","Заказ #@num был создан для @name. Статус заказа: @status"
+"Cloned into order #@num","Клонировано в заказ #@num"
+"Order has been cloned from order <a href=""@url"">@num</a>. Order status: @status","Заказ был клонирован из заказа <a href=""@url"">@num</a>. Статус заказа: @status"
+"Created order #@num","Создан заказ #@num"
+Comparison,Сравнение
+Home,Главная
+"Select products","Выберите товары"
+"Product has been deleted from cart","Товар удален из корзины"
+"Cron has started","Крон запущен"
+"Installing GPLCart","Установка GPLCart"
+"Review has been updated and will be published after approval","Отзыв был обновлён и будет опубликован после одобрения"
+"Review has not been added","Отзыв не был добавлен"
+"Review has been added and will be published after approval","Отзыв был добавлен и будет опубликован после одобрения"
+Search,Поиск
+"Search for «@term»","Поиск «@term»"
+Login,Вход
+Register,Регистрация
+"Reset password","Сброс пароля"
+"My wishlist","Мой список желаний"
+"Failed to read the source config @path","Не удается прочитать источник конфигурации @path"
+"Failed to create config.php","Не удалось создать config.php"
+"Failed to import database tables","Не удалось импортировать таблицы базы данных"
+"Your store has been installed.\nURL: @url\nAdmin area: @url/admin\nGood luck!","Ваш магазин был установлен.\nURL: @url\nАдминистрирование: @url/admin\nУдачи!"
+"Your store has been installed. Now you can log in as superadmin","Ваш магазин был установлен. Теперь вы можете войти как суперадмин"
+Inactive,Неактивно
+Active,Активно
+"New account on @store","Новая учётная запись на @store"
+"A new account has been created on @store\r\n\r\nE-mail: @email\r\nName: @name\r\nUser ID: @user_id\r\nStatus: @status","Была создана новая учётная запись на @store\r\n\r\nE-mail: @email\r\nИмя: @name\r\nID пользователя: @user_id\r\nСтатус: @status"
+"Account details for @name on @store","Детали учётной записи для @name на @store"
+"Thank you for registering on @store\r\n\r\nAccount status: @status\r\n\r\nEdit account: @edit\r\nView orders: @order","Спасибо за регистрацию на сайте @store\r\n\r\nСтатус учётной записи: @status\r\n\r\nРедактирование настроек: @edit\r\nЗаказы: @order"
+"Password recovery for @name on @store","Восстановление пароля для @name на @store"
+"You or someone else requested a new password on @store\r\n\r\nTo get the password please click on the following link:\r\n@link\r\n\r\nThis link expires on @expires and nothing will happen if it's not used","Вы или кто-то другой запросил новый пароль на сайте @store\r\n\r\nЧтобы получить новый пароль кликните на эту ссылку:\r\n@link\r\n\r\nСсылка действует до @expires и ничего не случится, если вы не используете её"
+"Password has been changed for @name on @store","Пароль был изменен для @name на @store"
+"Your password on @store has been changed","Пароль учётной записи на сайте @store был изменён"
+"\r\n\r\n-------------------------------------\r\n@owner\r\n@address\r\n@phone\r\n@fax\r\n@store_email\r\n@map","\r\n\r\n-------------------------------------\r\n@owner\r\n@address\r\n@phone\r\n@fax\r\n@store_email\r\n@map"
+"Tel: @phone","Тел: @phone"
+"Fax: @fax","Факс: @fax"
+"E-mail: @store_email","E-mail: @store_email"
+"Find us on Google Maps: @map","Найти нас на Google Maps: @map"
+"New order #@order_id on @store","Новый заказ #@order_id в @store"
+"Order status: @status\r\nTotal: @total\r\nView: @order","Статус заказа: @status\r\nСумма: @total\r\nПросмотреть: @order"
+"Order #@order_id on @store","Заказ #@order_id в @store"
+"Thank you for ordering on @store\r\n\r\nOrder ID: @order_id\r\nOrder status: @status\r\nView orders: @order","Спасибо за заказ в магазине @store\r\n\r\nID заказа: @order_id\r\nСтатус заказа: @status\r\nПросмотреть: @order"
+"Your order #@order_id on @store has been updated\r\n\r\nOrder status: @status\r\nView orders: @order","Ваш заказ #@order_id на @store был обновлён\r\n\r\nСтатус: @status\r\nПросмотр заказов: @order"
+"@field is required","@field является обязательным"
+"@field must be numeric","@field должно быть числом"
+"@field must be integer","@field должно быть целым числом"
+"@name is unavailable","@name недоступно"
+"@field must be @min - @max characters long","@field должно быть длиной @min - @max символов"
+"@field has invalid value","@field имеет неправильное значение"
+"@name already exists","@name уже существует"
+Title,Заголовок
+Name,Название
+"Meta title",Мета-заголовок
+"Meta description",Мета-описание
+Description,Описание
+Weight,Вес
+Alias,Псевдоним
+User,Пользователь
+Type,Тип
+SKU,Артикул
+Order,Заказ
+Quantity,Количество
+"Too low stock level","Слишком низкий запас на складе"
+"Please no more than @num items","Пожалуйста не более @num позиций"
+"Please no more than @num items per SKU","Пожалуйста не более @num позиций одного артикула"
+"Invalid combination","Неправильная комбинация"
+Category,Категория
+"Category group","Группы категорий"
+"Parent category","Родительская категория"
+"First description","Первое описание"
+"Second description","Второе описание"
+"Category group of this type already exists for this store","Группа категорий этого типа уже существует для этого магазина"
+Zone,Зона
+Collection,Коллекция
+URL,URL
+"Collection ID","ID коллекции"
+Value,Значение
+"Native name","Родное название"
+Code,Код
+Currency,Валюта
+Symbol,Символ
+"Major unit","Главная единица"
+"Minor unit","Дробная единица"
+"Conversion rate","Курс обмена"
+"Rounding step","Шаг округления"
+Decimals,Десятичные
+"Numeric code","Числовой код"
+Widget,Виджет
+"Field value","Значение поля"
+Color,Цвет
+"Image style","Стиль изображения"
+Actions,Действия
+"Error on line @num","Ошибка в строке @num"
+"Please fix all critical errors in your environment","Пожалуйста устраните все критические проблемы в вашем окружении"
+No,Нет
+Yes,Да
+Host,Сервер
+"Base path","Базовый путь"
+Timezone,"Часовой пояс"
+Installer,Установщик
+"Database type","Тип базы данных"
+"Unsupported database driver. Available drivers: @list","Драйвер базы данных не поддерживается. Доступные драйверы: @list"
+"Could not connect to database","Не удалось подключиться к базе данных"
+Language,Язык
+Payment,Платёж
+Shipping,"Способ доставки"
+"Shipping address","Адрес доставки"
+"Payment address","Платёжный адрес"
+Creator,Создатель
+Total,Итого
+Price,Цена
+Comment,Комментарий
+Transaction,Транзакция
+Log,Лог
+"Price rule","Правило цен"
+Trigger,Триггер
+"Times used","Использовано раз"
+"Value type","Тип значения"
+Brand,"Торговая марка"
+"Size unit","Единица размера"
+"Weight unit","Единица веса"
+Stock,Склад
+Width,Ширина
+Height,Высота
+Length,Длина
+"Product class","Класс товара"
+"Combination already exists","Такая комбинация уже существует."
+"SKU must be unique per store","Артикул должен быть уникальным для каждого магазина"
+"Only numeric values and no longer than @num characters","Только числовые значения и не длиннее чем @num символов"
+Rating,Рейтинг
+Text,Текст
+Created,Создано
+Email,Email
+Domain,Домен
+Map,Карта
+Theme,Тема
+Conditions,Условия
+"Error on line @num: !error","Ошибка в строке @num: !error"
+"No parameters","Без параметров"
+"Invalid operator","Неправильный оператор"
+"Failed validation","Не прошло валидацию"
+"Old password","Старый пароль"
+"Old and new password not matching","Старый и новый пароль не соответствует"
+Role,Роль
+Redirect,Переадресация
+Wishlist,"Список желаний"
+Condition,Условие
+"Unsupported operator","Неподдерживаемый оператор"
+"@field must not be longer than @max characters","@field должно быть длиной не более @max символов"
+"Unable to add product","Не удается добавить продукт"
+"Product has been added to your cart. <a href=""@url"">Checkout</a>","Товар был добавлен в вашу корзину. <a href=""@url"">Оформить заказ</a>"
+"Product has been moved to your <a href=""@url"">wishlist</a>","Товар был перемещён в ваш <a href=""@url"">список желаний</a>"
+"Hello, %name. Now you are logged in","Здравствуйте, %name. Теперь вы авторизованы"
+"Product has been added to <a href=""@url"">comparison</a>","Товар был добавлен в <a href=""@url"">сравнение</a>"
+"Product has been removed from comparison","Товар был удалён из сравнения"
+"Less than","Меньше чем"
+"Greater than","Больше чем"
+"Equal (is in list)","Равно (есть в списке)"
+"Less than or equal to","Меньше или равно"
+"Greater than or equal to","Больше или равно"
+"Not equal (is not in list)","Не равно (не в списке)"
+Button,Кнопка
+"Radio buttons",Радио-кнопки
+"Dropdown list","Раскрывающийся список"
+Option,Вариант
+Attribute,Атрибут
+"Unable to upload the file","Не удается загрузить файл"
+"Unable to create @name","Не удается создать @name"
+"Unable to move @source to @destination","Не удается переместить @source в @destination"
+"Unknown filename","Неизвестное имя файла"
+"Unknown file extension","Неизвестное расширение файла"
+"Unsupported file extension","Неподдерживаемое расширение файла"
+"Unknown handler","Неизвестный обработчик"
+"File size exceeds %num bytes","Размер файла превышает %num байт"
+Default,"По умолчанию"
+"The database you specified already has tables","Указанная вами база данных уже имеет таблицы"
+Starting...,Начинаем...
+Finished,Завершено
+Processing...,Обработка...
+"The job has not been properly completed","Задание не было завершено должным образом"
+"Processed %total items, errors: %errors","Обработано %total элементов, ошибок: %errors"
+"Successfully processed %total items","Успешно обработано %total элементов"
+"Module already installed and enabled","Модуль уже установлен и включён"
+"Module is locked in code","Модуль заблокирован в коде"
+"Modules that are installers cannot be enabled","Модули, которые являются установочными профилями не могут быть включены"
+"Module already installed","Модуль уже установлен"
+"Modules that are installers cannot be installed when system is set up","Модули, которые являются установочными профилями не могут быть установлены при работающей системе"
+"Failed to instantiate the main module class","Не удалось создать экземпляр класса главного модуля"
+"Modules that are active themes cannot be disabled/uninstalled","Модули, которые являются активными темами оформления нельзя выключить/удалить при работающей системе"
+"Modules that are installers cannot be installed/enabled when system is set up","Модули, которые являются установочными профилями нельзя установить/включить при работающей системе"
+"Requires incompatible version of @name","Требует несовместимую версию @name"
+"Invalid module ID","Неправильный ID модуля"
+"Missing core version","Отсутствует версия ядра"
+"Module incompatible with the current system core version","Модуль несовместим с текущей версией ядра системы"
+"Required by","Требуется для"
+"Order has been created","Заказ был создан"
+"Thank you for your order! Order ID: @num, status: @status","Спасибо за ваш заказ! Номер заказа: @num, статус: @status"
+Pending,Ожидает
+Canceled,Отменено
+Delivered,Доставлено
+Completed,Завершено
+Processing,Обрабатывается...
+Dispatched,Отправлено
+"Awaiting payment","В ожидании оплаты"
+"Cash on delivery","Оплата при доставке"
+"Payment for an order is made at the time of delivery","Оплата за заказ производится в момент получения"
+Gram,Грамм
+Kilogram,Килограмм
+Ounce,Унция
+Inch,Дюйм
+Millimeter,Миллиметр
+Centimetre,Сантиметр
+Info,Информация
+Danger,Опасность
+Warning,Предупреждение
+"Core version","Версия ядра"
+"Database version","Версия базы данных"
+"PHP version","Версия PHP"
+"PHP operating system","Операционная система"
+"PHP Memory Limit","Лимит памяти PHP"
+"PHP APC cache enabled","PHP-APC кэш включен"
+"Server software","Серверное программное обеспечение"
+"Cron last run","Последний запуск крон"
+"Filesystem is protected","Файловая система защищена"
+"Search index","Поисковый индекс"
+"@num rows","@num строк"
+"File %name is not secure. The file permissions must be %perm","Файл %name не защищён. Права на файл должны быть %perm"
+Pickup,Самовывоз
+"Customer must pick up his items himself at the store","Покупатель должен самостоятельно забрать свой заказ в магазине"
+"Out of stock","Нет в наличии"
+Unavailable,Недоступно
+"Failed to log in","Не удалось авторизоваться"
+"Your account has been created","Ваша учетная запись создана"
+"Password reset link has been sent to your E-mail","Ссылка для сброса пароля была отправлена на ваш адрес электронной почты"
+"Your password has been successfully changed","Ваш пароль был успешно изменен"
+"Product already in your <a href=""@url"">wishlist</a>","Товар уже в вашем <a href=""@url"">списке желаний</a>"
+"You're exceeding limit of %num items","Вы превысили лимит %num позиций"
+"Product has been added to your <a href=""@url"">wishlist</a>","Товар был добавлен в ваш <a href=""@url"">список желаний</a>"
+"Unable to load product class fields","Не удалось загрузить поля класса товара"
+"Generate automatically","Генерировать автоматически"
+"Do you want to change order status?","Хотите изменить статус заказа?"
+"Changes will not be saved until the form is submitted","Изменения не будут сохранены до тех пор, пока форма не будет отправлена"
+"Backend theme","Тема бэкенда"
+Delete,Удалить
+"Select one or more images","Выберите одно или несколько изображений"
+Cancel,Отмена
+Previous,Предыдущий
+Next,Следующий
+"403 - Permission denied","403 - доступ запрещён"
+"You do not have permission to retrieve the URL or link you requested","У вас нет прав доступа к этому URL"
+"404 - Page not found","404 - страница не найдена"
+"The requested object or URL was not found on this server","Запрошенный адрес не найден на этом сервере"
+"With selected","С выбранным"
+"Are you sure? It cannot be undone!","Вы уверены? Это действие не может быть отменено!"
+OK,"ОК "
+ID,ID
+"Entity type","Тип сущности"
+"Entity ID","ID сущности"
+Any,Любое
+"Reset filter","Сбросить фильтр"
+Filter,Фильтр
+"No results","Нет результатов"
+Reset,Сброс
+"There are no items yet","Нет контента"
+Enabled,Включено
+Disabled,Отключено
+"Disabled categories will not be available to frontend users and search engines","Отключенные категории не будут доступны для клиентов и поисковых роботов"
+"The title will be used on the category page and menu","Этот заголовок будет использован на странице этой категории и в меню"
+"Text that usually placed at the top of a category page","Текст, который обычно расположен вверху страницы категории"
+"Text that usually placed at the bottom of a category page","Текст, который обычно расположен внизу страницы категории"
+Translations,﻿Переводы
+"Title %language","Название %language"
+"First description %language","Первое описание %language"
+"Second description %language","Дополнительное описание %language"
+Relations,Связи
+Root,Корень
+"Select a parent of the category. Specify ""Root"" for top-level parentless category","Выберите родительскую категорию. Выберите ""Корень"", если эта категория не имеет родителей"
+"Alternative path by which the entity item can be accessed. Leave empty to generate it automatically","Альтернативный путь, по которому будет доступна эта сущность. Оставьте поле пустым, чтобы сгенерировать псевдоним автоматически"
+Meta,Мета
+"Optional text to be placed between %tags tags","Необязательный текст для вставки в теги %tags"
+"Optional text to be used in meta description tag. The tag is commonly used on search engine result pages (SERPs) to display preview snippets for a given page. Important for SEO","Необязательный текст для meta description. Этот тег обычно используется для сниппетов в поисковой выдачи. Важно для СЕО"
+"Meta title %language","Meta title %language"
+"Meta description %language","Meta description %language"
+Save,Сохранить
+"Category group name to be shown to administrators and customers","Имя категории группы для администраторов и клиентов"
+None,Ничего
+"Brand category groups will contain trademarks (Sony, Apple), catalog - normal categories like Computers, Monitors etc.","Группы категорий торговых марок содержат названия торговых марок, каталог - товарные категории"
+"Select a store where to display this item","Выберите магазин, в котором будет показан этот элемент"
+Add,Добавить
+Edit,Изменить
+Categories,Категории
+"Are you sure?","Вы уверены?"
+View,Просмотр
+"Add subcategory","Добавить подкатегорию"
+"Only enabled items will be available publicly","Только включенные элементы будут доступны публично"
+"Start to type in the field an entity title to get suggestions or enter a numeric entity ID","Начните набирать в этом поле заголовок сущности, чтобы получить предлагаемые варианты или укажите числовой ID сущности"
+"Upload new file","Загрузить новый файл"
+"Enter a referring URL. You can use either absolute (with http://) or relative URLs","Укажите связанный URL. Вы можете использовать абсолютные или относительные URL"
+"Items are sorted in lists by the weight value. Lower value means higher position","Элементы сортируются в списках по значению веса. Меньшее значение означает более высокую позицию"
+"Entity status","Статус сущности"
+Items,Элементы
+"The title will be displayed to customers on product pages","Название будет отображаться для клиентов на страницах продуктов"
+"Atributes are facts about the products, options are interactive with the customer (Size, Color etc)","Атрибуты содержат различные факты о товаре, опции управляются покупателем (размер, цвет и т.д)"
+"Select how to display the field on product pages. This is for options only","Выберите способ отображения поля на страницах продуктов. Применимо только к опциям"
+Values,Значения
+"Add value","Добавить значение"
+"Specify a HEX color code. It's applicable only for fields with color widgets","Укажите HEX код цвета. Это применимо только для полей с виджетом цвета"
+Image,Изображение
+"Upload an image. It's applicable only for fields with image widgets","Загрузите изображение. Это применимо только для полей с виджетом изображения"
+"Delete existing <a target=""_blank"" href=""@url"">image</a>","Удалить существующее <a target=""_blank"" href=""@url"">изображение</a>"
+"Short description of the file","Короткое описание файла"
+"Optional detailed description of the file","Необязательное подробное описание файла"
+"Description %language","Описание %language"
+"Supported extensions: %list","Поддерживаемые расширения: %list"
+"Delete from database and disk","Удалить из базы данных и диска"
+"MIME type","Тип MIME"
+Path,Путь
+Download,Скачать
+Author,Автор
+Modified,Изменено
+"Disabled pages will not be available to frontend users and search engines","Отключённые страницы не будут доступны клиентам и поисковым роботам"
+"The title will be used on the page and menu","Заголовок будет показан на странице и в меню"
+"You can use any HTML but user can see only allowed tags","Вы можете использовать любой HTML, но пользователям будут показаны только разрешённые теги"
+"- select -",-выберите-
+"Select a category of the page","Выберите категорию страницы"
+Attributes,Атрибуты
+"Disabled product classes will not be available to customers and administrators while editing products","Отключенные классы товаров не будут доступны для клиентов и администраторов во время редактирования товаров"
+"The name of product class for administrators","Название класса товаров для администраторов"
+"Assign one or more fields to the product class","Добавьте одно или несколько полей к этому классу"
+"No fields to add to %name","Нет полей для добавления в %name"
+"You can add one or more fields <a href=""@url"">here</a>","Можно добавить одно или более полей <a href=""@url""> здесь</a>"
+Required,Обязательно
+Multiple,Множественное
+Remove,Удалить
+"Disabled products will not be available to customers and search engines","Отключенные товары не будут доступны для клиентов и поисковых роботов"
+"The title will be used on the product page and menu","Этот заголовок будет показан на странице товара и в меню"
+"Optional translation for language %name","Необязательный перевод на %name"
+Data,Данные
+"Product class is a set of attributes and options that defines the type of the product","Класс товара - это набор полей (атрибутов и опций), которые определяют тип товара, имеющего данный класс"
+"SKU is an identificator that allows it to be tracked for inventory purposes. Leave empty to generate it automatically","Артикул - это идентификатор, который предназначен для складского учёта товара. Оставьте поле пустым для автоматического генерирования"
+"Integer or decimal value","Целое или десятичное число"
+Subtract,Вычитать
+"Quantity of the product kept on the premises of the store. If selected ""Subtract"", ordered products will be subtracted from the stock level","Количество товаров, которое хранится на территории магазина. Если выбрано «Вычитать», заказанные товары будут вычтены из запасов"
+"Trademark or manufacturer name identifying the product","Торговая марка или производитель, которые идентифицируют товар"
+"Catalog category for this product","Категория в каталоге товаров"
+Related,Связано
+"Autocomplete field. Select some products to be related to this product","Поле с авто-завершением. Выберите какие-нибудь товары, которые связаны с этим товаром"
+Dimensions,Размеры
+"Physical width of the product. Used to calculate shipping cost","Фактическая ширина продукта. Используется для расчета стоимости доставки"
+"Physical height of the product. Used to calculate shipping cost","Физическая высота продукта. Используется для расчета стоимости доставки"
+"Physical length of the product. Used to calculate shipping cost","Фактическая длина продукта. Используется для расчета стоимости доставки"
+"Select a unit of measurement to use with the specified width, height and length","Выберите единицу измерения для указанных ширины, высоты и длины"
+"Physical weight of the product. Used to calculate shipping cost","Физический вес товара. Используется для расчёта стоимости доставки"
+"Select a unit of measurement to use with the specified weight","Выберите единицу измерения для указанного веса"
+"Disabled reviews will not be available to customers and search engines","Отключенные отзывы не будут доступны для клиентов и поисковых роботов"
+"Date when the review was created","Дата создания отзыва"
+"Autocomplete field. An E-mail of the person who will be author of the review","Поле с авто-завершением. E-mail пользователя, которые будет автором этого отзыва"
+"Autocomplete field. Select a product that is related to this review","Поле с авто-завершением. Выберите товар, для которого предназначен этот отзыв"
+"Text of the review. HTML tags are not allowed","Текст отзыва. Теги HTML не разрешены"
+Missing,Отсутствует
+Panel,Панель
+Welcome!,"Добро пожаловать!"
+"Here are some extra steps to set up your store","Дополнительные шаги для завершения установки вашего магазина"
+"Extend your store by installing extra modules and themes","Расширьте функционал магазина путём установки дополнительных модулей"
+"Add products to sell","Добавьте товары для продажи"
+"Add company info, change logo, theme","Добавьте информацию о компании, измените логотип, тему оформления"
+Skip,Пропустить
+"See all","Смотреть все"
+"Toggle navigation","Переключить навигацию"
+GPLCart,GPLCart
+"Log out",Выход
+"Select language","Выберите язык"
+Version,Версия
+Dependencies,Зависимости
+Disable,Отключить
+Enable,Включить
+"Are you sure? This action may permanently delete some data managed by this module","Вы уверены? Это действие может навсегда удалить некоторые данные, управляемые этим модулем"
+Uninstall,Удалить
+"Install and enable","Установить и включить"
+Configure,Настроить
+"Implements hooks","Предоставляет хуки"
+Requires,Требует
+invalid,недействительно
+Error,Ошибка
+"No modules","Нет модулей"
+Clear,Очистить
+Message,Сообщение
+Severity,Важность
+Line,Строка
+"Clear cache","Очистить кэш"
+Vendor,Поставщик
+Directory,Директория
+Module,Модуль
+Pattern,Шаблон
+Access,"Права доступа"
+"Run cron","Запустить крон"
+"Abandoned / before checkout","Брошено/перед оформлением заказа"
+Amount,Сумма
+new,новое
+"You can add an order for an <a href=""@url"">existing user</a>","Вы можете добавить заказ для <a href=""@url""> существующего пользователя</a>"
+Print,Печать
+"Are you sure? A new order will be created, this order will be canceled","Вы уверены? Будет создан новый заказ, этот заказ будет отменен"
+Clone,Клонировать
+"Order comments","Комментарии к заказу"
+Components,Компоненты
+"Grand total","Итоговая сумма"
+"No products in the cart","Нет товаров в корзине"
+unavailable,недоступно
+"Orders placed","Размещённых заказов"
+Editor,Редактор
+"Customer is not notified","Клиент не уведомлён"
+"Failed to notify customer","Не удалось уведомить клиента"
+"Customer is notified","Клиент уведомлён"
+Uknown,Неизвестно
+"Order ID","ID заказа"
+"Update status","Обновить статус"
+"Last modified","Последнее изменение"
+IP,"IP адрес"
+"User agent","Агент пользователя"
+"Tracking number","Номер отслеживания"
+"Disabled rules will not affect store prices","Отключенные правила не влияют на цены в магазине"
+"Select an enabled <a href=""@url"">trigger</a> that applies this rule. Keep in mind that triggers are per store","Выберите включенный <a href=""@url""> триггер</a>, который применяет это правило. Помните, что триггеры привязаны к определённому магазину"
+"The name will be shown to administrators and customers during checkout","Это название будет показано для администраторов и клиентов во время оформления заказа"
+"Unique code you want to associate with this price rule. The code must be specified by a customer during checkout","Уникальный код, который вы хотите связать с данным правилом. Этот код должен быть указан клиентом во время оформления заказа для получения скидки"
+"Numeric value to be added to the original price when the rule is applied. To substract use negative numbers","Числовое значение, которое будет добавлено к оригинальной цене, если это правило будет применено. Для вычитания используйте отрицательные числа"
+Percent,Процент
+Fixed,Фиксированное
+"Select how to apply the price rule value, e.g for discount 10% use ""Percent""","Выберите, как применять значение цены, например для скидки в 10% используйте ""Процент"""
+"The price value will be converted according to the selected currency","Значение цены будет cконвертировано в соответствии с выбранной валютой"
+"Position of the rule among other enabled rules. Rules with lower weight are applied earlier","Позиция этого правила среди других правил. Правила в меньшим весом будут выполняться первыми"
+"Payment method","Способ оплаты"
+"Gateway transaction ID","ID трансакции шлюза"
+"Disabled cities will not be displayed to customers","Отключённые города не будет отображаться для клиентов"
+"Native name of the city","Родное название этого города"
+"Zones are geographic regions that you ship goods to. Each zone provides shipping rates that apply to customers whose addresses are within that zone.","Зоны - это географические области, куда осуществляется доставка. Каждая зона имеет свои расценки на доставку, которые будут применены при расчёте стоимости заказа"
+"Select your sitewide time zone. This setting can affect price rules and other important things","Выберите часовой пояс для всего сайта. Эти настройки влияют на правила цен и другие важные вещи"
+"Cron key","Ключ крон"
+"The key is used to run scheduled operations from outside of the site. Leave empty to generate a random key","Этот ключ используется для выполнения запланированных операций (CRON) путём внешнего запроса. Оставьте поле пустым для генерации случайного ключа"
+"Track errors","Отслеживать ошибки"
+"Errors, notices, warnings","Ошибки, уведомления, предупреждения"
+All,Все
+"Select which PHP errors should be tracked by logging system","Выберите, какие ошибки PHP должны отслеживаться логгером"
+"Compress JS","Сжимать JS"
+"If enabled, JS files will be merged into several big files. It reduces number of HTTP queries and improves site loading speed","Если включено, файлы Java-Script будут объединены в несколько больших файлов, что позволит уменьшить количество HTTP запросов и увеличить скорость загрузки сайта"
+"Compress CSS","Сжимать CSS"
+"If enabled, CSS files will be minified and merged into one big file. It reduces number of HTTP queries and improves site loading speed","Если включено, файлы CSS будут сжаты и объединены в несколько больших файлов, что позволит уменьшить количество HTTP запросов и увеличить скорость загрузки сайта"
+"Delete cached assets","Удалить кеш .js и .css файлов"
+"Disabled countries will not be available to customers","Отключённые страны не будут доступны для клиентов"
+"ISO 3166-2 code, e.g US","Код ISO 3166-2, например US"
+"International english name of the country according to ISO 3166-2 standard","Международное английское название страны по стандарту ISO 3166-2"
+"Local name of the country, e.g 中国","Локальное имя страны, например 中国"
+States,Области
+Format,Формат
+"Default currency is the base currency of the store","Валюта по умолчанию является базовой валютой магазина"
+"Disabled currencies will not be available to customers","Отключённые валюты не будут доступны для клиентов"
+"Exchange rate against default (base) currency. Only numeric positive values","Курс обмена относительно базовой валюты. Только числовые положительные значения"
+"Official currency name in english","Официальное название валюты на английском"
+"Template placeholder: %name","Подстановка в шаблоне: %name"
+"Three-letter upper-case code according to ISO 4217 standard, e.g USD","Трёх-буквенный код в верхнем регистре по стандарту ISO 4217, например USD"
+"Sign of the currency, e.g $.","Знак валюты, например $."
+"Numeric code according to ISO 4217 standard.","Числовой код по стандарту ISO 4217"
+"Name of the highest valued currency unit, e.g Dollar.","Название наибольшей единицы измерения валюты, например Доллар"
+"Name of the lowest valued currency unit. Usually it's 1/100 of the major unit, e.g Cent.","Название наименьшей единицы измерения валюты, например Цент"
+"Number of decimal points, usually 2","Количество десятичных точек, обычно 2"
+"Numeric value for more granular control over rounding to the final value. Enter 0 if unsure","Числовое значение для более детального контроля над округлением до конечного значения. Введите 0, если вы не уверены"
+"Thousands separator","Разделитель тысячного разряда"
+"Character used to separate thousands, e.g comma.","Символ, используемый для разделения тысяч, например запятая."
+"Decimal separator","Десятичный разделитель"
+"Character used to separate decimals, e.g period","Символ, используемый для разделения десятичных, например точка"
+Template,Шаблон
+"Template to format prices in this currency. See the field descriptions for available placeholders. For price value use %price","Шаблон формата цены в этой валюте. Смотрите описания полей для доступных подстановок. Для значения цены используйте %price"
+"In database","В базе данных"
+Updated,Обновлено
+"Disabled imagestyles will not process images","Отключенные стили не будут участвовать в обработке изображений"
+"Descriptive name of the image style for administrators","Описание стиля для администратора"
+"List of actions to be applied from the top to bottom. One action per line. See the legend. For example to make thumbnail 50X50: thumbnail 50,50","Список действий, которые буду применены сверху вниз. Одно действие на строку. Смотрите расшифровку обозначений. Например, сделать эскиз 50 X 50: thumbnail 50,50"
+Legend,"Расшифровка обозначений"
+Key,Ключ
+"If selected the language will be considered as default fallback language","Если выбрано, этот язык будет рассматриваться как язык по умолчанию"
+"Disabled languages will not be available to customers","Отключённые языки не будут доступны клиентам"
+Right-to-left,"Справа налево"
+"Whether the language is written in right-to-left (RTL) script","Написан ли язык справа налево (RTL)"
+"Language code according to ISO 639-1. Culture names also accepted","Код языка по стандарту ISO 639-1. Региональные названия также могут быть использованы"
+"International english name of the language according to ISO 639 standard","Международное название языка на английском по стандарту ISO 639"
+"Local name of the language, e.g 中文","Локальное название языка, например 中文"
+"Are you sure? All compiled translations for this language will be re-created, their existing translations will be lost!","Уверены? Все скомпилированные переводы для этого языка будет созданы заново, их существующие переводы будут потеряны!"
+Refresh,Обновить
+"Disabled states will not be displayed to customers","Отключённые области не будут доступны для клиентов"
+"Official name of the state","Официальное название этой области"
+"Code or abbreviation used to represent the state in the country, e.g NY for New York","Код или аббревиатура для обозначения этого штата/области в этой стране, например NY для New York"
+Cities,Города
+"Disabled stores will be closed and show maintenance status","Отключённые магазины будут закрыты и показывать сообщение о профилактических работах"
+"Short name for administrators","Короткое название для администраторов"
+"Domain name by which this store can be accessed","Название домена, по которому будет доступен этот магазин"
+"Specify a subdirectory if the store is not installed in the domain root directory","Укажите установочную поддиректорию, если файлы магазина загружены не в корень домен"
+"The default site name","Название сайта по умолчанию"
+"List of e-mails, one per line","Список e-mail, по одному в строке"
+Owner,Владелец
+"Name of the company that owns this store","Название компании, которой принадлежит этот магазин"
+"An optional text to be used in meta description tag","Необязательный текст для использования в мета-теге description"
+Contact,Контакты
+"City of the store","Город магазин"
+"Country state of the store","Область/штат магазина"
+"Country of the store","Страна магазина"
+"Physical address of the store","Физический адрес магазина"
+"Latitude and longitude of the store, one value per line","Широты и долготы магазина, одно значение в строке"
+"List of phone numbers, one per line","Список телефонных номеров, по одному в строке"
+"List of fax numbers, one per line","Список номеров факсов, по одному в строке"
+"Post code","Почтовый индекс"
+"Post code of the store","Почтовый код магазина"
+Appearance,Оформление
+"Select a theme module used to display front-end of the store to all devices","Выберите модуль, используемый для отображения магазина для всех устройств"
+"Anonymous checkout","Анонимное оформление заказа"
+"Whether or not anonymous customers should log in before checkout","Должны ли анонимные пользователи авторизоваться для оформления заказа"
+"Java-Script code without script tags to add on each public, non-admin and non-internal page, e.g Google Analytics tracking code","Код Java-Script без тегов ""script"" для вставки на каждой публичной странице, которая не предназначена для административного и внутреннего использования, например код отслеживания Google Analytics"
+"Select a <a href=""@url"">collection</a> to be used for banner slideshow on front page","Выберите <a href=""@url"">коллекцию</a> для показа баннеров на главной странице"
+"Featured products","Рекомендуемые товары"
+"Select a <a href=""@url"">collection</a> to be used for list of featured products on front page","Выберите <a href=""@url""> коллекцию</a> для списка товаров на главной странице"
+"Select a <a href=""@url"">collection</a> to be used for list of articles/news on front page","Выберите <a href=""@url""> коллекцию</a> для списка статей/новости на главной странице"
+Logo,Логотип
+"The main site logo. Appearance of the image is controlled by the current theme","Главный логотип сайта. Отображение этого изображения контролируется настройками текущей темы оформления"
+Favicon,Иконка
+"Favicon is a small image that represents your site. Appearance of the image is controlled by the current theme","Favicon - это небольшая иконка, которая представляет ваш сайт в закладках браузера. Отображение зависит от настроек текущей темы оформления"
+"Disabled triggers will be excluded from processing","Отключенные триггеры будут исключены из обработки"
+"The name will be shown to administrators","Это название будет показано администраторам"
+"Select a store that is associated with this trigger","Выберите магазин для этого триггера"
+"Position of the trigger among other enabled triggers. Triggers with lower weight are invoked earlier","Позиция триггера среди других включённых триггеров. Триггеры с меньшим весом будут срабатывать раньше"
+"Which conditions must be met to invoke the trigger. One condition per line. See the legend. Conditions are checked from the top to bottom. Format: [condition ID][space][operator][space][parameter(s)]","Какие условия должны соблюдаться для срабатывания этого триггера. Одно условие в строке. Смотрите расшифровку. Условия проверяются сверху вниз. Формат: [ID условия][пробел][оператор][пробел] [параметры]"
+Operators,Операторы
+Operator,Оператор
+"Disabled zones will not be available to users","Отключённые зоны не будут доступны пользователям"
+"Name for administrators","Название для администраторов"
+"Full name","Полное название"
+Details,Детали
+"User name, e.g John Smith","Имя пользователя, например Джон Смит"
+"Unique E-mail for this user","Уникальный адрес электронной почты для этого пользователя"
+"Password to log in this user","Пароль для входа этого пользователя"
+"Disabled users are not allowed to login","Отключённые пользователи не смогут авторизоваться на сайте"
+"Roles are sets of permissions that control what users can do and see on the site","Роли — это наборы разрешений, которые контролируют то, что пользователи могут делать и видеть на сайте"
+"Associate this user with a certain store","Связать этого пользователя с определенным магазином"
+"Add order","Добавить заказ"
+Expires,"Срок действия"
+"Disabled roles will not be available to users","Отключённые роли не будут доступны пользователям"
+"Descriptive name of the role, e.g Boss, Manager etc","Содержательное описание для этой роли, например Босс, Менеджер и т.д"
+"To account page","На страницу аккаунта"
+"A destination that a user is redirected to after logged in","Направление, куда будет перенаправлен пользователь после удачной авторизации"
+Permissions,Разрешения
+"Select/unselect all","Выбрать всё / снять выделения"
+"Category page","Страница категории"
+"Category page (child)","Страница категории (дочерняя)"
+"Product page","Страница товара"
+"Product catalog (grid)","Каталог товаров (сетка)"
+"Product catalog (list)","Каталог товаров (список)"
+"Product option","Вариант товара"
+"File collection (banners)","Коллекция файлов (баннеры)"
+"Page collection (news/articles)","Коллекция страниц (новости/статьи)"
+"Product collection (featured products)","Коллекции товаров (рекомендуемые)"
+"Settings have been reset to default values","Настройки были сброшены до значений по умолчанию"
+Frontend,Frontend
+"Edit %name settings","Изменение настроек %name"
+"Already in comparison","Уже в сравнении"
+"Already in wishlist","Уже в списке желаний"
+"Selected: !combination","Выбрано: !combination"
+"Checking availability...","Проверка доступности..."
+"Frontend theme","Тема фронтенда"
+"View and manage addressbook","Просмотр и управление адресной книгой"
+"Edit account details","Изменить данные учетной записи"
+"This account is inactive","Эта учетная запись неактивна"
+Never,Никогда
+"You have no orders yet. <a href=""@url"">Shop now</a>","У вас еще нет заказов. <a href=""@url"">В магазин</a>"
+Delete?,Удалить?
+"You have no saved addresses yet","У вас еще нет сохраненных адресов"
+"New password","Новый пароль"
+"Existing password","Существующий пароль"
+Comments,Комментарии
+"Add to cart","Добавить в корзину"
+"Add to wishlist","Добавить в список желаний"
+Compare,Сравнить
+"Shopping cart is empty","Корзина пуста"
+Subtotal,"Промежуточный итог"
+"Final price will be shown on checkout page","Окончательная цена будет показана на странице оформления заказа"
+"Cart / Checkout","Корзина / Оформить заказ"
+"This category has no content","Эта категория не имеет содержимого"
+"Showing @num of @total","Показано @num из @total"
+"Low prices first","Сначала низкие цены"
+"High prices first","Сначала высокой цены"
+"Title A-Z","Заголовок А–Я"
+"Title Z-A","Заголовок Я–А"
+Go,Далее
+"If you want to add a new order for a user, add all needed products to your cart then add an order for the <a href=""@url"">user</a>. Your cart items will be assigned to that user.","Если вы хотите добавить новый заказ для пользователя, добавьте необходимые товары в свою корзину, затем создайте заказ для этого <a href=""@url"">пользователя</a>. Товары из вашей корзины перейдут к этому пользователю."
+"Shopping cart is empty. <a href=""@url"">Shop now</a>","Корзина пуста. <a href=""@url"">В магазин</a>"
+"Your browser seems to have Java-Script disabled. You should press ""Update"" button each time you make changes in the form","Похоже ваш браузер не поддерживает Java-Script. Вам необходимо нажимать кнопку «Обновить» каждый раз, когда вы внести изменения в форме"
+Update,Обновить
+"Already registered?","Уже зарегистрированы?"
+"Click to login","Нажмите для входа"
+"Place order now",Заказать
+"Log in",Авторизоваться
+"Continue as guest","Продолжить как гость"
+"My shipping and payment addresses are the same","Мои адреса доставки и оплаты совпадают"
+"Add address","Добавить адрес"
+"Get states","Получить области"
+"Get services and rates","Получить сервисы и расценки"
+"Move to wishlist","Переместить в список желаний"
+"Enter code","Введите код"
+Apply,Применить
+"Shipping method","Способ доставки"
+Unvote,"Отменить голос"
+"@num out of @total stars","@num из @total звезд"
+Facebook,Facebook
+Google+,Google+
+Twitter,Twitter
+"Show only difference","Показать только различия"
+"Nothing to compare","Нечего сравнивать"
+"Add more to compare","Добавить к сравнению"
+"Change password","Изменить пароль"
+"Content coming soon...","Содержимое скоро будет..."
+"There are some issues in your environment","Существуют некоторые проблемы в вашем системном окружении"
+"non-critical issue",некритично
+"critical issue","критические проблемы"
+error,ошибка
+"Installation profiles","Установочные профили"
+"This distribution can be installed in several ways. Select an installer that fits your needs","Этот дистрибутив можно установить несколькими способами. Выберите установочный профиль, который соответствует вашим потребностям"
+Database,"База данных"
+"Name of the database you want to connect to","Имя базы данных, к которой вы хотите подключиться"
+"Existing username to access the database","Имя пользователя для доступа к базе данных"
+"Password to access the database. Can be empty","Пароль для доступа к базе данных. Может быть пустым"
+Site,Cайт
+"E-mail for superadmin","E-mail для супер-администратора"
+"Password for superadmin","Пароль для супер-администратора"
+"Name of the store","Название магазина"
+"Choose your local timezone","Выберите ваш часовой пояс"
+"Advanced database settings","Расширенные настройки базы данных"
+"Select your database type from the list of supported PDO drivers","Выберите тип базы данных из списка поддерживаемых драйверов"
+mysql,mysql
+sqlite,sqlite
+"The port number to use for the connection. The default port number is 3306","Номер порта, используемый для подключения базы данных. По умолчанию используется порт 3306"
+"The default host name is localhost. If your database should be connected remotely specify here its IP or domain","Имя хоста по умолчанию — localhost. Если ваша база данных должна быть подключена удаленно укажите здесь её IP или домен"
+Install,Установить
+Help,Помощь
+Hello,Здравствуйте
+"We'll be back soon!","Мы скоро вернёмся!"
+"Sorry for the inconvenience but we're performing some maintenance at the moment","Извините за неудобства, но на данный момент мы выполняем техническое обслуживания"
+"Forgot password","Забыл пароль"
+Specs,Характеристики
+"This product is disabled","Этот товар отключен"
+"@num reviews","@num отзывов"
+"Be first to review this product","Добавьте первый отзыв"
+"Recently viewed","Недавно просмотренные"
+"@min - @max characters","@min - @max символов"
+"No results found. Try another search keyword","Ничего не найдено. Попробуйте другое ключевое слово"
+"Products per page","Товаров на странице"
+"Default view","Вид по умолчанию"
+Grid,Сетка
+List,Список
+"Sorting field","Поле сортировки"
+"Sorting direction","Направление сортировки"
+Ascending,"По возрастанию"
+Descending,"По убыванию"
+"Your wishlist is empty. <a href=""@url"">Continue shopping</a>","Ваш список желаний пуст. <a href=""@url""> Продолжить покупки</a>"

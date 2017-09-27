@@ -1,0 +1,1827 @@
+"Displays all available commands","Відображає всі доступні команди"
+"Performs full system installation. Simple step-by-step wizard, has no options","Виконує повне встановлення системи. Простий покроковий майстер, не має параметрів"
+"Allows to perform full system installation at once","Дозволяє виконувати повне встановлення системи одразу"
+"Optional. ID of module to be used for this installation process","Необов'язково. ID модуля, який буде використовуватися для цієї установки"
+"Required. Database name","Обов'язково. Назва бази даних"
+"Optional. Database user. Defaults to ""root""","Необов'язково. Користувач бази даних. За замовчуванням ""root"""
+"Optional. Database host. Defaults to ""localhost""","Необов'язково. Сервер бази даних. За замовчуванням ""localhost"""
+"Optional. Database password. Defaults to empty string","Необов'язково. Пароль бази даних. За замовчуванням порожня строка"
+"Optional. Database type, e.g ""mysql"" or ""sqlite"". Defaults to ""mysql""","Необов'язково. Тип бази даних, наприклад, ""mysql"" або ""sqlite"". За замовчуванням ""mysql"""
+"Optional. Database port. Defaults to ""3306""","Необов'язково. Порт бази даних. За замовчуванням ""3306"""
+"Required. Admin e-mail","Обов'язково. Електрона пошта для адміністратора"
+"Required. Admin password","Обов'язково. Пароль адміністратора"
+"Optional. Name of the store. Defaults to ""GPL Cart""","Необов'язково. Назва магазину. За замовчуванням ""GPLCart"""
+"Optional. Subfolder name. Defaults to empty string, i.e domain root folder","Необов'язково. Назва директорії для встановлення. За замовчуванням порожній рядок, тобто коренева директорія домена"
+"Optional. Timezone of the store. Defaults to the current timezone","Необов'язково. Часовий пояс магазину. За замовчуванням поточний часовий пояс сервера"
+"Optional. Domain name e.g ""example.com"" without scheme prefix and slashes. Defaults to the current hostname/IP","Необов'язково. Назва домену, наприклад, ""example.com"" без схеми і косих рисок на кінці. За замовчуванням поточний хост/IP"
+Product,Товар
+File,Файл
+Page,Сторінка
+"System URL route (global)","Системний URL маршрут (глобально)"
+"Parameters: system route pattern. Only = and != operators allowed","Параметри: шаблон системного маршруту. Дозволені тільки оператори = та! ="
+"URL path (global)","Шлях URL (глобально)"
+"Parameters: path with regexp pattern. Only = and != operators allowed. Do not use trailing slashes. Example: account/(\d+)","Параметри: шлях з regexp шаблоном. Дозволені тільки оператори = та! =. Не використовуйте косу риску. Приклад: account/(\d+)"
+"User ID (global)","Ідентифікатор користувача (глобально)"
+"Parameters: list of ID, separated by comma","Параметри: список ID, розділені комами"
+"User role ID (global)","ID ролі користувача (глобально)"
+"Current date (global)","Поточна дата (глобально)"
+"Parameters: One value in time format. See http://php.net/manual/en/datetime.formats.php","Параметри: Одне значення в формат часу. Див. http://php.net/manual/en/datetime.formats.php"
+"Number of times a price rule code (coupon) has been used (checkout)","Скільки разів код правила був використаний (чекаут)"
+"Parameters: One numeric value","Параметри: Один числове значення"
+"Shipping method (checkout)","Спосіб доставки (чекаут)"
+"Payment method (checkout)","Спосіб оплати (чекаут)"
+"Shipping country code (checkout)","Код країни доставки (чекаут)"
+"Shipping state ID (checkout)","ID області адреси доставки (чекаут)"
+"Shipping address zone ID (checkout)","ID зони адреси доставки (чекаут)"
+"Payment country code (checkout)","Код країни оплати (чекаут)"
+"Payment state ID (checkout)","ID області адреси оплати (чекаут)"
+"Payment address zone ID (checkout)","ID зони адреси оплати (чекаут)"
+"Cart total (checkout)","Загальна сума кошика (чекаут)"
+"Parameters: one value in format ""price|currency"". If only price specified, default currency will be used","Параметри: одне значення у форматі «Ціна|валюта"". Якщо вказано тільки ціну, буде використовуватися валюта за замовчуванням"
+"Cart contains product ID (checkout)","Кошик містить ID товару (чекаут)"
+"Cart contains SKU (checkout)","Кошик містить артикул товару (чекаут)"
+"Parameters: list of SKU, separated by comma","Параметри: список артикулів, розділені комами"
+"Product ID","ID товару"
+"Product category ID","ID категорії товару"
+"Product brand category ID","ID категорії торгівельної марки товару"
+Afghanistan,Афганістан
+"Aland Islands","Аландські острови"
+Albania,Албанія
+Algeria,Алжир
+"American Samoa","Американське Самоа"
+Andorra,Андора
+Angola,Ангола
+Anguilla,Ангілья
+Antarctica,Антартика
+"Antigua and Barbuda","Антигуа і Барбуда"
+Argentina,Аргентина
+Armenia,Вірменія
+Aruba,Аруба
+Australia,Австралія
+Austria,Австрія
+Azerbaijan,Азербайджан
+Bahamas,Багами
+Bahrain,Бахрейн
+Bangladesh,Бангладеш
+Barbados,Барбадос
+Belarus,Білорусь
+Belgium,Бельгія
+Belize,Беліз
+Benin,Бенін
+Bermuda,"Бермудські острови"
+Bhutan,Бутан
+Bolivia,Болівія
+"Bonaire, Saint Eustatius and Saba","Бонайре, Сінт-Естатіус і Саба"
+"Bosnia and Herzegovina","Боснія та Герцеговина"
+Botswana,Ботсвана
+"Bouvet Island","Острів Буве"
+Brazil,Бразилія
+"British Indian Ocean Territory","Британська територія в Індійському океані"
+"British Virgin Islands","Британські Віргінські острови"
+Brunei,Бруней
+Bulgaria,Болгарія
+"Burkina Faso",Буркіна-Фасо
+Burundi,Бурунді
+Cambodia,Камбоджа
+Cameroon,Камерун
+Canada,Канада
+"Cape Verde",Кабо-Верде
+"Cayman Islands","Кайманові острови"
+"Central African Republic","Центрально-Африканська Республіка"
+Chad,Чад
+Chile,Чилі
+China,Китай
+"Christmas Island","Острів Різдва"
+"Cocos Islands","Кокосові острови"
+Colombia,Колумбія
+Comoros,"Коморські острови"
+"Cook Islands","Острови Кука"
+"Costa Rica",Коста-Ріка
+Croatia,Хорватія
+Cuba,Куба
+Curacao,Кюрасао
+Cyprus,Кіпр
+"Czech Republic",Чехія
+"Democratic Republic of the Congo",Конго
+Denmark,Данія
+Djibouti,Джибуті
+Dominica,Домініка
+"Dominican Republic","Домініканська республіка"
+"East Timor","Східний Тимор"
+Ecuador,Еквадор
+Egypt,Єгипет
+"El Salvador",Ель-Сальвадор
+"Equatorial Guinea","Екваторіальна Гвінея"
+Eritrea,Еритрея
+Estonia,Естонія
+Ethiopia,Ефіопія
+"Falkland Islands","Фолклендські острови"
+"Faroe Islands","Фарерські острови"
+Fiji,Фіджі
+Finland,Фінляндія
+France,Франція
+"French Guiana","Французька Гвіана"
+"French Polynesia","Французька Полінезія"
+"French Southern Territories","Французькі Південні і Антарктичні території"
+Gabon,Габон
+Gambia,Гамбія
+Georgia,Грузія
+Germany,Німеччина
+Ghana,Гана
+Gibraltar,Гібралтар
+Greece,Греція
+Greenland,Гренландія
+Grenada,Гренада
+Guadeloupe,Гваделупа
+Guam,Гуам
+Guatemala,Гватемала
+Guernsey,Гернсі
+Guinea,Гвінея
+Guinea-Bissau,Гвінея-Бісау
+Guyana,Гаяна
+Haiti,Гаіті
+"Heard Island and McDonald Islands","Острів Херд і Макдональд"
+Honduras,Гондурас
+"Hong Kong",Гонконг
+Hungary,Угорщина
+Iceland,Ісландія
+India,Індія
+Indonesia,Індонезія
+Iran,Іран
+Iraq,Ірак
+Ireland,Ірландія
+"Isle of Man","Острів Мен"
+Israel,Ізраїль
+Italy,Італія
+"Ivory Coast",Кот-д'Івуар
+Jamaica,Ямайка
+Japan,Японія
+Jersey,Джерсі
+Jordan,Йорданія
+Kazakhstan,Казахстан
+Kenya,Кенія
+Kiribati,Кірибаті
+Kosovo,Косово
+Kuwait,Кувейт
+Kyrgyzstan,Киргизстан
+Laos,Лаос
+Latvia,Латвія
+Lebanon,Ліван
+Lesotho,Лесото
+Liberia,Ліберія
+Libya,Лівія
+Liechtenstein,Ліхтенштейн
+Lithuania,Литва
+Luxembourg,Люксембург
+Macao,Макао
+Macedonia,Македонія
+Madagascar,Мадагаскар
+Malawi,Малаві
+Malaysia,Малайзія
+Maldives,Мальдіви
+Mali,Малі
+Malta,Мальта
+"Marshall Islands","Маршалові острови"
+Martinique,Мартініка
+Mauritania,Мавританія
+Mauritius,Маврикій
+Mayotte,Майотта
+Mexico,Мексика
+Micronesia,Мікронезія
+Moldova,Молдова
+Monaco,Монако
+Mongolia,Монголія
+Montenegro,Чорногорія
+Montserrat,Монтсеррат
+Morocco,Марокко
+Mozambique,Мозамбік
+Myanmar,М'янма
+Namibia,Намібія
+Nauru,Науру
+Nepal,Непал
+Netherlands,Нідерланди
+"New Caledonia","Нова Каледонія"
+"New Zealand","Нова Зеландія"
+Nicaragua,Нікарагуа
+Niger,Нігер
+Nigeria,Нігерія
+Niue,Ниуэ
+"Norfolk Island","Острів Норфолк"
+"North Korea","Північна Корея"
+"Northern Mariana Islands","Північні Маріанські острови"
+Norway,Норвегія
+Oman,Оман
+Pakistan,Пакістан
+Palau,Палау
+"Palestinian Territory",Палестина
+Panama,Панама
+"Papua New Guinea","Папуа-Нова Гвінея"
+Paraguay,Парагвай
+Peru,Перу
+Philippines,Філіпіни
+Pitcairn,Піткерн
+Poland,Польща
+Portugal,Португалія
+"Puerto Rico",Пуерто-Ріко
+Qatar,Катар
+"Republic of the Congo",Конго
+Reunion,Реюньйон
+Romania,Румунія
+Russia,Росія
+Rwanda,Руанда
+"Saint Barthelemy",Сен-Бартелемі
+"Saint Helena","Острів Святої Єлени"
+"Saint Kitts and Nevis","Сент-Кіттс і Невіс"
+"Saint Lucia",Сент-Люсія
+"Saint Martin",Сен-Мартін
+"Saint Pierre and Miquelon","Сен-П'єр і Мікелон"
+"Saint Vincent and the Grenadines","Сент-Вінсент і Гренадіни"
+Samoa,Самоа
+"San Marino",Сан-Маріно
+"Sao Tome and Principe","Сан-Томе і Принсіпі"
+"Saudi Arabia","Саудівська Аравія"
+Senegal,Сенегал
+Serbia,Сербія
+Seychelles,Сейшели
+"Sierra Leone","Сіера Леон"
+Singapore,Сінгапур
+"Sint Maarten",Сінт-Маартен
+Slovakia,Словакія
+Slovenia,Словенія
+"Solomon Islands","Соломонові острови"
+Somalia,Сомалі
+"South Africa","Південна Африка"
+"South Georgia and the South Sandwich Islands","Південна Джорджія та Південні Сандвічеві острови"
+"South Korea","Південна Корея"
+"South Sudan","Південний Судан"
+Spain,Іспанія
+"Sri Lanka","Шрі Ланка"
+Sudan,Судан
+Suriname,Сурінам
+"Svalbard and Jan Mayen","Шпіцберген і Ян-Маєн"
+Swaziland,Свазіленд
+Sweden,Швеція
+Switzerland,Швейцарія
+Syria,Сирія
+Taiwan,Тайвань
+Tajikistan,Таджикістан
+Tanzania,Танзанія
+Thailand,Таїланд
+Togo,Того
+Tokelau,Токелау
+Tonga,Тонга
+"Trinidad and Tobago","Трінідад і Табаго"
+Tunisia,Туніс
+Turkey,Туреччина
+Turkmenistan,Туркменістан
+"Turks and Caicos Islands","Острови Теркс і Кайкос"
+Tuvalu,Тувалу
+"U.S. Virgin Islands","Американські Віргінські острови"
+Uganda,Уганда
+Ukraine,Україна
+"United Arab Emirates","Об'єднані Арабські Емірати"
+"United Kingdom",Великобританія
+"United States",США
+"United States Minor Outlying Islands","Малі Віддалені острови США"
+Uruguay,Уругвай
+Uzbekistan,Узбекістан
+Vanuatu,Вануату
+Vatican,Ватікан
+Venezuela,Венесуела
+Vietnam,В'єтнам
+"Wallis and Futuna","Уолліс і Футуна"
+"Western Sahara","Західна Сахара"
+Yemen,Ємен
+Zambia,Замбія
+Zimbabwe,Зімбабве
+Country,Країна
+State,Область
+City,Місто
+Address,Адреса
+"Additional address","Додаткова адреса"
+Phone,Телефон
+"Post code/ZIP","Поштовий код/ZIP"
+"First name",Iм’я
+"Middle name","По батькові"
+"Last name",Прізвище
+Company,Компанія
+Fax,Факс
+"United States Dollar","Долар США"
+Cent,Цент
+Dollar,Долар
+"United Arab Emirates Dirham","Дірхам ОАЕ"
+Fils,Філ
+Dirham,Дірхам
+"Afghan Afghani",Афгані
+Pul,Пул
+Afghani,Афгані
+"Netherlands Antillean Guilder","Гульден Нідерландських Антильських островів"
+Guilder,Гульден
+"Angolan Kwanza","Ангольська кванза"
+Cêntimo,Сентім
+Kwanza,Кванза
+"Argentine Peso","Аргентинське песо"
+Centavo,Сентаво
+Peso,Песо
+"Australian Dollar","Австралійський долар"
+"Aruban Florin","Флорін Аруби"
+"Azerbaijanian Manat","Азербайджанський манат"
+Qəpik,Копік
+"New Manat",Манат
+"Bosnia-Herzegovina Convertible Mark","Марка БосніЇ та Герцеговини"
+Fening,Фенінг
+"Convertible Marka",Марка
+"Barbadian Dollar","Барбадоський долар"
+"Bangladeshi Taka","Бангладешська така"
+Paisa,Пайса
+Taka,Така
+"Bulgarian lev","Болгарський лев"
+Stotinka,Стотінка
+Lev,Лев
+"Bahraini Dinar","Бахрейнський динар"
+Dinar,Динар
+"Burundian Franc","Бурундійський франк"
+Centime,Сантім
+Franc,Франк
+"Bermudan Dollar","Бермудський долар"
+"Brunei Dollar","Брунейський долар"
+Sen,Сен
+"Bolivian Boliviano","Болівійський болівіано"
+Bolivianos,Болівіано
+"Brazilian Real","Бразильський реал"
+Reais,Реал
+"Bahamian Dollar","Багамський долар"
+"Bhutanese Ngultrum","Бутанійський нгултрум"
+Chetrum,Четрум
+Ngultrum,Нгултрум
+"Botswanan Pula","Ботсванська пула"
+Thebe,Зебе
+Pulas,Пула
+"Belarusian ruble","Білоруський рубль"
+Ruble,Рубль
+"Belize Dollar","Белізький долар"
+"Canadian Dollar","Канадійський долар"
+"Congolese Franc","Конголезський франк"
+"Swiss Franc","Швейцарський франк"
+Rappen,Рапен
+"Chilean Peso","Чилійське песо"
+"Chinese Yuan Renminbi","Китайський юань"
+Fen,Фен
+Yuan,Юань
+"Colombian Peso","Колумбійський песо"
+"Costa Rican Colón","Костариканський колон"
+Céntimo,Сантім
+Colón,Колон
+"Cuban Peso","Кубинський песо"
+"Cape Verdean Escudo","Ескудо Кабо-Верде"
+Escudo,Ескудо
+"Czech Republic Koruna","Чеська крона"
+Haléř,Гелер
+Koruna,Крона
+"Djiboutian Franc","Джибутійський франк"
+"Danish Krone","Дацька крона"
+Øre,Оро
+Kroner,Крона
+"Dominican Peso","Домініканський песо"
+"Algerian Dinar","Алжирський динар"
+Santeem,Сантім
+"Estonian Kroon","Естонська крона"
+Sent,Цент
+Krooni,Крона
+"Egyptian Pound","Єгипетський фунт"
+Piastr,Піастр
+Pound,Фунт
+"Eritrean Nakfa","Еритрейська накфа"
+Nakfa,Накфа
+"Ethiopian Birr","Ефіопський бір"
+Santim,Сантім
+Birr,Бір
+Euro,Євро
+"Fijian Dollar","Долар Фіджі"
+"Falkland Islands Pound","Фолклендський фунт"
+Penny,Пенні
+"British Pound Sterling","Британський фунт стерлінгів"
+"Ghanaian Cedi","Ганський седі"
+Pesewa,Песева
+Cedi,Седі
+"Gibraltar Pound","Гібралтарський фунт"
+"Gambian Dalasi","Гамбійський даласі"
+Butut,Бутут
+Dalasis,Даласі
+"Guinean Franc","Гвінейський франк"
+"Guatemalan Quetzal","Гватемальський кетцаль"
+Quetzales,Кетцаль
+"Guyanaese Dollar","Суринамський долар"
+"Hong Kong Dollar","Гонконгський долар"
+"Honduran Lempira","Гондураська лемпіра"
+Lempiras,Лемпіра
+"Croatian Kuna","Хорватська куна"
+Lipa,Ліпа
+Kuna,Куна
+"Haitian Gourde","Гаїтянський гурд"
+Gourde,Гурд
+"Hungarian Forint","Угорський форинт"
+Forint,Форинт
+"Indonesian Rupiah","Індонезійська рупія"
+Rupiahs,Рупія
+"Israeli New Shekel","Ізраїльський шекель"
+Agora,Агора
+"New Shekels",Шекель
+"Indian Rupee","Індійська рупія"
+Rupee,Рупія
+"Iranian Rial","Іранський ріал"
+Rial,Ріал
+Toman,Томан
+"Icelandic Króna","Ісландська крона"
+Eyrir,Еврір
+Kronur,Крона
+"Jamaican Dollar","Ямайський долар"
+"Jordanian Dinar","Йорданський динар"
+"Japanese Yen","Японська ієна"
+Yen,Єна
+"Kenyan Shilling","Кенійський шилінг"
+Shilling,Шилінг
+"Kyrgyzstani Som","Киргизський сом"
+Som,Сом
+Tyiyn,Тин
+"Comorian Franc","Коморський франк"
+"South Korean Won","Південнокорейська вона"
+Jeon,Джеон
+Won,Вон
+"Kuwaiti Dinar","Кувейтський динар"
+"Cayman Islands Dollar","Долар Соломонових Островів"
+"Kazakhstani tenge","Казахський тенге"
+Tiyn,Тійн
+Tenge,Тенге
+"Laotian Kip","Лаоський кіп"
+Att,Ат
+Kips,Кіп
+"Lebanese Pound","Ліванський фунт"
+Piastre,Піастр
+"Sri Lanka Rupee","Шрі-Ланкійська рупія"
+"Liberian Dollar","Ліберійський долар"
+"Lesotho Loti","Лоті Лесото"
+Sente,Цент
+Loti,Лоті
+"Lithuanian Litas","Литовський літ"
+Centas,Цент
+Litai,Літ
+"Latvian Lats","Латвійський лат"
+Santims,Сантім
+Lati,Лат
+"Libyan Dinar","Лівійський динар"
+"Moroccan Dirham","Мароканський дирхам"
+Santimat,Сантім
+Dirhams,Дирхам
+"Moldovan leu","Молдовський лей"
+Bani,Бані
+Lei,Лей
+"Macedonian denar","Македонський динар"
+Deni,Дені
+Denari,Денар
+"Myanma Kyat","Бірманський кят"
+Pya,Пя
+Kyat,Кят
+"Mongolian Tugrik","Монгольський тугрик"
+Möngö,Монго
+Tugriks,Тугрік
+"Macanese Pataca","Патака Макао"
+Avo,Аво
+Pataca,Патака
+"Mauritanian Ouguiya","Мавританський угій"
+Khoums,Хаум
+Ouguiya,Угій
+"Maltese Pound","Мальтійський фунт"
+"Mauritian Rupee","Маврикійська рупія"
+"Mexican Peso","Мексиканський песо"
+"Malaysian Ringgit","Малайзійський рінгіт"
+Ringgits,Рінгіт
+"Mozambican Metical","Мозамбіцький метикал"
+Metical,Метикал
+"Namibian Dollar","Намібійський долар"
+"Nigerian Naira","Нігерійська найра"
+Kobo,Кобо
+Naira,Найра
+"Nicaraguan Cordoba Oro","Нікарагуанський кордоба"
+Cordoba,Кордоба
+"Norwegian Krone","Норвезька крона"
+Krone,Крона
+"Nepalese Rupee","Непальська рупія"
+"New Zealand Dollar","Новозеландський долар"
+"Panamanian Balboa","Панамське бальбоа"
+Centésimo,Сантім
+Balboa,Бальбоа
+"Peruvian Nuevo Sol","Перуанський соль"
+"Nuevos Sole",Соль
+"Papua New Guinean Kina","Кіна Папуа Нової Гвінеї"
+Toea,Тое
+Kina,Кіна
+"Philippine Peso","Філіппінське песо"
+"Pakistani Rupee","Пакістанська рупія"
+"Polish Złoty","Польський злотий"
+Grosz,Грош
+Złotych,Злотий
+"Paraguayan Guarani","Парагвайський гуарані"
+Guarani,Гуарані
+"Qatari Rial","Катарський ріал"
+"Rhodesian Dollar","Родезійський долар"
+"Romanian Leu","Румунський лей"
+Ban,Бан
+Leu,Леї
+"Serbian Dinar","Сербський динар"
+Para,Пара
+Dinars,Динар
+"Russian Ruble","Російський рубль"
+Kopek,Копійка
+"Saudi Riyal","Саудівський ріал"
+Hallallah,Халлах
+Riyals,Ріал
+"Solomon Islands Dollar","Долар Соломонових Островів"
+"Seychellois Rupee","Сейшельська рупія"
+"Old Sudanese Dinar","Суданський динар"
+"Swedish Krona","Шведська крона"
+Öre,Ере
+Kronor,Крона
+"Singapore Dollar","Сінгапурський долар"
+"Saint Helena Pound","Фунт Святої Єлени"
+"Sierra Leonean Leone","Леоне Сьєрра-Леоне"
+Leone,Леон
+"Somali Shilling","Сомалійський шилінг"
+"Surinamese Dollar","Суринамський долар"
+"São Tomé and Príncipe Dobra","Добра Сан-Томе і Прінсіпі"
+Dobra,Добра
+"Syrian Pound","Сирійський фунт"
+"Swazi Lilangeni","Свазілендський лілангені"
+Lilangeni,Лілангені
+"Thai Baht","Тайський бат"
+Satang,Сатанг
+Baht,Бат
+"Tunisian Dinar","Туніський динар"
+Millime,Міліме
+"Tongan Paʻanga","Тонгійська панга"
+Senit,Сеніт
+Paʻanga,Панга
+"Turkish Lira","Турецька ліра"
+Kurus,Курус
+Lira,Ліра
+"Trinidad and Tobago Dollar","Долар Тринідаду і Тобаго"
+"New Taiwan Dollar","Тайванський долар"
+"New Dollar",Долар
+"Tanzanian Shilling","Танзанійський шилінг"
+Senti,Сенті
+"Ukrainian Hryvnia","Українська гривня"
+Kopiyka,Копійка
+Hryvnia,Гривня
+"Ugandan Shilling","Угандійський шилінг"
+"Uruguayan Peso","Уругвайський песо"
+"Venezuelan Bolívar Fuerte","Венесуельський болівар"
+"Bolivares Fuerte",Болівар
+"Vietnamese Dong","В'єтнамський донг"
+Hà,Ха
+Dong,Донг
+"Vanuatu Vatu","Вануатська вату"
+Vatu,Вату
+"Samoan Tala","Самоанський тала"
+Sene,Сене
+Tala,Тала
+"CFA Franc BEAC","Центральноафриканський франк"
+"East Caribbean Dollar","Східно-карибський долар"
+"CFA Franc BCEAO","Центральноафриканський франк"
+"CFP Franc",Франк
+"Yemeni Rial","Єменський ріал"
+"South African Rand","Південно-африканський ранд"
+Rand,Ранд
+"Zambian Kwacha","Замбійська квача"
+Ngwee,Нгі
+Kwacha,Квача
+"Recent orders","Останні замовлення"
+"Recent cart items","Останні елементи кошику"
+"Recent transactions","Останні транзакції"
+"Active price rules","Активні правила цін"
+Summary,Резюме
+"Recent reviews","Останні відгуки"
+"Recent users","Останні користувачі"
+"Recent events","Останні події"
+Thumbnail,Мініатюра
+"Trim and resize to exact width and height. Parameters: two integers, width and height, separated by comma","Обрізати і змінити до точної ширина та висота. Параметри: два цілих числа, ширина та висота, розділені комами"
+Crop,Кадрування
+"Crop a portion of image from x1, y1 to x2, y2. Parameters: Four integers, separated by comma","Обрізати частину зображення з x1, y1 до x2, y2. Параметри: чотири цілих числа, розділених комою"
+Resize,"Зміна розміру"
+"Resize to fixed width and height. Parameters: Two integers, width and height, separated by comma","Змінити розмір до фіксована ширина та висота. Параметри: два цілих числа, ширина та висота, розділені комами"
+"Fit to width","Вмістити за шириної"
+"Shrink to the specified width while maintaining proportion. Parameters: Integer","Стиснути до вказаної ширина зберігаючи пропорції. Параметри: ціле число"
+"Fit to height","Вмістити за висотою"
+"Shrink to the specified height while maintaining proportion. Parameters: Integer","Стиснути до вказаної висоти зберігаючи пропорції. Параметри: ціле число"
+50X50,"50 Х 50"
+100X100,"100 Х 100"
+150X150,150Х150
+200X200,"200 Х 200"
+300X300,300Х300
+400X400,400Х400
+1400X500,"1400 Х 500"
+Afar,Афарська
+Abkhazian,Абхазька
+Avestan,Авестійська
+Afrikaans,Африканська
+Akan,Аканська
+Amharic,Амхарська
+Arabic,Арабська
+Assamese,Ассамська
+Asturian,Астурська
+Avar,Аварська
+Aymara,Аймара
+Azerbaijani,Азербайджанська
+Bashkir,Башкирська
+Belarusian,Білоруська
+Bulgarian,Болгарська
+Bihari,Біхарі
+Bislama,Біслама
+Bambara,Бамбара
+Bengali,Бенгальська
+Tibetan,Тибетська
+Breton,Бретонська
+Bosnian,Боснійська
+Catalan,Каталонська
+Chechen,Чеченська
+Chamorro,Чаморро
+Corsican,Корсиканська
+Cree,Крі
+Czech,Чеська
+"Old Slavonic",Старослов'янська
+Chuvash,Чуваська
+Welsh,Валлійська
+Danish,Датська
+German,Німецька
+Maldivian,Мальдівська
+Bhutani,Бутанська
+Ewe,Еве
+Greek,Грецька
+English,Англійська
+Esperanto,Есперанто
+Spanish,Іспанська
+Estonian,Естонська
+Basque,Баскська
+Persian,Перська
+Fulah,Фула
+Finnish,Фінська
+Filipino,Філіпінська
+Faeroese,Фарерська
+French,Французька
+Frisian,Фризька
+Irish,Ірландська
+"Scots Gaelic",Гаельська
+Galician,Галісійська
+Gujarati,Гуджараті
+Manx,Менкська
+Hausa,Хауса
+Hebrew,Іврит
+Hindi,Хінді
+"Hiri Motu",Хірі-моту
+Croatian,Хорватська
+"Haitian Creole","Гаїтянська креольська"
+Hungarian,Угорська
+Armenian,Вірменська
+Herero,Гереро
+Interlingua,Інтерлінгва
+Indonesian,Індонезійська
+Interlingue,Інтерлінгве
+Igbo,Ігбо
+Inupiak,Інупяк
+Icelandic,Ісландська
+Italian,Італійська
+Inuktitut,Інуктітут
+Japanese,Японська
+Javanese,Яванська
+Georgian,Грузинська
+Kongo,Конго
+Kikuyu,Кікуйю
+Kwanyama,Кваньяма
+Kazakh,Казахська
+Greenlandic,Гренландська
+Cambodian,Камбоджійська
+Kannada,Каннадська
+Korean,Корейська
+Kanuri,Канурі
+Kashmiri,Кашмірська
+Kurdish,Курдська
+Komi,Комі
+Cornish,Корнійська
+Kyrgyz,Киргизька
+Latin,Латинська
+Luxembourgish,Люксембурзька
+Luganda,Лугандійська
+Lingala,Лінгала
+Laothian,Лаоська
+Lithuanian,Литовська
+Latvian,Латвійська
+Malagasy,Малагасійська
+Marshallese,Маршальська
+Māori,Маорі
+Macedonian,Македонська
+Malayalam,Малаялам
+Mongolian,Монгольська
+Moldavian,Молдавська
+Marathi,Маратхі
+Malay,Малайська
+Maltese,Мальтійська
+Burmese,Бірманська
+"North Ndebele","Північна Ндебелє"
+Nepali,Непальська
+Ndonga,Ндонга
+Dutch,Голандська
+"Norwegian Bokmål","Норвезька (Букмол)"
+"Norwegian Nynorsk","Норвезька (Нюнорськ)"
+"South Ndebele","Південна Ндебелє"
+Navajo,Навахо
+Chichewa,Чічева
+Occitan,Окситанська
+Oromo,Оромо
+Oriya,Орійська
+Ossetian,Осетинська
+Punjabi,Панджабі
+Pali,Палі
+Polish,Польська
+Pashto,Пушту
+Portuguese,Португальська
+Quechua,Кечуа
+Rhaeto-Romance,Ретороманська
+Kirundi,Кірунді
+Romanian,Румунська
+Russian,Російська
+Kinyarwanda,Кіньяруанда
+Sanskrit,Санскрит
+Sardinian,Сардинська
+Scots,Шотландська
+Sindhi,Сіндхі
+"Northern Sami",Північно-самська
+Sango,Санго
+Serbo-Croatian,Сербсько-хорватська
+Sinhala,Сінхала
+Slovak,Словацька
+Slovenian,Словенська
+Samoan,Самоанська
+Shona,Шона
+Somali,Сомалійська
+Albanian,Албанська
+Serbian,Сербська
+Siswati,Сісваті
+Sesotho,Сесото
+Sudanese,Суданська
+Swedish,Шведська
+Swahili,Суахілі
+Tamil,Тамільська
+Telugu,Телугу
+Tajik,Таджицька
+Thai,Тайська
+Tigrinya,Тигринья
+Turkmen,Туркменська
+Tagalog,Тагальська
+Setswana,Сетсвана
+Turkish,Турецька
+Tsonga,Тсонга
+Tatar,Татарська
+Twi,Тві
+Tahitian,Таїтянська
+Uyghur,Уйгурська
+Ukrainian,Українська
+Urdu,Урду
+Uzbek,Узбецька
+Venda,Венда
+Vietnamese,В’єтнамська
+Wolof,Волоф
+Xhosa,Кхоса
+Yiddish,Ідиш
+Yoruba,Йоруба
+Zhuang,Чжуанська
+"Chinese, Simplified","Китайська спрощена"
+"Chinese, Traditional","Китайська традиційна"
+Zulu,Зулуська
+Jquery,JQuery
+"jQuery JavaScript Library","jQuery JavaScript бібліотека"
+Cookie,Cookie
+"A simple, lightweight JavaScript API for handling browser cookies","Простий API JavaScript для обробки файлів cookie"
+"jQuery Match Height","jQuery Match Height"
+"A responsive equal heights plugin for jQuery","Рівна висота для елементів"
+"jQuery UI","jQuery UI"
+"jQuery user interface library","Бібліотека інтерфейса jQuery"
+"Font Awesome","Font Awesome"
+"The iconic font and CSS toolkit","CSS шрифти"
+"HTML5 Shiv","HTML5 Shiv"
+"The HTML5 Shiv enables use of HTML5 sectioning elements in legacy Internet Explorer and provides basic HTML5 styling for Internet Explorer 6-9, Safari 4.x (and iPhone 3.x), and Firefox 3.x.","Підтримка HTML5 в старих браузерах"
+Respond,Respond
+"A fast & lightweight polyfill for min/max-width CSS3 Media Queries (for IE 6-8, and more)","Підтримка CSS3 Media Queries"
+Bootstrap,Bootstrap
+"HTML, CSS, and JavaScript framework for developing responsive, mobile first layouts","HTML, CSS, JavaScript фреймворк"
+"Bootstrap Select","Bootstrap Select"
+"A jQuery plugin that utilizes Bootstrap's dropdown.js to style and bring additional functionality to standard select elements","Стилізація випадаючих списків"
+"To admin: new order","До адміністратора: нове замовлення"
+"To customer: new order","До клієнта: нове замовлення"
+"To customer: order has been updated","До клієнта: замовлення було оновлено"
+"To admin: new user","До адміністратора: новий користувач"
+"To user: account has been created","Для користувача: було створено обліковий запис"
+"To user: reset password","До користувача: скидання пароля"
+"To user: password has been changed","До користувача: пароль змінено"
+"Admin: access","Адмін: доступ"
+"Address: access","Адреса: доступ"
+"Address: delete","Адреса: видаляти"
+"Cart items: access","Кошик: доступ"
+"Cart items: delete","Кошик: видаляти"
+"Dashboard: access","Панель керування: доступ"
+"Dashboard: edit","Панель керування: редагувати"
+"Product: access","Товар: доступ"
+"Product: add","Товар: додавати"
+"Product: edit","Товар: редагувати"
+"Product: delete","Товар: видаляти"
+"Product class: access","Клас товару: доступ"
+"Product class: add","Клас товару: додавати"
+"Product class: edit","Клас товару: редагувати"
+"Product class: delete","Клас товару: видаляти"
+"Price rule: access","Правило ціни: доступ"
+"Price rule: add","Правило ціни: додавати"
+"Price rule: edit","Правило ціни: редагувати"
+"Price rule: delete","Правило ціни: видаляти"
+"Page: access","Сторінка: доступ"
+"Page: add","Сторінка: додавати"
+"Page: edit","Сторінка: редагувати"
+"Page: delete","Сторінка: видаляти"
+"Review: access","Відгук: доступ"
+"Review: add","Відгук: додавати"
+"Review: edit","Відгук: редагувати"
+"Review: delete","Відгук: видаляти"
+"Category: access","Категорія: доступ"
+"Category: add","Категорія: додавати"
+"Category: edit","Категорія: редагувати"
+"Category: delete","Категорія: видаляти"
+"Category group: access","Група категорій: доступ"
+"Category group: add","Група категорій: додавати"
+"Category group: edit","Група категорій: редагувати"
+"Category group: delete","Група категорій: видаляти"
+"Collection: access","Колекція: доступ"
+"Collection: add","Колекція: додавати"
+"Collection: edit","Колекція: редагувати"
+"Collection: delete","Колекція: видаляти"
+"Collection item: access","Елемент колекції: доступ"
+"Collection item: add","Елемент колекції: додавати"
+"Collection item: edit","Елемент колекції: редагувати"
+"Collection item: delete","Елемент колекції: видаляти"
+"User: access","Користувач: доступ"
+"User: add","Користувач: додавати"
+"User: edit","Користувач: редагувати"
+"User: delete","Користувач: видаляти"
+"User role: access","Роль користувача: доступ"
+"User role: add","Роль користувача: додавати"
+"User role: edit","Роль користувача: редагувати"
+"User role: delete","Роль користувача: видаляти"
+"Field: access","Поле: доступ"
+"Field: edit","Поле: редагувати"
+"Field: add","Поле: додавати"
+"Field: delete","Поле: видаляти"
+"Field value: access","Значення поля: доступ"
+"Field value: edit","Значення поля: редагувати"
+"Field value: add","Значення поля: додавати"
+"Field value: delete","Значення поля: видаляти"
+"Order: access","Замовлення: доступ"
+"Order: add","Замовлення: додавати"
+"Order: edit","Замовлення: редагувати"
+"Order: delete","Замовлення: видаляти"
+"Maintenance: access","Технічне обслуговування: доступ"
+"Module: access","Модуль: доступ"
+"Module: configure","Модуль: налаштовувати"
+"Module: install","Модуль: встановлювати"
+"Module: uninstall","Модуль: видаляти"
+"Module: enable","Модуль: вмикати"
+"Module: disable","Модуль: вимикати"
+"Store: access","Магазин: доступ"
+"Store: edit","Магазин: редагувати"
+"Store: add","Магазин: додавати"
+"Store: delete","Магазин: видаляти"
+"Image style: access","Стиль зображення: доступ"
+"Image style: edit","Стиль зображення: редагувати"
+"Image style: add","Стиль зображення: додавати"
+"Image style: delete","Стиль зображення: видаляти"
+"Language: access","Мова: доступ"
+"Language: add","Мова: додавати"
+"Language: edit","Мова: редагувати"
+"Language: delete","Мова: видаляти"
+"Currency: access","Валюта: доступ"
+"Currency: add","Валюта: додавати"
+"Currency: edit","Валюта: редагувати"
+"Currency: delete","Валюта: видаляти"
+"Country: access","Країна: доступ"
+"Country: edit","Країна: редагувати"
+"Country: add","Країна: додавати"
+"Country: delete","Країна: видаляти"
+"Country format: access","Формат країни: доступ"
+"Country format: edit","Формат країни: редагувати"
+"Country state: access","Область країни: доступ"
+"Country state: add","Область країни: додавати"
+"Country state: edit","Область країни: редагувати"
+"Country state: delete","Область країни: видаляти"
+"Transaction: access","Трансакція: доступ"
+"Transaction: delete","Трансакція: видаляти"
+"Trigger: access","Тригер: доступ"
+"Trigger: add","Тригер: додавати"
+"Trigger: edit","Тригер: редагувати"
+"Trigger: delete","Тригер: видаляти"
+"City: access","Місто: доступ"
+"City: add","Місто: додавати"
+"City: edit","Місто: редагувати"
+"City: delete","Місто: видаляти"
+"Report: access","Звіт: доступ"
+"Report system events: access","Звіт системних подій: доступ"
+"Report system status: access","Звіт про стан системи: доступ"
+"Report libraries: access","Звіт по бібліотекам: доступ"
+"File: access","Файл: доступ"
+"File: add","Файл: додавати"
+"File: edit","Файл: редагувати"
+"File: delete","Файл: видаляти"
+"File: upload","Файл: завантажувати"
+"Settings: access","Налаштування: доступ"
+"URL alias: access","URL-псевдоніми: доступ"
+"URL alias: delete","URL-псевдоніми: видаляти"
+"Zone: access","Зона: доступ"
+"Zone: edit","Зона: редагувати"
+"Zone: add","Зона: додавати"
+"Zone: delete","Зона: видаляти"
+"GD extension installed","GD розширення встановлене"
+"PDO extension installed","PDO розширення встановлене"
+"SPL extension installed","SPL розширення встановлене"
+"CURL extension installed","CURL розширення встановлене"
+"FileInfo extension installed","FileInfo розширення встановлене"
+"OpenSSL extension installed","OpenSSL розширення встановлене"
+"Ctype extension installed","Ctype розширення встановлене"
+"JSON extension installed","JSON розширення встановлене"
+"Directive ""allow_url_fopen"" is disabled","Директива ""allow_url_fopen"" вимкнена"
+"Directory ""/system/config/runtime"" exists and writable","Директорія ""/system/config/runtime"" існує і доступна для запису"
+"Directory ""/cache"" exists and writable","Директорія ""/cache"" існує і доступна для запису"
+Content,Вміст
+Products,Товари
+"Product classes","Класи товарів"
+Collections,Колекції
+Tools,Інструменти
+Sales,Продажі
+Orders,Замовлення
+Prices,Ціни
+Transactions,Транзакції
+Cart,Кошик
+Pages,Сторінки
+Files,Файли
+Users,Користувачі
+Roles,Ролі
+Addresses,Адреси
+Fields,Поля
+Aliases,Псевдоніми
+Modules,Модулі
+"On site","На сайті"
+Settings,Налаштування
+Common,Загальні
+Dashboard,"Панель керування"
+Languages,Мови
+Images,Зображення
+Currencies,Валюти
+Countries,Країни
+Triggers,Тригери
+Store,Магазин
+Zones,Зони
+Reports,Звіти
+Events,Події
+Status,Стан
+Libraries,Бібліотеки
+Routes,Маршрути
+"Payment methods","Способи оплати"
+"Shipping methods","Способи доставки"
+Options,Опції
+"@option - @description","@option - @description"
+"No description available","Опис відсутній"
+"List of available commands. To see help for a certain command use --help option","Список доступних команд. Щоб переглянути довідку для певної команди використовуйте опцію --help"
+"@command - @description","@command - @description"
+"No access","Немає доступу"
+"One or more errors occurred","Сталася одна або декілька помилок"
+Field,Поле
+"Table @name already exists","Таблиця @name вже існує"
+"An error occurred while importing database table @name","Сталася помилка під час імпортування таблиць бази даних @name"
+"Deleted %num item(s)","Видалено %num елемент(ів)"
+"Shopping cart items","Елементи кошику"
+"Updated %num item(s)","Оновлено %num елемент(ів)"
+"Items have been reordered","Порядок елементів був змінений"
+"Category groups","Групи категорій"
+"Categories of group %name","Категорії групи %name"
+"Category has been deleted","Категорія була видалена"
+"Unable to delete","Не вдалося видалити"
+"Category has been updated","Категорія була оновлена"
+"Category has been added","Категорія була додана"
+"Edit %name","Змінити %name"
+"Add category to %name","Додати категорію до %name"
+"Category group has been deleted","Група категорій була видалена"
+"Category group has been updated","Група категорій була оновлена"
+"Category group has been added","Група категорій була додана"
+"Add category group","Додати групу категорій"
+"Cities of state %name","Міста області %name"
+"States of %name","Області %name"
+"City has been deleted","Місто було видалене"
+"City has been updated","Місто було оновлене"
+"City has been added","Місто було додане"
+"Add city","Додати місто"
+"Collection has been deleted","Колекція була видалена"
+"Collection has been updated","Колекція була оновлена"
+"Collection has not been updated","Колекція не була оновлена"
+"Collection has been added","Колекція була додана"
+"Collection has not been added","Колекція не була додана"
+"Add collection","Додати колекцію"
+"Items of collection %name","Елементи колекції %name"
+"Collection item has been added","Елемент колекції був доданий"
+"Collection item has not been added","Елемент колекції не був доданий"
+"Add item to collection %name","Додати елемент до колекції %name"
+"@store (disabled)","@store (вимкнено)"
+"An error occurred","Виникла помилка"
+"Please select at least one item","Будь ласка, виберіть принаймні один елемент"
+"Country has been deleted","Країна була видалена"
+"Country has been updated","Країна була оновлена"
+"Country has been added","Країна була додана"
+"Add country","Додати країну"
+"Address format of %name","Формат адреси %name"
+"Currency has been deleted","Валюта була видалена"
+"Currency has been updated","Валюта була оновлена"
+"Currency has been added","Валюта була додана"
+"Add currency","Додати валюту"
+"Your dashboard has been updated","Налаштування вашої панелі керування були оновлені"
+"Your dashboard has been reset to default state","Налаштування вашої панелі керування були скинуті до значень за умовчанням"
+"Customize dashboard","Налаштування панелі керування"
+"Field has been deleted","Поле було видалене"
+"Field has been updated","Поле було оновлене"
+"Field has been added","Поле було додане"
+"Add field","Додати поле"
+"Values of %name","Значення %name"
+"Field value has been deleted","Значення поля було видалене"
+"Field value has been updated","Значення поля було оновлене"
+"Field value has been added","Значення поля було додане"
+"Add value for field %name","Додати значення до поля %name"
+"Deleted from database: %db, disk: %disk","Видалено з бази даних: %db, диск: %disk"
+"File has been deleted from database and disk","Файл було видалено з бази даних і диску"
+"File has been updated","Файл був оновлений"
+"File has been added","Файл був доданий"
+"File has not been added","Файл не був доданий"
+"Add file","Додати файл"
+"Cache has been deleted","Кеш був видалений"
+"Cache has not been deleted","Кеш не видалено"
+"Image styles","Стилі зображень"
+"Image style has been deleted","Стиль зображення був видалений"
+"Image style has been updated","Стиль зображення був оновлений"
+"Image style has been added","Стиль зображення був доданий"
+"Add image style","Додати стиль зображення"
+"Language has been deleted","Мова була видалена"
+"Language has been updated","Мова була оновлена"
+"Language has been added","Мова була додана"
+"Add language","Додати мову"
+"Language has been refreshed","Мова була перевантажена"
+"Module has been updated","Модуль був оновлений"
+"Operation unavailable","Операція недоступна"
+"Order has been deleted","Замовлення було видалене"
+"Update order status to @status","Оновити стан замовлення до @status"
+"Order #@order_id","Замовлення #@order_id"
+Anonymous,Анонім
+Customer,Клієнт
+Unknown,Невідомо
+"<a href=""@url"">@text</a>","<a href=""@url"">@text</a>"
+"Failed to notify customers in orders: !list","Не вдалося повідомити клієнтів у замовленнях: !list"
+"Page has been deleted","Сторінка була видалена"
+"Page has been updated","Сторінка була оновлена"
+"Page has been added","Сторінка була додана"
+"Add page","Додати сторінку"
+"Price rules","Правила цін"
+"Price rule has been deleted","Правило було видалене"
+"Price rule has been updated","Правило було оновлене"
+"Price rule has been added","Правило було додане"
+"Add price rule","Додати правило"
+"Product has been deleted","Товар був видалений"
+"Product has been updated","Товар був оновлений"
+"Product has been added","Товар був доданий"
+"Add product","Додати товар"
+"Product class has been deleted","Клас товару був видалений"
+"Product class has been updated","Клас товару був оновлений"
+"Product class has been added","Клас товару був доданий"
+"Add product class","Додати клас товару"
+"Fields of %name","Поля %name"
+"Add field to %name","Додати поле до %name"
+Public,Загальнодоступне
+Superadmin,Суперадміністратор
+"System events","Системні події"
+Reviews,Відгуки
+"Review has been deleted","Відгук було видалено"
+"Review has been updated","Відгук було оновлено"
+"Review has been added","Відгук було додано"
+Review,Відгук
+"Add review","Додати відгук"
+"Settings have been updated","Налаштування було оновлено"
+"Country state has been deleted","Область була видалена"
+"Country state has been updated","Область була оновлена"
+"Country state has been added","Область була додана"
+"Add country state for %name","Додати область до %name"
+Stores,Магазини
+"Store has been deleted","Магазин був видалений"
+"Store has been updated","Магазин був оновлений"
+"Store has been added","Магазин був доданий"
+"Add store","Додати магазин"
+"Trigger has been deleted","Тригер був видалений"
+"Trigger has been updated","Тригер був оновлений"
+"Trigger has been added","Тригер був доданий"
+"Trigger has not been added","Тригер не був доданий"
+"Add trigger","Додати тригер"
+"User has been deleted","Користувач був видалений"
+"User has been updated","Користувач був оновлений"
+"User has been added","Користувач був доданий"
+"Add user","Додати користувача"
+"Role has been deleted","Роль була видалена"
+"Role has been updated","Роль була оновлена"
+"Role has been added","Роль була додана"
+"Add role","Додати роль"
+"Zone has been deleted","Зона була видалена"
+"Zone has been updated","Зона була оновлена"
+"Zone has been added","Зона була додана"
+"Add zone","Додати зону"
+"System already installed","Система вже встановлена"
+"Language (enter a number)","Мова (введіть число)"
+"Invalid language","Неприпустима мова"
+"Installation profile (enter a number)","Профіль установки (введіть число)"
+"Store title","Назва магазину"
+E-mail,E-mail
+Password,Пароль
+"Installation subdirectory","Підкаталог установки"
+"Database name","Назва бази даних"
+"Database user","Користувач бази даних"
+"Database password","Пароль бази даних"
+"Database port","Порт бази даних"
+"Database host","Сервер бази даних"
+"Database type (enter a number)","Тип бази даних (введіть число)"
+Shop,Магазин
+"Account has been updated","Обліковий запис був оновлений"
+Account,"Обліковий запис"
+"Edit account","Редагувати обліковий запис"
+"Address has been deleted","Адрес був видалений"
+"Missing handler","Відсутній обробник"
+Catalog,Каталог
+"Cloning order #@num","Клонування замовлення #@num"
+"Add order for user %name","Додати замовлення для користувача %name"
+Checkout,"Оформлення замовлення"
+"Form has been updated","Форма була оновлена"
+"Invalid code","Неприпустимий код"
+"Order #@num has been created for user @name. Order status: @status","Замовлення #@num було створене для користувача @name. Стан замовлення: @status"
+"Cloned into order #@num","Клоновано в замовлення #@num"
+"Order has been cloned from order <a href=""@url"">@num</a>. Order status: @status","Замовлення було клоноване з замовлення <a href=""@url"">@num</a>. Стан замовлення: @status"
+"Created order #@num","Створене замовлення #@num"
+Comparison,Порівняння
+Home,Головна
+"Select products","Виберіть товари"
+"Product has been deleted from cart","Товар був видалений з кошика"
+"Cron has started","Cron запустився"
+"Installing GPLCart","Встановлення GPLCart"
+"Review has been updated and will be published after approval","Відгук був оновлений і буде опублікований після затвердження"
+"Review has not been added","Відгук не був доданий"
+"Review has been added and will be published after approval","Відгук був доданий і буде опублікований після затвердження"
+Search,Пошук
+"Search for «@term»","Пошук «@term»"
+Login,Вхід
+Register,Реєстрація
+"Reset password","Зміна пароля"
+"My wishlist","Мій список бажань"
+"Failed to read the source config @path","Не вдалося прочитати джерело config @path"
+"Failed to create config.php","Не вдалося створити config. php"
+"Failed to import database tables","Не вдалося імпортувати базу даних"
+"Your store has been installed.\nURL: @url\nAdmin area: @url/admin\nGood luck!","Ваш магазин був встановлений. \nURL: @url\nВхід для адміністратора: @url/admin\nВсього найкращого!"
+"Your store has been installed. Now you can log in as superadmin","Ваш магазин був встановлений. Тепер ви можете увійти в систему в якості супер-адміністратора"
+Inactive,Неактивно
+Active,Активно
+"New account on @store","Новий обліковий запис на @store"
+"A new account has been created on @store\r\n\r\nE-mail: @email\r\nName: @name\r\nUser ID: @user_id\r\nStatus: @status","Новий обліковий запис було створено на @store\r\n\r\nE-mail: @email\r\nІ'мя: @name\r\nID користувача: @user_id\r\nСтан: @status"
+"Account details for @name on @store","Обліковий запис для @name на @store"
+"Thank you for registering on @store\r\n\r\nAccount status: @status\r\n\r\nEdit account: @edit\r\nView orders: @order","Дякуємо вам за реєстрацію на @store\r\n\r\nСтан облікового запису: @status\r\n\r\nНалаштування: @edit\r\nПерегляд замовлень: @order"
+"Password recovery for @name on @store","Відновлення пароля для @name на @store"
+"You or someone else requested a new password on @store\r\n\r\nTo get the password please click on the following link:\r\n@link\r\n\r\nThis link expires on @expires and nothing will happen if it's not used","Ви або хтось інший запитав новий пароль на @store\r\n\r\nЩоб отримати новий пароль, будь ласка, натисніть на це посилання:\r\n@link\r\n\r\nТермін дії посилання закінчується @expires і нічого не відбудеться, якщо воно не буде використане"
+"Password has been changed for @name on @store","Пароль був змінений для @name на @store"
+"Your password on @store has been changed","Ваш пароль на @store був змінений"
+"\r\n\r\n-------------------------------------\r\n@owner\r\n@address\r\n@phone\r\n@fax\r\n@store_email\r\n@map","\r\n\r\n-------------------------------------\r\n@owner\r\n@address\r\n@phone\r\n@fax\r\n@store_email\r\n@map"
+"Tel: @phone","Тел: @phone"
+"Fax: @fax","Факс: @fax"
+"E-mail: @store_email","E-mail: @store_email"
+"Find us on Google Maps: @map","Знайти нас на Google Maps: @map"
+"New order #@order_id on @store","Нове замовлення #@order_id на @store"
+"Order status: @status\r\nTotal: @total\r\nView: @order","Стан замовлення: @status\r\nЗагалом: @total\r\nПерегляд: @order"
+"Order #@order_id on @store","Замовлення #@order_id на @store"
+"Thank you for ordering on @store\r\n\r\nOrder ID: @order_id\r\nOrder status: @status\r\nView orders: @order","Дякуємо вам за замовлення на @store\r\n\r\nНомер замовлення: @order_id\r\nСтан замовлення: @status\r\nПерегляд: @order"
+"Your order #@order_id on @store has been updated\r\n\r\nOrder status: @status\r\nView orders: @order","Ваше замовлення #@order_id на @store було оновлене\r\n\r\nСтан замовлення: @status\r\nПерегляд: @order"
+"@field is required","@field є обов'язковим"
+"@field must be numeric","@field має бути числом"
+"@field must be integer","@field має бути цілим числом"
+"@name is unavailable","@name недоступне"
+"@field must be @min - @max characters long","@field повинно бути довжиною @min - @max символів"
+"@field has invalid value","@field має неприпустиме значення"
+"@name already exists","@name вже існує"
+Title,Заголовок
+Name,Назва
+"Meta title",Meta-заголовок
+"Meta description","Meta - опис"
+Description,Опис
+Weight,Вага
+Alias,Псевдонім
+User,Користувач
+Type,Тип
+SKU,Артикул
+Order,Замовлення
+Quantity,Кількість
+"Too low stock level","Занадто низький рівень запасу"
+"Please no more than @num items","Будь ласка, не більше ніж @num позицій"
+"Please no more than @num items per SKU","Будь ласка, не більше ніж @num позицій кожного артикулу"
+"Invalid combination","Неприпустима комбінація"
+Category,Категорія
+"Category group","Група категорій"
+"Parent category","Батьківська категорія"
+"First description","Перший опис"
+"Second description","Другий опис"
+"Category group of this type already exists for this store","Група категорій цього типу вже існує для цього магазину"
+Zone,Зона
+Collection,Колекція
+URL,URL
+"Collection ID","ID колекції"
+Value,Значення
+"Native name","Рідна назва"
+Code,Код
+Currency,Валюта
+Symbol,Символ
+"Major unit","Основна одиниця"
+"Minor unit","Дрібна одиниця"
+"Conversion rate","Курс обміну"
+"Rounding step","Крок округлення"
+Decimals,Десяткові
+"Numeric code","Числовий код"
+Widget,Віджет
+"Field value","Значення поля"
+Color,Колір
+"Image style","Стилі зображення"
+Actions,Дії
+"Error on line @num","Помилка в рядку @num"
+"Please fix all critical errors in your environment","Будь ласка, виправте всі критичні помилки у вашому середовищі"
+No,Ні
+Yes,Так
+Host,Хост
+"Base path","Базовий шлях"
+Timezone,"Часовий пояс"
+Installer,Інсталятор
+"Database type","Тип бази даних"
+"Unsupported database driver. Available drivers: @list","Драйвер баз даних не підтримується. Доступні драйвери: @list"
+"Could not connect to database","Не вдалося підключитися до бази даних"
+Language,Мова
+Payment,Оплата
+Shipping,Доставка
+"Shipping address","Адреса доставки"
+"Payment address","Адреса оплати"
+Creator,Автор
+Total,Загалом
+Price,Ціна
+Comment,Коментар
+Transaction,Транзакція
+Log,Лог
+"Price rule","Правило ціни"
+Trigger,Тригер
+"Times used",Використань
+"Value type","Тип значення"
+Brand,"Торгова марка"
+"Size unit","Одиниця виміру"
+"Weight unit","Одиниця ваги"
+Stock,Наявність
+Width,Ширина
+Height,Висота
+Length,Довжина
+"Product class","Клас товару"
+"Combination already exists","Комбінація вже існує"
+"SKU must be unique per store","Артикул має бути унікальним для магазину"
+"Only numeric values and no longer than @num characters","Лише числові значення і не більше ніж @num символ(ів)"
+Rating,Рейтинг
+Text,Текст
+Created,Створено
+Email,Email
+Domain,Домен
+Map,Карта
+Theme,Тема
+Conditions,Умови
+"Error on line @num: !error","Помилка в рядку @num: !error"
+"No parameters","Без параметрів"
+"Invalid operator","Неприпустимий оператор"
+"Failed validation","Не пройшло перевірку"
+"Old password","Старий пароль"
+"Old and new password not matching","Старий і новий пароль не співпадають"
+Role,Роль
+Redirect,Перенаправлення
+Wishlist,"Список бажань"
+Condition,Умова
+"Unsupported operator","Оператор не підтримується"
+"@field must not be longer than @max characters","@field має містити не більше ніж @max символів"
+"Unable to add product","Не вдалося додати товар"
+"Product has been added to your cart. <a href=""@url"">Checkout</a>","Товар був доданий до вашого кошику. <a href=""@url"">Оформити замовлення</a>"
+"Product has been moved to your <a href=""@url"">wishlist</a>","Товар був переміщений до вашого<a href=""@url"">списку бажань</a>"
+"Hello, %name. Now you are logged in","Вітаємо, %name. Зараз ви авторизовані"
+"Product has been added to <a href=""@url"">comparison</a>","Товар був доданий до <a href=""@url""> порівняння</a>"
+"Product has been removed from comparison","Товар був видалений з порівняння"
+"Less than","Менше ніж"
+"Greater than","Більше ніж"
+"Equal (is in list)","Дорівнює (є в списку)"
+"Less than or equal to","Менше ніж або дорівнює"
+"Greater than or equal to","Більше ніж або дорівнює"
+"Not equal (is not in list)","Не дорівнює (немає в списку)"
+Button,Кнопка
+"Radio buttons","Радіо кнопки"
+"Dropdown list","Випадаючий список"
+Option,Опція
+Attribute,Атрибут
+"Unable to upload the file","Не вдалося завантажити файл"
+"Unable to create @name","Не вдалося створити @name"
+"Unable to move @source to @destination","Не вдалося перемістити @source в @destination"
+"Unknown filename","Невідоме ім'я файлу"
+"Unknown file extension","Невідоме розширення файлу"
+"Unsupported file extension","Розширення файлу не підтримується"
+"Unknown handler","Невідомий обробник"
+"File size exceeds %num bytes","Розмір файлу перевищує %num байт"
+Default,"За замовчуванням"
+"The database you specified already has tables","Вказана база даних вже має таблиці"
+Starting...,Запуск...
+Finished,Завершено
+Processing...,Обробка...
+"The job has not been properly completed","Завдання не було правильно завершене"
+"Processed %total items, errors: %errors","Оброблено елементів %total, помилки: %errors"
+"Successfully processed %total items","Успішно оброблено %total елемент(ів)"
+"Module already installed and enabled","Модуль вже встановлений і включений"
+"Module is locked in code","Модуль заблокований в коді"
+"Modules that are installers cannot be enabled","Не можна ввімкнути модулі, які є інсталяторами"
+"Module already installed","Модуль вже встановлено"
+"Modules that are installers cannot be installed when system is set up","Модулі, які є інсталяторами не можна встановлювати, коли система вже встановлена і працює"
+"Failed to instantiate the main module class","Не вдалося створити екземпляр основного класу модуля"
+"Modules that are active themes cannot be disabled/uninstalled","Модулі, які є активними темами, не можна виключати/видаляти"
+"Modules that are installers cannot be installed/enabled when system is set up","Модулі, які є інсталяторами не можна встановлювати/включати, коли система вже встановлена і працює"
+"Requires incompatible version of @name","Вимагає несумісну версію @name"
+"Invalid module ID","Невірний ID модуля"
+"Missing core version","Відсутня версія ядра"
+"Module incompatible with the current system core version","Модуль несумісний з поточною версією ядра системи"
+"Required by","Необхідний для"
+"Order has been created","Замовлення було створене"
+"Thank you for your order! Order ID: @num, status: @status","Дякуємо вам за ваше замовлення! Номер замовлення: @num, стан замовлення: @status"
+Pending,Очікує
+Canceled,Скасовано
+Delivered,Доставлено
+Completed,Завершено
+Processing,Обробляється
+Dispatched,Відправлено
+"Awaiting payment","В очікуванні оплати"
+"Cash on delivery","Оплата при отриманні"
+"Payment for an order is made at the time of delivery","Плата за замовлення здійснюється під час доставки"
+Gram,Грам
+Kilogram,Кілограм
+Ounce,Унція
+Inch,Дюйм
+Millimeter,Міліметр
+Centimetre,Сантиметр
+Info,Інформація
+Danger,Небезпека
+Warning,Попередження
+"Core version","Версія ядра"
+"Database version","Версія бази даних"
+"PHP version","Версія PHP"
+"PHP operating system","Операційна система"
+"PHP Memory Limit","Обмеження пам’яті PHP"
+"PHP APC cache enabled","PHP-APC кеш включений"
+"Server software","Серверне програмне забезпечення"
+"Cron last run","Останній запуск крон"
+"Filesystem is protected","Файлова система захищена"
+"Search index","Пошуковий індекс"
+"@num rows","@num рядків"
+"File %name is not secure. The file permissions must be %perm","Файл %name не є безпечним. Права на файл мають бути %perm"
+Pickup,Самовивіз
+"Customer must pick up his items himself at the store","Клієнт повинен самостійно забрати замовлені товари в магазині"
+"Out of stock","Немає в наявності"
+Unavailable,Недоступно
+"Failed to log in","Не вдалося увійти в систему"
+"Your account has been created","Ваш обліковий запис був створений"
+"Password reset link has been sent to your E-mail","Посилання для зміни пароля було надіслано на ваш E-mail"
+"Your password has been successfully changed","Ви успішно змінили пароль"
+"Product already in your <a href=""@url"">wishlist</a>","Товар вже у вашому <a href=""@url"">списку бажань</a>"
+"You're exceeding limit of %num items","Ви перевищуєте обмеження в %num позицій"
+"Product has been added to your <a href=""@url"">wishlist</a>","Товар був доданий до вашого<a href=""@url"">списку бажань</a>"
+"Unable to load product class fields","Не вдається завантажити поля класу"
+"Generate automatically","Генерувати автоматично"
+"Do you want to change order status?","Ви дiйсно хочете змінити стан замовлення?"
+"Changes will not be saved until the form is submitted","Зміни не будуть збережені до тих пір, поки форма не буде збережена"
+"Backend theme","Тема внутрішнього інтерфейсу"
+Delete,Видалити
+"Select one or more images","Виберіть одне або декілька зображень"
+Cancel,Скасувати
+Previous,Назад
+Next,Далі
+"403 - Permission denied","403 - немає доступу"
+"You do not have permission to retrieve the URL or link you requested","Ви не маєте дозволу на отримання URL-адреси або посилання"
+"404 - Page not found","404 - сторінка не знайдена"
+"The requested object or URL was not found on this server","Такий URL не був знайдений на цьому сервері"
+"With selected","З обраним"
+"Are you sure? It cannot be undone!","Ви впевнені? Ця дія не може бути скасована!"
+OK,OK
+ID,ID
+"Entity type","Тип об'єкту"
+"Entity ID","ID об'єкту"
+Any,Будь-яке
+"Reset filter","Скинути фільтр"
+Filter,Фільтр
+"No results","Немає результатів"
+Reset,Скинути
+"There are no items yet","Немає контенту"
+Enabled,Увімкнено
+Disabled,Вимкнено
+"Disabled categories will not be available to frontend users and search engines","Вимкнені категорії не будуть доступні для кліентів і пошукових машин"
+"The title will be used on the category page and menu","Назва буде використовуватися на сторінці категорії і меню"
+"Text that usually placed at the top of a category page","Текст, який зазвичай розміщується у верхній частині сторінки категорії"
+"Text that usually placed at the bottom of a category page","Текст, який зазвичай розміщується у нижній частині сторінки категорії"
+Translations,Переклади
+"Title %language","Назва %language"
+"First description %language","Перший опис %language"
+"Second description %language","Другий опис %language"
+Relations,Зв'язки
+Root,Корінь
+"Select a parent of the category. Specify ""Root"" for top-level parentless category","Оберіть батьківську категорію для цієї категорії. Вкажіть ""Корінь"", якщо ця категорія є найвищою і не має батьків"
+"Alternative path by which the entity item can be accessed. Leave empty to generate it automatically","Альтернативний шлях, за яким буде доступний цей об'єкт. Залиште поле порожнім для автоматичної генерації"
+Meta,Meta
+"Optional text to be placed between %tags tags","Необов'язковий текст, що буде розміщено в тегах %tags"
+"Optional text to be used in meta description tag. The tag is commonly used on search engine result pages (SERPs) to display preview snippets for a given page. Important for SEO","Необов'язковий текст для використання в тегу мета-опису. Цей тег зазвичай використовуються пошуковими системами для відображення сторінки в результатах пошуку. Важливо для SEO"
+"Meta title %language","Мета заголовок %language"
+"Meta description %language","Мета-опис %language"
+Save,Зберегти
+"Category group name to be shown to administrators and customers","Назва групи категорій яку буде показано для адміністраторів та клієнтів"
+None,Нічого
+"Brand category groups will contain trademarks (Sony, Apple), catalog - normal categories like Computers, Monitors etc.","Група категорій торгівельних марок містить назви торгівельних марок (напр. Sony, Apple), каталог - звичайні категорії каталога, наприклад Computers, Monitors."
+"Select a store where to display this item","Виберіть магазин, де потрібно показувати цей елемент"
+Add,Додати
+Edit,Редагувати
+Categories,Категорії
+"Are you sure?","Ви впевнені?"
+View,Перегляд
+"Add subcategory","Додати підкатегорію"
+"Only enabled items will be available publicly","Лише ввімкнені елементи будуть загальнодоступні"
+"Start to type in the field an entity title to get suggestions or enter a numeric entity ID","Почніть набирати заголовок об'єкта в полі, щоб отримати пропозиції, або зазначте числовий ID об'єкта"
+"Upload new file","Завантажити новий файл"
+"Enter a referring URL. You can use either absolute (with http://) or relative URLs","Вкажіть URL посилання у вигляді абсолютної або відносної адреси"
+"Items are sorted in lists by the weight value. Lower value means higher position","Елементи сортуються в списках за цим значенням ваги. Нижче значення означає вищу позицію"
+"Entity status","Стан об'єкта"
+Items,Елементи
+"The title will be displayed to customers on product pages","Ця назва буде показана клієнтам на сторінках товарів"
+"Atributes are facts about the products, options are interactive with the customer (Size, Color etc)","Атрібути - це статичні характеристики товарів, опції можуть обиратися клієнтом (Колір, Розмір тощо)"
+"Select how to display the field on product pages. This is for options only","Оберіть як відображати це поле на сторінках товарів. Стосується тільки опцій"
+Values,Значення
+"Add value","Додати значення"
+"Specify a HEX color code. It's applicable only for fields with color widgets","Вкажіть HEX код кольору. Застосовується лише для полів з віджетом кольору"
+Image,Зображення
+"Upload an image. It's applicable only for fields with image widgets","Завантажте зображення. Застосовується лише для полів з віджетом зображення"
+"Delete existing <a target=""_blank"" href=""@url"">image</a>","Видалити існуюче <a target=""_blank"" href=""@url"">зображення</a>"
+"Short description of the file","Короткий опис файлу"
+"Optional detailed description of the file","Необов'язковий детальний опис файлу"
+"Description %language","Опис %language"
+"Supported extensions: %list","Допустимі розширення: %list"
+"Delete from database and disk","Видалити з бази даних і диску"
+"MIME type",MIME-тип
+Path,Шлях
+Download,Завантажити
+Author,Автор
+Modified,Змінено
+"Disabled pages will not be available to frontend users and search engines","Вимкнені сторінки не будуть доступні для клієнтів і пошукових систем"
+"The title will be used on the page and menu","Назва буде використовуватися на сторінці і в меню"
+"You can use any HTML but user can see only allowed tags","Ви можете використовувати будь-який HTML, але користувач може бачити тільки дозволені теги"
+"- select -","- вибрати -"
+"Select a category of the page","Виберіть категорію цієї сторінки"
+Attributes,Атрибути
+"Disabled product classes will not be available to customers and administrators while editing products","Вимкнені класи товарів не будуть доступні для клієнтів та адміністраторів під час редагування товарів"
+"The name of product class for administrators","Назва класу товарів для адміністраторів"
+"Assign one or more fields to the product class","Призначте одне або декілька полів для цього класу товарів"
+"No fields to add to %name","Немає полів, щоб додати до %name"
+"You can add one or more fields <a href=""@url"">here</a>","Ви можете додати одне або декілька полів <a href=""@url"">тут</a>"
+Required,Обов'язково
+Multiple,Множина
+Remove,Видалити
+"Disabled products will not be available to customers and search engines","Вимкнені товари не будуть доступні для клієнтів і пошукових систем"
+"The title will be used on the product page and menu","Назва буде використовуватися на сторінці товару і в меню"
+"Optional translation for language %name","Необов'язковий переклад для мови %name"
+Data,Дані
+"Product class is a set of attributes and options that defines the type of the product","Клас товару - це набір атрибутів і опцій, що визначає тип продукту"
+"SKU is an identificator that allows it to be tracked for inventory purposes. Leave empty to generate it automatically","Артикул - це ідентифікатор, який дає змогу відстежувати наявність товару на складі. Залиште поле порожнім, щоб згенерувати автоматично"
+"Integer or decimal value","Ціле або десяткове числове значення"
+Subtract,Віднімати
+"Quantity of the product kept on the premises of the store. If selected ""Subtract"", ordered products will be subtracted from the stock level","Кількість товару в наявності. Якщо вибрано ""Віднімати"", замовлені товари будуть відняті від загального запасу на складі"
+"Trademark or manufacturer name identifying the product","Назва виробника або торгівельна марка"
+"Catalog category for this product","Категорія в каталогі товарів"
+Related,Пов'язані
+"Autocomplete field. Select some products to be related to this product","Поле з автоматичним заповненням. Виберіть товари, пов'язані з цим продуктом"
+Dimensions,Розміри
+"Physical width of the product. Used to calculate shipping cost","Фізична ширина товару. Використовується для підрахування вартості доставки"
+"Physical height of the product. Used to calculate shipping cost","Фізична висота товару. Використовується для підрахування вартості доставки"
+"Physical length of the product. Used to calculate shipping cost","Фізична довжина товару. Використовується для підрахування вартості доставки"
+"Select a unit of measurement to use with the specified width, height and length","Виберіть одиницю вимірювання для використання з вказаними розмірами"
+"Physical weight of the product. Used to calculate shipping cost","Фізична вага товару. Використовується для підрахування вартості доставки"
+"Select a unit of measurement to use with the specified weight","Виберіть одиницю вимірювання для використання з вказаною вагою"
+"Disabled reviews will not be available to customers and search engines","Вимкнені відгуки не будуть доступні для клієнтів і пошукових систем"
+"Date when the review was created","Дата, коли був створений відгук"
+"Autocomplete field. An E-mail of the person who will be author of the review","Поле з автоматичним заповненням. E-mail користувача, який має бути автором цього відгуку"
+"Autocomplete field. Select a product that is related to this review","Поле з автоматичним заповненням. Виберіть товар, що має відношення до цього відгуку"
+"Text of the review. HTML tags are not allowed","Текст відгуку. HTML-теги не допускаються"
+Missing,Відсутнє
+Panel,Панель
+Welcome!,"Ласкаво просимо!"
+"Here are some extra steps to set up your store","Є ще декілька кроків для налаштування вашого магазину"
+"Extend your store by installing extra modules and themes","Додайте додаткові функції шляхом встановлення додаткових модулів"
+"Add products to sell","Додайте товари для продажу"
+"Add company info, change logo, theme","Додайте відомості про компанію, налаштуйте логотип, тему оформлення"
+Skip,Пропустити
+"See all","Показати все"
+"Toggle navigation","Переключити навігацію"
+GPLCart,GPLCart
+"Log out",Вийти
+"Select language","Виберіть мову"
+Version,Версія
+Dependencies,Залежності
+Disable,Вимкнути
+Enable,Увімкнути
+"Are you sure? This action may permanently delete some data managed by this module","Ви впевнені? Ця дія може назавжди видалити деякі дані і налаштування, які пов'язані з цим модулем"
+Uninstall,Видалити
+"Install and enable","Встановити та увімкнути"
+Configure,Налаштувати
+"Implements hooks","Реалізує хуки"
+Requires,Вимагає
+invalid,неприпустимий
+Error,Помилка
+"No modules","Немає модулів"
+Clear,Очистити
+Message,Повідомлення
+Severity,Значимість
+Line,Рядок
+"Clear cache","Очистити кеш"
+Vendor,Постачальник
+Directory,Каталог
+Module,Модуль
+Pattern,Шаблон
+Access,Доступ
+"Run cron","Запустити cron"
+"Abandoned / before checkout","Залишені/перед замовленням"
+Amount,Сума
+new,нове
+"You can add an order for an <a href=""@url"">existing user</a>","Ви можете додати замовлення для <a href=""@url"">існуючого користувача</a>"
+Print,Друк
+"Are you sure? A new order will be created, this order will be canceled","Ви впевнені? Буде створено нове замовлення, це замовлення буде скасоване"
+Clone,Клонувати
+"Order comments","Коментарі до замовлення"
+Components,Компоненти
+"Grand total","Загальний підсумок"
+"No products in the cart","У кошику немає товарів"
+unavailable,недоступно
+"Orders placed","Розміщено замовлень"
+Editor,Редактор
+"Customer is not notified","Клієнт не був повідомлений"
+"Failed to notify customer","Не вдалося повідомити клієнта"
+"Customer is notified","Клієнт був повідомлений"
+Uknown,Невідомо
+"Order ID","ID замовлення"
+"Update status","Оновити статус"
+"Last modified","Остання зміна"
+IP,IP
+"User agent","Агент користувача"
+"Tracking number","Номер відстеження доставки"
+"Disabled rules will not affect store prices","Вимкнені правила не будуть впливати на ціни магазину"
+"Select an enabled <a href=""@url"">trigger</a> that applies this rule. Keep in mind that triggers are per store","Виберіть увімкнений <a href=""@url"">тригер</a>, який застосовує це правило. Майте на увазі, що тригери повязані з певним магазином"
+"The name will be shown to administrators and customers during checkout","Цю назву буде показано адміністраторам та клієнтами під час оформлення замовлення"
+"Unique code you want to associate with this price rule. The code must be specified by a customer during checkout","Унікальний код, що пов'язаний з цим правилом. Цей код має бути вказаний клієнтом на сторінці оформлення замовлення для отримання знижки"
+"Numeric value to be added to the original price when the rule is applied. To substract use negative numbers","Числове значення, яке буде додане до початкової ціни, коли застосовується правило. Щоб відняти, вкажіть негативне значення"
+Percent,Відсоток
+Fixed,Фіксоване
+"Select how to apply the price rule value, e.g for discount 10% use ""Percent""","Виберіть спосіб застосування значення правила ціни, наприклад для знижки 10% виберіть ""Відсоток"""
+"The price value will be converted according to the selected currency","Значення ціни буде перетворене відповідно до обраної валюти"
+"Position of the rule among other enabled rules. Rules with lower weight are applied earlier","Позиція правила серед інших увімкнених правил. Правила з меньшою вагою будуть застосовуватися першими"
+"Payment method","Спосіб оплати"
+"Gateway transaction ID","ID трансакції шлюза"
+"Disabled cities will not be displayed to customers","Вимкнені міста не будуть доступні для клієнтів"
+"Native name of the city","Рідна назва цього міста"
+"Zones are geographic regions that you ship goods to. Each zone provides shipping rates that apply to customers whose addresses are within that zone.","Зона - це географічний регіон, куди постачаються товари з магазину. Кожна зона забезпечує окремі ставки доставки, що застосовуються до клієнтів, адреси яких знаходяться в межах цієї зони."
+"Select your sitewide time zone. This setting can affect price rules and other important things","Виберіть свій часовий пояс по всьому сайту. Цей параметр може вплинути на правила цін і інші важливі речі"
+"Cron key","Ключ крон"
+"The key is used to run scheduled operations from outside of the site. Leave empty to generate a random key","Цей ключ використовується для запуску регулярних завдань шляхом зовнішніх запитів. Залиште порожнім для генерації випадкового ключа"
+"Track errors","Відслідковувати помилки"
+"Errors, notices, warnings","Помилки, сповіщення, попередження"
+All,Все
+"Select which PHP errors should be tracked by logging system","Виберіть, які PHP помилки мають відстежуватися логером"
+"Compress JS","Стискати JS"
+"If enabled, JS files will be merged into several big files. It reduces number of HTTP queries and improves site loading speed","Якщо ввімкнено, JS файли будуть об'єднані у декілька великих файлів. Це зменшує кількість HTTP-запитів і покращує швидкість завантаження сайту"
+"Compress CSS","Стискати CSS"
+"If enabled, CSS files will be minified and merged into one big file. It reduces number of HTTP queries and improves site loading speed","Якщо обрано, CSS файли будуть стиснуті і об'єднані у декілька великих файлів. Це зменшує кількість HTTP-запитів і покращує швидкість завантаження сайту"
+"Delete cached assets","Видалити кеш JS та CSS файлів"
+"Disabled countries will not be available to customers","Вимкнені країни не будуть доступні для клієнтів"
+"ISO 3166-2 code, e.g US","Код ISO 3166-2, наприклад US"
+"International english name of the country according to ISO 3166-2 standard","Міжнародна англійська назва країни за стандартом ISO 3166-2"
+"Local name of the country, e.g 中国","Місцева назва країни, наприклад 中国"
+States,Області
+Format,Формат
+"Default currency is the base currency of the store","Валюта за умовчанням є базовою основною валютою магазину"
+"Disabled currencies will not be available to customers","Вимкнені валюти не будуть доступні для клієнтів"
+"Exchange rate against default (base) currency. Only numeric positive values","Обмінний курс відносно базової валюти. Тільки числові позитивні значення"
+"Official currency name in english","Офіційна назва валюти англійською мовою"
+"Template placeholder: %name","Змінна в шаблоні формату: %name"
+"Three-letter upper-case code according to ISO 4217 standard, e.g USD","Трилітерний код великими літерами згідно зі стандартом ISO 4217, наприклад USD"
+"Sign of the currency, e.g $.","Позначка грошової одиниці, наприклад $."
+"Numeric code according to ISO 4217 standard.","Числовий код за стандартом ISO 4217."
+"Name of the highest valued currency unit, e.g Dollar.","Назва найбільшої одиниці валюти, наприклад Долар."
+"Name of the lowest valued currency unit. Usually it's 1/100 of the major unit, e.g Cent.","Назва найнижчої одиниці валюти. Зазвичай це 1/100 від найбільшої одиниці, наприклад Цент."
+"Number of decimal points, usually 2","Кількість десяткових значень, зазвичай 2"
+"Numeric value for more granular control over rounding to the final value. Enter 0 if unsure","Числове значення для більш точного контролю при округленні до остаточного значення. Вкажіть 0, якщо не впевнені"
+"Thousands separator","Роздільник тисяч"
+"Character used to separate thousands, e.g comma.","Символ, що використовується для розділення тисяч, наприклад кома."
+"Decimal separator","Роздільник десятків"
+"Character used to separate decimals, e.g period","Символ, що використовується для розділення десяткових частин, наприклад крапка"
+Template,Шаблон
+"Template to format prices in this currency. See the field descriptions for available placeholders. For price value use %price","Шаблон формату цін для цієї валюті. Дивіться описи полів для доступних змінних. Змінна значення ціни - %price"
+"In database","У базі даних"
+Updated,Оновлено
+"Disabled imagestyles will not process images","Відключені стилі зображень не будуть впливати на обробку зображень на сайті"
+"Descriptive name of the image style for administrators","Змістовний опис цього стилю для адміністраторів"
+"List of actions to be applied from the top to bottom. One action per line. See the legend. For example to make thumbnail 50X50: thumbnail 50,50","Список дій, які повинні застосовуватися зверху до низу. Одна дія на кожному рядку. Див. умовні позначення. Наприклад, щоб зробити мініатюру 50х50: thumbnail 50,50"
+Legend,"Умовні позначення"
+Key,Ключ
+"If selected the language will be considered as default fallback language","Якщо вибрано, ця мова буде встановлена як основна мова сайту"
+"Disabled languages will not be available to customers","Вимкнені мови не будуть доступні для клієнтів"
+Right-to-left,"Справа наліво"
+"Whether the language is written in right-to-left (RTL) script","Чи ця мова має підтримувати написання ""справа наліво"" (RTL)"
+"Language code according to ISO 639-1. Culture names also accepted","Мовний код згідно з ISO 639-1. Культурні коди також приймаються"
+"International english name of the language according to ISO 639 standard","Міжнародна англійська назва мови за стандартом ISO 639"
+"Local name of the language, e.g 中文","Місцева назва мови, наприклад 中文"
+"Are you sure? All compiled translations for this language will be re-created, their existing translations will be lost!","Ви впевнені? Всі зкомпільовані переклади для цієї мови будуть повторно створені, їх поточні переклади будуть втрачені назавжди!"
+Refresh,Перебудувати
+"Disabled states will not be displayed to customers","Вимкнені області не будуть доступні для клієнтів"
+"Official name of the state","Офіційна назва області"
+"Code or abbreviation used to represent the state in the country, e.g NY for New York","Код або абревіатура, що використовуються для відображення цієї області в країні, наприклад, NY для Нью-Йорка"
+Cities,Міста
+"Disabled stores will be closed and show maintenance status","Вимкнені магазини будуть показувати оголошення про технічне обслуговування"
+"Short name for administrators","Коротка назва для адміністраторів"
+"Domain name by which this store can be accessed","Назва домена, за яким цей магазин буде доступний онлайн"
+"Specify a subdirectory if the store is not installed in the domain root directory","Вкажіть директорію для файлів системи, якщо сайт встановлений не в корінь домену"
+"The default site name","Назва сайту за умовчанням"
+"List of e-mails, one per line","Список поштових електроних адрес, по одному на рядок"
+Owner,Власник
+"Name of the company that owns this store","Назва компанії, якій належить цей магазин"
+"An optional text to be used in meta description tag","Необов'язковий текст для використання в тегі meta-description"
+Contact,Контакт
+"City of the store","Місто магазину"
+"Country state of the store","Область або провінція магазину"
+"Country of the store","Країна магазину"
+"Physical address of the store","Фізична адреса магазина"
+"Latitude and longitude of the store, one value per line","Широта та довгота магазину, одне значення в кожному рядку"
+"List of phone numbers, one per line","Список телефонів, по одному на рядок"
+"List of fax numbers, one per line","Список факсів, по одному на рядок"
+"Post code","Поштовий індекс"
+"Post code of the store","Поштовий індекс магазину"
+Appearance,"Зовнішній вигляд"
+"Select a theme module used to display front-end of the store to all devices","Виберіть модуль теми оформлення для відображення зовнішнього інтерфейсу сайту"
+"Anonymous checkout","Анонімне оформлення замовлення"
+"Whether or not anonymous customers should log in before checkout","Чи має анонімний користувач авторизуватися щоб оформити замовлення"
+"Java-Script code without script tags to add on each public, non-admin and non-internal page, e.g Google Analytics tracking code","Код Java-Script без тегів script, який має бути доданий на публічних сторінках, наприклад код Google Analytics"
+"Select a <a href=""@url"">collection</a> to be used for banner slideshow on front page","Виберіть <a href=""@url"">колекцію</a> для відображення слайд-шоу банерів на головній сторінці"
+"Featured products","Рекомендовані товари"
+"Select a <a href=""@url"">collection</a> to be used for list of featured products on front page","Виберіть <a href=""@url"">колекцію</a> для відображення рекомендованих товарів на головній сторінці"
+"Select a <a href=""@url"">collection</a> to be used for list of articles/news on front page","Виберіть <a href=""@url"">колекцію</a> для відображення списку новин/статей на головній сторінці"
+Logo,Логотип
+"The main site logo. Appearance of the image is controlled by the current theme","Основний логотип сайту. Вигляд цього зображення контролюється відповідною темою оформлення"
+Favicon,Favicon
+"Favicon is a small image that represents your site. Appearance of the image is controlled by the current theme","Favicon - це невелике зображення, яке представляє ваш сайт. Вигляд зображення контролюється відповідною темою оформлення"
+"Disabled triggers will be excluded from processing","Вимкнені тригери не будуть спрацьовувати"
+"The name will be shown to administrators","Назва для адміністраторів"
+"Select a store that is associated with this trigger","Виберіть магазин, з яким пов'язаний цей тригер"
+"Position of the trigger among other enabled triggers. Triggers with lower weight are invoked earlier","Позиція тригера серед інших увімкнених тригерів. Тригери з меньшою вагою будуть спрацьовувати раніше"
+"Which conditions must be met to invoke the trigger. One condition per line. See the legend. Conditions are checked from the top to bottom. Format: [condition ID][space][operator][space][parameter(s)]","Які умови повинні бути виконані для спрацювання цього тригера. Одна умова на рядок. Дивіться умовні позначення. Умови перевіряються зверху до низу. Формат: [ID умови][пробіл][оператор][пробіл] [параметри]"
+Operators,Оператори
+Operator,Оператор
+"Disabled zones will not be available to users","Вимкнені зони не будуть доступні для користувачів"
+"Name for administrators","Назва для адміністраторів"
+"Full name","Повне ім'я"
+Details,Деталі
+"User name, e.g John Smith","Ім'я користувача, наприклад, Петро Гнатів"
+"Unique E-mail for this user","Унікальна адреса електроної пошти для цього користувача"
+"Password to log in this user","Пароль для авторизації цього користувача"
+"Disabled users are not allowed to login","Вимкнуті користувачі не зможуть авторизуватися"
+"Roles are sets of permissions that control what users can do and see on the site","Ролі - це набори прав, які контролюють те, що користувачі можуть зробити і побачити на сайті"
+"Associate this user with a certain store","Асоціювати цього користувача з певним магазином"
+"Add order","Додати замовлення"
+Expires,"Термін дії"
+"Disabled roles will not be available to users","Вимкнені ролі не будуть доступні для користувачів"
+"Descriptive name of the role, e.g Boss, Manager etc","Змістовна назва ролі, наприклад Босс, Менеджер тощо"
+"To account page","На сторінку облікового запису"
+"A destination that a user is redirected to after logged in","Адреса, на яку користувач буде перенаправлений після того, як авторизувався"
+Permissions,Права
+"Select/unselect all","Вибрати все"
+"Category page","Сторінка категорії"
+"Category page (child)","Сторінка категорії (субкатегорія)"
+"Product page","Сторінка товару"
+"Product catalog (grid)","Каталог товарів (сітка)"
+"Product catalog (list)","Каталог товарів (список)"
+"Product option","Опція товару"
+"File collection (banners)","Колекція файлів (банери)"
+"Page collection (news/articles)","Колекція сторінок (новини/статті)"
+"Product collection (featured products)","Колекції товарів (рекомендовані товари)"
+"Settings have been reset to default values","Параметри були скинуті до значень за умовчанням"
+Frontend,"Зовнішній інтерфейс"
+"Edit %name settings","Редагувати параметри %name"
+"Already in comparison","Вже в порівнянні"
+"Already in wishlist","Вже в списку бажань"
+"Selected: !combination","Вибрано: !combination"
+"Checking availability...","Перевірка доступності..."
+"Frontend theme","Тема зовнішнього інтерфейсу"
+"View and manage addressbook","Перегляд та керування адресною книгою"
+"Edit account details","Редагування облікового запису"
+"This account is inactive","Цей обліковий запис неактивний"
+Never,Ніколи
+"You have no orders yet. <a href=""@url"">Shop now</a>","У вас поки немає замовлень. <a href=""@url"">В магазин</a>"
+Delete?,Видалити?
+"You have no saved addresses yet","У вас поки немає збережених адрес"
+"New password","Новий пароль"
+"Existing password","Існуючий пароль"
+Comments,Коментарі
+"Add to cart","Додати в кошик"
+"Add to wishlist","Додати до списку бажань"
+Compare,Порівняти
+"Shopping cart is empty","Ваш кошик порожній"
+Subtotal,"Попередній підсумок"
+"Final price will be shown on checkout page","Остаточна ціна буде вказана на сторінці оформлення замовлення"
+"Cart / Checkout","Кошик / Зробити замовлення"
+"This category has no content","Ця категорія має без вмісту"
+"Showing @num of @total","Показано @num з @total"
+"Low prices first","Спочатку низькі ціни"
+"High prices first","Спочатку високі ціни"
+"Title A-Z","Назва A-Z"
+"Title Z-A","Назва Z-A"
+Go,ОК
+"If you want to add a new order for a user, add all needed products to your cart then add an order for the <a href=""@url"">user</a>. Your cart items will be assigned to that user.","Якщо потрібно додати нове замовлення для іншого користувача, додайте всі необхідні товари до свого кошику, потім зробіть замовлення для <a href=""@url""> користувача</a>. Товари з вашого кошику будуть призначено для цього користувача."
+"Shopping cart is empty. <a href=""@url"">Shop now</a>","Кошик порожній. <a href=""@url"">В магазин</a>"
+"Your browser seems to have Java-Script disabled. You should press ""Update"" button each time you make changes in the form","Схоже ваш браузер не підтримує Java-Script. Ви маєте натискати кнопку ""Оновити"" кожного разу, коли змінюєте значення в полях цієї форми"
+Update,Оновити
+"Already registered?","Вже зареєстровані?"
+"Click to login","Натисніть, щоб увійти"
+"Place order now",Замовити
+"Log in",Увійти
+"Continue as guest","Продовжити як гість"
+"My shipping and payment addresses are the same","Мої адреси доставки і оплати співпадають"
+"Add address","Додати адресу"
+"Get states","Отримати області"
+"Get services and rates","Отримати сервіси і тарифи"
+"Move to wishlist","Перемістити до списку бажань"
+"Enter code","Введіть код"
+Apply,Застосувати
+"Shipping method","Спосіб доставки"
+Unvote,"Відкликати голос"
+"@num out of @total stars","@num з @total зірочок"
+Facebook,Facebook
+Google+,"Google +"
+Twitter,Twitter
+"Show only difference","Показати лише різницю"
+"Nothing to compare","Немає що порівнювати"
+"Add more to compare","Додайте більше для порівняння"
+"Change password","Змінити пароль"
+"Content coming soon...","Вміст скоро буде..."
+"There are some issues in your environment","Є деякі проблеми у вашому системному середовищі"
+"non-critical issue",некритичне
+"critical issue",критичне
+error,помилка
+"Installation profiles","Профілі установки"
+"This distribution can be installed in several ways. Select an installer that fits your needs","Цей дистрибутив може бути встановлений різними способами. Оберіть профіль, який відповідає вашим потребам"
+Database,"База даних"
+"Name of the database you want to connect to","Назва бази даних, до якої ви хочете підключитися"
+"Existing username to access the database","Ім'я існуючого користувача для доступу до бази даних"
+"Password to access the database. Can be empty","Пароль для доступу до бази даних. Може бути порожнім"
+Site,Сайт
+"E-mail for superadmin","E-mail для супер-адміністратора"
+"Password for superadmin","Пароль для супер-адміністратора"
+"Name of the store","Назва магазина"
+"Choose your local timezone","Виберіть ваш місцевий часовий пояс"
+"Advanced database settings","Додаткові налаштування бази даних"
+"Select your database type from the list of supported PDO drivers","Виберіть тип бази даних зі списку підтримуваних драйверів PDO"
+mysql,mysql
+sqlite,sqlite
+"The port number to use for the connection. The default port number is 3306","Номер порту для підключення до бази даних. Номер порту за умовчанням є 3306"
+"The default host name is localhost. If your database should be connected remotely specify here its IP or domain","За умовчанням хост бази даних є localhost. Якщо у вас зовнішня база даних, вкажіть її IP або домен"
+Install,Встановити
+Help,Допомога
+Hello,Вітаємо
+"We'll be back soon!","Ми скоро повернемося!"
+"Sorry for the inconvenience but we're performing some maintenance at the moment","Вибачте за незручності, але на даний момент ми виконуємо технічне обслуговування сайту"
+"Forgot password","Нагадати пароль"
+Specs,Характеристики
+"This product is disabled","Цей товар вимкнено"
+"@num reviews","@num відгук(ів)"
+"Be first to review this product","Залиште відгук про цей товар першими"
+"Recently viewed","Останні переглянуті"
+"@min - @max characters","@min - @max символів"
+"No results found. Try another search keyword","Немає результатів. Спробуйте інше ключове слово"
+"Products per page","Товарів на сторінці"
+"Default view","Вид за замовчуванням"
+Grid,Сітка
+List,Список
+"Sorting field","Поле сортування"
+"Sorting direction","Напрямок сортування"
+Ascending,"За зростанням"
+Descending,"За спаданням"
+"Your wishlist is empty. <a href=""@url"">Continue shopping</a>","Ваш список бажань порожній. <a href=""@url"">В магазин</a>"
