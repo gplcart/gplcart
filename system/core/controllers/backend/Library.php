@@ -61,8 +61,7 @@ class Library extends BackendController
     {
         $this->controlToken('refresh');
 
-        if ($this->isQuery('refresh')) {
-            $this->library->clearCache();
+        if ($this->isQuery('refresh') && $this->library->clearCache()) {
             $this->redirect('', $this->text('Cache has been deleted'), 'success');
         }
     }
