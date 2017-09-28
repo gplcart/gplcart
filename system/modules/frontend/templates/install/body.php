@@ -10,24 +10,43 @@
 ?>
 <body class="install">
   <div class="container">
-    <h2><?php echo $this->e($_page_title); ?> <small>v. <?php echo gplcart_version(); ?></small></h2>
-    <form method="post">
-      <?php if (!empty($languages) && count($languages) > 1) { ?>
-      <div class="select-language clearfix">
-        <?php echo $this->text('Select language'); ?>:
-        <?php foreach ($languages as $code => $data) { ?>
-        <?php $language_query = ($code === 'en') ? array() : array('lang' => $code); ?>
-        <a class="<?php echo $code === $language ? ' active' : ''; ?>" href="<?php echo $this->url('', $language_query); ?>">
-          <?php echo $this->e($data['native_name']); ?>
-        </a>
+    <div class="row header">
+      <div class="col-md-6">
+        <h1 class="h3"><?php echo $this->e($_page_title); ?> <small>v. <?php echo $_version; ?></small></h1>
+      </div>
+      <div class="col-md-6 text-right">
+        <?php if (!empty($languages) && count($languages) > 1) { ?>
+        <div class="btn-group">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            <?php if ($language && isset($languages[$language]['native_name'])) { ?>
+            <?php echo $this->e($languages[$language]['native_name']); ?>
+            <?php unset($languages[$language]); ?>
+            <?php } else { ?>
+            <?php echo $this->e($languages['en']['native_name']); ?>
+            <?php unset($languages['en']); ?>
+            <?php } ?>
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu">
+            <?php foreach ($languages as $code => $data) { ?>
+            <?php $language_query = ($code === 'en') ? array() : array('lang' => $code); ?>
+            <li>
+              <a href="<?php echo $this->url('', $language_query); ?>">
+                <?php echo $this->e($data['native_name']); ?>
+              </a>
+            </li>
+            <?php } ?>
+          </ul>
+        </div>
         <?php } ?>
       </div>
-      <?php } ?>
+    </div>
+    <form method="post">
       <?php if (!empty($_messages)) { ?>
       <?php foreach ($_messages as $type => $strings) { ?>
       <div class="alert alert-<?php echo $this->e($type); ?> alert-dismissible fade in">
         <button type="button" class="close" data-dismiss="alert">
-          <span aria-hidden="true">&times;</span>
+          <span>&times;</span>
         </button>
         <?php foreach ($strings as $string) { ?>
         <?php echo $this->filter($string); ?>
