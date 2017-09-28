@@ -75,6 +75,7 @@ class Config
      */
     protected function setErrorHandlers()
     {
+        /* @var $logger \gplcart\core\Logger */
         $logger = Container::get('gplcart\\core\\Logger');
         $logger->setDb($this->db);
 
@@ -214,13 +215,19 @@ class Config
 
     /**
      * Returns an array of all available modules
+     * @param bool $cache
      * @return array
      */
-    public function getModules()
+    public function getModules($cache = true)
     {
-        $modules = &gplcart_static(__METHOD__);
+        $modules = &gplcart_static('module.list');
 
         if (isset($modules)) {
+            return $modules;
+        }
+
+        if ($cache && is_file(GC_CONFIG_MODULE)) {
+            $modules = require GC_CONFIG_MODULE;
             return $modules;
         }
 
@@ -271,7 +278,26 @@ class Config
 
         gplcart_array_sort($modules);
 
+        if ($cache) {
+            gplcart_file_config(GC_CONFIG_MODULE, $modules);
+        }
+
         return $modules;
+    }
+
+    /**
+     * Clear module cache
+     * @return boolean
+     */
+    public function clearModuleCache()
+    {
+        if (is_file(GC_CONFIG_MODULE)) {
+            chmod(GC_CONFIG_MODULE, 0644);
+            gplcart_static_clear();
+            return unlink(GC_CONFIG_MODULE);
+        }
+
+        return false;
     }
 
     /**
@@ -387,7 +413,7 @@ class Config
             return array();
         }
 
-        $modules = &gplcart_static(__METHOD__);
+        $modules = &gplcart_static('module.installed.list');
 
         if (isset($modules)) {
             return $modules;
@@ -402,11 +428,12 @@ class Config
 
     /**
      * Returns an array of enabled modules
+     * @param bool $cache
      * @return array
      */
-    public function getEnabledModules()
+    public function getEnabledModules($cache = true)
     {
-        return array_filter($this->getModules(), function ($module) {
+        return array_filter($this->getModules($cache), function ($module) {
             return !empty($module['status']);
         });
     }

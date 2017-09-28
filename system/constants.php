@@ -23,6 +23,7 @@ define('GC_CONFIG_DIR', GC_SYSTEM_DIR . '/config');
 define('GC_CONFIG_DEFAULT_DIR', GC_CONFIG_DIR . '/default');
 define('GC_CONFIG_RUNTIME_DIR', GC_CONFIG_DIR . '/runtime');
 define('GC_CONFIG_COMPILED_LIBRARY', GC_CONFIG_RUNTIME_DIR . '/library.php');
+define('GC_CONFIG_MODULE', GC_CONFIG_RUNTIME_DIR . '/module.php');
 define('GC_CONFIG_OVERRIDE', GC_CONFIG_RUNTIME_DIR . '/override.php');
 define('GC_CONFIG_COMMON', GC_CONFIG_RUNTIME_DIR . '/common.php');
 define('GC_CONFIG_DATABASE', GC_CONFIG_DEFAULT_DIR . '/database.php');

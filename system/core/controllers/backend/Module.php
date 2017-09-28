@@ -57,8 +57,8 @@ class Module extends BackendController
      */
     public function listModule()
     {
-        $this->controlToken('action');
         $this->actionListModule();
+        $this->clearCacheModule();
 
         $this->setTitleListModule();
         $this->setBreadcrumbListModule();
@@ -74,6 +74,18 @@ class Module extends BackendController
     }
 
     /**
+     * Clear module cache
+     */
+    protected function clearCacheModule()
+    {
+        $this->controlToken('refresh');
+
+        if ($this->isQuery('refresh') && $this->config->clearModuleCache()) {
+            $this->redirect('', $this->text('Cache has been deleted'), 'success');
+        }
+    }
+
+    /**
      * Sets the filter on the module overview page
      */
     protected function setFilterListModule()
@@ -86,6 +98,8 @@ class Module extends BackendController
      */
     protected function actionListModule()
     {
+        $this->controlToken('action');
+
         $action = $this->getQuery('action');
         $module_id = $this->getQuery('module_id');
 

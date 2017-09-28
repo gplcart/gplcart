@@ -87,12 +87,22 @@ class Module extends Model
     }
 
     /**
+     * Clear module cache
+     * @return bool
+     */
+    public function clearCache()
+    {
+        return $this->config->clearModuleCache();
+    }
+
+    /**
      * Returns an array of all available modules
+     * @param bool $cache
      * @return array
      */
-    public function getList()
+    public function getList($cache = true)
     {
-        return $this->config->getModules();
+        return $this->config->getModules($cache);
     }
 
     /**
@@ -125,11 +135,12 @@ class Module extends Model
 
     /**
      * Returns an array of enabled modules
+     * @param bool $cache
      * @return array
      */
-    public function getEnabled()
+    public function getEnabled($cache = true)
     {
-        return $this->config->getEnabledModules();
+        return $this->config->getEnabledModules($cache);
     }
 
     /**
@@ -149,6 +160,7 @@ class Module extends Model
 
         $this->update($module_id, array('status' => 1));
 
+        $this->clearCache();
         $this->setOverrideConfig();
 
         $this->hook->attach("module.enable.after|$module_id", $result, $this);
@@ -435,6 +447,7 @@ class Module extends Model
             $this->add(array('status' => false, 'module_id' => $module_id));
         }
 
+        $this->clearCache();
         $this->setOverrideConfig();
 
         $this->hook->attach("module.disable.after|$module_id", $result, $this);
@@ -529,6 +542,7 @@ class Module extends Model
 
         $this->add(array('module_id' => $module_id, 'status' => $status));
 
+        $this->clearCache();
         $this->setOverrideConfig();
 
         $this->hook->attach("module.install.after|$module_id", $result, $this);
@@ -560,6 +574,8 @@ class Module extends Model
         }
 
         $this->db->delete('module', array('module_id' => $module_id));
+
+        $this->clearCache();
         $this->setOverrideConfig();
 
         $this->hook->attach("module.uninstall.after|$module_id", $result, $this);
