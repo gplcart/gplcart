@@ -1785,6 +1785,7 @@ abstract class Controller
         $this->data = array_merge($this->data, $this->getDefaultData());
 
         $this->data['_help'] = '';
+        $this->data['_version'] = gplcart_version();
         $this->data['_user'] = $this->current_user;
         $this->data['_store'] = $this->current_store;
         $this->data['_language'] = $this->current_language;
@@ -2078,7 +2079,7 @@ abstract class Controller
     }
 
     /**
-     * 
+     *
      * @param array $allowed
      * @param array $query
      */
