@@ -140,10 +140,9 @@ class Base extends Handler
     protected function createLanguages()
     {
         if (!empty($this->data['store']['language']) && $this->data['store']['language'] !== 'en') {
-            $language = array('code' => $this->data['store']['language'], 'default' => true);
             /* @var $model \gplcart\core\models\Language */
             $model = Container::get('gplcart\\core\\models\\Language');
-            $model->add($language);
+            $model->update($this->data['store']['language'], array('default' => true));
         }
     }
 
@@ -314,13 +313,14 @@ class Base extends Handler
      */
     protected function createCountries()
     {
-        $countries = require GC_CONFIG_COUNTRY;
+        /* @var $model \gplcart\core\models\Country */
+        $model = Container::get('gplcart\\core\\models\\Country');
 
         $rows = $placeholders = array();
-
-        foreach ($countries as $code => $name) {
+        foreach ($model->getIso() as $code => $country) {
             $placeholders[] = '(?,?,?,?,?)';
-            $rows = array_merge($rows, array(0, $name, $code, $name, serialize(array())));
+            $native_name = isset($country['native_name']) ? $country['native_name'] : $country['name'];
+            $rows = array_merge($rows, array(0, $country['name'], $code, $native_name, serialize(array())));
         }
 
         $sql = 'INSERT INTO country (status, name, code, native_name, format) VALUES ' . implode(',', $placeholders);
