@@ -172,17 +172,14 @@ function gplcart_settype(&$value, $type, $default)
 }
 
 /**
- * Central static variable storage
- * Mostly taken from Drupal
- * @param string|null|array $cid
+ * Central static variable storage. Taken from Drupal
+ * @param string|null $name
  * @param mixed $default_value
  * @param boolean $reset
  * @return mixed
  */
-function &gplcart_static($cid, $default_value = null, $reset = false)
+function &gplcart_static($name, $default_value = null, $reset = false)
 {
-    $name = gplcart_cache_key($cid);
-
     static $data = array(), $default = array();
 
     if (isset($data[$name]) || array_key_exists($name, $data)) {
@@ -211,33 +208,9 @@ function &gplcart_static($cid, $default_value = null, $reset = false)
 
 /**
  * Reset static cache
- * @param string|array|null $cid
+ * @param string|null $cid
  */
 function gplcart_static_clear($cid = null)
 {
-    gplcart_static(gplcart_cache_key($cid), null, true);
-}
-
-/**
- * Generates a cache key from an array of arguments like ('prefix' => array(...))
- * @param string|array|null $data
- * @return string|null
- */
-function gplcart_cache_key($data)
-{
-    if (!isset($data)) {
-        return null;
-    }
-
-    if (!is_array($data)) {
-        return (string) $data;
-    }
-
-    $hash = reset($data);
-    $key = key($data);
-
-    settype($hash, 'array');
-    ksort($hash);
-
-    return $key . '.' . md5(json_encode($hash));
+    gplcart_static($cid, null, true);
 }

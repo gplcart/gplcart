@@ -180,3 +180,19 @@ function gplcart_array_split(array $list, $p)
 
     return $partition;
 }
+
+/**
+ * Generates a hash from an array
+ * @param array $data
+ * @return string
+ */
+function gplcart_array_hash(array $data)
+{
+    $hash = reset($data);
+    $key = key($data);
+
+    settype($hash, 'array');
+    ksort($hash);
+
+    return "$key." . md5(json_encode($hash));
+}
