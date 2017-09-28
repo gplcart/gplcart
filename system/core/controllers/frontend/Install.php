@@ -56,8 +56,8 @@ class Install extends BaseController
         $issues = $this->getRequirementErrorsInstall($requirements);
 
         $this->setData('issues', $issues);
-        $this->setData('settings.installer', 'default');
         $this->setData('requirements', $requirements);
+        $this->setData('settings.installer', 'default');
         $this->setData('timezones', gplcart_timezones());
         $this->setData('language', $this->install_language);
         $this->setData('handlers', $this->install->getHandlers());
