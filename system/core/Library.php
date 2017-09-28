@@ -81,7 +81,7 @@ class Library
      */
     public function getList()
     {
-        $libraries = &gplcart_static(__METHOD__);
+        $libraries = &gplcart_static('library.list');
 
         if (isset($libraries)) {
             return (array) $libraries;
@@ -102,11 +102,16 @@ class Library
 
     /**
      * Removes cached libraries
+     * @return boolean
      */
     public function clearCache()
     {
-        chmod(GC_CONFIG_COMPILED_LIBRARY, 0644);
-        return unlink(GC_CONFIG_COMPILED_LIBRARY);
+        if (is_file(GC_CONFIG_COMPILED_LIBRARY)) {
+            chmod(GC_CONFIG_COMPILED_LIBRARY, 0644);
+            return unlink(GC_CONFIG_COMPILED_LIBRARY);
+        }
+
+        return false;
     }
 
     /**
