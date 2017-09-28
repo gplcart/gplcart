@@ -89,7 +89,7 @@ class CliRoute
      */
     public function getList()
     {
-        $routes = &gplcart_static(__METHOD__);
+        $routes = &gplcart_static('cli.route.list');
 
         if (isset($routes)) {
             return $routes;

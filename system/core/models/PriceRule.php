@@ -50,7 +50,7 @@ class PriceRule extends Model
      */
     public function getList(array $data = array())
     {
-        $list = &gplcart_static(array(__METHOD__ => $data));
+        $list = &gplcart_static(gplcart_array_hash(array('price.rule.list' => $data)));
 
         if (isset($list)) {
             return $list;

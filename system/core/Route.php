@@ -93,7 +93,7 @@ class Route
      */
     public function getList()
     {
-        $routes = &gplcart_static(__METHOD__);
+        $routes = &gplcart_static('route.list');
 
         if (isset($routes)) {
             return $routes;

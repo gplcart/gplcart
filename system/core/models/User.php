@@ -324,7 +324,7 @@ class User extends Model
      */
     public function get($user_id, $store_id = null)
     {
-        $result = &gplcart_static(__METHOD__ . "$user_id");
+        $result = &gplcart_static("user.get.$user_id.$store_id");
 
         if (isset($result)) {
             return (array) $result;

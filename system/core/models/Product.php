@@ -270,7 +270,7 @@ class Product extends Model
      */
     public function get($product_id, array $options = array())
     {
-        $result = &gplcart_static(array(__METHOD__ . "$product_id" => $options));
+        $result = &gplcart_static(gplcart_array_hash(array("product.get.$product_id" => $options)));
 
         if (isset($result)) {
             return $result;
@@ -315,7 +315,7 @@ class Product extends Model
      */
     public function getBySku($sku, $store_id, $language = null)
     {
-        $product = &gplcart_static(__METHOD__ . "$sku$store_id$language");
+        $product = &gplcart_static("product.get.sku.$sku.$store_id.$language");
 
         if (isset($product)) {
             return $product;

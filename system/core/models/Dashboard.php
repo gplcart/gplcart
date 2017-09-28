@@ -41,7 +41,7 @@ class Dashboard extends Model
      */
     public function getHandlers()
     {
-        $handlers = &gplcart_static(__METHOD__);
+        $handlers = &gplcart_static('dashboard.handlers');
 
         if (isset($handlers)) {
             return $handlers;

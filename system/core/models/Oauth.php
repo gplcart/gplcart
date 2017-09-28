@@ -78,7 +78,7 @@ class Oauth extends Model
      */
     public function getProviders(array $data = array())
     {
-        $providers = &gplcart_static(array(__METHOD__ => $data));
+        $providers = &gplcart_static(gplcart_array_hash(array('oauth.providers' => $data)));
 
         if (isset($providers)) {
             return $providers;

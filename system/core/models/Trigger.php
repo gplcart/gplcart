@@ -41,7 +41,7 @@ class Trigger extends Model
      */
     public function getList(array $data = array())
     {
-        $triggers = &gplcart_static(array(__METHOD__ => $data));
+        $triggers = &gplcart_static(gplcart_array_hash(array('trigger.list' => $data)));
 
         if (isset($triggers)) {
             return $triggers;

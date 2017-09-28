@@ -391,7 +391,7 @@ class Job extends Model
      */
     protected function getHandlers()
     {
-        $handlers = &gplcart_static(__METHOD__);
+        $handlers = &gplcart_static('job.handlers');
 
         if (isset($handlers)) {
             return $handlers;

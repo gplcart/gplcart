@@ -126,7 +126,7 @@ class Condition extends Model
      */
     public function getHandlers()
     {
-        $handlers = &gplcart_static(__METHOD__);
+        $handlers = &gplcart_static('condition.handlers');
 
         if (isset($handlers)) {
             return $handlers;

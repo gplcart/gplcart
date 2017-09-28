@@ -41,7 +41,7 @@ class Address extends Model
      */
     public function get($address_id)
     {
-        $result = &gplcart_static(__METHOD__ . "$address_id");
+        $result = &gplcart_static("address.get.$address_id");
 
         if (isset($result)) {
             return $result;

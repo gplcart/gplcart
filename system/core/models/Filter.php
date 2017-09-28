@@ -105,7 +105,7 @@ class Filter extends Model
      */
     public function getList()
     {
-        $filters = &gplcart_static(__METHOD__);
+        $filters = &gplcart_static('filter.list');
 
         if (isset($filters)) {
             return $filters;

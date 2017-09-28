@@ -43,7 +43,7 @@ class Field extends Model
      */
     public function getWidgetTypes()
     {
-        $types = &gplcart_static(__METHOD__);
+        $types = &gplcart_static('field.widget.types');
 
         if (isset($types)) {
             return $types;
@@ -65,7 +65,7 @@ class Field extends Model
      */
     public function getTypes()
     {
-        $types = &gplcart_static(__METHOD__);
+        $types = &gplcart_static('field.types');
 
         if (isset($types)) {
             return $types;

@@ -97,7 +97,7 @@ class Cart extends Model
      */
     public function getContent(array $data)
     {
-        $result = &gplcart_static(array(__METHOD__ => $data));
+        $result = &gplcart_static(gplcart_array_hash(array('cart.get.content' => $data)));
 
         if (isset($result)) {
             return $result;

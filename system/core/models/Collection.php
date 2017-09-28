@@ -222,7 +222,7 @@ class Collection extends Model
      */
     public function getHandlers()
     {
-        $handlers = &gplcart_static(__METHOD__);
+        $handlers = &gplcart_static('collection.handlers');
 
         if (isset($handlers)) {
             return $handlers;

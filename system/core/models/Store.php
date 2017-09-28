@@ -41,7 +41,7 @@ class Store extends Model
      */
     public function getList(array $data = array())
     {
-        $stores = &gplcart_static(array(__METHOD__ => $data));
+        $stores = &gplcart_static(gplcart_array_hash(array('store.list' => $data)));
 
         if (isset($stores)) {
             return $stores;
@@ -129,7 +129,7 @@ class Store extends Model
             return array();
         }
 
-        $result = &gplcart_static(__METHOD__ . "$store_id");
+        $result = &gplcart_static("store.get.$store_id");
 
         if (isset($result)) {
             return $result;

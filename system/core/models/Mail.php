@@ -32,7 +32,7 @@ class Mail extends Model
      */
     public function getHandlers()
     {
-        $handlers = &gplcart_static(__METHOD__);
+        $handlers = &gplcart_static('mail.handlers');
 
         if (isset($handlers)) {
             return $handlers;

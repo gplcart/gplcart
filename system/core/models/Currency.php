@@ -42,7 +42,7 @@ class Currency extends Model
      */
     public function getList($enabled = false, $in_database = false)
     {
-        $currencies = &gplcart_static(array(__METHOD__ => array($enabled, $in_database)));
+        $currencies = &gplcart_static(gplcart_array_hash(array('currency.list' => array($enabled, $in_database))));
 
         if (isset($currencies)) {
             return $currencies;

@@ -165,7 +165,7 @@ class Category extends Model
      */
     public function getTree(array $data)
     {
-        $tree = &gplcart_static(array(__METHOD__ => $data));
+        $tree = &gplcart_static(gplcart_array_hash(array('category.tree' => $data)));
 
         if (isset($tree)) {
             return $tree;

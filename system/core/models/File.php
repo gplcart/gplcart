@@ -263,7 +263,7 @@ class File extends Model
      */
     protected function getHandlers()
     {
-        $handlers = &gplcart_static(__METHOD__);
+        $handlers = &gplcart_static('file.handlers');
 
         if (isset($handlers)) {
             return $handlers;
@@ -329,7 +329,7 @@ class File extends Model
      */
     public function getList(array $data = array())
     {
-        $files = &gplcart_static(array(__METHOD__ => $data));
+        $files = &gplcart_static(gplcart_array_hash(array('file.list' => $data)));
 
         if (isset($files)) {
             return $files;

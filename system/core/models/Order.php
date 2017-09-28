@@ -96,7 +96,7 @@ class Order extends Model
      */
     public function getStatuses()
     {
-        $statuses = &gplcart_static(__METHOD__);
+        $statuses = &gplcart_static('order.statuses');
 
         if (isset($statuses)) {
             return $statuses;

@@ -40,7 +40,7 @@ class UserRole extends Model
      */
     public function getPermissions()
     {
-        $permissions = &gplcart_static(__METHOD__);
+        $permissions = &gplcart_static('user.role.permissions');
 
         if (isset($permissions)) {
             return $permissions;
@@ -198,7 +198,7 @@ class UserRole extends Model
      */
     public function get($role_id)
     {
-        $result = &gplcart_static(__METHOD__ . "$role_id");
+        $result = &gplcart_static("user.role.get.$role_id");
 
         if (isset($result)) {
             return $result;

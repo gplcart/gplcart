@@ -457,7 +457,7 @@ class Module extends Model
      */
     public function getActiveThemes()
     {
-        $themes = &gplcart_static(__METHOD__);
+        $themes = &gplcart_static('module.active.themes');
 
         if (isset($themes)) {
             return $themes;

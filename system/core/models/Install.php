@@ -57,7 +57,7 @@ class Install extends Model
      */
     public function getHandlers()
     {
-        $handlers = &gplcart_static(__METHOD__);
+        $handlers = &gplcart_static('install.handlers');
 
         if (isset($handlers)) {
             return $handlers;
@@ -147,7 +147,7 @@ class Install extends Model
      */
     public function getRequirements()
     {
-        $requirements = &gplcart_static(__METHOD__);
+        $requirements = &gplcart_static('install.requirements');
 
         if (isset($requirements)) {
             return (array) $requirements;

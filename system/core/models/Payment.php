@@ -41,7 +41,7 @@ class Payment extends Model
      */
     public function getList(array $data = array())
     {
-        $methods = &gplcart_static(array(__METHOD__ => $data));
+        $methods = &gplcart_static(gplcart_array_hash(array('payment.methods' => $data)));
 
         if (isset($methods)) {
             return $methods;

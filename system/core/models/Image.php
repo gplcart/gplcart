@@ -60,7 +60,7 @@ class Image extends Model
      */
     public function getActionHandlers()
     {
-        $handlers = &gplcart_static(__METHOD__);
+        $handlers = &gplcart_static('imagestyle.action.handlers');
 
         if (isset($handlers)) {
             return (array) $handlers;
@@ -181,7 +181,7 @@ class Image extends Model
      */
     public function getStyleList()
     {
-        $imagestyles = &gplcart_static(__METHOD__);
+        $imagestyles = &gplcart_static('imagestyle.list');
 
         if (isset($imagestyles)) {
             return (array) $imagestyles;

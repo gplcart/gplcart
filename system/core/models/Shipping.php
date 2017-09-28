@@ -41,7 +41,7 @@ class Shipping extends Model
      */
     public function getList(array $data = array())
     {
-        $methods = &gplcart_static(array(__METHOD__ => $data));
+        $methods = &gplcart_static(gplcart_array_hash(array('shipping.methods' => $data)));
 
         if (isset($methods)) {
             return $methods;
@@ -64,7 +64,8 @@ class Shipping extends Model
                 continue;
             }
 
-            if (!empty($data['module']) && (empty($method['module']) || !in_array($method['module'], (array) $data['module']))) {
+            if (!empty($data['module']) && (empty($method['module'])//
+                    || !in_array($method['module'], (array) $data['module']))) {
                 unset($methods[$id]);
                 continue;
             }
