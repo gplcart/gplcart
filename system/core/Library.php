@@ -108,6 +108,7 @@ class Library
     {
         if (is_file(GC_CONFIG_COMPILED_LIBRARY)) {
             chmod(GC_CONFIG_COMPILED_LIBRARY, 0644);
+            gplcart_static_clear();
             return unlink(GC_CONFIG_COMPILED_LIBRARY);
         }
 
