@@ -85,7 +85,7 @@ class Language extends Model
     public function setLangcode($langcode)
     {
         $this->langcode = $langcode;
-        $this->prepareFiles($langcode);
+        return $this->prepareFiles($langcode);
     }
 
     /**
@@ -133,7 +133,7 @@ class Language extends Model
      */
     public function getList($enabled = false, $in_database = false)
     {
-        $languages = &gplcart_static(array(__METHOD__ => array($enabled, $in_database)));
+        $languages = &gplcart_static(gplcart_array_hash(array('language.list' => array($enabled, $in_database))));
 
         if (isset($languages)) {
             return $languages;
@@ -290,7 +290,7 @@ class Language extends Model
             $this->setDefault($data['code']);
         }
 
-        $default = $this->getDefaultData();
+        $default = $this->getDefaultData($data['code']);
         $data += $default;
 
         $languages = $this->config->select('languages', array());
@@ -318,7 +318,7 @@ class Language extends Model
             return (bool) $result;
         }
 
-        if (!empty($data['default']) && !$this->isDefault($code)) {
+        if (!empty($data['default'])) {
             $data['status'] = true;
             $this->setDefault($code);
         }
@@ -327,7 +327,13 @@ class Language extends Model
             $data['status'] = true;
         }
 
-        $default = $this->getDefaultData();
+        $iso = $this->getIso();
+
+        if (!empty($iso[$code])) {
+            $data += $iso[$code];
+        }
+
+        $default = $this->getDefaultData($code);
         $data += $default;
 
         $languages = $this->config->select('languages', array());
@@ -342,18 +348,19 @@ class Language extends Model
 
     /**
      * Returns an array of default language data
+     * @param string $code
      * @return array
      */
-    protected function getDefaultData()
+    protected function getDefaultData($code = '')
     {
         return array(
-            'code' => '',
-            'name' => '',
+            'code' => $code,
+            'name' => $code,
             'weight' => 0,
             'rtl' => false,
             'status' => false,
             'default' => false,
-            'native_name' => '',
+            'native_name' => $code,
         );
     }
 
@@ -419,11 +426,11 @@ class Language extends Model
      */
     public function text($string, array $arguments = array(), $format = true)
     {
-        if (empty($this->langcode) || $this->langcode === 'en' || empty($this->context)) {
+        if (empty($this->langcode) || $this->langcode === 'en') {
             return $format ? $this->formatString($string, $arguments) : array();
         }
 
-        $context_file = $this->getContextFile();
+        $context_file = $this->getContextFile($this->context, $this->langcode);
         $context_translations = $this->loadTranslation($context_file);
 
         if (isset($context_translations[$string])) {
@@ -446,11 +453,11 @@ class Language extends Model
 
     /**
      * Returns a context translation file
-     * @param string|null $context
-     * @param string|null $langcode
+     * @param string $context
+     * @param string $langcode
      * @return string
      */
-    public function getContextFile($context = null, $langcode = null)
+    public function getContextFile($context, $langcode)
     {
         static $files = array();
 
@@ -475,16 +482,12 @@ class Language extends Model
 
     /**
      * Converts context into filename
-     * @param string|null $context
+     * @param string $context
      * @return string
      */
-    protected function getFilenameFromContext($context = null)
+    protected function getFilenameFromContext($context)
     {
-        if (!isset($context)) {
-            $context = $this->context;
-        }
-
-        $clean = gplcart_file_name_clean(strtolower(str_replace('/*', '_', $context)), '-');
+        $clean = gplcart_file_name_clean(strtolower(str_replace('/*', '_', "$context")), '-');
         return str_replace(array('-_', '_-'), '_', $clean);
     }
 
@@ -521,7 +524,7 @@ class Language extends Model
      */
     public function loadTranslation($file)
     {
-        $translations = &gplcart_static(__METHOD__ . "$file");
+        $translations = &gplcart_static("language.translation.$file");
 
         if (isset($translations)) {
             return (array) $translations;
@@ -611,7 +614,7 @@ class Language extends Model
      */
     protected function addTranslation($string, array $translations, $file)
     {
-        if ($this->prepared && !isset($this->written[$file][$string])) {
+        if ($this->prepared && !isset($this->written[$file][$string]) && !empty($this->context)) {
 
             $data = array($string);
             if (isset($translations[$string][0]) && $translations[$string][0] !== '') {
