@@ -264,8 +264,7 @@ class Base extends Handler
      */
     protected function setContextError($step, $message)
     {
-        $pos = count($this->getContext("errors.$step"));
-        $pos++;
+        $pos = count($this->getContext("errors.$step")) + 1;
         $this->setContext("errors.$step.$pos", $message);
     }
 
@@ -317,7 +316,7 @@ class Base extends Handler
         $model = Container::get('gplcart\\core\\models\\Country');
 
         $rows = $placeholders = array();
-        foreach ($model->getIso() as $code => $country) {
+        foreach ((array) $model->getIso() as $code => $country) {
             $placeholders[] = '(?,?,?,?,?)';
             $native_name = isset($country['native_name']) ? $country['native_name'] : $country['name'];
             $rows = array_merge($rows, array(0, $country['name'], $code, $native_name, serialize(array())));
