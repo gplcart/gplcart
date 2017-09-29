@@ -230,7 +230,7 @@ class Install extends CliController
             $this->validateInputLanguageInstall();
         } else {
             $this->langcode = (string) $selected;
-            $this->language->setLangcode($this->langcode);
+            $this->language->set($this->langcode, null);
         }
     }
 

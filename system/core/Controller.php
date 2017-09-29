@@ -417,11 +417,11 @@ abstract class Controller
     protected function setLanguageProperties()
     {
         if (empty($this->current_route['internal'])) {
-            $this->langcode = $this->route->getLangcode();
-            if ($this->langcode) {
+            $langcode = $this->route->getLangcode();
+            if ($langcode) {
+                $this->language->set($langcode, $this->current_route['simple_pattern']);
+                $this->langcode = $this->language->getLangcode();
                 $this->current_language = $this->language->get($this->langcode);
-                $this->language->setLangcode($this->langcode);
-                $this->language->setContext($this->current_route['simple_pattern']);
             }
         }
     }

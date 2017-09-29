@@ -50,6 +50,29 @@ class Language extends Model
     }
 
     /**
+     * Set up a language
+     * @param string|null $langcode
+     * @param string|null $context
+     * @return bool
+     */
+    public function set($langcode, $context)
+    {
+        $result = null;
+        $this->hook->attach('language.set.before', $langcode, $context, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
+        $this->setContext($context);
+        $this->setLangcode($langcode);
+        $result = $this->prepareFiles($langcode);
+
+        $this->hook->attach('language.set.after', $langcode, $context, $result, $this);
+        return (bool) $result;
+    }
+
+    /**
      * Sets the current translation context
      * @param string $context
      * @return $this
@@ -57,6 +80,17 @@ class Language extends Model
     public function setContext($context)
     {
         $this->context = $context;
+        return $this;
+    }
+
+    /**
+     * Set a language code
+     * @param string $langcode
+     * @return $this
+     */
+    public function setLangcode($langcode)
+    {
+        $this->langcode = $langcode;
         return $this;
     }
 
@@ -76,16 +110,6 @@ class Language extends Model
     public function getLangcode()
     {
         return $this->langcode;
-    }
-
-    /**
-     * Set a language code
-     * @param string $langcode
-     */
-    public function setLangcode($langcode)
-    {
-        $this->langcode = $langcode;
-        return $this->prepareFiles($langcode);
     }
 
     /**

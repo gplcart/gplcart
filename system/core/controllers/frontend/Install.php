@@ -48,7 +48,7 @@ class Install extends BaseController
     {
         $this->controlAccessInstall();
 
-        $this->language->setLangcode($this->install_language);
+        $this->language->set($this->install_language, null);
 
         $this->setTitleEditInstall();
 
