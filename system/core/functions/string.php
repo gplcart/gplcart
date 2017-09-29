@@ -167,3 +167,21 @@ function gplcart_string_decode($string)
 
     return base64_decode(strtr($string, '-_', '+/'));
 }
+
+/**
+ * Creates a URL slug
+ * @param string $text
+ * @param string $separator
+ * @param string $empty
+ * @return string
+ */
+function gplcart_string_slug($text, $separator = '-', $empty = '')
+{
+    $flip = $separator == '-' ? '_' : '-';
+    $text = preg_replace('![' . preg_quote($flip) . ']+!u', $separator, $text);
+    $text = preg_replace('![^' . preg_quote($separator) . '\pL\pN\s.]+!u', '', mb_strtolower($text));
+    $text = preg_replace('![' . preg_quote($separator) . '\s]+!u', $separator, $text);
+    $text = trim($text, $separator);
+
+    return $text === '' ? $empty : $text;
+}

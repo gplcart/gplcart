@@ -211,7 +211,7 @@ class Alias extends Model
 
         if ($translit) {
             $transliterated = $this->language->translit($alias, $language);
-            $alias = preg_replace('/[^a-z0-9.\-_ ]/', '', strtolower($transliterated));
+            $alias = gplcart_string_slug($transliterated);
         }
 
         $trimmed = mb_strimwidth(str_replace(' ', '-', trim($alias)), 0, 100, '', 'UTF-8');
