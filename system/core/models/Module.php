@@ -97,10 +97,10 @@ class Module extends Model
 
     /**
      * Returns an array of all available modules
-     * @param bool $cache
+     * @param bool|null $cache
      * @return array
      */
-    public function getList($cache = true)
+    public function getList($cache = null)
     {
         return $this->config->getModules($cache);
     }
@@ -135,12 +135,11 @@ class Module extends Model
 
     /**
      * Returns an array of enabled modules
-     * @param bool $cache
      * @return array
      */
-    public function getEnabled($cache = true)
+    public function getEnabled()
     {
-        return $this->config->getEnabledModules($cache);
+        return $this->config->getEnabledModules();
     }
 
     /**
