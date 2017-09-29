@@ -727,6 +727,7 @@ class Language extends Model
             return $result;
         }
 
+        $result = $string;
         if (function_exists('transliterator_transliterate')) {
             $result = transliterator_transliterate('Any-Latin; Latin-ASCII; [\u0100-\u7fff] remove', $string);
         }
