@@ -13,11 +13,13 @@
 <?php echo $this->text('No results'); ?>
 <?php } ?>
 <?php if (!empty($modules)) { ?>
+<?php if($cached) { ?>
 <div class="btn-toolbar actions">
   <a class="btn btn-default" href="<?php echo $this->url('', array('refresh' => 1, 'token' => $_token)); ?>" class="refresh">
     <?php echo $this->text('Clear cache'); ?>
   </a>
 </div>
+<?php } ?>
 <div class="table-responsive">
   <table class="table table-hover modules">
     <thead>

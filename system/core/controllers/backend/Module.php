@@ -68,6 +68,7 @@ class Module extends BackendController
         $this->setPagerLimit();
 
         $this->setData('modules', $this->getListModule());
+        $this->setData('cached', $this->config->hasModuleCache());
         $this->setData('available_modules', $this->module->getList());
 
         $this->outputListModule();

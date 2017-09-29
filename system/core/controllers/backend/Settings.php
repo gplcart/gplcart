@@ -83,7 +83,6 @@ class Settings extends BackendController
     protected function validateEditSettings()
     {
         $this->setSubmitted('settings');
-
         if (!$this->getSubmitted('cron_key')) {
             $this->setSubmitted('cron_key', gplcart_string_random());
         }
@@ -111,6 +110,10 @@ class Settings extends BackendController
 
         foreach ($this->getSubmitted() as $key => $value) {
             $this->config->set($key, $value);
+        }
+
+        if ($this->getSubmitted('module_cache') != $this->config('module_cache', 0)) {
+            $this->config->clearModuleCache();
         }
 
         $this->redirect('', $this->text('Settings have been updated'), 'success');

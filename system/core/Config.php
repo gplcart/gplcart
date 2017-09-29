@@ -215,15 +215,19 @@ class Config
 
     /**
      * Returns an array of all available modules
-     * @param bool $cache
+     * @param bool|null $cache
      * @return array
      */
-    public function getModules($cache = true)
+    public function getModules($cache = null)
     {
         $modules = &gplcart_static('module.list');
 
         if (isset($modules)) {
             return $modules;
+        }
+
+        if (!isset($cache)) {
+            $cache = $this->get('module_cache', 0);
         }
 
         if ($cache && is_file(GC_CONFIG_MODULE)) {
@@ -291,13 +295,22 @@ class Config
      */
     public function clearModuleCache()
     {
-        if (is_file(GC_CONFIG_MODULE)) {
+        if ($this->hasModuleCache()) {
             chmod(GC_CONFIG_MODULE, 0644);
             gplcart_static_clear();
             return unlink(GC_CONFIG_MODULE);
         }
 
         return false;
+    }
+
+    /**
+     * Whether module cache exists
+     * @return bool
+     */
+    public function hasModuleCache()
+    {
+        return is_file(GC_CONFIG_MODULE);
     }
 
     /**
@@ -428,12 +441,11 @@ class Config
 
     /**
      * Returns an array of enabled modules
-     * @param bool $cache
      * @return array
      */
-    public function getEnabledModules($cache = true)
+    public function getEnabledModules()
     {
-        return array_filter($this->getModules($cache), function ($module) {
+        return array_filter($this->getModules(), function ($module) {
             return !empty($module['status']);
         });
     }

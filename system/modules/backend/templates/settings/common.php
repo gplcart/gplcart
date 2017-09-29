@@ -56,6 +56,22 @@
     </div>
   </div>
   <div class="form-group">
+    <label class="col-md-2 control-label"><?php echo $this->text('Cache modules'); ?></label>
+    <div class="col-md-4">
+      <div class="btn-group" data-toggle="buttons">
+        <label class="btn btn-default<?php echo empty($settings['module_cache']) ? '' : ' active'; ?>">
+          <input name="settings[module_cache]" type="radio" autocomplete="off" value="1"<?php echo empty($settings['module_cache']) ? '' : ' checked'; ?>><?php echo $this->text('Enabled'); ?>
+        </label>
+        <label class="btn btn-default<?php echo empty($settings['module_cache']) ? ' active' : ''; ?>">
+          <input name="settings[module_cache]" type="radio" autocomplete="off" value="0"<?php echo empty($settings['module_cache']) ? ' checked' : ''; ?>><?php echo $this->text('Disabled'); ?>
+        </label>
+      </div>
+      <div class="help-block">
+        <?php echo $this->text('If enabled, all module data will be cached which gives some performance boost for a large number of modules. Remember that you have to clear the cache each time when you add/remove a module from disk or edit its code/settings. Not recommended for development'); ?>
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
     <label class="col-md-2 control-label"><?php echo $this->text('Compress JS'); ?></label>
     <div class="col-md-4">
       <div class="btn-group" data-toggle="buttons">
