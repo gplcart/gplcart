@@ -10,7 +10,6 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Model;
-use gplcart\core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to countries
@@ -19,19 +18,11 @@ class Country extends Model
 {
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
+     * Constructor
      */
-    protected $language;
-
-    /**
-     * @param LanguageModel $language
-     */
-    public function __construct(LanguageModel $language)
+    public function __construct()
     {
         parent::__construct();
-
-        $this->language = $language;
     }
 
     /**
@@ -94,6 +85,21 @@ class Country extends Model
     }
 
     /**
+     * Returns a string containing default address template
+     * @return string
+     */
+    public function getDefaultAddressTemplate()
+    {
+        $parts = array("%first_name|mb_strtoupper %last_name|mb_strtoupper");
+        $parts[] = "%address_2|mb_strtoupper";
+        $parts[] = "%address_1|mb_strtoupper";
+        $parts[] = "%postcode|mb_strtoupper";
+        $parts[] = "%country|mb_strtoupper";
+
+        return implode(PHP_EOL, $parts);
+    }
+
+    /**
      * Returns the default country format
      * @return array
      */
@@ -104,10 +110,6 @@ class Country extends Model
         if (!isset($format)) {
             $format = require GC_CONFIG_COUNTRY_FORMAT;
         }
-
-        array_walk($format, function(&$item) {
-            $item['name'] = $this->language->text($item['name']);
-        });
 
         return $format;
     }
@@ -199,23 +201,6 @@ class Country extends Model
         $result = $this->db->fetchColumn($sql, array($code));
 
         return empty($result);
-    }
-
-    /**
-     * Returns an array of country names
-     * @param boolean $enabled
-     * @return array
-     */
-    public function getNames($enabled = false)
-    {
-        $countries = (array) $this->getList(array('status' => $enabled));
-
-        $names = array();
-        foreach ($countries as $code => $country) {
-            $names[$code] = $country['native_name'];
-        }
-
-        return $names;
     }
 
     /**
