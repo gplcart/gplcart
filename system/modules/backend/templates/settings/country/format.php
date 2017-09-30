@@ -26,6 +26,7 @@
           <th><?php echo $this->text('Name'); ?></th>
           <th><?php echo $this->text('Enabled'); ?></th>
           <th><?php echo $this->text('Required'); ?></th>
+          <th><?php echo $this->text('Template placeholder'); ?></th>
           <th><?php echo $this->text('Weight'); ?></th>
         </tr>
       </thead>
@@ -49,6 +50,7 @@
             <input type="checkbox" name="format[<?php echo $name; ?>][required]" value="1"<?php echo empty($item['required']) ? '' : ' checked'; ?><?php echo $access_actions ? '' : ' disabled'; ?>>
             <?php } ?>
           </td>
+          <td class="middle">%<?php echo $this->e($name); ?></td>
           <td class="middle">
             <?php if ($access_actions) { ?>
               <i class="fa fa-arrows handle"></i>

@@ -67,7 +67,7 @@
       <div class="help-block">
         <?php echo $this->error('name'); ?>
         <div class="text-muted">
-          <?php echo $this->text('Official currency name in english'); ?> <?php echo $this->text('Template placeholder: %name', array('%name' => '%name')); ?>
+          <?php echo $this->text('Official currency name in english'); ?> <?php echo $this->text('Template placeholder'); ?>: %name
         </div>
       </div>
     </div>
@@ -79,7 +79,7 @@
       <div class="help-block">
         <?php echo $this->error('code'); ?>
         <div class="text-muted">
-          <?php echo $this->text('Three-letter upper-case code according to ISO 4217 standard, e.g USD'); ?> <?php echo $this->text('Template placeholder: %name', array('%name' => '%code')); ?>
+          <?php echo $this->text('Three-letter upper-case code according to ISO 4217 standard, e.g USD'); ?> <?php echo $this->text('Template placeholder'); ?>: %code
         </div>
       </div>
     </div>
@@ -91,7 +91,7 @@
       <div class="help-block">
         <?php echo $this->error('symbol'); ?>
         <div class="text-muted">
-          <?php echo $this->text('Sign of the currency, e.g $.'); ?> <?php echo $this->text('Template placeholder: %name', array('%name' => '%symbol')); ?>
+          <?php echo $this->text('Sign of the currency, e.g $.'); ?> <?php echo $this->text('Template placeholder'); ?>: %symbol
         </div>
       </div>
     </div>
@@ -103,7 +103,7 @@
       <div class="help-block">
         <?php echo $this->error('numeric_code'); ?>
         <div class="text-muted">
-          <?php echo $this->text('Numeric code according to ISO 4217 standard.'); ?> <?php echo $this->text('Template placeholder: %name', array('%name' => '%numeric_code')); ?>
+          <?php echo $this->text('Numeric code according to ISO 4217 standard.'); ?> <?php echo $this->text('Template placeholder'); ?>: %numeric_code
         </div>
       </div>
     </div>
@@ -115,7 +115,7 @@
       <div class="help-block">
         <?php echo $this->error('major_unit'); ?>
         <div class="text-muted">
-          <?php echo $this->text('Name of the highest valued currency unit, e.g Dollar.'); ?> <?php echo $this->text('Template placeholder: %name', array('%name' => '%major_unit')); ?>
+          <?php echo $this->text('Name of the highest valued currency unit, e.g Dollar.'); ?> <?php echo $this->text('Template placeholder'); ?>: %major_unit
         </div>
       </div>
     </div>
@@ -127,7 +127,7 @@
       <div class="help-block">
         <?php echo $this->error('minor_unit'); ?>
         <div class="text-muted">
-          <?php echo $this->text("Name of the lowest valued currency unit. Usually it's 1/100 of the major unit, e.g Cent."); ?> <?php echo $this->text('Template placeholder: %name', array('%name' => '%minor_unit')); ?>
+          <?php echo $this->text("Name of the lowest valued currency unit. Usually it's 1/100 of the major unit, e.g Cent."); ?> <?php echo $this->text('Template placeholder'); ?>: %minor_unit
         </div>
       </div>
     </div>
