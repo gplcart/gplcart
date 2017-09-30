@@ -56,12 +56,7 @@ class Library
     public function get($library_id)
     {
         $libraries = $this->getList();
-
-        if (empty($libraries[$library_id])) {
-            return array();
-        }
-
-        return $libraries[$library_id];
+        return empty($libraries[$library_id]) ? array() : $libraries[$library_id];
     }
 
     /**
@@ -381,6 +376,7 @@ class Library
 
             $prepared = array_merge($prepared, $library['files']);
         }
+
         return $prepared;
     }
 
