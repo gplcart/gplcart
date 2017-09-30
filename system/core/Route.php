@@ -9,9 +9,9 @@
 
 namespace gplcart\core;
 
+use Exception;
 use gplcart\core\helpers\Url as UrlHelper,
     gplcart\core\helpers\Request as RequestHelper;
-use Exception;
 use gplcart\core\exceptions\Route as RouteException;
 
 /**
