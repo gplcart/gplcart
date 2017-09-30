@@ -754,6 +754,12 @@ class Language extends Model
         $result = $string;
         if (function_exists('transliterator_transliterate')) {
             $result = transliterator_transliterate('Any-Latin; Latin-ASCII; [\u0100-\u7fff] remove', $string);
+        } else if (function_exists('iconv')) {
+            $result = iconv('UTF-8', 'ASCII//IGNORE//TRANSLIT', $string);
+        }
+
+        if (trim($result) === '') {
+            $result = $string;
         }
 
         $this->hook->attach('language.translit.after', $string, $language, $result, $this);
