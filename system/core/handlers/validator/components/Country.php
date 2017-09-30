@@ -71,12 +71,13 @@ class Country extends ComponentValidator
         $this->validateNameComponent();
         $this->validateNativeNameCountry();
         $this->validateZoneCountry();
+        $this->validateTemplateCountry();
 
         return $this->getResult();
     }
 
     /**
-     * Validates a country to be updated
+     * Validates the country to be updated
      * @return boolean|null
      */
     protected function validateCountry()
@@ -123,6 +124,7 @@ class Country extends ComponentValidator
             $this->setErrorUnavailable($field, $label);
             return false;
         }
+
         return true;
     }
 
@@ -144,6 +146,29 @@ class Country extends ComponentValidator
             $this->setErrorLengthRange($field, $label);
             return false;
         }
+
+        return true;
+    }
+
+    /**
+     * Validates country address template
+     * @return boolean
+     */
+    protected function validateTemplateCountry()
+    {
+        $field = 'template';
+        $label = $this->language->text('Address template');
+        $template = $this->getSubmitted($field);
+
+        if ($this->isUpdating() && !isset($template)) {
+            return null;
+        }
+
+        if (empty($template)) {
+            $this->setErrorRequired($field, $label);
+            return false;
+        }
+
         return true;
     }
 

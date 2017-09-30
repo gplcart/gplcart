@@ -54,7 +54,7 @@ class Address extends Model
         }
 
         $sql = 'SELECT a.*, c.name AS country_name,'
-                . ' c.native_name AS country_native_name,'
+                . ' c.native_name AS country_native_name, c.template AS country_address_template,'
                 . ' c.format AS country_format, c.zone_id AS country_zone_id,'
                 . ' s.name AS state_name, s.zone_id AS state_zone_id,'
                 . ' ci.name AS city_name, ci.zone_id AS city_zone_id'
@@ -124,8 +124,8 @@ class Address extends Model
     {
         $sql = 'SELECT a.*, CONCAT_WS(" ", a.first_name, a.middle_name, a.last_name) AS full_name,'
                 . ' u.email AS user_email, u.name AS user_name,'
-                . ' ci.city_id, COALESCE(ci.name, a.city_id) AS city_name,'
-                . ' c.name AS country_name, ci.status AS city_status,'
+                . ' ci.city_id, COALESCE(ci.name, a.city_id) AS city_name, ci.status AS city_status,'
+                . ' c.name AS country_name, c.template AS country_address_template,'
                 . ' c.native_name AS country_native_name, c.format AS country_format, c.status AS country_status,'
                 . ' s.name AS state_name, s.status AS state_status';
 
@@ -299,6 +299,28 @@ class Address extends Model
         }
 
         return array_filter($results);
+    }
+
+    /**
+     * Returns formatted address
+     * @param integer|array $address
+     * @return string
+     */
+    public function getFormatted($address)
+    {
+        if (!is_array($address)) {
+            $address = $this->get($address);
+        }
+
+        if (empty($address)) {
+            return '';
+        }
+
+        if (empty($address['country_address_template'])) {
+            $address['country_address_template'] = $this->country->getDefaultAddressTemplate();
+        }
+
+        return gplcart_string_render($address['country_address_template'], $address);
     }
 
     /**

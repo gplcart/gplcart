@@ -67,25 +67,6 @@ function gplcart_string_equals($str1, $str2)
 }
 
 /**
- * Replaces placeholders in the string
- * @param string $pattern
- * @param array $placeholders
- * @param array $data
- * @return string
- */
-function gplcart_string_replace($pattern, array $placeholders, array $data)
-{
-    $pairs = array();
-    foreach ($placeholders as $placeholder => $key) {
-        if (isset($data[$key]) && !is_array($data[$key])) {
-            $pairs[$placeholder] = $data[$key];
-        }
-    }
-
-    return strtr($pattern, $pairs);
-}
-
-/**
  * Splits a text by new lines
  * @param string $string
  * @return array
@@ -118,6 +99,25 @@ function gplcart_string_format($string, array $arguments = array())
     }
 
     return strtr($string, $arguments);
+}
+
+/**
+ * Replaces placeholders in the string
+ * @param string $pattern
+ * @param array $placeholders
+ * @param array $data
+ * @return string
+ */
+function gplcart_string_replace($pattern, array $placeholders, array $data)
+{
+    $pairs = array();
+    foreach ($placeholders as $placeholder => $key) {
+        if (isset($data[$key]) && !is_array($data[$key])) {
+            $pairs[$placeholder] = $data[$key];
+        }
+    }
+
+    return strtr($pattern, $pairs);
 }
 
 /**
@@ -184,4 +184,42 @@ function gplcart_string_slug($text, $separator = '-', $empty = '')
     $text = trim($text, $separator);
 
     return $text === '' ? $empty : $text;
+}
+
+/**
+ * Replaces variables in a string and applies optional "filter" functions
+ * Example: %name|strtoupper will be replaced with NAME
+ * @param string $text
+ * @param array $data
+ * @param string $varprefix
+ * @return string
+ */
+function gplcart_string_render($text, array $data, $varprefix = '%')
+{
+    $functions = array();
+    foreach (preg_split('/[\s]+/', $text) as $string) {
+
+        $string = trim($string);
+        if (strpos($string, $varprefix) !== 0 || strpos($string, '|') === false) {
+            continue;
+        }
+
+        $function = substr($string, strrpos($string, '|') + 1);
+        if (!empty($function) && function_exists($function)) {
+            $placeholder = substr($string, 0, -strlen($function) - 1);
+            $functions[$placeholder] = $function;
+        }
+    }
+
+    foreach ($data as $key => $replace) {
+        $search = "$varprefix$key";
+        if (isset($functions["$varprefix$key"])) {
+            $search .= "|{$functions["$varprefix$key"]}";
+            $replace = $functions["$varprefix$key"]($replace);
+        }
+
+        $text = str_replace($search, $replace, $text);
+    }
+
+    return trim(preg_replace('/(\s)\s+/', '\\1', $text));
 }

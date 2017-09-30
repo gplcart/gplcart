@@ -166,6 +166,7 @@ class Country extends BackendController
         $this->setData('country', $this->data_country);
         $this->setData('zones', $this->getZonesCountry());
         $this->setData('can_delete', $this->canDeleteCountry());
+        $this->setData('default_address_template', $this->country->getDefaultAddressTemplate());
 
         $this->submitEditCountry();
         $this->outputEditCountry();
@@ -276,8 +277,7 @@ class Country extends BackendController
     protected function setTitleEditCountry()
     {
         if (isset($this->data_country['name'])) {
-            $vars = array('%name' => $this->data_country['name']);
-            $title = $this->text('Edit %name', $vars);
+            $title = $this->text('Edit %name', array('%name' => $this->data_country['name']));
         } else {
             $title = $this->text('Add country');
         }
@@ -387,6 +387,11 @@ class Country extends BackendController
         $breadcrumbs[] = array(
             'url' => $this->url('admin/settings/country'),
             'text' => $this->text('Countries')
+        );
+        
+        $breadcrumbs[] = array(
+            'url' => $this->url("admin/settings/country/edit/{$this->data_country['code']}"),
+            'text' => $this->text('Edit %name', array('%name' => $this->data_country['name']))
         );
 
         $this->setBreadcrumbs($breadcrumbs);

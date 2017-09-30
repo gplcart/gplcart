@@ -314,15 +314,16 @@ class Base extends Handler
     {
         /* @var $model \gplcart\core\models\Country */
         $model = Container::get('gplcart\\core\\models\\Country');
+        $template = $model->getDefaultAddressTemplate();
 
         $rows = $placeholders = array();
         foreach ((array) $model->getIso() as $code => $country) {
-            $placeholders[] = '(?,?,?,?,?)';
+            $placeholders[] = '(?,?,?,?,?,?)';
             $native_name = isset($country['native_name']) ? $country['native_name'] : $country['name'];
-            $rows = array_merge($rows, array(0, $country['name'], $code, $native_name, serialize(array())));
+            $rows = array_merge($rows, array(0, $country['name'], $code, $native_name, $template, serialize(array())));
         }
 
-        $sql = 'INSERT INTO country (status, name, code, native_name, format) VALUES ' . implode(',', $placeholders);
+        $sql = 'INSERT INTO country (status, name, code, native_name, template, format) VALUES ' . implode(',', $placeholders);
         $this->db->run($sql, $rows);
     }
 
