@@ -132,8 +132,7 @@ class Account extends FrontendController
      */
     protected function setDataPanelSummaryOrderAccount()
     {
-        $data = array('order' => $this->data_order);
-        $this->setData('summary', $this->render('account/order/summary', $data));
+        $this->setData('summary', $this->render('account/order/summary', array('order' => $this->data_order)));
     }
 
     /**
@@ -158,8 +157,7 @@ class Account extends FrontendController
      */
     protected function setDataPanelShippingAddressOrderAccount()
     {
-        $data = array('order' => $this->data_order);
-        $html = $this->render('account/order/shipping_address', $data);
+        $html = $this->render('account/order/shipping_address', array('order' => $this->data_order));
         $this->setData('shipping_address', $html);
     }
 
@@ -168,8 +166,7 @@ class Account extends FrontendController
      */
     protected function setDataPanelPaymentAddressOrderAccount()
     {
-        $data = array('order' => $this->data_order);
-        $html = $this->render('account/order/payment_address', $data);
+        $html = $this->render('account/order/payment_address', array('order' => $this->data_order));
         $this->setData('payment_address', $html);
     }
 
@@ -178,8 +175,7 @@ class Account extends FrontendController
      */
     protected function setTitleOrderAccount()
     {
-        $vars = array('@order_id' => $this->data_order['order_id']);
-        $this->setTitle($this->text('Order #@order_id', $vars));
+        $this->setTitle($this->text('Order #@order_id', array('@order_id' => $this->data_order['order_id'])));
     }
 
     /**
