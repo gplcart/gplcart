@@ -9,7 +9,7 @@
 return array(
     'help' => array(
         'handlers' => array(
-            'process' => array('gplcart\\core\\CliController', 'help')
+            'controller' => array('gplcart\\core\\CliController', 'help')
         ),
         'help' => array(
             'description' => /* @text */'Displays all available commands'
@@ -17,15 +17,15 @@ return array(
     ),
     'install' => array(
         'handlers' => array(
-            'process' => array('gplcart\\core\\controllers\\cli\\Install', 'wizardInstall')
+            'controller' => array('gplcart\\core\\controllers\\cli\\Install', 'wizardInstall')
         ),
         'help' => array(
-            'description' => /* @text */'Performs full system installation. Simple step-by-step wizard, has no options'
+            'description' => /* @text */'Performs full system installation. Simple step-by-step wizard without options'
         )
     ),
     'install-fast' => array(
         'handlers' => array(
-            'process' => array('gplcart\\core\\controllers\\cli\\Install', 'fastInstall')
+            'controller' => array('gplcart\\core\\controllers\\cli\\Install', 'fastInstall')
         ),
         'help' => array(
             'description' => /* @text */'Allows to perform full system installation at once',
