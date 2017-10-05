@@ -9,6 +9,7 @@
 
 namespace gplcart\core;
 
+use Exception;
 use gplcart\core\helpers\Url as UrlHelper,
     gplcart\core\helpers\Session as SessionHelper;
 
@@ -62,7 +63,7 @@ class Facade
     public function routeCli()
     {
         if (!$this->config->get('cli_status', 1)) {
-            exit('CLI access is disabled!');
+            throw new Exception('CLI access is disabled!');
         }
 
         /* @var $route \gplcart\core\CliRoute */
