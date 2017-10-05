@@ -55,7 +55,7 @@ return array(
     ),
     'product/(\d+)' => array(
         'handlers' => array(
-            'alias' => array('gplcart\\core\\Route', 'findEntityAlias'),
+            'alias' => array('gplcart\\core\\Route', 'findAlias'),
             'controller' => array('gplcart\\core\\controllers\\frontend\\Product', 'indexProduct')
         )
     ),
@@ -71,7 +71,7 @@ return array(
     ),
     'page/(\d+)' => array(
         'handlers' => array(
-            'alias' => array('gplcart\\core\\Route', 'findEntityAlias'),
+            'alias' => array('gplcart\\core\\Route', 'findAlias'),
             'controller' => array('gplcart\\core\\controllers\\frontend\\Page', 'indexPage')
         )
     ),
@@ -102,7 +102,7 @@ return array(
     ),
     'category/(\d+)' => array(
         'handlers' => array(
-            'alias' => array('gplcart\\core\\Route', 'findEntityAlias'),
+            'alias' => array('gplcart\\core\\Route', 'findAlias'),
             'controller' => array('gplcart\\core\\controllers\\frontend\\Category', 'indexCategory')
         )
     ),
