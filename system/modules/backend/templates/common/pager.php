@@ -13,6 +13,7 @@
   <?php if (!empty($pager['prev'])) { ?>
   <li><a rel="prev" href="<?php echo $this->e($pager['prev']); ?>">&laquo; <?php echo $this->text('Previous'); ?></a></li>
   <?php } ?>
+  <?php if(empty($options['mini'])) { ?>
   <?php foreach ($pager['pages'] as $page) { ?>
   <?php if (empty($page['url'])) { ?>
   <li class="disabled"><span><?php echo $page['num']; ?></span></li>
@@ -20,6 +21,7 @@
   <li class="<?php echo empty($page['is_current']) ? '' : 'active'; ?>">
     <a href="<?php echo $page['url']; ?>"><?php echo $page['num']; ?></a>
   </li>
+  <?php } ?>
   <?php } ?>
   <?php } ?>
   <?php if (!empty($pager['next'])) { ?>
