@@ -231,9 +231,8 @@ class Route
      * @param array|null $alias
      * @throws RouteException
      */
-    public function findEntityAlias($path, $pattern, $alias)
+    public function findAlias($path, $pattern, $alias)
     {
-
         if (!empty($alias['id_key']) && !empty($alias['id_value'])) {
             $entity = substr($alias['id_key'], 0, -3);
             if (strpos($pattern, "$entity/") === 0) {
@@ -243,7 +242,7 @@ class Route
         }
 
         if (!isset($alias)) {
-            $arguments = gplcart_parse_path($path, $pattern);
+            $arguments = gplcart_path_parse($path, $pattern);
             if (is_array($arguments)) {
                 $entity_id = reset($arguments);
                 $entity = strtok($pattern, '/') . '_id';
@@ -308,7 +307,7 @@ class Route
             }
 
             $path = empty($this->path) ? '/' : $this->path;
-            $arguments = gplcart_parse_path($path, $pattern);
+            $arguments = gplcart_path_parse($path, $pattern);
 
             if (is_array($arguments)) {
                 $this->call($pattern, $arguments);
