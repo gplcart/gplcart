@@ -106,14 +106,14 @@ class Trigger extends ComponentValidator
         }
 
         $errors = $modified = array();
+        $submitted = $this->getSubmitted();
         $operators = $this->condition->getOperators();
         $prepared_operators = array_map('htmlspecialchars', array_keys($operators));
 
         foreach ($value as $line => $condition) {
 
             $line++;
-            $condition = trim($condition);
-            $parts = array_map('trim', explode(' ', $condition));
+            $parts = explode(' ', preg_replace('/\s+/', ' ', trim($condition)));
 
             $condition_id = array_shift($parts);
             $operator = array_shift($parts);
@@ -136,11 +136,10 @@ class Trigger extends ComponentValidator
                 continue;
             }
 
-            $data = $this->getSubmitted();
             $parameters = array_unique($parameters);
             $handlers = $this->condition->getHandlers();
             $result = Handler::call($handlers, $condition_id, 'validate', array(
-                        $parameters, $operator, $condition_id, $data));
+                        $parameters, $operator, $condition_id, $submitted));
 
             if ($result !== true) {
                 $error = empty($result) ? $this->language->text('Failed validation') : (string) $result;

@@ -100,7 +100,8 @@ class Image extends ComponentValidator
         $modified = $errors = array();
         foreach ($actions as $line => $action) {
 
-            $parts = array_map('trim', explode(' ', trim($action)));
+            $parts = explode(' ', preg_replace('/\s+/', ' ', trim($action)));
+
             $action_id = array_shift($parts);
             $value = array_filter(explode(',', implode('', $parts)));
 
