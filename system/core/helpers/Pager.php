@@ -55,7 +55,7 @@ class Pager
      * @param int $limit_pages
      * @return $this
      */
-    public function setMaxPagesToShow($limit_pages)
+    public function setMaxPages($limit_pages)
     {
         $this->limit_pages = $limit_pages;
         return $this;
