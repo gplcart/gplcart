@@ -1,8 +1,8 @@
 # Prevent direct access to files
-<FilesMatch "\.(htaccess|htpasswd|ini|fla|psd|log|sh|c|twig|exe|cache|json)$">
+<FilesMatch "^\.|\.(ini|fla|psd|log|sh|c|twig|exe|cache|json|yml)$|^(gplcart)$">
     Order Allow,Deny
     Deny from all
-</FilesMatch>
+</FilesMatch> 
 
 # Prevent directory listing
 Options -Indexes
@@ -42,9 +42,6 @@ FileETag None
     # Prevent direct access to .php files
     RewriteCond %{THE_REQUEST} ^.+?\ [^?]+\.php[?\ ]
     RewriteRule \.php$ - [F]
-
-    # Protect hidden directories whose names begin with a period, e.g .git
-    RewriteRule "(^|/)\." - [F]
 
     # Prevent direct access to system files, except module asset folders
     RewriteRule ^system/\w+/\w+/(js|css|image|vendor)/ - [L]
