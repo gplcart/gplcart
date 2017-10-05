@@ -375,16 +375,16 @@ abstract class Controller
         $this->user = Container::get('gplcart\\core\\models\\User');
         $this->store = Container::get('gplcart\\core\\models\\Store');
         $this->image = Container::get('gplcart\\core\\models\\Image');
+        $this->filter = Container::get('gplcart\\core\\models\\Filter');
         $this->language = Container::get('gplcart\\core\\models\\Language');
         $this->validator = Container::get('gplcart\\core\\models\\Validator');
-        $this->filter = Container::get('gplcart\\core\\models\\Filter');
 
         $this->url = Container::get('gplcart\\core\\helpers\\Url');
+        $this->asset = Container::get('gplcart\\core\\helpers\\Asset');
+        $this->pager = Container::get('gplcart\\core\\helpers\\Pager');
+        $this->session = Container::get('gplcart\\core\\helpers\\Session');
         $this->request = Container::get('gplcart\\core\\helpers\\Request');
         $this->response = Container::get('gplcart\\core\\helpers\\Response');
-        $this->asset = Container::get('gplcart\\core\\helpers\\Asset');
-        $this->session = Container::get('gplcart\\core\\helpers\\Session');
-        $this->pager = Container::get('gplcart\\core\\helpers\\Pager');
         $this->compressor = Container::get('gplcart\\core\\helpers\\Compressor');
 
         $this->hook = Container::get('gplcart\\core\\Hook');
@@ -476,9 +476,10 @@ abstract class Controller
     protected function setDefaultAssets()
     {
         if (empty($this->current_route['internal'])) {
-            $this->addAssetLibrary('jquery', array('aggregate' => false));
-            $this->setJs('files/assets/system/js/common.js', array('aggregate' => false));
-            $this->setCss('files/assets/system/css/common.css', array('aggregate' => false));
+            $options = array('aggregate' => false);
+            $this->addAssetLibrary('jquery', $options);
+            $this->setJs('files/assets/system/js/common.js', $options);
+            $this->setCss('files/assets/system/css/common.css', $options);
         }
     }
 
@@ -575,7 +576,7 @@ abstract class Controller
     }
 
     /**
-     * Prints and/or returns JS array code with translations
+     * Prints and/or returns JS array with translations
      * @param string|array $strings
      * @param bool $print
      * @return string
@@ -868,10 +869,12 @@ abstract class Controller
      * @param string $file
      * @param array $data
      * @param boolean $merge
+     * @param string $default
      * @return string
      */
-    public function render($file, array $data = array(), $merge = true)
+    public function render($file, $data = array(), $merge = true, $default = '')
     {
+        settype($data, 'array');
         $templates = $this->getTemplateFiles($file);
 
         if ($merge) {
@@ -891,10 +894,8 @@ abstract class Controller
             $template = "$overridden.php";
         } else if (is_file("$original.php")) {
             $template = "$original.php";
-        }
-
-        if (empty($template)) {
-            return '';
+        } else {
+            return $default;
         }
 
         $rendered = $this->renderPhpTemplate($template, $data);
@@ -2141,14 +2142,12 @@ abstract class Controller
 
     /**
      * Sets the pager
-     * @param integer $total
-     * @param null|array $query
-     * @param null|integer $limit
+     * @param array $options
      * @return array
      */
-    public function setPager($total, $query = null, $limit = null)
+    public function setPager(array $options)
     {
-        $this->data['_pager'] = $this->getPager($total, $query, $limit);
+        $this->data['_pager'] = $this->getPager($options);
         return $this->getPagerLimit();
     }
 
@@ -2168,60 +2167,56 @@ abstract class Controller
      */
     public function setPagerLimit($limit = null)
     {
-        return $this->limit = $this->setPager($this->total, $this->query_filter, $limit);
-    }
-
-    /**
-     * Returns a rendered pager
-     * @param integer $total
-     * @param null|array $query
-     * @param null|integer $limit
-     * @param string $key
-     * @return string
-     */
-    public function getPager($total = null, $query = null, $limit = null,
-            $key = 'p')
-    {
-        if (!isset($total)) {
-            $total = (int) $this->total;
-        }
-
-        if (!isset($limit)) {
-            $limit = $this->config('list_limit', 20);
-        }
-
-        if (!isset($query)) {
-            $query = $this->getFilterQuery();
-        }
-
-        return $this->renderPager($total, $query, $limit, $key);
-    }
-
-    /**
-     * Returns a rendered pager
-     * @param integer $total
-     * @param array $query
-     * @param integer $limit
-     * @param string $key
-     * @return string
-     */
-    public function renderPager($total, $query, $limit, $key = 'p')
-    {
-        $data = array(
-            'page' => 1,
-            'limit' => $limit,
-            'total' => $total,
-            'query' => $query
+        $options = array(
+            'total' => $this->total,
+            'query' => $this->query_filter
         );
 
-        if (isset($query[$key])) {
-            $data['page'] = (int) $query[$key];
+        if (isset($limit)) {
+            $options['limit'] = $limit;
         }
 
-        $data['query'][$key] = '%num';
-        $pager = $this->pager->build($data)->get();
+        return $this->limit = $this->setPager($options);
+    }
 
-        return $this->render('common/pager', array('pager' => $pager));
+    /**
+     * Returns a rendered pager
+     * @param array $options
+     * @return string
+     */
+    public function getPager(array $options = array())
+    {
+        $options += array(
+            'total' => $this->total,
+            'query' => $this->getFilterQuery(),
+            'limit' => $this->config('list_limit', 20)
+        );
+
+        return $this->renderPager($options);
+    }
+
+    /**
+     * Returns a rendered pager
+     * @param array $options
+     * @return string
+     */
+    public function renderPager(array $options)
+    {
+        $options += array(
+            'key' => 'p',
+            'page' => 1,
+            'query' => $this->query,
+            'template' => 'common/pager'
+        );
+
+        if (isset($options['query'][$options['key']])) {
+            $options['page'] = (int) $options['query'][$options['key']];
+        }
+
+        $options['query'][$options['key']] = '%num';
+        $pager = $this->pager->build($options)->get();
+
+        return $this->render($options['template'], array('pager' => $pager, 'options' => $options));
     }
 
     /**
