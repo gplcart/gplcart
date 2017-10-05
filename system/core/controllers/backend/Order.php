@@ -404,11 +404,11 @@ class Order extends BackendController
     protected function setDataPanelLogsIndexOrder()
     {
         $total = $this->getTotalLogOrder();
-        $max = $this->config('order_log_limit', 5);
+        $limit = $this->config('order_log_limit', 5);
 
         $data = array(
             'order' => $this->data_order,
-            'pager' => $this->getPager($total, null, $max),
+            'pager' => $this->getPager(array('total' => $total, 'limit' => $limit)),
             'items' => $this->getListLogOrder($this->getPagerLimit())
         );
 
