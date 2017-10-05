@@ -1,20 +1,17 @@
 #!/usr/bin/env php
 <?php
-
 /**
  * @package GPL Cart core
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
-use gplcart\core\Container;
-
 if (PHP_SAPI !== 'cli') {
-    exit('Only CLI access allowed!');
+    throw new \Exception('Only CLI access allowed!');
 }
 
 require 'system/bootstrap.php';
 
 /* @var $facade \gplcart\core\Facade */
-$facade = Container::get('gplcart\\core\\Facade');
+$facade = \gplcart\core\Container::get('gplcart\\core\\Facade');
 $facade->routeCli();
