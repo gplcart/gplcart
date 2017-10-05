@@ -117,7 +117,7 @@ class CliRoute
 
         $this->route = $routes[$command];
 
-        Handler::call($this->route, null, 'process', array($this->arguments));
+        Handler::call($this->route, null, 'controller', array($this->arguments));
         exit('The command was completed incorrectly');
     }
 
