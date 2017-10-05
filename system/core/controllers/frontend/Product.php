@@ -191,8 +191,8 @@ class Product extends FrontendController
     {
         if ($this->config('review_enabled', 1) && !empty($this->data_product['total_reviews'])) {
 
-            $max = (int) $this->config('review_limit', 5);
-            $pager = $this->getPager($this->data_product['total_reviews'], null, $max);
+            $limit = (int) $this->config('review_limit', 5);
+            $pager = $this->getPager(array('total' => $this->data_product['total_reviews'], 'limit' => $limit));
 
             $data = array(
                 'pager' => $pager,
@@ -215,7 +215,7 @@ class Product extends FrontendController
 
             $total = count($products);
             $max = $this->config('recent_pager_limit', 4);
-            $pager = $this->getPager($total, null, $max, 'rcp');
+            $pager = $this->getPager(array('total' => $total, 'limit' => $max, 'key' => 'rcp'));
             $limit = $this->getPagerLimit();
 
             if (!empty($limit)) {
@@ -239,7 +239,7 @@ class Product extends FrontendController
 
             $total = count($products);
             $max = $this->config('related_pager_limit', 4);
-            $pager = $this->getPager($total, null, $max, 'rlp');
+            $pager = $this->getPager(array('total' => $total, 'limit' => $max, 'key' => 'rlp'));
             $limit = $this->getPagerLimit();
 
             if (!empty($limit)) {
