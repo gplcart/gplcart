@@ -349,9 +349,7 @@
                         setModal(data.preview, 'cart-preview', Gplcart.text('Cart'));
                     }
                 },
-                error: function (xhr) {
-                    console.warn(xhr.responseText);
-                }
+                error: function () {}
             });
 
             return false;
@@ -410,9 +408,7 @@
                         submitRemoveFromWishlist(action, data, button);
                     }
                 },
-                error: function (xhr) {
-                    console.warn(xhr.responseText);
-                }
+                error: function () {}
             });
 
             return false;
@@ -496,9 +492,7 @@
 
                     $('[name="add_to_cart"]').prop('disabled', !data.cart_access);
                 },
-                error: function (xhr) {
-                    console.warn(xhr.responseText);
-                },
+                error: function () {},
                 beforeSend: function () {
                     $('[data-field-id]').prop('disabled', true);
                     message.html('<span class="loading">' + Gplcart.text('Checking availability...') + '</span>');
