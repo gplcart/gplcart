@@ -424,9 +424,9 @@ class Image extends Model
      */
     public function urlFromPath($path)
     {
-        $expected = gplcart_file_absolute_path($path);
+        $expected = gplcart_file_absolute($path);
         $query = is_file($expected) ? array('v' => filemtime($expected)) : array();
-        return $this->url->get('files/' . gplcart_relative_path($path), $query, false, true);
+        return $this->url->get('files/' . gplcart_path_relative($path), $query, false, true);
     }
 
 }

@@ -144,13 +144,9 @@ function gplcart_file_csv($file, $data, $del = ",", $en = '"', $limit = 0)
  * @param string $absolute
  * @return string
  */
-function gplcart_file_relative_path($absolute)
+function gplcart_file_relative($absolute)
 {
-    if (strpos($absolute, GC_FILE_DIR) === 0) {
-        return trim(substr($absolute, strlen(GC_FILE_DIR)), '/\\');
-    }
-
-    return $absolute;
+    return gplcart_path_relative($absolute, GC_FILE_DIR);
 }
 
 /**
@@ -158,9 +154,13 @@ function gplcart_file_relative_path($absolute)
  * @param string $path
  * @return string
  */
-function gplcart_file_absolute_path($path)
+function gplcart_file_absolute($path)
 {
-    return strpos($path, GC_FILE_DIR) === 0 ? $path : GC_FILE_DIR . "/$path";
+    if (gplcart_path_starts(GC_FILE_DIR, $path)) {
+        return $path;
+    }
+
+    return GC_FILE_DIR . "/$path";
 }
 
 /**
@@ -189,7 +189,7 @@ function gplcart_file_size($size, $precision = 2)
  * @param string $replace
  * @return string
  */
-function gplcart_file_name_clean($name, $replace = '')
+function gplcart_file_clean($name, $replace = '')
 {
     // Remove unsafe characters
     $safe = preg_replace('/[^0-9a-zA-Z-.,_]/', $replace, $name);

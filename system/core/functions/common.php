@@ -22,7 +22,7 @@ function gplcart_version($major = false)
  * @param string $value
  * @return integer
  */
-function gplcart_to_bytes($value)
+function gplcart_bytes($value)
 {
     $bytes = (int) $value;
     $unit = strtolower(substr($value, -1, 1));
@@ -57,27 +57,17 @@ function gplcart_json_encode($data, $pretty = false)
 }
 
 /**
- * Validates a domain name, e.g domain.com
- * @param string $domain
- * @return boolean
- */
-function gplcart_is_valid_domain($domain)
-{
-    $pattern = '/^(?!\-)'
-            . '(?:[a-zA-Z\d\-]{0,62}[a-zA-Z\d]\.)'
-            . '{1,126}(?!\d+)[a-zA-Z\d]{1,63}$/';
-
-    return (bool) preg_match($pattern, $domain);
-}
-
-/**
- * Whether the path is an absolute server path
+ * Whether the path starts with the given substring
+ * @param string $prefix
  * @param string $path
  * @return bool
  */
-function gplcart_is_absolute_path($path)
+function gplcart_path_starts($prefix, $path)
 {
-    return strpos($path, GC_ROOT_DIR) === 0;
+    $haystack = str_replace('\\', '/', $path);
+    $needle = str_replace('\\', '/', $prefix);
+
+    return strpos($haystack, $needle) === 0;
 }
 
 /**
@@ -86,7 +76,7 @@ function gplcart_is_absolute_path($path)
  * @param string $pattern
  * @return boolean|array
  */
-function gplcart_parse_path($string, $pattern)
+function gplcart_path_parse($string, $pattern)
 {
     $arguments = array();
 
@@ -118,13 +108,23 @@ function gplcart_timezones()
 }
 
 /**
+ * Whether the path is an absolute server path
+ * @param string $path
+ * @return bool
+ */
+function gplcart_path_is_absolute($path)
+{
+    return gplcart_path_starts(GC_ROOT_DIR, $path);
+}
+
+/**
  * Returns an absolute path to the file
  * @param string $file
  * @return string
  */
-function gplcart_absolute_path($file)
+function gplcart_path_absolute($file)
 {
-    if (gplcart_is_absolute_path($file)) {
+    if (gplcart_path_is_absolute($file)) {
         return $file;
     }
 
@@ -133,16 +133,18 @@ function gplcart_absolute_path($file)
 
 /**
  * Converts the file path to a relative path
- * @param string $file
+ * @param string $absolute
  * @return string
  */
-function gplcart_relative_path($file)
+function gplcart_path_relative($absolute, $prefix = GC_ROOT_DIR)
 {
-    if (gplcart_is_absolute_path($file)) {
-        return trim(substr($file, strlen(GC_ROOT_DIR)), '/\\');
+    if (gplcart_path_starts($prefix, $absolute)) {
+        $prefix_normalized = str_replace('\\', '/', $prefix);
+        $absolute_normalized = str_replace('\\', '/', $absolute);
+        return trim(substr($absolute_normalized, strlen($prefix_normalized)), '/\\');
     }
 
-    return $file;
+    return $absolute;
 }
 
 /**

@@ -54,7 +54,7 @@ function gplcart_setup_server()
 function gplcart_setup_php()
 {
     if (GC_CLI) {
-        $bytes = gplcart_to_bytes('1G');
+        $bytes = gplcart_bytes('1G');
         $limit = trim(ini_get('memory_limit'));
         if ($limit != -1 && $bytes < 1024 * 1024 * 1024) {
             ini_set('memory_limit', '1G');

@@ -104,7 +104,7 @@ class File extends Model
         }
 
         if (empty($data['mime_type'])) {
-            $data['mime_type'] = mime_content_type(gplcart_file_absolute_path($data['path']));
+            $data['mime_type'] = mime_content_type(gplcart_file_absolute($data['path']));
         }
 
         if (empty($data['file_type'])) {
@@ -438,7 +438,7 @@ class File extends Model
      */
     public function path($absolute)
     {
-        return gplcart_file_relative_path($absolute);
+        return gplcart_file_relative($absolute);
     }
 
     /**
@@ -463,7 +463,7 @@ class File extends Model
             return false;
         }
 
-        $path = gplcart_file_absolute_path($file['path']);
+        $path = gplcart_file_absolute($file['path']);
         return file_exists($path) ? unlink($path) : false;
     }
 
@@ -665,7 +665,7 @@ class File extends Model
             return true;
         }
 
-        $directory = gplcart_file_absolute_path($this->path($this->destination));
+        $directory = gplcart_file_absolute($this->path($this->destination));
         $pathinfo = $upload ? pathinfo($to) : pathinfo($directory);
 
         if ($upload) {
@@ -725,7 +725,7 @@ class File extends Model
     protected function prepareFileName($filename, $extension)
     {
         $suffix = gplcart_string_random(6);
-        $clean = gplcart_file_name_clean($filename);
+        $clean = gplcart_file_clean($filename);
 
         if ($this->config->get('file_upload_translit', 1)) {
             $clean = $this->language->translit($clean, null);

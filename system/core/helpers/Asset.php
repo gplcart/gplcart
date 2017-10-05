@@ -214,11 +214,11 @@ class Asset
             return $data;
         }
 
-        if (gplcart_is_absolute_path($data['asset'])) {
+        if (gplcart_path_is_absolute($data['asset'])) {
             $data['file'] = $data['asset'];
-            $data['asset'] = gplcart_relative_path($data['asset']);
+            $data['asset'] = gplcart_path_relative($data['asset']);
         } else if ($type !== 'external') {
-            $data['file'] = gplcart_absolute_path($data['asset']);
+            $data['file'] = gplcart_path_absolute($data['asset']);
         }
 
         if (!empty($data['file'])) {

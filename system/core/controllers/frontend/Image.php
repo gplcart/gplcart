@@ -163,7 +163,7 @@ class Image extends FrontendController
      */
     protected function setFileImage()
     {
-        $file = gplcart_file_absolute_path("image/{$this->data_path}");
+        $file = gplcart_file_absolute("image/{$this->data_path}");
 
         if (is_file($file)) {
             $this->data_source_file = $file;

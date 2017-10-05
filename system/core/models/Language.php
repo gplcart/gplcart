@@ -511,7 +511,7 @@ class Language extends Model
      */
     protected function getFilenameFromContext($context)
     {
-        $clean = gplcart_file_name_clean(strtolower(str_replace('/*', '_', "$context")), '-');
+        $clean = gplcart_file_clean(strtolower(str_replace('/*', '_', "$context")), '-');
         return str_replace(array('-_', '_-'), '_', $clean);
     }
 
