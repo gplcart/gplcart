@@ -81,6 +81,7 @@ class Container
     /**
      * Override a class namespace
      * @param string $namespace
+     * @return string
      */
     protected static function override(&$namespace)
     {
@@ -94,6 +95,8 @@ class Container
             $override = end($map[$namespace]);
             $namespace = $override;
         }
+
+        return $namespace;
     }
 
     /**
