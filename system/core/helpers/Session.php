@@ -50,22 +50,6 @@ class Session
     }
 
     /**
-     * Sets a message to be displayed to the user
-     * @param string $message
-     * @param string $type
-     */
-    public function setMessage($message, $type = 'info')
-    {
-        if ($message !== '') {
-            $messages = (array)$this->get("messages.$type", array());
-            if (!in_array($message, $messages)) {
-                $messages[] = $message;
-                $this->set("messages.$type", $messages);
-            }
-        }
-    }
-
-    /**
      * Returns a session data
      * @param string|array $key
      * @param mixed $default
@@ -117,21 +101,36 @@ class Session
     }
 
     /**
+     * Sets a message to be displayed to the user
+     * @param string $message
+     * @param string $type
+     * @param string $key
+     */
+    public function setMessage($message, $type = 'info', $key = 'messages')
+    {
+        if ($message !== '') {
+            $messages = (array) $this->get("$key.$type", array());
+            if (!in_array($message, $messages)) {
+                $messages[] = $message;
+                $this->set("$key.$type", $messages);
+            }
+        }
+    }
+
+    /**
      * Returns messages from the session
      * @param string $type
+     * @param string $key
      * @return string
      */
-    public function getMessage($type = null)
+    public function getMessage($type = null, $key = 'messages')
     {
-        $key = array('messages');
-
         if (isset($type)) {
-            $key[] = $type;
+            $key .= ".$type";
         }
 
         $message = $this->get($key, array());
         $this->delete($key);
-
         return $message;
     }
 
