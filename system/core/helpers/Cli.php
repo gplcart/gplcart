@@ -23,7 +23,7 @@ class Cli
     public function parse($argv)
     {
         if (is_string($argv)) {
-            $argv = array_map('trim', explode(' ', trim($argv)));
+            $argv = explode(' ', preg_replace('/\s+/', ' ', trim($argv)));
         }
 
         array_shift($argv);
