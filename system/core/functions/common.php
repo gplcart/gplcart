@@ -58,11 +58,11 @@ function gplcart_json_encode($data, $pretty = false)
 
 /**
  * Whether the path starts with the given substring
- * @param string $prefix
  * @param string $path
+ * @param string $prefix
  * @return bool
  */
-function gplcart_path_starts($prefix, $path)
+function gplcart_path_starts($path, $prefix)
 {
     $haystack = str_replace('\\', '/', $path);
     $needle = str_replace('\\', '/', $prefix);
@@ -89,46 +89,29 @@ function gplcart_path_parse($string, $pattern)
 }
 
 /**
- * Generates an array of time zones and their local data
- * @return array
- */
-function gplcart_timezones()
-{
-    $zones = array();
-    $timestamp = GC_TIME;
-    $default_timezone = date_default_timezone_get();
-
-    foreach (timezone_identifiers_list() as $zone) {
-        date_default_timezone_set($zone);
-        $zones[$zone] = '(UTC/GMT ' . date('P', $timestamp) . ') ' . $zone;
-    }
-
-    date_default_timezone_set($default_timezone);
-    return $zones;
-}
-
-/**
  * Whether the path is an absolute server path
  * @param string $path
+ * @param string $prefix
  * @return bool
  */
-function gplcart_path_is_absolute($path)
+function gplcart_path_is_absolute($path, $prefix = GC_ROOT_DIR)
 {
-    return gplcart_path_starts(GC_ROOT_DIR, $path);
+    return gplcart_path_starts($path, $prefix);
 }
 
 /**
  * Returns an absolute path to the file
  * @param string $file
+ * @param string $prefix
  * @return string
  */
-function gplcart_path_absolute($file)
+function gplcart_path_absolute($file, $prefix = GC_ROOT_DIR)
 {
-    if (gplcart_path_is_absolute($file)) {
+    if (gplcart_path_is_absolute($file, $prefix)) {
         return $file;
     }
 
-    return GC_ROOT_DIR . "/$file";
+    return "$prefix/$file";
 }
 
 /**
@@ -138,13 +121,23 @@ function gplcart_path_absolute($file)
  */
 function gplcart_path_relative($absolute, $prefix = GC_ROOT_DIR)
 {
-    if (gplcart_path_starts($prefix, $absolute)) {
-        $prefix_normalized = str_replace('\\', '/', $prefix);
-        $absolute_normalized = str_replace('\\', '/', $absolute);
-        return trim(substr($absolute_normalized, strlen($prefix_normalized)), '/\\');
+    if (gplcart_path_starts($absolute, $prefix)) {
+        $prefix_normalized = gplcart_path_normalize($prefix);
+        $absolute_normalized = gplcart_path_normalize($absolute);
+        return trim(substr($absolute_normalized, strlen($prefix_normalized)), '/');
     }
 
     return $absolute;
+}
+
+/**
+ * Converts backward slashes to forward slashes and trims trailing slashes
+ * @param string $path
+ * @return string
+ */
+function gplcart_path_normalize($path)
+{
+    return trim(str_replace('\\', '/', $path), '/');
 }
 
 /**
@@ -171,6 +164,25 @@ function gplcart_settype(&$value, $type, $default)
 
     $value = $default;
     return false;
+}
+
+/**
+ * Generates an array of time zones and their local data
+ * @return array
+ */
+function gplcart_timezones()
+{
+    $zones = array();
+    $timestamp = GC_TIME;
+    $default_timezone = date_default_timezone_get();
+
+    foreach (timezone_identifiers_list() as $zone) {
+        date_default_timezone_set($zone);
+        $zones[$zone] = '(UTC/GMT ' . date('P', $timestamp) . ') ' . $zone;
+    }
+
+    date_default_timezone_set($default_timezone);
+    return $zones;
 }
 
 /**
