@@ -75,7 +75,7 @@ function gplcart_file_delete_recursive($directory)
 function gplcart_file_scan_recursive($directory, &$results = array())
 {
     foreach (scandir($directory) as $file) {
-        $path = $directory . DIRECTORY_SEPARATOR . $file;
+        $path = "$directory/$file";
         if (!is_dir($path)) {
             $results[] = $path;
         } else if ($file != "." && $file != "..") {
@@ -156,7 +156,7 @@ function gplcart_file_relative($absolute)
  */
 function gplcart_file_absolute($path)
 {
-    if (gplcart_path_starts(GC_FILE_DIR, $path)) {
+    if (gplcart_path_starts($path, GC_FILE_DIR)) {
         return $path;
     }
 
@@ -181,6 +181,16 @@ function gplcart_file_size($size, $precision = 2)
     }
 
     return round($size, $precision) . $units[$i];
+}
+
+/**
+ * Formats file permissions
+ * @param string $permissions
+ * @return string
+ */
+function gplcart_file_perms($permissions)
+{
+    return substr(sprintf('%o', $permissions), -4);
 }
 
 /**
