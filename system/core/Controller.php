@@ -1435,18 +1435,23 @@ abstract class Controller
     /**
      * Redirects to a new location
      * @param string $url
-     * @param string $message
-     * @param string $severity
-     * @param boolean $exclude_langcode
+     * @param string $msg
+     * @param string $svt
+     * @param boolean $excl
      */
-    final public function redirect($url = '', $message = '', $severity = 'info',
-            $exclude_langcode = false)
+    public function redirect($url = '', $msg = '', $svt = 'info', $excl = false)
     {
-        if ($message !== '') {
-            $this->setMessage($message, $severity, true);
+        $this->setMessage($msg, $svt, true);
+
+        $parsed = parse_url($url);
+
+        $query = array();
+        if (isset($parsed['query'])) {
+            parse_str($parsed['query'], $query);
         }
 
-        $this->url->redirect($url, array(), false, $exclude_langcode);
+        $full = strpos($url, $this->base) === 0;
+        $this->url->redirect($url, $query, $full, $excl);
     }
 
     /**
@@ -1636,8 +1641,10 @@ abstract class Controller
         }
 
         if ($content !== '' && isset($this->templates["region_$region"])) {
-            $weight = isset($this->data["region_$region"]) ? count($this->data["region_$region"]) : 0;
-            $weight++;
+            $weight = 1;
+            if (isset($this->data["region_$region"])) {
+                $weight = count($this->data["region_$region"]) + 1;
+            }
             $this->data["region_$region"][] = array('rendered' => $content, 'weight' => $weight);
         }
     }
@@ -2039,14 +2046,13 @@ abstract class Controller
      */
     public function setMessage($messages, $severity = 'info', $once = false)
     {
-        settype($messages, 'array');
-
-        foreach (gplcart_array_flatten($messages) as $message) {
-
-            if ($once) {
-                $this->session->setMessage($message, $severity);
-            } else {
-                $this->data['_messages'][$severity][] = $message;
+        if (!empty($messages)) {
+            foreach (gplcart_array_flatten((array) $messages) as $message) {
+                if ($once) {
+                    $this->session->setMessage($message, $severity);
+                } else {
+                    $this->data['_messages'][$severity][] = $message;
+                }
             }
         }
     }
