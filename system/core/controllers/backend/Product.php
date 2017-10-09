@@ -341,8 +341,13 @@ class Product extends BackendController
             return array();
         }
 
-        $options = array('store_id' => $this->data_product['store_id']);
-        $products = $this->product->getRelated($this->data_product['product_id'], true, $options);
+        $options = array(
+            'load' => true,
+            'store_id' => $this->data_product['store_id'],
+            'product_id' => $this->data_product['product_id']
+        );
+
+        $products = $this->product->getRelated($options);
         $this->attachEntityUrl($products, 'product');
 
         return $products;

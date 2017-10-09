@@ -9,6 +9,7 @@
 
 namespace gplcart\core\controllers\frontend;
 
+use gplcart\core\traits\Product as ProductTrait;
 use gplcart\core\models\Sku as SkuModel,
     gplcart\core\models\Review as ReviewModel,
     gplcart\core\models\Rating as RatingModel,
@@ -21,7 +22,7 @@ use gplcart\core\controllers\frontend\Controller as FrontendController;
 class Product extends FrontendController
 {
 
-    use \gplcart\core\traits\Product;
+    use ProductTrait;
 
     /**
      * Product class model instance
@@ -107,7 +108,6 @@ class Product extends FrontendController
     protected function setDataSummaryIndexProduct()
     {
         $summary = '';
-
         if (!empty($this->data_product['description'])) {
             list($summary, $body) = $this->explodeText($this->data_product['description']);
             if ($body !== '') {
@@ -141,17 +141,6 @@ class Product extends FrontendController
      */
     protected function setDataImagesIndexProduct()
     {
-        $options = array(
-            'imagestyle' => $this->configTheme('image_style_product', 6)
-        );
-
-        if (empty($this->data_product['images'])) {
-            $this->data_product['images'][] = array(
-                'thumb' => $this->image->getPlaceholder($options['imagestyle']));
-        } else {
-            $this->setItemThumb($this->data_product, $options);
-        }
-
         $html = $this->render('product/images', array('product' => $this->data_product));
         $this->setData('images', $html);
     }
@@ -438,7 +427,6 @@ class Product extends FrontendController
     protected function prepareProduct(array $product)
     {
         $field_value_ids = array();
-
         if (!empty($product['default_field_values'])) {
             $field_value_ids = $product['default_field_values'];
         }
@@ -450,7 +438,7 @@ class Product extends FrontendController
 
         $this->setItemInComparison($product);
         $this->setItemInWishlist($product);
-
+        $this->setItemThumbProduct($product);
         $this->setItemPriceCalculated($selected);
         $this->setItemPriceFormatted($selected);
 
@@ -459,6 +447,23 @@ class Product extends FrontendController
 
         $this->setProductFieldsTrait($product, $this->product_class, $this);
         return $product;
+    }
+
+    /**
+     * Sets product thumbs
+     * @param array $product
+     */
+    protected function setItemThumbProduct(array &$product)
+    {
+        $options = array(
+            'imagestyle' => $this->configTheme('image_style_product', 6));
+
+        if (empty($product['images'])) {
+            $product['images'][] = array(
+                'thumb' => $this->image->getPlaceholder($options['imagestyle']));
+        } else {
+            $this->setItemThumb($product, $options);
+        }
     }
 
     /**
@@ -489,15 +494,15 @@ class Product extends FrontendController
      */
     protected function getRelatedProduct()
     {
-        $limit = $this->config('related_limit', 12);
-
-        $conditions = array(
+        $options = array(
             'status' => 1,
-            'limit' => array(0, $limit),
-            'store_id' => $this->store_id
+            'load' => true,
+            'store_id' => $this->store_id,
+            'product_id' => $this->data_product['product_id'],
+            'limit' => array(0, $this->config('related_limit', 12))
         );
 
-        $products = (array) $this->product->getRelated($this->data_product['product_id'], true, $conditions);
+        $products = (array) $this->product->getRelated($options);
         return $this->prepareEntityItems($products, array('entity' => 'product'));
     }
 
@@ -507,12 +512,8 @@ class Product extends FrontendController
      */
     protected function getRecentProduct()
     {
-        $limit = $this->config('recent_limit', 12);
-        $lifespan = $this->config('recent_cookie_lifespan', 365 * 24 * 60 * 60);
-        $product_ids = $this->product->setViewed($this->data_product['product_id'], $limit, $lifespan);
-
+        $product_ids = $this->setViewedProduct();
         $current = array_search($this->data_product['product_id'], $product_ids);
-
         unset($product_ids[$current]); // Exclude the current product iD
 
         if (empty($product_ids)) {
@@ -520,6 +521,17 @@ class Product extends FrontendController
         }
 
         return $this->getProducts(array('product_id' => $product_ids));
+    }
+
+    /**
+     * Sets the current product is viewed
+     * @return array
+     */
+    protected function setViewedProduct()
+    {
+        $limit = $this->config('recent_limit', 12);
+        $lifespan = $this->config('recent_cookie_lifespan', 365 * 24 * 60 * 60);
+        return $this->product->setViewed($this->data_product['product_id'], $limit, $lifespan);
     }
 
 }

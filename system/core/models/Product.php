@@ -507,24 +507,28 @@ class Product extends Model
 
     /**
      * Returns an array of related products
-     * @param integer $product_id
-     * @param boolean $load
-     * @param array $data
+     * @param array $options
      * @return array
      */
-    public function getRelated($product_id, $load = false, array $data = array())
+    public function getRelated(array $options)
     {
-        $sql = 'SELECT related_product_id FROM product_related WHERE product_id=?';
+        $options += array('load' => false);
 
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        if (empty($options['product_id'])) {
+            return array();
         }
 
-        $list = $this->db->fetchColumnAll($sql, array($product_id));
+        $sql = 'SELECT related_product_id FROM product_related WHERE product_id=?';
 
-        if (!empty($list) && $load) {
-            $data['product_id'] = $list;
-            $list = $this->getList($data);
+        if (!empty($options['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
+        }
+
+        $list = $this->db->fetchColumnAll($sql, array($options['product_id']));
+
+        if ($list && $options['load']) {
+            $options['product_id'] = $list;
+            $list = $this->getList($options);
         }
 
         return (array) $list;
@@ -537,7 +541,6 @@ class Product extends Model
      */
     public function getList(array $data = array())
     {
-
         $sql = 'SELECT p.*, a.alias, COALESCE(NULLIF(pt.title, ""), p.title) AS title,'
                 . 'pt.language, ps.sku, ps.price, ps.stock, ps.file_id, u.role_id';
 
@@ -745,6 +748,16 @@ class Product extends Model
             $this->sku->delete($data['product_id'], array('combinations' => true));
         }
 
+        return $this->addSkuCombinations($data);
+    }
+
+    /**
+     * Add SKUs for an array of product combinations
+     * @param array $data
+     * @return boolean
+     */
+    protected function addSkuCombinations(array $data)
+    {
         if (empty($data['combination'])) {
             return false;
         }
@@ -761,23 +774,15 @@ class Product extends Model
 
             $this->setCombinationFileId($combination, $data);
 
-            $sku = array(
-                'sku' => $combination['sku'],
-                'store_id' => $data['store_id'],
-                'price' => $combination['price'],
-                'stock' => $combination['stock'],
-                'product_id' => $data['product_id'],
-                'file_id' => $combination['file_id'],
-                'status' => !empty($combination['status']),
-                'is_default' => !empty($combination['is_default']),
-                'combination_id' => $this->sku->getCombinationId($combination['fields'], $data['product_id'])
-            );
+            $combination['store_id'] = $data['store_id'];
+            $combination['product_id'] = $data['product_id'];
+            $combination['combination_id'] = $this->sku->getCombinationId($combination['fields'], $data['product_id']);
 
-            if (empty($sku['sku'])) {
-                $sku['sku'] = $this->sku->generate($data['sku'], array(), array('store_id' => $data['store_id']));
+            if (empty($combination['sku'])) {
+                $combination['sku'] = $this->sku->generate($data['sku'], array(), array('store_id' => $data['store_id']));
             }
 
-            $this->sku->add($sku);
+            $this->sku->add($combination);
         }
 
         return true;
@@ -816,36 +821,7 @@ class Product extends Model
             $this->product_field->delete('option', $data['product_id']);
         }
 
-        if (empty($data['combination'])) {
-            return false;
-        }
-
-        $this->addOptions($data);
-        return true;
-    }
-
-    /**
-     * Adds multiple options
-     * @param array $data
-     */
-    protected function addOptions(array $data)
-    {
-        foreach ($data['combination'] as $combination) {
-
-            if (empty($combination['fields'])) {
-                continue;
-            }
-
-            foreach ($combination['fields'] as $field_id => $field_value_id) {
-                $options = array(
-                    'type' => 'option',
-                    'field_id' => $field_id,
-                    'product_id' => $data['product_id'],
-                    'field_value_id' => $field_value_id
-                );
-                $this->product_field->add($options);
-            }
-        }
+        return $this->addOptions($data);
     }
 
     /**
@@ -864,20 +840,53 @@ class Product extends Model
             $this->product_field->delete('attribute', $data['product_id']);
         }
 
-        if (empty($data['field']['attribute'])) {
+        return $this->addAttributes($data);
+    }
+
+    /**
+     * Adds multiple options
+     * @param array $data
+     * @return boolean
+     */
+    protected function addOptions(array $data)
+    {
+        if (empty($data['combination'])) {
             return false;
         }
 
-        $this->addAttributes($data);
+        foreach ($data['combination'] as $combination) {
+
+            if (empty($combination['fields'])) {
+                continue;
+            }
+
+            foreach ($combination['fields'] as $field_id => $field_value_id) {
+
+                $options = array(
+                    'type' => 'option',
+                    'field_id' => $field_id,
+                    'product_id' => $data['product_id'],
+                    'field_value_id' => $field_value_id
+                );
+
+                $this->product_field->add($options);
+            }
+        }
+
         return true;
     }
 
     /**
      * Adds multiple attributes
      * @param array $data
+     * @return boolean
      */
     protected function addAttributes(array $data)
     {
+        if (empty($data['field']['attribute'])) {
+            return false;
+        }
+
         foreach ($data['field']['attribute'] as $field_id => $field_value_ids) {
             foreach ((array) $field_value_ids as $field_value_id) {
 
@@ -891,6 +900,8 @@ class Product extends Model
                 $this->product_field->add($options);
             }
         }
+
+        return true;
     }
 
     /**
@@ -903,10 +914,10 @@ class Product extends Model
         $dirname = $this->config->get('product_image_dirname', 'product');
 
         if ($absolute) {
-            return GC_IMAGE_DIR . "/$dirname";
+            return gplcart_path_absolute($dirname, GC_IMAGE_DIR);
         }
 
-        return trim(substr(GC_IMAGE_DIR, strlen(GC_FILE_DIR)), '/') . "/$dirname";
+        return trim(substr(GC_IMAGE_DIR, strlen(GC_FILE_DIR)), '\\/') . "/$dirname";
     }
 
 }
