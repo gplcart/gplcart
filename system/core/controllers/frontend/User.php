@@ -155,7 +155,7 @@ class User extends FrontendController
     protected function controlAccessRegisterUser()
     {
         if (!empty($this->uid)) {
-            $this->url->redirect("account/{$this->uid}");
+            $this->redirect("account/{$this->uid}");
         }
     }
 
@@ -245,7 +245,7 @@ class User extends FrontendController
     protected function controlAccessResetPasswordUser()
     {
         if (!empty($this->uid)) {
-            $this->url->redirect("account/{$this->uid}");
+            $this->redirect("account/{$this->uid}");
         }
     }
 
