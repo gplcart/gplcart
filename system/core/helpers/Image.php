@@ -48,6 +48,16 @@ class Image
     protected $height;
 
     /**
+     * Destroy image resource
+     */
+    public function __destruct()
+    {
+        if (is_resource($this->image) && get_resource_type($this->image) === 'gd') {
+            imagedestroy($this->image);
+        }
+    }
+
+    /**
      * Load an image
      * @param string $filename
      * @return $this
@@ -64,25 +74,14 @@ class Image
             throw new InvalidArgumentException("Invalid image: {$this->filename}");
         }
 
-        switch ($info['mime']) {
-            case 'image/gif':
-                $this->image = imagecreatefromgif($this->filename);
-                break;
-            case 'image/jpeg':
-                $this->image = imagecreatefromjpeg($this->filename);
-                break;
-            case 'image/png':
-                $this->image = imagecreatefrompng($this->filename);
-                break;
-        }
-
-        if (!is_resource($this->image)) {
-            throw new InvalidArgumentException('Invalid image: ' . $this->filename);
-        }
-
         $this->width = $info[0];
         $this->height = $info[1];
         $this->format = preg_replace('/^image\//', '', $info['mime']);
+        $this->image = $this->callFunction('imagecreatefrom', $this->format, array($this->filename));
+
+        if (!is_resource($this->image)) {
+            throw new InvalidArgumentException("Failed to create image resource for {$this->filename}");
+        }
 
         imagesavealpha($this->image, true);
         imagealphablending($this->image, true);
@@ -91,13 +90,43 @@ class Image
     }
 
     /**
-     * Destroy image resource
+     * Returns an array of supported image formats
+     * @return array
      */
-    public function __destruct()
+    public function getSupportedFormats()
     {
-        if (is_resource($this->image) && get_resource_type($this->image) === 'gd') {
-            imagedestroy($this->image);
+        static $formats = null;
+
+        if (isset($formats)) {
+            return $formats;
         }
+
+        $formats = array();
+        foreach (gd_info() as $name => $status) {
+            if (strpos($name, 'Support') !== false && $status) {
+                $formats[] = strtolower(strtok($name, ' '));
+            }
+        }
+
+        return $formats = array_unique($formats);
+    }
+
+    /**
+     * Call a function which name is constructed from prefix and image format
+     * @param string $prefix
+     * @param string $format
+     * @param array $arguments
+     * @return mixed
+     * @throws InvalidArgumentException
+     */
+    protected function callFunction($prefix, $format, array $arguments)
+    {
+        $function = "$prefix$format";
+        if (in_array($format, $this->getSupportedFormats()) && function_exists($function)) {
+            return call_user_func_array($function, $arguments);
+        }
+
+        throw new InvalidArgumentException('Unsupported function prefix/image format');
     }
 
     /**
@@ -231,24 +260,20 @@ class Image
             $format = $this->format;
         }
 
-        switch (strtolower($format)) {
-            case 'gif':
-                $result = imagegif($this->image, $filename);
-                break;
-            case 'jpg':
-            case 'jpeg':
-                imageinterlace($this->image, true);
-                $result = imagejpeg($this->image, $filename, round($quality));
-                break;
-            case 'png':
-                $result = imagepng($this->image, $filename, round(9 * $quality / 100));
-                break;
-            default:
-                throw new InvalidArgumentException('Unsupported format');
+        $arguments = array($this->image, $filename);
+
+        if (in_array($format, array('jpg', 'jpeg'))) {
+            $format = 'jpeg';
+            imageinterlace($this->image, true);
+            $arguments = array($this->image, $filename, round($quality));
+        } else if ($format === 'png') {
+            $arguments = array($this->image, $filename, round(9 * $quality / 100));
         }
 
+        $result = $this->callFunction('image', $format, $arguments);
+
         if (empty($result)) {
-            throw new InvalidArgumentException("Unable to save image: $filename");
+            throw new InvalidArgumentException("Unable to save image $filename");
         }
 
         return $this;
