@@ -122,7 +122,7 @@ class Category extends Model
 
         $list = array();
         foreach ($groups as $group) {
-            $list[$group['title']] = $this->getOptionList($group['category_group_id']);
+            $list[$group['title']] = $this->getOptionList(array('category_group_id' => $group['category_group_id']));
         }
 
         return $list;
@@ -130,32 +130,25 @@ class Category extends Model
 
     /**
      * Returns a list of categories to use directly in <select>
-     * @param null|integer $gid
-     * @param integer $pid
-     * @param boolean $hierarchy
+     * @param array $options
      * @return array
      */
-    public function getOptionList($gid = null, $pid = 0, $hierarchy = true)
+    public function getOptionList(array $options)
     {
-        $conditions = array(
-            'status' => 1,
-            'parent_id' => $pid,
-            'category_group_id' => $gid
-        );
-
-        $categories = $this->getTree($conditions);
+        $options += array('status' => 1, 'parent_id' => 0, 'hierarchy' => true);
+        $categories = $this->getTree($options);
 
         if (empty($categories)) {
             return array();
         }
 
-        $options = array();
+        $list = array();
         foreach ($categories as $category) {
-            $title = $hierarchy ? str_repeat('— ', $category['depth']) . $category['title'] : $category['title'];
-            $options[$category['category_id']] = $title;
+            $title = empty($options['hierarchy']) ? $category['title'] : str_repeat('— ', $category['depth']) . $category['title'];
+            $list[$category['category_id']] = $title;
         }
 
-        return $options;
+        return $list;
     }
 
     /**
@@ -275,42 +268,6 @@ class Category extends Model
 
         $this->hook->attach('category.tree', $tree, $this);
         return $tree;
-    }
-
-    /**
-     * Counts number of children for a given category ID
-     * @param integer $category_id
-     * @param array $tree
-     * @return integer
-     */
-    public function countChildren($category_id, $tree)
-    {
-        $children = 0;
-        foreach ($tree as $item) {
-            if ($item['parents'][0] == $category_id) {
-                $children++;
-            }
-        }
-
-        return $children;
-    }
-
-    /**
-     * Returns an array of children for a given category ID
-     * @param integer $category_id
-     * @param array $tree
-     * @return array
-     */
-    public function getChildren($category_id, $tree)
-    {
-        $children = array();
-        foreach ($tree as $item) {
-            if (in_array($category_id, $item['parents'])) {
-                $children[] = $item;
-            }
-        }
-
-        return $children;
     }
 
     /**
@@ -481,7 +438,7 @@ class Category extends Model
         $dirname = $this->config->get('category_image_dirname', 'category');
 
         if ($absolute) {
-            return GC_IMAGE_DIR . "/$dirname";
+            return gplcart_path_absolute($dirname, GC_IMAGE_DIR);
         }
 
         return trim(substr(GC_IMAGE_DIR, strlen(GC_FILE_DIR)), '/') . "/$dirname";
