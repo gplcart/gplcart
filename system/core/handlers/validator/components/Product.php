@@ -403,7 +403,7 @@ class Product extends ComponentValidator
 
         if ($this->isUpdating() && empty($value)) {
             $data = $this->getSubmitted();
-            $value = $this->product->createSku($data);
+            $value = $this->product->generateSku($data);
             $this->setSubmitted('sku', $value);
         }
 

@@ -250,16 +250,14 @@ class Product extends Model
     }
 
     /**
-     * Creates a SKU
+     * Generate a product SKU
      * @param array $data
      * @return string
      */
-    public function createSku(array $data)
+    public function generateSku(array $data)
     {
-        $pattern = $this->config->get('product_sku_pattern', 'PRODUCT-%i');
-        $placeholders = $this->config->get('product_sku_placeholder', array('%i' => 'product_id'));
-
-        return $this->sku->generate($pattern, $placeholders, $data);
+        $data += array('placeholders' => $this->sku->getPatternPlaceholders());
+        return $this->sku->generate($this->sku->getPattern(), $data);
     }
 
     /**
@@ -726,7 +724,7 @@ class Product extends Model
         }
 
         if (empty($data['sku'])) {
-            $data['sku'] = $this->createSku($data);
+            $data['sku'] = $this->generateSku($data);
         }
 
         return (bool) $this->sku->add($data);
@@ -779,7 +777,7 @@ class Product extends Model
             $combination['combination_id'] = $this->sku->getCombinationId($combination['fields'], $data['product_id']);
 
             if (empty($combination['sku'])) {
-                $combination['sku'] = $this->sku->generate($data['sku'], array(), array('store_id' => $data['store_id']));
+                $combination['sku'] = $this->sku->generate($data['sku'], array('store_id' => $data['store_id']));
             }
 
             $this->sku->add($combination);
