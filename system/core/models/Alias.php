@@ -45,20 +45,21 @@ class Alias extends Model
 
     /**
      * Adds an alias
-     * @param string $id_key
-     * @param integer $id_value
-     * @param string $alias
+     * @param array $data
      * @return integer
      */
-    public function add($id_key, $id_value, $alias)
+    public function add(array $data)
     {
-        $values = array(
-            'alias' => $alias,
-            'id_key' => $id_key,
-            'id_value' => $id_value
-        );
+        $result = null;
+        $this->hook->attach('alias.add.before', $data, $result);
 
-        return $this->db->insert('alias', $values);
+        if (isset($result)) {
+            return (int) $result;
+        }
+
+        $result = $this->db->insert('alias', $data);
+        $this->hook->attach('alias.add.after', $data, $result);
+        return (int) $result;
     }
 
     /**
@@ -69,52 +70,49 @@ class Alias extends Model
      */
     public function get($id_key, $id_value = null)
     {
-        if (is_numeric($id_key)) {
-            $sql = 'SELECT * FROM alias WHERE alias_id=?';
-            return $this->db->fetch($sql, array($id_key));
+        $result = null;
+        $this->hook->attach('alias.get.before', $id_key, $id_value, $result);
+
+        if (isset($result)) {
+            return $result;
         }
 
-        $sql = 'SELECT alias FROM alias WHERE id_key=? AND id_value=?';
-        return $this->db->fetchColumn($sql, array($id_key, $id_value));
+        if (is_numeric($id_key)) {
+            $sql = 'SELECT * FROM alias WHERE alias_id=?';
+            $result = $this->db->fetch($sql, array($id_key));
+        } else {
+            $sql = 'SELECT alias FROM alias WHERE id_key=? AND id_value=?';
+            $result = $this->db->fetchColumn($sql, array($id_key, $id_value));
+        }
+
+        $this->hook->attach('alias.get.after', $id_key, $id_value, $result);
+        return $result;
     }
 
     /**
      * Deletes an alias
      * @param string $id_key
      * @param null|integer $id_value
-     * @return integer
+     * @return bool
      */
     public function delete($id_key, $id_value = null)
     {
+        $result = null;
+        $this->hook->attach('alias.delete.before', $id_key, $id_value, $result);
+
+        if (isset($result)) {
+            return (bool) $result;
+        }
+
         if (is_numeric($id_key)) {
-            return $this->db->delete('alias', array('alias_id' => $id_key));
+            $result = $this->db->delete('alias', array('alias_id' => $id_key));
+        } else {
+            $conditions = array('id_key' => $id_key, 'id_value' => $id_value);
+            $result = $this->db->delete('alias', $conditions);
         }
 
-        $conditions = array('id_key' => $id_key, 'id_value' => $id_value);
-        return $this->db->delete('alias', $conditions);
-    }
-
-    /**
-     * Returns an array of url aliases keyed by id_value
-     * @param string $id_key
-     * @param array $id_value
-     * @return array
-     */
-    public function getMultiple($id_key, array $id_value)
-    {
-        $conditions = array(
-            'id_key' => $id_key,
-            'id_value' => $id_value
-        );
-
-        $results = $this->getList($conditions);
-
-        $aliases = array();
-        foreach ((array) $results as $result) {
-            $aliases[$result['id_value']] = $result['alias'];
-        }
-
-        return $aliases;
+        $this->hook->attach('alias.delete.after', $id_key, $id_value, $result);
+        return (bool) $result;
     }
 
     /**
@@ -124,6 +122,13 @@ class Alias extends Model
      */
     public function getList(array $data = array())
     {
+        $result = null;
+        $this->hook->attach('alias.list.before', $data, $result);
+
+        if (isset($result)) {
+            return $result;
+        }
+
         $sql = 'SELECT *';
 
         if (!empty($data['count'])) {
@@ -176,8 +181,9 @@ class Alias extends Model
             return (int) $this->db->fetchColumn($sql, $where);
         }
 
-        $options = array('index' => 'alias_id');
-        return $this->db->fetchAll($sql, $where, $options);
+        $result = $this->db->fetchAll($sql, $where, array('index' => 'alias_id'));
+        $this->hook->attach('alias.list.after', $data, $result);
+        return $result;
     }
 
     /**
@@ -192,30 +198,68 @@ class Alias extends Model
     /**
      * Creates an alias using an array of data
      * @param string $pattern
-     * @param array $placeholders
-     * @param array $data
-     * @param boolean $translit
-     * @param string $language
+     * @param array $options
      * @return string
      */
-    public function generate(
-    $pattern, array $placeholders = array(), array $data = array(),
-            $translit = true, $language = null
-    )
+    public function generate($pattern, array $options = array())
     {
-        $alias = $pattern;
+        $options += array('translit' => true, 'language' => null, 'placeholders' => array());
 
-        if (!empty($placeholders)) {
-            $alias = gplcart_string_replace($pattern, $placeholders, $data);
+        $result = null;
+        $this->hook->attach('alias.generate.before', $pattern, $options, $result);
+
+        if (isset($result)) {
+            return (string) $result;
         }
 
-        if ($translit) {
-            $transliterated = $this->language->translit($alias, $language);
+        $alias = $pattern;
+
+        if (!empty($options['placeholders'])) {
+            $alias = gplcart_string_replace($pattern, $options['placeholders'], $options);
+        }
+
+        if (!empty($options['translit'])) {
+            $transliterated = $this->language->translit($alias, $options['language']);
             $alias = gplcart_string_slug($transliterated);
         }
 
-        $trimmed = mb_strimwidth(str_replace(' ', '-', trim($alias)), 0, 100, '', 'UTF-8');
-        return $this->getUnique($trimmed);
+        $trimmed = mb_strimwidth(str_replace(' ', '-', trim($alias)), 0, 100, '');
+        $result = $this->getUnique($trimmed);
+
+        $this->hook->attach('alias.generate.after', $pattern, $options, $result);
+        return $result;
+    }
+
+    /**
+     * Generates an alias for an entity
+     * @param string $entity_name
+     * @param array $data
+     * @return string
+     */
+    public function generateEntity($entity_name, array $data)
+    {
+        $data += array('placeholders' => $this->getEntityPatternPlaceholders($entity_name));
+        return $this->generate($this->getEntityPattern($entity_name), $data);
+    }
+
+    /**
+     * Returns default entity alias pattern
+     * @param string $entity_name
+     * @return string
+     */
+    protected function getEntityPattern($entity_name)
+    {
+        return $this->config->get("{$entity_name}_alias_pattern", '%t.html');
+    }
+
+    /**
+     * Returns default entity alias placeholders
+     * @param string $entity_name
+     * @return array
+     */
+    protected function getEntityPatternPlaceholders($entity_name)
+    {
+        return $this->config->get("{$entity_name}_alias_placeholder", array('%t' => 'title'));
     }
 
     /**
@@ -240,20 +284,6 @@ class Alias extends Model
         } while ($this->exists($modified));
 
         return $modified;
-    }
-
-    /**
-     * Generates an alias for an entity
-     * @param array $data
-     * @param string $entity
-     * @return string
-     */
-    public function generateEntity(array $data, $entity)
-    {
-        $pattern = $this->config->get("{$entity}_alias_pattern", '%t.html');
-        $placeholders = $this->config->get("{$entity}_alias_placeholder", array('%t' => 'title'));
-
-        return $this->generate($pattern, $placeholders, $data, true);
     }
 
     /**
