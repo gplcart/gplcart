@@ -168,23 +168,18 @@ class FieldValue extends Model
             return false;
         }
 
-        if ($delete) {
-
-            $conditions = array(
-                'id_key' => 'field_value_id',
-                'id_value' => $data['field_value_id']
-            );
-
-            $this->db->delete('file', $conditions);
-        }
-
         $conditions = array(
-            'path' => $data['path'],
             'id_key' => 'field_value_id',
             'id_value' => $data['field_value_id']
         );
 
+        if ($delete) {
+            $this->db->delete('file', $conditions);
+        }
+
+        $conditions['path'] = $data['path'];
         $file_id = $this->file->add($conditions);
+
         $this->update($data['field_value_id'], array('file_id' => $file_id));
         return true;
     }
@@ -213,7 +208,6 @@ class FieldValue extends Model
         $updated += (int) $this->setTranslationTrait($this->db, $data, 'field_value');
 
         $result = $updated > 0;
-
         $this->hook->attach('field.value.update.after', $field_value_id, $data, $result, $this);
         return (bool) $result;
     }
@@ -265,7 +259,6 @@ class FieldValue extends Model
                 . ' WHERE pf.field_value_id=?';
 
         $result = $this->db->fetchColumn($sql, array($field_value_id));
-
         return empty($result);
     }
 
@@ -279,7 +272,7 @@ class FieldValue extends Model
         $dirname = $this->config->get('field_value_image_dirname', 'field_value');
 
         if ($absolute) {
-            return GC_IMAGE_DIR . "/$dirname";
+            return gplcart_path_absolute($dirname, GC_IMAGE_DIR);
         }
 
         return trim(substr(GC_IMAGE_DIR, strlen(GC_FILE_DIR)), '/') . "/$dirname";
