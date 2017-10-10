@@ -170,7 +170,7 @@ class Logger
     }
 
     /**
-     * Returns an array of PHP error types which to be considered fatal
+     * Returns an array of PHP error types which are fatal
      * @return array
      */
     protected function getFatalErrorTypes()
