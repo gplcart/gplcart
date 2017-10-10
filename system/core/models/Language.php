@@ -445,20 +445,19 @@ class Language extends Model
      * Translates a string
      * @param string $string
      * @param array $arguments
-     * @param bool $format
-     * @return string|array
+     * @return string
      */
-    public function text($string, array $arguments = array(), $format = true)
+    public function text($string, array $arguments = array())
     {
         if (empty($this->langcode) || $this->langcode === 'en') {
-            return $format ? $this->formatString($string, $arguments) : array();
+            return $this->formatString($string, $arguments);
         }
 
         $context_file = $this->getContextFile($this->context, $this->langcode);
         $context_translations = $this->loadTranslation($context_file);
 
         if (isset($context_translations[$string])) {
-            return $format ? $this->formatString($string, $arguments, $context_translations[$string]) : $context_translations[$string];
+            return $this->formatString($string, $arguments, $context_translations[$string]);
         }
 
         $common_file = $this->getCommonFile();
@@ -466,13 +465,13 @@ class Language extends Model
 
         if (isset($common_translations[$string])) {
             $this->addTranslation($string, $common_translations, $context_file);
-            return $format ? $this->formatString($string, $arguments, $common_translations[$string]) : $common_translations[$string];
+            return $this->formatString($string, $arguments, $common_translations[$string]);
         }
 
         $this->addTranslation($string, $common_translations, $context_file);
         $this->addTranslation($string, $common_translations, $common_file);
 
-        return $format ? $this->formatString($string, $arguments) : $string;
+        return $this->formatString($string, $arguments);
     }
 
     /**

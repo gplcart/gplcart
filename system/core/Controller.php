@@ -585,12 +585,10 @@ abstract class Controller
     {
         $code = '';
         foreach ((array) $strings as $string) {
-            $text = $this->language->text($string, array(), false);
-            if (isset($text[0]) && $text[0] !== '') {
-                $key = gplcart_json_encode($string);
-                $translation = gplcart_json_encode($text);
-                $code .= "Gplcart.translations[$key]=$translation;\n";
-            }
+            $key = gplcart_json_encode($string);
+            $text = $this->language->text($string);
+            $translation = gplcart_json_encode(array($text));
+            $code .= "Gplcart.translations[$key]=$translation;\n";
         }
 
         if ($print && $code) {
