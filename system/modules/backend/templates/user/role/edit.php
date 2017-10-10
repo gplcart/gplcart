@@ -74,7 +74,7 @@
                 <?php } else { ?>
                 <input type="checkbox" class="select-all" name="role[permissions][]" value="<?php echo $id; ?>">
                 <?php } ?>
-                <?php echo $this->e($name); ?> <small class="text-muted"><small><?php echo $this->e($id); ?></small></small>
+                <?php echo $this->text($name); ?> <small class="text-muted"><small><?php echo $this->e($id); ?></small></small>
               </label>
             </div>
             <?php } ?>

@@ -71,8 +71,8 @@
       <div class="col-md-4">
         <select name="settings[<?php echo $key; ?>]" class="form-control">
           <option value=""><?php echo $this->text('Default'); ?></option>
-          <?php foreach ($imagestyles as $id => $name) { ?>
-          <option value="<?php echo $this->e($id); ?>"<?php echo $settings[$key] == $id ? ' selected' : ''; ?>><?php echo $this->e($name); ?></option>
+          <?php foreach ($imagestyles as $id => $imagestyle) { ?>
+          <option value="<?php echo $this->e($id); ?>"<?php echo $settings[$key] == $id ? ' selected' : ''; ?>><?php echo $this->e($imagestyle['name']); ?></option>
           <?php } ?>
         </select>
       </div>

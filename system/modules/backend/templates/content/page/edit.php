@@ -96,7 +96,7 @@
   </fieldset>
   <fieldset>
     <legend><?php echo $this->text('Relations'); ?></legend>
-    <div class="form-group<?php echo $this->error('store_id', ' has-error'); ?>">
+    <div class="form-group required<?php echo $this->error('store_id', ' has-error'); ?>">
       <label class="col-md-2 control-label"><?php echo $this->text('Store'); ?></label>
       <div class="col-md-4">
         <select class="form-control" name="page[store_id]">
