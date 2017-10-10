@@ -132,9 +132,9 @@ class State extends ComponentValidator
     public function validateCodeState()
     {
         $field = 'code';
-        $label = $this->language->text('Code');
         $updating = $this->getUpdating();
         $value = $this->getSubmitted($field);
+        $label = $this->language->text('Code');
 
         if (isset($updating['code']) && $updating['code'] === $value) {
             return true;
@@ -145,13 +145,13 @@ class State extends ComponentValidator
             return false;
         }
 
-        $country = $this->getSubmitted('country');
-        $existing = $this->state->getByCode($value, $country);
+        $existing = $this->state->getList(array('code' => $value, 'country' => $this->getSubmitted('country')));
 
         if (!empty($existing)) {
             $this->setErrorExists($field, $label);
             return false;
         }
+
         return true;
     }
 
