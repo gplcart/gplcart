@@ -267,22 +267,6 @@ class Order extends Model
     }
 
     /**
-     * Returns an order component
-     * @param string $component
-     * @param array $order
-     * @param mixed $default
-     * @return mixed
-     */
-    public function getComponent($component, $order, $default = null)
-    {
-        if (isset($order['data']['components'][$component])) {
-            return $order['data']['components'][$component];
-        }
-
-        return $default;
-    }
-
-    /**
      * Returns an array of order component types
      * @return array
      */
@@ -683,7 +667,6 @@ class Order extends Model
         $order += array('status' => $this->getDefaultStatus());
 
         $result = $this->db->insert('orders', $order);
-
         $this->hook->attach('order.add.after', $order, $result, $this);
         return (int) $result;
     }
