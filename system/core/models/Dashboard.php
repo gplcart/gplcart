@@ -88,7 +88,6 @@ class Dashboard extends Model
         }
 
         $result = (bool) $this->db->update('dashboard', $data, array('dashboard_id' => $dashboard_id));
-
         $this->hook->attach('dashboard.update.after', $dashboard_id, $data, $result, $this);
         return (bool) $result;
     }
@@ -160,7 +159,6 @@ class Dashboard extends Model
         }
 
         $result = (bool) $this->db->delete('dashboard', array('dashboard_id'));
-
         $this->hook->attach('dashboard.delete.after', $dashboard_id, $result, $this);
         return (bool) $result;
     }

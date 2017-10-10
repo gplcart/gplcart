@@ -139,7 +139,6 @@ class CategoryGroup extends Model
         }
 
         $result = $data['category_group_id'] = $this->db->insert('category_group', $data);
-
         $this->setTranslationTrait($this->db, $data, 'category_group', false);
 
         $this->hook->attach('category.group.add.after', $data, $result, $this);
@@ -204,13 +203,10 @@ class CategoryGroup extends Model
         }
 
         $updated = $this->db->update('category_group', $data, array('category_group_id' => $category_group_id));
-
         $data['category_group_id'] = $category_group_id;
-
         $updated += (int) $this->setTranslationTrait($this->db, $data, 'category_group');
 
         $result = $updated > 0;
-
         $this->hook->attach('category.group.update.after', $category_group_id, $data, $result, $this);
         return (bool) $result;
     }
@@ -223,7 +219,6 @@ class CategoryGroup extends Model
     {
         $types = $this->getDefaultTypes();
         $this->hook->attach('category.group.types', $types, $this);
-
         return $types;
     }
 

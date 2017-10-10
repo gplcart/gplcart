@@ -79,7 +79,6 @@ class Job extends Model
         }
 
         $result = $this->getSession($job_id);
-
         $this->hook->attach('job.get.after', $job_id, $result, $this);
         return $result;
     }
@@ -171,7 +170,6 @@ class Job extends Model
         }
 
         $result = $this->session->delete(self::SESSION_KEY . ".$job_id");
-
         $this->hook->attach('job.delete.after', $job_id, $result, $this);
         return (bool) $result;
     }
@@ -242,7 +240,6 @@ class Job extends Model
         } catch (\Exception $ex) {
             $job['status'] = false;
             $job['errors'] ++;
-            trigger_error($ex->getMessage());
         }
     }
 

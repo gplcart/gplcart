@@ -121,7 +121,6 @@ class City extends Model
         }
 
         $result = $this->db->insert('city', $data);
-
         $this->hook->attach('city.add.after', $data, $result, $this);
         return (int) $result;
     }
@@ -146,7 +145,6 @@ class City extends Model
         }
 
         $result = $this->db->fetch('SELECT * FROM city WHERE city_id=?', array($city_id));
-
         $this->hook->attach('city.get.after', $city_id, $result, $this);
         return $result;
     }
@@ -171,7 +169,6 @@ class City extends Model
         }
 
         $result = (bool) $this->db->delete('city', array('city_id' => $city_id));
-
         $this->hook->attach('city.delete.after', $city_id, $check, $result, $this);
         return (bool) $result;
     }
@@ -183,9 +180,7 @@ class City extends Model
      */
     public function canDelete($city_id)
     {
-        $sql = 'SELECT address_id FROM address WHERE city_id=?';
-        $result = $this->db->fetchColumn($sql, array($city_id));
-
+        $result = $this->db->fetchColumn('SELECT address_id FROM address WHERE city_id=?', array($city_id));
         return empty($result);
     }
 
@@ -205,7 +200,6 @@ class City extends Model
         }
 
         $result = (bool) $this->db->update('city', $data, array('city_id' => $city_id));
-
         $this->hook->attach('city.update.after', $city_id, $data, $result, $this);
         return (bool) $result;
     }

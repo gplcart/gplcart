@@ -67,7 +67,6 @@ class Compare extends Model
         $this->controlLimit($product_ids);
 
         $result = $this->set($product_ids);
-
         $this->hook->attach('compare.add.after', $product_id, $result, $this);
         return (bool) $result;
     }

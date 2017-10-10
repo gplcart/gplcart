@@ -41,8 +41,8 @@ class Rating extends Model
 
         $sql = 'SELECT rating, votes FROM rating WHERE product_id=?';
         $result = $this->db->fetch($sql, array($product_id));
-        $this->hook->attach('rating.get.after', $product_id, $result, $this);
 
+        $this->hook->attach('rating.get.after', $product_id, $result, $this);
         return $result;
     }
 
@@ -105,7 +105,6 @@ class Rating extends Model
         $this->addByUser($data);
 
         $result = $this->setBayesian($data);
-
         $this->hook->attach('rating.set.after', $data, $result, $this);
         return $result;
     }

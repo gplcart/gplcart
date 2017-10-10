@@ -135,7 +135,6 @@ class CollectionItem extends Model
         }
 
         $result = (int) $this->db->insert('collection_item', $data);
-
         $this->hook->attach('collection.item.add.after', $data, $result, $this);
         return (int) $result;
     }
@@ -176,7 +175,6 @@ class CollectionItem extends Model
         }
 
         $result = (bool) $this->db->delete('collection_item', array('collection_item_id' => $id));
-
         $this->hook->attach('collection.item.delete.after', $id, $result, $this);
         return (bool) $result;
     }
@@ -197,7 +195,6 @@ class CollectionItem extends Model
         }
 
         $result = (bool) $this->db->update('collection_item', $data, array('collection_item_id' => $id));
-
         $this->hook->attach('collection.item.update.after', $id, $data, $result, $this);
         return (bool) $result;
     }

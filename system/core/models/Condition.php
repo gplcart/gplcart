@@ -97,7 +97,6 @@ class Condition extends Model
             }
             $result = call_user_func_array($handler, array($condition, $data, $this));
         } catch (\Exception $ex) {
-            trigger_error($ex->getMessage());
             return false;
         }
 

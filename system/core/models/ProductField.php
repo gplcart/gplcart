@@ -40,7 +40,6 @@ class ProductField extends Model
         }
 
         $result = $this->db->insert('product_field', $data);
-
         $this->hook->attach('product.field.add.after', $data, $result, $this);
         return (int) $result;
     }

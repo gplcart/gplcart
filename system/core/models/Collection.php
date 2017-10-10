@@ -134,9 +134,7 @@ class Collection extends Model
             return $result;
         }
 
-        $sql = 'SELECT * FROM collection WHERE collection_id=?';
-        $result = $this->db->fetch($sql, array($collection_id));
-
+        $result = $this->db->fetch('SELECT * FROM collection WHERE collection_id=?', array($collection_id));
         $this->attachTranslationTrait($this->db, $result, 'collection', $language);
 
         $this->hook->attach('collection.get.after', $collection_id, $language, $result, $this);
@@ -206,9 +204,7 @@ class Collection extends Model
         unset($data['type']); // Cannot change item type!
 
         $updated = $this->db->update('collection', $data, array('collection_id' => $collection_id));
-
         $data['collection_id'] = $collection_id;
-
         $updated += (int) $this->setTranslationTrait($this->db, $data, 'collection');
 
         $result = $updated > 0;

@@ -129,7 +129,6 @@ class Trigger extends Model
         }
 
         $result = $this->db->insert('triggers', $data);
-
         $this->hook->attach('trigger.add.after', $data, $result, $this);
         return (int) $result;
     }
@@ -150,7 +149,6 @@ class Trigger extends Model
 
         $sql = 'SELECT * FROM triggers WHERE trigger_id=?';
         $result = $this->db->fetch($sql, array($trigger_id), array('unserialize' => 'data'));
-
         $this->hook->attach('trigger.get.after', $trigger_id, $result, $this);
         return $result;
     }
@@ -170,7 +168,6 @@ class Trigger extends Model
         }
 
         $result = (bool) $this->db->delete('triggers', array('trigger_id' => $trigger_id));
-
         $this->hook->attach('trigger.delete.after', $trigger_id, $result, $this);
         return (bool) $result;
     }
@@ -191,7 +188,6 @@ class Trigger extends Model
         }
 
         $result = (bool) $this->db->update('triggers', $data, array('trigger_id' => $trigger_id));
-
         $this->hook->attach('trigger.update.after', $trigger_id, $data, $result, $this);
         return (bool) $result;
     }

@@ -245,9 +245,7 @@ class Field extends Model
      */
     public function canDelete($field_id)
     {
-        $sql = 'SELECT field_id FROM product_field WHERE field_id=?';
-        $result = $this->db->fetchColumn($sql, array($field_id));
-
+        $result = $this->db->fetchColumn('SELECT field_id FROM product_field WHERE field_id=?', array($field_id));
         return empty($result);
     }
 
@@ -267,9 +265,7 @@ class Field extends Model
         }
 
         $updated = $this->db->update('field', $data, array('field_id' => $field_id));
-
         $data['field_id'] = $field_id;
-
         $updated += (int) $this->setTranslationTrait($this->db, $data, 'field');
 
         $result = $updated > 0;
