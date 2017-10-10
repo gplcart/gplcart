@@ -115,10 +115,9 @@ class User extends Model
             if (empty($address['address_id'])) {
                 $address['user_id'] = $data['user_id'];
                 $this->address->add($address);
-                continue;
+            } else {
+                $this->address->update($address['address_id'], $address);
             }
-
-            $this->address->update($address['address_id'], $address);
         }
 
         return true;
@@ -150,13 +149,10 @@ class User extends Model
         }
 
         $updated = $this->db->update('user', $data, array('user_id' => $user_id));
-
         $data['user_id'] = $user_id;
-
         $updated += (int) $this->setAddress($data);
 
         $result = $updated > 0;
-
         $this->hook->attach('user.update.after', $user_id, $data, $result, $this);
         return (bool) $result;
     }
@@ -229,27 +225,12 @@ class User extends Model
     }
 
     /**
-     * Returns UID for super-admin
-     * @return int
-     */
-    public function getSuperadminId()
-    {
-        return (int) $this->config->get('user_superadmin', 1);
-    }
-
-    /**
      * Returns the current user ID from the session
      * @return integer
      */
     public function getId()
     {
-        static $uid = null;
-
-        if (!isset($uid)) {
-            $uid = (int) $this->getSession('user_id');
-        }
-
-        return $uid;
+        return (int) $this->getSession('user_id');
     }
 
     /**
@@ -293,8 +274,6 @@ class User extends Model
         }
 
         if (is_numeric($user)) {
-            // User is already loaded and cached in memory
-            // so no additional database query needed
             $user = $this->get($user);
         }
 
@@ -436,11 +415,7 @@ class User extends Model
             return (array) $result;
         }
 
-        $result = array(
-            'message' => '',
-            'severity' => '',
-            'redirect' => null
-        );
+        $result = array('message' => '', 'severity' => '', 'redirect' => null);
 
         // Extra security. Remove all but allowed keys
         $allowed = array('name', 'email', 'password', 'store_id');
@@ -591,11 +566,9 @@ class User extends Model
      */
     protected function resetPasswordStart(array $user)
     {
-        $lifetime = (int) $this->config->get('user_reset_password_lifespan', 24 * 60 * 60);
-
         $user['data']['reset_password'] = array(
             'token' => gplcart_string_random(),
-            'expires' => GC_TIME + $lifetime,
+            'expires' => GC_TIME + $this->getResetPasswordLifespan(),
         );
 
         $this->update($user['user_id'], array('data' => $user['data']));
@@ -700,6 +673,16 @@ class User extends Model
     }
 
     /**
+     * Generates a random password
+     * @return string
+     */
+    public function generatePassword()
+    {
+        $hash = crypt(gplcart_string_random(), gplcart_string_random());
+        return gplcart_string_encode($hash);
+    }
+
+    /**
      * Returns min and max allowed password length
      * @return array
      */
@@ -712,13 +695,21 @@ class User extends Model
     }
 
     /**
-     * Generates a random password
-     * @return string
+     * Returns reset password lifespan in seconds
+     * @return integer
      */
-    public function generatePassword()
+    public function getResetPasswordLifespan()
     {
-        $hash = crypt(gplcart_string_random(), gplcart_string_random());
-        return gplcart_string_encode($hash);
+        return (int) $this->config->get('user_reset_password_lifespan', 24 * 60 * 60);
+    }
+
+    /**
+     * Returns UID for super-admin
+     * @return int
+     */
+    public function getSuperadminId()
+    {
+        return (int) $this->config->get('user_superadmin', 1);
     }
 
 }
