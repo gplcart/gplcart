@@ -284,7 +284,7 @@ class Page extends Model
         $dirname = $this->config->get('page_image_dirname', 'page');
 
         if ($absolute) {
-            return GC_IMAGE_DIR . "/$dirname";
+            return gplcart_path_absolute($dirname, GC_IMAGE_DIR);
         }
 
         return trim(substr(GC_IMAGE_DIR, strlen(GC_FILE_DIR)), '/') . "/$dirname";
