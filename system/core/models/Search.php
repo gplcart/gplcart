@@ -107,8 +107,7 @@ class Search extends Model
             return $result;
         }
 
-        $handlers = $this->getHandlers();
-        return Handler::call($handlers, $handler_id, 'index', array($data, $this));
+        return $this->callHandler($handler_id, 'index', array($data, $this));
     }
 
     /**
@@ -134,11 +133,27 @@ class Search extends Model
         $filtered = $this->filterStopwords($query, $options['language']);
 
         if (!empty($filtered)) {
-            $handlers = $this->getHandlers();
-            return Handler::call($handlers, $handler_id, 'search', array($filtered, $options, $this));
+            return $this->callHandler($handler_id, 'search', array($filtered, $options, $this));
         }
 
         return array();
+    }
+
+    /**
+     * Calls a search handler
+     * @param string $handler_id
+     * @param string $method
+     * @param array $args
+     * @return mixed
+     */
+    public function callHandler($handler_id, $method, array $args)
+    {
+        try {
+            $handlers = $this->getHandlers();
+            return Handler::call($handlers, $handler_id, $method, $args);
+        } catch (\Exception $ex) {
+            return null;
+        }
     }
 
     /**
