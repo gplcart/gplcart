@@ -116,7 +116,6 @@ class File extends Model
         }
 
         $data['created'] = GC_TIME;
-
         $result = $data['file_id'] = $this->db->insert('file', $data);
 
         $this->setTranslationTrait($this->db, $data, 'file', false);
@@ -141,13 +140,10 @@ class File extends Model
         }
 
         $updated = $this->db->update('file', $data, array('file_id' => $file_id));
-
         $data['file_id'] = $file_id;
-
         $updated += (int) $this->setTranslationTrait($this->db, $data, 'file');
 
         $result = $updated > 0;
-
         $this->hook->attach('file.update.after', $file_id, $data, $result, $this);
         return (bool) $result;
     }
@@ -202,21 +198,6 @@ class File extends Model
 
         $this->hook->attach('file.delete.after', $file_id, $check, $result, $this);
         return (bool) $result;
-    }
-
-    /**
-     * Deletes multiple files
-     * @param array $options
-     * @return bool
-     */
-    public function deleteMultiple($options)
-    {
-        $deleted = 0;
-        foreach ((array) $this->getList($options) as $file) {
-            $deleted += (int) $this->delete($file['file_id']);
-        }
-
-        return $deleted > 0;
     }
 
     /**
@@ -724,12 +705,12 @@ class File extends Model
      */
     protected function prepareFileName($filename, $extension)
     {
+        if ($this->config->get('file_upload_translit', 1)) {
+            $filename = $this->language->translit($filename, null);
+        }
+
         $suffix = gplcart_string_random(6);
         $clean = gplcart_file_clean($filename);
-
-        if ($this->config->get('file_upload_translit', 1)) {
-            $clean = $this->language->translit($clean, null);
-        }
 
         return "$clean-$suffix.$extension";
     }
