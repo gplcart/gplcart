@@ -142,9 +142,9 @@ class Store extends Model
         }
 
         if (is_numeric($store_id)) {
-            $result = $this->selectById($store_id);
+            $result = $this->getById($store_id);
         } else {
-            $result = $this->selectByDomain($store_id);
+            $result = $this->getByDomain($store_id);
         }
 
         if (!empty($result)) {
@@ -160,7 +160,7 @@ class Store extends Model
      * @param integer $store_id
      * @return array
      */
-    protected function selectById($store_id)
+    protected function getById($store_id)
     {
         $sql = 'SELECT * FROM store WHERE store_id=?';
         return $this->db->fetch($sql, array($store_id), array('unserialize' => 'data'));
@@ -171,7 +171,7 @@ class Store extends Model
      * @param string $domain
      * @return array
      */
-    protected function selectByDomain($domain)
+    protected function getByDomain($domain)
     {
         $sql = 'SELECT * FROM store WHERE domain=?';
         $conditions = array($domain);
@@ -396,31 +396,6 @@ class Store extends Model
     {
         $scheme = $this->request->scheme();
         return rtrim("$scheme{$store['domain']}/{$store['basepath']}", '/');
-    }
-
-    /**
-     * Returns stores email(s)
-     * @param array $store
-     * @param mixed $type
-     * @return mixed
-     */
-    public function email($store, $type = true)
-    {
-        $emails = (array) $store['data']['email'];
-
-        switch ($type) {
-            case true:
-                return reset($emails);
-            case false:
-                array_shift($emails);
-                return $emails;
-        }
-
-        if (is_numeric($type)) {
-            return isset($emails[$type]) ? $emails[$type] : '';
-        }
-
-        return $emails;
     }
 
 }
