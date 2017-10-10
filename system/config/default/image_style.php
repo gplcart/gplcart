@@ -8,7 +8,7 @@
  */
 return array(
     1 => array(
-        'name' => /* @text */'50X50',
+        'name' => '50X50',
         'status' => 1,
         'actions' => array(
             'thumbnail' => array(
@@ -18,7 +18,7 @@ return array(
         )
     ),
     2 => array(
-        'name' => /* @text */'100X100',
+        'name' => '100X100',
         'status' => 1,
         'actions' => array(
             'thumbnail' => array(
@@ -28,7 +28,7 @@ return array(
         )
     ),
     3 => array(
-        'name' => /* @text */'150X150',
+        'name' => '150X150',
         'status' => 1,
         'actions' => array(
             'thumbnail' => array(
@@ -38,7 +38,7 @@ return array(
         )
     ),
     4 => array(
-        'name' => /* @text */'200X200',
+        'name' => '200X200',
         'status' => 1,
         'actions' => array(
             'thumbnail' => array(
@@ -48,7 +48,7 @@ return array(
         )
     ),
     5 => array(
-        'name' => /* @text */'300X300',
+        'name' => '300X300',
         'status' => 1,
         'actions' => array(
             'thumbnail' => array(
@@ -58,7 +58,7 @@ return array(
         )
     ),
     6 => array(
-        'name' => /* @text */'400X400',
+        'name' => '400X400',
         'status' => 1,
         'actions' => array(
             'thumbnail' => array(
@@ -68,7 +68,7 @@ return array(
         )
     ),
     7 => array(
-        'name' => /* @text */'1400X500',
+        'name' => '1400X500',
         'status' => 1,
         'actions' => array(
             'thumbnail' => array(
