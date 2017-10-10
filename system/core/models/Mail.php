@@ -78,10 +78,14 @@ class Mail extends Model
      */
     public function set($handler_id, array $arguments)
     {
-        $handlers = $this->getHandlers();
-        $data = Handler::call($handlers, $handler_id, 'data', $arguments);
-
-        return call_user_func_array(array($this, 'send'), $data);
+        try {
+            $handlers = $this->getHandlers();
+            $data = Handler::call($handlers, $handler_id, 'data', $arguments);
+            return call_user_func_array(array($this, 'send'), $data);
+        } catch (\Exception $ex) {
+            trigger_error($ex->getMessage());
+            return false;
+        }
     }
 
     /**
