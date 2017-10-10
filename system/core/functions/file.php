@@ -45,25 +45,37 @@ function gplcart_file_scan($path, $pattern)
 /**
  * Recursive deletes files and directories
  * @param string $directory
+ * @param int $errors
+ * @param int $success
  * @return boolean
  */
-function gplcart_file_delete_recursive($directory)
+function gplcart_file_delete_recursive($directory, &$errors = 0, &$success = 0)
 {
     if (!is_dir($directory)) {
         return false;
     }
 
-    $files = gplcart_file_scan_recursive($directory);
+    foreach (gplcart_file_scan_recursive($directory) as $file) {
 
-    foreach ($files as $file) {
         if (is_dir($file)) {
-            gplcart_file_delete_recursive($file);
+            gplcart_file_delete_recursive($file, $errors, $success);
+            continue;
+        }
+
+        if (unlink($file)) {
+            $success++;
         } else {
-            unlink($file);
+            $errors++;
         }
     }
 
-    return rmdir($directory);
+    if (rmdir($directory)) {
+        $success++;
+        return true;
+    }
+
+    $errors++;
+    return false;
 }
 
 /**
