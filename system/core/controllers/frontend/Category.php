@@ -252,7 +252,14 @@ class Category extends FrontendController
      */
     protected function setChildrenCategory()
     {
-        $this->data_children = $this->category->getChildren($this->data_category['category_id'], $this->data_categories);
+        $children = array();
+        foreach ($this->data_categories as $item) {
+            if (in_array($this->data_category['category_id'], $item['parents'])) {
+                $children[] = $item;
+            }
+        }
+
+        $this->data_children = $children;
     }
 
     /**

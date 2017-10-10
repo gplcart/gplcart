@@ -241,7 +241,7 @@ class Category extends BackendController
      */
     protected function getOptionsCategory($category_group_id)
     {
-        return $this->category->getOptionList($category_group_id, 0);
+        return $this->category->getOptionList(array('category_group_id' => $category_group_id));
     }
 
     /**
