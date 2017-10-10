@@ -52,7 +52,7 @@ class Order extends BaseHandler
     {
         $store = $this->store->get($order['store_id']);
         $store_name = $this->store->getTranslation('title', $this->language->getLangcode(), $store);
-        $options = array('from' => $this->store->email($store));
+        $options = array('from' => reset($store['data']['email']));
 
         $default = (array) $this->store->getDefault(true);
         $url = $this->store->url($default);
@@ -84,7 +84,7 @@ class Order extends BaseHandler
         $store_name = $this->store->getTranslation('title', $this->language->getLangcode(), $store);
 
         $options = $this->store->config(null, $store);
-        $options['from'] = $this->store->email($store);
+        $options['from'] = reset($store['data']['email']);
 
         $vars = array(
             '@store' => $store_name,
@@ -113,7 +113,7 @@ class Order extends BaseHandler
         $store_name = $this->store->getTranslation('title', $this->language->getLangcode(), $store);
 
         $options = $this->store->config(null, $store);
-        $options['from'] = $this->store->email($store);
+        $options['from'] = reset($store['data']['email']);
 
         $vars = array(
             '@store' => $store_name,
