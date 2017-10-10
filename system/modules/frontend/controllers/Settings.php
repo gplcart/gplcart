@@ -39,7 +39,7 @@ class Settings extends BackendController
      */
     public function editSettings()
     {
-        $this->setData('imagestyles', $this->image->getStyleNames());
+        $this->setData('imagestyles', $this->image->getStyleList());
         $this->setData('settings', $this->config->module('frontend'));
         $this->setData('imagestyle_fields', $this->getImageStyleFieldsSettings());
 
