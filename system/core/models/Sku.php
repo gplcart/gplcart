@@ -35,29 +35,6 @@ class Sku extends Model
     }
 
     /**
-     * Loads a SKU by a product ID
-     * @param integer $product_id
-     * @return array
-     */
-    public function getByProduct($product_id)
-    {
-        $codes = (array) $this->getList(array('product_id' => $product_id));
-
-        $results = array('base' => '');
-
-        foreach ($codes as $code) {
-            if (empty($code['combination_id'])) {
-                $results['base'] = $code['sku'];
-                continue;
-            }
-
-            $results['combinations'][$code['combination_id']] = $code['sku'];
-        }
-
-        return $results;
-    }
-
-    /**
      * Returns an array of SKUs or counts them
      * @param array $data
      * @return array|integer
@@ -134,7 +111,6 @@ class Sku extends Model
         }
 
         $result = $this->db->insert('product_sku', $data);
-
         $this->hook->attach('sku.add.after', $data, $result, $this);
         return (int) $result;
     }
@@ -165,7 +141,6 @@ class Sku extends Model
         }
 
         $result = (bool) $this->db->run($sql, array($product_id))->rowCount();
-
         $this->hook->attach('sku.delete.after', $product_id, $options, $result, $this);
         return (bool) $result;
     }
@@ -173,19 +148,46 @@ class Sku extends Model
     /**
      * Generates a SKU
      * @param string $pattern
-     * @param array $placeholders
-     * @param array $data
+     * @param array $options
      * @return string
      */
-    public function generate($pattern, $placeholders = array(), $data = array())
+    public function generate($pattern, array $options = array())
     {
-        $sku = $pattern;
-        if (!empty($placeholders)) {
-            $sku = gplcart_string_replace($pattern, $placeholders, $data);
+        $options += array('store_id' => null, 'placeholders' => array());
+
+        $result = null;
+        $this->hook->attach('sku.generate.before', $pattern, $options, $result);
+
+        if (isset($result)) {
+            return (string) $result;
         }
 
-        $store_id = isset($data['store_id']) ? $data['store_id'] : null;
-        return $this->getUnique(mb_strimwidth($sku, 0, 200, 'UTF-8'), $store_id);
+        $sku = $pattern;
+        if (!empty($options['placeholders'])) {
+            $sku = gplcart_string_replace($pattern, $options['placeholders'], $options);
+        }
+
+        $result = $this->getUnique(mb_strimwidth($sku, 0, 200, ''), $options['store_id']);
+        $this->hook->attach('sku.generate.after', $pattern, $options, $result);
+        return $result;
+    }
+
+    /**
+     * Returns a product SKU pattern
+     * @return string
+     */
+    public function getPattern()
+    {
+        return $this->config->get("product_sku_pattern", 'PRODUCT-%i');
+    }
+
+    /**
+     * Returns an array of placeholders for a product SKU pattern
+     * @return array
+     */
+    public function getPatternPlaceholders()
+    {
+        return $this->config->get('product_sku_placeholder', array('%i' => 'product_id'));
     }
 
     /**
