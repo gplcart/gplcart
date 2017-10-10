@@ -51,8 +51,7 @@ class Validator extends Model
             return $result;
         }
 
-        $result = $this->call($handler_id, $submitted, $options);
-
+        $result = $this->callHandler($handler_id, $submitted, $options);
         $this->hook->attach('validator.run.after', $submitted, $options, $result, $this);
 
         if ($result === true) {
@@ -69,7 +68,7 @@ class Validator extends Model
      * @param array $options
      * @return mixed
      */
-    protected function call($handler_id, &$submitted, array $options)
+    public function callHandler($handler_id, &$submitted, array $options)
     {
         $result = null;
 
