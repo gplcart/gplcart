@@ -34,10 +34,16 @@ trait Alias
         }
 
         if (empty($data['alias'])) {
-            $data['alias'] = $model->generateEntity($data, $entity);
+            $data['alias'] = $model->generateEntity($entity, $data);
         }
 
-        return $model->add("{$entity}_id", $data["{$entity}_id"], $data['alias']);
+        $alias = array(
+            'alias' => $data['alias'],
+            'id_key' => "{$entity}_id",
+            'id_value' => $data["{$entity}_id"]
+        );
+
+        return $model->add($alias);
     }
 
 }
