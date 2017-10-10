@@ -260,12 +260,13 @@ class Currency extends ComponentValidator
             return true;
         }
 
-        $existing = $this->currency->getByNumericCode($numeric_code);
-
-        if (!empty($existing)) {
-            $this->setErrorExists($field, $label);
-            return false;
+        foreach ($this->currency->getList() as $currency) {
+            if ($currency['numeric_code'] == $numeric_code) {
+                $this->setErrorExists($field, $label);
+                return false;
+            }
         }
+
         return true;
     }
 

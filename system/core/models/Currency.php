@@ -313,24 +313,6 @@ class Currency extends Model
     }
 
     /**
-     * Returns a currency by a numeric code
-     * @param integer $code
-     * @return array
-     */
-    public function getByNumericCode($code)
-    {
-        $list = $this->getList();
-
-        foreach ($list as $currency) {
-            if ($currency['numeric_code'] == $code) {
-                return $currency;
-            }
-        }
-
-        return array();
-    }
-
-    /**
      * Returns a default currency
      * @return string
      */
