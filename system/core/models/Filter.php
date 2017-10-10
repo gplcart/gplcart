@@ -57,19 +57,36 @@ class Filter extends Model
     }
 
     /**
-     * Default system text filter
+     * Filter out dangerous characters from a string considering the whitelisted tags and protocols
      * @param string $text
      * @return string
      */
     public function filter($text)
     {
-        $tags = $this->config->get('filter_allowed_tags', array('a', 'i', 'b', 'em', 'span', 'strong', 'ul', 'ol', 'li'));
-        $protocols = $this->config->get('filter_allowed_protocols', array('http', 'ftp', 'mailto'));
-
-        $this->filter->setTags($tags);
-        $this->filter->setProtocols($protocols);
+        $this->filter->setTags($this->getAllowedtags());
+        $this->filter->setProtocols($this->getAllowedProtocols());
 
         return $this->filter->filter($text);
+    }
+
+    /**
+     * Returns an array of allowed HTML tags
+     * @return array
+     */
+    public function getAllowedtags()
+    {
+        $default = array('a', 'i', 'b', 'em', 'span', 'strong', 'ul', 'ol', 'li');
+        return $this->config->get('filter_allowed_tags', $default);
+    }
+
+    /**
+     * Returns an array of allowed protocols
+     * @return array
+     */
+    public function getAllowedProtocols()
+    {
+        $default = array('http', 'ftp', 'mailto');
+        return $this->config->get('filter_allowed_protocols', $default);
     }
 
     /**
