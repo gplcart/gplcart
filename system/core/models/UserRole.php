@@ -47,11 +47,6 @@ class UserRole extends Model
         }
 
         $permissions = require GC_CONFIG_PERMISSION;
-
-        array_walk($permissions, function(&$name) {
-            $name = $this->language->text($name);
-        });
-
         asort($permissions);
 
         $this->hook->attach('user.role.permissions', $permissions, $this);
@@ -134,7 +129,6 @@ class UserRole extends Model
         }
 
         $result = $this->db->delete('role', array('role_id' => $role_id));
-
         $this->hook->attach('user.role.delete.after', $role_id, $check, $result, $this);
         return (bool) $result;
     }
