@@ -64,23 +64,9 @@ class State extends Model
             return $result;
         }
 
-        $sql = 'SELECT * FROM state WHERE state_id=?';
-        $result = $this->db->fetch($sql, array($state_id));
-
+        $result = $this->db->fetch('SELECT * FROM state WHERE state_id=?', array($state_id));
         $this->hook->attach('state.get.after', $state_id, $result, $this);
         return $result;
-    }
-
-    /**
-     * Loads a country state by code
-     * @param string $code
-     * @param string|null $country
-     * @return array
-     */
-    public function getByCode($code, $country = null)
-    {
-        $state = $this->getList(array('code' => $code, 'country' => $country));
-        return $state ? reset($state) : array();
     }
 
     /**
@@ -201,7 +187,6 @@ class State extends Model
         }
 
         $result = (bool) $this->db->update('state', $data, array('state_id' => $state_id));
-
         $this->hook->attach('state.update.after', $state_id, $data, $result, $this);
         return (bool) $result;
     }
