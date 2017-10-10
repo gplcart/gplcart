@@ -336,7 +336,7 @@ class Cart extends Model
             return (string) $session_user_id;
         }
 
-        $cookie_name = $this->config->get('user_cookie_name', 'user_id');
+        $cookie_name = $this->getCookieUserName();
         $cookie_user_id = $this->request->cookie($cookie_name, '', 'string');
 
         if (!empty($cookie_user_id)) {
@@ -344,7 +344,7 @@ class Cart extends Model
         }
 
         $user_id = '_' . gplcart_string_random(6);
-        $lifespan = $this->config->get('cart_cookie_lifespan', 365 * 24 * 60 * 60);
+        $lifespan = $this->getCookieLifespan();
         $this->request->setCookie($cookie_name, $user_id, $lifespan);
         return $user_id;
     }
@@ -425,24 +425,19 @@ class Cart extends Model
     /**
      * Returns an array containing a total number of products
      * and a number of products per SKU for the given user and store
-     * @param array $conditions
-     * @param null|string $key
+     * @param array $options
      * @return array|integer
      */
-    public function getQuantity(array $conditions, $key = null)
+    public function getQuantity(array $options)
     {
-        $conditions += array('order_id' => 0);
+        $options += array('order_id' => 0);
 
-        $items = $this->getList($conditions);
+        $items = $this->getList($options);
         $result = array('total' => 0, 'sku' => array());
 
         foreach ((array) $items as $item) {
             $result['total'] += (int) $item['quantity'];
             $result['sku'][$item['sku']] = (int) $item['quantity'];
-        }
-
-        if (isset($key)) {
-            return $result[$key];
         }
 
         return $result;
@@ -623,8 +618,25 @@ class Cart extends Model
      */
     public function deleteCookie()
     {
-        $cookie = $this->config->get('user_cookie_name', 'user_id');
-        return $this->request->deleteCookie($cookie);
+        return $this->request->deleteCookie($this->getCookieUserName());
+    }
+
+    /**
+     * Returns cookie name used to store the current user ID
+     * @return string
+     */
+    public function getCookieUserName()
+    {
+        return $this->config->get('user_cookie_name', 'user_id');
+    }
+
+    /**
+     * Returns cart cookie lifespan
+     * @return integer
+     */
+    public function getCookieLifespan()
+    {
+        return $this->config->get('cart_cookie_lifespan', 365 * 24 * 60 * 60);
     }
 
 }
