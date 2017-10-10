@@ -111,8 +111,7 @@ class Cron extends FrontendController
      */
     protected function deleteExpiredLogsCron()
     {
-        $lifespan = $this->config('report_log_lifespan', 24 * 60 * 60);
-        $this->report->deleteExpired($lifespan);
+        $this->report->deleteExpired();
     }
 
     /**

@@ -117,22 +117,6 @@ class Report extends Model
     }
 
     /**
-     * Returns an array of total log records per severity type
-     * @return array
-     */
-    public function countSeverity()
-    {
-        $sql = "SELECT"
-                . " SUM(severity = 'danger') AS danger,"
-                . " SUM(severity = 'warning') AS warning,"
-                . " SUM(severity = 'info') AS info"
-                . " FROM log";
-
-        $result = $this->db->fetchAll($sql, array());
-        return reset($result);
-    }
-
-    /**
      * Clears log records
      * @param array $error_types
      * @return boolean
@@ -152,12 +136,20 @@ class Report extends Model
 
     /**
      * Deletes expired logs
-     * @param integer $interval
      */
-    public function deleteExpired($interval)
+    public function deleteExpired()
     {
-        $time = GC_TIME - (int) $interval;
+        $time = GC_TIME - $this->getExpiredLogLifespan();
         $this->db->run('DELETE FROM log WHERE time < ?', array($time));
+    }
+
+    /**
+     * Max number of seconds to keep logs in the database
+     * @return integer
+     */
+    public function getExpiredLogLifespan()
+    {
+        return (int) $this->config->get('report_log_lifespan', 24 * 60 * 60);
     }
 
     /**
