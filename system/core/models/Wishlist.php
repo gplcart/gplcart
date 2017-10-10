@@ -215,30 +215,7 @@ class Wishlist extends Model
         );
 
         $existing = $this->getList($conditions);
-
         return count($existing) < $limit;
-    }
-
-    /**
-     * Returns a max number of items in the user wishlist
-     * @param integer|string $user_id
-     * @return integer
-     */
-    public function getLimit($user_id)
-    {
-        $limit = $this->config->get('wishlist_limit', 20);
-
-        if (!is_numeric($user_id)) {
-            return $limit; // Anonymous
-        }
-
-        $user = $this->user->get($user_id);
-
-        if (empty($user['status'])) {
-            return $limit; // Missing user
-        }
-
-        return $this->config->get("wishlist_limit_{$user['role_id']}", 20);
     }
 
     /**
@@ -319,7 +296,8 @@ class Wishlist extends Model
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('product_id', 'user_id', 'created');
 
-        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort) && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)//
+                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY w.{$data['sort']} {$data['order']}";
         } else {
             $sql .= " ORDER BY w.created DESC";
@@ -335,7 +313,6 @@ class Wishlist extends Model
 
         $items = $this->db->fetchAll($sql, $where, array('index' => 'wishlist_id'));
         $this->hook->attach('wishlist.list', $items, $this);
-
         return $items;
     }
 
@@ -361,6 +338,45 @@ class Wishlist extends Model
         }
 
         return false;
+    }
+
+    /**
+     * Returns a max number of items for the user ID
+     * @param integer|string $user_id
+     * @return integer
+     */
+    public function getLimit($user_id)
+    {
+        if (!is_numeric($user_id)) {
+            return $this->getDefaultLimit();
+        }
+
+        $user = $this->user->get($user_id);
+
+        if (isset($user['role_id'])) {
+            return $this->getLimitByRole($user['role_id']);
+        }
+
+        return $this->getDefaultLimit();
+    }
+
+    /**
+     * Returns a max number of wishlist items for the role ID
+     * @param string|integer $role_id
+     * @return integer
+     */
+    public function getLimitByRole($role_id)
+    {
+        return (int) $this->config->get("wishlist_limit_$role_id", $this->getDefaultLimit());
+    }
+
+    /**
+     * Returns a max number of wishlist items a user can have by default
+     * @return integer
+     */
+    public function getDefaultLimit()
+    {
+        return (int) $this->config->get('wishlist_limit', 20);
     }
 
 }
