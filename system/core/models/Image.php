@@ -138,7 +138,12 @@ class Image extends Model
      */
     public function deleteMultiple(array $options)
     {
-        return $this->file->deleteMultiple($options);
+        $deleted = 0;
+        foreach ((array) $this->file->getList($options) as $file) {
+            $deleted += (int) $this->file->delete($file['file_id']);
+        }
+
+        return $deleted > 0;
     }
 
     /**
@@ -159,20 +164,6 @@ class Image extends Model
         }
 
         return $applied;
-    }
-
-    /**
-     * Returns an array of image style names
-     * @return array
-     */
-    public function getStyleNames()
-    {
-        $names = array();
-        foreach ($this->getStyleList() as $imagestyle_id => $imagestyle) {
-            $names[$imagestyle_id] = $imagestyle['name'];
-        }
-
-        return $names;
     }
 
     /**
@@ -286,15 +277,6 @@ class Image extends Model
     }
 
     /**
-     * Returns an array of default image style data
-     * @return array
-     */
-    protected function getDefaultData()
-    {
-        return array('name' => '', 'status' => false, 'actions' => array());
-    }
-
-    /**
      * Deletes an image style
      * @param integer $imagestyle_id
      * @param bool $check
@@ -332,6 +314,15 @@ class Image extends Model
     {
         $imagestyles = $this->config->select('imagestyles', array());
         return isset($imagestyles[$imagestyle_id]);
+    }
+
+    /**
+     * Returns an array of default image style data
+     * @return array
+     */
+    protected function getDefaultData()
+    {
+        return array('name' => '', 'status' => false, 'actions' => array());
     }
 
     /**
