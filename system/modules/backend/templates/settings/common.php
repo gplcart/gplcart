@@ -67,7 +67,7 @@
         </label>
       </div>
       <div class="help-block">
-        <?php echo $this->text('If enabled, all module data will be cached which gives some performance boost for a large number of modules. Remember that you have to clear the cache each time when you add/remove a module from disk or edit its code/settings. Not recommended for development'); ?>
+        <?php echo $this->text('If enabled, all module data will be cached which gives some performance boost for a large number of modules. Remember that you have to clear the cache each time when you add/remove/edit module files. Not recommended for development'); ?>
       </div>
     </div>
   </div>
