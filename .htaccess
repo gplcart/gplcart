@@ -1,5 +1,5 @@
 # Prevent direct access to files
-<FilesMatch "^\.|\.(ini|fla|psd|log|sh|c|twig|exe|cache|json|yml)$|^(gplcart)$">
+<FilesMatch "^\.|\.(ini|fla|psd|log|sh|c|twig|exe|cache|json|yml)$|^gplcart$">
     Order Allow,Deny
     Deny from all
 </FilesMatch> 
