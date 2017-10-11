@@ -9,6 +9,7 @@
 
 namespace gplcart\core\models;
 
+use DirectoryIterator;
 use gplcart\core\Model,
     gplcart\core\Hook;
 use gplcart\core\models\Language as LanguageModel;
@@ -411,18 +412,21 @@ class Module extends Model
      */
     public function setSettings($module_id, array $settings)
     {
+        $result = false;
         if ($this->isInstalled($module_id)) {
             $this->update($module_id, array('settings' => $settings));
-            return true;
-        }
-
-        if ($this->isActiveTheme($module_id)) {
+            $result = true;
+        } else if ($this->isActiveTheme($module_id)) {
             $data = array('status' => true, 'settings' => $settings, 'module_id' => $module_id);
             $this->add($data);
-            return true;
+            $result = true;
         }
 
-        return false;
+        if ($this->config->get('module_cache', 0)) {
+            $this->config->clearModuleCache();
+        }
+
+        return $result;
     }
 
     /**
@@ -625,14 +629,11 @@ class Module extends Model
      */
     protected function scanOverrideFiles($directory, array &$results = array())
     {
-        foreach (scandir($directory) as $value) {
-            $path = "$directory/$value";
-            if (is_file($path)) {
-                if (substr($path, -4) === '.php') {
-                    $results[] = rtrim($path, '.php');
-                }
-            } elseif ($value !== '.' && $value !== '..') {
-                $this->scanOverrideFiles($path, $results);
+        foreach (new DirectoryIterator($directory) as $file) {
+            if ($file->isFile() && $file->getExtension() === 'php') {
+                $results[] = $file->getFilename();
+            } elseif ($file->isDir() && !$file->isDot()) {
+                $this->scanOverrideFiles($file->getRealPath(), $results);
             }
         }
 
