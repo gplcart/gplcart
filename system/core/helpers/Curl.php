@@ -9,6 +9,8 @@
 
 namespace gplcart\core\helpers;
 
+use RuntimeException;
+
 /**
  * Provides wrappers for CURL functions
  */
@@ -168,7 +170,7 @@ class Curl
     protected function checkRequirements()
     {
         if (!function_exists('curl_init')) {
-            throw new \RuntimeException("CURL library is not installed");
+            throw new RuntimeException("CURL library is not installed");
         }
     }
 
