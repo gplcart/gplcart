@@ -44,7 +44,7 @@ class Cart extends BaseHandler
     }
 
     /**
-     * Returns true if a cart total condition is met
+     * Returns true if the cart total condition is met
      * @param array $condition
      * @param array $data
      * @return boolean
@@ -69,7 +69,7 @@ class Cart extends BaseHandler
     }
 
     /**
-     * Returns true if cart product ID condition is met
+     * Returns true if the cart product ID condition is met
      * @param array $condition
      * @param array $data
      * @return boolean
@@ -89,7 +89,7 @@ class Cart extends BaseHandler
     }
 
     /**
-     * Returns true if cart product SKU condition is met
+     * Returns true if the cart product SKU condition is met
      * @param array $condition
      * @param array $data
      * @return boolean
