@@ -102,16 +102,6 @@ class Hook
     }
 
     /**
-     * Sets method has been called
-     * @param string $method
-     * @param string $namespace
-     */
-    protected function setCalled($method, $namespace)
-    {
-        $this->called[$method][$namespace] = array($namespace, $method);
-    }
-
-    /**
      * Executes a hook
      * @param string $hook
      * @param mixed $a
@@ -157,7 +147,7 @@ class Hook
      * @param mixed $e
      * @return boolean
      */
-    protected function call($namespace, $method, &$a = null, &$b = null,
+    public function call($namespace, $method, &$a = null, &$b = null,
             &$c = null, &$d = null, &$e = null)
     {
         if (!is_callable(array($namespace, $method))) {
@@ -167,7 +157,7 @@ class Hook
         try {
             $instance = Container::get($namespace);
             $instance->{$method}($a, $b, $c, $d, $e);
-            $this->setCalled($method, $namespace);
+            $this->called[$method][$namespace] = array($namespace, $method);
         } catch (\Exception $exc) {
             return false;
         }
