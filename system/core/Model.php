@@ -61,18 +61,4 @@ abstract class Model
         return $this->db;
     }
 
-    /**
-     * Returns a property
-     * @param string $name
-     * @return mixed
-     */
-    public function getProperty($name)
-    {
-        if (property_exists($this, $name)) {
-            return $this->{$name};
-        }
-
-        throw new \InvalidArgumentException("Property $name does not exist");
-    }
-
 }
