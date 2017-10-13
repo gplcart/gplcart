@@ -32,14 +32,13 @@ class Request
 
     /**
      * Returns a data from $_SERVER variable
-     * @param string $var
+     * @param string $name
      * @param mixed $default
      * @return mixed
      */
-    public function server($var, $default = '')
+    public function server($name, $default = '')
     {
-        $data = filter_input_array(INPUT_SERVER, FILTER_SANITIZE_STRING);
-        return isset($data[$var]) ? trim($data[$var]) : $default;
+        return isset($_SERVER[$name]) ? filter_var(trim($_SERVER[$name]), FILTER_SANITIZE_STRING) : $default;
     }
 
     /**
@@ -50,17 +49,13 @@ class Request
      */
     public function base($exclude_langcode = false)
     {
-        static $cache = array();
-
-        if (isset($cache[$exclude_langcode])) {
-            return $cache[$exclude_langcode];
+        $base = GC_BASE;
+        if ($base !== '/') {
+            $base .= '/';
         }
 
-        $base = str_replace(array('\\', ' '), array('/', '%20'), dirname($this->server('SCRIPT_NAME')));
-        $base = $base === '/' ? '/' : "$base/";
-
         if (!empty($this->langcode)) {
-            $suffix = $this->langcode . '/';
+            $suffix = "{$this->langcode}/";
             $base .= $suffix;
         }
 
@@ -68,7 +63,6 @@ class Request
             $base = substr($base, 0, -strlen($suffix));
         }
 
-        $cache[$exclude_langcode] = $base;
         return $base;
     }
 
