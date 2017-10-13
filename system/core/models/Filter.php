@@ -37,7 +37,7 @@ class Filter extends Model
     /**
      * Filter a text string
      * @param string $text
-     * @param integer|array $filter
+     * @param string|array $filter
      * @return string
      */
     public function run($text, $filter)
@@ -96,7 +96,7 @@ class Filter extends Model
      */
     public function get($filter_id)
     {
-        $filters = $this->getList();
+        $filters = $this->getHandlers();
         return empty($filters[$filter_id]) ? array() : $filters[$filter_id];
     }
 
@@ -107,8 +107,8 @@ class Filter extends Model
      */
     public function getByRole($role_id)
     {
-        foreach ($this->getList() as $filter) {
-            if (in_array($role_id, $filter['role_id'])) {
+        foreach ($this->getHandlers() as $filter) {
+            if (in_array($role_id, (array) $filter['role_id'])) {
                 return $filter;
             }
         }
@@ -120,16 +120,21 @@ class Filter extends Model
      * Returns an array of defined filters
      * @return array
      */
-    public function getList()
+    public function getHandlers()
     {
-        $filters = &gplcart_static('filter.list');
+        $filters = &gplcart_static('filter.handlers');
 
         if (isset($filters)) {
             return $filters;
         }
 
         $filters = array();
-        $this->hook->attach('filter.list', $filters, $this);
+        $this->hook->attach('filter.handlers', $filters, $this);
+
+        foreach ($filters as $id => &$filter) {
+            $filter['filter_id'] = $id;
+        }
+
         return $filters;
     }
 
