@@ -10,6 +10,9 @@ define('GC_VERSION', '1.0.0');
 define('GC_START', microtime(true));
 define('GC_CLI', PHP_SAPI === 'cli');
 define('GC_WIN', strtoupper(substr(PHP_OS, 0, 3)) === 'WIN');
+define('GC_TIME', (int) $_SERVER['REQUEST_TIME']);
+define('GC_BASE', str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])));
+// File paths
 define('GC_ROOT_DIR', realpath(__DIR__ . '/../'));
 define('GC_SYSTEM_DIR', GC_ROOT_DIR . '/system');
 define('GC_CORE_DIR', GC_SYSTEM_DIR . '/core');
@@ -54,4 +57,6 @@ define('GC_PRIVATE_MODULE_DIR', GC_PRIVATE_DIR . '/modules');
 define('GC_IMAGE_DIR', GC_FILE_DIR . '/image/upload');
 define('GC_IMAGE_CACHE_DIR', GC_FILE_DIR . '/image/cache');
 define('GC_TRANSLATION_DIR', GC_SYSTEM_DIR . '/translations');
-define('GC_TIME', (int) $_SERVER['REQUEST_TIME']);
+
+
+
