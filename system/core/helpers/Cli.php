@@ -33,6 +33,7 @@ class Cli
 
             $key = null;
             $arg = $argv[$i];
+
             if (substr($arg, 0, 2) === '--') {
                 $pos = strpos($arg, '=');
                 if ($pos === false) {
@@ -55,22 +56,26 @@ class Cli
             }
 
             if (substr($arg, 0, 1) === '-') {
+
                 if (substr($arg, 2, 1) === '=') {
                     $key = substr($arg, 1, 1);
                     $value = substr($arg, 3);
                     $out[$key] = $value;
                     continue;
                 }
+
                 $chars = str_split(substr($arg, 1));
                 foreach ($chars as $char) {
                     $key = $char;
                     $value = isset($out[$key]) ? $out[$key] : true;
                     $out[$key] = $value;
                 }
+
                 if ($i + 1 < $j && $argv[$i + 1][0] !== '-') {
                     $out[$key] = $argv[$i + 1];
                     $i++;
                 }
+
                 continue;
             }
 
