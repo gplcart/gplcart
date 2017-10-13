@@ -73,7 +73,7 @@ class Graph
 
     /**
      * Sort a list of IDs according to their dependencies
-     * Dependend items always go last
+     * Dependent items always go last
      * @param array $ids
      * @param array $list
      * @return array
@@ -120,14 +120,13 @@ class Graph
             if (!isset($component_weights[$component])) {
                 $component_weights[$component] = 0;
             }
-            $this->graph[$vertex]['weight'] = $component_weights[$component]--;
+            $this->graph[$vertex]['weight'] = $component_weights[$component] --;
         }
     }
 
     /**
      * Performs a depth-first search on a graph
      * @param string $start
-     * @return null
      */
     protected function searchComponent($start)
     {
@@ -170,7 +169,6 @@ class Graph
         }
 
         $this->state['last_visit_order'][] = $start;
-        return null;
     }
 
 }
