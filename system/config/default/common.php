@@ -44,6 +44,7 @@ $config = array();
 # $config['history_lifespan']                     = 30*24*60*60; // Max number of seconds to keep records in "history" table
 # $config['image_cache_lifetime']                 = 365*24*60*60; // Max number of seconds to keep in browser cache processed images
 # $config['language']                             = ''; // Default store language
+# $config['mailer']                               = 'php'; // Mailer
 # $config['module_cache']                         = 0; // Whether to cache modules
 # $config['no_image']                             = 'image/misc/no-image.png'; // Path to placeholder image
 # $config['order_status']                         = 'pending'; // Default order status
@@ -109,7 +110,6 @@ $config = array();
 # $config['field_value_image_dirname']            = 'field_value'; // Default folder for uploaded field value images
 # $config['compress_js']                          = 0; // Whether to aggregate JS files
 # $config['compress_css']                         = 0; // Whether to aggregate and compress CSS files
-# $config['mailer']                               = 'php'; // Mailer
 # $config['filter_allowed_tags']                  = array('a', 'i', 'b', 'em', 'span', 'strong', 'ul', 'ol', 'li'); // Array of allowed tags for default filter
 # $config['filter_allowed_protocols']             = array('http', 'ftp', 'mailto'); // Array of allowed protocols for default filter
 
