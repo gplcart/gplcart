@@ -230,7 +230,7 @@ class Config
             $cache = $this->get('module_cache', 0);
         }
 
-        if ($cache && is_file(GC_CONFIG_MODULE)) {
+        if ($cache && $this->hasModuleCache()) {
             $modules = require GC_CONFIG_MODULE;
             return $modules;
         }
