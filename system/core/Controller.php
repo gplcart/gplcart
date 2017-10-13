@@ -9,6 +9,8 @@
 
 namespace gplcart\core;
 
+use InvalidArgumentException;
+
 /**
  * Base controller class
  */
@@ -494,7 +496,7 @@ abstract class Controller
             return $this->$name;
         }
 
-        throw new \InvalidArgumentException("Property $name does not exist");
+        throw new InvalidArgumentException("Property $name does not exist");
     }
 
     /**
@@ -1000,7 +1002,6 @@ abstract class Controller
     public function isSubmitted($key)
     {
         $result = $this->getSubmitted($key);
-
         return isset($result);
     }
 
@@ -1499,7 +1500,9 @@ abstract class Controller
     {
         if (!empty($this->langcode) && !is_file($this->language->getContextJsFile())) {
             foreach ($scripts as $key => $script) {
-                if (strpos($key, 'system/modules/') === 0 && strpos($key, '/vendor/') === false && !empty($script['file'])) {
+                if (strpos($key, 'system/modules/') === 0//
+                        && strpos($key, '/vendor/') === false//
+                        && !empty($script['file'])) {
                     $string = file_get_contents($script['file']);
                     $this->language->createJsTranslation($string);
                 }
