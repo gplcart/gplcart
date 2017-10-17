@@ -250,8 +250,7 @@ class File extends Model
             return $handlers;
         }
 
-        $handlers = require GC_CONFIG_FILE;
-
+        $handlers = gplcart_config_get(GC_CONFIG_FILE);
         $this->hook->attach('file.handlers', $handlers, $this);
         return $handlers;
     }
@@ -523,30 +522,23 @@ class File extends Model
      * Multiple file upload
      * @param array $files
      * @param null|string|false $handler
-     * @param string $path
-     * @param bool $relative
+     * @param string|null $path
      * @return array
      */
-    public function uploadMultiple($files, $handler, $path, $relative = true)
+    public function uploadMultiple($files, $handler, $path = null)
     {
-        if (empty($files['name']) || (count($files['name']) == 1 && empty($files['name'][0]))) {
-            return array();
+        $return = array('transferred' => array(), 'errors' => array());
+
+        if (!gplcart_file_convert_upload($files)) {
+            return $return;
         }
 
-        $converted = array();
-        foreach ($files as $key => $all) {
-            foreach ($all as $i => $val) {
-                $converted[$i][$key] = $val;
-            }
-        }
-
-        $return = array();
-        foreach ($converted as $key => $file) {
+        foreach ($files as $key => $file) {
             $result = $this->upload($file, $handler, $path);
             if ($result === true) {
-                $return[$key]['transferred'] = $this->getTransferred($relative);
+                $return['transferred'][$key] = $this->getTransferred(true);
             } else {
-                $return[$key]['errors'] = (string) $result;
+                $return['errors'][$key] = (string) $result;
             }
         }
 
@@ -616,20 +608,11 @@ class File extends Model
             return false;
         }
 
-        $file = tempnam($this->getTempDirectory(), 'DWN');
+        $file = gplcart_file_tempname();
         $fh = fopen($file, "w");
         fwrite($fh, $content);
         fclose($fh);
         return $file;
-    }
-
-    /**
-     * Returns directory path used for temporary files
-     * @return string
-     */
-    public function getTempDirectory()
-    {
-        return ini_get('upload_tmp_dir') ?: sys_get_temp_dir();
     }
 
     /**
@@ -710,7 +693,7 @@ class File extends Model
         }
 
         $suffix = gplcart_string_random(6);
-        $clean = gplcart_file_clean($filename);
+        $clean = gplcart_file_sanitize($filename);
 
         return "$clean-$suffix.$extension";
     }
