@@ -10,7 +10,6 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Model;
-use gplcart\core\models\Language as LanguageModel;
 use gplcart\core\traits\Translation as TranslationTrait;
 
 /**
@@ -22,19 +21,11 @@ class Collection extends Model
     use TranslationTrait;
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
+     * Constructor
      */
-    protected $language;
-
-    /**
-     * @param LanguageModel $language
-     */
-    public function __construct(LanguageModel $language)
+    public function __construct()
     {
         parent::__construct();
-
-        $this->language = $language;
     }
 
     /**
@@ -224,12 +215,7 @@ class Collection extends Model
             return $handlers;
         }
 
-        $handlers = require GC_CONFIG_COLLECTION;
-
-        array_walk($handlers, function (&$handler) {
-            $handler['title'] = $this->language->text($handler['title']);
-        });
-
+        $handlers = gplcart_config_get(GC_CONFIG_COLLECTION);
         $this->hook->attach('collection.handlers', $handlers, $this);
         return $handlers;
     }
