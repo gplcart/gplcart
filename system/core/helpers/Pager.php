@@ -380,12 +380,14 @@ class Pager
             'page' => 1,
             'limit' => 0,
             'total' => 0,
+            'max_pages' => 10,
             'query' => array()
         );
 
         $this->setPage($data['page'])
                 ->setPerPage($data['limit'])
                 ->setTotal($data['total'])
+                ->setMaxPages($data['max_pages'])
                 ->setUrlPattern('?' . urldecode(http_build_query($data['query'])));
 
         return $this;
