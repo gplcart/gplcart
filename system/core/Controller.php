@@ -1206,7 +1206,7 @@ abstract class Controller
         $value = $this->getSubmitted($key);
 
         if (isset($value) && is_string($value)) {
-            $array = gplcart_string_array($value);
+            $array = gplcart_string_explode_multiline($value);
             $this->setSubmitted($key, $array);
             return $array;
         }
