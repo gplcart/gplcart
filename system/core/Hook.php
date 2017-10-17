@@ -172,7 +172,7 @@ class Hook
      */
     public function getMethod($hook)
     {
-        return 'hook' . strtolower(str_replace(".", "", $hook));
+        return 'hook' . strtolower(str_replace(array('.', '_'), '', $hook));
     }
 
 }
