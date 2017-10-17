@@ -65,11 +65,11 @@ class Url extends BaseHandler
             return false;
         }
 
-        $path = $this->route->path();
+        $path = $this->route->getPath();
 
         $found = false;
         foreach ((array) $condition['value'] as $pattern) {
-            if (gplcart_path_parse($path, $pattern)) {
+            if (gplcart_path_match($path, $pattern)) {
                 $found = true;
             }
         }

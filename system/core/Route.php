@@ -98,7 +98,7 @@ class Route
             return $routes;
         }
 
-        $routes = require GC_CONFIG_ROUTE;
+        $routes = gplcart_config_get(GC_CONFIG_ROUTE);
         $this->hook->attach('route.list', $routes, $this);
         return $routes;
     }
@@ -106,7 +106,7 @@ class Route
     /**
      * Processes the current route
      */
-    public function process()
+    public function output()
     {
         $this->outputAlias();
         $this->outputRoute();
@@ -192,17 +192,18 @@ class Route
                 continue;
             }
 
-            $this->call($pattern, array($path, $pattern, $alias), 'alias');
+            $this->callHandler($pattern, array($path, $pattern, $alias), 'alias');
         }
 
         foreach ($routes as $pattern => $route) {
-            $this->call($pattern, array($path, $pattern, null), 'alias');
+            $this->callHandler($pattern, array($path, $pattern, null), 'alias');
         }
     }
 
     /**
      * Whether the path 100% cannot have an alias
      * Allows to avoid unneeded database queries
+     * @todo Rethink this
      * @param string $path
      * @return boolean
      */
@@ -235,14 +236,14 @@ class Route
         if (!empty($alias['id_key']) && !empty($alias['id_value'])) {
             $entity = substr($alias['id_key'], 0, -3);
             if (strpos($pattern, "$entity/") === 0) {
-                $this->call($pattern, array($alias['id_value']));
+                $this->callHandler($pattern, array($alias['id_value']));
                 throw new RouteException('An error occurred while processing the route');
             }
         }
 
         if (!isset($alias)) {
-            $arguments = gplcart_path_parse($path, $pattern);
-            if (is_array($arguments)) {
+            $arguments = array();
+            if (gplcart_path_match($path, $pattern, $arguments)) {
                 $entity_id = reset($arguments);
                 $entity = strtok($pattern, '/') . '_id';
                 $alias_path = $this->db->fetchColumn('SELECT alias FROM alias WHERE id_key=? AND id_value=?', array($entity, $entity_id));
@@ -261,7 +262,8 @@ class Route
      * @param string $method
      * @return mixed
      */
-    public function call($pattern, $arguments = array(), $method = 'controller')
+    public function callHandler($pattern, $arguments = array(),
+            $method = 'controller')
     {
         $list = $this->getList();
         $route = $list[$pattern];
@@ -305,11 +307,11 @@ class Route
                 continue;
             }
 
+            $arguments = array();
             $path = empty($this->path) ? '/' : $this->path;
-            $arguments = gplcart_path_parse($path, $pattern);
 
-            if (is_array($arguments)) {
-                $this->call($pattern, $arguments);
+            if (gplcart_path_match($path, $pattern, $arguments)) {
+                $this->callHandler($pattern, $arguments);
                 throw new RouteException('An error occurred while processing the route');
             }
         }
@@ -321,7 +323,7 @@ class Route
     public function output404()
     {
         $pattern = $this->url->isBackend() ? 'status-backend' : 'status-frontend';
-        $this->call($pattern, array(404));
+        $this->callHandler($pattern, array(404));
         throw new RouteException('An error occurred while processing the route');
     }
 
@@ -329,7 +331,7 @@ class Route
      * Returns the current path
      * @return string
      */
-    public function path()
+    public function getPath()
     {
         return $this->path;
     }
