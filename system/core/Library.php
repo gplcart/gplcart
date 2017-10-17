@@ -82,16 +82,17 @@ class Library
             return (array) $libraries;
         }
 
-        if (is_file(GC_CONFIG_COMPILED_LIBRARY)) {
-            $libraries = require GC_CONFIG_COMPILED_LIBRARY;
-            return $libraries;
+        $config = gplcart_config_get(GC_CONFIG_COMPILED_LIBRARY);
+
+        if (isset($config)) {
+            return $libraries = $config;
         }
 
-        $libraries = require GC_CONFIG_LIBRARY;
+        $libraries = gplcart_config_get(GC_CONFIG_LIBRARY);
         $this->hook->attach('library.list', $libraries, $this);
 
         $libraries = $this->prepareList($libraries);
-        gplcart_file_config(GC_CONFIG_COMPILED_LIBRARY, $libraries);
+        gplcart_config_set(GC_CONFIG_COMPILED_LIBRARY, $libraries);
         return (array) $libraries;
     }
 

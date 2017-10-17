@@ -131,13 +131,7 @@ class Condition extends Model
             return $handlers;
         }
 
-        $handlers = require GC_CONFIG_CONDITION;
-
-        array_walk($handlers, function(&$handler) {
-            $handler['title'] = $this->language->text($handler['title']);
-            $handler['description'] = $this->language->text($handler['description']);
-        });
-
+        $handlers = gplcart_config_get(GC_CONFIG_CONDITION);
         $this->hook->attach('condition.handlers', $handlers, $this);
         return $handlers;
     }

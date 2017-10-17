@@ -510,7 +510,7 @@ class Language extends Model
      */
     protected function getFilenameFromContext($context)
     {
-        $clean = gplcart_file_clean(strtolower(str_replace('/*', '_', "$context")), '-');
+        $clean = gplcart_file_sanitize(strtolower(str_replace('/*', '_', "$context")), '-');
         return str_replace(array('-_', '_-'), '_', $clean);
     }
 
@@ -703,7 +703,7 @@ class Language extends Model
             return $result;
         }
 
-        gplcart_file_delete($this->getCompiledDirectory($langcode), array('csv'));
+        gplcart_file_empty($this->getCompiledDirectory($langcode), array('csv'));
 
         gplcart_static_clear();
 
@@ -772,11 +772,7 @@ class Language extends Model
      */
     public function getIso($code = null)
     {
-        static $data = null;
-
-        if (!isset($data)) {
-            $data = require GC_CONFIG_LANGUAGE;
-        }
+        $data = gplcart_config_get(GC_CONFIG_LANGUAGE);
 
         if (isset($code)) {
             return isset($data[$code]) ? (array) $data[$code] : array();

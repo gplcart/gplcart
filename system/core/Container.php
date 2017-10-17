@@ -85,11 +85,7 @@ class Container
      */
     protected static function override(&$namespace)
     {
-        static $map = null;
-
-        if (!isset($map) && is_file(GC_CONFIG_OVERRIDE)) {
-            $map = require GC_CONFIG_OVERRIDE;
-        }
+        $map = gplcart_config_get(GC_CONFIG_OVERRIDE);
 
         if (isset($map[$namespace])) {
             $override = end($map[$namespace]);

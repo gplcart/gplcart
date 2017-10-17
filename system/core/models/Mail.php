@@ -38,7 +38,7 @@ class Mail extends Model
             return $handlers;
         }
 
-        $handlers = require GC_CONFIG_MAIL;
+        $handlers = gplcart_config_get(GC_CONFIG_MAIL);
         $this->hook->attach('mail.handlers', $handlers, $this);
 
         return $handlers;
