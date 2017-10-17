@@ -41,12 +41,7 @@ class User extends BaseHandler
      */
     public function id(array $condition)
     {
-        static $user_id = null;
-
-        if ($user_id === null) {
-            $user_id = $this->user->getId();
-        }
-
+        $user_id = $this->user->getId();
         return $this->compare($user_id, $condition['value'], $condition['operator']);
     }
 
@@ -57,12 +52,7 @@ class User extends BaseHandler
      */
     public function roleId(array $condition)
     {
-        static $role_id = null;
-
-        if ($role_id === null) {
-            $role_id = $this->user->getRoleId();
-        }
-
+        $role_id = $this->user->getRoleId();
         return $this->compare($role_id, $condition['value'], $condition['operator']);
     }
 
