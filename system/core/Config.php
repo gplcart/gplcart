@@ -46,12 +46,51 @@ class Config
      */
     public function __construct()
     {
-        $this->init();
+        if (is_readable(GC_CONFIG_COMMON)) {
+
+            $this->exists = true;
+            $this->config = gplcart_config_get(GC_CONFIG_COMMON);
+
+            $this->setDb();
+            $this->config = array_merge($this->config, $this->select());
+            $this->setKey();
+        }
 
         date_default_timezone_set($this->get('timezone', 'Europe/London'));
 
         $this->setErrorReportingLevel();
         $this->setErrorHandlers();
+    }
+
+    /**
+     * Sets a unique key
+     */
+    protected function setKey()
+    {
+        $this->key = $this->get('private_key', '');
+
+        if (empty($this->key)) {
+            $this->key = gplcart_string_random();
+            $this->set('private_key', $this->key);
+        }
+    }
+
+    /**
+     * Sets the database
+     */
+    protected function setDb()
+    {
+        if (isset($this->db)) {
+            return false;
+        }
+
+        if (empty($this->config['database'])) {
+            throw new DatabaseException('Missing database settings');
+        }
+
+        $this->db = Container::get('gplcart\\core\\Database');
+        $this->db->set($this->config['database']);
+        return true;
     }
 
     /**
@@ -104,26 +143,39 @@ class Config
     }
 
     /**
-     * Returns a module configuration value
-     * @param string $module_id
-     * @param string $key
+     * Select all or a single setting from the database
+     * @param null|string $name
      * @param mixed $default
      * @return mixed
      */
-    public function module($module_id, $key = null, $default = null)
+    public function select($name = null, $default = null)
     {
-        $modules = $this->getModules();
-
-        if (empty($modules[$module_id]['settings'])) {
-            return $default;
+        if (!$this->exists) {
+            return isset($name) ? $default : array();
         }
 
-        if (!isset($key)) {
-            return (array) $modules[$module_id]['settings'];
+        if (isset($name)) {
+            $result = $this->db->fetch('SELECT * FROM settings WHERE id=?', array($name));
+            if (empty($result)) {
+                return $default;
+            }
+            if ($result['serialized']) {
+                return unserialize($result['value']);
+            }
+            return $result['value'];
         }
 
-        $value = gplcart_array_get($modules[$module_id]['settings'], $key);
-        return isset($value) ? $value : $default;
+        $results = $this->db->fetchAll('SELECT * FROM settings', array());
+
+        $settings = array();
+        foreach ($results as $result) {
+            if ($result['serialized']) {
+                $result['value'] = unserialize($result['value']);
+            }
+            $settings[$result['id']] = $result['value'];
+        }
+
+        return $settings;
     }
 
     /**
@@ -168,6 +220,29 @@ class Config
     }
 
     /**
+     * Returns a module configuration value
+     * @param string $module_id
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     */
+    public function module($module_id, $key = null, $default = null)
+    {
+        $modules = $this->getModules();
+
+        if (empty($modules[$module_id]['settings'])) {
+            return $default;
+        }
+
+        if (!isset($key)) {
+            return (array) $modules[$module_id]['settings'];
+        }
+
+        $value = gplcart_array_get($modules[$module_id]['settings'], $key);
+        return isset($value) ? $value : $default;
+    }
+
+    /**
      * Returns the database class instance
      * @return \gplcart\core\Database
      */
@@ -183,6 +258,15 @@ class Config
     public function exists()
     {
         return $this->exists;
+    }
+
+    /**
+     * Returns a private key
+     * @return string
+     */
+    public function key()
+    {
+        return $this->key;
     }
 
     /**
@@ -205,15 +289,6 @@ class Config
     }
 
     /**
-     * Returns a private key
-     * @return string
-     */
-    public function key()
-    {
-        return $this->key;
-    }
-
-    /**
      * Returns an array of all available modules
      * @param bool|null $cache
      * @return array
@@ -231,8 +306,7 @@ class Config
         }
 
         if ($cache && $this->hasModuleCache()) {
-            $modules = require GC_CONFIG_MODULE;
-            return $modules;
+            return $modules = gplcart_config_get(GC_CONFIG_MODULE);
         }
 
         $installed = $this->getInstalledModules();
@@ -269,12 +343,16 @@ class Config
                 $info = array_replace_recursive($info, $installed[$module_id]);
             }
 
-            if (!empty($info['status'])) {
-                $instance = $this->getModuleInstance($module_id);
-                if ($instance instanceof Module) {
-                    $info['hooks'] = $this->getModuleHooks($instance);
-                    $info['class'] = get_class($instance);
-                }
+            if (empty($info['status'])) {
+                $modules[$module_id] = $info;
+                continue;
+            }
+
+            $instance = $this->getModuleInstance($module_id);
+
+            if ($instance instanceof Module) {
+                $info['hooks'] = $this->getModuleHooks($instance);
+                $info['class'] = get_class($instance);
             }
 
             $modules[$module_id] = $info;
@@ -283,7 +361,7 @@ class Config
         gplcart_array_sort($modules);
 
         if ($cache) {
-            gplcart_file_config(GC_CONFIG_MODULE, $modules);
+            gplcart_config_set(GC_CONFIG_MODULE, $modules);
         }
 
         return $modules;
@@ -448,79 +526,6 @@ class Config
         return array_filter($this->getModules(), function ($module) {
             return !empty($module['status']);
         });
-    }
-
-    /**
-     * Initializes the system configuration
-     * @return bool
-     * @throws DatabaseException
-     */
-    protected function init()
-    {
-        if (!is_readable(GC_CONFIG_COMMON)) {
-            return false;
-        }
-
-        $this->config = require GC_CONFIG_COMMON;
-
-        if (empty($this->config['database'])) {
-            throw new DatabaseException('Missing database settings');
-        }
-
-        $this->exists = true;
-
-        if (isset($this->db)) {
-            return true;
-        }
-
-        $this->db = Container::get('gplcart\\core\\Database');
-        $this->db->set($this->config['database']);
-
-        $this->config = array_merge($this->config, $this->select());
-        $this->key = $this->get('private_key', '');
-
-        if (empty($this->key)) {
-            $this->key = gplcart_string_random();
-            $this->set('private_key', $this->key);
-        }
-
-        return true;
-    }
-
-    /**
-     * Select all or a single setting from the database
-     * @param null|string $name
-     * @param mixed $default
-     * @return mixed
-     */
-    public function select($name = null, $default = null)
-    {
-        if (!$this->exists) {
-            return isset($name) ? $default : array();
-        }
-
-        if (isset($name)) {
-            $result = $this->db->fetch('SELECT * FROM settings WHERE id=?', array($name));
-            if (empty($result)) {
-                return $default;
-            }
-            if ($result['serialized']) {
-                return unserialize($result['value']);
-            }
-            return $result['value'];
-        }
-
-        $results = $this->db->fetchAll('SELECT * FROM settings', array());
-
-        $settings = array();
-        foreach ($results as $result) {
-            if ($result['serialized']) {
-                $result['value'] = unserialize($result['value']);
-            }
-            $settings[$result['id']] = $result['value'];
-        }
-
-        return $settings;
     }
 
     /**
