@@ -139,7 +139,7 @@ class UserRole extends BackendController
     {
         $this->controlAccess('user_role_edit');
         $this->role->update($this->data_role['role_id'], $this->getSubmitted());
-        $this->redirect('admin/user/role', $this->text('Role has been updated'), 'success');
+        $this->redirect('', $this->text('Role has been updated'), 'success');
     }
 
     /**
