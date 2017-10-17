@@ -591,7 +591,7 @@ class Module extends Model
      */
     protected function setOverrideConfig()
     {
-        return gplcart_file_config(GC_CONFIG_OVERRIDE, $this->getOverrideMap());
+        return gplcart_config_set(GC_CONFIG_OVERRIDE, $this->getOverrideMap());
     }
 
     /**
