@@ -14,8 +14,12 @@
  * @param integer $lifespan
  * @return integer
  */
-function gplcart_file_delete($directory, $pattern, $lifespan = 0)
+function gplcart_file_empty($directory, $pattern, $lifespan = 0)
 {
+    if (!is_dir($directory)) {
+        return 0;
+    }
+
     $deleted = 0;
     foreach (gplcart_file_scan($directory, $pattern) as $file) {
         if ((filemtime($file) < GC_TIME - $lifespan) && unlink($file)) {
@@ -44,32 +48,31 @@ function gplcart_file_scan($path, $pattern)
 
 /**
  * Recursive deletes files and directories
- * @param string $directory
+ * @param string $file
  * @param int $errors
  * @param int $success
  * @return boolean
  */
-function gplcart_file_delete_recursive($directory, &$errors = 0, &$success = 0)
+function gplcart_file_delete_recursive($file, &$errors = 0, &$success = 0)
 {
-    if (!is_dir($directory)) {
+    if (is_file($file)) {
+        if (unlink($file)) {
+            $success++;
+            return true;
+        }
+        $errors++;
         return false;
     }
 
-    foreach (gplcart_file_scan_recursive($directory) as $file) {
-
-        if (is_dir($file)) {
-            gplcart_file_delete_recursive($file, $errors, $success);
-            continue;
-        }
-
-        if (unlink($file)) {
-            $success++;
-        } else {
-            $errors++;
-        }
+    if (!is_dir($file)) {
+        return false;
     }
 
-    if (rmdir($directory)) {
+    foreach (gplcart_file_scan_recursive($file) as $f) {
+        gplcart_file_delete_recursive($f, $errors, $success);
+    }
+
+    if (rmdir($file)) {
         $success++;
         return true;
     }
@@ -122,6 +125,37 @@ function gplcart_file_unique($file)
     } while (file_exists($modified_file));
 
     return $modified_file;
+}
+
+/**
+ * Returns an absolute path to a temporary file in the private directory
+ * @param string $filename
+ * @param bool $unique
+ * @return string
+ */
+function gplcart_file_private_temp($filename, $unique = false)
+{
+    $file = GC_PRIVATE_TEMP_DIR . "/$filename";
+    return $unique ? gplcart_file_unique($file) : $file;
+}
+
+/**
+ * Returns an absolute path to either private module directory or file
+ * @param string $module_id
+ * @param string $filename
+ * @param bool $unique
+ * @return string
+ */
+function gplcart_file_private_module($module_id, $filename = '', $unique = false)
+{
+    $dir = GC_PRIVATE_MODULE_DIR . "/$module_id";
+
+    if (empty($filename)) {
+        return $dir;
+    }
+
+    $file = "$dir/$filename";
+    return $unique ? gplcart_file_unique($file) : $file;
 }
 
 /**
@@ -211,7 +245,7 @@ function gplcart_file_perms($permissions)
  * @param string $replace
  * @return string
  */
-function gplcart_file_clean($name, $replace = '')
+function gplcart_file_sanitize($name, $replace = '')
 {
     // Remove unsafe characters
     $safe = preg_replace('/[^0-9a-zA-Z-.,_]/', $replace, $name);
@@ -220,22 +254,42 @@ function gplcart_file_clean($name, $replace = '')
 }
 
 /**
- * Saves PHP configuration in a file
- * @param string $file
- * @param mixed $data
+ * Returns temporary file directory
+ * @return string
  */
-function gplcart_file_config($file, $data)
+function gplcart_file_tempdir()
 {
-    if (file_exists($file)) {
-        chmod($file, 0644);
+    return ini_get('upload_tmp_dir') ?: sys_get_temp_dir();
+}
+
+/**
+ * Create file with unique file name in the temporary directory
+ * @param string $prefix
+ * @return string
+ */
+function gplcart_file_tempname($prefix = 'GC')
+{
+    return tempnam(gplcart_file_tempdir(), $prefix);
+}
+
+/**
+ * Reorder the $_FILES array when uploading multiple files
+ * @param array $files
+ * @return boolean
+ */
+function gplcart_file_convert_upload(&$files)
+{
+    if (empty($files['name']) || (count($files['name']) == 1 && empty($files['name'][0]))) {
+        return false;
     }
 
-    $result = file_put_contents($file, '<?php return ' . var_export($data, true) . ';');
-
-    if ($result !== false) {
-        chmod($file, 0444);
-        return true;
+    $converted = array();
+    foreach ($files as $key => $all) {
+        foreach ($all as $i => $val) {
+            $converted[$i][$key] = $val;
+        }
     }
 
-    return false;
+    $files = $converted;
+    return true;
 }
