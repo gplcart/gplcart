@@ -53,6 +53,12 @@ class User extends Model
     protected $session;
 
     /**
+     * The current user ID
+     * @var integer
+     */
+    protected $uid;
+
+    /**
      * @param AddressModel $address
      * @param UserRoleModel $role
      * @param MailModel $mail
@@ -69,6 +75,8 @@ class User extends Model
         $this->address = $address;
         $this->session = $session;
         $this->language = $language;
+
+        $this->uid = $this->getId();
     }
 
     /**
@@ -221,7 +229,7 @@ class User extends Model
             return $this->getSuperadminId() == $user_id;
         }
 
-        return $this->getSuperadminId() == $this->getId();
+        return $this->getSuperadminId() == $this->uid;
     }
 
     /**
@@ -245,12 +253,12 @@ class User extends Model
     /**
      * Whether a user has an access to do something
      * @param string $permission
-     * @param mixed $user
+     * @param null|int $user_id
      * @return boolean
      */
-    public function access($permission, $user = null)
+    public function access($permission, $user_id = null)
     {
-        if ($this->isSuperadmin($user)) {
+        if ($this->isSuperadmin($user_id)) {
             return true;
         }
 
@@ -258,27 +266,31 @@ class User extends Model
             return false;
         }
 
-        $permissions = $this->getPermissions($user);
+        $permissions = $this->getPermissions($user_id);
         return in_array($permission, $permissions);
     }
 
     /**
      * Returns user permissions
-     * @param mixed $user
+     * @param null|integer $user_id
      * @return array
      */
-    public function getPermissions($user = null)
+    public function getPermissions($user_id = null)
     {
-        if (!isset($user)) {
-            $user = $this->getId();
+        static $permissions = array();
+
+        if (!isset($user_id)) {
+            $user_id = $this->uid;
         }
 
-        if (is_numeric($user)) {
-            $user = $this->get($user);
+        if (isset($permissions[$user_id])) {
+            return $permissions[$user_id];
         }
+
+        $user = $this->get($user_id);
 
         if (empty($user['role_id'])) {
-            return array();
+            return $permissions[$user_id] = array();
         }
 
         $role = array();
@@ -289,10 +301,10 @@ class User extends Model
         }
 
         if (empty($role['permissions'])) {
-            return array();
+            return $permissions[$user_id] = array();
         }
 
-        return (array) $role['permissions'];
+        return $permissions[$user_id] = (array) $role['permissions'];
     }
 
     /**
