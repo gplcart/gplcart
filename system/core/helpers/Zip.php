@@ -71,7 +71,7 @@ class Zip
      * @param string $wrapper Wrapping local directory in the archive
      * @return boolean
      */
-    public function folder($source, $destination, $wrapper = '')
+    public function directory($source, $destination, $wrapper = '')
     {
         $files = gplcart_file_scan_recursive($source);
 
@@ -105,7 +105,7 @@ class Zip
      * @param string $destination
      * @return bool
      */
-    public function create($source, $destination)
+    public function file($source, $destination)
     {
         settype($source, 'array');
 
