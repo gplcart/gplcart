@@ -303,25 +303,30 @@ class Component extends BaseValidator
     /**
      * Validates multiple uploaded images
      * @param string $entity
-     * @return bool
+     * @return bool|null
      */
     protected function validateUploadImagesComponent($entity)
     {
         $files = $this->request->file('files');
+
+        if (empty($files['name'][0])) {
+            return null;
+        }
+
         $directory = $this->config->get("{$entity}_image_dirname", $entity);
         $results = $this->file->uploadMultiple($files, 'image', "image/upload/$directory");
 
-        $errors = 0;
-        foreach ($results as $key => $result) {
-            if (empty($result['error'])) {
-                $this->setSubmitted("images.$key.path", $result['transferred']);
-            } else {
-                $errors++;
-                $this->setError('images', $result['error']);
-            }
+        foreach ($results['transferred'] as $key => $path) {
+            $this->setSubmitted("images.$key.path", $path);
         }
 
-        return empty($errors);
+        if (!empty($results['errors'])) {
+            $message = $this->language->text('@num errors occurred while uploading files', array('@num' => count($results['errors'])));
+            $this->setError('images', $message);
+            return false;
+        }
+
+        return true;
     }
 
     /**
