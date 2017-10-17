@@ -11,6 +11,5 @@ system/modules/*
 files/private/*
 !files/private/.htaccess
 !files/private/stopwords
-!files/private/download
 !files/private/temp
 !files/private/modules

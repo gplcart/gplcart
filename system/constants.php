@@ -51,7 +51,6 @@ define('GC_CONFIG_FILE', GC_CONFIG_DEFAULT_DIR . '/file.php');
 define('GC_UPLOAD_DIR', GC_FILE_DIR . '/upload');
 define('GC_DOWNLOAD_DIR', GC_FILE_DIR . '/download');
 define('GC_PRIVATE_DIR', GC_FILE_DIR . '/private');
-define('GC_PRIVATE_DOWNLOAD_DIR', GC_PRIVATE_DIR . '/download');
 define('GC_PRIVATE_TEMP_DIR', GC_PRIVATE_DIR . '/temp');
 define('GC_PRIVATE_MODULE_DIR', GC_PRIVATE_DIR . '/modules');
 define('GC_IMAGE_DIR', GC_FILE_DIR . '/image/upload');
