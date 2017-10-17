@@ -78,7 +78,7 @@ class Url
         }
 
         foreach ($values as $value) {
-            if (preg_match("~$value~", null) === false) {
+            if (!gplcart_string_is_regexp($value)) {
                 $vars = array('@field' => $this->language->text('Condition'));
                 return $this->language->text('@field has invalid value', $vars);
             }
