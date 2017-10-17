@@ -47,7 +47,7 @@
           <div class="help-block">
             <?php echo $this->error('actions'); ?>
             <div class="text-muted">
-              <?php echo $this->text('List of actions to be applied from the top to bottom. One action per line. See the legend. For example to make thumbnail 50X50: thumbnail 50,50'); ?>
+              <?php echo $this->text('List of actions in format [action ID][whitespace][parameters]. One action per line. See the legend. Actions will be applied from the top to bottom. For example to make thumbnail 50X50: <i>thumbnail 50,50</i>'); ?>
             </div>
           </div>
         </div>

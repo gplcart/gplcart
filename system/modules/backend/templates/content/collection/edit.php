@@ -58,11 +58,11 @@
         <?php foreach ($types as $handler_id => $name) { ?>
         <?php if (isset($collection['type']) && $collection['type'] == $handler_id) { ?>
         <option value="<?php echo $this->e($handler_id); ?>" selected>
-          <?php echo $this->e($name); ?>
+          <?php echo $this->text($name); ?>
         </option>
         <?php } else { ?>
         <option value="<?php echo $this->e($handler_id); ?>">
-          <?php echo $this->e($name); ?>
+          <?php echo $this->text($name); ?>
         </option>
         <?php } ?>
         <?php } ?>

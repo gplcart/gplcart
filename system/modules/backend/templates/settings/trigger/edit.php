@@ -142,9 +142,9 @@
               <tr>
                 <td class="middle"><?php echo $id; ?></td>
                 <td>
-                  <?php echo $this->e($info['title']); ?>
+                  <?php echo $this->e($this->text($info['title'])); ?>
                   <?php if (!empty($info['description'])) { ?>
-                  <div class="text-muted small"><?php echo $this->filter($info['description']); ?></div>
+                  <div class="text-muted small"><?php echo $this->filter($this->text($info['description'])); ?></div>
                   <?php } ?>
                 </td>
               </tr>

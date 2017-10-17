@@ -68,13 +68,13 @@
           <div class="col-md-<?php echo 12 / count($permissions); ?>">
             <?php foreach ($permission_group as $id => $name) { ?>
             <div class="checkbox">
-              <label>
+              <label title="<?php echo $this->e($id); ?>">
                 <?php if (!empty($role['permissions']) && in_array($id, $role['permissions'])) { ?>
                 <input type="checkbox" class="select-all" name="role[permissions][]" value="<?php echo $id; ?>" checked>
                 <?php } else { ?>
                 <input type="checkbox" class="select-all" name="role[permissions][]" value="<?php echo $id; ?>">
                 <?php } ?>
-                <?php echo $this->text($name); ?> <small class="text-muted"><small><?php echo $this->e($id); ?></small></small>
+                <?php echo $this->text($name); ?>
               </label>
             </div>
             <?php } ?>

@@ -68,9 +68,9 @@
               <option value=""><?php echo $this->text('Any'); ?></option>
               <?php foreach ($handlers as $handler_id => $handler) { ?>
               <?php if ($filter_type === $handler_id) { ?>
-              <option value="<?php echo $this->e($handler_id); ?>" selected><?php echo $this->e($handler['title']); ?></option>
+              <option value="<?php echo $this->e($handler_id); ?>" selected><?php echo $this->text($handler['title']); ?></option>
               <?php } else { ?>
-              <option value="<?php echo $this->e($handler_id); ?>"><?php echo $this->e($handler['title']); ?></option>
+              <option value="<?php echo $this->e($handler_id); ?>"><?php echo $this->text($handler['title']); ?></option>
               <?php } ?>
               <?php } ?>
             </select>
