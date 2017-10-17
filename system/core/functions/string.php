@@ -67,17 +67,38 @@ function gplcart_string_equals($str1, $str2)
 }
 
 /**
- * Splits a text by new lines
+ * Splits a text by new line
  * @param string $string
  * @return array
  */
-function gplcart_string_array($string)
+function gplcart_string_explode_multiline($string)
 {
     return array_filter(array_map('trim', explode("\n", str_replace("\r", "", $string))));
 }
 
 /**
- * Formats a string by replacing variable placeholders
+ * Splits a text by whitespace
+ * @param string $string
+ * @param int|null $limit
+ * @return array
+ */
+function gplcart_string_explode_whitespace($string, $limit = null)
+{
+    $prepared = preg_replace('/\s+/', ' ', trim($string));
+    return isset($limit) ? explode(' ', $prepared, $limit) : explode(' ', $prepared);
+}
+
+/**
+ * Whether the string is valid regular expression
+ * @return bool
+ */
+function gplcart_string_is_regexp($string)
+{
+    return @preg_match("~$string~", null) !== false;
+}
+
+/**
+ * Formats a string by replacing a placeholder
  * @param string $string
  * @param array $arguments
  * @return string
@@ -102,7 +123,7 @@ function gplcart_string_format($string, array $arguments = array())
 }
 
 /**
- * Replaces placeholders in the string
+ * Replaces placeholder in the string
  * @param string $pattern
  * @param array $placeholders
  * @param array $data
@@ -225,7 +246,7 @@ function gplcart_string_render($text, array $data, $varprefix = '%')
 }
 
 /**
- * Validates a domain name, e.g domain.com
+ * Whether the string is a valid domain
  * @param string $domain
  * @return boolean
  */
