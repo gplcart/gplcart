@@ -71,18 +71,19 @@ function gplcart_path_starts($path, $prefix)
 }
 
 /**
- * Parses and extracts arguments from a path string
- * @param string $string
+ * Perform a regular expression match on the given path string
+ * @param string $path
  * @param string $pattern
- * @return boolean|array
+ * @param null|array $arguments
+ * @return boolean
  */
-function gplcart_path_parse($string, $pattern)
+function gplcart_path_match($path, $pattern, &$arguments = null)
 {
-    $arguments = array();
-
-    if (preg_match("~^$pattern$~i", $string, $arguments) === 1) {
-        array_shift($arguments);
-        return array_values($arguments);
+    $matches = array();
+    if (preg_match("~^$pattern$~i", $path, $matches) === 1) {
+        array_shift($matches);
+        $arguments = array_values($matches);
+        return true;
     }
 
     return false;
@@ -227,4 +228,47 @@ function &gplcart_static($name, $default_value = null, $reset = false)
 function gplcart_static_clear($cid = null)
 {
     gplcart_static($cid, null, true);
+}
+
+/**
+ * Saves PHP configuration in a file
+ * @param string $file
+ * @param mixed $data
+ */
+function gplcart_config_set($file, $data)
+{
+    if (file_exists($file)) {
+        chmod($file, 0644);
+    }
+
+    $result = file_put_contents($file, '<?php return ' . var_export($data, true) . ';');
+
+    if ($result !== false) {
+        chmod($file, 0444);
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * Returns a configuration data from the file
+ * @param string $file
+ * @return mixed
+ */
+function gplcart_config_get($file)
+{
+    static $data = array();
+
+    if (isset($data[$file])) {
+        return $data[$file];
+    }
+
+    $data[$file] = null;
+
+    if (is_file($file)) {
+        $data[$file] = require $file;
+    }
+
+    return $data[$file];
 }
