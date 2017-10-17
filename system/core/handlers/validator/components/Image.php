@@ -100,7 +100,7 @@ class Image extends ComponentValidator
         $modified = $errors = array();
         foreach ($actions as $line => $action) {
 
-            $parts = explode(' ', preg_replace('/\s+/', ' ', trim($action)));
+            $parts = gplcart_string_explode_whitespace($action, 2);
 
             $action_id = array_shift($parts);
             $value = array_filter(explode(',', implode('', $parts)));

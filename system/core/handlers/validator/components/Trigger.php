@@ -113,7 +113,7 @@ class Trigger extends ComponentValidator
         foreach ($value as $line => $condition) {
 
             $line++;
-            $parts = explode(' ', preg_replace('/\s+/', ' ', trim($condition)));
+            $parts = gplcart_string_explode_whitespace($condition, 3);
 
             $condition_id = array_shift($parts);
             $operator = array_shift($parts);

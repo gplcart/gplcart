@@ -23,7 +23,7 @@ class Cli
     public function parse($argv)
     {
         if (is_string($argv)) {
-            $argv = explode(' ', preg_replace('/\s+/', ' ', trim($argv)));
+            $argv = gplcart_string_explode_whitespace($argv);
         }
 
         array_shift($argv);
