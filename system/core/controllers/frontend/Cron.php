@@ -98,10 +98,8 @@ class Cron extends FrontendController
     protected function deleteExpiredFilesCron()
     {
         foreach (gplcart_file_scan_recursive(GC_PRIVATE_TEMP_DIR) as $file) {
-            if (is_dir($file)) {
+            if (strpos(basename($file), '.') !== 0) { // Ignore hidden files
                 gplcart_file_delete_recursive($file);
-            } else if (basename($file) !== '.gitignore') {
-                unlink($file);
             }
         }
     }
