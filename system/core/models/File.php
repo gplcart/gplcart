@@ -250,7 +250,7 @@ class File extends Model
             return $handlers;
         }
 
-        $handlers = gplcart_config_get(GC_CONFIG_FILE);
+        $handlers = (array) gplcart_config_get(GC_CONFIG_FILE);
         $this->hook->attach('file.handlers', $handlers, $this);
         return $handlers;
     }
@@ -529,7 +529,7 @@ class File extends Model
     {
         $return = array('transferred' => array(), 'errors' => array());
 
-        if (!gplcart_file_convert_upload($files)) {
+        if (!gplcart_file_multi_upload($files)) {
             return $return;
         }
 
