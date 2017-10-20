@@ -277,7 +277,7 @@ function gplcart_file_tempname($prefix = 'GC')
  * @param array $files
  * @return boolean
  */
-function gplcart_file_convert_upload(&$files)
+function gplcart_file_multi_upload(&$files)
 {
     if (empty($files['name']) || (count($files['name']) == 1 && empty($files['name'][0]))) {
         return false;
