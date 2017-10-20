@@ -24,21 +24,10 @@ class Asset
     protected $compressor;
 
     /**
-     * Default weight to add to the the next asset
-     */
-    const WEIGHT_STEP = 20;
-
-    /**
      * An array of added assets
      * @var array
      */
     protected $assets = array();
-
-    /**
-     * An array of asset groups
-     * @var array
-     */
-    protected $groups = array();
 
     /**
      * @param CompressorHelper $compressor
@@ -60,28 +49,31 @@ class Asset
         $group = 0;
         $groups = $results = array();
         foreach ($assets as $key => $asset) {
+
             $exclude = isset($asset['aggregate']) && empty($asset['aggregate']);
+
             if (!empty($asset['text']) || $exclude) {
                 $groups["__$group"] = $asset;
                 $group++;
                 continue;
             }
+
             if (!empty($asset['asset'])) {
                 $groups[$group][$key] = $asset['asset'];
             }
         }
 
-        foreach ($groups as $group => $content) {
+        foreach ($groups as $group => $contents) {
 
             if (strpos($group, '__') === 0) {
-                $results[$group] = $content;
+                $results[$group] = $contents;
                 continue;
             }
 
             if ($type === 'js') {
-                $aggregated = $this->compressor->compressJs($content, $directory);
+                $aggregated = $this->compressor->compressJs($contents, $directory);
             } else if ($type === 'css') {
-                $aggregated = $this->compressor->compressCss($content, $directory);
+                $aggregated = $this->compressor->compressCss($contents, $directory);
             }
 
             if (!empty($aggregated)) {
@@ -94,28 +86,6 @@ class Asset
     }
 
     /**
-     * Sets groups of assets
-     * @param string $key
-     * @param array $data
-     * @return bool|array
-     */
-    public function setGroup($key, array $data)
-    {
-        if (!isset($this->groups[$data['type']][$key])) {
-            $this->groups[$data['type']][$key] = 0;
-        }
-
-        if (isset($data['weight'])) {
-            $this->groups[$data['type']][$key] += (int) $data['weight'];
-        } else {
-            $this->groups[$data['type']][$key] ++;
-            $data['weight'] = $this->groups[$data['type']][$key];
-        }
-
-        return $this->set($data);
-    }
-
-    /**
      * Returns a weight for the next asset
      * @param string $type
      * @param string $pos
@@ -123,8 +93,9 @@ class Asset
      */
     public function getNextWeight($type, $pos)
     {
+        $step = 20;
         $count = $this->getLastWeight($type, $pos);
-        return $count * self::WEIGHT_STEP + self::WEIGHT_STEP;
+        return $count * $step + $step;
     }
 
     /**
@@ -166,6 +137,13 @@ class Asset
             return false;
         }
 
+        if (!empty($build['merge']) && is_array($build['asset'])) {
+            if (isset($this->assets[$build['type']][$build['position']][$build['merge']])) {
+                $existing = $this->assets[$build['type']][$build['position']][$build['merge']]['asset'];
+                $this->assets[$build['type']][$build['position']][$build['merge']]['asset'] = array_merge($existing, $build['asset']);
+            }
+        }
+
         if (isset($this->assets[$build['type']][$build['position']][$build['key']])) {
             return false;
         }
@@ -181,19 +159,23 @@ class Asset
      */
     protected function build(array $data)
     {
-        if (strpos($data['asset'], 'http') === 0) {
+        if (is_array($data['asset'])) {
+            $type = 'js';
+        } else if (strpos($data['asset'], 'http') === 0) {
             $type = 'external';
         } else {
             $type = pathinfo($data['asset'], PATHINFO_EXTENSION);
         }
 
         $data += array(
-            'type' => $type,
-            'position' => 'top',
-            'condition' => '',
-            'version' => '',
-            'text' => false,
             'file' => '',
+            'key' => null,
+            'merge' => '',
+            'version' => '',
+            'type' => $type,
+            'text' => false,
+            'condition' => '',
+            'position' => 'top',
             'aggregate' => ($type !== 'external')
         );
 
@@ -205,12 +187,14 @@ class Asset
             $data['text'] = true;
         }
 
-        if ($type !== 'external' && $type != $data['type']) {
-            $data['text'] = true;
+        if (($type !== 'external' && $type != $data['type']) || is_array($data['asset'])) {
+            $data['text'] = true; // Arrays will be converted to JSON
         }
 
         if ($data['text']) {
-            $data['key'] = 'text.' . md5($data['asset']);
+            if (!isset($data['key'])) {
+                $data['key'] = 'text.' . md5(json_encode($data['asset']));
+            }
             return $data;
         }
 
@@ -222,11 +206,9 @@ class Asset
         }
 
         if (!empty($data['file'])) {
-
             if (!file_exists($data['file'])) {
                 return array();
             }
-
             $data['version'] = filemtime($data['file']);
         }
 
