@@ -669,6 +669,12 @@ abstract class Controller
     public function getJs($position)
     {
         $js = $this->asset->get('js', $position);
+
+        if (isset($js['js_settings']['asset'])) {
+            $json = gplcart_json_encode($js['js_settings']['asset']);
+            $js['js_settings']['asset'] = "Gplcart.settings=$json;";
+        }
+
         return $this->compressAssets($js, 'js');
     }
 
@@ -1404,18 +1410,13 @@ abstract class Controller
      */
     protected function controlMaintenanceMode()
     {
-        $this->is_maintenance = empty($this->current_store['status'])//
-                && !$this->is_install//
-                && !$this->is_backend//
-                && !$this->path('^login$')//
-                && !$this->path('^logout$');
+        $allowed_path = $this->is_install || $this->is_backend || in_array($this->path, array('login', 'logout'));
+        $this->is_maintenance = empty($this->current_store['status']) && !$allowed_path;
 
         if ($this->is_maintenance && !$this->access('maintenance')) {
-
             if (!$this->isFront()) {
                 $this->redirect('/');
             }
-
             $this->outputMaintenance();
         }
     }
@@ -1699,55 +1700,37 @@ abstract class Controller
     }
 
     /**
-     * Adds required JS
+     * Adds default JS
      */
     protected function setDefaultJs()
     {
-        $this->setDefaultJsSettings();
-        $this->setDefaultJsTranslation();
-    }
-
-    /**
-     * Sets default JS settings
-     */
-    protected function setDefaultJsSettings()
-    {
-        $settings = array();
         foreach ($this->getDefaultData() as $key => $value) {
-            $settings[ltrim($key, '_')] = $value;
+            $this->setJsSettings(ltrim($key, '_'), $value, 60);
         }
 
-        $this->setJsSettings('', $settings, 60);
-    }
-
-    /**
-     * Adds JS translations
-     */
-    protected function setDefaultJsTranslation()
-    {
         $translations = $this->language->loadJsTranslation();
         $json = gplcart_json_encode($translations);
-        $this->setJs("Gplcart.translations=$json");
+        $this->setJs("Gplcart.translations=$json;");
     }
 
     /**
      * Adds JSON string with JS settings
      * @param string $key
-     * @param array $data
+     * @param mixed $data
      * @param integer|null $weight
      */
-    public function setJsSettings($key, array $data, $weight = null)
+    public function setJsSettings($key, $data, $weight = null)
     {
-        $json = gplcart_json_encode($data);
-        $var = rtrim("Gplcart.settings.$key", '.');
-
         $asset = array(
             'type' => 'js',
             'weight' => $weight,
-            'asset' => "$var = $json;"
+            'key' => 'js_settings',
+            'merge' => 'js_settings',
+            'aggregate' => false,
+            'asset' => array($key => $data)
         );
 
-        $this->asset->setGroup('settings', $asset);
+        $this->asset->set($asset);
     }
 
     /**
