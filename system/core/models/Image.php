@@ -66,7 +66,7 @@ class Image extends Model
             return (array) $handlers;
         }
 
-        $handlers = gplcart_config_get(GC_CONFIG_IMAGE_ACTION);
+        $handlers = (array) gplcart_config_get(GC_CONFIG_IMAGE_ACTION);
         $this->hook->attach('imagestyle.action.handlers', $handlers, $this);
         return (array) $handlers;
     }
@@ -178,7 +178,7 @@ class Image extends Model
             return (array) $imagestyles;
         }
 
-        $default = gplcart_config_get(GC_CONFIG_IMAGE_STYLE);
+        $default = (array) gplcart_config_get(GC_CONFIG_IMAGE_STYLE);
         $saved = $this->config->get('imagestyles', array());
         $imagestyles = array_replace_recursive($default, $saved);
 

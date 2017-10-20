@@ -47,7 +47,7 @@ class Dashboard extends Model
             return $handlers;
         }
 
-        $handlers = gplcart_config_get(GC_CONFIG_DASHBOARD);
+        $handlers = (array) gplcart_config_get(GC_CONFIG_DASHBOARD);
         $this->hook->attach('dashboard.handlers', $handlers, $this);
         return $handlers;
     }

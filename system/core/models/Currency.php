@@ -328,7 +328,7 @@ class Currency extends Model
      */
     public function getIso($code = null)
     {
-        $data = gplcart_config_get(GC_CONFIG_CURRENCY);
+        $data = (array) gplcart_config_get(GC_CONFIG_CURRENCY);
 
         if (isset($code)) {
             return isset($data[$code]) ? $data[$code] + array('code' => $code) : array();

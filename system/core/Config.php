@@ -49,7 +49,7 @@ class Config
         if (is_readable(GC_CONFIG_COMMON)) {
 
             $this->exists = true;
-            $this->config = gplcart_config_get(GC_CONFIG_COMMON);
+            $this->config = (array) gplcart_config_get(GC_CONFIG_COMMON);
 
             $this->setDb();
             $this->config = array_merge($this->config, $this->select());
@@ -306,7 +306,7 @@ class Config
         }
 
         if ($cache && $this->hasModuleCache()) {
-            return $modules = gplcart_config_get(GC_CONFIG_MODULE);
+            return $modules = (array) gplcart_config_get(GC_CONFIG_MODULE);
         }
 
         $installed = $this->getInstalledModules();

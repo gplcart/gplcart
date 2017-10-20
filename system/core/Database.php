@@ -314,7 +314,7 @@ class Database
      */
     public function getScheme($table = null)
     {
-        $default = gplcart_config_get(GC_CONFIG_DATABASE);
+        $default = (array) gplcart_config_get(GC_CONFIG_DATABASE);
         $scheme = array_merge($this->scheme, $default);
 
         if (isset($table)) {

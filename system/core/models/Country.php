@@ -105,7 +105,7 @@ class Country extends Model
      */
     public function getDefaultFormat()
     {
-        return gplcart_config_get(GC_CONFIG_COUNTRY_FORMAT);
+        return (array) gplcart_config_get(GC_CONFIG_COUNTRY_FORMAT);
     }
 
     /**
@@ -278,7 +278,7 @@ class Country extends Model
      */
     public function getIso($code = null)
     {
-        $data = gplcart_config_get(GC_CONFIG_COUNTRY);
+        $data = (array) gplcart_config_get(GC_CONFIG_COUNTRY);
 
         if (isset($code)) {
             return isset($data[$code]) ? $data[$code] : '';

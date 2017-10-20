@@ -153,7 +153,7 @@ class Install extends Model
             return (array) $requirements;
         }
 
-        $requirements = gplcart_config_get(GC_CONFIG_REQUIREMENT);
+        $requirements = (array) gplcart_config_get(GC_CONFIG_REQUIREMENT);
         $this->hook->attach('install.requirements', $requirements);
         return (array) $requirements;
     }

@@ -85,10 +85,10 @@ class Library
         $config = gplcart_config_get(GC_CONFIG_COMPILED_LIBRARY);
 
         if (isset($config)) {
-            return $libraries = $config;
+            return $libraries = (array) $config;
         }
 
-        $libraries = gplcart_config_get(GC_CONFIG_LIBRARY);
+        $libraries = (array) gplcart_config_get(GC_CONFIG_LIBRARY);
         $this->hook->attach('library.list', $libraries, $this);
 
         $libraries = $this->prepareList($libraries);

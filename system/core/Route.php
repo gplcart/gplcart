@@ -98,7 +98,7 @@ class Route
             return $routes;
         }
 
-        $routes = gplcart_config_get(GC_CONFIG_ROUTE);
+        $routes = (array) gplcart_config_get(GC_CONFIG_ROUTE);
         $this->hook->attach('route.list', $routes, $this);
         return $routes;
     }
