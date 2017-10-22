@@ -13,7 +13,7 @@ define('GC_WIN', strtoupper(substr(PHP_OS, 0, 3)) === 'WIN');
 define('GC_TIME', (int) $_SERVER['REQUEST_TIME']);
 define('GC_BASE', str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])));
 // File paths
-define('GC_ROOT_DIR', realpath(__DIR__ . '/../'));
+define('GC_ROOT_DIR', str_replace('\\', '/', realpath(__DIR__ . '/../')));
 define('GC_SYSTEM_DIR', GC_ROOT_DIR . '/system');
 define('GC_CORE_DIR', GC_SYSTEM_DIR . '/core');
 define('GC_MODULE_DIR', GC_SYSTEM_DIR . '/modules');
