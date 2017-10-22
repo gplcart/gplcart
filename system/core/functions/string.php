@@ -244,17 +244,3 @@ function gplcart_string_render($text, array $data, $varprefix = '%')
 
     return trim(preg_replace('/(\s)\s+/', '\\1', $text));
 }
-
-/**
- * Whether the string is a valid domain
- * @param string $domain
- * @return boolean
- */
-function gplcart_string_is_domain($domain)
-{
-    $pattern = '/^(?!\-)'
-            . '(?:[a-zA-Z\d\-]{0,62}[a-zA-Z\d]\.)'
-            . '{1,126}(?!\d+)[a-zA-Z\d]{1,63}$/';
-
-    return (bool) preg_match($pattern, $domain);
-}
