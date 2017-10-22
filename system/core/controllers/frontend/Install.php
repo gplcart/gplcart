@@ -66,6 +66,9 @@ class Install extends BaseController
         $this->setData('settings.store.language', $this->install_language);
 
         $this->submitEditInstall();
+        
+        print_r($this->errors);
+        
         $this->outputEditInstall();
     }
 
