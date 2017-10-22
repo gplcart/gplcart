@@ -118,11 +118,6 @@ class Store extends ComponentValidator
             return true;
         }
 
-        if (filter_var($value, FILTER_VALIDATE_IP) === false && !gplcart_string_is_domain($value)) {
-            $this->setErrorInvalid($field, $label);
-            return false;
-        }
-
         $existing = $this->store->get($value);
 
         if (!empty($existing)) {
