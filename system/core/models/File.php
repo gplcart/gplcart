@@ -250,7 +250,7 @@ class File extends Model
             return $handlers;
         }
 
-        $handlers = (array) gplcart_config_get(GC_CONFIG_FILE);
+        $handlers = (array) gplcart_config_get(GC_FILE_CONFIG_FILE);
         $this->hook->attach('file.handlers', $handlers, $this);
         return $handlers;
     }

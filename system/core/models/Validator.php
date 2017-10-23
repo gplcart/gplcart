@@ -97,7 +97,7 @@ class Validator extends Model
             return $handlers;
         }
 
-        $handlers = (array) gplcart_config_get(GC_CONFIG_VALIDATOR);
+        $handlers = (array) gplcart_config_get(GC_FILE_CONFIG_VALIDATOR);
         $this->hook->attach('validator.handlers', $handlers, $this);
         return $handlers;
     }

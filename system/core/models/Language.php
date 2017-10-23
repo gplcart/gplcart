@@ -234,7 +234,7 @@ class Language extends Model
             $langcode = $this->langcode;
         }
 
-        return GC_TRANSLATION_DIR . "/$langcode";
+        return GC_DIR_TRANSLATION . "/$langcode";
     }
 
     /**
@@ -663,7 +663,7 @@ class Language extends Model
 
         $results = array();
         foreach ($matches[1] as $key => $strings) {
-            foreach ((array) $strings as $key => $string) {
+            foreach ((array) $strings as $string) {
                 $results[] = implode('', preg_split('~(?<!\\\\)[\'"]\s*\+\s*[\'"]~s', substr($string, 1, -1)));
             }
         }
@@ -674,25 +674,30 @@ class Language extends Model
     /**
      * Creates context JS translation
      * @param string $content
-     * @param string $langcode
+     * @param string|null $langcode
      * @return boolean
      */
     public function createJsTranslation($content, $langcode = null)
     {
         $extracted = $this->parseJs($content);
 
-        if (!empty($extracted)) {
-            $file = $this->getContextJsFile($langcode);
-            $translations = $this->loadTranslation($this->getCommonFile($langcode));
-            foreach ($extracted as $string) {
-                $this->addTranslation($string, $translations, $file);
-            }
+        if (empty($extracted)) {
+            return false;
         }
+
+        $file = $this->getContextJsFile($langcode);
+        $translations = $this->loadTranslation($this->getCommonFile($langcode));
+        foreach ($extracted as $string) {
+            $this->addTranslation($string, $translations, $file);
+        }
+
+        return true;
     }
 
     /**
      * Removes cached translation files
      * @param string|null $langcode
+     * @return bool
      */
     public function refresh($langcode = null)
     {
@@ -704,7 +709,6 @@ class Language extends Model
         }
 
         gplcart_file_empty($this->getCompiledDirectory($langcode), array('csv'));
-
         gplcart_static_clear();
 
         $this->prepareFiles($langcode);
@@ -772,7 +776,7 @@ class Language extends Model
      */
     public function getIso($code = null)
     {
-        $data = (array) gplcart_config_get(GC_CONFIG_LANGUAGE);
+        $data = (array) gplcart_config_get(GC_FILE_CONFIG_LANGUAGE);
 
         if (isset($code)) {
             return isset($data[$code]) ? (array) $data[$code] : array();

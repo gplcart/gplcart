@@ -325,7 +325,7 @@ class Oauth extends Model
     {
         $data += array('lifetime' => 3600);
 
-        if (strpos($data['certificate_file'], GC_FILE_DIR) !== 0) {
+        if (strpos($data['certificate_file'], GC_DIR_FILE) !== 0) {
             $data['certificate_file'] = gplcart_file_absolute($data['certificate_file']);
         }
 

@@ -36,7 +36,7 @@ class Config
     protected $config = array();
 
     /**
-     * Whether the runtime configuration file exists
+     * Whether the compiled configuration file exists
      * @var boolean
      */
     protected $exists = false;
@@ -46,10 +46,10 @@ class Config
      */
     public function __construct()
     {
-        if (is_readable(GC_CONFIG_COMMON)) {
+        if (is_readable(GC_FILE_CONFIG_COMPILED)) {
 
             $this->exists = true;
-            $this->config = (array) gplcart_config_get(GC_CONFIG_COMMON);
+            $this->config = (array) gplcart_config_get(GC_FILE_CONFIG_COMPILED);
 
             $this->setDb();
             $this->config = array_merge($this->config, $this->select());
@@ -252,7 +252,7 @@ class Config
     }
 
     /**
-     * Whether the runtime configuration file exists
+     * Whether the compiled configuration file exists
      * @return boolean
      */
     public function exists()
@@ -306,13 +306,13 @@ class Config
         }
 
         if ($cache && $this->hasModuleCache()) {
-            return $modules = (array) gplcart_config_get(GC_CONFIG_MODULE);
+            return $modules = (array) gplcart_config_get(GC_FILE_CONFIG_COMPILED_MODULE);
         }
 
         $installed = $this->getInstalledModules();
 
         $modules = array();
-        foreach (scandir(GC_MODULE_DIR) as $module_id) {
+        foreach (scandir(GC_DIR_MODULE) as $module_id) {
 
             if (!$this->validModuleId($module_id)) {
                 continue;
@@ -361,7 +361,7 @@ class Config
         gplcart_array_sort($modules);
 
         if ($cache) {
-            gplcart_config_set(GC_CONFIG_MODULE, $modules);
+            gplcart_config_set(GC_FILE_CONFIG_COMPILED_MODULE, $modules);
         }
 
         return $modules;
@@ -374,9 +374,9 @@ class Config
     public function clearModuleCache()
     {
         if ($this->hasModuleCache()) {
-            chmod(GC_CONFIG_MODULE, 0644);
+            chmod(GC_FILE_CONFIG_COMPILED_MODULE, 0644);
             gplcart_static_clear();
-            return unlink(GC_CONFIG_MODULE);
+            return unlink(GC_FILE_CONFIG_COMPILED_MODULE);
         }
 
         return false;
@@ -388,7 +388,7 @@ class Config
      */
     public function hasModuleCache()
     {
-        return is_file(GC_CONFIG_MODULE);
+        return is_file(GC_FILE_CONFIG_COMPILED_MODULE);
     }
 
     /**
@@ -409,7 +409,7 @@ class Config
      */
     public function getModuleDirectory($module_id)
     {
-        return GC_MODULE_DIR . "/$module_id";
+        return GC_DIR_MODULE . "/$module_id";
     }
 
     /**
@@ -425,7 +425,7 @@ class Config
             return $information[$module_id];
         }
 
-        $file = GC_MODULE_DIR . "/$module_id/module.json";
+        $file = GC_DIR_MODULE . "/$module_id/module.json";
 
         $decoded = null;
         if (is_file($file)) {

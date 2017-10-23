@@ -66,7 +66,7 @@ class Image extends Model
             return (array) $handlers;
         }
 
-        $handlers = (array) gplcart_config_get(GC_CONFIG_IMAGE_ACTION);
+        $handlers = (array) gplcart_config_get(GC_FILE_CONFIG_IMAGE_ACTION);
         $this->hook->attach('imagestyle.action.handlers', $handlers, $this);
         return (array) $handlers;
     }
@@ -178,7 +178,7 @@ class Image extends Model
             return (array) $imagestyles;
         }
 
-        $default = (array) gplcart_config_get(GC_CONFIG_IMAGE_STYLE);
+        $default = (array) gplcart_config_get(GC_FILE_CONFIG_IMAGE_STYLE);
         $saved = $this->config->get('imagestyles', array());
         $imagestyles = array_replace_recursive($default, $saved);
 
@@ -339,7 +339,7 @@ class Image extends Model
             return (bool) $result;
         }
 
-        $directory = GC_IMAGE_CACHE_DIR;
+        $directory = GC_DIR_IMAGE_CACHE;
 
         if (!empty($imagestyle_id)) {
             $directory = "$directory/$imagestyle_id";
@@ -402,7 +402,7 @@ class Image extends Model
         }
 
         $trimmed = trim($image, "/");
-        $file = GC_IMAGE_CACHE_DIR . "/$imagestyle_id/" . preg_replace('/^image\//', '', $trimmed);
+        $file = GC_DIR_IMAGE_CACHE . "/$imagestyle_id/" . preg_replace('/^image\//', '', $trimmed);
         $options = file_exists($file) ? array('v' => filemtime($file)) : array('v' => GC_TIME);
 
         return $this->url->get("files/image/cache/$imagestyle_id/$trimmed", $options, $absolute);

@@ -172,7 +172,7 @@ class Report extends Model
             'title' => $this->language->text('Database version'),
             'description' => '',
             'severity' => 'info',
-            'status' => $this->db->getAttribute(\PDO::ATTR_SERVER_VERSION),
+            'status' => $this->db->pdo()->getAttribute(\PDO::ATTR_SERVER_VERSION),
             'weight' => 1,
         );
 
@@ -259,11 +259,11 @@ class Report extends Model
     public function checkFilesystem()
     {
         $results = array(
-            $this->checkPermissions(GC_CONFIG_COMMON)
+            $this->checkPermissions(GC_FILE_CONFIG_COMPILED)
         );
 
-        if (file_exists(GC_CONFIG_OVERRIDE)) {
-            $results[] = $this->checkPermissions(GC_CONFIG_OVERRIDE);
+        if (file_exists(GC_FILE_CONFIG_COMPILED_OVERRIDE)) {
+            $results[] = $this->checkPermissions(GC_FILE_CONFIG_COMPILED_OVERRIDE);
         }
 
         $filtered = array_filter($results, 'is_string');

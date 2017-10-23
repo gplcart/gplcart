@@ -438,10 +438,10 @@ class Category extends Model
         $dirname = $this->config->get('category_image_dirname', 'category');
 
         if ($absolute) {
-            return gplcart_path_absolute($dirname, GC_IMAGE_DIR);
+            return gplcart_path_absolute($dirname, GC_DIR_IMAGE);
         }
 
-        return trim(substr(GC_IMAGE_DIR, strlen(GC_FILE_DIR)), '/') . "/$dirname";
+        return trim(substr(GC_DIR_IMAGE, strlen(GC_DIR_FILE)), '/') . "/$dirname";
     }
 
 }

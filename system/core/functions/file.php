@@ -135,7 +135,7 @@ function gplcart_file_unique($file)
  */
 function gplcart_file_private_temp($filename, $unique = false)
 {
-    $file = GC_PRIVATE_TEMP_DIR . "/$filename";
+    $file = GC_DIR_PRIVATE_TEMP . "/$filename";
     return $unique ? gplcart_file_unique($file) : $file;
 }
 
@@ -148,7 +148,7 @@ function gplcart_file_private_temp($filename, $unique = false)
  */
 function gplcart_file_private_module($module_id, $filename = '', $unique = false)
 {
-    $dir = GC_PRIVATE_MODULE_DIR . "/$module_id";
+    $dir = GC_DIR_PRIVATE_MODULE . "/$module_id";
 
     if (empty($filename)) {
         return $dir;
@@ -192,7 +192,7 @@ function gplcart_file_csv($file, $data, $del = ",", $en = '"', $limit = 0)
  */
 function gplcart_file_relative($absolute)
 {
-    return gplcart_path_relative($absolute, GC_FILE_DIR);
+    return gplcart_path_relative($absolute, GC_DIR_FILE);
 }
 
 /**
@@ -202,11 +202,11 @@ function gplcart_file_relative($absolute)
  */
 function gplcart_file_absolute($path)
 {
-    if (gplcart_path_starts($path, GC_FILE_DIR)) {
+    if (gplcart_path_starts($path, GC_DIR_FILE)) {
         return $path;
     }
 
-    return GC_FILE_DIR . "/$path";
+    return GC_DIR_FILE . "/$path";
 }
 
 /**

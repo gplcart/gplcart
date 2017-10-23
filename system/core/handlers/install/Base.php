@@ -82,10 +82,10 @@ class Base extends Handler
      */
     protected function createConfig()
     {
-        $config = file_get_contents(GC_CONFIG_COMMON_DEFAULT);
+        $config = file_get_contents(GC_FILE_CONFIG);
 
         if (empty($config)) {
-            $vars = array('@path' => GC_CONFIG_COMMON_DEFAULT);
+            $vars = array('@path' => GC_FILE_CONFIG);
             return $this->language->text('Failed to read the source config @path', $vars);
         }
 
@@ -94,8 +94,8 @@ class Base extends Handler
         $config .= 'return $config;';
         $config .= PHP_EOL;
 
-        if (file_put_contents(GC_CONFIG_COMMON, $config) !== false) {
-            chmod(GC_CONFIG_COMMON, 0444);
+        if (file_put_contents(GC_FILE_CONFIG_COMPILED, $config) !== false) {
+            chmod(GC_FILE_CONFIG_COMPILED, 0444);
             return true;
         }
 

@@ -85,7 +85,7 @@ function gplcart_setup_autoload()
 
         // Flip slashes and remove "gplcart/" from the beginning
         $path = substr(str_replace('\\', '/', $namespace), 8);
-        $file = strpos($path, 'tests') === 0 ? GC_ROOT_DIR : GC_SYSTEM_DIR;
+        $file = strpos($path, 'tests') === 0 ? GC_DIR : GC_DIR_SYSTEM;
         $file .= "/$path.php";
 
         if (file_exists($file)) {

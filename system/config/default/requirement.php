@@ -58,12 +58,12 @@ return array(
     ),
     'files' => array(
         'system_directory' => array(
-            'status' => is_writable(GC_CONFIG_RUNTIME_DIR),
+            'status' => is_writable(GC_DIR_CONFIG_COMPILED),
             'severity' => 'danger',
-            'message' => /* @text */'Directory "/system/config/runtime" exists and writable'
+            'message' => /* @text */'Directory "/system/config/compiled" exists and writable'
         ),
         'cache_directory' => array(
-            'status' => is_writable(GC_CACHE_DIR),
+            'status' => is_writable(GC_DIR_CACHE),
             'severity' => 'danger',
             'message' => /* @text */'Directory "/cache" exists and writable'
         )

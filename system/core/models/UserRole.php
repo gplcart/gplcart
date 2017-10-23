@@ -46,7 +46,7 @@ class UserRole extends Model
             return $permissions;
         }
 
-        $permissions = (array) gplcart_config_get(GC_CONFIG_PERMISSION);
+        $permissions = (array) gplcart_config_get(GC_FILE_CONFIG_PERMISSION);
         asort($permissions);
 
         $this->hook->attach('user.role.permissions', $permissions, $this);

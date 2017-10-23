@@ -591,7 +591,7 @@ class Module extends Model
      */
     protected function setOverrideConfig()
     {
-        return gplcart_config_set(GC_CONFIG_OVERRIDE, $this->getOverrideMap());
+        return gplcart_config_set(GC_FILE_CONFIG_COMPILED_OVERRIDE, $this->getOverrideMap());
     }
 
     /**
@@ -605,7 +605,7 @@ class Module extends Model
         $map = array();
         foreach ($this->getEnabled() as $module) {
 
-            $directory = GC_MODULE_DIR . "/{$module['id']}/override/classes";
+            $directory = GC_DIR_MODULE . "/{$module['id']}/override/classes";
 
             if (!is_readable($directory)) {
                 continue;
@@ -613,7 +613,7 @@ class Module extends Model
 
             foreach ($this->scanOverrideFiles($directory) as $file) {
                 $original = str_replace('/', '\\', str_replace($directory . '/', '', preg_replace('/Override$/', '', $file)));
-                $override = str_replace('/', '\\', str_replace(GC_SYSTEM_DIR . '/', '', $file));
+                $override = str_replace('/', '\\', str_replace(GC_DIR_SYSTEM . '/', '', $file));
                 $map["gplcart\\$original"][$module['id']] = "gplcart\\$override";
             }
         }

@@ -78,7 +78,7 @@ class Cache
             $cid = gplcart_array_hash($cid);
         }
 
-        $this->file = GC_CACHE_DIR . "/$cid.cache";
+        $this->file = GC_DIR_CACHE . "/$cid.cache";
 
         $result = false;
         if (file_put_contents($this->file, serialize((array) $data)) !== false) {
@@ -110,7 +110,7 @@ class Cache
             $cid = gplcart_array_hash($cid);
         }
 
-        $this->file = GC_CACHE_DIR . "/$cid.cache";
+        $this->file = GC_DIR_CACHE . "/$cid.cache";
 
         $result = $options['default'];
 
@@ -144,7 +144,7 @@ class Cache
         $result = true;
 
         if ($cid === null) {
-            array_map('unlink', glob(GC_CACHE_DIR . '/*.cache'));
+            array_map('unlink', glob(GC_DIR_CACHE . '/*.cache'));
             gplcart_static_clear();
         } else {
 
@@ -152,7 +152,7 @@ class Cache
                 $cid = gplcart_array_hash($cid);
             }
 
-            array_map('unlink', glob(GC_CACHE_DIR . "/$cid{$options['pattern']}"));
+            array_map('unlink', glob(GC_DIR_CACHE . "/$cid{$options['pattern']}"));
             gplcart_static_clear($cid);
         }
 

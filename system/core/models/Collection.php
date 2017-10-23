@@ -215,7 +215,7 @@ class Collection extends Model
             return $handlers;
         }
 
-        $handlers = (array) gplcart_config_get(GC_CONFIG_COLLECTION);
+        $handlers = (array) gplcart_config_get(GC_FILE_CONFIG_COLLECTION);
         $this->hook->attach('collection.handlers', $handlers, $this);
         return $handlers;
     }

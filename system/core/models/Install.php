@@ -48,7 +48,7 @@ class Install extends Model
      */
     public function isInstalled()
     {
-        return is_file(GC_CONFIG_COMMON);
+        return is_file(GC_FILE_CONFIG_COMPILED);
     }
 
     /**
@@ -153,7 +153,7 @@ class Install extends Model
             return (array) $requirements;
         }
 
-        $requirements = (array) gplcart_config_get(GC_CONFIG_REQUIREMENT);
+        $requirements = (array) gplcart_config_get(GC_FILE_CONFIG_REQUIREMENT);
         $this->hook->attach('install.requirements', $requirements);
         return (array) $requirements;
     }

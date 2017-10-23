@@ -229,7 +229,7 @@ class Search extends Model
         }
 
         $stopwords = array();
-        $path = GC_PRIVATE_DIR . "/stopwords/$language.txt";
+        $path = GC_DIR_PRIVATE . "/stopwords/$language.txt";
 
         if (is_readable($path)) {
             $stopwords = array_map('trim', file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES));

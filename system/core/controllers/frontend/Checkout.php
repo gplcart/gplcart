@@ -401,7 +401,7 @@ class Checkout extends FrontendController
     {
         foreach ($methods as &$method) {
             if (isset($method['module']) && isset($method['image'])) {
-                $path = GC_MODULE_DIR . "/{$method['module']}/{$method['image']}";
+                $path = GC_DIR_MODULE . "/{$method['module']}/{$method['image']}";
                 $method['image'] = $this->url(gplcart_path_relative($path));
             }
         }

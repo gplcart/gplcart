@@ -95,7 +95,7 @@ class CliRoute
             return $routes;
         }
 
-        $routes = (array) gplcart_config_get(GC_CONFIG_CLI_ROUTE);
+        $routes = (array) gplcart_config_get(GC_FILE_CONFIG_ROUTE_CLI);
         $this->hook->attach('cli.route.list', $routes, $this);
         return $routes;
     }

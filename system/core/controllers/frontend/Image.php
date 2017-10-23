@@ -148,11 +148,11 @@ class Image extends FrontendController
      */
     protected function setDirectoryImage()
     {
-        $imagestyle_directory = GC_IMAGE_CACHE_DIR . "/{$this->data_imagestyle_id}";
+        $imagestyle_directory = GC_DIR_IMAGE_CACHE . "/{$this->data_imagestyle_id}";
         $image_directory = pathinfo($this->data_path, PATHINFO_DIRNAME);
 
         if (!empty($image_directory)) {
-            $imagestyle_directory = GC_IMAGE_CACHE_DIR . "/{$this->data_imagestyle_id}/$image_directory";
+            $imagestyle_directory = GC_DIR_IMAGE_CACHE . "/{$this->data_imagestyle_id}/$image_directory";
         }
 
         $this->data_imagestyle_directory = $imagestyle_directory;

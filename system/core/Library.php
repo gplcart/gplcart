@@ -82,17 +82,17 @@ class Library
             return (array) $libraries;
         }
 
-        $config = gplcart_config_get(GC_CONFIG_COMPILED_LIBRARY);
+        $config = gplcart_config_get(GC_FILE_CONFIG_COMPILED_LIBRARY);
 
         if (isset($config)) {
             return $libraries = (array) $config;
         }
 
-        $libraries = (array) gplcart_config_get(GC_CONFIG_LIBRARY);
+        $libraries = (array) gplcart_config_get(GC_FILE_CONFIG_LIBRARY);
         $this->hook->attach('library.list', $libraries, $this);
 
         $libraries = $this->prepareList($libraries);
-        gplcart_config_set(GC_CONFIG_COMPILED_LIBRARY, $libraries);
+        gplcart_config_set(GC_FILE_CONFIG_COMPILED_LIBRARY, $libraries);
         return (array) $libraries;
     }
 
@@ -102,10 +102,10 @@ class Library
      */
     public function clearCache()
     {
-        if (is_file(GC_CONFIG_COMPILED_LIBRARY)) {
-            chmod(GC_CONFIG_COMPILED_LIBRARY, 0644);
+        if (is_file(GC_FILE_CONFIG_COMPILED_LIBRARY)) {
+            chmod(GC_FILE_CONFIG_COMPILED_LIBRARY, 0644);
             gplcart_static_clear();
-            return unlink(GC_CONFIG_COMPILED_LIBRARY);
+            return unlink(GC_FILE_CONFIG_COMPILED_LIBRARY);
         }
 
         return false;
@@ -128,11 +128,11 @@ class Library
             $library['id'] = $library_id;
 
             if (!empty($library['module']) && empty($library['basepath'])) {
-                $library['basepath'] = GC_MODULE_DIR . "/{$library['module']}";
+                $library['basepath'] = GC_DIR_MODULE . "/{$library['module']}";
             }
 
             if (empty($library['basepath']) && $library['type'] === 'asset') {
-                $library['basepath'] = GC_ASSET_LIBRARY_DIR . "/$library_id";
+                $library['basepath'] = GC_DIR_ASSET_LIBRARY . "/$library_id";
             }
 
             if (empty($library['basepath'])) {

@@ -922,8 +922,8 @@ abstract class Controller
         }
 
         return array(
-            GC_MODULE_DIR . "/$module_id/templates/$file",
-            GC_MODULE_DIR . "/{$this->theme}/override/templates/$module_id/$file"
+            GC_DIR_MODULE . "/$module_id/templates/$file",
+            GC_DIR_MODULE . "/{$this->theme}/override/templates/$module_id/$file"
         );
     }
 
@@ -1675,7 +1675,7 @@ abstract class Controller
     protected function compressAssets(array $assets, $type)
     {
         if ($this->config("compress_$type", 0)) {
-            $directory = GC_COMPRESSED_ASSET_DIR . "/$type";
+            $directory = GC_DIR_ASSET_COMPRESSED . "/$type";
             return $this->asset->compress($assets, $type, $directory);
         }
 

@@ -92,10 +92,10 @@ function gplcart_path_match($path, $pattern, &$arguments = null)
 /**
  * Whether the path is an absolute server path
  * @param string $path
- * @param string $prefix
+ * @param mixed|string $prefix
  * @return bool
  */
-function gplcart_path_is_absolute($path, $prefix = GC_ROOT_DIR)
+function gplcart_path_is_absolute($path, $prefix = GC_DIR)
 {
     return gplcart_path_starts($path, $prefix);
 }
@@ -103,10 +103,10 @@ function gplcart_path_is_absolute($path, $prefix = GC_ROOT_DIR)
 /**
  * Returns an absolute path to the file
  * @param string $file
- * @param string $prefix
+ * @param mixed|string $prefix
  * @return string
  */
-function gplcart_path_absolute($file, $prefix = GC_ROOT_DIR)
+function gplcart_path_absolute($file, $prefix = GC_DIR)
 {
     if (gplcart_path_is_absolute($file, $prefix)) {
         return $file;
@@ -118,9 +118,10 @@ function gplcart_path_absolute($file, $prefix = GC_ROOT_DIR)
 /**
  * Converts the file path to a relative path
  * @param string $absolute
+ * @param mixed|string $prefix
  * @return string
  */
-function gplcart_path_relative($absolute, $prefix = GC_ROOT_DIR)
+function gplcart_path_relative($absolute, $prefix = GC_DIR)
 {
     if (gplcart_path_starts($absolute, $prefix)) {
         $prefix_normalized = gplcart_path_normalize($prefix);
@@ -234,6 +235,7 @@ function gplcart_static_clear($cid = null)
  * Saves PHP configuration in a file
  * @param string $file
  * @param mixed $data
+ * @return bool
  */
 function gplcart_config_set($file, $data)
 {

@@ -98,7 +98,7 @@ class Route
             return $routes;
         }
 
-        $routes = (array) gplcart_config_get(GC_CONFIG_ROUTE);
+        $routes = (array) gplcart_config_get(GC_FILE_CONFIG_ROUTE);
         $this->hook->attach('route.list', $routes, $this);
         return $routes;
     }
@@ -162,6 +162,7 @@ class Route
     /**
      * Finds an alias for a path
      * @param string|null $path
+     * @return null
      */
     public function outputAlias($path = null)
     {
@@ -198,6 +199,8 @@ class Route
         foreach ($routes as $pattern => $route) {
             $this->callHandler($pattern, array($path, $pattern, null), 'alias');
         }
+
+        return null;
     }
 
     /**
@@ -281,7 +284,7 @@ class Route
      * Returns route handler
      * @param array $route
      * @param string $method
-     * @return \gplcart\core\Controller
+     * @return array
      * @throws RouteException
      */
     public function getHandler(array $route, $method = 'controller')
@@ -297,7 +300,7 @@ class Route
 
     /**
      * Find an appropriate controller for the current URL
-     * @return bool
+     * @throws RouteException
      */
     public function outputRoute()
     {
