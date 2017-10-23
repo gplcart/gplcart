@@ -90,6 +90,7 @@ function gplcart_string_explode_whitespace($string, $limit = null)
 
 /**
  * Whether the string is valid regular expression
+ * @param string
  * @return bool
  */
 function gplcart_string_is_regexp($string)

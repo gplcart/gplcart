@@ -127,6 +127,7 @@ class Graph
     /**
      * Performs a depth-first search on a graph
      * @param string $start
+     * @return null
      */
     protected function searchComponent($start)
     {
@@ -169,6 +170,7 @@ class Graph
         }
 
         $this->state['last_visit_order'][] = $start;
+        return null;
     }
 
 }

@@ -121,7 +121,7 @@ class Session
      * Returns messages from the session
      * @param string $type
      * @param string $key
-     * @return string
+     * @return string|array
      */
     public function getMessage($type = null, $key = 'messages')
     {

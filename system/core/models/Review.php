@@ -91,7 +91,7 @@ class Review extends Model
 
     /**
      * Deletes a review
-     * @param integer $review_id
+     * @param integer|array $review_id
      * @return boolean
      */
     public function delete($review_id)

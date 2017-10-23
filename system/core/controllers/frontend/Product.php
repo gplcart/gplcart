@@ -273,6 +273,7 @@ class Product extends FrontendController
             $users[] = $review['user_id'];
         }
 
+        $ratings = null;
         if (!empty($users)) {
             $ratings = $this->rating->getByUser($this->data_product['product_id'], $users);
         }

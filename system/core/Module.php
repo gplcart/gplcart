@@ -95,7 +95,9 @@ abstract class Module
      */
     protected function getLibrary()
     {
-        return $this->getInstance('gplcart\\core\\Library');
+        /* @var $instance \gplcart\core\Library */
+        $instance = $this->getInstance('gplcart\\core\\Library');
+        return $instance;
     }
 
     /**
@@ -104,7 +106,9 @@ abstract class Module
      */
     protected function getLanguage()
     {
-        return $this->getModel('Language');
+        /* @var $model \gplcart\core\models\Language */
+        $model = $this->getModel('Language');
+        return $model;
     }
 
     /**

@@ -155,6 +155,7 @@ class Review extends BackendController
     {
         $product_id = $this->getQuery('product_id');
 
+        $product = null;
         if (!empty($product_id)) {
             $product = $this->product->get($product_id);
         }

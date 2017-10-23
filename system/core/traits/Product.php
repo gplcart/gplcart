@@ -19,7 +19,7 @@ trait Product
      * Attach prepared fields to a product
      * @param array $product
      * @param \gplcart\core\models\ProductClass $product_model
-     * @param \gplcart\core\Controller $controller
+     * @param \gplcart\core\controllers\frontend\Controller $controller
      */
     protected function setProductFieldsTrait(array &$product, $product_model,
             $controller)
