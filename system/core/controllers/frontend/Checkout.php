@@ -459,7 +459,7 @@ class Checkout extends FrontendController
     protected function setFormDataAddressCheckout()
     {
         $countries = array();
-        foreach ($this->country->getList(array('status' => true)) as $code => $country) {
+        foreach ((array) $this->country->getList(array('status' => true)) as $code => $country) {
             $countries[$code] = $country['native_name'];
         }
 

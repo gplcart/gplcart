@@ -1154,13 +1154,13 @@ abstract class Controller
                 return $this->submitted = (array) $value;
             }
 
-            $this->submitted = $this->request->post(null, array(), $filter, 'array');
+            $this->submitted = (array) $this->request->post(null, array(), $filter, 'array');
             return $this->submitted;
         }
 
         if (!isset($value) && empty($this->submitted)) {
             $this->form_source = (string) $key;
-            $this->submitted = $this->request->post($key, array(), $filter, 'array');
+            $this->submitted = (array) $this->request->post($key, array(), $filter, 'array');
             return $this->submitted;
         }
 

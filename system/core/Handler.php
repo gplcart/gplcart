@@ -9,7 +9,6 @@
 
 namespace gplcart\core;
 
-use Exception;
 use InvalidArgumentException;
 
 /**
@@ -45,7 +44,7 @@ class Handler
     {
         try {
             $handler = static::get($handlers, $handler_id, $method);
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             throw new InvalidArgumentException($ex->getMessage());
         }
 

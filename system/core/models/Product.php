@@ -524,7 +524,7 @@ class Product extends Model
 
         $list = $this->db->fetchColumnAll($sql, array($options['product_id']));
 
-        if ($list && $options['load']) {
+        if (!empty($list) && $options['load']) {
             $options['product_id'] = $list;
             $list = $this->getList($options);
         }

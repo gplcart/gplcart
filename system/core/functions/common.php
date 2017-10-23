@@ -74,10 +74,10 @@ function gplcart_path_starts($path, $prefix)
  * Perform a regular expression match on the given path string
  * @param string $path
  * @param string $pattern
- * @param null|array $arguments
+ * @param array $arguments
  * @return boolean
  */
-function gplcart_path_match($path, $pattern, &$arguments = null)
+function gplcart_path_match($path, $pattern, &$arguments = array())
 {
     $matches = array();
     if (preg_match("~^$pattern$~i", $path, $matches) === 1) {
