@@ -172,7 +172,7 @@ class Report extends Model
             'title' => $this->language->text('Database version'),
             'description' => '',
             'severity' => 'info',
-            'status' => $this->db->pdo()->getAttribute(\PDO::ATTR_SERVER_VERSION),
+            'status' => $this->db->getPdo()->getAttribute(\PDO::ATTR_SERVER_VERSION),
             'weight' => 1,
         );
 
