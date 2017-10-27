@@ -601,13 +601,6 @@ class File extends Model
             return false;
         }
 
-        $error = $this->curl->getError();
-
-        if (!empty($error)) {
-            $this->error = $error;
-            return false;
-        }
-
         $file = gplcart_file_tempname();
         $fh = fopen($file, "w");
         fwrite($fh, $content);
