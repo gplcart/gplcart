@@ -385,9 +385,7 @@ class CliController
         $this->line($this->text('List of available commands. To see help for a certain command use --help option'));
 
         foreach ($this->route->getList() as $command => $info) {
-
             $description = $this->text('No description available');
-
             if (!empty($info['help']['description'])) {
                 $description = $this->text($info['help']['description']);
             }

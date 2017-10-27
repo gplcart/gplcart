@@ -360,7 +360,6 @@ class Product extends Model
             return $product;
         }
 
-        // Remove repeating field values
         foreach ($product['field']['option'] as &$field_values) {
             $field_values = array_unique($field_values);
         }

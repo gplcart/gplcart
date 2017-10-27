@@ -42,7 +42,7 @@ class Cache
     }
 
     /**
-     * Return cache file modification time
+     * Return the cache file modification time
      * @return integer
      */
     public function getFileMtime()
@@ -51,7 +51,7 @@ class Cache
     }
 
     /**
-     * Returns path to a cache file
+     * Returns path to the current cache file
      * @return string
      */
     public function getFile()
@@ -60,7 +60,7 @@ class Cache
     }
 
     /**
-     * Sets a cache data
+     * Set cache
      * @param string|array $cid
      * @param mixed $data
      * @return boolean
@@ -127,15 +127,15 @@ class Cache
 
     /**
      * Clears a cached data
-     * @param string|null|array $cid
+     * @param string|null|array $cache_id
      * @param array $options
      * @return bool
      */
-    public function clear($cid, $options = array())
+    public function clear($cache_id, $options = array())
     {
         $result = null;
         $options += array('pattern' => '.cache');
-        $this->hook->attach('cache.clear.before', $cid, $options, $result, $this);
+        $this->hook->attach('cache.clear.before', $cache_id, $options, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -143,20 +143,20 @@ class Cache
 
         $result = true;
 
-        if ($cid === null) {
+        if ($cache_id === null) {
             array_map('unlink', glob(GC_DIR_CACHE . '/*.cache'));
             gplcart_static_clear();
         } else {
 
-            if (is_array($cid)) {
-                $cid = gplcart_array_hash($cid);
+            if (is_array($cache_id)) {
+                $cache_id = gplcart_array_hash($cache_id);
             }
 
-            array_map('unlink', glob(GC_DIR_CACHE . "/$cid{$options['pattern']}"));
-            gplcart_static_clear($cid);
+            array_map('unlink', glob(GC_DIR_CACHE . "/$cache_id{$options['pattern']}"));
+            gplcart_static_clear($cache_id);
         }
 
-        $this->hook->attach('cache.clear.after', $cid, $options, $result, $this);
+        $this->hook->attach('cache.clear.after', $cache_id, $options, $result, $this);
         return (bool) $result;
     }
 
