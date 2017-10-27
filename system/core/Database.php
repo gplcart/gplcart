@@ -56,7 +56,7 @@ class Database
             $this->pdo = new PDO($dns, $config['user'], $config['password']);
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $ex) {
-            throw new DatabaseException($ex->getMessage());
+            throw new DatabaseException('Cannot connect to database: ' . $ex->getMessage());
         }
 
         return $this->pdo;
