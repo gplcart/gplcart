@@ -23,11 +23,6 @@ return array(
             'severity' => 'danger',
             'message' => /* @text */'SPL extension installed'
         ),
-        'curl' => array(
-            'status' => extension_loaded('curl'),
-            'severity' => 'danger',
-            'message' => /* @text */'CURL extension installed'
-        ),
         'fileinfo' => array(
             'status' => extension_loaded('fileinfo'),
             'severity' => 'danger',
