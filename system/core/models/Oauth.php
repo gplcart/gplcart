@@ -46,7 +46,7 @@ class Oauth extends Model
      * @param UrlHelper $url
      */
     public function __construct(CurlHelper $curl, SessionHelper $session,
-                                UrlHelper $url)
+            UrlHelper $url)
     {
         parent::__construct();
 
@@ -119,7 +119,7 @@ class Oauth extends Model
 
         if (isset($provider['handlers']['auth'])) {
             // Call per-provider query handler
-            $params = $this->call('auth', $provider, $params);
+            $params = $this->callHandler('auth', $provider, $params);
         }
 
         return $params;
@@ -152,7 +152,6 @@ class Oauth extends Model
         );
 
         $default += $this->getDefaultQuery($provider);
-
         return array_merge($default, $params);
     }
 
@@ -183,7 +182,6 @@ class Oauth extends Model
 
         $state = gplcart_string_encode(json_encode($data));
         $this->setState($state, $provider['id']);
-
         return $state;
     }
 
@@ -241,8 +239,8 @@ class Oauth extends Model
         $token = $this->getToken($provider_id);
 
         return isset($token['access_token'])//
-            && isset($token['expires'])//
-            && GC_TIME < $token['expires'];
+                && isset($token['expires'])//
+                && GC_TIME < $token['expires'];
     }
 
     /**
@@ -305,7 +303,7 @@ class Oauth extends Model
         }
 
         if (isset($provider['handlers']['token'])) {
-            $token = $this->call('token', $provider, $params);
+            $token = $this->callHandler('token', $provider, $params);
         } else {
             $token = $this->requestToken($provider, $params);
         }
@@ -383,10 +381,8 @@ class Oauth extends Model
             return $result;
         }
 
-        $result = $this->call('process', $provider, $params);
-
+        $result = $this->callHandler('process', $provider, $params);
         $this->hook->attach('oauth.process.after', $provider, $params, $result, $this);
-
         return $result;
     }
 
@@ -397,10 +393,14 @@ class Oauth extends Model
      * @param array $params
      * @return mixed
      */
-    protected function call($handler, array $provider, $params)
+    protected function callHandler($handler, array $provider, $params)
     {
-        $providers = $this->getProviders();
-        return Handler::call($providers, $provider['id'], $handler, array($params, $provider, $this));
+        try {
+            $providers = $this->getProviders();
+            return Handler::call($providers, $provider['id'], $handler, array($params, $provider, $this));
+        } catch (\Exception $ex) {
+            return $ex->getMessage();
+        }
     }
 
     /**
