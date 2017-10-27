@@ -55,38 +55,18 @@ class Database
         try {
             $this->pdo = new PDO($dns, $config['user'], $config['password']);
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $exc) {
-            throw new DatabaseException('Could not connect to database');
+        } catch (PDOException $ex) {
+            throw new DatabaseException($ex->getMessage());
         }
 
         return $this->pdo;
     }
 
     /**
-     * Try to call a PDO method when invoking an inaccessible method in the class
-     * @param string $method
-     * @param array $params
-     * @return mixed
-     * @throws DatabaseException
-     */
-    public function __call($method, $params)
-    {
-        if (!is_callable(array($this->pdo, $method))) {
-            throw new DatabaseException("Method $method does not exist in \PDO class");
-        }
-
-        try {
-            return call_user_func_array(array($this->pdo, $method), $params);
-        } catch (PDOException $ex) {
-            throw new DatabaseException($ex->getMessage());
-        }
-    }
-
-    /**
      * Returns PDO instance
      * @return \PDO
      */
-    public function pdo()
+    public function getPdo()
     {
         return $this->pdo;
     }
