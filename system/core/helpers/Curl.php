@@ -18,12 +18,6 @@ class Curl
 {
 
     /**
-     * A string containing the last error for the current CURL session
-     * @var string
-     */
-    protected $error = '';
-
-    /**
      * Array of curl response info
      * @var mixed
      */
@@ -38,7 +32,9 @@ class Curl
      */
     public function get($url, array $options = array())
     {
-        $this->checkRequirements();
+        if (!function_exists('curl_init')) {
+            throw new RuntimeException('CURL library is not installed');
+        }
 
         if (isset($options['query'])) {
             $query = is_string($options['query'])//
@@ -51,15 +47,17 @@ class Curl
 
         $ch = curl_init();
         curl_setopt_array($ch, $options);
+
         $response = curl_exec($ch);
+        $error = curl_error($ch);
 
-        $this->error = curl_error($ch);
+        $this->info = curl_getinfo($ch);
+        curl_close($ch);
 
-        if (empty($this->error)) {
-            $this->info = curl_getinfo($ch);
+        if (!empty($error)) {
+            throw new RuntimeException($error);
         }
 
-        curl_close($ch);
         return $response;
     }
 
@@ -72,7 +70,9 @@ class Curl
      */
     public function post($url, array $options = array())
     {
-        $this->checkRequirements();
+        if (!function_exists('curl_init')) {
+            throw new RuntimeException('CURL library is not installed');
+        }
 
         $options += $this->defaultOptions($url);
         $options[CURLOPT_POST] = true;
@@ -86,16 +86,49 @@ class Curl
 
         $ch = curl_init();
         curl_setopt_array($ch, $options);
+
         $response = curl_exec($ch);
+        $error = curl_error($ch);
 
-        $this->error = curl_error($ch);
+        $this->info = curl_getinfo($ch);
+        curl_close($ch);
 
-        if (empty($this->error)) {
-            $this->info = curl_getinfo($ch);
+        if (!empty($error)) {
+            throw new RuntimeException($error);
         }
 
-        curl_close($ch);
         return $response;
+    }
+
+    /**
+     * Returns an array of header data
+     * @param string $url
+     * @param array $options
+     * @return string
+     * @throws \RuntimeException
+     */
+    public function header($url, array $options = array())
+    {
+        if (!function_exists('curl_init')) {
+            throw new RuntimeException('CURL library is not installed');
+        }
+
+        $options += $this->defaultOptions($url);
+        $options += array(CURLOPT_HEADER => true, CURLOPT_NOBODY => true);
+
+        $ch = curl_init();
+        curl_setopt_array($ch, $options);
+        curl_exec($ch);
+
+        $error = curl_error($ch);
+        $this->info = curl_getinfo($ch);
+        curl_close($ch);
+
+        if (!empty($error)) {
+            throw new RuntimeException($error);
+        }
+
+        return $this->info;
     }
 
     /**
@@ -117,61 +150,12 @@ class Curl
     }
 
     /**
-     * Returns an array of header data
-     * @param string $url
-     * @param array $options
-     * @return string
-     * @throws \RuntimeException
-     */
-    public function header($url, array $options = array())
-    {
-        $this->checkRequirements();
-
-        $options += $this->defaultOptions($url);
-        $options += array(CURLOPT_HEADER => true, CURLOPT_NOBODY => true);
-
-        $ch = curl_init();
-        curl_setopt_array($ch, $options);
-        curl_exec($ch);
-        $info = curl_getinfo($ch);
-
-        $this->error = curl_error($ch);
-
-        if (empty($this->error)) {
-            $this->info = $info;
-        }
-
-        curl_close($ch);
-        return $info;
-    }
-
-    /**
      * Returns an array of response info
      * @return array
      */
     public function getInfo()
     {
         return $this->info;
-    }
-
-    /**
-     * Returns a string containing the last error for the current CURL session
-     * @return string
-     */
-    public function getError()
-    {
-        return $this->error;
-    }
-
-    /**
-     * Ensures that CURL is installed
-     * @throws \RuntimeException
-     */
-    protected function checkRequirements()
-    {
-        if (!function_exists('curl_init')) {
-            throw new RuntimeException("CURL library is not installed");
-        }
     }
 
 }
