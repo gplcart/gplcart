@@ -20,7 +20,7 @@ class Cli
      * @param array|string $argv
      * @return array
      */
-    public function parse($argv)
+    public function parseArguments($argv)
     {
         if (is_string($argv)) {
             $argv = gplcart_string_explode_whitespace($argv);
@@ -35,7 +35,9 @@ class Cli
             $arg = $argv[$i];
 
             if (substr($arg, 0, 2) === '--') {
+
                 $pos = strpos($arg, '=');
+
                 if ($pos === false) {
                     $key = substr($arg, 2);
                     if ($i + 1 < $j && $argv[$i + 1][0] !== '-') {
@@ -64,8 +66,7 @@ class Cli
                     continue;
                 }
 
-                $chars = str_split(substr($arg, 1));
-                foreach ($chars as $char) {
+                foreach (str_split(substr($arg, 1)) as $char) {
                     $key = $char;
                     $value = isset($out[$key]) ? $out[$key] : true;
                     $out[$key] = $value;
