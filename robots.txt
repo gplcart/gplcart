@@ -26,4 +26,8 @@ Disallow: /review/add
 Disallow: /review/edit
 Disallow: /search
 Disallow: /system
+Disallow: /tests
 Disallow: /wishlist
+Disallow: /oauth
+Disallow: /status-backend
+Disallow: /status-frontend
