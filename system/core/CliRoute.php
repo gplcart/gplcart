@@ -51,7 +51,7 @@ class CliRoute
         $this->hook = $hook;
 
         if (!empty($_SERVER['argv'])) {
-            $this->arguments = $this->cli->parse($_SERVER['argv']);
+            $this->arguments = $this->cli->parseArguments($_SERVER['argv']);
         }
 
         $this->hook->attach('construct.cli.route', $this);
