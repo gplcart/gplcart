@@ -37,21 +37,6 @@ class Logger
     }
 
     /**
-     * Writes a log message to the CSV file
-     * @param string $file
-     * @param string $type
-     * @param string $message
-     * @param string $severity
-     * @param integer $limit
-     * @return bool
-     */
-    public function csv($file, $type, $message, $severity = 'info', $limit = 0)
-    {
-        $fields = array(date('M d, Y G:iA'), $severity, $type, strip_tags($message));
-        return gplcart_file_csv($file, $fields, ',', '"', $limit);
-    }
-
-    /**
      * Writes a log message to the database
      * @param string $type
      * @param array|string $data
@@ -106,11 +91,11 @@ class Logger
     }
 
     /**
-     * Returns an array of logged PHP errors in the database
+     * Returns an array of logged PHP errors from the database
      * @param integer|null $limit
      * @return array
      */
-    public function selectPhpErrors($limit = null)
+    public function selectErrors($limit = null)
     {
         $sql = "SELECT * FROM log WHERE type LIKE ? ORDER BY time DESC";
 
@@ -189,28 +174,19 @@ class Logger
 
     /**
      * Common exception handler
-     * @param \Exception $exception
+     * @param \Exception $exc
      */
-    public function exceptionHandler(\Exception $exception)
+    public function exceptionHandler(\Exception $exc)
     {
-        $error = $this->getExceptionMessageArray($exception);
+        $error = array(
+            'code' => $exc->getCode(),
+            'file' => $exc->getFile(),
+            'line' => $exc->getLine(),
+            'message' => $exc->getMessage()
+        );
+
         $this->log('php_exception', $error, 'danger', false);
         echo $this->getFormattedError($error, 'PHP Exception');
-    }
-
-    /**
-     * Returns an array of exception data to be rendered
-     * @param \Exception $instance
-     * @return array
-     */
-    protected function getExceptionMessageArray(\Exception $instance)
-    {
-        return array(
-            'code' => $instance->getCode(),
-            'file' => $instance->getFile(),
-            'line' => $instance->getLine(),
-            'message' => $instance->getMessage()
-        );
     }
 
     /**
@@ -221,30 +197,26 @@ class Logger
      */
     public function getFormattedError($error, $header = '')
     {
-        $message = "";
-
-        if ($header !== '') {
-            $message .= "<h3>$header</h3>\n";
-        }
-
-        $message .= "Message: {$error['message']}<br>\n";
+        $parts = array("Message: {$error['message']}");
 
         if (isset($error['code'])) {
-            $message .= "Code: {$error['code']}<br>\n";
+            $parts[] = "Code: {$error['code']}";
         }
 
         if (isset($error['type'])) {
-            $message .= "Type: {$error['type']}<br>\n";
+            $parts[] = "Type: {$error['type']}";
         }
 
-        $message .= "File: {$error['file']}<br>\n";
-        $message .= "Line: {$error['line']}<br>\n";
+        $parts[] = "File: {$error['file']}";
+        $parts[] = "Line: {$error['line']}";
 
-        if (GC_CLI) {
-            return strip_tags($message);
+        $message = implode("<br>\n", $parts);
+
+        if ($header !== '') {
+            $message = "<h3>$header</h3>$message";
         }
 
-        return $message;
+        return GC_CLI ? strip_tags($message) : $message;
     }
 
     /**
@@ -252,7 +224,7 @@ class Logger
      * @param boolean $format
      * @return array
      */
-    public function getPhpErrors($format = true)
+    public function getErrors($format = true)
     {
         if (!$format) {
             return $this->errors;
