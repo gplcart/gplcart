@@ -374,8 +374,7 @@ class Database
      * @param bool $filter
      * @return integer
      */
-    public function update($table, array $data, array $conditions,
-            $filter = true
+    public function update($table, array $data, array $conditions, $filter = true
     )
     {
         if ($filter) {

@@ -34,7 +34,6 @@ class Hook
     protected $config;
 
     /**
-     * Constructor
      * @param Config $config
      */
     public function __construct(Config $config)
@@ -111,8 +110,7 @@ class Hook
      * @param mixed $e
      * @return boolean
      */
-    public function attach($hook, &$a = null, &$b = null, &$c = null,
-            &$d = null, &$e = null)
+    public function attach($hook, &$a = null, &$b = null, &$c = null, &$d = null, &$e = null)
     {
         if (strpos($hook, '|') !== false) {
             list($hook, $module_id) = explode('|', $hook, 2);
@@ -138,7 +136,7 @@ class Hook
 
     /**
      * Calls a hook method
-     * @param string $namespace
+     * @param string $class
      * @param string $method
      * @param mixed $a
      * @param mixed $b
@@ -147,17 +145,16 @@ class Hook
      * @param mixed $e
      * @return boolean
      */
-    public function call($namespace, $method, &$a = null, &$b = null,
-            &$c = null, &$d = null, &$e = null)
+    public function call($class, $method, &$a = null, &$b = null, &$c = null, &$d = null, &$e = null)
     {
-        if (!is_callable(array($namespace, $method))) {
+        if (!is_callable(array($class, $method))) {
             return false;
         }
 
         try {
-            $instance = Container::get($namespace);
+            $instance = Container::get($class);
             $instance->{$method}($a, $b, $c, $d, $e);
-            $this->called[$method][$namespace] = array($namespace, $method);
+            $this->called[$method][$class] = array($class, $method);
         } catch (\Exception $exc) {
             return false;
         }

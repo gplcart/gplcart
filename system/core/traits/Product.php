@@ -21,8 +21,7 @@ trait Product
      * @param \gplcart\core\models\ProductClass $product_model
      * @param \gplcart\core\controllers\frontend\Controller $controller
      */
-    protected function setProductFieldsTrait(array &$product, $product_model,
-            $controller)
+    protected function setProductFieldsTrait(array &$product, $product_model, $controller)
     {
         $fields = $product_model->getFieldData($product['product_class_id']);
         $this->prepareProductFieldsTrait($product, $fields, 'option', $controller);
@@ -37,8 +36,7 @@ trait Product
      * @param \gplcart\core\controllers\frontend\Controller $controller
      * @return null
      */
-    protected function prepareProductFieldsTrait(array &$product, array $fields,
-            $type, $controller)
+    protected function prepareProductFieldsTrait(array &$product, array $fields, $type, $controller)
     {
         if (empty($product['field'][$type])) {
             return null;
@@ -56,7 +54,6 @@ trait Product
                 );
 
                 $controller->setItemThumb($fields[$type][$field_id]['values'][$field_value_id], $options);
-
                 if (isset($fields[$type][$field_id]['values'][$field_value_id]['title'])) {
                     $product['field_value_labels'][$type][$field_id][$field_value_id] = $fields[$type][$field_id]['values'][$field_value_id]['title'];
                 }

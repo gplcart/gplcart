@@ -43,8 +43,8 @@ class Facade
      * @param UrlHelper $url
      * @param SessionHelper $session
      */
-    public function __construct(Config $config, Route $route, Hook $hook,
-            UrlHelper $url, SessionHelper $session)
+    public function __construct(Config $config, Route $route, Hook $hook, UrlHelper $url,
+            SessionHelper $session)
     {
         $session->start();
 

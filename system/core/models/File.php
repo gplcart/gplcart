@@ -78,8 +78,8 @@ class File extends Model
      * @param UrlHelper $url
      * @param CurlHelper $curl
      */
-    public function __construct(LanguageModel $language,
-            ValidatorModel $validator, UrlHelper $url, CurlHelper $curl)
+    public function __construct(LanguageModel $language, ValidatorModel $validator, UrlHelper $url,
+            CurlHelper $curl)
     {
         parent::__construct();
 

@@ -73,8 +73,7 @@ class Route
      * @param UrlHelper $url
      * @param RequestHelper $request
      */
-    public function __construct(Config $config, Hook $hook, UrlHelper $url,
-            RequestHelper $request)
+    public function __construct(Config $config, Hook $hook, UrlHelper $url, RequestHelper $request)
     {
         $this->url = $url;
         $this->hook = $hook;
@@ -265,8 +264,7 @@ class Route
      * @param string $method
      * @return mixed
      */
-    public function callHandler($pattern, $arguments = array(),
-            $method = 'controller')
+    public function callHandler($pattern, $arguments = array(), $method = 'controller')
     {
         $list = $this->getList();
         $route = $list[$pattern];

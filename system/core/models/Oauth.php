@@ -45,8 +45,7 @@ class Oauth extends Model
      * @param SessionHelper $session
      * @param UrlHelper $url
      */
-    public function __construct(CurlHelper $curl, SessionHelper $session,
-            UrlHelper $url)
+    public function __construct(CurlHelper $curl, SessionHelper $session, UrlHelper $url)
     {
         parent::__construct();
 

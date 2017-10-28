@@ -75,9 +75,9 @@ class Cart extends Model
      * @param LanguageModel $language
      * @param RequestHelper $request
      */
-    public function __construct(ProductModel $product, SkuModel $sku,
-            CurrencyModel $currency, UserModel $user, WishlistModel $wishlist,
-            LanguageModel $language, RequestHelper $request)
+    public function __construct(ProductModel $product, SkuModel $sku, CurrencyModel $currency,
+            UserModel $user, WishlistModel $wishlist, LanguageModel $language,
+            RequestHelper $request)
     {
         parent::__construct();
 
@@ -257,7 +257,7 @@ class Cart extends Model
     }
 
     /**
-     * Returns the cart limits
+     * Returns cart limits
      * @param null|string $item
      * @return array|integer
      */
@@ -272,7 +272,7 @@ class Cart extends Model
     }
 
     /**
-     * Adds a product to the cart
+     * Adds a product to the current cart
      * @param array $product
      * @param array $data
      * @return array
@@ -325,7 +325,7 @@ class Cart extends Model
     }
 
     /**
-     * Returns a cart user ID
+     * Returns the cart user ID
      * @return string
      */
     public function getUid()
@@ -350,7 +350,7 @@ class Cart extends Model
     }
 
     /**
-     * Adds/updates products in the cart
+     * Adds/updates products in cart
      * @param array $data
      * @return integer|boolean
      */
