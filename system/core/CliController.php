@@ -114,6 +114,21 @@ class CliController
     }
 
     /**
+     * Access protected properties
+     * @param string $name
+     * @return mixed
+     */
+    public function __get($name)
+    {
+        if (property_exists($this, $name)) {
+            return $this->$name;
+        }
+
+        user_error("Property $name does not exist");
+        return null;
+    }
+
+    /**
      * Handle calls to non-existing static methods
      * @param string $method
      * @param array $arguments
@@ -153,20 +168,6 @@ class CliController
     }
 
     /**
-     * Returns a property
-     * @param string $name
-     * @return mixed
-     */
-    public function getProperty($name)
-    {
-        if (property_exists($this, $name)) {
-            return $this->$name;
-        }
-
-        throw new \InvalidArgumentException("Property $name does not exist");
-    }
-
-    /**
      * Returns a translated string
      * @param string $text
      * @param array $arguments
@@ -184,8 +185,7 @@ class CliController
      * @param array $default
      * @return array
      */
-    public function setSubmittedMapped(array $map, $arguments = null,
-            array $default = array())
+    public function setSubmittedMapped(array $map, $arguments = null, array $default = array())
     {
         $mapped = $this->mapArguments($map, $arguments);
         $merged = gplcart_array_merge($default, $mapped);
@@ -330,7 +330,7 @@ class CliController
      */
     public function output()
     {
-        $errors = $this->logger->getPhpErrors();
+        $errors = $this->logger->getErrors();
 
         if (!empty($errors)) {
             $this->setError('php_errors', $errors);

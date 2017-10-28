@@ -51,8 +51,8 @@ class Ajax extends FrontendController
      * @param CollectionModel $collection
      * @param CollectionItemModel $collection_item
      */
-    public function __construct(SkuModel $sku, CityModel $city,
-            CollectionModel $collection, CollectionItemModel $collection_item)
+    public function __construct(SkuModel $sku, CityModel $city, CollectionModel $collection,
+            CollectionItemModel $collection_item)
     {
         parent::__construct();
 
@@ -71,14 +71,13 @@ class Ajax extends FrontendController
             $this->response->error403();
         }
 
-        $action = $this->getPosted('action', '', true, 'string');
+        $action = $this->getPosted('action');
 
         if (empty($action)) {
             $this->response->json(array('error' => $this->text('Missing handler')));
         }
 
-        $response = $this->{$action}();
-        $this->response->json($response);
+        $this->response->json(call_user_func(array($this, $action)));
     }
 
     /**
@@ -107,9 +106,9 @@ class Ajax extends FrontendController
         }
 
         $options = array(
-            'status' => $this->getPosted('status', null, true, 'integer'),
-            'store_id' => $this->getPosted('store_id', null, true, 'integer'),
-            'title' => $this->getPosted('term', '', true, 'string'),
+            'title' => $this->getPosted('term'),
+            'status' => $this->getPosted('status'),
+            'store_id' => $this->getPosted('store_id'),
             'limit' => array(0, $this->config('autocomplete_limit', 10))
         );
 
@@ -127,8 +126,8 @@ class Ajax extends FrontendController
         }
 
         $options = array(
-            'email' => $this->getPosted('term', '', true, 'string'),
-            'store_id' => $this->getPosted('store_id', null, true, 'integer'),
+            'email' => $this->getPosted('term'),
+            'store_id' => $this->getPosted('store_id'),
             'limit' => array(0, $this->config('autocomplete_limit', 10)));
 
         return $this->user->getList($options);
@@ -144,9 +143,7 @@ class Ajax extends FrontendController
             return array('error' => $this->text('No access'));
         }
 
-        $default = $this->store->getDefault();
-        $store_id = $this->getPosted('store_id', $default, true, 'integer');
-
+        $store_id = $this->getPosted('store_id', $this->store->getDefault());
         return $this->category->getOptionListByStore($store_id);
     }
 
@@ -156,7 +153,7 @@ class Ajax extends FrontendController
      */
     public function switchProductOptionsAjax()
     {
-        $product_id = $this->getPosted('product_id', null, true, 'integer');
+        $product_id = $this->getPosted('product_id');
         $field_value_ids = $this->getPosted('values', array(), true, 'array');
 
         if (empty($product_id)) {
@@ -198,8 +195,8 @@ class Ajax extends FrontendController
      */
     public function getCollectionItemAjax()
     {
-        $term = $this->getPosted('term', '', true, 'string');
-        $collection_id = $this->getPosted('collection_id', null, true, 'integer');
+        $term = $this->getPosted('term');
+        $collection_id = $this->getPosted('collection_id');
 
         if (empty($term) || empty($collection_id)) {
             return array('error' => $this->text('An error occurred'));
@@ -215,10 +212,14 @@ class Ajax extends FrontendController
             return array('error' => $this->text('No access'));
         }
 
-        $max = $this->config('autocomplete_limit', 10);
-        $options = array('title' => $term, 'limit' => array(0, $max));
+        $options = array(
+            'status' => 1,
+            'title' => $term,
+            'store_id' => $collection['store_id'],
+            'limit' => array(0, $this->config('autocomplete_limit', 10))
+        );
 
-        return $this->collection_item->getSuggestions($collection, $options);
+        return $this->collection_item->getListEntities($collection['type'], $options);
     }
 
     /**
@@ -227,8 +228,8 @@ class Ajax extends FrontendController
      */
     public function searchCityAjax()
     {
-        $country = $this->getPosted('country', '', true, 'string');
-        $state_id = $this->getPosted('state_id', '', true, 'string');
+        $country = $this->getPosted('country');
+        $state_id = $this->getPosted('state_id');
 
         if (empty($country) || empty($state_id)) {
             return array();

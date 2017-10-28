@@ -9,8 +9,6 @@
 
 namespace gplcart\core;
 
-use InvalidArgumentException;
-
 /**
  * Base controller class
  */
@@ -180,6 +178,12 @@ abstract class Controller
     protected $current_filter;
 
     /**
+     * Current language data
+     * @var array
+     */
+    protected $current_language;
+
+    /**
      * Array of the current theme module info
      * @var array
      */
@@ -195,7 +199,7 @@ abstract class Controller
      * A key to get submitted data for $this->submitted
      * @var string
      */
-    protected $form_source;
+    protected $post_key;
 
     /**
      * Array of validation errors
@@ -252,12 +256,6 @@ abstract class Controller
     protected $langcode;
 
     /**
-     * Current language data
-     * @var array
-     */
-    protected $current_language;
-
-    /**
      * URL class instance
      * @var \gplcart\core\helpers\Url $url
      */
@@ -312,12 +310,6 @@ abstract class Controller
     protected $pager;
 
     /**
-     * Compressor class instance
-     * @var \gplcart\core\helpers\Compressor $compressor
-     */
-    protected $compressor;
-
-    /**
      * Config class instance
      * @var \gplcart\core\Config $config
      */
@@ -357,6 +349,21 @@ abstract class Controller
     }
 
     /**
+     * Access protected properties
+     * @param string $name
+     * @return mixed
+     */
+    public function __get($name)
+    {
+        if (property_exists($this, $name)) {
+            return $this->$name;
+        }
+
+        user_error("Property $name does not exist");
+        return null;
+    }
+
+    /**
      * Sets instance properties
      */
     protected function setInstanceProperties()
@@ -375,7 +382,6 @@ abstract class Controller
         $this->session = Container::get('gplcart\\core\\helpers\\Session');
         $this->request = Container::get('gplcart\\core\\helpers\\Request');
         $this->response = Container::get('gplcart\\core\\helpers\\Response');
-        $this->compressor = Container::get('gplcart\\core\\helpers\\Compressor');
 
         $this->hook = Container::get('gplcart\\core\\Hook');
         $this->route = Container::get('gplcart\\core\\Route');
@@ -455,6 +461,7 @@ abstract class Controller
     protected function setStoreProperties()
     {
         $this->current_store = $this->store->getCurrent();
+
         if (isset($this->current_store['store_id'])) {
             $this->store_id = $this->current_store['store_id'];
         }
@@ -471,20 +478,6 @@ abstract class Controller
             $this->setJs('files/assets/system/js/common.js', $options);
             $this->setCss('files/assets/system/css/common.css', $options);
         }
-    }
-
-    /**
-     * Returns a property
-     * @param string $name
-     * @return object
-     */
-    public function getProperty($name)
-    {
-        if (property_exists($this, $name)) {
-            return $this->$name;
-        }
-
-        throw new InvalidArgumentException("Property $name does not exist");
     }
 
     /**
@@ -589,14 +582,13 @@ abstract class Controller
     }
 
     /**
-     * Returns a value on a error
+     * Returns a value if an error occurred
      * @param string|array $key
      * @param mixed $return_error
      * @param mixed $return_no_error
      * @return mixed
      */
-    public function error($key = null, $return_error = null,
-            $return_no_error = '')
+    public function error($key = null, $return_error = null, $return_no_error = '')
     {
         if (isset($key)) {
             $result = gplcart_array_get($this->errors, $key);
@@ -757,11 +749,8 @@ abstract class Controller
             return $this->theme_settings;
         }
 
-        if (array_key_exists($key, $this->theme_settings)) {
-            return $this->theme_settings[$key];
-        }
-
-        return $default;
+        $value = gplcart_array_get($this->theme_settings, $key);
+        return isset($value) ? $value : $default;
     }
 
     /**
@@ -935,8 +924,7 @@ abstract class Controller
     }
 
     /**
-     * Whether a key is presented in the POST query
-     * If no key is set it returns TRUE if the request is POST type
+     * Whether the key exists in POST query or current query is POST type
      * @param string|null $key
      * @return boolean
      */
@@ -958,8 +946,7 @@ abstract class Controller
      * @param string $type
      * @return mixed
      */
-    public function getPosted($name, $default = null, $filter = true,
-            $type = 'string')
+    public function getPosted($name, $default = null, $filter = true, $type = 'string')
     {
         return $this->request->post($name, $default, $filter, $type);
     }
@@ -1147,7 +1134,7 @@ abstract class Controller
         }
 
         if (!isset($value) && empty($this->submitted)) {
-            $this->form_source = (string) $key;
+            $this->post_key = (string) $key;
             $this->submitted = (array) $this->request->post($key, array(), $filter, 'array');
             return $this->submitted;
         }
@@ -1423,13 +1410,13 @@ abstract class Controller
     /**
      * Redirects to a new location
      * @param string $url
-     * @param string $msg
-     * @param string $svt
-     * @param boolean $excl
+     * @param string $message
+     * @param string $severity
+     * @param boolean $exclude_lang
      */
-    public function redirect($url = '', $msg = '', $svt = 'info', $excl = false)
+    public function redirect($url = '', $message = '', $severity = 'info', $exclude_lang = false)
     {
-        $this->setMessage($msg, $svt, true);
+        $this->setMessage($message, $severity, true);
 
         $parsed = parse_url($url);
 
@@ -1439,7 +1426,7 @@ abstract class Controller
         }
 
         $full = strpos($url, $this->base) === 0;
-        $this->url->redirect($url, $query, $full, $excl);
+        $this->url->redirect($url, $query, $full, $exclude_lang);
     }
 
     /**
@@ -1955,8 +1942,8 @@ abstract class Controller
             $this->setMessage($this->text('One or more errors occurred'), 'danger');
         }
 
-        if (isset($this->form_source)) {
-            $this->setData($this->form_source, $this->submitted);
+        if (isset($this->post_key)) {
+            $this->setData($this->post_key, $this->submitted);
         }
 
         return true;

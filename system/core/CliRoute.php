@@ -50,9 +50,7 @@ class CliRoute
         $this->cli = $cli;
         $this->hook = $hook;
 
-        if (!empty($_SERVER['argv'])) {
-            $this->arguments = $this->cli->parseArguments($_SERVER['argv']);
-        }
+        $this->setArguments();
 
         $this->hook->attach('construct.cli.route', $this);
     }
@@ -67,7 +65,7 @@ class CliRoute
     }
 
     /**
-     * Returns an array of arguments of the current command
+     * Returns an array of arguments for the current command
      * @return array
      */
     public function getArguments()
@@ -76,12 +74,16 @@ class CliRoute
     }
 
     /**
-     * Set an array of CLI arguments
-     * @param array $arguments
+     * Set CLI arguments
+     * @param array|null $arguments
      */
-    public function setArguments(array $arguments)
+    public function setArguments($arguments = null)
     {
-        $this->arguments = $arguments;
+        if (!isset($arguments) && isset($_SERVER['argv'])) {
+            $this->arguments = $this->cli->parseArguments($_SERVER['argv']);
+        }
+
+        $this->arguments = (array) $arguments;
     }
 
     /**
@@ -109,7 +111,7 @@ class CliRoute
         $command = array_shift($this->arguments);
 
         if (empty($routes[$command])) {
-            exit("Unknown command. Use 'help' command to see what you got");
+            exit("Unknown command. Use 'help' command to see available commands");
         }
 
         $routes[$command]['command'] = $command;
@@ -118,7 +120,7 @@ class CliRoute
         $this->route = $routes[$command];
 
         Handler::call($this->route, null, 'controller', array($this->arguments));
-        exit('The command was completed incorrectly');
+        throw new \RuntimeException('The command was completed incorrectly');
     }
 
 }

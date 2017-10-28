@@ -148,8 +148,8 @@ class Account extends FrontendController
     {
         $this->prepareOrderComponentCartTrait($this->data_order, $this, $this->price);
         $this->prepareOrderComponentPriceRuleTrait($this->data_order, $this, $this->price, $this->pricerule);
-        $this->prepareOrderComponentPaymentMethodTrait($this->data_order, $this, $this->price, $this->payment, $this->order);
-        $this->prepareOrderComponentShippingMethodTrait($this->data_order, $this, $this->price, $this->shipping, $this->order);
+        $this->prepareOrderComponentPaymentTrait($this->data_order, $this, $this->price, $this->payment, $this->order);
+        $this->prepareOrderComponentShippingTrait($this->data_order, $this, $this->price, $this->shipping, $this->order);
 
         ksort($this->data_order['data']['components']);
 
