@@ -32,6 +32,12 @@ class Review extends BackendController
     protected $product;
 
     /**
+     * Pager limit
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * An array of review data
      * @var array
      */
@@ -60,8 +66,7 @@ class Review extends BackendController
         $this->setBreadcrumbListReview();
 
         $this->setFilterListReview();
-        $this->setTotalListReview();
-        $this->setPagerLimit();
+        $this->setPagerListReview();
 
         $this->setData('reviews', $this->getListReview());
         $this->setDataListReview();
@@ -111,13 +116,20 @@ class Review extends BackendController
     }
 
     /**
-     * Sets a total number of reviews found for the filter conditions
+     * Sets pager
+     * @return array
      */
-    protected function setTotalListReview()
+    protected function setPagerListReview()
     {
-        $query = $this->query_filter;
-        $query['count'] = true;
-        $this->total = (int) $this->review->getList($query);
+        $options = $this->query_filter;
+        $options['count'] = true;
+
+        $pager = array(
+            'query' => $this->query_filter,
+            'total' => (int) $this->review->getList($options)
+        );
+
+        return $this->data_limit = $this->setPager($pager);
     }
 
     /**
@@ -126,9 +138,9 @@ class Review extends BackendController
      */
     protected function getListReview()
     {
-        $query = $this->query_filter;
-        $query['limit'] = $this->limit;
-        $reviews = (array) $this->review->getList($query);
+        $options = $this->query_filter;
+        $options['limit'] = $this->data_limit;
+        $reviews = (array) $this->review->getList($options);
 
         return $this->prepareListReview($reviews);
     }

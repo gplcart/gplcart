@@ -25,6 +25,12 @@ class CategoryGroup extends BackendController
     protected $category_group;
 
     /**
+     * Pager limit
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * The current category group
      * @var array
      */
@@ -49,11 +55,9 @@ class CategoryGroup extends BackendController
         $this->setBreadcrumbListCategoryGroup();
 
         $this->setFilterListCategoryGroup();
-        $this->setTotalListCategoryGroup();
-        $this->setPagerLimit();
+        $this->setPagerListCategoryGroup();
 
         $this->setData('groups', $this->getListCategoryGroup());
-
         $this->outputListCategoryGroup();
     }
 
@@ -67,13 +71,17 @@ class CategoryGroup extends BackendController
     }
 
     /**
-     * Sets a total number of category groups found for the filter conditions
+     * Sets pager
+     * @return array
      */
-    protected function setTotalListCategoryGroup()
+    protected function setPagerListCategoryGroup()
     {
         $query = $this->query_filter;
         $query['count'] = true;
-        $this->total = (int) $this->category_group->getList($query);
+        $total = (int) $this->category_group->getList($query);
+
+        $pager = array('total' => $total, 'query' => $this->query_filter);
+        return $this->data_limit = $this->setPager($pager);
     }
 
     /**
@@ -83,8 +91,7 @@ class CategoryGroup extends BackendController
     protected function getListCategoryGroup()
     {
         $query = $this->query_filter;
-        $query['limit'] = $this->limit;
-
+        $query['limit'] = $this->data_limit;
         return $this->category_group->getList($query);
     }
 

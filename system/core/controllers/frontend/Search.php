@@ -25,6 +25,12 @@ class Search extends FrontendController
     protected $search;
 
     /**
+     * Pager limit
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * The search term
      * @var string
      */
@@ -57,8 +63,7 @@ class Search extends FrontendController
         $this->setBreadcrumbListSearch();
 
         $this->setFilterQueryListSearch();
-        $this->setTotalListSearch();
-        $this->setPagerLimit($this->configTheme('catalog_limit', 20));
+        $this->setPagerListSearch();
 
         $this->setResultsSearch();
 
@@ -82,7 +87,7 @@ class Search extends FrontendController
     protected function setDataNavbarListSearch()
     {
         $options = array(
-            'total' => $this->total,
+            'total' => $this->data_limit,
             'view' => $this->query_filter['view'],
             'quantity' => count($this->data_results),
             'sort' => "{$this->query_filter['sort']}-{$this->query_filter['order']}"
@@ -114,9 +119,10 @@ class Search extends FrontendController
     }
 
     /**
-     * Sets a total number of results found for the filter conditions
+     * Sets pager
+     * @return array
      */
-    protected function setTotalListSearch()
+    protected function setPagerListSearch()
     {
         $options = array(
             'status' => 1,
@@ -125,7 +131,13 @@ class Search extends FrontendController
             'language' => $this->langcode
         );
 
-        $this->total = (int) $this->search->search('product', $this->data_term, $options);
+        $pager = array(
+            'query' => $this->query_filter,
+            'limit' => $this->configTheme('catalog_limit', 20),
+            'total' => (int) $this->search->search('product', $this->data_term, $options)
+        );
+
+        return $this->data_limit = $this->setPager($pager);
     }
 
     /**
@@ -166,7 +178,7 @@ class Search extends FrontendController
         $options = array(
             'status' => 1,
             'entity' => 'product',
-            'limit' => $this->limit,
+            'limit' => $this->data_limit,
             'language' => $this->langcode,
             'store_id' => $this->store_id
         );

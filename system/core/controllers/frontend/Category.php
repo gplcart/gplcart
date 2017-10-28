@@ -25,6 +25,12 @@ class Category extends FrontendController
     protected $category_group;
 
     /**
+     * Pager limit
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * An array of category data
      * @var array
      */
@@ -101,8 +107,7 @@ class Category extends FrontendController
         $this->setHtmlFilterIndexCategory();
 
         $this->setFilterIndexCategory();
-        $this->setTotalIndexCategory();
-        $this->setPagerLimit($this->configTheme('catalog_limit', 20));
+        $this->setPagerIndexCategory();
 
         $this->setListProductCategory();
         $this->setChildrenCategory();
@@ -134,17 +139,22 @@ class Category extends FrontendController
     }
 
     /**
-     * Sets a total number of products for the category
+     * Sets pager
+     * @return array
      */
-    protected function setTotalIndexCategory()
+    protected function setPagerIndexCategory()
     {
-        $options = array(
-            'count' => true,
-            'category_id' => $this->data_category['category_id']
+        $options = $this->query_filter;
+        $options['count'] = true;
+        $options['category_id'] = $this->data_category['category_id'];
+
+        $pager = array(
+            'query' => $this->query_filter,
+            'limit' => $this->configTheme('catalog_limit', 20),
+            'total' => (int) $this->product->getList($options)
         );
 
-        $options += $this->query_filter;
-        $this->total = (int) $this->product->getList($options);
+        return $this->data_limit = $this->setPager($pager);
     }
 
     /**
@@ -183,7 +193,7 @@ class Category extends FrontendController
     protected function setDataNavbarIndexCategory()
     {
         $data = array(
-            'total' => $this->total,
+            'total' => $this->data_limit,
             'view' => $this->query_filter['view'],
             'quantity' => count($this->data_products),
             'sort' => "{$this->query_filter['sort']}-{$this->query_filter['order']}"
@@ -229,7 +239,7 @@ class Category extends FrontendController
         $options = array('placeholder' => true) + $this->query_filter;
 
         $conditions = array(
-            'limit' => $this->limit,
+            'limit' => $this->data_limit,
             'category_id' => $this->data_category['category_id']) + $this->query_filter;
 
         $this->data_products = $this->getProducts($conditions, $options);

@@ -67,6 +67,12 @@ class Product extends BackendController
     protected $alias;
 
     /**
+     * Pager limit
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * The current updating product
      * @var array
      */
@@ -108,8 +114,7 @@ class Product extends BackendController
         $this->setBreadcrumbListProduct();
 
         $this->setFilterListProduct();
-        $this->setTotalListProduct();
-        $this->setPagerLimit();
+        $this->setPagerListProduct();
 
         $this->setData('products', $this->getListProduct());
         $this->setData('currencies', $this->currency->getList(true));
@@ -129,13 +134,20 @@ class Product extends BackendController
     }
 
     /**
-     * Set a number of total products found for the filter conditions
+     * Set pager
+     * @return array
      */
-    protected function setTotalListProduct()
+    protected function setPagerListProduct()
     {
-        $query = $this->query_filter;
-        $query['count'] = true;
-        $this->total = (int) $this->product->getList($query);
+        $options = $this->query_filter;
+        $options['count'] = true;
+
+        $pager = array(
+            'query' => $this->query_filter,
+            'total' => (int) $this->product->getList($options)
+        );
+
+        return $this->data_limit = $this->setPager($pager);
     }
 
     /**
@@ -174,9 +186,9 @@ class Product extends BackendController
      */
     protected function getListProduct()
     {
-        $query = $this->query_filter;
-        $query['limit'] = $this->limit;
-        $products = (array) $this->product->getList($query);
+        $options = $this->query_filter;
+        $options['limit'] = $this->data_limit;
+        $products = (array) $this->product->getList($options);
 
         return empty($products) ? array() : $this->prepareListProduct($products);
     }

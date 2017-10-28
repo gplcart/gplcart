@@ -46,6 +46,12 @@ class PriceRule extends BackendController
     protected $price;
 
     /**
+     * Pager limit
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * An array of price rule data
      * @var array
      */
@@ -79,8 +85,7 @@ class PriceRule extends BackendController
         $this->setBreadcrumbListPriceRule();
 
         $this->setFilterListPriceRule();
-        $this->setTotalListPriceRule();
-        $this->setPagerLimit();
+        $this->setPagerListPriceRule();
 
         $this->setData('stores', $this->store->getList());
         $this->setData('price_rules', $this->getListPriceRule());
@@ -89,13 +94,20 @@ class PriceRule extends BackendController
     }
 
     /**
-     * Sets a total number of results on the price rule overview page
+     * Sets pager
+     * @return array
      */
-    protected function setTotalListPriceRule()
+    protected function setPagerListPriceRule()
     {
-        $query = $this->query_filter;
-        $query['count'] = true;
-        $this->total = (int) $this->rule->getList($query);
+        $options = $this->query_filter;
+        $options['count'] = true;
+
+        $pager = array(
+            'query' => $this->query_filter,
+            'total' => (int) $this->rule->getList($options)
+        );
+
+        return $this->data_limit = $this->setPager($pager);
     }
 
     /**
@@ -145,9 +157,9 @@ class PriceRule extends BackendController
      */
     protected function getListPriceRule()
     {
-        $query = $this->query_filter;
-        $query['limit'] = $this->limit;
-        $rules = (array) $this->rule->getList($query);
+        $options = $this->query_filter;
+        $options['limit'] = $this->data_limit;
+        $rules = (array) $this->rule->getList($options);
 
         return $this->prepareListPriceRule($rules);
     }

@@ -25,6 +25,12 @@ class User extends BackendController
     protected $role;
 
     /**
+     * Pager limit
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * A n array of user data
      * @var array
      */
@@ -50,8 +56,7 @@ class User extends BackendController
         $this->setBreadcrumbListUser();
 
         $this->setFilterListUser();
-        $this->setTotalListUser();
-        $this->setPagerLimit();
+        $this->setPagerListUser();
 
         $this->setData('roles', $this->role->getList());
         $this->setData('users', $this->getListUser());
@@ -71,13 +76,20 @@ class User extends BackendController
     }
 
     /**
-     * Sets a total number of users found for the filter conditions
+     * Sets pager
+     * @return array
      */
-    protected function setTotalListUser()
+    protected function setPagerListUser()
     {
-        $query = $this->query_filter;
-        $query['count'] = true;
-        $this->total = (int) $this->user->getList($query);
+        $options = $this->query_filter;
+        $options['count'] = true;
+
+        $pager = array(
+            'query' => $this->query_filter,
+            'total' => (int) $this->user->getList($options)
+        );
+
+        return $this->data_limit = $this->setPager($pager);
     }
 
     /**
@@ -120,10 +132,10 @@ class User extends BackendController
      */
     protected function getListUser()
     {
-        $query = $this->query_filter;
-        $query['limit'] = $this->limit;
+        $options = $this->query_filter;
+        $options['limit'] = $this->data_limit;
 
-        $users = (array) $this->user->getList($query);
+        $users = (array) $this->user->getList($options);
         return $this->prepareListUser($users);
     }
 

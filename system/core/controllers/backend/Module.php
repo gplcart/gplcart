@@ -35,6 +35,12 @@ class Module extends BackendController
     protected $graph;
 
     /**
+     * Pager limit
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * The current module
      * @var array
      */
@@ -64,8 +70,7 @@ class Module extends BackendController
         $this->setBreadcrumbListModule();
 
         $this->setFilterListModule();
-        $this->setTotalListModule();
-        $this->setPagerLimit();
+        $this->setPagerListModule();
 
         $this->setData('modules', $this->getListModule());
         $this->setData('cached', $this->config->hasModuleCache());
@@ -199,11 +204,17 @@ class Module extends BackendController
     }
 
     /**
-     * Sets a total number of modules found for the current filter
+     * Sets pager
+     * @return array
      */
-    protected function setTotalListModule()
+    protected function setPagerListModule()
     {
-        $this->total = count($this->module->getList());
+        $pager = array(
+            'query' => $this->query_filter,
+            'total' => count($this->module->getList())
+        );
+
+        return $this->data_limit = $this->setPager($pager);
     }
 
     /**
@@ -237,10 +248,8 @@ class Module extends BackendController
      */
     protected function limitListModule(array &$modules)
     {
-        if (!empty($this->limit)) {
-            list($from, $to) = $this->limit;
-            $modules = array_slice($modules, $from, $to, true);
-        }
+        list($from, $to) = $this->data_limit;
+        $modules = array_slice($modules, $from, $to, true);
     }
 
     /**

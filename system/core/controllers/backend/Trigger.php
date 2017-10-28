@@ -32,6 +32,12 @@ class Trigger extends BackendController
     protected $condition;
 
     /**
+     * Pager limit
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * The current trigger
      * @var array
      */
@@ -60,8 +66,7 @@ class Trigger extends BackendController
         $this->setBreadcrumbListTrigger();
 
         $this->setFilterListTrigger();
-        $this->setTotalListTrigger();
-        $this->setPagerLimit();
+        $this->setPagerListTrigger();
 
         $this->setData('triggers', $this->getListTrigger());
 
@@ -108,14 +113,20 @@ class Trigger extends BackendController
     }
 
     /**
-     * Sets a total number of triggers found for the filter conditions
+     * Sets pager
+     * @return array
      */
-    protected function setTotalListTrigger()
+    protected function setPagerListTrigger()
     {
-        $query = $this->query_filter;
-        $query['count'] = true;
+        $options = $this->query_filter;
+        $options['count'] = true;
 
-        $this->total = (int) $this->trigger->getList($query);
+        $pager = array(
+            'query' => $this->query_filter,
+            'total' => (int) $this->trigger->getList($options)
+        );
+
+        return $this->data_limit = $this->setPager($pager);
     }
 
     /**
@@ -124,10 +135,10 @@ class Trigger extends BackendController
      */
     protected function getListTrigger()
     {
-        $query = $this->query_filter;
-        $query['limit'] = $this->limit;
+        $options = $this->query_filter;
+        $options['limit'] = $this->data_limit;
 
-        return (array) $this->trigger->getList($query);
+        return (array) $this->trigger->getList($options);
     }
 
     /**

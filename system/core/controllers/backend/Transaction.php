@@ -32,6 +32,12 @@ class Transaction extends BackendController
     protected $transaction;
 
     /**
+     * Pager limit
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * @param PaymentModel $payment
      * @param TransactionModel $transaction
      */
@@ -55,8 +61,7 @@ class Transaction extends BackendController
         $this->setBreadcrumbListTransaction();
 
         $this->setFilterListTransaction();
-        $this->setTotalListTransaction();
-        $this->setPagerLimit();
+        $this->setPagerListTransaction();
 
         $this->setData('transactions', $this->getListTransaction());
         $this->setData('payment_methods', $this->payment->getList());
@@ -76,13 +81,20 @@ class Transaction extends BackendController
     }
 
     /**
-     * Sets a total transactions found for the given conditions
+     * Sets pager
+     * @return array
      */
-    protected function setTotalListTransaction()
+    protected function setPagerListTransaction()
     {
-        $query = $this->query_filter;
-        $query['count'] = true;
-        $this->total = (int) $this->transaction->getList($query);
+        $options = $this->query_filter;
+        $options['count'] = true;
+
+        $pager = array(
+            'query' => $this->query_filter,
+            'total' => (int) $this->transaction->getList($options)
+        );
+
+        return $this->data_limit = $this->setPager($pager);
     }
 
     /**
@@ -112,10 +124,10 @@ class Transaction extends BackendController
      */
     protected function getListTransaction()
     {
-        $query = $this->query_filter;
-        $query['limit'] = $this->limit;
+        $options = $this->query_filter;
+        $options['limit'] = $this->data_limit;
 
-        return (array) $this->transaction->getList($query);
+        return (array) $this->transaction->getList($options);
     }
 
     /**

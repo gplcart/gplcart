@@ -39,6 +39,12 @@ class Store extends BackendController
     protected $collection;
 
     /**
+     * Pager limit
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * The current store
      * @var array
      */
@@ -70,8 +76,7 @@ class Store extends BackendController
         $this->setBreadcrumbListStore();
 
         $this->setFilterListStore();
-        $this->setTotalListStore();
-        $this->setPagerLimit();
+        $this->setPagerListStore();
 
         $this->setData('stores', $this->getListStore());
         $this->setData('default_store', $this->store->getDefault());
@@ -88,13 +93,20 @@ class Store extends BackendController
     }
 
     /**
-     * Sets a total number of stores found for the filter conditions
+     * Sets pager
+     * @return array
      */
-    protected function setTotalListStore()
+    protected function setPagerListStore()
     {
-        $query = $this->query_filter;
-        $query['count'] = true;
-        $this->total = (int) $this->store->getList($query);
+        $options = $this->query_filter;
+        $options['count'] = true;
+
+        $pager = array(
+            'query' => $this->query_filter,
+            'total' => (int) $this->store->getList($options)
+        );
+
+        return $this->data_limit = $this->setPager($pager);
     }
 
     /**
@@ -133,10 +145,10 @@ class Store extends BackendController
      */
     protected function getListStore()
     {
-        $query = $this->query_filter;
-        $query['limit'] = $this->limit;
+        $options = $this->query_filter;
+        $options['limit'] = $this->data_limit;
 
-        return $this->store->getList($query);
+        return $this->store->getList($options);
     }
 
     /**

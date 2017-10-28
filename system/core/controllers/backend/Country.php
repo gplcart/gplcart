@@ -38,6 +38,12 @@ class Country extends BackendController
     protected $data_country = array();
 
     /**
+     * Pager limits
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * @param CountryModel $country
      * @param ZoneModel $zone
      */
@@ -60,8 +66,7 @@ class Country extends BackendController
         $this->setBreadcrumbListCountry();
 
         $this->setFilterListCountry();
-        $this->setTotalListCountry();
-        $this->setPagerLimit();
+        $this->setPagerlListCountry();
 
         $this->setData('countries', $this->getListCountry());
         $this->outputListCountry();
@@ -106,13 +111,17 @@ class Country extends BackendController
     }
 
     /**
-     * Set a total number of countries
+     * Set pager
+     * @return array
      */
-    protected function setTotalListCountry()
+    protected function setPagerlListCountry()
     {
         $query = $this->query_filter;
         $query['count'] = true;
-        $this->total = (int) $this->country->getList($query);
+        $total = (int) $this->country->getList($query);
+
+        $pager = array('total' => $total, 'query' => $this->query_filter);
+        return $this->data_limit = $this->setPager($pager);
     }
 
     /**
@@ -122,7 +131,7 @@ class Country extends BackendController
     protected function getListCountry()
     {
         $query = $this->query_filter;
-        $query['limit'] = $this->limit;
+        $query['limit'] = $this->data_limit;
 
         return (array) $this->country->getList($query);
     }
@@ -388,7 +397,7 @@ class Country extends BackendController
             'url' => $this->url('admin/settings/country'),
             'text' => $this->text('Countries')
         );
-        
+
         $breadcrumbs[] = array(
             'url' => $this->url("admin/settings/country/edit/{$this->data_country['code']}"),
             'text' => $this->text('Edit %name', array('%name' => $this->data_country['name']))

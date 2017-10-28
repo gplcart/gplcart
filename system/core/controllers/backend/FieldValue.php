@@ -45,6 +45,12 @@ class FieldValue extends BackendController
     protected $field_value;
 
     /**
+     * Pager limit
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * The current field data
      * @var array
      */
@@ -84,8 +90,7 @@ class FieldValue extends BackendController
         $this->setBreadcrumbListFieldValue();
 
         $this->setFilterListFieldValue();
-        $this->setTotalListFieldValue();
-        $this->setPagerLimit();
+        $this->setPagerListFieldValue();
 
         $this->setData('field', $this->data_field);
         $this->setData('values', $this->getListFieldValue());
@@ -154,15 +159,21 @@ class FieldValue extends BackendController
     }
 
     /**
-     * Sets total number of values for a given field and conditions
+     * Sets pager
+     * @return array
      */
-    protected function setTotalListFieldValue()
+    protected function setPagerListFieldValue()
     {
-        $options = array(
-            'count' => true,
-            'field_id' => $this->data_field['field_id']) + $this->query_filter;
+        $options = $this->query_filter;
+        $options['count'] = true;
+        $options['field_id'] = $this->data_field['field_id'];
 
-        $this->total = (int) $this->field_value->getList($options);
+        $pager = array(
+            'query' => $this->query_filter,
+            'total' => (int) $this->field_value->getList($options)
+        );
+
+        return $this->data_limit = $this->setPager($pager);
     }
 
     /**
@@ -171,9 +182,9 @@ class FieldValue extends BackendController
      */
     protected function getListFieldValue()
     {
-        $options = array(
-            'limit' => $this->limit,
-            'field_id' => $this->data_field['field_id']) + $this->query_filter;
+        $options = $this->query_filter;
+        $options['limit'] = $this->data_limit;
+        $options['field_id'] = $this->data_field['field_id'];
 
         $values = (array) $this->field_value->getList($options);
         return $this->prepareFieldValues($values);

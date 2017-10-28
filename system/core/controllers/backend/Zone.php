@@ -25,6 +25,12 @@ class Zone extends BackendController
     protected $zone;
 
     /**
+     * Pager limit
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * An array of zone data
      * @var array
      */
@@ -51,8 +57,7 @@ class Zone extends BackendController
         $this->setBreadcrumbListZone();
 
         $this->setFilterListZone();
-        $this->setTotalListZone();
-        $this->setPagerLimit();
+        $this->setPagerListZone();
 
         $this->setData('zones', $this->getListZone());
         $this->outputListZone();
@@ -67,13 +72,20 @@ class Zone extends BackendController
     }
 
     /**
-     * Sets a total number of zones found for the filter conditions
+     * Sets pager
+     * @return array
      */
-    public function setTotalListZone()
+    public function setPagerListZone()
     {
-        $query = $this->query_filter;
-        $query['count'] = true;
-        $this->total = (int) $this->zone->getList($query);
+        $options = $this->query_filter;
+        $options['count'] = true;
+
+        $pager = array(
+            'query' => $this->query_filter,
+            'total' => (int) $this->zone->getList($options)
+        );
+
+        return $this->data_limit = $this->setPager($pager);
     }
 
     /**
@@ -112,10 +124,10 @@ class Zone extends BackendController
      */
     protected function getListZone()
     {
-        $query = $this->query_filter;
-        $query['limit'] = $this->limit;
+        $options = $this->query_filter;
+        $options['limit'] = $this->data_limit;
 
-        return $this->zone->getList($query);
+        return $this->zone->getList($options);
     }
 
     /**

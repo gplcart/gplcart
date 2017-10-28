@@ -25,6 +25,12 @@ class Field extends BackendController
     protected $field;
 
     /**
+     * Pager limit
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * The current field
      * @var array
      */
@@ -51,8 +57,7 @@ class Field extends BackendController
         $this->setBreadcrumbListField();
 
         $this->setFilterListField();
-        $this->setTotalListField();
-        $this->setPagerLimit();
+        $this->setPagerListField();
 
         $this->setData('fields', $this->getListField());
         $this->setData('widget_types', $this->field->getWidgetTypes());
@@ -90,13 +95,20 @@ class Field extends BackendController
     }
 
     /**
-     * Set a total number of fields found for the filter conditions
+     * Set pager
+     * @return array
      */
-    protected function setTotalListField()
+    protected function setPagerListField()
     {
         $query = $this->query_filter;
         $query['count'] = true;
-        $this->total = (int) $this->field->getList($query);
+
+        $pager = array(
+            'query' => $this->query_filter,
+            'total' => (int) $this->field->getList($query)
+        );
+
+        return $this->data_limit = $this->setPager($pager);
     }
 
     /**
@@ -106,9 +118,9 @@ class Field extends BackendController
     protected function getListField()
     {
         $query = $this->query_filter;
-        $query['limit'] = $this->limit;
+        $query['limit'] = $this->data_limit;
 
-        return $this->field->getList($query);
+        return (array) $this->field->getList($query);
     }
 
     /**

@@ -46,6 +46,12 @@ class City extends BackendController
     protected $zone;
 
     /**
+     * Pager limit
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * An array of country state data
      * @var array
      */
@@ -96,8 +102,7 @@ class City extends BackendController
         $this->setBreadcrumbListCity();
 
         $this->setFilterListCity();
-        $this->setTotalListCity();
-        $this->setPagerLimit();
+        $this->setPagerListCity();
 
         $this->setData('state', $this->data_state);
         $this->setData('country', $this->data_country);
@@ -171,16 +176,23 @@ class City extends BackendController
     }
 
     /**
-     * Sets a total number of cities found for the filter conditions
+     * Sets pager
+     * @return array
      */
-    protected function setTotalListCity()
+    protected function setPagerListCity()
     {
         $options = array(
             'count' => true,
             'state_id' => $this->data_state['state_id']);
 
         $options += $this->query_filter;
-        $this->total = (int) $this->city->getList($options);
+
+        $pager = array(
+            'query' => $this->query_filter,
+            'total' => (int) $this->city->getList($options)
+        );
+
+        return $this->data_limit = $this->setPager($pager);
     }
 
     /**
@@ -190,7 +202,7 @@ class City extends BackendController
     protected function getListCity()
     {
         $options = array(
-            'limit' => $this->limit,
+            'limit' => $this->data_limit,
             'state_id' => $this->data_state['state_id']);
 
         $options += $this->query_filter;

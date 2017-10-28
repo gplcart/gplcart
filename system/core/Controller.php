@@ -132,18 +132,6 @@ abstract class Controller
     protected $query_filter = array();
 
     /**
-     * Pager limits
-     * @var array
-     */
-    protected $limit;
-
-    /**
-     * A total number of items found for the filter conditions
-     * @var integer
-     */
-    protected $total;
-
-    /**
      * Array of template variables
      * @var array
      */
@@ -2151,25 +2139,6 @@ abstract class Controller
     }
 
     /**
-     * Set pager limits
-     * @param null|integer
-     * @return array
-     */
-    public function setPagerLimit($limit = null)
-    {
-        $options = array(
-            'total' => $this->total,
-            'query' => $this->query_filter
-        );
-
-        if (isset($limit)) {
-            $options['limit'] = $limit;
-        }
-
-        return $this->limit = $this->setPager($options);
-    }
-
-    /**
      * Returns a rendered pager
      * @param array $options
      * @return string
@@ -2177,7 +2146,6 @@ abstract class Controller
     public function getPager(array $options = array())
     {
         $options += array(
-            'total' => $this->total,
             'query' => $this->getFilterQuery(),
             'limit' => $this->config('list_limit', 20)
         );

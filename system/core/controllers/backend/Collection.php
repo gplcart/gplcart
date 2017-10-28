@@ -25,6 +25,12 @@ class Collection extends BackendController
     protected $collection;
 
     /**
+     * Pager limit
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * The current collection
      * @var array
      */
@@ -51,8 +57,7 @@ class Collection extends BackendController
         $this->setBreadcrumbListCollection();
 
         $this->setFilterListCollection();
-        $this->setTotalListCollection();
-        $this->setPagerLimit();
+        $this->setPagerListCollection();
 
         $this->setData('collections', $this->getListCollection());
         $this->setData('handlers', $this->collection->getHandlers());
@@ -100,13 +105,20 @@ class Collection extends BackendController
     }
 
     /**
-     * Sets a total number of collections
+     * Set pager
+     * @return array
      */
-    protected function setTotalListCollection()
+    protected function setPagerListCollection()
     {
         $query = $this->query_filter;
         $query['count'] = true;
-        $this->total = (int) $this->collection->getList($query);
+
+        $pager = array(
+            'query' => $this->query_filter,
+            'total' => (int) $this->collection->getList($query)
+        );
+
+        return $this->data_limit = $this->setPager($pager);
     }
 
     /**
@@ -116,7 +128,7 @@ class Collection extends BackendController
     protected function getListCollection()
     {
         $query = $this->query_filter;
-        $query['limit'] = $this->limit;
+        $query['limit'] = $this->data_limit;
 
         return (array) $this->collection->getList($query);
     }

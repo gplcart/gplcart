@@ -32,6 +32,12 @@ class ProductClass extends BackendController
     protected $field;
 
     /**
+     * Pager limit
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * An array of product class data
      * @var array
      */
@@ -61,21 +67,27 @@ class ProductClass extends BackendController
         $this->setBreadcrumbListProductClass();
 
         $this->setFilterListProductClass();
-        $this->setTotalListProductClass();
-        $this->setPagerLimit();
+        $this->setPagerListProductClass();
 
         $this->setData('classes', $this->getListProductClass());
         $this->outputListProductClass();
     }
 
     /**
-     * Set a total number of product classes
+     * Set pager
+     * @return array
      */
-    public function setTotalListProductClass()
+    public function setPagerListProductClass()
     {
-        $query = $this->query_filter;
-        $query['count'] = true;
-        $this->total = (int) $this->product_class->getList($query);
+        $options = $this->query_filter;
+        $options['count'] = true;
+
+        $pager = array(
+            'query' => $this->query_filter,
+            'total' => (int) $this->product_class->getList($options)
+        );
+
+        return $this->data_limit = $this->setPager($pager);
     }
 
     /**
@@ -122,9 +134,9 @@ class ProductClass extends BackendController
      */
     protected function getListProductClass()
     {
-        $query = $this->query_filter;
-        $query['limit'] = $this->limit;
-        return (array) $this->product_class->getList($query);
+        $options = $this->query_filter;
+        $options['limit'] = $this->data_limit;
+        return (array) $this->product_class->getList($options);
     }
 
     /**

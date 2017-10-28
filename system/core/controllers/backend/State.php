@@ -39,6 +39,12 @@ class State extends BackendController
     protected $zone;
 
     /**
+     * Pager limit
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * An array of country data
      * @var array
      */
@@ -78,8 +84,7 @@ class State extends BackendController
         $this->setBreadcrumbListState();
 
         $this->setFilterListState();
-        $this->setTotalListState();
-        $this->setPagerLimit();
+        $this->setPagerListState();
 
         $this->setData('country', $this->data_country);
         $this->setData('states', $this->getListState());
@@ -153,12 +158,21 @@ class State extends BackendController
     }
 
     /**
-     * Set a total number of country states for the country and filter conditions
+     * Set pager
+     * @return array
      */
-    protected function setTotalListState()
+    protected function setPagerListState()
     {
-        $options = array('count' => true, 'country' => $this->data_country['code']);
-        $this->total = (int) $this->state->getList($options + $this->query_filter);
+        $options = $this->query_filter;
+        $options['count'] = true;
+        $options['country'] = $this->data_country['code'];
+
+        $pager = array(
+            'query' => $this->query_filter,
+            'total' => (int) $this->state->getList($options)
+        );
+
+        return $this->data_limit = $this->setPager($pager);
     }
 
     /**
@@ -167,8 +181,11 @@ class State extends BackendController
      */
     protected function getListState()
     {
-        $options = array('limit' => $this->limit, 'country' => $this->data_country['code']);
-        return (array) $this->state->getList($options + $this->query_filter);
+        $options = $this->query_filter;
+        $options['limit'] = $this->data_limit;
+        $options['country'] = $this->data_country['code'];
+
+        return (array) $this->state->getList($options);
     }
 
     /**

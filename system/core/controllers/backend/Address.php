@@ -25,6 +25,12 @@ class Address extends BackendController
     protected $address;
 
     /**
+     * Pager limit
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * @param AddressModel $address
      */
     public function __construct(AddressModel $address)
@@ -45,8 +51,7 @@ class Address extends BackendController
         $this->setBreadcrumbListAddress();
 
         $this->setFilterListAddress();
-        $this->setTotalListAddress();
-        $this->setPagerLimit();
+        $this->setPagerlListAddress();
 
         $this->setData('addresses', $this->getListAddress());
         $this->outputListAddress();
@@ -84,13 +89,17 @@ class Address extends BackendController
     }
 
     /**
-     * Sets a total number of addresses found for the filter conditions
+     * Sets pager
+     * @return array
      */
-    protected function setTotalListAddress()
+    protected function setPagerlListAddress()
     {
         $options = $this->query_filter;
         $options['count'] = true;
-        $this->total = (int) $this->address->getList($options);
+        $total = (int) $this->address->getList($options);
+
+        $pager = array('total' => $total, 'query' => $this->query_filter);
+        return $this->data_limit = $this->setPager($pager);
     }
 
     /**
@@ -100,7 +109,7 @@ class Address extends BackendController
     protected function getListAddress()
     {
         $options = $this->query_filter;
-        $options['limit'] = $this->limit;
+        $options['limit'] = $this->data_limit;
         $addresses = (array) $this->address->getList($options);
 
         return $this->prepareListAddress($addresses);

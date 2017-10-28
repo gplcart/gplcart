@@ -80,6 +80,12 @@ class Order extends BackendController
     protected $shipping;
 
     /**
+     * Pager limit
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * An array of order data
      * @var array
      */
@@ -267,7 +273,6 @@ class Order extends BackendController
      */
     protected function createTempCartOrder()
     {
-        // Remove all previous cart items
         $this->cart->clear($this->uid);
 
         // Copy order's cart items
@@ -487,13 +492,10 @@ class Order extends BackendController
 
         $this->setTitleListOrder();
         $this->setBreadcrumbListOrder();
-
         $this->setData('statuses', $this->order->getStatuses());
 
         $this->setFilterListOrder();
-        $this->setTotalListOrder();
-        $this->setPagerLimit();
-
+        $this->setPagerListOrder();
         $this->setData('orders', $this->getListOrder());
 
         $this->outputListOrder();
@@ -511,13 +513,20 @@ class Order extends BackendController
     }
 
     /**
-     * Sets a total number of orders on the order list page
+     * Sets pager
+     * @return array
      */
-    protected function setTotalListOrder()
+    protected function setPagerListOrder()
     {
         $query = $this->query_filter;
         $query['count'] = true;
-        $this->total = (int) $this->order->getList($query);
+
+        $pager = array(
+            'query' => $this->query_filter,
+            'total' => (int) $this->order->getList($query)
+        );
+
+        return $this->data_limit = $this->setPager($pager);
     }
 
     /**
@@ -593,7 +602,7 @@ class Order extends BackendController
     protected function getListOrder()
     {
         $query = $this->query_filter;
-        $query['limit'] = $this->limit;
+        $query['limit'] = $this->data_limit;
         $orders = (array) $this->order->getList($query);
 
         return $this->prepareListOrder($orders);

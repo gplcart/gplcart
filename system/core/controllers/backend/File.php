@@ -25,6 +25,12 @@ class File extends BackendController
     protected $file;
 
     /**
+     * Pager limit
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * The current file
      * @var array
      */
@@ -52,8 +58,7 @@ class File extends BackendController
         $this->setBreadcrumbListFile();
 
         $this->setFilterListFile();
-        $this->setTotalListFile();
-        $this->setPagerLimit();
+        $this->setPagerListFile();
 
         $this->setData('files', $this->getListFile());
         $this->outputListFile();
@@ -105,13 +110,20 @@ class File extends BackendController
     }
 
     /**
-     * Set a total number of files depending on the filter conditions
+     * Set pager
+     * @return array
      */
-    protected function setTotalListFile()
+    protected function setPagerListFile()
     {
-        $query = $this->query_filter;
-        $query['count'] = true;
-        $this->total = (int) $this->file->getList($query);
+        $options = $this->query_filter;
+        $options['count'] = true;
+
+        $pager = array(
+            'query' => $this->query_filter,
+            'total' => (int) $this->file->getList($options)
+        );
+
+        return $this->data_limit = $this->setPager($pager);
     }
 
     /**
@@ -120,9 +132,9 @@ class File extends BackendController
      */
     protected function getListFile()
     {
-        $query = $this->query_filter;
-        $query['limit'] = $this->limit;
-        $files = (array) $this->file->getList($query);
+        $options = $this->query_filter;
+        $options['limit'] = $this->data_limit;
+        $files = (array) $this->file->getList($options);
 
         return $this->prepareListFile($files);
     }

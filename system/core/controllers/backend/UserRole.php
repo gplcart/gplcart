@@ -25,6 +25,12 @@ class UserRole extends BackendController
     protected $role;
 
     /**
+     * Pager limit
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * An array of user role data
      * @var array
      */
@@ -201,8 +207,7 @@ class UserRole extends BackendController
         $this->setBreadcrumbListUserRole();
 
         $this->setFilterListUserRole();
-        $this->setTotalListUserRole();
-        $this->setPagerLimit();
+        $this->setPagerListUserRole();
 
         $this->setData('roles', $this->getListUserRole());
         $this->outputListUserRole();
@@ -217,13 +222,20 @@ class UserRole extends BackendController
     }
 
     /**
-     * Sets a total number of user roles found for the filter conditions
+     * Sets pager
+     * @return array
      */
-    protected function setTotalListUserRole()
+    protected function setPagerListUserRole()
     {
-        $query = $this->query_filter;
-        $query['count'] = true;
-        $this->total = (int) $this->role->getList($query);
+        $options = $this->query_filter;
+        $options['count'] = true;
+
+        $pager = array(
+            'query' => $this->query_filter,
+            'total' => (int) $this->role->getList($options)
+        );
+
+        return $this->data_limit = $this->setPager($pager);
     }
 
     /**
@@ -262,10 +274,10 @@ class UserRole extends BackendController
      */
     protected function getListUserRole()
     {
-        $query = $this->query_filter;
-        $query['limit'] = $this->limit;
+        $options = $this->query_filter;
+        $options['limit'] = $this->data_limit;
 
-        $roles = (array) $this->role->getList($query);
+        $roles = (array) $this->role->getList($options);
         return $this->prepareListUserRole($roles);
     }
 

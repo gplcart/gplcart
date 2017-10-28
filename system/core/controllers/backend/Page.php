@@ -39,6 +39,12 @@ class Page extends BackendController
     protected $alias;
 
     /**
+     * Pager limit
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * The current page
      * @var array
      */
@@ -68,13 +74,10 @@ class Page extends BackendController
 
         $this->setTitleListPage();
         $this->setBreadcrumbListPage();
-
         $this->setFilterListPage();
-        $this->setTotalListPage();
-        $this->setPagerLimit();
+        $this->setPagerListPage();
 
         $this->setData('pages', $this->getListPage());
-
         $this->outputListPage();
     }
 
@@ -120,13 +123,20 @@ class Page extends BackendController
     }
 
     /**
-     * Sets a total number of pages for the current filter parameters
+     * Sets pager
+     * @return array
      */
-    protected function setTotalListPage()
+    protected function setPagerListPage()
     {
-        $query = $this->query_filter;
-        $query['count'] = true;
-        $this->total = (int) $this->page->getList($query);
+        $options = $this->query_filter;
+        $options['count'] = true;
+
+        $pager = array(
+            'query' => $this->query_filter,
+            'total' => (int) $this->page->getList($options)
+        );
+
+        return $this->data_limit = $this->setPager($pager);
     }
 
     /**
@@ -135,10 +145,10 @@ class Page extends BackendController
      */
     protected function getListPage()
     {
-        $query = $this->query_filter;
-        $query['limit'] = $this->limit;
-        $pages = (array) $this->page->getList($query);
+        $options = $this->query_filter;
+        $options['limit'] = $this->data_limit;
 
+        $pages = (array) $this->page->getList($options);
         $this->attachEntityUrl($pages, 'page');
         return $pages;
     }
@@ -177,7 +187,7 @@ class Page extends BackendController
 
         $this->setTitleEditPage();
         $this->setBreadcrumbEditPage();
-        
+
         $this->setData('page', $this->data_page);
         $this->setData('languages', $this->language->getList(false, true));
 

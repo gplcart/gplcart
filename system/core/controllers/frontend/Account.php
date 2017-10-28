@@ -65,6 +65,12 @@ class Account extends FrontendController
     protected $shipping;
 
     /**
+     * Pager limit
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * An array of user data
      * @var array
      */
@@ -248,8 +254,7 @@ class Account extends FrontendController
         $this->setBreadcrumbIndexAccount();
 
         $this->setFilter();
-        $this->setTotalOrderIndexAccount();
-        $this->setPagerLimit($this->config('account_order_limit', 10));
+        $this->setPagerOrderIndexAccount();
 
         $this->setData('user', $this->data_user);
         $this->setData('orders', $this->getListOrderAccount());
@@ -275,16 +280,23 @@ class Account extends FrontendController
     }
 
     /**
-     * Sets a total number of orders for the customer
+     * Sets pager
+     * @return array
      */
-    protected function setTotalOrderIndexAccount()
+    protected function setPagerOrderIndexAccount()
     {
         $options = array(
             'count' => true,
             'user_id' => $this->data_user['user_id']
         );
 
-        $this->total = (int) $this->order->getList($options);
+        $pager = array(
+            'query' => $this->query_filter,
+            'total' => (int) $this->order->getList($options),
+            'limit' => $this->config('account_order_limit', 10)
+        );
+
+        return $this->data_limit = $this->setPager($pager);
     }
 
     /**
@@ -296,7 +308,7 @@ class Account extends FrontendController
         $conditions = array(
             'order' => 'desc',
             'sort' => 'created',
-            'limit' => $this->limit) + $this->query_filter;
+            'limit' => $this->data_limit) + $this->query_filter;
 
         $conditions['user_id'] = $this->data_user['user_id'];
         $orders = (array) $this->order->getList($conditions);

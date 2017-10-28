@@ -18,6 +18,12 @@ class Cart extends BackendController
 {
 
     /**
+     * Pager limits
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -36,11 +42,9 @@ class Cart extends BackendController
         $this->setBreadcrumbListCart();
 
         $this->setFilterListCart();
-        $this->setTotalListCart();
-        $this->setPagerLimit();
+        $this->setPagerlListCart();
 
         $this->setData('carts', $this->getListCart());
-
         $this->outputListCart();
     }
 
@@ -76,13 +80,17 @@ class Cart extends BackendController
     }
 
     /**
-     * Sets a total number of shopping cart items
+     * Sets pager
+     * @return array
      */
-    protected function setTotalListCart()
+    protected function setPagerlListCart()
     {
         $options = $this->query_filter;
         $options['count'] = true;
-        $this->total = (int) $this->cart->getList($options, 'cart_id');
+        $total = (int) $this->cart->getList($options, 'cart_id');
+
+        $pager = array('total' => $total, 'query' => $this->query_filter);
+        return $this->data_limit = $this->setPager($pager);
     }
 
     /**
@@ -92,8 +100,7 @@ class Cart extends BackendController
     protected function getListCart()
     {
         $options = $this->query_filter;
-        $options['limit'] = $this->limit;
-
+        $options['limit'] = $this->data_limit;
         $list = (array) $this->cart->getList($options, 'cart_id');
 
         $this->attachEntityUrl($list, 'product');

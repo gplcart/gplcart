@@ -25,6 +25,12 @@ class Alias extends BackendController
     protected $alias;
 
     /**
+     * Pager limit
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * @param AliasModel $alias
      */
     public function __construct(AliasModel $alias)
@@ -45,8 +51,7 @@ class Alias extends BackendController
         $this->setBreadcrumbListAlias();
 
         $this->setFilterListAlias();
-        $this->setTotalListAlias();
-        $this->setPagerLimit();
+        $this->setPagerListAlias();
 
         $this->setData('id_keys', $this->alias->getIdKeys());
         $this->setData('aliases', $this->getListAlias());
@@ -86,13 +91,17 @@ class Alias extends BackendController
     }
 
     /**
-     * Sets a total number of aliases found for the current filter conditions
+     * Sets pager
+     * @return array
      */
-    protected function setTotalListAlias()
+    protected function setPagerListAlias()
     {
         $options = $this->query_filter;
         $options['count'] = true;
-        $this->total = (int) $this->alias->getList($options);
+        $total = (int) $this->alias->getList($options);
+
+        $pager = array('total' => $total, 'query' => $this->query_filter);
+        return $this->data_limit = $this->setPager($pager);
     }
 
     /**
@@ -102,9 +111,18 @@ class Alias extends BackendController
     protected function getListAlias()
     {
         $options = $this->query_filter;
-        $options['limit'] = $this->limit;
+        $options['limit'] = $this->data_limit;
         $aliases = (array) $this->alias->getList($options);
+        return $this->prepareListAlias($aliases);
+    }
 
+    /**
+     * Prepare an array of aliases
+     * @param array $aliases
+     * @return array
+     */
+    protected function prepareListAlias(array $aliases)
+    {
         foreach ($aliases as &$alias) {
             $entity = preg_replace('/_id$/', '', $alias['id_key']);
             $alias['entity'] = $this->text(ucfirst($entity));

@@ -46,6 +46,12 @@ class Report extends BackendController
     protected $shipping;
 
     /**
+     * Pager limit
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * @param ReportModel $report
      * @param UserRoleModel $role
      * @param PaymentModel $payment
@@ -229,8 +235,7 @@ class Report extends BackendController
         $this->setBreadcrumbListEventReport();
 
         $this->setFilterListEventReport();
-        $this->setTotalListEventReport();
-        $this->setPagerLimit();
+        $this->setPagerListEventReport();
 
         $this->setData('types', $this->report->getTypes());
         $this->setData('severities', $this->report->getSeverities());
@@ -248,13 +253,20 @@ class Report extends BackendController
     }
 
     /**
-     * Sets a total number of events found for the filter conditions
+     * Sets pager
+     * @return array
      */
-    protected function setTotalListEventReport()
+    protected function setPagerListEventReport()
     {
-        $query = $this->query_filter;
-        $query['count'] = true;
-        $this->total = (int) $this->report->getList($query);
+        $options = $this->query_filter;
+        $options['count'] = true;
+
+        $pager = array(
+            'query' => $this->query_filter,
+            'total' => (int) $this->report->getList($options)
+        );
+
+        return $this->data_limit = $this->setPager($pager);
     }
 
     /**
@@ -277,9 +289,9 @@ class Report extends BackendController
      */
     protected function getListEventReport()
     {
-        $query = $this->query_filter;
-        $query['limit'] = $this->limit;
-        $records = (array) $this->report->getList($query);
+        $options = $this->query_filter;
+        $options['limit'] = $this->data_limit;
+        $records = (array) $this->report->getList($options);
 
         return $this->prepareListEventReport($records);
     }
