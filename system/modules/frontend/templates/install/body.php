@@ -233,7 +233,7 @@
             <tr class="required<?php echo $this->error('database.host', ' has-error'); ?>">
               <td>
                 <div class="name"><?php echo $this->text('Database host'); ?></div>
-                <div class="text-muted description"><?php echo $this->text('The default host name is localhost. If your database should be connected remotely specify here its IP or domain'); ?></div>
+                <div class="text-muted description"><?php echo $this->text('The database host name. Can be any string, domain or IP. Defaults to localhost'); ?></div>
               </td>
               <td>
                 <input name="settings[database][host]" class="form-control" value="<?php echo isset($settings['database']['host']) ? $this->e($settings['database']['host']) : 'localhost'; ?>">
