@@ -24,12 +24,7 @@ class Job extends Model
     /**
      * Max milliseconds for one iteration
      */
-    const MAX_TIME = 1000;
-
-    /**
-     * A key for array of a job data in the session
-     */
-    const SESSION_KEY = 'jobs';
+    const LIMIT = 1000;
 
     /**
      * Language model instance
@@ -54,8 +49,7 @@ class Job extends Model
      * @param SessionHelper $session
      * @param UrlHelper $url
      */
-    public function __construct(LanguageModel $language, SessionHelper $session,
-            UrlHelper $url)
+    public function __construct(LanguageModel $language, SessionHelper $session, UrlHelper $url)
     {
         parent::__construct();
 
@@ -169,7 +163,7 @@ class Job extends Model
             return (bool) $result;
         }
 
-        $result = $this->session->delete(self::SESSION_KEY . ".$job_id");
+        $result = $this->session->delete("jobs.$job_id");
         $this->hook->attach('job.delete.after', $job_id, $result, $this);
         return (bool) $result;
     }
@@ -193,9 +187,9 @@ class Job extends Model
         $progress = 0;
         $start_time = microtime(true);
 
-        while (round((microtime(true) - $start_time) * 1000, 2) < self::MAX_TIME) {
+        while (round((microtime(true) - $start_time) * 1000, 2) < self::LIMIT) {
 
-            $this->call($job);
+            $this->processIteration($job);
 
             if (empty($job['status'])) {
                 break;
@@ -229,7 +223,7 @@ class Job extends Model
      * Call a handler processor
      * @param array $job
      */
-    protected function call(array &$job)
+    protected function processIteration(array &$job)
     {
         try {
             $handlers = $this->getHandlers();
@@ -251,8 +245,12 @@ class Job extends Model
      */
     public function getTotal($handler_id, array $arguments = array())
     {
-        $handlers = $this->getHandlers();
-        return (int) Handler::call($handlers, $handler_id, 'total', array($arguments));
+        try {
+            $handlers = $this->getHandlers();
+            return (int) Handler::call($handlers, $handler_id, 'total', array($arguments));
+        } catch (\Exception $ex) {
+            return 0;
+        }
     }
 
     /**
@@ -275,7 +273,7 @@ class Job extends Model
      */
     protected function getSession($job_id)
     {
-        return $this->session->get(self::SESSION_KEY . ".$job_id", array());
+        return $this->session->get("jobs.$job_id", array());
     }
 
     /**
@@ -284,7 +282,7 @@ class Job extends Model
      */
     protected function setSession(array $job)
     {
-        $this->session->set(self::SESSION_KEY . ".{$job['id']}", $job);
+        $this->session->set("jobs.{$job['id']}", $job);
     }
 
     /**

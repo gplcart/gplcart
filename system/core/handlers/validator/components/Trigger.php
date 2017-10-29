@@ -137,14 +137,10 @@ class Trigger extends ComponentValidator
             }
 
             $parameters = array_unique($parameters);
-            $handlers = $this->condition->getHandlers();
-            $result = Handler::call($handlers, $condition_id, 'validate', array(
-                        $parameters, $operator, $condition_id, $submitted));
+            $result = $this->callValidator($condition_id, array($parameters, $operator, $condition_id, $submitted));
 
             if ($result !== true) {
-                $error = empty($result) ? $this->language->text('Failed validation') : (string) $result;
-                $errors[] = $this->language->text('Error on line @num: !error', array(
-                    '@num' => $line, '!error' => $error));
+                $errors[] = $this->language->text('Error on line @num: !error', array('@num' => $line, '!error' => $result));
                 continue;
             }
 
@@ -167,6 +163,22 @@ class Trigger extends ComponentValidator
         }
 
         return false;
+    }
+
+    /**
+     * Call a validator handler
+     * @param string $condition_id
+     * @param array $args
+     * @return mixed
+     */
+    protected function callValidator($condition_id, array $args)
+    {
+        try {
+            $handlers = $this->condition->getHandlers();
+            return Handler::call($handlers, $condition_id, 'validate', $args);
+        } catch (\Exception $ex) {
+            return $ex->getMessage();
+        }
     }
 
 }

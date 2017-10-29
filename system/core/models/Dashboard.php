@@ -117,8 +117,13 @@ class Dashboard extends Model
                 continue;
             }
 
+            try {
+                $handler['data'] = Handler::call($handlers, $handler_id, 'data');
+            } catch (\Exception $ex) {
+                continue;
+            }
+
             $handler['title'] = $this->language->text($handler['title']);
-            $handler['data'] = Handler::call($handlers, $handler_id, 'data');
         }
 
         gplcart_array_sort($result['data']);

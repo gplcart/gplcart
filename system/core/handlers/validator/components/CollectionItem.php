@@ -52,8 +52,8 @@ class CollectionItem extends ComponentValidator
      * @param CollectionModel $collection
      * @param CollectionItemModel $collection_item
      */
-    public function __construct(PageModel $page, ProductModel $product,
-            CollectionModel $collection, CollectionItemModel $collection_item)
+    public function __construct(PageModel $page, ProductModel $product, CollectionModel $collection,
+            CollectionItemModel $collection_item)
     {
 
         parent::__construct();
@@ -186,8 +186,13 @@ class CollectionItem extends ComponentValidator
         }
 
         $value = $this->getSubmitted('value');
-        $handlers = $this->collection->getHandlers();
-        $result = Handler::call($handlers, $collection['type'], 'validate', array($value));
+
+        try {
+            $handlers = $this->collection->getHandlers();
+            $result = Handler::call($handlers, $collection['type'], 'validate', array($value));
+        } catch (\Exception $ex) {
+            $result = $ex->getMessage();
+        }
 
         if ($result === true) {
             return true;
