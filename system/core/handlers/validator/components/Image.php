@@ -140,8 +140,13 @@ class Image extends ComponentValidator
         if (empty($handler)) {
             return false;
         }
-        $callback = Handler::get($handler, null, 'validate');
-        return call_user_func_array($callback, array(&$value));
+
+        try {
+            $callback = Handler::get($handler, null, 'validate');
+            return call_user_func_array($callback, array(&$value));
+        } catch (\Exception $ex) {
+            return false;
+        }
     }
 
     /**
