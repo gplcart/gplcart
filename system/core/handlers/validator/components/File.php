@@ -18,9 +18,9 @@ class File extends ComponentValidator
 {
 
     /**
-     * Default path for uploaded field that is relative to main file directory
+     * Default path for uploaded files
      */
-    const UPLOAD_PATH = 'image/upload/common';
+    const PATH = 'image/upload/common';
 
     /**
      * Constructor
@@ -117,7 +117,7 @@ class File extends ComponentValidator
             return false;
         }
 
-        $result = $this->file->upload($file, null, self::UPLOAD_PATH);
+        $result = $this->file->upload($file, null, self::PATH);
 
         if ($result !== true) {
             $this->setError('file', (string) $result);

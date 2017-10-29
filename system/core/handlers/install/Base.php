@@ -323,7 +323,8 @@ class Base extends Handler
             $rows = array_merge($rows, array(0, $country['name'], $code, $native_name, $template, serialize(array())));
         }
 
-        $sql = 'INSERT INTO country (status, name, code, native_name, template, format) VALUES ' . implode(',', $placeholders);
+        $values = implode(',', $placeholders);
+        $sql = "INSERT INTO country (status, name, code, native_name, template, format) VALUES $values";
         $this->db->run($sql, $rows);
     }
 
