@@ -118,7 +118,6 @@ class CliRoute
         $routes[$command]['arguments'] = $this->arguments;
 
         $this->route = $routes[$command];
-
         Handler::call($this->route, null, 'controller', array($this->arguments));
         throw new \RuntimeException('The command was completed incorrectly');
     }
