@@ -12,8 +12,7 @@ namespace gplcart\core\models;
 use gplcart\core\Model,
     gplcart\core\Handler;
 use gplcart\core\helpers\Url as UrlHelper;
-use gplcart\core\models\File as FileModel,
-    gplcart\core\models\Language as LanguageModel;
+use gplcart\core\models\File as FileModel;
 
 /**
  * Manages basic behaviors and data related to images
@@ -28,30 +27,21 @@ class Image extends Model
     protected $file;
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language;
-     */
-    protected $language;
-
-    /**
      * URL class instance
      * @var \gplcart\core\helpers\Url $url
      */
     protected $url;
 
     /**
-     * @param LanguageModel $language
      * @param FileModel $file
      * @param UrlHelper $url
      */
-    public function __construct(LanguageModel $language, FileModel $file,
-            UrlHelper $url)
+    public function __construct(FileModel $file, UrlHelper $url)
     {
         parent::__construct();
 
         $this->url = $url;
         $this->file = $file;
-        $this->language = $language;
     }
 
     /**
