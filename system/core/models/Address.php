@@ -324,35 +324,6 @@ class Address extends Model
     }
 
     /**
-     * Returns a string containing formatted geocode query
-     * @param array $data
-     * @return string
-     */
-    public function getGeocodeQuery(array $data)
-    {
-        $fields = $this->getGeocodeFields();
-
-        $components = array();
-        foreach ($fields as $field) {
-            if (!empty($data[$field])) {
-                $components[] = $data[$field];
-            }
-        }
-
-        $this->hook->attach('address.geocode', $data, $fields, $components, $this);
-        return implode(',', $components);
-    }
-
-    /**
-     * Returns an array of address fields to be used to format geocoding query
-     * @return array
-     */
-    protected function getGeocodeFields()
-    {
-        return array('address_1', 'state_id', 'city_id', 'country');
-    }
-
-    /**
      * Reduces max number of addresses that a user can have
      * @param integer $user_id
      */
