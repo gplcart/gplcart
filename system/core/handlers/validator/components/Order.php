@@ -67,9 +67,8 @@ class Order extends ComponentValidator
      * @param CurrencyModel $currency
      * @param TransactionModel $transaction
      */
-    public function __construct(OrderModel $order, PaymentModel $payment,
-            ShippingModel $shipping, AddressModel $address,
-            CurrencyModel $currency, TransactionModel $transaction)
+    public function __construct(OrderModel $order, PaymentModel $payment, ShippingModel $shipping,
+            AddressModel $address, CurrencyModel $currency, TransactionModel $transaction)
     {
         parent::__construct();
 
@@ -349,12 +348,12 @@ class Order extends ComponentValidator
         }
 
         foreach ($components as $id => $component) {
-            
+
             if (!is_numeric($component['price'])) {
                 $this->setErrorNumeric("data.components.$id", $label);
                 continue;
             }
-            
+
             if (strlen($component['price']) > 10) {
                 $this->setErrorLengthRange("data.components.$id", $label, 0, 10);
             }

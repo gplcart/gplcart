@@ -35,8 +35,7 @@ class Category extends ComponentValidator
      * @param CategoryModel $category
      * @param CategoryGroupModel $category_group
      */
-    public function __construct(CategoryModel $category,
-            CategoryGroupModel $category_group)
+    public function __construct(CategoryModel $category, CategoryGroupModel $category_group)
     {
 
         parent::__construct();

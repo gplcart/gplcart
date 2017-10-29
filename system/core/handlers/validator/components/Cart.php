@@ -51,8 +51,8 @@ class Cart extends ComponentValidator
      * @param SkuModel $sku
      * @param OrderModel $order
      */
-    public function __construct(CartModel $cart, ProductModel $product,
-            SkuModel $sku, OrderModel $order)
+    public function __construct(CartModel $cart, ProductModel $product, SkuModel $sku,
+            OrderModel $order)
     {
         parent::__construct();
 

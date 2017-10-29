@@ -43,8 +43,7 @@ class Country extends ComponentValidator
      * @param StateModel $state
      * @param ZoneModel $zone
      */
-    public function __construct(CountryModel $country, StateModel $state,
-            ZoneModel $zone)
+    public function __construct(CountryModel $country, StateModel $state, ZoneModel $zone)
     {
         parent::__construct();
 

@@ -51,8 +51,8 @@ class City extends ComponentValidator
      * @param CountryModel $country
      * @param ZoneModel $zone
      */
-    public function __construct(CityModel $city, StateModel $state,
-            CountryModel $country, ZoneModel $zone)
+    public function __construct(CityModel $city, StateModel $state, CountryModel $country,
+            ZoneModel $zone)
     {
         parent::__construct();
 

@@ -51,8 +51,8 @@ class Address extends ComponentValidator
      * @param AddressModel $address
      * @param CityModel $city
      */
-    public function __construct(CountryModel $country, StateModel $state,
-            AddressModel $address, CityModel $city)
+    public function __construct(CountryModel $country, StateModel $state, AddressModel $address,
+            CityModel $city)
     {
         parent::__construct();
 
@@ -332,9 +332,7 @@ class Address extends ComponentValidator
                 continue;
             }
 
-            if (!isset($submitted_value)//
-                    || $submitted_value === ''//
-                    || mb_strlen($submitted_value) > 255) {
+            if (!isset($submitted_value) || $submitted_value === '' || mb_strlen($submitted_value) > 255) {
                 $errors++;
                 $this->setErrorLengthRange($field, $format[$field]['name']);
             }

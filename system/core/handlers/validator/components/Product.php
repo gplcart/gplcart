@@ -77,9 +77,8 @@ class Product extends ComponentValidator
      * @param CurrencyModel $currency
      * @param CategoryModel $category
      */
-    public function __construct(ProductModel $product,
-            ProductClassModel $product_class, SkuModel $sku,
-            CurrencyModel $currency, CategoryModel $category)
+    public function __construct(ProductModel $product, ProductClassModel $product_class,
+            SkuModel $sku, CurrencyModel $currency, CategoryModel $category)
     {
         parent::__construct();
 
