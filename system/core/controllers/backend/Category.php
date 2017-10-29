@@ -142,7 +142,7 @@ class Category extends BackendController
             $this->category->update($category_id, array('weight' => $weight));
         }
 
-        $this->response->json(array('success' => $this->text('Items have been reordered')));
+        $this->response->outputJson(array('success' => $this->text('Items have been reordered')));
     }
 
     /**

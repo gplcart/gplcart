@@ -492,7 +492,7 @@ class Product extends BackendController
         $this->setData('attribute_form', $attributes);
 
         if ($output_field_form) {
-            $this->response->html($attributes . $options);
+            $this->response->outputHtml($attributes . $options);
         }
     }
 

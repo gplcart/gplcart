@@ -260,7 +260,7 @@ class Controller extends BaseController
             if ($result['severity'] === 'success') {
                 $result += array('modal' => $this->renderCartPreview());
             }
-            $this->response->json($result);
+            $this->response->outputJson($result);
         }
         $this->redirect($result['redirect'], $result['message'], $result['severity']);
     }
@@ -305,7 +305,7 @@ class Controller extends BaseController
 
         if ($this->isAjax()) {
             $result['modal'] = $preview;
-            $this->response->json($result);
+            $this->response->outputJson($result);
         }
 
         $this->redirect($result['redirect'], $result['message'], $result['severity']);
@@ -409,7 +409,7 @@ class Controller extends BaseController
         }
 
         if ($this->isAjax()) {
-            $this->response->json($result);
+            $this->response->outputJson($result);
         }
 
         $this->redirect($result['redirect'], $result['message'], $result['severity']);
@@ -424,7 +424,7 @@ class Controller extends BaseController
         $result = $this->compare->deleteProduct($product_id);
 
         if ($this->isAjax()) {
-            $this->response->json($result);
+            $this->response->outputJson($result);
         } else {
             $this->controlDeleteFromCompare($result, $product_id);
         }
@@ -503,7 +503,7 @@ class Controller extends BaseController
         }
 
         if ($this->isAjax()) {
-            $this->response->json($result);
+            $this->response->outputJson($result);
         }
         $this->redirect($result['redirect'], $result['message'], $result['severity']);
     }
@@ -522,7 +522,7 @@ class Controller extends BaseController
         $result = $this->wishlist->deleteProduct($condititons);
 
         if ($this->isAjax()) {
-            $this->response->json($result);
+            $this->response->outputJson($result);
         }
 
         $this->redirect($result['redirect'], $result['message'], $result['severity']);

@@ -1015,13 +1015,13 @@ abstract class Controller
         $this->hook->attach('theme', $this);
 
         if (empty($this->theme)) {
-            $this->response->error404();
+            $this->response->outputError404();
         }
 
         $this->current_theme = $this->config->getModuleInfo($this->theme);
 
         if (empty($this->current_theme)) {
-            $this->response->error404();
+            $this->response->outputError404();
         }
 
         $this->theme_settings = (array) $this->config->module($this->theme, null, array());
@@ -1262,7 +1262,7 @@ abstract class Controller
     public function controlSpam()
     {
         if ($this->request->post('url', '', false, 'string') !== '') {
-            $this->response->error403(false);
+            $this->response->outputError403(false);
         }
     }
 
@@ -1293,7 +1293,7 @@ abstract class Controller
     protected function controlAccessUpload()
     {
         if ($this->request->file() && !$this->access('file_upload')) {
-            $this->response->error403();
+            $this->response->outputError403();
         }
     }
 
@@ -1315,7 +1315,7 @@ abstract class Controller
         if ($this->isPosted() && (!isset($this->current_route['token']) || !empty($this->current_route['token']))) {
             $token = $this->request->post('token', '', false, 'string');
             if (!gplcart_string_equals($token, $this->token)) {
-                $this->response->error403();
+                $this->response->outputError403();
             }
         }
     }
@@ -1328,7 +1328,7 @@ abstract class Controller
     {
         $control = isset($key) ? isset($this->query[$key]) : !empty($this->query);
         if ($control && (empty($this->query['token']) || !$this->config->tokenValid($this->query['token']))) {
-            $this->response->error403();
+            $this->response->outputError403();
         }
     }
 
@@ -1465,7 +1465,7 @@ abstract class Controller
 
         $this->prepareDataOutput();
         $this->prepareOutput($templates, $options);
-        $this->response->html($this->renderOutput($templates), $options);
+        $this->response->outputHtml($this->renderOutput($templates), $options);
     }
 
     /**
@@ -1494,7 +1494,7 @@ abstract class Controller
     protected function prepareOutput(&$templates, array &$options)
     {
         if (!empty($this->http_status)) {
-            $title = (string) $this->response->statuses($this->http_status);
+            $title = (string) $this->response->getStatuses($this->http_status);
             $this->setTitle($title, false);
             $templates = "common/status/{$this->http_status}";
             $options['headers'] = $this->http_status;

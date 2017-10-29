@@ -68,16 +68,16 @@ class Ajax extends FrontendController
     public function responseAjax()
     {
         if (!$this->isAjax()) {
-            $this->response->error403();
+            $this->response->outputError403();
         }
 
         $action = $this->getPosted('action');
 
         if (empty($action)) {
-            $this->response->json(array('error' => $this->text('Missing handler')));
+            $this->response->outputJson(array('error' => $this->text('Missing handler')));
         }
 
-        $this->response->json(call_user_func(array($this, $action)));
+        $this->response->outputJson(call_user_func(array($this, $action)));
     }
 
     /**

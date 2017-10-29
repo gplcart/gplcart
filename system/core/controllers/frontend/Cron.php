@@ -58,7 +58,7 @@ class Cron extends FrontendController
 
         $this->hook->attach('cron', $this);
         $this->config->set('cron_last_run', GC_TIME);
-        $this->response->html($this->text('Cron has started'));
+        $this->response->outputHtml($this->text('Cron has started'));
     }
 
     /**
@@ -68,7 +68,7 @@ class Cron extends FrontendController
     {
         $key = $this->getQuery('key', '');
         if (strcmp($key, $this->config('cron_key', '')) !== 0) {
-            $this->response->error403(false);
+            $this->response->outputError403(false);
         }
     }
 

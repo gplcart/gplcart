@@ -1053,7 +1053,7 @@ class Checkout extends FrontendController
         $form = $this->render('checkout/form', $this->data_form, true);
 
         if ($this->isAjax()) {
-            $this->response->html($form);
+            $this->response->outputHtml($form);
         }
 
         $this->setData('checkout_form', $form);
