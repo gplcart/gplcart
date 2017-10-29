@@ -10,21 +10,21 @@
 namespace gplcart\core\helpers;
 
 /**
- * Provides methods to output a data
+ * Provides methods to output data
  */
 class Response
 {
 
     /**
-     * Array of defined headers
+     * Array of defined HTTP headers
      * @var array
      */
     protected $headers = array();
 
     /**
-     * Sends headers
+     * Sends HTTP headers
      */
-    protected function sendHeaders()
+    public function sendHeaders()
     {
         if (!headers_sent()) {
             foreach ($this->headers as $header) {
@@ -37,14 +37,14 @@ class Response
 
     /**
      * Adds a header
-     * @param mixed $name Header name or numeric code (for status headers)
-     * @param string $value Optional second part of header name
-     * @return \gplcart\core\helpers\Response
+     * @param string|int $name
+     * @param string $value
+     * @return $this
      */
-    protected function addHeader($name, $value = null)
+    public function addHeader($name, $value = null)
     {
         if (is_numeric($name)) {
-            $status = $this->statuses($name);
+            $status = $this->getStatuses($name);
             if (!empty($status)) {
                 $this->headers[] = "{$_SERVER['SERVER_PROTOCOL']} $name $status";
             }
@@ -60,7 +60,7 @@ class Response
      * @param null|int $status
      * @return array|string
      */
-    public function statuses($status = null)
+    public function getStatuses($status = null)
     {
         $statuses = array(
             100 => 'Continue',
@@ -113,23 +113,9 @@ class Response
     }
 
     /**
-     * Prints a JSON string
-     * @param array $data
+     * Adds headers from options
      * @param array $options
-     */
-    final public function json($data, $options = array())
-    {
-        $this->addHeader('Content-Type', 'application/json');
-        $this->addOptionalHeaders($options);
-        $this->sendHeaders();
-
-        echo gplcart_json_encode($data);
-        exit;
-    }
-
-    /**
-     * Adds headers from deliver options
-     * @param array $options
+     * @return $this
      */
     protected function addOptionalHeaders($options)
     {
@@ -139,20 +125,37 @@ class Response
                 $this->addHeader($name, $value);
             }
         }
+
+        return $this;
     }
 
     /**
-     * Displays a static HTML
+     * Output HTML page
      * @param string $html
      * @param array $options
      */
-    final public function html($html, $options = array())
+    public function outputHtml($html, $options = array())
     {
-        $this->addHeader('Content-Type', 'text/html; charset=utf-8');
-        $this->addOptionalHeaders($options);
-        $this->sendHeaders();
+        $this->addHeader('Content-Type', 'text/html; charset=utf-8')
+                ->addOptionalHeaders($options)
+                ->sendHeaders();
 
         echo $html;
+        exit;
+    }
+
+    /**
+     * Output JSON string
+     * @param array $data
+     * @param array $options
+     */
+    public function outputJson($data, $options = array())
+    {
+        $this->addHeader('Content-Type', 'application/json')
+                ->addOptionalHeaders($options)
+                ->sendHeaders();
+
+        echo gplcart_json_encode($data);
         exit;
     }
 
@@ -177,16 +180,15 @@ class Response
 
         $size = $readfile ? filesize($file) : strlen($file);
 
-        $this->addHeader('Expires', 0);
-        $this->addHeader('Pragma', 'public');
-        $this->addHeader('Content-Length', $size);
-        $this->addHeader('Cache-Control', 'must-revalidate');
-        $this->addHeader('Content-Description', 'File Transfer');
-        $this->addHeader('Content-Type', 'application/octet-stream');
-        $this->addHeader('Content-Disposition', 'attachment; filename=' . $filename);
-
-        $this->addOptionalHeaders($options);
-        $this->sendHeaders();
+        $this->addHeader('Expires', 0)
+                ->addHeader('Pragma', 'public')
+                ->addHeader('Content-Length', $size)
+                ->addHeader('Cache-Control', 'must-revalidate')
+                ->addHeader('Content-Description', 'File Transfer')
+                ->addHeader('Content-Type', 'application/octet-stream')
+                ->addHeader('Content-Disposition', 'attachment; filename=' . $filename)
+                ->addOptionalHeaders($options)
+                ->sendHeaders();
 
         if ($readfile) {
             readfile($file);
@@ -198,60 +200,40 @@ class Response
     }
 
     /**
-     * Outputs a file
-     * @param string $file
-     * @param array $options
-     */
-    public function file($file, $options = array())
-    {
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mimetype = finfo_file($finfo, $file);
-        finfo_close($finfo);
-
-        $this->addHeader('Content-type', $mimetype);
-        $this->addHeader('Content-Length', filesize($file));
-        $this->addOptionalHeaders($options);
-        $this->sendHeaders();
-
-        readfile($file);
-        exit;
-    }
-
-    /**
-     * Displays the 403 Access Denied message
+     * Output 403 error page
      * @param bool $message
      */
-    final public function error403($message = true)
+    public function outputError403($message = true)
     {
         $this->addHeader(403)->sendHeaders();
 
         if ($message) {
-            echo $this->getMessageError403();
+            echo $this->getError403();
         }
 
         exit;
     }
 
     /**
-     * Displays the 404 Not Found error
+     * Output 404 error page
      * @param boolean $message
      */
-    final public function error404($message = true)
+    public function outputError404($message = true)
     {
         $this->addHeader(404)->sendHeaders();
 
         if ($message) {
-            echo $this->getMessageError404();
+            echo $this->getError404();
         }
 
         exit;
     }
 
     /**
-     * Returns a string with the error 403 text
+     * Returns 403 error message
      * @return string
      */
-    protected function getMessageError403()
+    protected function getError403()
     {
         $text = '<html>';
         $text .= '<head>';
@@ -267,10 +249,10 @@ class Response
     }
 
     /**
-     * Returns a string with the error 404 text
+     * Returns 404 error message
      * @return string
      */
-    protected function getMessageError404()
+    protected function getError404()
     {
         $text = '<html>';
         $text .= '<head>';
