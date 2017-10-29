@@ -139,7 +139,7 @@ class Route
 
         if (!empty($languages)) {
 
-            $segments = $this->url->segments(true);
+            $segments = $this->url->getSegments(true);
             $default = $this->config->get('language', 'en');
 
             $found = !empty($languages[$segments[0]]['status']) || $segments[0] === 'en';

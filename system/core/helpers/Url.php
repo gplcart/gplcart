@@ -34,31 +34,29 @@ class Url
      * @param string|null $url
      * @param array $options
      * @param boolean $full
-     * @param boolean $exclude_langcode
+     * @param boolean $nolangcode
      * @return null
      */
-    final public function redirect($url = '', $options = array(), $full = false,
-            $exclude_langcode = false)
+    final public function redirect($url = '', $options = array(), $full = false, $nolangcode = false)
     {
-        if (!isset($url)) {
-            return null;
-        }
+        if (isset($url)) {
 
-        if (!empty($url) && ($full || $this->isAbsolute($url))) {
-            header("Location: $url");
+            if (!empty($url) && ($full || $this->isAbsolute($url))) {
+                header("Location: $url");
+                exit;
+            }
+
+            $target = $this->request->get('target', '', 'string');
+
+            if (!empty($target)) {
+                $url = (string) parse_url($target, PHP_URL_PATH);
+                $parsed = parse_url($target, PHP_URL_QUERY);
+                $options = is_array($parsed) ? $parsed : array();
+            }
+
+            header('Location: ' . $this->get($url, $options, false, $nolangcode));
             exit;
         }
-
-        $target = $this->request->get('target', '', 'string');
-
-        if (!empty($target)) {
-            $url = (string) parse_url($target, PHP_URL_PATH);
-            $parsed = parse_url($target, PHP_URL_QUERY);
-            $options = is_array($parsed) ? $parsed : array();
-        }
-
-        header('Location: ' . $this->get($url, $options, false, $exclude_langcode));
-        exit;
     }
 
     /**
@@ -66,10 +64,10 @@ class Url
      * @param string $path
      * @param array $options
      * @param boolean $absolute
-     * @param boolean $exclude_langcode
+     * @param boolean $nolangcode
      * @return string
      */
-    public function get($path = '', $options = array(), $absolute = false, $exclude_langcode = false)
+    public function get($path = '', $options = array(), $absolute = false, $nolangcode = false)
     {
         $pass_absolute = false;
 
@@ -78,25 +76,18 @@ class Url
                 $url = $path;
                 $pass_absolute = true;
             } else {
-                $url = $this->request->base($exclude_langcode) . trim($path, '/');
+                $url = $this->request->base($nolangcode) . trim($path, '/');
             }
         } else {
             $url = $this->request->urn();
         }
 
         $url = strtok($url, '?');
-
         if ($absolute && !$pass_absolute) {
-            $host = $this->request->host();
-            $scheme = $this->request->scheme();
-            $url = "$scheme$host$url";
+            $url = $this->request->scheme() . $this->request->host() . $url;
         }
 
-        if (!empty($options)) {
-            $url .= '?' . http_build_query($options);
-        }
-
-        return $url;
+        return empty($options) ? $url : "$url?" . http_build_query($options);
     }
 
     /**
@@ -108,25 +99,18 @@ class Url
      */
     public function language($code, $path = '', $options = array())
     {
-        $segments = $this->segments(true, $path);
+        $segments = $this->getSegments(true, $path);
         $langcode = $this->request->getLangcode();
 
-        // Remove an existing language code
         if (isset($segments[0]) && $segments[0] === $langcode) {
             unset($segments[0]);
         }
 
-        // Prepend language code
         array_unshift($segments, $code);
 
-        $url = $this->request->base(true);
-        $url .= trim(implode('/', $segments), '/');
+        $url = $this->request->base(true) . trim(implode('/', $segments), '/');
 
-        if (!empty($options)) {
-            $url .= '?' . http_build_query($options);
-        }
-
-        return $url;
+        return empty($options) ? $url : "$url?" . http_build_query($options);
     }
 
     /**
@@ -135,7 +119,7 @@ class Url
      * @param string $path
      * @return array
      */
-    public function segments($append_langcode = false, $path = '')
+    public function getSegments($append_langcode = false, $path = '')
     {
         if (empty($path)) {
             $path = $this->path($append_langcode);
@@ -161,7 +145,7 @@ class Url
      */
     public function isInstall()
     {
-        $segments = $this->segments();
+        $segments = $this->getSegments();
         return isset($segments[0]) && $segments[0] === 'install';
     }
 
@@ -171,7 +155,7 @@ class Url
      */
     public function isFront()
     {
-        $segments = $this->segments();
+        $segments = $this->getSegments();
         return empty($segments[0]);
     }
 
@@ -181,8 +165,7 @@ class Url
      */
     public function isAccount()
     {
-        $id = $this->getAccountId();
-        return is_integer($id);
+        return is_integer($this->getAccountId());
     }
 
     /**
@@ -200,7 +183,7 @@ class Url
      */
     public function isBackend()
     {
-        $segments = $this->segments();
+        $segments = $this->getSegments();
         return isset($segments[0]) && $segments[0] === 'admin';
     }
 
@@ -225,10 +208,12 @@ class Url
      */
     public function getAccountId()
     {
-        $segments = $this->segments();
+        $segments = $this->getSegments();
+
         if (reset($segments) === 'account' && isset($segments[1]) && ctype_digit($segments[1])) {
             return (int) $segments[1];
         }
+
         return false;
     }
 
