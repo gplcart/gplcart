@@ -58,27 +58,18 @@ class Image extends FrontendController
     /**
      * Outputs processed images
      */
-    public function cacheImage()
+    public function outputCacheImage()
     {
-        $this->setPathImage();
+        $this->setUrlPathImage();
         $this->setFileImage();
         $this->setDirectoryImage();
-        $this->setCacheImage();
 
         $this->tryOutputImage();
         $this->checkCacheDirectoryImage();
         $this->applyActionsImage();
 
         $this->tryOutputImage();
-        $this->response->error404(false);
-    }
-
-    /**
-     * Set the full server path to the cached image
-     */
-    protected function setCacheImage()
-    {
-        $this->data_cached_file = "{$this->data_imagestyle_directory}/" . basename($this->data_path);
+        $this->response->outputError404(false);
     }
 
     /**
@@ -87,7 +78,7 @@ class Image extends FrontendController
     protected function checkCacheDirectoryImage()
     {
         if (!file_exists($this->data_imagestyle_directory) && !mkdir($this->data_imagestyle_directory, 0775, true)) {
-            $this->response->error404(false);
+            $this->response->outputError404(false);
         }
     }
 
@@ -99,39 +90,49 @@ class Image extends FrontendController
         $actions = $this->image->getStyleActions($this->data_imagestyle_id);
 
         if (empty($actions)) {
-            $this->response->error404(false);
+            $this->response->outputError404(false);
         } else {
             $this->image->applyActions($actions, $this->data_source_file, $this->data_cached_file);
         }
     }
 
     /**
-     * Check if the cached image exists and output it
+     * Try to output existing image
      */
     protected function tryOutputImage()
     {
         if (is_file($this->data_cached_file)) {
-            $headers = array('headers' => $this->getHeaders($this->data_cached_file));
-            $this->response->file($this->data_cached_file, $headers);
+
+            $timestamp = filemtime($this->data_cached_file);
+            $expires = (int) $this->config('image_cache_lifetime', 365 * 24 * 60 * 60);
+
+            $this->response->addHeader('Cache-Control', "public, max-age=$expires")
+                    ->addHeader('Last-Modified', gmdate('D, d M Y H:i:s T', $timestamp))
+                    ->addHeader('Content-Length', filesize($this->data_cached_file))
+                    ->addHeader('Content-type', mime_content_type($this->data_cached_file))
+                    ->sendHeaders();
+
+            readfile($this->data_cached_file);
+            exit;
         }
     }
 
     /**
-     * Parse the current URL path and extract an image style ID and expected path to the cached image
+     * Parse the current URL path
      */
-    protected function setPathImage()
+    protected function setUrlPathImage()
     {
         $path = urldecode(strtok($this->request->urn(), '?'));
         $parts = explode('files/image/cache/', $path);
 
         if (empty($parts[1])) {
-            $this->response->error404(false);
+            $this->response->outputError404(false);
         }
 
         $parts = explode('/', $parts[1]);
 
         if (empty($parts[1])) {
-            $this->response->error404(false);
+            $this->response->outputError404(false);
         }
 
         $this->data_imagestyle_id = array_shift($parts);
@@ -148,46 +149,29 @@ class Image extends FrontendController
      */
     protected function setDirectoryImage()
     {
-        $imagestyle_directory = GC_DIR_IMAGE_CACHE . "/{$this->data_imagestyle_id}";
+        $imagestyle_directory = GC_DIR_IMAGE_CACHE . "/$this->data_imagestyle_id";
         $image_directory = pathinfo($this->data_path, PATHINFO_DIRNAME);
 
         if (!empty($image_directory)) {
-            $imagestyle_directory = GC_DIR_IMAGE_CACHE . "/{$this->data_imagestyle_id}/$image_directory";
+            $imagestyle_directory = GC_DIR_IMAGE_CACHE . "/$this->data_imagestyle_id/$image_directory";
         }
 
         $this->data_imagestyle_directory = $imagestyle_directory;
+        $this->data_cached_file = "$imagestyle_directory/" . basename($this->data_path);
     }
 
     /**
-     * Set the full expected server path to the cached image
+     * Set image file path
      */
     protected function setFileImage()
     {
         $file = gplcart_file_absolute("image/{$this->data_path}");
 
-        if (is_file($file)) {
-            $this->data_source_file = $file;
-        } else {
-            $this->response->error404(false);
+        if (!is_file($file)) {
+            $this->response->outputError404(false);
         }
-    }
 
-    /**
-     * Returns HTTP headers
-     * @param string $file
-     * @return array
-     */
-    protected function getHeaders($file)
-    {
-        $timestamp = filemtime($file);
-        $expires = (int) $this->config('image_cache_lifetime', 365*24*60*60); // 1 year
-
-        $headers = array(
-            array('Last-Modified', gmdate('D, d M Y H:i:s T', $timestamp)),
-            array('Cache-Control', "public, max-age=$expires")
-        );
-
-        return $headers;
+        $this->data_source_file = $file;
     }
 
 }
