@@ -222,8 +222,7 @@ class CollectionItem extends Model
 
         $handlers = $this->collection->getHandlers();
         $conditions[$handlers[$handler_id]['id_key']] = array_keys($items);
-
-        $results = Handler::call($handlers, $handler_id, 'list', array($conditions));
+        $results = $this->getListEntities($handler_id, $conditions);
 
         if (empty($results)) {
             return array();
@@ -254,28 +253,20 @@ class CollectionItem extends Model
     }
 
     /**
-     * Returns an array of auto-complete suggestion for the given collection type
-     * @param array $collection
-     * @param array $options
+     * Returns an array of entities for the given collection ID
+     * @param string $collection_id
+     * @param array $arguments
      * @return array
      */
-    public function getSuggestions(array $collection, array $options = array())
+    public function getListEntities($collection_id, array $arguments)
     {
-        $handler_id = $collection['type'];
-        $handlers = $this->collection->getHandlers();
-
-        $options += array(
-            'status' => 1,
-            'store_id' => $collection['store_id']
-        );
-
-        $results = Handler::call($handlers, $handler_id, 'list', array($options));
-
-        if (empty($results)) {
+        try {
+            $handlers = $this->collection->getHandlers();
+            return Handler::call($handlers, $collection_id, 'list', array($arguments));
+        } catch (\Exception $ex) {
+            trigger_error($ex->getMessage());
             return array();
         }
-
-        return $results;
     }
 
 }
