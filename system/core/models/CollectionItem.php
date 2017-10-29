@@ -42,32 +42,12 @@ class CollectionItem extends Model
      */
     public function getList(array $data = array())
     {
-        $items = &gplcart_static(gplcart_array_hash(array('collection.item.list' => $data)));
+        $list = &gplcart_static(gplcart_array_hash(array('collection.item.list' => $data)));
 
-        if (isset($items)) {
-            return $items;
+        if (isset($list)) {
+            return $list;
         }
 
-        list($sql, $params) = $this->getListSql($data);
-
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $params);
-        }
-
-        $options = array('index' => 'collection_item_id', 'unserialize' => 'data');
-        $items = $this->db->fetchAll($sql, $params, $options);
-
-        $this->hook->attach('collection.item.list', $items, $this);
-        return $items;
-    }
-
-    /**
-     * Returns an array containing SQL query and its parameters for getList() method
-     * @param array $data
-     * @return array
-     */
-    protected function getListSql(array $data = array())
-    {
         $sql = 'SELECT ci.*, c.status AS collection_status, c.store_id,'
                 . 'c.type, c.title AS collection_title';
 
@@ -79,28 +59,28 @@ class CollectionItem extends Model
                 . ' LEFT JOIN collection c ON(ci.collection_id=c.collection_id)'
                 . ' WHERE ci.collection_item_id > 0';
 
-        $where = array();
+        $conditions = array();
 
         if (isset($data['value'])) {
             $sql .= ' AND ci.value = ?';
-            $where[] = (int) $data['value'];
+            $conditions[] = (int) $data['value'];
         }
 
         if (isset($data['status'])) {
             $sql .= ' AND c.status = ?';
             $sql .= ' AND ci.status = ?';
-            $where[] = (int) $data['status'];
-            $where[] = (int) $data['status'];
+            $conditions[] = (int) $data['status'];
+            $conditions[] = (int) $data['status'];
         }
 
         if (isset($data['store_id'])) {
             $sql .= ' AND c.store_id = ?';
-            $where[] = (int) $data['store_id'];
+            $conditions[] = (int) $data['store_id'];
         }
 
         if (isset($data['collection_id'])) {
             $sql .= ' AND ci.collection_id = ?';
-            $where[] = (int) $data['collection_id'];
+            $conditions[] = (int) $data['collection_id'];
         }
 
         $allowed_order = array('asc', 'desc');
@@ -117,7 +97,15 @@ class CollectionItem extends Model
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        return array($sql, $where);
+        if (!empty($data['count'])) {
+            return (int) $this->db->fetchColumn($sql, $conditions);
+        }
+
+        $options = array('index' => 'collection_item_id', 'unserialize' => 'data');
+        $list = $this->db->fetchAll($sql, $conditions, $options);
+
+        $this->hook->attach('collection.item.list', $list, $this);
+        return $list;
     }
 
     /**
