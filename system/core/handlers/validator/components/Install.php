@@ -79,7 +79,7 @@ class Install extends ComponentValidator
             return null;
         }
 
-        if ($this->install->isInstalled()) {
+        if ($this->config->exists()) {
             $error = $this->language->text('System already installed');
             $this->setError('installed', $error);
             return false;
