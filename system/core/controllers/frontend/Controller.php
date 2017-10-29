@@ -439,7 +439,7 @@ class Controller extends BaseController
     protected function controlDeleteFromCompare(array &$result, $product_id)
     {
         if (empty($result['redirect'])) {
-            $segments = $this->url->segments();
+            $segments = $this->url->getSegments();
             if (isset($segments[0]) && $segments[0] === 'compare' && !empty($segments[1])) {
                 $ids = array_filter(array_map('trim', explode(',', $segments[1])), 'ctype_digit');
                 unset($ids[array_search($product_id, $ids)]);
