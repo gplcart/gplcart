@@ -62,21 +62,6 @@ class Url
     }
 
     /**
-     * Check if the URL is a valid absolute URL
-     * @param string $url
-     * @return boolean
-     */
-    public function isAbsolute($url)
-    {
-        $pattern = "/^(?:ftp|https?|feed):\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
-        (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
-        (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
-        (?:[\w#!:\.\?\+=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
-
-        return preg_match($pattern, $url) === 1;
-    }
-
-    /**
      * Returns an internal or external URL
      * @param string $path
      * @param array $options
@@ -84,8 +69,7 @@ class Url
      * @param boolean $exclude_langcode
      * @return string
      */
-    public function get($path = '', $options = array(), $absolute = false,
-            $exclude_langcode = false)
+    public function get($path = '', $options = array(), $absolute = false, $exclude_langcode = false)
     {
         $pass_absolute = false;
 
@@ -146,26 +130,7 @@ class Url
     }
 
     /**
-     * Returns true if the path is a public area
-     * @return boolean
-     */
-    public function isFrontend()
-    {
-        return !$this->isBackend();
-    }
-
-    /**
-     * Returns true if the path is an admin area
-     * @return boolean
-     */
-    public function isBackend()
-    {
-        $segments = $this->segments();
-        return isset($segments[0]) && $segments[0] === 'admin';
-    }
-
-    /**
-     * Returns an array containing all the components of the current path
+     * Returns an array of path components
      * @param boolean $append_langcode
      * @param string $path
      * @return array
@@ -191,17 +156,7 @@ class Url
     }
 
     /**
-     * Returns true if the path is admin dashboard
-     * @return boolean
-     */
-    public function isDashboard()
-    {
-        $segments = $this->segments();
-        return isset($segments[0]) && $segments[0] === 'admin' && empty($segments[1]);
-    }
-
-    /**
-     * Returns true if the path is a /install page
+     * Whether the path is an installation path
      * @return boolean
      */
     public function isInstall()
@@ -211,7 +166,7 @@ class Url
     }
 
     /**
-     * Returns true if the path is front page
+     * Whether the path is home page
      * @return boolean
      */
     public function isFront()
@@ -221,13 +176,47 @@ class Url
     }
 
     /**
-     * Whether the path belongs to an account URL
+     * Whether the path is an account area
      * @return boolean
      */
     public function isAccount()
     {
         $id = $this->getAccountId();
         return is_integer($id);
+    }
+
+    /**
+     * Whether the path is a public area
+     * @return boolean
+     */
+    public function isFrontend()
+    {
+        return !$this->isBackend();
+    }
+
+    /**
+     * Whether the path is an admin area
+     * @return boolean
+     */
+    public function isBackend()
+    {
+        $segments = $this->segments();
+        return isset($segments[0]) && $segments[0] === 'admin';
+    }
+
+    /**
+     * Whether the string is a valid absolute URL
+     * @param string $url
+     * @return boolean
+     */
+    public function isAbsolute($url)
+    {
+        $pattern = "/^(?:ftp|https?|feed):\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
+        (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
+        (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
+        (?:[\w#!:\.\?\+=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
+
+        return preg_match($pattern, $url) === 1;
     }
 
     /**
