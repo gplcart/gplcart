@@ -16,7 +16,7 @@ class Response
 {
 
     /**
-     * Array of defined HTTP headers
+     * Array of HTTP headers
      * @var array
      */
     protected $headers = array();
@@ -160,7 +160,7 @@ class Response
     }
 
     /**
-     * Downloads a file
+     * Download a file
      * @param string $file Absolute path to the file
      * @param string $filename An alternative filename
      * @param array $options

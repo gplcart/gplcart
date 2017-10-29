@@ -65,7 +65,7 @@ class Session
     }
 
     /**
-     * Saves/updates a data in the session
+     * Saves/updates a session data
      * @param string|array $key
      * @param mixed $value
      */
@@ -77,7 +77,7 @@ class Session
     }
 
     /**
-     * Deletes a data from the session
+     * Deletes a session data
      * @param mixed $key
      * @return bool
      * @throws AuthorizationException
