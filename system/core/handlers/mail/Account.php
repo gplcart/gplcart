@@ -12,7 +12,7 @@ namespace gplcart\core\handlers\mail;
 use gplcart\core\handlers\mail\Base as BaseHandler;
 
 /**
- * Mail data handlers related to user accouts
+ * Mail data handlers related to user accounts
  */
 class Account extends BaseHandler
 {
@@ -50,7 +50,7 @@ class Account extends BaseHandler
     }
 
     /**
-     * Sent to a user when his account has been created
+     * Sent to the user when his account has been created
      * @param array $user
      * @return array
      */
@@ -108,7 +108,7 @@ class Account extends BaseHandler
     }
 
     /**
-     * Sent to a user whose password has been changed
+     * Sent to the user whose password has been changed
      * @param array $user
      * @return array
      */

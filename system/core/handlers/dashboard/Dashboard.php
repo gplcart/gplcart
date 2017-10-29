@@ -23,7 +23,7 @@ use gplcart\core\models\Cart as CartModel,
 use gplcart\core\traits\Order as OrderTrait;
 
 /**
- * Dashboard item handlers
+ * Dashboard handlers
  */
 class Dashboard extends Handler
 {
@@ -108,10 +108,9 @@ class Dashboard extends Handler
      * @param TransactionModel $transaction
      * @param PriceRuleModel $pricerule
      */
-    public function __construct(CartModel $cart, UserModel $user,
-            ProductModel $product, LanguageModel $language, PriceModel $price,
-            OrderModel $order, ReportModel $report, ReviewModel $review,
-            TransactionModel $transaction, PriceRuleModel $pricerule)
+    public function __construct(CartModel $cart, UserModel $user, ProductModel $product,
+            LanguageModel $language, PriceModel $price, OrderModel $order, ReportModel $report,
+            ReviewModel $review, TransactionModel $transaction, PriceRuleModel $pricerule)
     {
         parent::__construct();
 

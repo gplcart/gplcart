@@ -26,7 +26,7 @@ class PriceRule extends BaseHandler
     }
 
     /**
-     * Returns true if a number of usage condition is met
+     * Returns true if the "number of usage" condition is met
      * @param array $condition
      * @param array $data
      * @return boolean

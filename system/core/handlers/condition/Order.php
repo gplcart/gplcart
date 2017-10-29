@@ -26,7 +26,7 @@ class Order extends BaseHandler
     }
 
     /**
-     * Returns true if a shipping service condition is met
+     * Whether the shipping service condition is met
      * @param array $condition
      * @param array $data
      * @return boolean
@@ -41,7 +41,7 @@ class Order extends BaseHandler
     }
 
     /**
-     * Returns true if a payment service condition is met
+     * Whether the payment service condition is met
      * @param array $condition
      * @param array $data
      * @return boolean

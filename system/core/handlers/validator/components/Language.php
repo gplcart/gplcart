@@ -44,8 +44,6 @@ class Language extends ComponentValidator
         $this->validateNativeNameLanguage();
         $this->validateCodeLanguage();
 
-        // Remove data of updating language
-        // to prevent from saving in serialized string
         $this->unsetSubmitted('update');
 
         return $this->getResult();

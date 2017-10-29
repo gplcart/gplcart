@@ -33,7 +33,7 @@ class Action
     }
 
     /**
-     * Thumbnail action
+     * Make thumbnail
      * @param string $source
      * @param string $target
      * @param array $action
@@ -53,7 +53,7 @@ class Action
     }
 
     /**
-     * Crop action
+     * Crop
      * @param string $source
      * @param string $target
      * @param array $action
@@ -73,7 +73,7 @@ class Action
     }
 
     /**
-     * Resize action
+     * Resize
      * @param string $source
      * @param string $target
      * @param array $action
@@ -93,7 +93,7 @@ class Action
     }
 
     /**
-     * Fit to width action
+     * Fit to width
      * @param string $source
      * @param string $target
      * @param array $action
@@ -113,7 +113,7 @@ class Action
     }
 
     /**
-     * Fit to height action
+     * Fit to height
      * @param string $source
      * @param string $target
      * @param array $action

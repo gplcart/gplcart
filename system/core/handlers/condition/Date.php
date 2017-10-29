@@ -26,7 +26,7 @@ class Date extends BaseHandler
     }
 
     /**
-     * Returns true if a date condition is met
+     * Whether the date condition is met
      * @param array $condition
      * @return boolean
      */

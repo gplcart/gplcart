@@ -35,7 +35,7 @@ class User extends BaseHandler
     }
 
     /**
-     * Returns true if a user ID condition is met
+     * Whether the user ID condition is met
      * @param array $condition
      * @return boolean
      */
@@ -46,7 +46,7 @@ class User extends BaseHandler
     }
 
     /**
-     * Returns true if a user role condition is met
+     * Whether the user role condition is met
      * @param array $condition
      * @return boolean
      */

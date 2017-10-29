@@ -10,7 +10,7 @@
 namespace gplcart\core\helpers;
 
 /**
- * Provides methods to work with various server data
+ * Provides methods to work with HTTP requests
  */
 class Request
 {
@@ -43,13 +43,13 @@ class Request
 
     /**
      * Returns the current base path
-     * @staticvar array $cache
      * @param boolean $exclude_langcode
      * @return string
      */
     public function base($exclude_langcode = false)
     {
         $base = GC_BASE;
+
         if ($base !== '/') {
             $base .= '/';
         }
@@ -94,7 +94,7 @@ class Request
     }
 
     /**
-     * Returns request method
+     * Returns the request method
      * @return string
      */
     public function method()
@@ -104,7 +104,7 @@ class Request
 
     /**
      * Returns an address of the page which referred the user agent to the current page
-     * @return string HTTP referrer
+     * @return string
      */
     public function referrer()
     {
@@ -112,7 +112,7 @@ class Request
     }
 
     /**
-     * Returns an IP from which the user is viewing the current page
+     * Returns IP from which the user is viewing the current page
      * @return string IP address
      */
     public function ip()
@@ -148,7 +148,7 @@ class Request
     }
 
     /**
-     * Returns contents of the User-Agent: header from the current request
+     * Returns the current user agent
      * @return string
      */
     public function agent()
@@ -157,8 +157,8 @@ class Request
     }
 
     /**
-     * Returns a content type
-     * @return string Content type
+     * Returns a content type of the request
+     * @return string
      */
     public function type()
     {
@@ -166,8 +166,8 @@ class Request
     }
 
     /**
-     * Returns a content length
-     * @return integer Content length in bytes
+     * Returns a content length of the request
+     * @return integer
      */
     public function length()
     {
@@ -175,7 +175,7 @@ class Request
     }
 
     /**
-     * Returns request language
+     * Returns a language of the request
      * @return string
      */
     public function language()
@@ -184,15 +184,14 @@ class Request
     }
 
     /**
-     * Returns a data from the POST request
+     * Returns a data from POST request
      * @param string|array $name
      * @param mixed $default
      * @param bool|string $filter
      * @param null|string $type
      * @return mixed
      */
-    public function post($name = null, $default = null, $filter = true,
-            $type = null)
+    public function post($name = null, $default = null, $filter = true, $type = null)
     {
         $post = $_POST;
 
@@ -217,7 +216,7 @@ class Request
     }
 
     /**
-     * Returns a data from the GET request
+     * Returns a data from GET request
      * @param string $name
      * @param mixed $default
      * @param null|string $type
@@ -246,7 +245,7 @@ class Request
     }
 
     /**
-     * Returns a data from the FILES request
+     * Returns a data from FILES request
      * @param string $name
      * @param mixed $default
      * @return mixed

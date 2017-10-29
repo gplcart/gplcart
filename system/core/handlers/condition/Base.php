@@ -26,7 +26,7 @@ class Base extends Handler
     }
 
     /**
-     * Compares values
+     * Compare two values using an operator
      * @param mixed $a
      * @param mixed $b
      * @param string $operator

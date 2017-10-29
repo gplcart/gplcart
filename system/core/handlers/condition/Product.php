@@ -26,7 +26,7 @@ class Product extends BaseHandler
     }
 
     /**
-     * Returns true if a product ID condition is met
+     * Whether the product ID condition is met
      * @param array $condition
      * @param array $data
      * @return boolean
@@ -41,7 +41,7 @@ class Product extends BaseHandler
     }
 
     /**
-     * Returns true if a product category ID condition is met
+     * Whether the product category ID condition is met
      * @param array $condition
      * @param array $data
      * @return boolean
@@ -56,7 +56,7 @@ class Product extends BaseHandler
     }
 
     /**
-     * Returns true if a product brand condition is met
+     * Whether the product brand condition is met
      * @param array $condition
      * @param array $data
      * @return boolean

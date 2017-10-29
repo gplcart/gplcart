@@ -145,7 +145,6 @@ class FieldValue extends ComponentValidator
             return false;
         }
 
-        // Ugly hack!
         // HTML5 color field cannot have empty value
         // Default value is #000000
         // Assuming black is empty
@@ -162,7 +161,6 @@ class FieldValue extends ComponentValidator
      */
     protected function validateFileFieldValue()
     {
-        // Do not upload if an error has occurred before
         if ($this->isError()) {
             return null;
         }
