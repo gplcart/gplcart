@@ -19,10 +19,9 @@ trait OrderComponent
      * Prepare cart component
      * @param array $order
      * @param \gplcart\core\Controller $controller
-     * @param \gplcart\core\models\Price $price_model
+     * @param \gplcart\core\models\Price $pmodel
      */
-    protected function prepareOrderComponentCartTrait(&$order, $controller,
-            $price_model)
+    protected function prepareOrderComponentCartTrait(&$order, $controller, $pmodel)
     {
         if (!empty($order['data']['components']['cart']['items'])) {
 
@@ -31,7 +30,7 @@ trait OrderComponent
                     $order['cart'][$sku]['product_status'] = 0;
                 }
 
-                $order['cart'][$sku]['price_formatted'] = $price_model->format($component['price'], $order['currency']);
+                $order['cart'][$sku]['price_formatted'] = $pmodel->format($component['price'], $order['currency']);
             }
 
             $html = $controller->render('backend|sale/order/panes/components/cart', array('order' => $order));
@@ -42,29 +41,27 @@ trait OrderComponent
     /**
      * Prepare shipping method component
      * @param array $order
-     * @param \gplcart\core\Controller $controller
-     * @param \gplcart\core\models\Price $price_model
-     * @param \gplcart\core\models\Shipping $shipping_model
-     * @param \gplcart\core\models\Order $order_model
+     * @param \gplcart\core\Controller $cont
+     * @param \gplcart\core\models\Price $pmodel
+     * @param \gplcart\core\models\Shipping $shmodel
+     * @param \gplcart\core\models\Order $omodel
      */
-    protected function prepareOrderComponentShippingMethodTrait(&$order,
-            $controller, $price_model, $shipping_model, $order_model)
+    protected function prepareOrderComponentShippingTrait(&$order, $cont, $pmodel, $shmodel, $omodel)
     {
         if (isset($order['data']['components']['shipping']['price'])) {
 
-            $method = $shipping_model->get($order['shipping']);
+            $method = $shmodel->get($order['shipping']);
             $value = $order['data']['components']['shipping']['price'];
 
             if (abs($value) == 0) {
                 $value = 0;
             }
 
-            $component_types = $order_model->getComponentTypes();
-
-            $method['price_formatted'] = $price_model->format($value, $order['currency']);
+            $component_types = $omodel->getComponentTypes();
+            $method['price_formatted'] = $pmodel->format($value, $order['currency']);
             $data = array('method' => $method, 'title' => $component_types['shipping']);
 
-            $html = $controller->render('backend|sale/order/panes/components/method', $data);
+            $html = $cont->render('backend|sale/order/panes/components/method', $data);
             $order['data']['components']['shipping']['rendered'] = $html;
         }
     }
@@ -72,29 +69,27 @@ trait OrderComponent
     /**
      * Prepare payment method component
      * @param array $order
-     * @param \gplcart\core\Controller $controller
-     * @param \gplcart\core\models\Price $price_model
-     * @param \gplcart\core\models\Payment $payment_model
-     * @param \gplcart\core\models\Order $order_model
+     * @param \gplcart\core\Controller $cont
+     * @param \gplcart\core\models\Price $pmodel
+     * @param \gplcart\core\models\Payment $pamodel
+     * @param \gplcart\core\models\Order $omodel
      */
-    protected function prepareOrderComponentPaymentMethodTrait(&$order,
-            $controller, $price_model, $payment_model, $order_model)
+    protected function prepareOrderComponentPaymentTrait(&$order, $cont, $pmodel, $pamodel, $omodel)
     {
         if (isset($order['data']['components']['payment']['price'])) {
 
-            $method = $payment_model->get($order['payment']);
+            $method = $pamodel->get($order['payment']);
             $value = $order['data']['components']['payment']['price'];
 
             if (abs($value) == 0) {
                 $value = 0;
             }
 
-            $component_types = $order_model->getComponentTypes();
-
-            $method['price_formatted'] = $price_model->format($value, $order['currency']);
+            $component_types = $omodel->getComponentTypes();
+            $method['price_formatted'] = $pmodel->format($value, $order['currency']);
             $data = array('method' => $method, 'title' => $component_types['payment']);
 
-            $html = $controller->render('backend|sale/order/panes/components/method', $data);
+            $html = $cont->render('backend|sale/order/panes/components/method', $data);
             $order['data']['components']['payment']['rendered'] = $html;
         }
     }
@@ -103,11 +98,10 @@ trait OrderComponent
      * Prepare price rule component
      * @param array $order
      * @param \gplcart\core\Controller $controller
-     * @param \gplcart\core\models\Price $price_model
-     * @param \gplcart\core\models\PriceRule $pricerule_model
+     * @param \gplcart\core\models\Price $pmodel
+     * @param \gplcart\core\models\PriceRule $prmodel
      */
-    protected function prepareOrderComponentPriceRuleTrait(&$order, $controller,
-            $price_model, $pricerule_model)
+    protected function prepareOrderComponentPriceRuleTrait(&$order, $controller, $pmodel, $prmodel)
     {
         foreach ($order['data']['components'] as $price_rule_id => $component) {
 
@@ -115,15 +109,15 @@ trait OrderComponent
                 continue;
             }
 
-            $rule = $pricerule_model->get($price_rule_id);
+            $price_rule = $prmodel->get($price_rule_id);
 
             if (abs($component['price']) == 0) {
                 $component['price'] = 0;
             }
 
             $data = array(
-                'rule' => $rule,
-                'price' => $price_model->format($component['price'], $rule['currency']));
+                'rule' => $price_rule,
+                'price' => $pmodel->format($component['price'], $price_rule['currency']));
 
             $html = $controller->render('backend|sale/order/panes/components/rule', $data);
             $order['data']['components'][$price_rule_id]['rendered'] = $html;
