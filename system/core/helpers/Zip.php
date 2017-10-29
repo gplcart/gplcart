@@ -160,10 +160,10 @@ class Zip
     }
 
     /**
-     * Returns original ZipArchive class instance
+     * Returns ZipArchive class instance
      * @return \ZipArchive
      */
-    public function getInstance()
+    public function getZipArchive()
     {
         return $this->zip;
     }
