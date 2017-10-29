@@ -43,15 +43,6 @@ class Install extends Model
     }
 
     /**
-     * Whether the main config file exists
-     * @return boolean
-     */
-    public function isInstalled()
-    {
-        return is_file(GC_FILE_CONFIG_COMPILED);
-    }
-
-    /**
      * Returns an array of defined handlers
      * @return array
      */
