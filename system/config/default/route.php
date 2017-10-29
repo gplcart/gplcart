@@ -45,7 +45,7 @@ return array(
     'files/image/cache/(.*)' => array(
         'internal' => true,
         'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\frontend\\Image', 'cacheImage')
+            'controller' => array('gplcart\\core\\controllers\\frontend\\Image', 'outputCacheImage')
         )
     ),
     'install' => array(
