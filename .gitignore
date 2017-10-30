@@ -3,6 +3,7 @@ nbproject
 *sublime*
 .git
 composer.lock
+vendor
 
 system/modules/*
 !system/modules/frontend
