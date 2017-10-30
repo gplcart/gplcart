@@ -29,7 +29,7 @@ class Common extends ElementValidator
      * Validates the field/value is not empty
      * @param array $submitted
      * @param array $options
-     * @return mixed
+     * @return bool|array
      */
     public function required(array $submitted, array $options)
     {
@@ -46,7 +46,7 @@ class Common extends ElementValidator
      * Validates the field/value is numeric
      * @param array $submitted
      * @param array $options
-     * @return mixed
+     * @return bool|array
      */
     public function numeric(array $submitted, array $options)
     {
@@ -63,7 +63,7 @@ class Common extends ElementValidator
      * Validates the field/value contains only digits
      * @param array $submitted
      * @param array $options
-     * @return mixed
+     * @return bool|array
      */
     public function integer(array $submitted, array $options)
     {
@@ -80,12 +80,13 @@ class Common extends ElementValidator
      * Validates the field/value length
      * @param array $submitted
      * @param array $options
-     * @return mixed
+     * @return bool|array
      */
     public function length(array $submitted, array $options)
     {
         $value = gplcart_array_get($submitted, $options['field']);
         $length = mb_strlen($value);
+        $options += array('arguments' => array());
 
         list($min, $max) = $options['arguments'] + array(1, 255);
 
@@ -100,7 +101,7 @@ class Common extends ElementValidator
      * Validates the field/value matches a regexp pattern
      * @param array $submitted
      * @param array $options
-     * @return mixed
+     * @return bool|array
      */
     public function regexp(array $submitted, array $options)
     {
@@ -118,7 +119,7 @@ class Common extends ElementValidator
      * @param array $submitted
      * @param array $options
      * @link http://php.net/manual/en/function.strtotime.php
-     * @return mixed
+     * @return bool|array
      */
     public function dateformat(array $submitted, array $options)
     {
@@ -135,7 +136,7 @@ class Common extends ElementValidator
      * Validates the field/value is a JSON string
      * @param array $submitted
      * @param array $options
-     * @return mixed
+     * @return array|bool
      */
     public function json(array $submitted, array $options)
     {

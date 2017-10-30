@@ -13,14 +13,14 @@ use ReflectionClass;
 use ReflectionException;
 use PHPUnit_Framework_TestCase;
 
-class UnitTest extends PHPUnit_Framework_TestCase
+class PhpUnitTest extends PHPUnit_Framework_TestCase
 {
 
     /**
-     * The testing object
-     * @var object
+     * Test file model
+     * @var \gplcart\tests\phpunit\support\File $file
      */
-    protected $object;
+    protected $file;
 
     /**
      * @param null|string $name
@@ -30,15 +30,8 @@ class UnitTest extends PHPUnit_Framework_TestCase
     public function __construct($name = null, array $data = array(), $dname = '')
     {
         parent::__construct($name, $data, $dname);
-    }
 
-    /**
-     * Sets the testing object
-     * @param string $class
-     */
-    protected function setInstance($class)
-    {
-        $this->object = $this->getInstance($class);
+        $this->file = $this->getInstance('gplcart\\tests\\phpunit\\support\\File');
     }
 
     /**
@@ -83,6 +76,24 @@ class UnitTest extends PHPUnit_Framework_TestCase
     {
         $this->expectOutputString('');
         print_r($data);
+    }
+
+    /**
+     * Returns a random string
+     * @param int $length
+     * @return string
+     */
+    protected function getRandomString($length = 10)
+    {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $characters_length = strlen($characters);
+
+        $random_string = '';
+        for ($i = 0; $i < $length; $i++) {
+            $random_string .= $characters[rand(0, $characters_length - 1)];
+        }
+
+        return $random_string;
     }
 
 }

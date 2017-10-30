@@ -22,4 +22,5 @@ mb_internal_encoding('UTF-8');
 
 gplcart_setup_php();
 gplcart_setup_server();
+gplcart_setup_vendor();
 gplcart_setup_autoload();
