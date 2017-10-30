@@ -78,11 +78,6 @@ function gplcart_setup_autoload()
 {
     return spl_autoload_register(function($namespace) {
 
-        // Skip foreign namespaces
-        if (strpos($namespace, 'gplcart\\') !== 0) {
-            return false;
-        }
-
         // Flip slashes and remove "gplcart/" from the beginning
         $path = substr(str_replace('\\', '/', $namespace), 8);
         $file = strpos($path, 'tests') === 0 ? GC_DIR : GC_DIR_SYSTEM;
@@ -106,4 +101,15 @@ function gplcart_setup_autoload()
 
         return false;
     });
+}
+
+/**
+ * Include optional vendor files
+ */
+function gplcart_setup_vendor()
+{
+    $autoload = GC_DIR . "/vendor/autoload.php";
+    if (is_file($autoload)) {
+        include_once $autoload;
+    }
 }
