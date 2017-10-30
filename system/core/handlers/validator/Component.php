@@ -196,7 +196,7 @@ class Component extends BaseValidator
     }
 
     /**
-     * Sets "Default" field to integer value
+     * Sets "Default" field to an integer value
      * @return boolean
      */
     protected function validateDefaultComponent()
@@ -301,7 +301,7 @@ class Component extends BaseValidator
     }
 
     /**
-     * Validates multiple uploaded images
+     * Validates uploaded images
      * @param string $entity
      * @return bool|null
      */
@@ -370,7 +370,7 @@ class Component extends BaseValidator
     }
 
     /**
-     * Validates store ID field
+     * Validates the store ID field
      * @return boolean|null
      */
     protected function validateStoreIdComponent()

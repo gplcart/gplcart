@@ -274,3 +274,18 @@ function gplcart_config_get($file)
 
     return $data[$file];
 }
+
+/**
+ * Deletes a configuration file
+ * @param string $file
+ * @return boolean
+ */
+function gplcart_config_delete($file)
+{
+    if (is_file($file)) {
+        chmod($file, 0644);
+        return unlink($file);
+    }
+
+    return false;
+}

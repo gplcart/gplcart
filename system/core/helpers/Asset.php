@@ -24,7 +24,7 @@ class Asset
     protected $compressor;
 
     /**
-     * An array of added assets
+     * An array of assets
      * @var array
      */
     protected $assets = array();
@@ -38,7 +38,7 @@ class Asset
     }
 
     /**
-     * Compresses and aggregates assets
+     * Compress and aggregate an array of assets
      * @param array $assets
      * @param string $type
      * @param string $directory

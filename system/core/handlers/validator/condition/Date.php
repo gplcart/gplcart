@@ -24,7 +24,6 @@ class Date
     protected $language;
 
     /**
-     * Constructor
      * @param LanguageModel $language
      */
     public function __construct(LanguageModel $language)
@@ -33,7 +32,7 @@ class Date
     }
 
     /**
-     * Validates date condition
+     * Validates the date condition
      * @param array $values
      * @return boolean|string
      */
@@ -50,6 +49,7 @@ class Date
             $vars = array('@field' => $this->language->text('Condition'));
             return $this->language->text('@field has invalid value', $vars);
         }
+
         return true;
     }
 

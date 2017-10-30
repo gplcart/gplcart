@@ -35,13 +35,11 @@ class User
     protected $user;
 
     /**
-     * Constructor
      * @param UserRoleModel $role
      * @param LanguageModel $language
      * @param UserModel $user
      */
-    public function __construct(UserRoleModel $role, LanguageModel $language,
-            UserModel $user)
+    public function __construct(UserRoleModel $role, LanguageModel $language, UserModel $user)
     {
         $this->user = $user;
         $this->role = $role;
@@ -63,15 +61,15 @@ class User
             return $this->language->text('@field has invalid value', $vars);
         }
 
-        $exists = array_filter($values, function ($user_id) {
+        $existing = array_filter($values, function ($user_id) {
             if ($user_id == 0) {
-                return true; // 0 also valid if we check a user is logged in
+                return true; // 0 also valid if we check that user is logged in
             }
             $user = $this->user->get($user_id);
             return isset($user['user_id']);
         });
 
-        if ($count != count($exists)) {
+        if ($count != count($existing)) {
             $vars = array('@name' => $this->language->text('User'));
             return $this->language->text('@name is unavailable', $vars);
         }

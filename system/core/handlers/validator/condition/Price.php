@@ -31,7 +31,6 @@ class Price
     protected $currency;
 
     /**
-     * Constructor
      * @param CurrencyModel $currency
      * @param LanguageModel $language
      */

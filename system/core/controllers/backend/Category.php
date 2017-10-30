@@ -342,6 +342,7 @@ class Category extends BackendController
     protected function updateCategory()
     {
         $this->controlAccess('category_edit');
+
         $this->category->update($this->data_category['category_id'], $this->getSubmitted());
         $url = "admin/content/category/{$this->data_category_group['category_group_id']}";
         $this->redirect($url, $this->text('Category has been updated'), 'success');
@@ -353,6 +354,7 @@ class Category extends BackendController
     protected function addCategory()
     {
         $this->controlAccess('category_add');
+
         $this->category->add($this->getSubmitted());
         $url = "admin/content/category/{$this->data_category_group['category_group_id']}";
         $this->redirect($url, $this->text('Category has been added'), 'success');

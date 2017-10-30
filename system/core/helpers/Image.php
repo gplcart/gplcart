@@ -95,12 +95,6 @@ class Image
      */
     public function getSupportedFormats()
     {
-        static $formats = null;
-
-        if (isset($formats)) {
-            return $formats;
-        }
-
         $formats = array();
         foreach (gd_info() as $name => $status) {
             if (strpos($name, 'Support') !== false && $status) {
@@ -108,7 +102,7 @@ class Image
             }
         }
 
-        return $formats = array_unique($formats);
+        return array_unique($formats);
     }
 
     /**

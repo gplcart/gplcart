@@ -24,7 +24,6 @@ class PriceRule
     protected $language;
 
     /**
-     * Constructor
      * @param LanguageModel $language
      */
     public function __construct(LanguageModel $language)
@@ -33,7 +32,7 @@ class PriceRule
     }
 
     /**
-     * Validates number of usage condition
+     * Validates the number of usage condition
      * @param array $values
      * @return boolean|string
      */

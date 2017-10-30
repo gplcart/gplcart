@@ -45,14 +45,13 @@ class Shipping
     protected $zone;
 
     /**
-     * Constructor
      * @param CountryModel $country
      * @param StateModel $state
      * @param ZoneModel $zone
      * @param LanguageModel $language
      */
-    public function __construct(CountryModel $country, StateModel $state,
-            ZoneModel $zone, LanguageModel $language)
+    public function __construct(CountryModel $country, StateModel $state, ZoneModel $zone,
+            LanguageModel $language)
     {
         $this->zone = $zone;
         $this->state = $state;
@@ -61,18 +60,18 @@ class Shipping
     }
 
     /**
-     * Validates a country code condition
+     * Validates the country code condition
      * @param array $values
      * @return boolean|string
      */
     public function countryCode(array $values)
     {
-        $exists = array_filter($values, function ($code) {
+        $existing = array_filter($values, function ($code) {
             $country = $this->country->get($code);
             return isset($country['code']);
         });
 
-        if (count($values) != count($exists)) {
+        if (count($values) != count($existing)) {
             $vars = array('@name' => $this->language->text('Country'));
             return $this->language->text('@name is unavailable', $vars);
         }
@@ -81,7 +80,7 @@ class Shipping
     }
 
     /**
-     * Validates a country state condition
+     * Validates the country state condition
      * @param array $values
      * @return boolean|string
      */
@@ -95,12 +94,12 @@ class Shipping
             return $this->language->text('@field has invalid value', $vars);
         }
 
-        $exists = array_filter($values, function ($state_id) {
+        $existing = array_filter($values, function ($state_id) {
             $state = $this->state->get($state_id);
             return isset($state['state_id']);
         });
 
-        if ($count != count($exists)) {
+        if ($count != count($existing)) {
             $vars = array('@name' => $this->language->text('State'));
             return $this->language->text('@name is unavailable', $vars);
         }

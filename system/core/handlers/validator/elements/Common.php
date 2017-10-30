@@ -26,7 +26,7 @@ class Common extends ElementValidator
     }
 
     /**
-     * Validates field/value is not empty
+     * Validates the field/value is not empty
      * @param array $submitted
      * @param array $options
      * @return mixed
@@ -43,7 +43,7 @@ class Common extends ElementValidator
     }
 
     /**
-     * Validates field/value is numeric
+     * Validates the field/value is numeric
      * @param array $submitted
      * @param array $options
      * @return mixed
@@ -60,7 +60,7 @@ class Common extends ElementValidator
     }
 
     /**
-     * Validates a field/value consists of digits
+     * Validates the field/value contains only digits
      * @param array $submitted
      * @param array $options
      * @return mixed
@@ -77,7 +77,7 @@ class Common extends ElementValidator
     }
 
     /**
-     * Validates field/value length is in range
+     * Validates the field/value length
      * @param array $submitted
      * @param array $options
      * @return mixed
@@ -97,7 +97,7 @@ class Common extends ElementValidator
     }
 
     /**
-     * Validates field/value matches a regexp pattern
+     * Validates the field/value matches a regexp pattern
      * @param array $submitted
      * @param array $options
      * @return mixed
@@ -114,7 +114,7 @@ class Common extends ElementValidator
     }
 
     /**
-     * Validates a date format
+     * Validates the date format
      * @param array $submitted
      * @param array $options
      * @link http://php.net/manual/en/function.strtotime.php
@@ -132,7 +132,7 @@ class Common extends ElementValidator
     }
 
     /**
-     * Validates a JSON encoded string
+     * Validates the field/value is a JSON string
      * @param array $submitted
      * @param array $options
      * @return mixed

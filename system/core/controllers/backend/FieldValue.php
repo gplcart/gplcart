@@ -67,8 +67,7 @@ class FieldValue extends BackendController
      * @param FieldValueModel $field_value
      * @param FileModel $file
      */
-    public function __construct(FieldModel $field, FieldValueModel $field_value,
-            FileModel $file)
+    public function __construct(FieldModel $field, FieldValueModel $field_value, FileModel $file)
     {
         parent::__construct();
 
@@ -335,6 +334,7 @@ class FieldValue extends BackendController
     protected function deleteImageFieldValue()
     {
         $this->controlAccess('field_value_edit');
+
         $this->field_value->update($this->data_field_value['field_value_id'], array('file_id' => 0));
         $this->file->delete($this->data_field_value['file_id']);
         $this->file->deleteFromDisk($this->file->get($this->data_field_value['file_id']));
@@ -346,6 +346,7 @@ class FieldValue extends BackendController
     protected function updateFieldValue()
     {
         $this->controlAccess('field_value_edit');
+
         $this->field_value->update($this->data_field_value['field_value_id'], $this->getSubmitted());
         $url = "admin/content/field/value/{$this->data_field['field_id']}";
         $this->redirect($url, $this->text('Field value has been updated'), 'success');
@@ -357,6 +358,7 @@ class FieldValue extends BackendController
     protected function addFieldValue()
     {
         $this->controlAccess('field_value_add');
+
         $this->field_value->add($this->getSubmitted());
         $url = "admin/content/field/value/{$this->data_field['field_id']}";
         $this->redirect($url, $this->text('Field value has been added'), 'success');

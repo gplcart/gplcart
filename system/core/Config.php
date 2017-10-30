@@ -305,8 +305,11 @@ class Config
             $cache = $this->get('module_cache', 0);
         }
 
-        if ($cache && $this->hasModuleCache()) {
-            return $modules = (array) gplcart_config_get(GC_FILE_CONFIG_COMPILED_MODULE);
+        if ($cache) {
+            $config = gplcart_config_get(GC_FILE_CONFIG_COMPILED_MODULE);
+            if (isset($config)) {
+                return (array) $config;
+            }
         }
 
         $installed = $this->getInstalledModules();
@@ -373,22 +376,12 @@ class Config
      */
     public function clearModuleCache()
     {
-        if ($this->hasModuleCache()) {
-            chmod(GC_FILE_CONFIG_COMPILED_MODULE, 0644);
+        if (gplcart_config_delete(GC_FILE_CONFIG_COMPILED_MODULE)) {
             gplcart_static_clear();
-            return unlink(GC_FILE_CONFIG_COMPILED_MODULE);
+            return true;
         }
 
         return false;
-    }
-
-    /**
-     * Whether module cache exists
-     * @return bool
-     */
-    public function hasModuleCache()
-    {
-        return is_file(GC_FILE_CONFIG_COMPILED_MODULE);
     }
 
     /**

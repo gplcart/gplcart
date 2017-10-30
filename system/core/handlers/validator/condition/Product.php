@@ -45,7 +45,6 @@ class Product
     protected $category;
 
     /**
-     * Constructor
      * @param ProductModel $product
      * @param CategoryModel $category
      * @param LanguageModel $language
@@ -61,7 +60,7 @@ class Product
     }
 
     /**
-     * Validates a product ID condition
+     * Validates the product ID condition
      * @param array $values
      * @return boolean|string
      */
@@ -75,12 +74,12 @@ class Product
             return $this->language->text('@field has invalid value', $vars);
         }
 
-        $exists = array_filter($values, function ($product_id) {
+        $existing = array_filter($values, function ($product_id) {
             $product = $this->product->get($product_id);
             return isset($product['product_id']);
         });
 
-        if ($count != count($exists)) {
+        if ($count != count($existing)) {
             $vars = array('@name' => $this->language->text('Product'));
             return $this->language->text('@name is unavailable', $vars);
         }
@@ -89,7 +88,7 @@ class Product
     }
 
     /**
-     * Validates a product category ID condition
+     * Validates the category ID condition
      * @param array $values
      * @return boolean|string
      */
@@ -103,12 +102,12 @@ class Product
             return $this->language->text('@field has invalid value', $vars);
         }
 
-        $exists = array_filter($values, function ($category_id) {
+        $existing = array_filter($values, function ($category_id) {
             $category = $this->category->get($category_id);
             return isset($category['category_id']);
         });
 
-        if ($count != count($exists)) {
+        if ($count != count($existing)) {
             $vars = array('@name' => $this->language->text('Category'));
             return $this->language->text('@name is unavailable', $vars);
         }
@@ -117,7 +116,7 @@ class Product
     }
 
     /**
-     * Validates a product SKU condition
+     * Validates the SKU condition
      * @param array $values
      * @return boolean|string
      */
@@ -125,12 +124,12 @@ class Product
     {
         $count = count($values);
 
-        $exists = array_filter($values, function ($sku) {
+        $existing = array_filter($values, function ($sku) {
             $sku = $this->sku->get($sku);
             return !empty($sku);
         });
 
-        if ($count != count($exists)) {
+        if ($count != count($existing)) {
             $vars = array('@name' => $this->language->text('SKU'));
             return $this->language->text('@name is unavailable', $vars);
         }

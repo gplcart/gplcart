@@ -38,7 +38,6 @@ class Order
     protected $shipping;
 
     /**
-     * Constructor
      * @param PaymentModel $payment
      * @param ShippingModel $shipping
      * @param LanguageModel $language
@@ -58,11 +57,11 @@ class Order
      */
     public function shippingMethod(array $values)
     {
-        $exists = array_filter($values, function ($method_id) {
+        $existing = array_filter($values, function ($method_id) {
             return (bool) $this->shipping->get($method_id);
         });
 
-        if (count($values) != count($exists)) {
+        if (count($values) != count($existing)) {
             $vars = array('@name' => $this->language->text('Shipping'));
             return $this->language->text('@name is unavailable', $vars);
         }
@@ -77,11 +76,11 @@ class Order
      */
     public function paymentMethod(array $values)
     {
-        $exists = array_filter($values, function ($method_id) {
+        $existing = array_filter($values, function ($method_id) {
             return (bool) $this->payment->get($method_id);
         });
 
-        if (count($values) != count($exists)) {
+        if (count($values) != count($existing)) {
             $vars = array('@name' => $this->language->text('Payment'));
             return $this->language->text('@name is unavailable', $vars);
         }

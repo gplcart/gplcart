@@ -280,6 +280,7 @@ class Trigger extends BackendController
     protected function updateTrigger()
     {
         $this->controlAccess('trigger_edit');
+
         $this->trigger->update($this->data_trigger['trigger_id'], $this->getSubmitted());
         $this->redirect('admin/settings/trigger', $this->text('Trigger has been updated'), 'success');
     }

@@ -10,7 +10,7 @@
 namespace gplcart\core\handlers\validator;
 
 /**
- * Provides methods to validate different types of files
+ * Provides methods to validate file types
  */
 class FileType
 {

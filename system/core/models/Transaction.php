@@ -109,7 +109,7 @@ class Transaction extends Model
     }
 
     /**
-     * Loads a transaction the database
+     * Loads a transaction from the database
      * @param integer $transaction_id
      * @return array
      */

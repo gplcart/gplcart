@@ -73,7 +73,7 @@ class Module extends BackendController
         $this->setPagerListModule();
 
         $this->setData('modules', $this->getListModule());
-        $this->setData('cached', $this->config->hasModuleCache());
+        $this->setData('cached', is_file(GC_FILE_CONFIG_COMPILED_MODULE));
         $this->setData('available_modules', $this->module->getList());
 
         $this->outputListModule();

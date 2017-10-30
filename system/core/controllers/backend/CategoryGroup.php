@@ -213,6 +213,7 @@ class CategoryGroup extends BackendController
     protected function updateCategoryGroup()
     {
         $this->controlAccess('category_group_edit');
+
         $this->category_group->update($this->data_category_group['category_group_id'], $this->getSubmitted());
         $this->redirect('admin/content/category-group', $this->text('Category group has been updated'), 'success');
     }
@@ -223,6 +224,7 @@ class CategoryGroup extends BackendController
     protected function addCategoryGroup()
     {
         $this->controlAccess('category_group_add');
+
         $this->category_group->add($this->getSubmitted());
         $this->redirect('admin/content/category-group', $this->text('Category group has been added'), 'success');
     }

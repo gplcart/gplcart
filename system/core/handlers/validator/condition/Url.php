@@ -31,7 +31,6 @@ class Url
     protected $language;
 
     /**
-     * Constructor
      * @param Route $route
      * @param LanguageModel $language
      */
@@ -53,10 +52,10 @@ class Url
             return $this->language->text('Unsupported operator');
         }
 
-        $routes = $this->route->getList();
+        $existing = $this->route->getList();
 
-        foreach ($values as $value) {
-            if (empty($routes[$value])) {
+        foreach ($values as $pattern) {
+            if (empty($existing[$pattern])) {
                 $vars = array('@name' => $this->language->text('Condition'));
                 return $this->language->text('@name is unavailable', $vars);
             }
@@ -77,8 +76,8 @@ class Url
             return $this->language->text('Unsupported operator');
         }
 
-        foreach ($values as $value) {
-            if (!gplcart_string_is_regexp($value)) {
+        foreach ($values as $pattern) {
+            if (!gplcart_string_is_regexp($pattern)) {
                 $vars = array('@field' => $this->language->text('Condition'));
                 return $this->language->text('@field has invalid value', $vars);
             }

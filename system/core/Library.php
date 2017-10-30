@@ -102,10 +102,9 @@ class Library
      */
     public function clearCache()
     {
-        if (is_file(GC_FILE_CONFIG_COMPILED_LIBRARY)) {
-            chmod(GC_FILE_CONFIG_COMPILED_LIBRARY, 0644);
+        if (gplcart_config_delete(GC_FILE_CONFIG_COMPILED_LIBRARY)) {
             gplcart_static_clear();
-            return unlink(GC_FILE_CONFIG_COMPILED_LIBRARY);
+            return true;
         }
 
         return false;

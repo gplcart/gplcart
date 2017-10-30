@@ -32,9 +32,7 @@ class Curl
      */
     public function get($url, array $options = array())
     {
-        if (!function_exists('curl_init')) {
-            throw new RuntimeException('CURL library is not installed');
-        }
+        $this->checkCurlInstalled();
 
         if (isset($options['query'])) {
             $query = is_string($options['query'])//
@@ -70,9 +68,7 @@ class Curl
      */
     public function post($url, array $options = array())
     {
-        if (!function_exists('curl_init')) {
-            throw new RuntimeException('CURL library is not installed');
-        }
+        $this->checkCurlInstalled();
 
         $options += $this->defaultOptions($url);
         $options[CURLOPT_POST] = true;
@@ -109,9 +105,7 @@ class Curl
      */
     public function header($url, array $options = array())
     {
-        if (!function_exists('curl_init')) {
-            throw new RuntimeException('CURL library is not installed');
-        }
+        $this->checkCurlInstalled();
 
         $options += $this->defaultOptions($url);
         $options += array(CURLOPT_HEADER => true, CURLOPT_NOBODY => true);
@@ -140,13 +134,24 @@ class Curl
     {
         return array(
             CURLOPT_URL => $url,
-            CURLOPT_CONNECTTIMEOUT => 10,
             CURLOPT_MAXREDIRS => 10,
+            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_USERAGENT => 'GPLCart',
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_USERAGENT => 'GPLCart'
+            CURLOPT_SSL_VERIFYPEER => false
         );
+    }
+
+    /**
+     * Whether CURL library is installed
+     * @throws RuntimeException
+     */
+    protected function checkCurlInstalled()
+    {
+        if (!function_exists('curl_init')) {
+            throw new RuntimeException('CURL library is not installed');
+        }
     }
 
     /**
