@@ -322,7 +322,7 @@ abstract class Controller
     {
         $this->setInstanceProperties();
 
-        $this->token = $this->config->token();
+        $this->token = $this->config->getToken();
 
         $this->setRouteProperties();
         $this->setLanguageProperties();
@@ -1327,7 +1327,7 @@ abstract class Controller
     protected function controlToken($key = null)
     {
         $control = isset($key) ? isset($this->query[$key]) : !empty($this->query);
-        if ($control && (empty($this->query['token']) || !$this->config->tokenValid($this->query['token']))) {
+        if ($control && (empty($this->query['token']) || !$this->config->isValidToken($this->query['token']))) {
             $this->response->outputError403();
         }
     }
