@@ -54,6 +54,7 @@ function gplcart_setup_server()
 function gplcart_setup_php()
 {
     if (GC_CLI) {
+
         $bytes = gplcart_bytes('1G');
         $limit = trim(ini_get('memory_limit'));
         if ($limit != -1 && $bytes < 1024 * 1024 * 1024) {
@@ -61,46 +62,43 @@ function gplcart_setup_php()
         }
 
         ini_set('html_errors', 'off');
-    } else {
-        ini_set('session.use_cookies', '1');
-        ini_set('session.use_only_cookies', '1');
-        ini_set('session.use_trans_sid', '0');
-        ini_set('session.cache_limiter', '');
-        ini_set('session.cookie_httponly', '1');
+        return null;
     }
+
+    ini_set('session.use_cookies', '1');
+    ini_set('session.use_only_cookies', '1');
+    ini_set('session.use_trans_sid', '0');
+    ini_set('session.cache_limiter', '');
+    ini_set('session.cookie_httponly', '1');
 }
 
 /**
- * Provides class autoloading functionality
- * @return boolean
+ * Set up class autoloading
  */
 function gplcart_setup_autoload()
 {
-    return spl_autoload_register(function($namespace) {
+    $callback = function($namespace) {
 
-        // Flip slashes and remove "gplcart/" from the beginning
         $path = substr(str_replace('\\', '/', $namespace), 8);
+
         $file = strpos($path, 'tests') === 0 ? GC_DIR : GC_DIR_SYSTEM;
         $file .= "/$path.php";
 
         if (file_exists($file)) {
-            require $file;
-            return true;
+            require_once $file;
+            return null;
         }
 
-        // Check lowercase class name to prevent "file not found" for
-        // classes like gplcart\\modules\\test_module\\TestModule
         $lowerfile = strtolower($file);
-
         foreach (glob(dirname($file) . '/*') as $file) {
             if (strtolower($file) == $lowerfile) {
-                require $file;
-                return true;
+                require_once $file;
+                break;
             }
         }
+    };
 
-        return false;
-    });
+    spl_autoload_register($callback);
 }
 
 /**
@@ -108,8 +106,9 @@ function gplcart_setup_autoload()
  */
 function gplcart_setup_vendor()
 {
+    $lock = GC_DIR . '/composer.lock';
     $autoload = GC_DIR . "/vendor/autoload.php";
-    if (is_file($autoload)) {
+    if (is_file($lock) && is_file($autoload)) {
         include_once $autoload;
     }
 }
