@@ -2,8 +2,6 @@
 [![Build Status](https://scrutinizer-ci.com/g/gplcart/gplcart/badges/build.png?b=dev)](https://scrutinizer-ci.com/g/gplcart/gplcart/build-status/dev)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/gplcart/gplcart/badges/quality-score.png?b=dev)](https://scrutinizer-ci.com/g/gplcart/gplcart/?branch=dev)
 
-<a href="http://play-with-docker.com?stack=https://raw.githubusercontent.com/gplcart/docker-core/master/docker-compose.yml"><img src="https://github.com/play-with-docker/stacks/raw/cff22438cb4195ace27f9b15784bbb497047afa7/assets/images/button.png"></a>
-
 ## WARNING. Dev branch in not for production. Please wait until the release of 1.X ##
 
 ## About ##
