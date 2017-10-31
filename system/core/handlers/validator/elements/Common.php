@@ -33,6 +33,7 @@ class Common extends ElementValidator
      */
     public function required(array $submitted, array $options)
     {
+        $options += array('field' => null, 'label' => null);
         $value = gplcart_array_get($submitted, $options['field']);
 
         if (empty($value)) {
@@ -50,6 +51,7 @@ class Common extends ElementValidator
      */
     public function numeric(array $submitted, array $options)
     {
+        $options += array('field' => null, 'label' => null);
         $value = gplcart_array_get($submitted, $options['field']);
 
         if (is_numeric($value)) {
@@ -67,6 +69,7 @@ class Common extends ElementValidator
      */
     public function integer(array $submitted, array $options)
     {
+        $options += array('field' => null, 'label' => null);
         $value = gplcart_array_get($submitted, $options['field']);
 
         if (filter_var($value, FILTER_VALIDATE_INT) === false) {
@@ -84,12 +87,13 @@ class Common extends ElementValidator
      */
     public function length(array $submitted, array $options)
     {
+        $options += array('field' => null, 'label' => null, 'arguments' => array());
+
         $value = gplcart_array_get($submitted, $options['field']);
-        $length = mb_strlen($value);
-        $options += array('arguments' => array());
 
         list($min, $max) = $options['arguments'] + array(1, 255);
 
+        $length = mb_strlen($value);
         if ($min <= $length && $length <= $max) {
             return true;
         }
@@ -105,6 +109,7 @@ class Common extends ElementValidator
      */
     public function regexp(array $submitted, array $options)
     {
+        $options += array('field' => null, 'label' => null, 'arguments' => array());
         $value = gplcart_array_get($submitted, $options['field']);
 
         if (empty($options['arguments']) || preg_match(reset($options['arguments']), $value) !== 1) {
@@ -123,6 +128,7 @@ class Common extends ElementValidator
      */
     public function dateformat(array $submitted, array $options)
     {
+        $options += array('field' => null, 'label' => null);
         $value = gplcart_array_get($submitted, $options['field']);
 
         if (strtotime($value) === false) {
@@ -140,6 +146,7 @@ class Common extends ElementValidator
      */
     public function json(array $submitted, array $options)
     {
+        $options += array('field' => null, 'label' => null);
         $value = gplcart_array_get($submitted, $options['field']);
 
         if (json_decode($value) === null) {
