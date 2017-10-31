@@ -72,6 +72,15 @@ class Database
     }
 
     /**
+     * Sets PDO instance
+     * @param \PDO $instance
+     */
+    public function setPdo(\PDO $instance)
+    {
+        $this->pdo = $instance;
+    }
+
+    /**
      * Returns an array of collected query logs
      * @return array
      */
