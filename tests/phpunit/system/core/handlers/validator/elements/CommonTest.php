@@ -30,15 +30,16 @@ class CommonTest extends PhpUnitTest
      */
     public function testRequired()
     {
-        $submitted = array();
-        $options = array('field' => 'test_field', 'label' => 'Test');
+        $field = 'test_field';
+        $options = array('field' => $field);
 
         // Fails
+        $submitted = array();
         $result = $this->object->required($submitted, $options);
-        $this->assertArrayHasKey('test_field', $result);
+        $this->assertArrayHasKey($field, $result);
 
         // Passes
-        $submitted['test_field'] = 'test_value';
+        $submitted[$field] = 'test';
         $this->assertTrue($this->object->required($submitted, $options));
     }
 
@@ -47,29 +48,30 @@ class CommonTest extends PhpUnitTest
      */
     public function testNumeric()
     {
-        $options = array('field' => 'test_field', 'label' => 'Test');
+        $field = 'test_field';
+        $options = array('field' => $field);
 
         // Fails
         $submitted = array();
-        $this->assertArrayHasKey('test_field', $this->object->numeric($submitted, $options));
+        $this->assertArrayHasKey($field, $this->object->numeric($submitted, $options));
 
-        $submitted['test_field'] = 'test_value';
-        $this->assertArrayHasKey('test_field', $this->object->numeric($submitted, $options));
+        $submitted[$field] = 'test_value';
+        $this->assertArrayHasKey($field, $this->object->numeric($submitted, $options));
 
-        $submitted['test_field'] = '1.1a';
-        $this->assertArrayHasKey('test_field', $this->object->numeric($submitted, $options));
+        $submitted[$field] = '1.1a';
+        $this->assertArrayHasKey($field, $this->object->numeric($submitted, $options));
 
         // Passes
-        $submitted['test_field'] = '1.1';
+        $submitted[$field] = '1.1';
         $this->assertTrue($this->object->numeric($submitted, $options));
 
-        $submitted['test_field'] = '0';
+        $submitted[$field] = '0';
         $this->assertTrue($this->object->numeric($submitted, $options));
 
-        $submitted['test_field'] = 0;
+        $submitted[$field] = 0;
         $this->assertTrue($this->object->numeric($submitted, $options));
 
-        $submitted['test_field'] = 1.234;
+        $submitted[$field] = 1.234;
         $this->assertTrue($this->object->numeric($submitted, $options));
     }
 
@@ -78,29 +80,30 @@ class CommonTest extends PhpUnitTest
      */
     public function testInteger()
     {
-        $options = array('field' => 'test_field', 'label' => 'Test');
+        $field = 'test_field';
+        $options = array('field' => $field);
 
         // Fails
         $submitted = array();
-        $this->assertArrayHasKey('test_field', $this->object->integer($submitted, $options));
+        $this->assertArrayHasKey($field, $this->object->integer($submitted, $options));
 
-        $submitted['test_field'] = 'test_value';
-        $this->assertArrayHasKey('test_field', $this->object->integer($submitted, $options));
+        $submitted[$field] = 'test_value';
+        $this->assertArrayHasKey($field, $this->object->integer($submitted, $options));
 
-        $submitted['test_field'] = '1.1';
-        $this->assertArrayHasKey('test_field', $this->object->integer($submitted, $options));
+        $submitted[$field] = '1.1';
+        $this->assertArrayHasKey($field, $this->object->integer($submitted, $options));
 
-        $submitted['test_field'] = 1.1;
-        $this->assertArrayHasKey('test_field', $this->object->integer($submitted, $options));
+        $submitted[$field] = 1.1;
+        $this->assertArrayHasKey($field, $this->object->integer($submitted, $options));
 
         // Passes
-        $submitted['test_field'] = '0';
+        $submitted[$field] = '0';
         $this->assertTrue($this->object->integer($submitted, $options));
 
-        $submitted['test_field'] = 123;
+        $submitted[$field] = 123;
         $this->assertTrue($this->object->integer($submitted, $options));
 
-        $submitted['test_field'] = 0;
+        $submitted[$field] = 0;
         $this->assertTrue($this->object->integer($submitted, $options));
     }
 
@@ -109,36 +112,27 @@ class CommonTest extends PhpUnitTest
      */
     public function testLength()
     {
-        $options = array('field' => 'test_field', 'label' => 'Test');
+        $field = 'test_field';
+        $options = array('field' => $field, 'arguments' => array(10, 50));
 
-        // Test default values
         // Fails
         $submitted = array();
-        $this->assertArrayHasKey('test_field', $this->object->length($submitted, $options));
+        $this->assertArrayHasKey($field, $this->object->length($submitted, $options));
 
-        $submitted['test_field'] = $this->getRandomString(256);
-        $this->assertArrayHasKey('test_field', $this->object->length($submitted, $options));
+        $submitted[$field] = $this->getRandomString(51);
+        $this->assertArrayHasKey($field, $this->object->length($submitted, $options));
 
-        $submitted['test_field'] = '';
-        $this->assertArrayHasKey('test_field', $this->object->length($submitted, $options));
+        $submitted[$field] = $this->getRandomString(9);
+        $this->assertArrayHasKey($field, $this->object->length($submitted, $options));
 
-        // Set limits 10 - 50 characters
-        $options['arguments'] = array(
-            10, // Min 10 chars
-            50 // Max 50 chars
-        );
-
-        $submitted['test_field'] = $this->getRandomString(51);
-        $this->assertArrayHasKey('test_field', $this->object->length($submitted, $options));
-
-        $submitted['test_field'] = $this->getRandomString(9);
-        $this->assertArrayHasKey('test_field', $this->object->length($submitted, $options));
+        $submitted[$field] = '';
+        $this->assertArrayHasKey($field, $this->object->length($submitted, $options));
 
         // Passes
-        $submitted['test_field'] = $this->getRandomString(50);
+        $submitted[$field] = $this->getRandomString(50);
         $this->assertTrue($this->object->length($submitted, $options));
 
-        $submitted['test_field'] = $this->getRandomString(10);
+        $submitted[$field] = $this->getRandomString(10);
         $this->assertTrue($this->object->length($submitted, $options));
     }
 
@@ -149,7 +143,7 @@ class CommonTest extends PhpUnitTest
     public function testRegexp()
     {
         $field = 'test_field';
-        $options = array('field' => $field, 'label' => 'Test');
+        $options = array('field' => $field);
 
         // Fails
         $submitted = array();
@@ -170,7 +164,7 @@ class CommonTest extends PhpUnitTest
     public function testDateformat()
     {
         $field = 'test_field';
-        $options = array('field' => $field, 'label' => 'Test');
+        $options = array('field' => $field);
 
         // Fails
         $submitted = array();
@@ -202,7 +196,7 @@ class CommonTest extends PhpUnitTest
     public function testJson()
     {
         $field = 'test_field';
-        $options = array('field' => $field, 'label' => 'Test');
+        $options = array('field' => $field);
 
         // Fails
         $submitted = array();

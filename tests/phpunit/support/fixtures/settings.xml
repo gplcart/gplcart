@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * @package GPL Cart core
+ * @author Iurii Makukh <gplcart.software@gmail.com>
+ * @copyright Copyright (c) 2015, Iurii Makukh
+ * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+ */
+-->
+<dataset>
+    <settings id="test1" value="test_value_1" created="1234567890" serialized="0" />
+    <settings id="test2" value='a:1:{s:4:"test";b:1;}' created="1234567890" serialized="1" />
+</dataset>
