@@ -348,7 +348,7 @@ class Module extends Model
      */
     public function checkModuleId($module_id)
     {
-        if ($this->config->validModuleId($module_id)) {
+        if ($this->config->isValidModuleId($module_id)) {
             return true;
         }
 
