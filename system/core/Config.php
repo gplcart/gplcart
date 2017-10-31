@@ -63,7 +63,7 @@ class Config
     }
 
     /**
-     * Sets a unique key
+     * Sets a private key
      */
     protected function setKey()
     {
@@ -73,10 +73,14 @@ class Config
             $this->key = gplcart_string_random();
             $this->set('private_key', $this->key);
         }
+
+        return $this->key;
     }
 
     /**
      * Sets the database
+     * @return \gplcart\core\Database|bool
+     * @throws DatabaseException
      */
     protected function setDb()
     {
@@ -90,7 +94,7 @@ class Config
 
         $this->db = Container::get('gplcart\\core\\Database');
         $this->db->set($this->config['database']);
-        return true;
+        return $this->db;
     }
 
     /**
@@ -155,16 +159,39 @@ class Config
         }
 
         if (isset($name)) {
-            $result = $this->db->fetch('SELECT * FROM settings WHERE id=?', array($name));
-            if (empty($result)) {
-                return $default;
-            }
-            if ($result['serialized']) {
-                return unserialize($result['value']);
-            }
-            return $result['value'];
+            return $this->selectOne($name, $default);
         }
 
+        return $this->selectAll();
+    }
+
+    /**
+     * Select a single setting from the database
+     * @param string $name
+     * @param mixed $default
+     * @return mixed
+     */
+    protected function selectOne($name, $default = null)
+    {
+        $result = $this->db->fetch('SELECT * FROM settings WHERE id=?', array($name));
+
+        if (empty($result)) {
+            return $default;
+        }
+
+        if ($result['serialized']) {
+            return unserialize($result['value']);
+        }
+
+        return $result['value'];
+    }
+
+    /**
+     * Select all settings from the database
+     * @return array
+     */
+    protected function selectAll()
+    {
         $results = $this->db->fetchAll('SELECT * FROM settings', array());
 
         $settings = array();
@@ -264,28 +291,18 @@ class Config
      * Returns a private key
      * @return string
      */
-    public function key()
+    public function getKey()
     {
         return $this->key;
-    }
-
-    /**
-     * Whether the given token is valid
-     * @param string $token
-     * @return boolean
-     */
-    public function tokenValid($token)
-    {
-        return gplcart_string_equals($this->token(), (string) $token);
     }
 
     /**
      * Returns a token based on the current session iD
      * @return string
      */
-    public function token()
+    public function getToken()
     {
-        return gplcart_string_encode(crypt(session_id(), $this->key()));
+        return gplcart_string_encode(crypt(session_id(), $this->getKey()));
     }
 
     /**
@@ -315,50 +332,8 @@ class Config
         $installed = $this->getInstalledModules();
 
         $modules = array();
-        foreach (scandir(GC_DIR_MODULE) as $module_id) {
-
-            if (!$this->validModuleId($module_id)) {
-                continue;
-            }
-
-            $info = $this->getModuleInfo($module_id);
-
-            if (empty($info['core'])) {
-                continue;
-            }
-
-            $info['directory'] = $this->getModuleDirectory($module_id);
-
-            $info += array('type' => 'module', 'name' => $module_id);
-
-            // Do not override status set in module.json for locked modules
-            if (isset($info['status']) && !empty($info['lock'])) {
-                unset($installed[$module_id]['status']);
-            }
-
-            // Do not override weight set in module.json for locked modules
-            if (isset($info['weight']) && !empty($info['lock'])) {
-                unset($installed[$module_id]['weight']);
-            }
-
-            if (isset($installed[$module_id])) {
-                $info['installed'] = true;
-                $info = array_replace_recursive($info, $installed[$module_id]);
-            }
-
-            if (empty($info['status'])) {
-                $modules[$module_id] = $info;
-                continue;
-            }
-
-            $instance = $this->getModuleInstance($module_id);
-
-            if ($instance instanceof Module) {
-                $info['hooks'] = $this->getModuleHooks($instance);
-                $info['class'] = get_class($instance);
-            }
-
-            $modules[$module_id] = $info;
+        foreach ($this->scanModules() as $module_id => $info) {
+            $modules[$module_id] = $this->prepareModuleInfo($module_id, $info, $installed);
         }
 
         gplcart_array_sort($modules);
@@ -368,6 +343,69 @@ class Config
         }
 
         return $modules;
+    }
+
+    /**
+     * Returns an array of scanned modules
+     * @return array
+     */
+    protected function scanModules()
+    {
+        $modules = array();
+        foreach (scandir(GC_DIR_MODULE) as $module_id) {
+
+            if (!$this->isValidModuleId($module_id)) {
+                continue;
+            }
+
+            $info = $this->getModuleInfo($module_id);
+
+            if (empty($info['core'])) {
+                continue;
+            }
+
+            $modules[$module_id] = $info;
+        }
+
+        return $modules;
+    }
+
+    /**
+     * Prepare module info
+     * @param string $module_id
+     * @param array $info
+     * @param array $installed
+     * @return array
+     */
+    protected function prepareModuleInfo($module_id, array $info, array $installed)
+    {
+        $info['directory'] = $this->getModuleDirectory($module_id);
+        $info += array('type' => 'module', 'name' => $module_id);
+
+        // Do not override status set in module.json for locked modules
+        if (isset($info['status']) && !empty($info['lock'])) {
+            unset($installed[$module_id]['status']);
+        }
+
+        // Do not override weight set in module.json for locked modules
+        if (isset($info['weight']) && !empty($info['lock'])) {
+            unset($installed[$module_id]['weight']);
+        }
+
+        if (isset($installed[$module_id])) {
+            $info['installed'] = true;
+            $info = array_replace_recursive($info, $installed[$module_id]);
+        }
+
+        if (!empty($info['status'])) {
+            $instance = $this->getModuleInstance($module_id);
+            if ($instance instanceof Module) {
+                $info['hooks'] = $this->getModuleHooks($instance);
+                $info['class'] = get_class($instance);
+            }
+        }
+
+        return $info;
     }
 
     /**
@@ -587,13 +625,23 @@ class Config
      * @param string $id
      * @return boolean
      */
-    public function validModuleId($id)
+    public function isValidModuleId($id)
     {
         if (in_array($id, array('core', 'gplcart'))) {
             return false;
         }
 
         return preg_match('/^[a-z][a-z0-9_]+$/', $id) === 1;
+    }
+
+    /**
+     * Whether the given token is valid
+     * @param string $token
+     * @return boolean
+     */
+    public function isValidToken($token)
+    {
+        return gplcart_string_equals($this->getToken(), (string) $token);
     }
 
 }
