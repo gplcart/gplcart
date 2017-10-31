@@ -43,6 +43,7 @@ class Hook
 
     /**
      * Registers all hooks from all modules
+     * @return array
      */
     public function registerAll()
     {
@@ -56,6 +57,8 @@ class Hook
                 $this->register($method, $module['class']);
             }
         }
+
+        return $this->hooks;
     }
 
     /**
@@ -143,7 +146,7 @@ class Hook
      * @param mixed $c
      * @param mixed $d
      * @param mixed $e
-     * @return boolean
+     * @return boolean|array
      */
     public function call($class, $method, &$a = null, &$b = null, &$c = null, &$d = null, &$e = null)
     {
@@ -155,11 +158,10 @@ class Hook
             $instance = Container::get($class);
             $instance->{$method}($a, $b, $c, $d, $e);
             $this->called[$method][$class] = array($class, $method);
+            return array($a, $b, $c, $d, $e);
         } catch (\Exception $exc) {
             return false;
         }
-
-        return true;
     }
 
     /**
