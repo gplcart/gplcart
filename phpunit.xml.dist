@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit
-    bootstrap="tests/phpunit/support/bootstrap.php"
+    bootstrap="./tests/phpunit/support/bootstrap.php"
     colors="true"
     verbose="true">
     <testsuites>
         <testsuite name="GplCart Test Suite">
-            <directory>tests/phpunit</directory>
+            <directory>./tests/phpunit</directory>
         </testsuite>
     </testsuites>
 </phpunit>
