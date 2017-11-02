@@ -1,20 +1,10 @@
 dist: trusty
 language: php
+php:
+    - 5.6
 
 before_script:
   - composer self-update
-  - composer require phpunit/phpunit:${PHPUNIT}
 
 script:
   - phpunit
-
-matrix:
-  include:
-      - php: 5.6
-        env: PHPUNIT=~5.7
-      - php: 7.0
-        env: PHPUNIT=~5.7
-      - php: 7.1
-        env: PHPUNIT=~6
-      - php: nightly
-        env: PHPUNIT=~6
