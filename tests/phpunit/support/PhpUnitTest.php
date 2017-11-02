@@ -9,18 +9,44 @@
 
 namespace gplcart\tests\phpunit\support;
 
-use ReflectionClass;
-use ReflectionException;
-use PHPUnit_Framework_TestCase;
+use PDO;
+use PHPUnit_Extensions_Database_TestCase;
+use PHPUnit_Extensions_Database_DataSet_CompositeDataSet;
+use gplcart\tests\phpunit\support\Tool as ToolHelper;
+use gplcart\tests\phpunit\support\File as FileHelper;
 
-class PhpUnitTest extends PHPUnit_Framework_TestCase
+class PhpUnitTest extends PHPUnit_Extensions_Database_TestCase
 {
 
     /**
-     * Test file model
+     * File helper class instance
      * @var \gplcart\tests\phpunit\support\File $file
      */
     protected $file;
+
+    /**
+     * Tool helper class instance
+     * @var \gplcart\tests\phpunit\support\Tool $tool
+     */
+    protected $tool;
+
+    /**
+     * PDO object
+     * @var \PDO $pdo
+     */
+    static protected $pdo;
+
+    /**
+     * A new DefaultDatabaseConnection using the given PDO connection and database schema name
+     * @var \PHPUnit_Extensions_Database_DB_DefaultDatabaseConnection
+     */
+    protected $conn;
+
+    /**
+     * An array of fixtures
+     * @var array
+     */
+    protected $fixtures = array();
 
     /**
      * @param null|string $name
@@ -31,41 +57,8 @@ class PhpUnitTest extends PHPUnit_Framework_TestCase
     {
         parent::__construct($name, $data, $dname);
 
-        $this->file = $this->getInstance('gplcart\\tests\\phpunit\\support\\File');
-    }
-
-    /**
-     * Returns a class instance
-     * @param string $class
-     * @return object
-     * @throws \ReflectionException
-     */
-    protected function getInstance($class)
-    {
-        if (!class_exists($class)) {
-            throw new ReflectionException("Class $class is not callable");
-        }
-
-        $reflection = new ReflectionClass($class);
-        $constructor = $reflection->getConstructor();
-
-        if (empty($constructor)) {
-            return new $class;
-        }
-
-        $parameters = $constructor->getParameters();
-
-        if (empty($parameters)) {
-            return new $class;
-        }
-
-        $dependencies = array();
-        foreach ($parameters as $parameter) {
-            $parameter_class = $parameter->getClass();
-            $dependencies[] = $this->getInstance($parameter_class->getName());
-        }
-
-        return $reflection->newInstanceArgs($dependencies);
+        $this->file = new FileHelper;
+        $this->tool = new ToolHelper;
     }
 
     /**
@@ -79,21 +72,122 @@ class PhpUnitTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Returns a random string
-     * @param int $length
-     * @return string
+     * Sets database fixtures
+     * @param string|array $fixtures
      */
-    protected function getRandomString($length = 10)
+    protected function setFixtures($fixtures)
     {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $characters_length = strlen($characters);
+        $this->fixtures = (array) $fixtures;
+    }
 
-        $random_string = '';
-        for ($i = 0; $i < $length; $i++) {
-            $random_string .= $characters[rand(0, $characters_length - 1)];
+    /**
+     * Returns the test database connection
+     * @return \PHPUnit_Extensions_Database_DB_IDatabaseConnection
+     */
+    protected function getConnection()
+    {
+        if (isset($this->conn)) {
+            return $this->conn;
         }
 
-        return $random_string;
+        if (!isset(self::$pdo)) {
+            static::$pdo = new PDO('sqlite::memory:');
+        }
+
+        $this->conn = $this->createDefaultDBConnection(static::$pdo, ':memory:');
+        return $this->conn;
+    }
+
+    /**
+     * Returns the test dataset
+     * @return null|\PHPUnit_Extensions_Database_DataSet_IDataSet
+     */
+    protected function getDataSet()
+    {
+        if (empty($this->fixtures)) {
+            return null;
+        }
+
+        $dataset = new PHPUnit_Extensions_Database_DataSet_CompositeDataSet;
+
+        foreach ((array) $this->fixtures as $fixture) {
+            $dataset->addDataSet($this->createFixtureDataSet($fixture));
+        }
+
+        return $dataset;
+    }
+
+    /**
+     * Creates a dataset for the fixture
+     * @param string $fixture
+     * @return \PHPUnit_Extensions_Database_DataSet_XmlDataSet
+     * @throws \InvalidArgumentException
+     */
+    protected function createFixtureDataSet($fixture)
+    {
+        $dir = __DIR__ . '/fixtures';
+        $file = "$dir/$fixture.xml";
+
+        if (!is_file($file)) {
+            throw new \InvalidArgumentException("File '$file' not found for fixture '$fixture'");
+        }
+
+        return $this->createXmlDataSet($file);
+    }
+
+    /**
+     * Assets that fixture table equals to the source
+     * @param string $fixture
+     */
+    protected function assertFixtureTable($fixture)
+    {
+        $actual = $this->getConnection()->createQueryTable($fixture, "SELECT * FROM $fixture");
+        $expected = $this->createFixtureDataSet($fixture)->getTable($fixture);
+        $this->assertTablesEqual($expected, $actual, "Table for fixture $fixture does not match expected structure");
+    }
+
+    /**
+     * Set up database using fixtures
+     */
+    protected function setUp()
+    {
+        if (!empty($this->fixtures)) {
+
+            $dataset = $this->getDataSet();
+            $pdo = $this->getConnection()->getConnection();
+
+            foreach ($dataset->getTableNames() as $table) {
+
+                $pdo->exec("DROP TABLE IF EXISTS $table;");
+                $meta = $dataset->getTableMetaData($table);
+                $create = "CREATE TABLE IF NOT EXISTS $table ";
+
+                $cols = array();
+                foreach ($meta->getColumns() as $col) {
+                    $cols[] = "$col VARCHAR(255)";
+                }
+
+                $create .= '(' . implode(',', $cols) . ');';
+                $pdo->exec($create);
+            }
+        }
+
+        parent::setUp();
+    }
+
+    /**
+     * Clear up database
+     */
+    protected function tearDown()
+    {
+        if (!empty($this->fixtures)) {
+            $pdo = $this->getConnection()->getConnection();
+            foreach ($this->getDataSet()->getTableNames() as $table) {
+                $pdo->exec("DROP TABLE IF EXISTS $table;");
+            }
+        }
+
+        parent::tearDown();
     }
 
 }

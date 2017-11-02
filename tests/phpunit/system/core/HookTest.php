@@ -29,7 +29,7 @@ class HookTest extends PhpUnitTest
      */
     protected function setUp()
     {
-        $this->object = $this->getInstance('gplcart\\core\\Hook');
+        $this->object = $this->tool->getInstance('gplcart\\core\\Hook');
     }
 
     /**

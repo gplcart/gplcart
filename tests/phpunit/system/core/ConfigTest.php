@@ -24,312 +24,122 @@ class ConfigTest extends PhpUnitTest
     protected $object;
 
     /**
+     * Fixture name
+     */
+    const FIXTURE = 'settings';
+
+    /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
     protected function setUp()
     {
-        $this->object = $this->getInstance('gplcart\\core\\Config');
+        $this->object = $this->tool->getInstance('gplcart\\core\\Config');
+
+        $this->setFixtures('settings');
+        parent::setUp();
     }
 
     /**
-     * @covers gplcart\core\Config::get
-     * @todo   Implement testGet().
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
      */
-    public function testGet()
+    protected function tearDown()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
+        parent::tearDown();
     }
 
     /**
-     * @covers gplcart\core\Config::select
-     * @todo   Implement testSelect().
+     * @covers gplcart\core\Config::setDb
      */
-    public function testSelect()
+    public function testSetDb()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers gplcart\core\Config::set
-     * @todo   Implement testSet().
-     */
-    public function testSet()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers gplcart\core\Config::reset
-     * @todo   Implement testReset().
-     */
-    public function testReset()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers gplcart\core\Config::module
-     * @todo   Implement testModule().
-     */
-    public function testModule()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
+        $this->assertFixtureTable(self::FIXTURE);
+        $this->assertTrue(is_object($this->object->setDb(static::$pdo)));
     }
 
     /**
      * @covers gplcart\core\Config::getDb
-     * @todo   Implement testGetDb().
+     * @depends testSetDb
      */
     public function testGetDb()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
+        $this->object->setDb(static::$pdo);
+        $this->assertTrue(is_object($this->object->getDb()));
     }
 
     /**
-     * @covers gplcart\core\Config::exists
-     * @todo   Implement testExists().
+     * @covers gplcart\core\Config::select
+     * @depends testSetDb
      */
-    public function testExists()
+    public function testSelect()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
+        $this->object->setDb(static::$pdo);
+
+        $actual = $this->object->select();
+        $this->assertInternalType('array', $actual);
+        $this->assertCount(2, $actual);
+
+        $this->assertTrue($this->object->select('test_1') === 'test_value_1');
+        $this->assertArrayHasKey('test', $this->object->select('test_2'));
+        $this->assertEquals('some_default_value', $this->object->select('some_fake_value', 'some_default_value'));
+    }
+
+    /**
+     * @covers gplcart\core\Config::set
+     * @depends testSetDb
+     * @depends testSelect
+     */
+    public function testSet()
+    {
+        $key = 'some_test_key';
+        $value = 'some_test_value';
+
+        $this->object->setDb(static::$pdo);
+
+        $this->object->set($key, $value);
+        $this->assertEquals($value, $this->object->select($key));
+
+        $this->object->set($key, array($key => true));
+        $this->assertArrayHasKey($key, $this->object->select($key));
+    }
+
+    /**
+     * @covers gplcart\core\Config::reset
+     * @depends testSet
+     * @depends testSetDb
+     * @depends testSelect
+     */
+    public function testReset()
+    {
+        $key = 'some_test_key';
+        $value = 'some_test_value';
+
+        $this->object->setDb(static::$pdo);
+        $this->object->set($key, $value);
+
+        $this->assertTrue($this->object->reset($key));
+        $this->assertEmpty($this->object->select($key));
+    }
+
+    /**
+     * @covers gplcart\core\Config::setKey
+     */
+    public function testSetKey()
+    {
+        $expected = $this->tool->getRandomString();
+        $this->assertEquals($expected, $this->object->setKey($expected));
     }
 
     /**
      * @covers gplcart\core\Config::getKey
-     * @todo   Implement testGetKey().
+     * @depends testSetKey
      */
     public function testGetKey()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers gplcart\core\Config::getToken
-     * @todo   Implement testGetToken().
-     */
-    public function testGetToken()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers gplcart\core\Config::getModules
-     * @todo   Implement testGetModules().
-     */
-    public function testGetModules()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers gplcart\core\Config::clearModuleCache
-     * @todo   Implement testClearModuleCache().
-     */
-    public function testClearModuleCache()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers gplcart\core\Config::getModule
-     * @todo   Implement testGetModule().
-     */
-    public function testGetModule()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers gplcart\core\Config::getModuleDirectory
-     * @todo   Implement testGetModuleDirectory().
-     */
-    public function testGetModuleDirectory()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers gplcart\core\Config::getModuleInfo
-     * @todo   Implement testGetModuleInfo().
-     */
-    public function testGetModuleInfo()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers gplcart\core\Config::getModuleInstance
-     * @todo   Implement testGetModuleInstance().
-     */
-    public function testGetModuleInstance()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers gplcart\core\Config::getModuleBaseNamespace
-     * @todo   Implement testGetModuleBaseNamespace().
-     */
-    public function testGetModuleBaseNamespace()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers gplcart\core\Config::getModuleClassNamespace
-     * @todo   Implement testGetModuleClassNamespace().
-     */
-    public function testGetModuleClassNamespace()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers gplcart\core\Config::getModuleClassName
-     * @todo   Implement testGetModuleClassName().
-     */
-    public function testGetModuleClassName()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers gplcart\core\Config::getInstalledModules
-     * @todo   Implement testGetInstalledModules().
-     */
-    public function testGetInstalledModules()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers gplcart\core\Config::getEnabledModules
-     * @todo   Implement testGetEnabledModules().
-     */
-    public function testGetEnabledModules()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers gplcart\core\Config::getModuleHooks
-     * @todo   Implement testGetModuleHooks().
-     */
-    public function testGetModuleHooks()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers gplcart\core\Config::isEnabledModule
-     * @todo   Implement testIsEnabledModule().
-     */
-    public function testIsEnabledModule()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers gplcart\core\Config::isInstalledModule
-     * @todo   Implement testIsInstalledModule().
-     */
-    public function testIsInstalledModule()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers gplcart\core\Config::isLockedModule
-     * @todo   Implement testIsLockedModule().
-     */
-    public function testIsLockedModule()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers gplcart\core\Config::isInstallerModule
-     * @todo   Implement testIsInstallerModule().
-     */
-    public function testIsInstallerModule()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
+        $expected = $this->tool->getRandomString();
+        $this->object->setKey($expected);
+        $this->assertEquals($expected, $this->object->getKey());
     }
 
     /**
@@ -351,15 +161,11 @@ class ConfigTest extends PhpUnitTest
     }
 
     /**
-     * @covers gplcart\core\Config::isValidToken
-     * @todo   Implement testIsValidToken().
+     * @covers gplcart\core\Config::getToken
      */
-    public function testIsValidToken()
+    public function testGetToken()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-                'This test has not been implemented yet.'
-        );
+        $this->assertInternalType('string', $this->object->getToken());
     }
 
 }

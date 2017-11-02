@@ -29,7 +29,7 @@ class FileTypeTest extends PhpUnitTest
      */
     protected function setUp()
     {
-        $this->object = $this->getInstance('gplcart\\core\\handlers\\validator\\FileType');
+        $this->object = $this->tool->getInstance('gplcart\\core\\handlers\\validator\\FileType');
 
         $this->file->setImage();
         $this->file->setCsv();

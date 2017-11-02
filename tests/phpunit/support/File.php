@@ -10,7 +10,7 @@
 namespace gplcart\tests\phpunit\support;
 
 /**
- * Helper class to mock file system
+ * Helper methods to test files
  */
 class File
 {
@@ -36,6 +36,40 @@ class File
     }
 
     /**
+     * Set a file
+     * @param string $filename
+     * @param string $content
+     * @param null|string $group
+     * @throws \RuntimeException
+     */
+    public function setFile($filename, $content, $group = null)
+    {
+        $file = "$this->temp/$filename";
+
+        if (file_exists($file) && !unlink($file)) {
+            throw new \RuntimeException("File $file already exists");
+        }
+
+        $pathinfo = pathinfo($file);
+
+        if (!isset($group)) {
+            $group = $pathinfo['extension'];
+        }
+
+        if (!empty($pathinfo['dirname'])) {
+            if (!file_exists($pathinfo['dirname']) && !mkdir($pathinfo['dirname'])) {
+                throw new \RuntimeException("Failed to create directory {$pathinfo['dirname']}");
+            }
+        }
+
+        if (file_put_contents($file, $content) === false) {
+            throw new \RuntimeException("Failed to create file $file");
+        }
+
+        $this->created[$group][] = $file;
+    }
+
+    /**
      * Create temporary images
      */
     public function setImage()
@@ -54,52 +88,50 @@ class File
 
     /**
      * Creates CSV files
+     * @param string $filename
+     * @param array $data
      */
-    public function setCsv($name = 'test', array $data = array())
+    public function setCsv($filename = 'test.csv', array $data = array())
     {
         $data += array(
             'header' => array('Column 1', 'Column 2', 'Column 3', 'Column 4', 'Column 5'),
             'body' => array(array('Data 11', 'Data 12', 'Data 13', 'Data 14', 'Data 15'))
         );
 
-        $file = "$this->temp/$name.csv";
-        $fp = fopen($file, 'w');
-        fputcsv($fp, $data['header']);
-
-        foreach ($data['body'] as $row) {
-            fputcsv($fp, $row);
+        $content = implode(',', $data['header']) . "\r\n";
+        foreach ($data['body'] as $array) {
+            $content .= implode(',', $array) . "\r\n";
         }
 
-        fclose($fp);
-        $this->created['csv'][] = $file;
+        $this->setFile($filename, $content);
     }
 
     /**
      * Creates .json files
+     * @param string $filename
+     * @param array $data
      */
-    public function setJson()
+    public function setJson($filename = 'test.json', array $data = array('test'))
     {
-        $file = "$this->temp/test.json";
-        file_put_contents($file, json_encode(array('test')));
-        $this->created['json'][] = $file;
+        $this->setFile($filename, json_encode($data));
     }
 
     /**
      * Creates ZIP files
+     * @throws \RuntimeException
      */
     public function setZip()
     {
-        if (class_exists('ZipArchive')) {
+        $zip = new \ZipArchive;
+        $file = "$this->temp/test.zip";
 
-            $zip = new \ZipArchive;
-            $file = "$this->temp/test.zip";
-
-            if ($zip->open($file, \ZipArchive::CREATE)) {
-                $zip->addFromString('test.txt', 'test');
-                $zip->close();
-                $this->created['zip'][] = $file;
-            }
+        if (!$zip->open($file, \ZipArchive::CREATE)) {
+            throw new \RuntimeException("Failed to open ZIP file $file");
         }
+
+        $zip->addFromString('test.txt', 'test');
+        $zip->close();
+        $this->created['zip'][] = $file;
     }
 
     /**

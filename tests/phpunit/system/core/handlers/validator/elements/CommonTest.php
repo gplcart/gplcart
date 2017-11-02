@@ -22,7 +22,7 @@ class CommonTest extends PhpUnitTest
      */
     protected function setUp()
     {
-        $this->object = $this->getInstance('gplcart\\core\\handlers\\validator\\elements\\Common');
+        $this->object = $this->tool->getInstance('gplcart\\core\\handlers\\validator\\elements\\Common');
     }
 
     /**
@@ -119,20 +119,20 @@ class CommonTest extends PhpUnitTest
         $submitted = array();
         $this->assertArrayHasKey($field, $this->object->length($submitted, $options));
 
-        $submitted[$field] = $this->getRandomString(51);
+        $submitted[$field] = $this->tool->getRandomString(51);
         $this->assertArrayHasKey($field, $this->object->length($submitted, $options));
 
-        $submitted[$field] = $this->getRandomString(9);
+        $submitted[$field] = $this->tool->getRandomString(9);
         $this->assertArrayHasKey($field, $this->object->length($submitted, $options));
 
         $submitted[$field] = '';
         $this->assertArrayHasKey($field, $this->object->length($submitted, $options));
 
         // Passes
-        $submitted[$field] = $this->getRandomString(50);
+        $submitted[$field] = $this->tool->getRandomString(50);
         $this->assertTrue($this->object->length($submitted, $options));
 
-        $submitted[$field] = $this->getRandomString(10);
+        $submitted[$field] = $this->tool->getRandomString(10);
         $this->assertTrue($this->object->length($submitted, $options));
     }
 
