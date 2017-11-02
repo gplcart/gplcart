@@ -9,26 +9,13 @@
 
 namespace gplcart\core;
 
-use gplcart\core\helpers\Url as UrlHelper,
-    gplcart\core\helpers\Session as SessionHelper;
+use gplcart\core\helpers\Session as SessionHelper;
 
 /**
  * Provides methods to route incoming requests and setup the system
  */
 class Facade
 {
-
-    /**
-     * Route class instance
-     * @var \gplcart\core\Route $route
-     */
-    protected $route;
-
-    /**
-     * URL class instance
-     * @var \gplcart\core\helpers\Url $url
-     */
-    protected $url;
 
     /**
      * Config class instance
@@ -38,19 +25,15 @@ class Facade
 
     /**
      * @param Config $config
-     * @param Route $route
      * @param Hook $hook
-     * @param UrlHelper $url
      * @param SessionHelper $session
      */
-    public function __construct(Config $config, Route $route, Hook $hook, UrlHelper $url,
-            SessionHelper $session)
+    public function __construct(Config $config, Hook $hook, SessionHelper $session)
     {
         $session->start();
 
-        $this->url = $url;
-        $this->route = $route;
         $this->config = $config;
+        $this->config->init();
 
         $hook->registerAll();
         $hook->attach('construct', $this);
@@ -75,10 +58,16 @@ class Facade
      */
     public function routeHttp()
     {
-        if ($this->config->exists() || $this->url->isInstall()) {
-            $this->route->output();
+        /* @var $route \gplcart\core\Route */
+        $route = Container::get('gplcart\\core\\Route');
+
+        /* @var $url \gplcart\core\helpers\Url */
+        $url = Container::get('gplcart\\core\\helpers\\Url');
+
+        if ($this->config->isInitialized() || $url->isInstall()) {
+            $route->output();
         } else {
-            $this->url->redirect('install');
+            $url->redirect('install');
         }
     }
 

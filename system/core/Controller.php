@@ -1024,7 +1024,7 @@ abstract class Controller
             $this->response->outputError404();
         }
 
-        $this->theme_settings = (array) $this->config->module($this->theme, null, array());
+        $this->theme_settings = (array) $this->config->getFromModule($this->theme, null, array());
 
         $this->templates = $this->getDefaultTemplates();
         if (!empty($this->current_theme['data']['templates'])) {

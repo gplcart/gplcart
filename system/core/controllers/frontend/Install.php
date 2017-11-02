@@ -90,7 +90,7 @@ class Install extends BaseController
      */
     protected function controlAccessInstall()
     {
-        if ($this->config->exists()) {
+        if ($this->config->isInitialized()) {
             $this->redirect('/');
         }
     }

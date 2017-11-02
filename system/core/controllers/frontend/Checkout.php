@@ -1117,7 +1117,7 @@ class Checkout extends FrontendController
 
             if (!empty($method['module'])) {
                 $template = "{$method['module']}|$template";
-                $settings = $this->config->module($method['module']);
+                $settings = $this->config->getFromModule($method['module']);
             }
 
             $options = array(
