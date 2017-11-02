@@ -39,18 +39,25 @@ class Database
 
     /**
      * Set up database connection
-     * @param array $config
+     * @param mixed $config
      * @throws DatabaseException
-     * @return \PDO
+     * @return $this
      */
-    public function set(array $config)
+    public function set($config)
     {
         if (isset($this->pdo)) {
-            return $this->pdo;
+            return $this;
         }
 
-        $dns = "{$config['type']}:host={$config['host']};"
-                . "port={$config['port']};dbname={$config['name']}";
+        if (is_array($config)) {
+            $config += array('user' => null, 'password' => null);
+            $dns = "{$config['type']}:host={$config['host']};port={$config['port']};dbname={$config['name']}";
+        } else if (is_string($config)) {
+            $dns = $config;
+        } else if ($config instanceof \PDO) {
+            $this->pdo = $config;
+            return $this;
+        }
 
         try {
             $this->pdo = new PDO($dns, $config['user'], $config['password']);
@@ -59,7 +66,7 @@ class Database
             throw new DatabaseException('Cannot connect to database: ' . $ex->getMessage());
         }
 
-        return $this->pdo;
+        return $this;
     }
 
     /**
