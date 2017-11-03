@@ -35,47 +35,22 @@ class ConfigTest extends PhpUnitTest
     protected function setUp()
     {
         $this->object = $this->tool->getInstance('gplcart\\core\\Config');
-
-        $this->setFixtures('settings');
-        parent::setUp();
-    }
-
-    /**
-     * Tears down the fixture, for example, closes a network connection.
-     * This method is called after a test is executed.
-     */
-    protected function tearDown()
-    {
-        parent::tearDown();
-    }
-
-    /**
-     * @covers gplcart\core\Config::setDb
-     */
-    public function testSetDb()
-    {
-        $this->assertFixtureTable(self::FIXTURE);
-        $this->assertTrue(is_object($this->object->setDb(static::$pdo)));
+        $this->object->setDb($this->setUpTestDatabase('settings'));
     }
 
     /**
      * @covers gplcart\core\Config::getDb
-     * @depends testSetDb
      */
     public function testGetDb()
     {
-        $this->object->setDb(static::$pdo);
         $this->assertTrue(is_object($this->object->getDb()));
     }
 
     /**
      * @covers gplcart\core\Config::select
-     * @depends testSetDb
      */
     public function testSelect()
     {
-        $this->object->setDb(static::$pdo);
-
         $actual = $this->object->select();
         $this->assertInternalType('array', $actual);
         $this->assertCount(2, $actual);
@@ -87,15 +62,12 @@ class ConfigTest extends PhpUnitTest
 
     /**
      * @covers gplcart\core\Config::set
-     * @depends testSetDb
      * @depends testSelect
      */
     public function testSet()
     {
         $key = 'some_test_key';
         $value = 'some_test_value';
-
-        $this->object->setDb(static::$pdo);
 
         $this->object->set($key, $value);
         $this->assertEquals($value, $this->object->select($key));
@@ -107,7 +79,6 @@ class ConfigTest extends PhpUnitTest
     /**
      * @covers gplcart\core\Config::reset
      * @depends testSet
-     * @depends testSetDb
      * @depends testSelect
      */
     public function testReset()
@@ -115,7 +86,6 @@ class ConfigTest extends PhpUnitTest
         $key = 'some_test_key';
         $value = 'some_test_value';
 
-        $this->object->setDb(static::$pdo);
         $this->object->set($key, $value);
 
         $this->assertTrue($this->object->reset($key));
