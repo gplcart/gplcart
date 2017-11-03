@@ -12,7 +12,7 @@ return array(
         'id_key' => 'product_id',
         'handlers' => array(
             'list' => array('gplcart\\core\\models\\Product', 'getList'),
-            'validate' => array('gplcart\\core\\handlers\\validator\\components\\CollectionItem', 'product'),
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\CollectionItem', 'validateProductCollectionItem'),
         ),
         'template' => array(
             'item' => 'product/item/grid',
@@ -24,7 +24,7 @@ return array(
         'id_key' => 'file_id',
         'handlers' => array(
             'list' => array('gplcart\\core\\models\\File', 'getList'),
-            'validate' => array('gplcart\\core\\handlers\\validator\\components\\CollectionItem', 'file'),
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\CollectionItem', 'validateFileCollectionItem'),
         ),
         'template' => array(
             'item' => 'collection/item/file',
@@ -36,7 +36,7 @@ return array(
         'id_key' => 'page_id',
         'handlers' => array(
             'list' => array('gplcart\\core\\models\\Page', 'getList'),
-            'validate' => array('gplcart\\core\\handlers\\validator\\components\\CollectionItem', 'page'),
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\CollectionItem', 'validatePageCollectionItem'),
         ),
         'template' => array(
             'item' => 'collection/item/page',
