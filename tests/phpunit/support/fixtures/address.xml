@@ -1,0 +1,60 @@
+<?xml version="1.0" ?>
+<dataset>
+    <table name="address">
+        <column>address_id</column>
+        <column>state_id</column>
+        <column>created</column>
+        <column>country</column>
+        <column>city_id</column>
+        <column>address_1</column>
+        <column>address_2</column>
+        <column>phone</column>
+        <column>type</column>
+        <column>user_id</column>
+        <column>middle_name</column>
+        <column>last_name</column>
+        <column>first_name</column>
+        <column>postcode</column>
+        <column>company</column>
+        <column>fax</column>
+        <column>data</column>
+        <row>
+            <value>1</value>
+            <value>1</value>
+            <value>1234567890</value>
+            <value>US</value>
+            <value>1</value>
+            <value>First address</value>
+            <value>Second address</value>
+            <value>1-213-621-0002</value>
+            <value>shipping</value>
+            <value>1</value>
+            <value>Middle name</value>
+            <value>Last name</value>
+            <value>First name</value>
+            <value>01234</value>
+            <value>Company name</value>
+            <value>1-213-621-0002</value>
+            <value>a:1:{s:4:"test";b:1;}</value>
+        </row>
+        <row>
+            <value>2</value>
+            <value>2</value>
+            <value>1234567890</value>
+            <value>UA</value>
+            <value>Kyiv</value>
+            <value>First address</value>
+            <value>Second address</value>
+            <value>+380961112234</value>
+            <value>payment</value>
+            <value>1</value>
+            <value>Middle name</value>
+            <value>Last name</value>
+            <value>First name</value>
+            <value>01235</value>
+            <value>Company name</value>
+            <value>+380961112234</value>
+            <value>a:1:{s:4:"test";b:1;}</value>
+        </row>
+    </table>
+</dataset>
