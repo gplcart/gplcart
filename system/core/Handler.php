@@ -9,6 +9,7 @@
 
 namespace gplcart\core;
 
+use gplcart\core\Config;
 use InvalidArgumentException;
 
 /**
@@ -24,17 +25,17 @@ class Handler
     protected $config;
 
     /**
-     * Constructor
+     * @param Config $config
      */
-    public function __construct()
+    public function __construct(Config $config)
     {
-        $this->config = Container::get('gplcart\\core\\Config');
+        $this->config = $config;
     }
 
     /**
      * Call a handler
      * @param array $handlers
-     * @param string $handler_id
+     * @param string|null $handler_id
      * @param string $method
      * @param array $args
      * @return mixed
@@ -53,6 +54,25 @@ class Handler
         }
 
         return call_user_func_array($handler, $args);
+    }
+
+    /**
+     * Call a handler and pass arguments by reference
+     * @param array $handlers
+     * @param string|null $handler_id
+     * @param string $method
+     * @param mixed $a
+     * @param mixed $b
+     * @param mixed $c
+     * @param mixed $d
+     * @param mixed $e
+     * @return mixed
+     */
+    public static function callRef($handlers, $handler_id, $method, &$a = null, &$b = null,
+            &$c = null, &$d = null, &$e = null)
+    {
+        $callback = static::get($handlers, $handler_id, $method);
+        return call_user_func_array($callback, array(&$a, &$b, &$c, &$d, &$e));
     }
 
     /**

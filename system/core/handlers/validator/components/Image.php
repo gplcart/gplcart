@@ -9,7 +9,15 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\Handler;
+// Parent
+use gplcart\core\Config;
+use gplcart\core\models\File as FileModel,
+    gplcart\core\models\User as UserModel,
+    gplcart\core\models\Store as StoreModel,
+    gplcart\core\models\Alias as AliasModel,
+    gplcart\core\helpers\Request as RequestHelper,
+    gplcart\core\models\Language as LanguageModel;
+// New
 use gplcart\core\models\Image as ImageModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
 
@@ -26,11 +34,20 @@ class Image extends ComponentValidator
     protected $image;
 
     /**
+     * @param Config $config
+     * @param LanguageModel $language
+     * @param FileModel $file
+     * @param UserModel $user
+     * @param StoreModel $store
+     * @param AliasModel $alias
+     * @param RequestHelper $request
      * @param ImageModel $image
      */
-    public function __construct(ImageModel $image)
+    public function __construct(Config $config, LanguageModel $language, FileModel $file,
+            UserModel $user, StoreModel $store, AliasModel $alias, RequestHelper $request,
+            ImageModel $image)
     {
-        parent::__construct();
+        parent::__construct($config, $language, $file, $user, $store, $alias, $request);
 
         $this->image = $image;
     }
@@ -47,8 +64,8 @@ class Image extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateImageStyle();
-        $this->validateNameComponent();
-        $this->validateStatusComponent();
+        $this->validateName();
+        $this->validateStatus();
         $this->validateActionsImageStyle();
 
         $this->unsetSubmitted('update');
@@ -142,8 +159,7 @@ class Image extends ComponentValidator
         }
 
         try {
-            $callback = Handler::get($handler, null, 'validate');
-            return call_user_func_array($callback, array(&$value));
+            return parent::callRef($handler, null, 'validate', $value);
         } catch (\Exception $ex) {
             return false;
         }

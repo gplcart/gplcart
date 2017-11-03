@@ -9,7 +9,11 @@
 
 namespace gplcart\core\handlers\mail;
 
-use gplcart\core\models\Price as PriceModel,
+use gplcart\core\Config;
+use gplcart\core\models\User as UserModel,
+    gplcart\core\models\Store as StoreModel,
+    gplcart\core\models\Language as LanguageModel,
+    gplcart\core\models\Price as PriceModel,
     gplcart\core\models\Order as OrderModel;
 use gplcart\core\handlers\mail\Base as BaseHandler;
 
@@ -32,12 +36,17 @@ class Order extends BaseHandler
     protected $price;
 
     /**
+     * @param Config $config
+     * @param LanguageModel $language
+     * @param StoreModel $store
+     * @param UserModel $user
      * @param OrderModel $order
      * @param PriceModel $price
      */
-    public function __construct(OrderModel $order, PriceModel $price)
+    public function __construct(Config $config, LanguageModel $language, StoreModel $store,
+            UserModel $user, OrderModel $order, PriceModel $price)
     {
-        parent::__construct();
+        parent::__construct($config, $language, $store, $user);
 
         $this->price = $price;
         $this->order = $order;

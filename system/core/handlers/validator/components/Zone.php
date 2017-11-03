@@ -9,6 +9,15 @@
 
 namespace gplcart\core\handlers\validator\components;
 
+// Parent
+use gplcart\core\Config;
+use gplcart\core\models\File as FileModel,
+    gplcart\core\models\User as UserModel,
+    gplcart\core\models\Store as StoreModel,
+    gplcart\core\models\Alias as AliasModel,
+    gplcart\core\helpers\Request as RequestHelper,
+    gplcart\core\models\Language as LanguageModel;
+// New
 use gplcart\core\models\Zone as ZoneModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
 
@@ -25,11 +34,20 @@ class Zone extends ComponentValidator
     protected $zone;
 
     /**
+     * @param Config $config
+     * @param LanguageModel $language
+     * @param FileModel $file
+     * @param UserModel $user
+     * @param StoreModel $store
+     * @param AliasModel $alias
+     * @param RequestHelper $request
      * @param ZoneModel $zone
      */
-    public function __construct(ZoneModel $zone)
+    public function __construct(Config $config, LanguageModel $language, FileModel $file,
+            UserModel $user, StoreModel $store, AliasModel $alias, RequestHelper $request,
+            ZoneModel $zone)
     {
-        parent::__construct();
+        parent::__construct($config, $language, $file, $user, $store, $alias, $request);
 
         $this->zone = $zone;
     }
@@ -46,8 +64,8 @@ class Zone extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateZone();
-        $this->validateStatusComponent();
-        $this->validateTitleComponent();
+        $this->validateStatus();
+        $this->validateTitle();
 
         return $this->getResult();
     }

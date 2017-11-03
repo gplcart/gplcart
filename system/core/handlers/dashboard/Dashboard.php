@@ -9,7 +9,8 @@
 
 namespace gplcart\core\handlers\dashboard;
 
-use gplcart\core\Handler;
+use gplcart\core\Handler,
+    gplcart\core\Config;
 use gplcart\core\models\Cart as CartModel,
     gplcart\core\models\User as UserModel,
     gplcart\core\models\Order as OrderModel,
@@ -97,6 +98,7 @@ class Dashboard extends Handler
     protected $limit;
 
     /**
+     * @param Config $config
      * @param CartModel $cart
      * @param UserModel $user
      * @param ProductModel $product
@@ -108,11 +110,12 @@ class Dashboard extends Handler
      * @param TransactionModel $transaction
      * @param PriceRuleModel $pricerule
      */
-    public function __construct(CartModel $cart, UserModel $user, ProductModel $product,
-            LanguageModel $language, PriceModel $price, OrderModel $order, ReportModel $report,
-            ReviewModel $review, TransactionModel $transaction, PriceRuleModel $pricerule)
+    public function __construct(Config $config, CartModel $cart, UserModel $user,
+            ProductModel $product, LanguageModel $language, PriceModel $price, OrderModel $order,
+            ReportModel $report, ReviewModel $review, TransactionModel $transaction,
+            PriceRuleModel $pricerule)
     {
-        parent::__construct();
+        parent::__construct($config);
 
         $this->cart = $cart;
         $this->user = $user;

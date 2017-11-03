@@ -9,6 +9,11 @@
 
 namespace gplcart\core\handlers\condition;
 
+use gplcart\core\Config;
+use gplcart\core\models\City as CityModel,
+    gplcart\core\models\State as StateModel,
+    gplcart\core\models\Country as CountryModel,
+    gplcart\core\models\Address as AddressModel;
 use gplcart\core\handlers\condition\Address as AddressBaseHandler;
 
 /**
@@ -18,11 +23,16 @@ class Payment extends AddressBaseHandler
 {
 
     /**
-     * Constructor
+     * @param Config $config
+     * @param CityModel $city
+     * @param StateModel $state
+     * @param CountryModel $country
+     * @param AddressModel $address
      */
-    public function __construct()
+    public function __construct(Config $config, CityModel $city, StateModel $state,
+            CountryModel $country, AddressModel $address)
     {
-        parent::__construct();
+        parent::__construct($config, $city, $state, $country, $address);
     }
 
     /**

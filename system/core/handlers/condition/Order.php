@@ -9,6 +9,7 @@
 
 namespace gplcart\core\handlers\condition;
 
+use gplcart\core\Config;
 use gplcart\core\handlers\condition\Base as BaseHandler;
 
 /**
@@ -18,11 +19,11 @@ class Order extends BaseHandler
 {
 
     /**
-     * Constructor
+     * @param Config $config
      */
-    public function __construct()
+    public function __construct(Config $config)
     {
-        parent::__construct();
+        parent::__construct($config);
     }
 
     /**

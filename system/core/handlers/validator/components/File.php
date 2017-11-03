@@ -9,6 +9,13 @@
 
 namespace gplcart\core\handlers\validator\components;
 
+use gplcart\core\Config;
+use gplcart\core\models\File as FileModel,
+    gplcart\core\models\User as UserModel,
+    gplcart\core\models\Store as StoreModel,
+    gplcart\core\models\Alias as AliasModel,
+    gplcart\core\helpers\Request as RequestHelper,
+    gplcart\core\models\Language as LanguageModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
@@ -23,11 +30,18 @@ class File extends ComponentValidator
     const PATH = 'image/upload/common';
 
     /**
-     * Constructor
+     * @param Config $config
+     * @param LanguageModel $language
+     * @param FileModel $file
+     * @param UserModel $user
+     * @param StoreModel $store
+     * @param AliasModel $alias
+     * @param RequestHelper $request
      */
-    public function __construct()
+    public function __construct(Config $config, LanguageModel $language, FileModel $file,
+            UserModel $user, StoreModel $store, AliasModel $alias, RequestHelper $request)
     {
-        parent::__construct();
+        parent::__construct($config, $language, $file, $user, $store, $alias, $request);
     }
 
     /**
@@ -43,9 +57,9 @@ class File extends ComponentValidator
 
         $this->validateFile();
         $this->validateTitleFile();
-        $this->validateDescriptionComponent();
-        $this->validateWeightComponent();
-        $this->validateTranslationComponent();
+        $this->validateDescription();
+        $this->validateWeight();
+        $this->validateTranslation();
         $this->validatePathFile();
 
         return $this->getResult();

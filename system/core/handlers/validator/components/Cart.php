@@ -9,6 +9,15 @@
 
 namespace gplcart\core\handlers\validator\components;
 
+// Parent
+use gplcart\core\Config;
+use gplcart\core\models\File as FileModel,
+    gplcart\core\models\User as UserModel,
+    gplcart\core\models\Store as StoreModel,
+    gplcart\core\models\Alias as AliasModel,
+    gplcart\core\helpers\Request as RequestHelper,
+    gplcart\core\models\Language as LanguageModel;
+// New
 use gplcart\core\models\Sku as SkuModel,
     gplcart\core\models\Cart as CartModel,
     gplcart\core\models\Order as OrderModel,
@@ -46,15 +55,24 @@ class Cart extends ComponentValidator
     protected $order;
 
     /**
+     * @param Config $config
+     * @param LanguageModel $language
+     * @param FileModel $file
+     * @param UserModel $user
+     * @param StoreModel $store
+     * @param AliasModel $alias
+     * @param RequestHelper $request
      * @param CartModel $cart
      * @param ProductModel $product
      * @param SkuModel $sku
      * @param OrderModel $order
      */
-    public function __construct(CartModel $cart, ProductModel $product, SkuModel $sku,
-            OrderModel $order)
+    public function __construct(Config $config, LanguageModel $language, FileModel $file,
+            UserModel $user, StoreModel $store, AliasModel $alias, RequestHelper $request,
+            CartModel $cart, ProductModel $product, SkuModel $sku, OrderModel $order
+    )
     {
-        parent::__construct();
+        parent::__construct($config, $language, $file, $user, $store, $alias, $request);
 
         $this->sku = $sku;
         $this->cart = $cart;
@@ -74,10 +92,10 @@ class Cart extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateCart();
-        $this->validateStoreIdComponent();
+        $this->validateStoreId();
         $this->validateProductCart();
         $this->validateSkuCart();
-        $this->validateUserCartIdComponent();
+        $this->validateUserCartId();
         $this->validateOrderCart();
         $this->validateQuantityCart();
         $this->validateOptionsCart();

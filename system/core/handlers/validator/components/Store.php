@@ -9,6 +9,15 @@
 
 namespace gplcart\core\handlers\validator\components;
 
+// Parent
+use gplcart\core\Config;
+use gplcart\core\models\File as FileModel,
+    gplcart\core\models\User as UserModel,
+    gplcart\core\models\Store as StoreModel,
+    gplcart\core\models\Alias as AliasModel,
+    gplcart\core\helpers\Request as RequestHelper,
+    gplcart\core\models\Language as LanguageModel;
+// New
 use gplcart\core\models\Module as ModuleModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
 
@@ -30,11 +39,20 @@ class Store extends ComponentValidator
     protected $module;
 
     /**
+     * @param Config $config
+     * @param LanguageModel $language
+     * @param FileModel $file
+     * @param UserModel $user
+     * @param StoreModel $store
+     * @param AliasModel $alias
+     * @param RequestHelper $request
      * @param ModuleModel $module
      */
-    public function __construct(ModuleModel $module)
+    public function __construct(Config $config, LanguageModel $language, FileModel $file,
+            UserModel $user, StoreModel $store, AliasModel $alias, RequestHelper $request,
+            ModuleModel $module)
     {
-        parent::__construct();
+        parent::__construct($config, $language, $file, $user, $store, $alias, $request);
 
         $this->module = $module;
     }
@@ -51,10 +69,10 @@ class Store extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateStore();
-        $this->validateStatusComponent();
+        $this->validateStatus();
         $this->validateDomainStore();
         $this->validateBasepathStore();
-        $this->validateNameComponent();
+        $this->validateName();
         $this->validateEmailStore();
         $this->validateMapStore();
         $this->validateTitleStore();
@@ -244,7 +262,7 @@ class Store extends ComponentValidator
         $options = $this->options;
         $this->options += array('parents' => 'data');
 
-        $result = $this->validateTitleComponent();
+        $result = $this->validateTitle();
 
         $this->options = $options;
         return $result;
@@ -259,7 +277,7 @@ class Store extends ComponentValidator
         $options = $this->options;
         $this->options += array('parents' => 'data');
 
-        $result = $this->validateMetaTitleComponent();
+        $result = $this->validateMetaTitle();
 
         $this->options = $options;
         return $result;
@@ -274,7 +292,7 @@ class Store extends ComponentValidator
         $options = $this->options;
         $this->options += array('parents' => 'data');
 
-        $result = $this->validateMetaDescriptionComponent();
+        $result = $this->validateMetaDescription();
 
         $this->options = $options;
         return $result;
@@ -289,7 +307,7 @@ class Store extends ComponentValidator
         $options = $this->options;
         $this->options += array('parents' => 'data');
 
-        $result = $this->validateTranslationComponent();
+        $result = $this->validateTranslation();
 
         $this->options = $options;
         return $result;

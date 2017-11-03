@@ -9,6 +9,11 @@
 
 namespace gplcart\core\handlers\install;
 
+use gplcart\core\Config;
+use gplcart\core\helpers\Cli as CliHelper,
+    gplcart\core\helpers\Session as SessionHelper;
+use gplcart\core\models\Install as InstallModel,
+    gplcart\core\models\Language as LanguageModel;
 use gplcart\core\handlers\install\Base as BaseInstall;
 
 /**
@@ -18,11 +23,16 @@ class DefaultProfile extends BaseInstall
 {
 
     /**
-     * Constructor
+     * @param Config $config
+     * @param InstallModel $install
+     * @param LanguageModel $language
+     * @param SessionHelper $session
+     * @param CliHelper $cli
      */
-    public function __construct()
+    public function __construct(Config $config, InstallModel $install, LanguageModel $language,
+            SessionHelper $session, CliHelper $cli)
     {
-        parent::__construct();
+        parent::__construct($config, $install, $language, $session, $cli);
     }
 
     /**

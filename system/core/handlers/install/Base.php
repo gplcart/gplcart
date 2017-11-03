@@ -9,8 +9,13 @@
 
 namespace gplcart\core\handlers\install;
 
-use gplcart\core\Container,
-    gplcart\core\Handler;
+use gplcart\core\Config,
+    gplcart\core\Handler,
+    gplcart\core\Container;
+use gplcart\core\helpers\Cli as CliHelper,
+    gplcart\core\helpers\Session as SessionHelper;
+use gplcart\core\models\Install as InstallModel,
+    gplcart\core\models\Language as LanguageModel;
 
 /**
  * Base installer handlers class
@@ -61,19 +66,23 @@ class Base extends Handler
     protected $context = array();
 
     /**
-     * Constructor
+     * @param Config $config
+     * @param InstallModel $install
+     * @param LanguageModel $language
+     * @param SessionHelper $session
+     * @param CliHelper $cli
      */
-    public function __construct()
+    public function __construct(Config $config, InstallModel $install, LanguageModel $language,
+            SessionHelper $session, CliHelper $cli)
     {
-        parent::__construct();
+        parent::__construct($config);
 
         set_time_limit(0);
 
-        $this->cli = Container::get('gplcart\\core\\helpers\Cli');
-        $this->session = Container::get('gplcart\\core\\helpers\Session');
-        $this->install = Container::get('gplcart\\core\\models\\Install');
-        $this->language = Container::get('gplcart\\core\\models\\Language');
-        // Rest of models are loaded inline as they require database set up
+        $this->cli = $cli;
+        $this->session = $session;
+        $this->install = $install;
+        $this->language = $language;
     }
 
     /**

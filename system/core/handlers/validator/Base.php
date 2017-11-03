@@ -9,8 +9,9 @@
 
 namespace gplcart\core\handlers\validator;
 
-use gplcart\core\Container,
-    gplcart\core\Handler;
+use gplcart\core\Config;
+use gplcart\core\Handler;
+use gplcart\core\models\Language as LanguageModel;
 
 /**
  * Base validator class
@@ -43,13 +44,14 @@ class Base extends Handler
     protected $language;
 
     /**
-     * Constructor
+     * @param Config $config
+     * @param LanguageModel $language
      */
-    public function __construct()
+    public function __construct(Config $config, LanguageModel $language)
     {
-        parent::__construct();
+        parent::__construct($config);
 
-        $this->language = Container::get('gplcart\\core\\models\\Language');
+        $this->language = $language;
     }
 
     /**
@@ -153,7 +155,7 @@ class Base extends Handler
             $this->options['parents'] = explode('.', $this->options['parents']);
         }
 
-        return array_merge((array)$this->options['parents'], (array)$key);
+        return array_merge((array) $this->options['parents'], (array) $key);
     }
 
     /**

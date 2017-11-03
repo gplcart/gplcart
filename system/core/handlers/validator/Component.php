@@ -9,7 +9,13 @@
 
 namespace gplcart\core\handlers\validator;
 
-use gplcart\core\Container as Container;
+use gplcart\core\Config;
+use gplcart\core\models\File as FileModel,
+    gplcart\core\models\User as UserModel,
+    gplcart\core\models\Store as StoreModel,
+    gplcart\core\models\Alias as AliasModel,
+    gplcart\core\helpers\Request as RequestHelper,
+    gplcart\core\models\Language as LanguageModel;
 use gplcart\core\handlers\validator\Base as BaseValidator;
 
 /**
@@ -49,24 +55,31 @@ class Component extends BaseValidator
     protected $request;
 
     /**
-     * Constructor
+     * @param Config $config
+     * @param LanguageModel $language
+     * @param FileModel $file
+     * @param UserModel $user
+     * @param StoreModel $store
+     * @param AliasModel $alias
+     * @param RequestHelper $request
      */
-    public function __construct()
+    public function __construct(Config $config, LanguageModel $language, FileModel $file,
+            UserModel $user, StoreModel $store, AliasModel $alias, RequestHelper $request)
     {
-        parent::__construct();
+        parent::__construct($config, $language);
 
-        $this->file = Container::get('gplcart\\core\\models\\File');
-        $this->user = Container::get('gplcart\\core\\models\\User');
-        $this->store = Container::get('gplcart\\core\\models\\Store');
-        $this->alias = Container::get('gplcart\\core\\models\\Alias');
-        $this->request = Container::get('gplcart\\core\\helpers\Request');
+        $this->file = $file;
+        $this->user = $user;
+        $this->store = $store;
+        $this->alias = $alias;
+        $this->request = $request;
     }
 
     /**
      * Validates a title
      * @return boolean|null
      */
-    protected function validateTitleComponent()
+    protected function validateTitle()
     {
         $field = 'title';
         $label = $this->language->text('Title');
@@ -88,7 +101,7 @@ class Component extends BaseValidator
      * Validates a name
      * @return boolean|null
      */
-    protected function validateNameComponent()
+    protected function validateName()
     {
         $field = 'name';
         $label = $this->language->text('Name');
@@ -110,7 +123,7 @@ class Component extends BaseValidator
      * Validates a meta title
      * @return boolean
      */
-    protected function validateMetaTitleComponent()
+    protected function validateMetaTitle()
     {
         $field = 'meta_title';
         $label = $this->language->text('Meta title');
@@ -128,7 +141,7 @@ class Component extends BaseValidator
      * Validates a meta description
      * @return boolean
      */
-    protected function validateMetaDescriptionComponent()
+    protected function validateMetaDescription()
     {
         $field = 'meta_description';
         $label = $this->language->text('Meta description');
@@ -146,7 +159,7 @@ class Component extends BaseValidator
      * Validates a description field
      * @return boolean
      */
-    protected function validateDescriptionComponent()
+    protected function validateDescription()
     {
         $field = 'description';
         $label = $this->language->text('Description');
@@ -164,7 +177,7 @@ class Component extends BaseValidator
      * Validates a weight field
      * @return boolean
      */
-    protected function validateWeightComponent()
+    protected function validateWeight()
     {
         $field = 'weight';
         $label = $this->language->text('Weight');
@@ -182,7 +195,7 @@ class Component extends BaseValidator
      * Sets "Status" field to an integer value
      * @return boolean
      */
-    protected function validateStatusComponent()
+    protected function validateStatus()
     {
         $field = 'status';
         $status = $this->getSubmitted($field);
@@ -199,7 +212,7 @@ class Component extends BaseValidator
      * Sets "Default" field to an integer value
      * @return boolean
      */
-    protected function validateDefaultComponent()
+    protected function validateDefault()
     {
         $field = 'default';
         $default = $this->getSubmitted($field);
@@ -216,7 +229,7 @@ class Component extends BaseValidator
      * Validates category translations
      * @return boolean|null
      */
-    protected function validateTranslationComponent()
+    protected function validateTranslation()
     {
         $translations = $this->getSubmitted('translation');
 
@@ -258,7 +271,7 @@ class Component extends BaseValidator
      * Validates / prepares an array of submitted images
      * @return null|bool
      */
-    protected function validateImagesComponent()
+    protected function validateImages()
     {
         $images = $this->getSubmitted('images');
 
@@ -305,7 +318,7 @@ class Component extends BaseValidator
      * @param string $entity
      * @return bool|null
      */
-    protected function validateUploadImagesComponent($entity)
+    protected function validateUploadImages($entity)
     {
         $files = $this->request->file('files');
 
@@ -333,7 +346,7 @@ class Component extends BaseValidator
      * Validates an alias
      * @return boolean|null
      */
-    protected function validateAliasComponent()
+    protected function validateAlias()
     {
         $field = 'alias';
         $label = $this->language->text('Alias');
@@ -373,7 +386,7 @@ class Component extends BaseValidator
      * Validates the store ID field
      * @return boolean|null
      */
-    protected function validateStoreIdComponent()
+    protected function validateStoreId()
     {
         $field = 'store_id';
         $label = $this->language->text('Store');
@@ -407,7 +420,7 @@ class Component extends BaseValidator
      * Validates a user ID
      * @return boolean|null
      */
-    protected function validateUserIdComponent()
+    protected function validateUserId()
     {
         $field = 'user_id';
         $label = $this->language->text('User');
@@ -441,7 +454,7 @@ class Component extends BaseValidator
      * Validates a user cart ID
      * @return boolean|null
      */
-    protected function validateUserCartIdComponent()
+    protected function validateUserCartId()
     {
         $field = 'user_id';
         $label = $this->language->text('User');
@@ -479,7 +492,7 @@ class Component extends BaseValidator
      * Validates an E-mail
      * @return boolean
      */
-    protected function validateEmailComponent()
+    protected function validateEmail()
     {
         $field = 'email';
         $label = $this->language->text('E-mail');

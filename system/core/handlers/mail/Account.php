@@ -9,6 +9,10 @@
 
 namespace gplcart\core\handlers\mail;
 
+use gplcart\core\Config;
+use gplcart\core\models\User as UserModel,
+    gplcart\core\models\Store as StoreModel,
+    gplcart\core\models\Language as LanguageModel;
 use gplcart\core\handlers\mail\Base as BaseHandler;
 
 /**
@@ -18,11 +22,15 @@ class Account extends BaseHandler
 {
 
     /**
-     * Constructor
+     * @param Config $config
+     * @param LanguageModel $language
+     * @param StoreModel $store
+     * @param UserModel $user
      */
-    public function __construct()
+    public function __construct(Config $config, LanguageModel $language, StoreModel $store,
+            UserModel $user)
     {
-        parent::__construct();
+        parent::__construct($config, $language, $store, $user);
     }
 
     /**

@@ -9,7 +9,15 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\Handler;
+// Parent
+use gplcart\core\Config;
+use gplcart\core\models\File as FileModel,
+    gplcart\core\models\User as UserModel,
+    gplcart\core\models\Store as StoreModel,
+    gplcart\core\models\Alias as AliasModel,
+    gplcart\core\helpers\Request as RequestHelper,
+    gplcart\core\models\Language as LanguageModel;
+// New
 use gplcart\core\models\Page as PageModel,
     gplcart\core\models\Product as ProductModel,
     gplcart\core\models\Collection as CollectionModel,
@@ -47,16 +55,24 @@ class CollectionItem extends ComponentValidator
     protected $collection_item;
 
     /**
+     * @param Config $config
+     * @param LanguageModel $language
+     * @param FileModel $file
+     * @param UserModel $user
+     * @param StoreModel $store
+     * @param AliasModel $alias
+     * @param RequestHelper $request
      * @param PageModel $page
      * @param ProductModel $product
      * @param CollectionModel $collection
      * @param CollectionItemModel $collection_item
      */
-    public function __construct(PageModel $page, ProductModel $product, CollectionModel $collection,
+    public function __construct(Config $config, LanguageModel $language, FileModel $file,
+            UserModel $user, StoreModel $store, AliasModel $alias, RequestHelper $request,
+            PageModel $page, ProductModel $product, CollectionModel $collection,
             CollectionItemModel $collection_item)
     {
-
-        parent::__construct();
+        parent::__construct($config, $language, $file, $user, $store, $alias, $request);
 
         $this->page = $page;
         $this->product = $product;
@@ -75,8 +91,8 @@ class CollectionItem extends ComponentValidator
         $this->options = $options;
         $this->submitted = &$submitted;
 
-        $this->validateStatusComponent();
-        $this->validateWeightComponent();
+        $this->validateStatus();
+        $this->validateWeight();
         $this->validateUrlCollectionItem();
         $this->validateCollectionCollectionItem();
         $this->validateValueCollectionItem();
@@ -189,7 +205,7 @@ class CollectionItem extends ComponentValidator
 
         try {
             $handlers = $this->collection->getHandlers();
-            $result = Handler::call($handlers, $collection['type'], 'validate', array($value));
+            $result = parent::call($handlers, $collection['type'], 'validate', array($value));
         } catch (\Exception $ex) {
             $result = $ex->getMessage();
         }
@@ -210,7 +226,7 @@ class CollectionItem extends ComponentValidator
      * @param integer $page_id
      * @return boolean|string
      */
-    public function page($page_id)
+    public function validatePageCollectionItem($page_id)
     {
         $page = $this->page->get($page_id);
 
@@ -227,7 +243,7 @@ class CollectionItem extends ComponentValidator
      * @param integer $product_id
      * @return boolean|string
      */
-    public function product($product_id)
+    public function validateProductCollectionItem($product_id)
     {
         $product = $this->product->get($product_id);
 
@@ -244,7 +260,7 @@ class CollectionItem extends ComponentValidator
      * @param integer $file_id
      * @return boolean|string
      */
-    public function file($file_id)
+    public function validateFileCollectionItem($file_id)
     {
         $file = $this->file->get($file_id);
 

@@ -9,6 +9,8 @@
 
 namespace gplcart\core\handlers\validator\elements;
 
+use gplcart\core\Config;
+use gplcart\core\models\Language as LanguageModel;
 use gplcart\core\handlers\validator\Element as ElementValidator;
 
 /**
@@ -18,11 +20,12 @@ class Common extends ElementValidator
 {
 
     /**
-     * Constructor
+     * @param Config $config
+     * @param LanguageModel $language
      */
-    public function __construct()
+    public function __construct(Config $config, LanguageModel $language)
     {
-        parent::__construct();
+        parent::__construct($config, $language);
     }
 
     /**

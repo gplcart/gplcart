@@ -9,7 +9,8 @@
 
 namespace gplcart\core\handlers\condition;
 
-use gplcart\core\Handler;
+use gplcart\core\Handler,
+    gplcart\core\Config;
 
 /**
  * Parent class for condition handlers
@@ -18,11 +19,11 @@ class Base extends Handler
 {
 
     /**
-     * Constructor
+     * @param Config $config
      */
-    public function __construct()
+    public function __construct(Config $config)
     {
-        parent::__construct();
+        parent::__construct($config);
     }
 
     /**

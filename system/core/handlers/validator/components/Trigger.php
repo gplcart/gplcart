@@ -9,7 +9,15 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\Handler;
+// Parent
+use gplcart\core\Config;
+use gplcart\core\models\File as FileModel,
+    gplcart\core\models\User as UserModel,
+    gplcart\core\models\Store as StoreModel,
+    gplcart\core\models\Alias as AliasModel,
+    gplcart\core\helpers\Request as RequestHelper,
+    gplcart\core\models\Language as LanguageModel;
+// New
 use gplcart\core\models\Trigger as TriggerModel,
     gplcart\core\models\Condition as ConditionModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
@@ -33,12 +41,21 @@ class Trigger extends ComponentValidator
     protected $trigger;
 
     /**
+     * @param Config $config
+     * @param LanguageModel $language
+     * @param FileModel $file
+     * @param UserModel $user
+     * @param StoreModel $store
+     * @param AliasModel $alias
+     * @param RequestHelper $request
      * @param ConditionModel $condition
      * @param TriggerModel $trigger
      */
-    public function __construct(ConditionModel $condition, TriggerModel $trigger)
+    public function __construct(Config $config, LanguageModel $language, FileModel $file,
+            UserModel $user, StoreModel $store, AliasModel $alias, RequestHelper $request,
+            ConditionModel $condition, TriggerModel $trigger)
     {
-        parent::__construct();
+        parent::__construct($config, $language, $file, $user, $store, $alias, $request);
 
         $this->trigger = $trigger;
         $this->condition = $condition;
@@ -56,10 +73,10 @@ class Trigger extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateTrigger();
-        $this->validateStatusComponent();
-        $this->validateNameComponent();
-        $this->validateStoreIdComponent();
-        $this->validateWeightComponent();
+        $this->validateStatus();
+        $this->validateName();
+        $this->validateStoreId();
+        $this->validateWeight();
         $this->validateConditionsTrigger();
 
         return $this->getResult();
@@ -175,7 +192,7 @@ class Trigger extends ComponentValidator
     {
         try {
             $handlers = $this->condition->getHandlers();
-            return Handler::call($handlers, $condition_id, 'validate', $args);
+            return parent::call($handlers, $condition_id, 'validate', $args);
         } catch (\Exception $ex) {
             return $ex->getMessage();
         }

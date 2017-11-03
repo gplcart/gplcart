@@ -9,8 +9,11 @@
 
 namespace gplcart\core\handlers\mail;
 
-use gplcart\core\Container,
-    gplcart\core\Handler;
+use gplcart\core\Handler,
+    gplcart\core\Config;
+use gplcart\core\models\User as UserModel,
+    gplcart\core\models\Store as StoreModel,
+    gplcart\core\models\Language as LanguageModel;
 
 /**
  * Base mail data handler class
@@ -37,20 +40,24 @@ class Base extends Handler
     protected $language;
 
     /**
-     * Constructor
+     * @param Config $config
+     * @param LanguageModel $language
+     * @param StoreModel $store
+     * @param UserModel $user
      */
-    public function __construct()
+    public function __construct(Config $config, LanguageModel $language, StoreModel $store,
+            UserModel $user)
     {
-        parent::__construct();
+        parent::__construct($config);
 
-        $this->user = Container::get('gplcart\\core\\models\\User');
-        $this->store = Container::get('gplcart\\core\\models\\Store');
-        $this->language = Container::get('gplcart\\core\\models\\Language');
+        $this->user = $user;
+        $this->store = $store;
+        $this->language = $language;
     }
 
     /**
      * Returns a string containing default e-mail signature
-     * @param array $options Store settings
+     * @param array $options
      * @return string
      */
     protected function getSignature(array $options)

@@ -9,7 +9,11 @@
 
 namespace gplcart\core\handlers\condition;
 
-use gplcart\core\Container;
+use gplcart\core\Config;
+use gplcart\core\models\City as CityModel,
+    gplcart\core\models\State as StateModel,
+    gplcart\core\models\Country as CountryModel,
+    gplcart\core\models\Address as AddressModel;
 use gplcart\core\handlers\condition\Base as BaseHandler;
 
 /**
@@ -43,16 +47,21 @@ class Address extends BaseHandler
     protected $country;
 
     /**
-     * Constructor
+     * @param Config $config
+     * @param CityModel $city
+     * @param StateModel $state
+     * @param CountryModel $country
+     * @param AddressModel $address
      */
-    public function __construct()
+    public function __construct(Config $config, CityModel $city, StateModel $state,
+            CountryModel $country, AddressModel $address)
     {
-        parent::__construct();
+        parent::__construct($config);
 
-        $this->city = Container::get('gplcart\\core\\models\\City');
-        $this->state = Container::get('gplcart\\core\\models\\State');
-        $this->country = Container::get('gplcart\\core\\models\\Country');
-        $this->address = Container::get('gplcart\\core\\models\\Address');
+        $this->city = $city;
+        $this->state = $state;
+        $this->country = $country;
+        $this->address = $address;
     }
 
     /**

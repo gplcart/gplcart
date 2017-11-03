@@ -9,6 +9,15 @@
 
 namespace gplcart\core\handlers\validator\components;
 
+// Parent
+use gplcart\core\Config;
+use gplcart\core\models\File as FileModel,
+    gplcart\core\models\User as UserModel,
+    gplcart\core\models\Store as StoreModel,
+    gplcart\core\models\Alias as AliasModel,
+    gplcart\core\helpers\Request as RequestHelper,
+    gplcart\core\models\Language as LanguageModel;
+// New
 use gplcart\core\models\Price as PriceModel,
     gplcart\core\models\Trigger as TriggerModel,
     gplcart\core\models\Currency as CurrencyModel,
@@ -46,15 +55,23 @@ class PriceRule extends ComponentValidator
     protected $price;
 
     /**
+     * @param Config $config
+     * @param LanguageModel $language
+     * @param FileModel $file
+     * @param UserModel $user
+     * @param StoreModel $store
+     * @param AliasModel $alias
+     * @param RequestHelper $request
      * @param PriceRuleModel $rule
      * @param TriggerModel $trigger
      * @param CurrencyModel $currency
      * @param PriceModel $price
      */
-    public function __construct(PriceRuleModel $rule, TriggerModel $trigger,
-            CurrencyModel $currency, PriceModel $price)
+    public function __construct(Config $config, LanguageModel $language, FileModel $file,
+            UserModel $user, StoreModel $store, AliasModel $alias, RequestHelper $request,
+            PriceRuleModel $rule, TriggerModel $trigger, CurrencyModel $currency, PriceModel $price)
     {
-        parent::__construct();
+        parent::__construct($config, $language, $file, $user, $store, $alias, $request);
 
         $this->rule = $rule;
         $this->price = $price;
@@ -74,8 +91,8 @@ class PriceRule extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validatePriceRule();
-        $this->validateNameComponent();
-        $this->validateWeightComponent();
+        $this->validateName();
+        $this->validateWeight();
         $this->validateUsedPriceRule();
         $this->validateTriggerPriceRule();
         $this->validateCurrencyPriceRule();

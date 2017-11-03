@@ -9,6 +9,15 @@
 
 namespace gplcart\core\handlers\validator\components;
 
+// Parent
+use gplcart\core\Config;
+use gplcart\core\models\File as FileModel,
+    gplcart\core\models\User as UserModel,
+    gplcart\core\models\Store as StoreModel,
+    gplcart\core\models\Alias as AliasModel,
+    gplcart\core\helpers\Request as RequestHelper,
+    gplcart\core\models\Language as LanguageModel;
+// New
 use gplcart\core\models\Install as InstallModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
 
@@ -25,11 +34,20 @@ class Install extends ComponentValidator
     protected $install;
 
     /**
+     * @param Config $config
+     * @param LanguageModel $language
+     * @param FileModel $file
+     * @param UserModel $user
+     * @param StoreModel $store
+     * @param AliasModel $alias
+     * @param RequestHelper $request
      * @param InstallModel $install
      */
-    public function __construct(InstallModel $install)
+    public function __construct(Config $config, LanguageModel $language, FileModel $file,
+            UserModel $user, StoreModel $store, AliasModel $alias, RequestHelper $request,
+            InstallModel $install)
     {
-        parent::__construct();
+        parent::__construct($config, $language, $file, $user, $store, $alias, $request);
 
         $this->install = $install;
     }
@@ -120,7 +138,7 @@ class Install extends ComponentValidator
 
         $options = $this->options;
         $this->options['parents'] = 'user';
-        $result = $this->validateEmailComponent();
+        $result = $this->validateEmail();
         $this->options = $options; // Restore original
 
         return $result;

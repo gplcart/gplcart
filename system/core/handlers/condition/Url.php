@@ -9,7 +9,8 @@
 
 namespace gplcart\core\handlers\condition;
 
-use gplcart\core\Route;
+use gplcart\core\Route,
+    gplcart\core\Config;
 use gplcart\core\handlers\condition\Base as BaseHandler;
 
 /**
@@ -25,11 +26,12 @@ class Url extends BaseHandler
     protected $route;
 
     /**
+     * @param Config $config
      * @param Route $route
      */
-    public function __construct(Route $route)
+    public function __construct(Config $config, Route $route)
     {
-        parent::__construct();
+        parent::__construct($config);
 
         $this->route = $route;
     }
