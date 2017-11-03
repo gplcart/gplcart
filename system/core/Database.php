@@ -23,7 +23,7 @@ class Database
      * PDO class instance
      * @var \PDO $pdo
      */
-    protected $pdo;
+    static protected $pdo;
 
     /**
      * An array of collected queries
@@ -45,23 +45,24 @@ class Database
      */
     public function set($config)
     {
-        if (isset($this->pdo)) {
+        if (isset(static::$pdo)) {
             return $this;
         }
 
+        $dns = '';
         if (is_array($config)) {
             $config += array('user' => null, 'password' => null);
             $dns = "{$config['type']}:host={$config['host']};port={$config['port']};dbname={$config['name']}";
         } else if (is_string($config)) {
             $dns = $config;
         } else if ($config instanceof \PDO) {
-            $this->pdo = $config;
+            static::$pdo = $config;
             return $this;
         }
 
         try {
-            $this->pdo = new PDO($dns, $config['user'], $config['password']);
-            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            static::$pdo = new PDO($dns, $config['user'], $config['password']);
+            static::$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $ex) {
             throw new DatabaseException('Cannot connect to database: ' . $ex->getMessage());
         }
@@ -75,16 +76,7 @@ class Database
      */
     public function getPdo()
     {
-        return $this->pdo;
-    }
-
-    /**
-     * Sets PDO instance
-     * @param \PDO $instance
-     */
-    public function setPdo(\PDO $instance)
-    {
-        $this->pdo = $instance;
+        return static::$pdo;
     }
 
     /**
@@ -103,7 +95,7 @@ class Database
      */
     public function query($statement)
     {
-        $result = $this->pdo->query($statement);
+        $result = static::$pdo->query($statement);
         $this->logs[] = $statement;
         return $result;
     }
@@ -115,7 +107,7 @@ class Database
      */
     public function exec($statement)
     {
-        $result = $this->pdo->exec($statement);
+        $result = static::$pdo->exec($statement);
         $this->logs[] = $statement;
         return $result;
     }
@@ -140,7 +132,7 @@ class Database
      */
     public function run($sql, array $params = array())
     {
-        $sth = $this->pdo->prepare($sql);
+        $sth = static::$pdo->prepare($sql);
 
         foreach ($params as $key => $value) {
             $key = is_numeric($key) ? $key + 1 : ":$key";
@@ -251,14 +243,14 @@ class Database
         $fields = implode(',', $keys);
         $values = ':' . implode(',:', $keys);
 
-        $sth = $this->pdo->prepare("INSERT INTO $table ($fields) VALUES ($values)");
+        $sth = static::$pdo->prepare("INSERT INTO $table ($fields) VALUES ($values)");
 
         foreach ($data as $key => $value) {
             $sth->bindValue(":$key", $value);
         }
 
         $sth->execute();
-        return $this->pdo->lastInsertId();
+        return static::$pdo->lastInsertId();
     }
 
     /**
@@ -414,7 +406,7 @@ class Database
         }
 
         $where = implode(' AND ', $carray);
-        $stmt = $this->pdo->prepare("UPDATE $table SET $fields WHERE $where");
+        $stmt = static::$pdo->prepare("UPDATE $table SET $fields WHERE $where");
 
         foreach ($data as $key => $value) {
             $stmt->bindValue(":$key", $value);
@@ -446,7 +438,7 @@ class Database
         }
 
         $where = implode(' AND ', $carray);
-        $stmt = $this->pdo->prepare("DELETE FROM $table WHERE $where");
+        $stmt = static::$pdo->prepare("DELETE FROM $table WHERE $where");
 
         foreach ($conditions as $key => $value) {
             $stmt->bindValue(":$key", $value);
@@ -472,7 +464,7 @@ class Database
      */
     public function tableExists($table)
     {
-        $result = $this->query("SHOW TABLES LIKE " . $this->pdo->quote($table));
+        $result = $this->query("SHOW TABLES LIKE " . static::$pdo->quote($table));
         return $result->rowCount() > 0;
     }
 
