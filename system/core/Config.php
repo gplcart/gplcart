@@ -108,13 +108,13 @@ class Config
 
     /**
      * Sets the database
-     * @param mixed $config
+     * @param mixed $db
      * @return \gplcart\core\Database
      */
-    public function setDb($config)
+    public function setDb($db)
     {
         $this->db = Container::get('gplcart\\core\\Database');
-        $this->db->set($config);
+        $this->db->set($db);
         return $this->db;
     }
 
