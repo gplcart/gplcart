@@ -170,8 +170,7 @@ class PhpUnitTest extends PHPUnit_Extensions_Database_TestCase
             $pdo->exec($create);
         }
 
-        parent::setUp();
-
+        $this->setUp();
         return $pdo;
     }
 
@@ -188,8 +187,6 @@ class PhpUnitTest extends PHPUnit_Extensions_Database_TestCase
 
             parent::tearDown();
         }
-        
-        //$this->getMockBuilder($className)->
     }
 
 }
