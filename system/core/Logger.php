@@ -30,10 +30,12 @@ class Logger
     /**
      * Sets the database instance
      * @param \gplcart\core\Database $db
+     * @return $this
      */
     public function setDb($db)
     {
         $this->db = $db;
+        return $this;
     }
 
     /**
