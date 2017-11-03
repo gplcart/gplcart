@@ -59,15 +59,6 @@ abstract class Model
     }
 
     /**
-     * Returns config instance
-     * @return \gplcart\core\Config
-     */
-    public function getConfig()
-    {
-        return $this->config;
-    }
-
-    /**
      * Returns PDO database instance
      * @return \gplcart\core\Database
      */
