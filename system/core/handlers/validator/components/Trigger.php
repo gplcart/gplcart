@@ -192,7 +192,7 @@ class Trigger extends ComponentValidator
     {
         try {
             $handlers = $this->condition->getHandlers();
-            return parent::call($handlers, $condition_id, 'validate', $args);
+            return static::call($handlers, $condition_id, 'validate', $args);
         } catch (\Exception $ex) {
             return $ex->getMessage();
         }

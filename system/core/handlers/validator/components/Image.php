@@ -159,7 +159,7 @@ class Image extends ComponentValidator
         }
 
         try {
-            return parent::callRef($handler, null, 'validate', $value);
+            return static::callRef($handler, null, 'validate', $value);
         } catch (\Exception $ex) {
             return false;
         }

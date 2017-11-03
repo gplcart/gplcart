@@ -205,7 +205,7 @@ class CollectionItem extends ComponentValidator
 
         try {
             $handlers = $this->collection->getHandlers();
-            $result = parent::call($handlers, $collection['type'], 'validate', array($value));
+            $result = static::call($handlers, $collection['type'], 'validate', array($value));
         } catch (\Exception $ex) {
             $result = $ex->getMessage();
         }
