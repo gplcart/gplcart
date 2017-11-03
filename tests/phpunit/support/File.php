@@ -32,7 +32,7 @@ class File
      */
     public function __construct()
     {
-        $this->temp = $this->getTempDir();
+        $this->temp = __DIR__ . '/tmp';
     }
 
     /**
@@ -158,15 +158,6 @@ class File
                 unlink($file);
             }
         }
-    }
-
-    /**
-     * Returns the temporary file directory
-     * @return string
-     */
-    public function getTempDir()
-    {
-        return ini_get('upload_tmp_dir') ?: sys_get_temp_dir();
     }
 
 }
