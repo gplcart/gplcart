@@ -72,15 +72,6 @@ class PhpUnitTest extends PHPUnit_Extensions_Database_TestCase
     }
 
     /**
-     * Sets database fixtures
-     * @param string|array $fixtures
-     */
-    protected function setFixtures($fixtures)
-    {
-        $this->fixtures = (array) $fixtures;
-    }
-
-    /**
      * Returns the test database connection
      * @return \PHPUnit_Extensions_Database_DB_IDatabaseConnection
      */
@@ -100,17 +91,13 @@ class PhpUnitTest extends PHPUnit_Extensions_Database_TestCase
 
     /**
      * Returns the test dataset
-     * @return null|\PHPUnit_Extensions_Database_DataSet_IDataSet
+     * @return PHPUnit_Extensions_Database_DataSet_IDataSet
      */
     protected function getDataSet()
     {
-        if (empty($this->fixtures)) {
-            return null;
-        }
-
         $dataset = new PHPUnit_Extensions_Database_DataSet_CompositeDataSet;
 
-        foreach ((array) $this->fixtures as $fixture) {
+        foreach ($this->fixtures as $fixture) {
             $dataset->addDataSet($this->createFixtureDataSet($fixture));
         }
 
@@ -136,7 +123,7 @@ class PhpUnitTest extends PHPUnit_Extensions_Database_TestCase
     }
 
     /**
-     * Assets that fixture table equals to the source
+     * Assets that fixture table equals to the fixture source
      * @param string $fixture
      */
     protected function assertFixtureTable($fixture)
@@ -147,32 +134,45 @@ class PhpUnitTest extends PHPUnit_Extensions_Database_TestCase
     }
 
     /**
-     * Set up database using fixtures
+     * Performs assertions shared by all tests of a test case
      */
-    protected function setUp()
+    protected function assertPreConditions()
     {
-        if (!empty($this->fixtures)) {
+        foreach ($this->fixtures as $fixture) {
+            $this->assertFixtureTable($fixture);
+        }
+    }
 
-            $dataset = $this->getDataSet();
-            $pdo = $this->getConnection()->getConnection();
+    /**
+     * Set up test database using fixture(s)
+     * @param string|array $fixtures
+     * @return \PDO
+     */
+    protected function setUpTestDatabase($fixtures)
+    {
+        $this->fixtures = (array) $fixtures;
 
-            foreach ($dataset->getTableNames() as $table) {
+        $dataset = $this->getDataSet();
+        $pdo = $this->getConnection()->getConnection();
 
-                $pdo->exec("DROP TABLE IF EXISTS $table;");
-                $meta = $dataset->getTableMetaData($table);
-                $create = "CREATE TABLE IF NOT EXISTS $table ";
+        foreach ($dataset->getTableNames() as $table) {
 
-                $cols = array();
-                foreach ($meta->getColumns() as $col) {
-                    $cols[] = "$col VARCHAR(255)";
-                }
+            $pdo->exec("DROP TABLE IF EXISTS $table;");
+            $meta = $dataset->getTableMetaData($table);
+            $create = "CREATE TABLE IF NOT EXISTS $table ";
 
-                $create .= '(' . implode(',', $cols) . ');';
-                $pdo->exec($create);
+            $cols = array();
+            foreach ($meta->getColumns() as $col) {
+                $cols[] = "$col VARCHAR(255)";
             }
+
+            $create .= '(' . implode(',', $cols) . ');';
+            $pdo->exec($create);
         }
 
         parent::setUp();
+
+        return $pdo;
     }
 
     /**
@@ -185,9 +185,11 @@ class PhpUnitTest extends PHPUnit_Extensions_Database_TestCase
             foreach ($this->getDataSet()->getTableNames() as $table) {
                 $pdo->exec("DROP TABLE IF EXISTS $table;");
             }
-        }
 
-        parent::tearDown();
+            parent::tearDown();
+        }
+        
+        //$this->getMockBuilder($className)->
     }
 
 }
