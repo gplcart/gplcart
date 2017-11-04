@@ -43,7 +43,7 @@ class ConfigTest extends PhpUnitTest
      */
     public function testGetDb()
     {
-        $this->assertTrue(is_object($this->object->getDb()));
+        $this->assertInstanceOf('gplcart\core\Database', $this->object->getDb());
     }
 
     /**
