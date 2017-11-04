@@ -48,6 +48,21 @@ abstract class Model
     }
 
     /**
+     * Access protected properties
+     * @param string $name
+     * @return mixed
+     */
+    public function __get($name)
+    {
+        if (property_exists($this, $name)) {
+            return $this->$name;
+        }
+
+        user_error("Property $name does not exist");
+        return null;
+    }
+
+    /**
      * Returns PDO database instance
      * @return \gplcart\core\Database
      */
