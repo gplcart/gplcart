@@ -9,7 +9,9 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
+use gplcart\core\Model,
+    gplcart\core\Config,
+    gplcart\core\Hook;
 use gplcart\core\models\Country as CountryModel;
 
 /**
@@ -25,11 +27,13 @@ class Address extends Model
     protected $country;
 
     /**
+     * @param Config $config
+     * @param Hook $hook
      * @param CountryModel $country
      */
-    public function __construct(CountryModel $country)
+    public function __construct(Config $config, Hook $hook, CountryModel $country)
     {
-        parent::__construct();
+        parent::__construct($config, $hook);
 
         $this->country = $country;
     }

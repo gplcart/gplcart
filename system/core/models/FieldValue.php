@@ -9,7 +9,9 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
+use gplcart\core\Model,
+    gplcart\core\Config,
+    gplcart\core\Hook;
 use gplcart\core\models\File as FileModel,
     gplcart\core\models\Language as LanguageModel;
 use gplcart\core\traits\Translation as TranslationTrait;
@@ -35,12 +37,14 @@ class FieldValue extends Model
     protected $language;
 
     /**
+     * @param Config $config
+     * @param Hook $hook
      * @param FileModel $file
      * @param LanguageModel $language
      */
-    public function __construct(FileModel $file, LanguageModel $language)
+    public function __construct(Config $config, Hook $hook, FileModel $file, LanguageModel $language)
     {
-        parent::__construct();
+        parent::__construct($config, $hook);
 
         $this->file = $file;
         $this->language = $language;

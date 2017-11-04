@@ -10,7 +10,9 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Model,
-    gplcart\core\Handler;
+    gplcart\core\Handler,
+    gplcart\core\Config,
+    gplcart\core\Hook;
 use gplcart\core\models\Language as LanguageModel;
 
 /**
@@ -32,11 +34,13 @@ class Condition extends Model
     protected $processed = array();
 
     /**
+     * @param Config $config
+     * @param Hook $hook
      * @param LanguageModel $language
      */
-    public function __construct(LanguageModel $language)
+    public function __construct(Config $config, Hook $hook, LanguageModel $language)
     {
-        parent::__construct();
+        parent::__construct($config, $hook);
 
         $this->language = $language;
     }

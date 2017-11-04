@@ -10,7 +10,9 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Route,
-    gplcart\core\Model;
+    gplcart\core\Model,
+    gplcart\core\Config,
+    gplcart\core\Hook;
 use gplcart\core\models\Language as LanguageModel;
 
 /**
@@ -32,12 +34,14 @@ class Alias extends Model
     protected $route;
 
     /**
-     * @param LanguageModel $language
+     * @param Config $config
+     * @param Hook $hook
      * @param Route $route
+     * @param LanguageModel $language
      */
-    public function __construct(LanguageModel $language, Route $route)
+    public function __construct(Config $config, Hook $hook, Route $route, LanguageModel $language)
     {
-        parent::__construct();
+        parent::__construct($config, $hook);
 
         $this->route = $route;
         $this->language = $language;

@@ -10,7 +10,9 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Model,
-    gplcart\core\Handler;
+    gplcart\core\Handler,
+    gplcart\core\Config,
+    gplcart\core\Hook;
 use gplcart\core\helpers\Url as UrlHelper;
 use gplcart\core\models\File as FileModel;
 
@@ -33,12 +35,14 @@ class Image extends Model
     protected $url;
 
     /**
+     * @param Config $config
+     * @param Hook $hook
      * @param FileModel $file
      * @param UrlHelper $url
      */
-    public function __construct(FileModel $file, UrlHelper $url)
+    public function __construct(Config $config, Hook $hook, FileModel $file, UrlHelper $url)
     {
-        parent::__construct();
+        parent::__construct($config, $hook);
 
         $this->url = $url;
         $this->file = $file;

@@ -9,7 +9,9 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
+use gplcart\core\Model,
+    gplcart\core\Config,
+    gplcart\core\Hook;
 use gplcart\core\helpers\Filter as FilterHelper;
 
 /**
@@ -25,11 +27,13 @@ class Filter extends Model
     protected $filter;
 
     /**
+     * @param Config $config
+     * @param Hook $hook
      * @param FilterHelper $filter
      */
-    public function __construct(FilterHelper $filter)
+    public function __construct(Config $config, Hook $hook, FilterHelper $filter)
     {
-        parent::__construct();
+        parent::__construct($config, $hook);
 
         $this->filter = $filter;
     }

@@ -9,7 +9,9 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
+use gplcart\core\Model,
+    gplcart\core\Config,
+    gplcart\core\Hook;
 use gplcart\core\models\Sku as SkuModel,
     gplcart\core\models\User as UserModel,
     gplcart\core\models\Product as ProductModel,
@@ -67,6 +69,8 @@ class Cart extends Model
     protected $request;
 
     /**
+     * @param Config $config
+     * @param Hook $hook
      * @param ProductModel $product
      * @param SkuModel $sku
      * @param CurrencyModel $currency
@@ -75,11 +79,11 @@ class Cart extends Model
      * @param LanguageModel $language
      * @param RequestHelper $request
      */
-    public function __construct(ProductModel $product, SkuModel $sku, CurrencyModel $currency,
-            UserModel $user, WishlistModel $wishlist, LanguageModel $language,
-            RequestHelper $request)
+    public function __construct(Config $config, Hook $hook, ProductModel $product, SkuModel $sku,
+            CurrencyModel $currency, UserModel $user, WishlistModel $wishlist,
+            LanguageModel $language, RequestHelper $request)
     {
-        parent::__construct();
+        parent::__construct($config, $hook);
 
         $this->sku = $sku;
         $this->user = $user;

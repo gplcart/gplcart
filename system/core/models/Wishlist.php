@@ -9,7 +9,9 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
+use gplcart\core\Model,
+    gplcart\core\Config,
+    gplcart\core\Hook;
 use gplcart\core\models\User as UserModel,
     gplcart\core\models\Language as LanguageModel;
 use gplcart\core\helpers\Url as UrlHelper;
@@ -39,14 +41,16 @@ class Wishlist extends Model
     protected $url;
 
     /**
+     * @param Config $config
+     * @param Hook $hook
      * @param UserModel $user
      * @param LanguageModel $language
      * @param UrlHelper $url
      */
-    public function __construct(UserModel $user, LanguageModel $language,
-            UrlHelper $url)
+    public function __construct(Config $config, Hook $hook, UserModel $user,
+            LanguageModel $language, UrlHelper $url)
     {
-        parent::__construct();
+        parent::__construct($config, $hook);
 
         $this->url = $url;
         $this->user = $user;

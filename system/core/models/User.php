@@ -9,7 +9,9 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
+use gplcart\core\Model,
+    gplcart\core\Config,
+    gplcart\core\Hook;
 use gplcart\core\models\Mail as MailModel,
     gplcart\core\models\Address as AddressModel,
     gplcart\core\models\UserRole as UserRoleModel,
@@ -59,16 +61,18 @@ class User extends Model
     protected $uid;
 
     /**
+     * @param Config $config
+     * @param Hook $hook
+     * @param LanguageModel $language
      * @param AddressModel $address
      * @param UserRoleModel $role
      * @param MailModel $mail
-     * @param LanguageModel $language
      * @param SessionHelper $session
      */
-    public function __construct(AddressModel $address, UserRoleModel $role,
-            MailModel $mail, LanguageModel $language, SessionHelper $session)
+    public function __construct(Config $config, Hook $hook, LanguageModel $language,
+            AddressModel $address, UserRoleModel $role, MailModel $mail, SessionHelper $session)
     {
-        parent::__construct();
+        parent::__construct($config, $hook);
 
         $this->mail = $mail;
         $this->role = $role;

@@ -9,7 +9,9 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
+use gplcart\core\Model,
+    gplcart\core\Config,
+    gplcart\core\Hook;
 use gplcart\core\traits\Image as ImageTrait,
     gplcart\core\traits\Alias as AliasTrait;
 use gplcart\core\models\File as FileModel,
@@ -51,15 +53,17 @@ class Category extends Model
     protected $file;
 
     /**
+     * @param Config $config
+     * @param Hook $hook
      * @param AliasModel $alias
      * @param FileModel $file
      * @param LanguageModel $language
      * @param CategoryGroupModel $category_group
      */
-    public function __construct(AliasModel $alias, FileModel $file,
+    public function __construct(Config $config, Hook $hook, AliasModel $alias, FileModel $file,
             LanguageModel $language, CategoryGroupModel $category_group)
     {
-        parent::__construct();
+        parent::__construct($config, $hook);
 
         $this->file = $file;
         $this->alias = $alias;

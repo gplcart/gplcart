@@ -9,7 +9,9 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
+use gplcart\core\Model,
+    gplcart\core\Config,
+    gplcart\core\Hook;
 use gplcart\core\traits\Translation as TranslationTrait;
 
 /**
@@ -21,11 +23,12 @@ class Collection extends Model
     use TranslationTrait;
 
     /**
-     * Constructor
+     * @param Config $config
+     * @param Hook $hook
      */
-    public function __construct()
+    public function __construct(Config $config, Hook $hook)
     {
-        parent::__construct();
+        parent::__construct($config, $hook);
     }
 
     /**

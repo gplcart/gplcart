@@ -10,7 +10,9 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Model,
-    gplcart\core\Cache;
+    gplcart\core\Cache,
+    gplcart\core\Config,
+    gplcart\core\Hook;
 use gplcart\core\traits\Image as ImageTrait,
     gplcart\core\traits\Alias as AliasTrait;
 use gplcart\core\models\Sku as SkuModel,
@@ -93,24 +95,25 @@ class Product extends Model
     protected $request;
 
     /**
+     * @param Config $config
+     * @param Hook $hook
+     * @param Cache $cache
+     * @param LanguageModel $language
      * @param AliasModel $alias
      * @param FileModel $file
      * @param PriceModel $price
      * @param PriceRuleModel $pricerule
-     * @param LanguageModel $language
      * @param SkuModel $sku
      * @param SearchModel $search
      * @param ProductFieldModel $product_field
-     * @param Cache $cache
      * @param RequestHelper $request
      */
-    public function __construct(AliasModel $alias, FileModel $file,
-            PriceModel $price, PriceRuleModel $pricerule,
-            LanguageModel $language, SkuModel $sku, SearchModel $search,
-            ProductFieldModel $product_field, Cache $cache,
+    public function __construct(Config $config, Hook $hook, Cache $cache, LanguageModel $language,
+            AliasModel $alias, FileModel $file, PriceModel $price, PriceRuleModel $pricerule,
+            SkuModel $sku, SearchModel $search, ProductFieldModel $product_field,
             RequestHelper $request)
     {
-        parent::__construct();
+        parent::__construct($config, $hook);
 
         $this->sku = $sku;
         $this->file = $file;

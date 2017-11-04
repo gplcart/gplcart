@@ -9,7 +9,9 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
+use gplcart\core\Model,
+    gplcart\core\Config,
+    gplcart\core\Hook;
 use gplcart\core\models\Condition as ConditionModel;
 
 /**
@@ -25,11 +27,13 @@ class Trigger extends Model
     protected $condition;
 
     /**
+     * @param Config $config
+     * @param Hook $hook
      * @param ConditionModel $condition
      */
-    public function __construct(ConditionModel $condition)
+    public function __construct(Config $config, Hook $hook, ConditionModel $condition)
     {
-        parent::__construct();
+        parent::__construct($config, $hook);
 
         $this->condition = $condition;
     }

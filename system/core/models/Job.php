@@ -10,7 +10,9 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Model,
-    gplcart\core\Handler;
+    gplcart\core\Handler,
+    gplcart\core\Config,
+    gplcart\core\Hook;
 use gplcart\core\helpers\Url as UrlHelper,
     gplcart\core\helpers\Session as SessionHelper;
 use gplcart\core\models\Language as LanguageModel;
@@ -45,13 +47,16 @@ class Job extends Model
     protected $url;
 
     /**
+     * @param Config $config
+     * @param Hook $hook
      * @param LanguageModel $language
      * @param SessionHelper $session
      * @param UrlHelper $url
      */
-    public function __construct(LanguageModel $language, SessionHelper $session, UrlHelper $url)
+    public function __construct(Config $config, Hook $hook, LanguageModel $language,
+            SessionHelper $session, UrlHelper $url)
     {
-        parent::__construct();
+        parent::__construct($config, $hook);
 
         $this->url = $url;
         $this->session = $session;

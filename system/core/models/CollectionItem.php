@@ -10,7 +10,9 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Model,
-    gplcart\core\Handler;
+    gplcart\core\Handler,
+    gplcart\core\Config,
+    gplcart\core\Hook;
 use gplcart\core\models\Collection as CollectionModel;
 
 /**
@@ -26,11 +28,13 @@ class CollectionItem extends Model
     protected $collection;
 
     /**
+     * @param Config $config
+     * @param Hook $hook
      * @param CollectionModel $collection
      */
-    public function __construct(CollectionModel $collection)
+    public function __construct(Config $config, Hook $hook, CollectionModel $collection)
     {
-        parent::__construct();
+        parent::__construct($config, $hook);
 
         $this->collection = $collection;
     }

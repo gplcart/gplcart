@@ -9,7 +9,9 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
+use gplcart\core\Model,
+    gplcart\core\Config,
+    gplcart\core\Hook;
 use gplcart\core\models\Field as FieldModel,
     gplcart\core\models\Language as LanguageModel,
     gplcart\core\models\FieldValue as FieldValueModel;
@@ -39,14 +41,16 @@ class ProductClass extends Model
     protected $field_value;
 
     /**
+     * @param Config $config
+     * @param Hook $hook
      * @param LanguageModel $language
      * @param FieldModel $field
      * @param FieldValueModel $field_value
      */
-    public function __construct(LanguageModel $language, FieldModel $field,
-            FieldValueModel $field_value)
+    public function __construct(Config $config, Hook $hook, LanguageModel $language,
+            FieldModel $field, FieldValueModel $field_value)
     {
-        parent::__construct();
+        parent::__construct($config, $hook);
 
         $this->field = $field;
         $this->language = $language;

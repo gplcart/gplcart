@@ -9,6 +9,9 @@
 
 namespace gplcart\core;
 
+use gplcart\core\Config,
+    gplcart\core\Hook;
+
 /**
  * Parent class for models
  */
@@ -34,28 +37,14 @@ abstract class Model
     protected $db;
 
     /**
-     * Constructor
+     * @param Config $config
+     * @param Hook $hook
      */
-    public function __construct()
+    public function __construct(Config $config, Hook $hook)
     {
-        $this->hook = Container::get('gplcart\\core\\Hook');
-        $this->config = Container::get('gplcart\\core\\Config');
+        $this->hook = $hook;
+        $this->config = $config;
         $this->db = $this->config->getDb();
-    }
-
-    /**
-     * Access protected properties
-     * @param string $name
-     * @return mixed
-     */
-    public function __get($name)
-    {
-        if (property_exists($this, $name)) {
-            return $this->$name;
-        }
-
-        user_error("Property $name does not exist");
-        return null;
     }
 
     /**

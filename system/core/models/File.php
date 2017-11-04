@@ -9,7 +9,9 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model;
+use gplcart\core\Model,
+    gplcart\core\Config,
+    gplcart\core\Hook;
 use gplcart\core\helpers\Url as UrlHelper,
     gplcart\core\helpers\Curl as CurlHelper;
 use gplcart\core\models\Language as LanguageModel,
@@ -73,15 +75,17 @@ class File extends Model
     protected $error;
 
     /**
+     * @param Config $config
+     * @param Hook $hook
      * @param LanguageModel $language
      * @param ValidatorModel $validator
      * @param UrlHelper $url
      * @param CurlHelper $curl
      */
-    public function __construct(LanguageModel $language, ValidatorModel $validator, UrlHelper $url,
-            CurlHelper $curl)
+    public function __construct(Config $config, Hook $hook, LanguageModel $language,
+            ValidatorModel $validator, UrlHelper $url, CurlHelper $curl)
     {
-        parent::__construct();
+        parent::__construct($config, $hook);
 
         $this->url = $url;
         $this->curl = $curl;

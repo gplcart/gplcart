@@ -11,7 +11,8 @@ namespace gplcart\core\models;
 
 use DirectoryIterator;
 use gplcart\core\Model,
-    gplcart\core\Hook;
+    gplcart\core\Hook,
+    gplcart\core\Config;
 use gplcart\core\models\Language as LanguageModel;
 use gplcart\core\traits\Dependency as DependencyTrait;
 
@@ -30,20 +31,14 @@ class Module extends Model
     protected $language;
 
     /**
-     * Hook class instance
-     * @var \gplcart\core\Hook $hook
-     */
-    protected $hook;
-
-    /**
+     * @param Config $config
      * @param Hook $hook
      * @param LanguageModel $language
      */
-    public function __construct(Hook $hook, LanguageModel $language)
+    public function __construct(Config $config, Hook $hook, LanguageModel $language)
     {
-        parent::__construct();
+        parent::__construct($config, $hook);
 
-        $this->hook = $hook;
         $this->language = $language;
     }
 

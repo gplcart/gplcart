@@ -10,7 +10,9 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Model,
-    gplcart\core\Cache;
+    gplcart\core\Cache,
+    gplcart\core\Config,
+    gplcart\core\Hook;
 use gplcart\core\models\File as FileModel,
     gplcart\core\models\Alias as AliasModel,
     gplcart\core\models\Language as LanguageModel;
@@ -51,15 +53,17 @@ class Page extends Model
     protected $file;
 
     /**
+     * @param Config $config
+     * @param Hook $hook
+     * @param Cache $cache
+     * @param LanguageModel $language
      * @param AliasModel $alias
      * @param FileModel $file
-     * @param LanguageModel $language
-     * @param Cache $cache
      */
-    public function __construct(AliasModel $alias, FileModel $file,
-            LanguageModel $language, Cache $cache)
+    public function __construct(Config $config, Hook $hook, Cache $cache, LanguageModel $language,
+            AliasModel $alias, FileModel $file)
     {
-        parent::__construct();
+        parent::__construct($config, $hook);
 
         $this->file = $file;
         $this->alias = $alias;

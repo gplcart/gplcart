@@ -10,7 +10,9 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Model,
-    gplcart\core\Handler;
+    gplcart\core\Handler,
+    gplcart\core\Config,
+    gplcart\core\Hook;
 use gplcart\core\models\Language as LanguageModel;
 
 /**
@@ -26,11 +28,13 @@ class Validator extends Model
     protected $language;
 
     /**
+     * @param Config $config
+     * @param Hook $hook
      * @param LanguageModel $language
      */
-    public function __construct(LanguageModel $language)
+    public function __construct(Config $config, Hook $hook, LanguageModel $language)
     {
-        parent::__construct();
+        parent::__construct($config, $hook);
 
         $this->language = $language;
     }
@@ -70,19 +74,13 @@ class Validator extends Model
      */
     public function callHandler($handler_id, &$submitted, array $options)
     {
-        $result = null;
-
         try {
             $handlers = $this->getHandlers();
             $handler = Handler::get($handlers, $handler_id, 'validate');
-            if (!empty($handler)) {
-                $result = call_user_func_array($handler, array(&$submitted, $options));
-            }
+            return call_user_func_array($handler, array(&$submitted, $options));
         } catch (\Exception $ex) {
-            trigger_error($ex->getMessage());
+            return $ex->getMessage();
         }
-
-        return $result;
     }
 
     /**
