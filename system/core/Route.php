@@ -165,7 +165,7 @@ class Route
      */
     public function outputAlias($path = null)
     {
-        if (empty($this->db)) {
+        if (!$this->db->isInitialized()) {
             return null;
         }
 
