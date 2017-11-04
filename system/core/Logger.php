@@ -48,12 +48,11 @@ class Logger
      */
     public function log($type, $data, $severity = 'info', $translatable = true)
     {
-        if (!$this->db instanceof Database) {
+        if (!$this->db->isInitialized()) {
             return false;
         }
 
         $message = '';
-
         if (is_string($data)) {
             $message = $data;
         } elseif (isset($data['message'])) {
@@ -99,6 +98,10 @@ class Logger
      */
     public function selectErrors($limit = null)
     {
+        if (!$this->db->isInitialized()) {
+            return array();
+        }
+
         $sql = "SELECT * FROM log WHERE type LIKE ? ORDER BY time DESC";
 
         if (isset($limit)) {
