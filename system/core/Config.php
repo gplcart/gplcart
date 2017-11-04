@@ -16,6 +16,12 @@ class Config
 {
 
     /**
+     * Logger class instance
+     * @var \gplcart\core\Logger $logger
+     */
+    protected $logger;
+
+    /**
      * Database class instance
      * @var \gplcart\core\Database $db
      */
@@ -38,6 +44,16 @@ class Config
      * @var boolean
      */
     protected $initialized;
+
+    /**
+     * @param Logger $logger
+     * @param Database $db
+     */
+    public function __construct(Logger $logger, Database $db)
+    {
+        $this->db = $db;
+        $this->logger = $logger;
+    }
 
     /**
      * Initialize the system configuration
@@ -75,13 +91,18 @@ class Config
             error_reporting(E_ALL);
         }
 
-        /* @var $logger \gplcart\core\Logger */
-        $logger = Container::get('gplcart\\core\\Logger');
-        $logger->setDb($this->db);
+        if ($this->get('error_display', 0)) {
+            ini_set('display_errors', 1);
+            ini_set('track_errors', 1);
+            ini_set('display_startup_errors', 1);
+            ini_set('html_errors', 1);
+        }
 
-        register_shutdown_function(array($logger, 'shutdownHandler'));
-        set_exception_handler(array($logger, 'exceptionHandler'));
-        set_error_handler(array($logger, 'errorHandler'), error_reporting());
+        $this->logger->setDb($this->db);
+
+        register_shutdown_function(array($this->logger, 'shutdownHandler'));
+        set_exception_handler(array($this->logger, 'exceptionHandler'));
+        set_error_handler(array($this->logger, 'errorHandler'), error_reporting());
 
         date_default_timezone_set($this->get('timezone', 'Europe/London'));
     }
@@ -113,9 +134,7 @@ class Config
      */
     public function setDb($db)
     {
-        $this->db = Container::get('gplcart\\core\\Database');
-        $this->db->set($db);
-        return $this->db;
+        return $this->db->set($db);
     }
 
     /**
@@ -145,7 +164,7 @@ class Config
      */
     public function set($key, $value)
     {
-        if (empty($this->db) || empty($key) || !isset($value)) {
+        if (!$this->db->isInitialized() || empty($key) || !isset($value)) {
             return false;
         }
 
@@ -176,7 +195,7 @@ class Config
      */
     public function select($name = null, $default = null)
     {
-        if (empty($this->db)) {
+        if (!$this->db->isInitialized()) {
             return isset($name) ? $default : array();
         }
 
@@ -496,7 +515,7 @@ class Config
      */
     public function getInstalledModules()
     {
-        if (empty($this->db)) {
+        if (!$this->db->isInitialized()) {
             return array();
         }
 
@@ -592,11 +611,11 @@ class Config
      */
     public function isValidModuleId($id)
     {
-        if (in_array($id, array('core', 'gplcart'))) {
+        if (preg_match('/^[a-z][a-z0-9_]+$/', $id) !== 1) {
             return false;
         }
 
-        return preg_match('/^[a-z][a-z0-9_]+$/', $id) === 1;
+        return !in_array($id, array('core', 'gplcart'));
     }
 
     /**
