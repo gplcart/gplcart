@@ -9,9 +9,9 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Config,
-    gplcart\core\Hook;
+use gplcart\core\Config,
+    gplcart\core\Hook,
+    gplcart\core\Database;
 use gplcart\core\models\Mail as MailModel,
     gplcart\core\models\Address as AddressModel,
     gplcart\core\models\UserRole as UserRoleModel,
@@ -21,8 +21,26 @@ use gplcart\core\helpers\Session as SessionHelper;
 /**
  * Manages basic behaviors and data related to users
  */
-class User extends Model
+class User
 {
+
+    /**
+     * Database class instance
+     * @var \gplcart\core\Database $db
+     */
+    protected $db;
+
+    /**
+     * Hook class instance
+     * @var \gplcart\core\Hook $hook
+     */
+    protected $hook;
+
+    /**
+     * Config class instance
+     * @var \gplcart\core\Config $config
+     */
+    protected $config;
 
     /**
      * Address model instance
@@ -61,18 +79,21 @@ class User extends Model
     protected $uid;
 
     /**
-     * @param Config $config
      * @param Hook $hook
+     * @param Database $db
+     * @param Config $config
      * @param LanguageModel $language
      * @param AddressModel $address
      * @param UserRoleModel $role
      * @param MailModel $mail
      * @param SessionHelper $session
      */
-    public function __construct(Config $config, Hook $hook, LanguageModel $language,
+    public function __construct(Hook $hook, Database $db, Config $config, LanguageModel $language,
             AddressModel $address, UserRoleModel $role, MailModel $mail, SessionHelper $session)
     {
-        parent::__construct($config, $hook);
+        $this->db = $db;
+        $this->hook = $hook;
+        $this->config = $config;
 
         $this->mail = $mail;
         $this->role = $role;

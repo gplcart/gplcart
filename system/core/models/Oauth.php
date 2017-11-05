@@ -9,9 +9,7 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Handler,
-    gplcart\core\Config,
+use gplcart\core\Handler,
     gplcart\core\Hook;
 use gplcart\core\helpers\Url as UrlHelper,
     gplcart\core\helpers\Curl as CurlHelper,
@@ -21,8 +19,14 @@ use gplcart\core\exceptions\OauthAuthorization as OauthAuthorizationException;
 /**
  * Manages basic behaviors and data related to Oauth 2.0 functionality
  */
-class Oauth extends Model
+class Oauth
 {
+
+    /**
+     * Hook class instance
+     * @var \gplcart\core\Hook $hook
+     */
+    protected $hook;
 
     /**
      * Curl helper instance
@@ -43,19 +47,16 @@ class Oauth extends Model
     protected $session;
 
     /**
-     * @param Config $config
      * @param Hook $hook
      * @param CurlHelper $curl
      * @param SessionHelper $session
      * @param UrlHelper $url
      */
-    public function __construct(Config $config, Hook $hook, CurlHelper $curl,
-            SessionHelper $session, UrlHelper $url)
+    public function __construct(Hook $hook, CurlHelper $curl, SessionHelper $session, UrlHelper $url)
     {
-        parent::__construct($config, $hook);
-
         $this->url = $url;
         $this->curl = $curl;
+        $this->hook = $hook;
         $this->session = $session;
     }
 

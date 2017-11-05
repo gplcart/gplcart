@@ -9,15 +9,26 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Config,
+use gplcart\core\Config,
     gplcart\core\Hook;
 
 /**
  * Manages basic behaviors and data related to languages and their translations
  */
-class Language extends Model
+class Language
 {
+
+    /**
+     * Hook class instance
+     * @var \gplcart\core\Hook $hook
+     */
+    protected $hook;
+
+    /**
+     * Config class instance
+     * @var \gplcart\core\Config $config
+     */
+    protected $config;
 
     /**
      * Array of processed translations
@@ -44,12 +55,13 @@ class Language extends Model
     protected $prepared = false;
 
     /**
-     * @param Config $config
      * @param Hook $hook
+     * @param Config $config
      */
-    public function __construct(Config $config, Hook $hook)
+    public function __construct(Hook $hook, Config $config)
     {
-        parent::__construct($config, $hook);
+        $this->hook = $hook;
+        $this->config = $config;
     }
 
     /**

@@ -9,9 +9,9 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Config,
-    gplcart\core\Hook;
+use gplcart\core\Config,
+    gplcart\core\Hook,
+    gplcart\core\Database;
 use gplcart\core\traits\Image as ImageTrait,
     gplcart\core\traits\Alias as AliasTrait;
 use gplcart\core\models\File as FileModel,
@@ -22,11 +22,29 @@ use gplcart\core\models\File as FileModel,
 /**
  * Manages basic behaviors and data related to product categories
  */
-class Category extends Model
+class Category
 {
 
     use ImageTrait,
         AliasTrait;
+
+    /**
+     * Database class instance
+     * @var \gplcart\core\Database $db
+     */
+    protected $db;
+
+    /**
+     * Hook class instance
+     * @var \gplcart\core\Hook $hook
+     */
+    protected $hook;
+
+    /**
+     * Config class instance
+     * @var \gplcart\core\Config $config
+     */
+    protected $config;
 
     /**
      * Category group model instance
@@ -53,17 +71,20 @@ class Category extends Model
     protected $file;
 
     /**
-     * @param Config $config
      * @param Hook $hook
+     * @param Database $db
+     * @param Config $config
      * @param AliasModel $alias
      * @param FileModel $file
      * @param LanguageModel $language
      * @param CategoryGroupModel $category_group
      */
-    public function __construct(Config $config, Hook $hook, AliasModel $alias, FileModel $file,
-            LanguageModel $language, CategoryGroupModel $category_group)
+    public function __construct(Hook $hook, Database $db, Config $config, AliasModel $alias,
+            FileModel $file, LanguageModel $language, CategoryGroupModel $category_group)
     {
-        parent::__construct($config, $hook);
+        $this->db = $db;
+        $this->hook = $hook;
+        $this->config = $config;
 
         $this->file = $file;
         $this->alias = $alias;
@@ -103,7 +124,7 @@ class Category extends Model
         $category = $this->db->fetch($sql, $conditions);
 
         $this->attachTranslationTrait($this->db, $category, 'category', $language);
-        $this->attachImagesTrait($this->file, $category, 'category', $language);
+        $this->attachImagesTrait($this->db, $this->file, $category, 'category', $language);
 
         $this->hook->attach('category.get.after', $category, $language, $store_id, $this);
         return $category;

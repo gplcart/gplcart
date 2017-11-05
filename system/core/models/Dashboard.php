@@ -9,17 +9,28 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Handler,
-    gplcart\core\Config,
-    gplcart\core\Hook;
+use gplcart\core\Hook,
+    gplcart\core\Database,
+    gplcart\core\Handler;
 use gplcart\core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related admin dashboard
  */
-class Dashboard extends Model
+class Dashboard
 {
+
+    /**
+     * Database class instance
+     * @var \gplcart\core\Database $db
+     */
+    protected $db;
+
+    /**
+     * Hook class instance
+     * @var \gplcart\core\Hook $hook
+     */
+    protected $hook;
 
     /**
      * Language model instance
@@ -28,14 +39,14 @@ class Dashboard extends Model
     protected $language;
 
     /**
-     * @param Config $config
      * @param Hook $hook
+     * @param Database $db
      * @param LanguageModel $language
      */
-    public function __construct(Config $config, Hook $hook, LanguageModel $language)
+    public function __construct(Hook $hook, Database $db, LanguageModel $language)
     {
-        parent::__construct($config, $hook);
-
+        $this->db = $db;
+        $this->hook = $hook;
         $this->language = $language;
     }
 

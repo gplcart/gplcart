@@ -9,9 +9,7 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Handler,
-    gplcart\core\Config,
+use gplcart\core\Handler,
     gplcart\core\Hook;
 use gplcart\core\helpers\Url as UrlHelper,
     gplcart\core\helpers\Session as SessionHelper;
@@ -20,8 +18,14 @@ use gplcart\core\models\Language as LanguageModel;
 /**
  * Manages basic behaviors and data related to batch jobs
  */
-class Job extends Model
+class Job
 {
+
+    /**
+     * Hook class instance
+     * @var \gplcart\core\Hook $hook
+     */
+    protected $hook;
 
     /**
      * Max milliseconds for one iteration
@@ -47,18 +51,16 @@ class Job extends Model
     protected $url;
 
     /**
-     * @param Config $config
      * @param Hook $hook
      * @param LanguageModel $language
      * @param SessionHelper $session
      * @param UrlHelper $url
      */
-    public function __construct(Config $config, Hook $hook, LanguageModel $language,
-            SessionHelper $session, UrlHelper $url)
+    public function __construct(Hook $hook, LanguageModel $language, SessionHelper $session,
+            UrlHelper $url)
     {
-        parent::__construct($config, $hook);
-
         $this->url = $url;
+        $this->hook = $hook;
         $this->session = $session;
         $this->language = $language;
     }

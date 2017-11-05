@@ -9,8 +9,7 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Config,
+use gplcart\core\Config,
     gplcart\core\Hook;
 use gplcart\core\helpers\Request as RequestHelper;
 use gplcart\core\models\Language as LanguageModel;
@@ -18,8 +17,20 @@ use gplcart\core\models\Language as LanguageModel;
 /**
  * Manages basic behaviors and data related to product comparison
  */
-class Compare extends Model
+class Compare
 {
+
+    /**
+     * Hook class instance
+     * @var \gplcart\core\Hook $hook
+     */
+    protected $hook;
+
+    /**
+     * Config class instance
+     * @var \gplcart\core\Config $config
+     */
+    protected $config;
 
     /**
      * Request class instance
@@ -34,16 +45,16 @@ class Compare extends Model
     protected $language;
 
     /**
-     * @param Config $config
      * @param Hook $hook
+     * @param Config $config
      * @param LanguageModel $language
      * @param RequestHelper $request
      */
-    public function __construct(Config $config, Hook $hook, LanguageModel $language,
+    public function __construct(Hook $hook, Config $config, LanguageModel $language,
             RequestHelper $request)
     {
-        parent::__construct($config, $hook);
-
+        $this->hook = $hook;
+        $this->config = $config;
         $this->request = $request;
         $this->language = $language;
     }

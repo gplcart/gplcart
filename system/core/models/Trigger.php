@@ -9,16 +9,27 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Config,
-    gplcart\core\Hook;
+use gplcart\core\Hook,
+    gplcart\core\Database;
 use gplcart\core\models\Condition as ConditionModel;
 
 /**
  * Manages basic behaviors and data related to triggers
  */
-class Trigger extends Model
+class Trigger
 {
+
+    /**
+     * Database class instance
+     * @var \gplcart\core\Database $db
+     */
+    protected $db;
+
+    /**
+     * Hook class instance
+     * @var \gplcart\core\Hook $hook
+     */
+    protected $hook;
 
     /**
      * Condition model instance
@@ -27,14 +38,14 @@ class Trigger extends Model
     protected $condition;
 
     /**
-     * @param Config $config
      * @param Hook $hook
+     * @param Database $db
      * @param ConditionModel $condition
      */
-    public function __construct(Config $config, Hook $hook, ConditionModel $condition)
+    public function __construct(Hook $hook, Database $db, ConditionModel $condition)
     {
-        parent::__construct($config, $hook);
-
+        $this->db = $db;
+        $this->hook = $hook;
         $this->condition = $condition;
     }
 

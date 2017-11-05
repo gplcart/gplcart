@@ -9,24 +9,27 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Handler,
-    gplcart\core\Config,
+use gplcart\core\Handler,
     gplcart\core\Hook;
 
 /**
  * Manages basic behaviors and data related to sending e-mails
  */
-class Mail extends Model
+class Mail
 {
 
     /**
-     * @param Config $config
+     * Hook class instance
+     * @var \gplcart\core\Hook $hook
+     */
+    protected $hook;
+
+    /**
      * @param Hook $hook
      */
-    public function __construct(Config $config, Hook $hook)
+    public function __construct(Hook $hook)
     {
-        parent::__construct($config, $hook);
+        $this->hook = $hook;
     }
 
     /**

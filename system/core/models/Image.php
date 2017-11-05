@@ -9,18 +9,29 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Handler,
-    gplcart\core\Config,
-    gplcart\core\Hook;
+use gplcart\core\Config,
+    gplcart\core\Hook,
+    gplcart\core\Handler;
 use gplcart\core\helpers\Url as UrlHelper;
 use gplcart\core\models\File as FileModel;
 
 /**
  * Manages basic behaviors and data related to images
  */
-class Image extends Model
+class Image
 {
+
+    /**
+     * Hook class instance
+     * @var \gplcart\core\Hook $hook
+     */
+    protected $hook;
+
+    /**
+     * Config class instance
+     * @var \gplcart\core\Config $config
+     */
+    protected $config;
 
     /**
      * File model instance
@@ -35,14 +46,15 @@ class Image extends Model
     protected $url;
 
     /**
-     * @param Config $config
      * @param Hook $hook
+     * @param Config $config
      * @param FileModel $file
      * @param UrlHelper $url
      */
-    public function __construct(Config $config, Hook $hook, FileModel $file, UrlHelper $url)
+    public function __construct(Hook $hook, Config $config, FileModel $file, UrlHelper $url)
     {
-        parent::__construct($config, $hook);
+        $this->hook = $hook;
+        $this->config = $config;
 
         $this->url = $url;
         $this->file = $file;

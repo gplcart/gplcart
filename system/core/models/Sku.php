@@ -9,16 +9,34 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Config,
-    gplcart\core\Hook;
+use gplcart\core\Config,
+    gplcart\core\Hook,
+    gplcart\core\Database;
 use gplcart\core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to product SKU
  */
-class Sku extends Model
+class Sku
 {
+
+    /**
+     * Database class instance
+     * @var \gplcart\core\Database $db
+     */
+    protected $db;
+
+    /**
+     * Hook class instance
+     * @var \gplcart\core\Hook $hook
+     */
+    protected $hook;
+
+    /**
+     * Config class instance
+     * @var \gplcart\core\Config $config
+     */
+    protected $config;
 
     /**
      * Language model instance
@@ -27,14 +45,16 @@ class Sku extends Model
     protected $language;
 
     /**
-     * @param Config $config
      * @param Hook $hook
+     * @param Database $db
+     * @param Config $config
      * @param LanguageModel $language
      */
-    public function __construct(Config $config, Hook $hook, LanguageModel $language)
+    public function __construct(Hook $hook, Database $db, Config $config, LanguageModel $language)
     {
-        parent::__construct($config, $hook);
-
+        $this->db = $db;
+        $this->hook = $hook;
+        $this->config = $config;
         $this->language = $language;
     }
 

@@ -9,8 +9,7 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Database,
+use gplcart\core\Database,
     gplcart\core\Handler,
     gplcart\core\Config,
     gplcart\core\Hook;
@@ -19,8 +18,26 @@ use gplcart\core\models\Language as LanguageModel;
 /**
  * Manages basic behaviors and data related to system installation
  */
-class Install extends Model
+class Install
 {
+
+    /**
+     * Database class instance
+     * @var \gplcart\core\Database $db
+     */
+    protected $db;
+
+    /**
+     * Hook class instance
+     * @var \gplcart\core\Hook $hook
+     */
+    protected $hook;
+
+    /**
+     * Config class instance
+     * @var \gplcart\core\Config $config
+     */
+    protected $config;
 
     /**
      * Language model instance
@@ -29,20 +46,14 @@ class Install extends Model
     protected $language;
 
     /**
-     * Database class instance
-     * @var \gplcart\core\Database $db
-     */
-    protected $database;
-
-    /**
-     * @param Config $config
      * @param Hook $hook
+     * @param Config $config
      * @param LanguageModel $language
      */
-    public function __construct(Config $config, Hook $hook, LanguageModel $language)
+    public function __construct(Hook $hook, Config $config, LanguageModel $language)
     {
-        parent::__construct($config, $hook);
-
+        $this->hook = $hook;
+        $this->config = $config;
         $this->language = $language;
     }
 
@@ -128,7 +139,7 @@ class Install extends Model
         $method = isset($data['step']) ? 'install_' . $data['step'] : 'install';
 
         try {
-            $result = Handler::call($handlers, $handler_id, $method, array($data, $this->database));
+            $result = Handler::call($handlers, $handler_id, $method, array($data, $this->db));
         } catch (\Exception $ex) {
             $result = array();
         }
@@ -180,10 +191,10 @@ class Install extends Model
     public function connectDb(array $settings)
     {
         try {
-            $this->database = new Database;
-            $this->database->set($settings);
+            $this->db = new Database;
+            $this->db->set($settings);
         } catch (\Exception $e) {
-            $this->database = null;
+            $this->db = null;
             return $this->language->text($e->getMessage());
         }
 
@@ -196,7 +207,7 @@ class Install extends Model
      */
     public function validateDb()
     {
-        $existing = $this->database->query('SHOW TABLES')->fetchColumn();
+        $existing = $this->db->query('SHOW TABLES')->fetchColumn();
 
         if (empty($existing)) {
             return true;

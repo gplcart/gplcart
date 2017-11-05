@@ -9,23 +9,35 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Config,
-    gplcart\core\Hook;
+use gplcart\core\Hook,
+    gplcart\core\Database;
 
 /**
  * Manages basic behaviors and data related to country states
  */
-class State extends Model
+class State
 {
 
     /**
-     * @param Config $config
-     * @param Hook $hook
+     * Database class instance
+     * @var \gplcart\core\Database $db
      */
-    public function __construct(Config $config, Hook $hook)
+    protected $db;
+
+    /**
+     * Hook class instance
+     * @var \gplcart\core\Hook $hook
+     */
+    protected $hook;
+
+    /**
+     * @param Hook $hook
+     * @param Database $db
+     */
+    public function __construct(Hook $hook, Database $db)
     {
-        parent::__construct($config, $hook);
+        $this->db = $db;
+        $this->hook = $hook;
     }
 
     /**

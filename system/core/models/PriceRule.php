@@ -9,17 +9,28 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Config,
-    gplcart\core\Hook;
+use gplcart\core\Hook,
+    gplcart\core\Database;
 use gplcart\core\models\Trigger as TriggerModel,
     gplcart\core\models\Currency as CurrencyModel;
 
 /**
  * Manages basic behaviors and data related to price rules
  */
-class PriceRule extends Model
+class PriceRule
 {
+
+    /**
+     * Database class instance
+     * @var \gplcart\core\Database $db
+     */
+    protected $db;
+
+    /**
+     * Hook class instance
+     * @var \gplcart\core\Hook $hook
+     */
+    protected $hook;
 
     /**
      * Currency model instance
@@ -34,16 +45,16 @@ class PriceRule extends Model
     protected $trigger;
 
     /**
-     * @param Config $config
      * @param Hook $hook
+     * @param Database $db
      * @param CurrencyModel $currency
      * @param TriggerModel $trigger
      */
-    public function __construct(Config $config, Hook $hook, CurrencyModel $currency,
+    public function __construct(Hook $hook, Database $db, CurrencyModel $currency,
             TriggerModel $trigger)
     {
-        parent::__construct($config, $hook);
-
+        $this->db = $db;
+        $this->hook = $hook;
         $this->trigger = $trigger;
         $this->currency = $currency;
     }

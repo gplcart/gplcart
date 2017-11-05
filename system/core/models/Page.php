@@ -9,10 +9,10 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Cache,
+use gplcart\core\Cache,
     gplcart\core\Config,
-    gplcart\core\Hook;
+    gplcart\core\Hook,
+    gplcart\core\Database;
 use gplcart\core\models\File as FileModel,
     gplcart\core\models\Alias as AliasModel,
     gplcart\core\models\Language as LanguageModel;
@@ -27,6 +27,24 @@ class Page extends Model
 
     use ImageTrait,
         AliasTrait;
+
+    /**
+     * Database class instance
+     * @var \gplcart\core\Database $db
+     */
+    protected $db;
+
+    /**
+     * Hook class instance
+     * @var \gplcart\core\Hook $hook
+     */
+    protected $hook;
+
+    /**
+     * Config class instance
+     * @var \gplcart\core\Config $config
+     */
+    protected $config;
 
     /**
      * Cache instance
@@ -53,17 +71,20 @@ class Page extends Model
     protected $file;
 
     /**
-     * @param Config $config
      * @param Hook $hook
+     * @param Database $db
+     * @param Config $config
      * @param Cache $cache
      * @param LanguageModel $language
      * @param AliasModel $alias
      * @param FileModel $file
      */
-    public function __construct(Config $config, Hook $hook, Cache $cache, LanguageModel $language,
-            AliasModel $alias, FileModel $file)
+    public function __construct(Hook $hook, Database $db, Config $config, Cache $cache,
+            LanguageModel $language, AliasModel $alias, FileModel $file)
     {
-        parent::__construct($config, $hook);
+        $this->db = $db;
+        $this->hook = $hook;
+        $this->config = $config;
 
         $this->file = $file;
         $this->alias = $alias;
@@ -94,7 +115,7 @@ class Page extends Model
 
         $result = $this->db->fetch($sql, array($page_id));
 
-        $this->attachImagesTrait($this->file, $result, 'page', $language);
+        $this->attachImagesTrait($this->db, $this->file, $result, 'page', $language);
         $this->attachTranslationTrait($this->db, $result, 'page', $language);
 
         $this->hook->attach('page.get.after', $page_id, $language, $result, $this);

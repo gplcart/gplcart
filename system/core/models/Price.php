@@ -9,15 +9,12 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Config,
-    gplcart\core\Hook;
 use gplcart\core\models\Currency as CurrencyModel;
 
 /**
  * Manages basic behaviors and data related to prices
  */
-class Price extends Model
+class Price
 {
 
     /**
@@ -27,14 +24,10 @@ class Price extends Model
     protected $currency;
 
     /**
-     * @param Config $config
-     * @param Hook $hook
      * @param CurrencyModel $currency
      */
-    public function __construct(Config $config, Hook $hook, CurrencyModel $currency)
+    public function __construct(CurrencyModel $currency)
     {
-        parent::__construct($config, $hook);
-
         $this->currency = $currency;
     }
 

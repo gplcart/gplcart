@@ -9,17 +9,21 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Handler,
-    gplcart\core\Config,
-    gplcart\core\Hook;
+use gplcart\core\Hook,
+    gplcart\core\Handler;
 use gplcart\core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to trigger conditions
  */
-class Condition extends Model
+class Condition
 {
+
+    /**
+     * Hook class instance
+     * @var \gplcart\core\Hook $hook
+     */
+    protected $hook;
 
     /**
      * Language model instance
@@ -34,14 +38,12 @@ class Condition extends Model
     protected $processed = array();
 
     /**
-     * @param Config $config
      * @param Hook $hook
      * @param LanguageModel $language
      */
-    public function __construct(Config $config, Hook $hook, LanguageModel $language)
+    public function __construct(Hook $hook, LanguageModel $language)
     {
-        parent::__construct($config, $hook);
-
+        $this->hook = $hook;
         $this->language = $language;
     }
 
@@ -75,7 +77,7 @@ class Condition extends Model
 
         $met = false;
         foreach ($trigger['data']['conditions'] as $condition) {
-            if ($this->call($condition, $data) === true) {
+            if ($this->callHandler($condition, $data) === true) {
                 $met = true;
                 break;
             }
@@ -91,15 +93,11 @@ class Condition extends Model
      * @param array $data
      * @return boolean
      */
-    protected function call(array $condition, array $data)
+    protected function callHandler(array $condition, array $data)
     {
         try {
             $handlers = $this->getHandlers();
-            $handler = Handler::get($handlers, $condition['id'], 'process');
-            if (empty($handler)) {
-                return false;
-            }
-            $result = call_user_func_array($handler, array($condition, $data, $this));
+            $result = Handler::call($handlers, $condition['id'], 'process', array($condition, $data, $this));
         } catch (\Exception $ex) {
             return false;
         }

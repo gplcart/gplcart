@@ -9,17 +9,21 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Handler,
-    gplcart\core\Config,
-    gplcart\core\Hook;
+use gplcart\core\Hook,
+    gplcart\core\Handler;
 use gplcart\core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to data validation
  */
-class Validator extends Model
+class Validator
 {
+
+    /**
+     * Hook class instance
+     * @var \gplcart\core\Hook $hook
+     */
+    protected $hook;
 
     /**
      * Language model instance
@@ -28,14 +32,12 @@ class Validator extends Model
     protected $language;
 
     /**
-     * @param Config $config
      * @param Hook $hook
      * @param LanguageModel $language
      */
-    public function __construct(Config $config, Hook $hook, LanguageModel $language)
+    public function __construct(Hook $hook, LanguageModel $language)
     {
-        parent::__construct($config, $hook);
-
+        $this->hook = $hook;
         $this->language = $language;
     }
 

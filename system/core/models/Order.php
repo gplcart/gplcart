@@ -9,9 +9,9 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Config,
-    gplcart\core\Hook;
+use gplcart\core\Config,
+    gplcart\core\Hook,
+    gplcart\core\Database;
 use gplcart\core\models\Mail as MailModel,
     gplcart\core\models\Cart as CartModel,
     gplcart\core\models\User as UserModel,
@@ -23,8 +23,26 @@ use gplcart\core\helpers\Convertor as ConvertorHelper;
 /**
  * Manages basic behaviors and data related to store orders
  */
-class Order extends Model
+class Order
 {
+
+    /**
+     * Database class instance
+     * @var \gplcart\core\Database $db
+     */
+    protected $db;
+
+    /**
+     * Hook class instance
+     * @var \gplcart\core\Hook $hook
+     */
+    protected $hook;
+
+    /**
+     * Config class instance
+     * @var \gplcart\core\Config $config
+     */
+    protected $config;
 
     /**
      * User model instance
@@ -69,8 +87,9 @@ class Order extends Model
     protected $convertor;
 
     /**
-     * @param Config $config
      * @param Hook $hook
+     * @param Database $db
+     * @param Config $config
      * @param UserModel $user
      * @param PriceModel $price
      * @param PriceRuleModel $pricerule
@@ -79,11 +98,13 @@ class Order extends Model
      * @param MailModel $mail
      * @param ConvertorHelper $convertor
      */
-    public function __construct(Config $config, Hook $hook, UserModel $user, PriceModel $price,
-            PriceRuleModel $pricerule, CartModel $cart, LanguageModel $language, MailModel $mail,
-            ConvertorHelper $convertor)
+    public function __construct(Hook $hook, Database $db, Config $config, UserModel $user,
+            PriceModel $price, PriceRuleModel $pricerule, CartModel $cart, LanguageModel $language,
+            MailModel $mail, ConvertorHelper $convertor)
     {
-        parent::__construct($config, $hook);
+        $this->db = $db;
+        $this->hook = $hook;
+        $this->config = $config;
 
         $this->mail = $mail;
         $this->user = $user;

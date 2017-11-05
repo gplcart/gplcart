@@ -9,10 +9,10 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
+use gplcart\core\Config,
+    gplcart\core\Hook,
     gplcart\core\Cache,
-    gplcart\core\Config,
-    gplcart\core\Hook;
+    gplcart\core\Database;
 use gplcart\core\traits\Image as ImageTrait,
     gplcart\core\traits\Alias as AliasTrait;
 use gplcart\core\models\Sku as SkuModel,
@@ -28,11 +28,29 @@ use gplcart\core\helpers\Request as RequestHelper;
 /**
  * Manages basic behaviors and data related to products
  */
-class Product extends Model
+class Product
 {
 
     use ImageTrait,
         AliasTrait;
+
+    /**
+     * Database class instance
+     * @var \gplcart\core\Database $db
+     */
+    protected $db;
+
+    /**
+     * Hook class instance
+     * @var \gplcart\core\Hook $hook
+     */
+    protected $hook;
+
+    /**
+     * Config class instance
+     * @var \gplcart\core\Config $config
+     */
+    protected $config;
 
     /**
      * Cache instance
@@ -95,8 +113,9 @@ class Product extends Model
     protected $request;
 
     /**
-     * @param Config $config
      * @param Hook $hook
+     * @param Database $db
+     * @param Config $config
      * @param Cache $cache
      * @param LanguageModel $language
      * @param AliasModel $alias
@@ -108,12 +127,14 @@ class Product extends Model
      * @param ProductFieldModel $product_field
      * @param RequestHelper $request
      */
-    public function __construct(Config $config, Hook $hook, Cache $cache, LanguageModel $language,
-            AliasModel $alias, FileModel $file, PriceModel $price, PriceRuleModel $pricerule,
-            SkuModel $sku, SearchModel $search, ProductFieldModel $product_field,
-            RequestHelper $request)
+    public function __construct(Hook $hook, Database $db, Config $config, Cache $cache,
+            LanguageModel $language, AliasModel $alias, FileModel $file, PriceModel $price,
+            PriceRuleModel $pricerule, SkuModel $sku, SearchModel $search,
+            ProductFieldModel $product_field, RequestHelper $request)
     {
-        parent::__construct($config, $hook);
+        $this->db = $db;
+        $this->hook = $hook;
+        $this->config = $config;
 
         $this->sku = $sku;
         $this->file = $file;
@@ -298,7 +319,7 @@ class Product extends Model
 
         $this->attachFields($result);
         $this->attachSku($result);
-        $this->attachImagesTrait($this->file, $result, 'product', $options['language']);
+        $this->attachImagesTrait($this->db, $this->file, $result, 'product', $options['language']);
         $this->attachTranslationTrait($this->db, $result, 'product', $options['language']);
 
         $this->hook->attach('product.get.after', $product_id, $options, $result, $this);
@@ -341,7 +362,7 @@ class Product extends Model
         );
 
         $product = $this->db->fetch($sql, $conditions);
-        $this->attachImagesTrait($this->file, $product, 'product', $language);
+        $this->attachImagesTrait($this->db, $this->file, $product, 'product', $language);
 
         return $product;
     }

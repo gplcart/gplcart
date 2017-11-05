@@ -9,9 +9,9 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Config,
-    gplcart\core\Hook;
+use gplcart\core\Config,
+    gplcart\core\Hook,
+    gplcart\core\Database;
 use gplcart\core\helpers\Url as UrlHelper,
     gplcart\core\helpers\Curl as CurlHelper;
 use gplcart\core\models\Language as LanguageModel,
@@ -21,10 +21,28 @@ use gplcart\core\traits\Translation as TranslationTrait;
 /**
  * Manages basic behaviors and data related to files
  */
-class File extends Model
+class File
 {
 
     use TranslationTrait;
+
+    /**
+     * Database class instance
+     * @var \gplcart\core\Database $db
+     */
+    protected $db;
+
+    /**
+     * Hook class instance
+     * @var \gplcart\core\Hook $hook
+     */
+    protected $hook;
+
+    /**
+     * Config class instance
+     * @var \gplcart\core\Config $config
+     */
+    protected $config;
 
     /**
      * Language model instance
@@ -75,17 +93,20 @@ class File extends Model
     protected $error;
 
     /**
-     * @param Config $config
      * @param Hook $hook
+     * @param Database $db
+     * @param Config $config
      * @param LanguageModel $language
      * @param ValidatorModel $validator
      * @param UrlHelper $url
      * @param CurlHelper $curl
      */
-    public function __construct(Config $config, Hook $hook, LanguageModel $language,
+    public function __construct(Hook $hook, Database $db, Config $config, LanguageModel $language,
             ValidatorModel $validator, UrlHelper $url, CurlHelper $curl)
     {
-        parent::__construct($config, $hook);
+        $this->db = $db;
+        $this->hook = $hook;
+        $this->config = $config;
 
         $this->url = $url;
         $this->curl = $curl;

@@ -9,9 +9,9 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Config,
-    gplcart\core\Hook;
+use gplcart\core\Config,
+    gplcart\core\Hook,
+    gplcart\core\Database;
 use gplcart\core\models\Sku as SkuModel,
     gplcart\core\models\User as UserModel,
     gplcart\core\models\Product as ProductModel,
@@ -23,8 +23,26 @@ use gplcart\core\helpers\Request as RequestHelper;
 /**
  * Manages basic behaviors and data related to user carts
  */
-class Cart extends Model
+class Cart
 {
+
+    /**
+     * Database class instance
+     * @var \gplcart\core\Database $db
+     */
+    protected $db;
+
+    /**
+     * Hook class instance
+     * @var \gplcart\core\Hook $hook
+     */
+    protected $hook;
+
+    /**
+     * Config class instance
+     * @var \gplcart\core\Config $config
+     */
+    protected $config;
 
     /**
      * Product model instance
@@ -69,8 +87,9 @@ class Cart extends Model
     protected $request;
 
     /**
-     * @param Config $config
      * @param Hook $hook
+     * @param Database $db
+     * @param Config $config
      * @param ProductModel $product
      * @param SkuModel $sku
      * @param CurrencyModel $currency
@@ -79,11 +98,14 @@ class Cart extends Model
      * @param LanguageModel $language
      * @param RequestHelper $request
      */
-    public function __construct(Config $config, Hook $hook, ProductModel $product, SkuModel $sku,
-            CurrencyModel $currency, UserModel $user, WishlistModel $wishlist,
+    public function __construct(Hook $hook, Database $db, Config $config, ProductModel $product,
+            SkuModel $sku, CurrencyModel $currency, UserModel $user, WishlistModel $wishlist,
             LanguageModel $language, RequestHelper $request)
     {
-        parent::__construct($config, $hook);
+
+        $this->db = $db;
+        $this->hook = $hook;
+        $this->config = $config;
 
         $this->sku = $sku;
         $this->user = $user;

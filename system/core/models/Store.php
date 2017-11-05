@@ -9,16 +9,34 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Config,
-    gplcart\core\Hook;
+use gplcart\core\Config,
+    gplcart\core\Hook,
+    gplcart\core\Database;
 use gplcart\core\helpers\Request as RequestHelper;
 
 /**
  * Manages basic behaviors and data related to stores
  */
-class Store extends Model
+class Store
 {
+
+    /**
+     * Database class instance
+     * @var \gplcart\core\Database $db
+     */
+    protected $db;
+
+    /**
+     * Hook class instance
+     * @var \gplcart\core\Hook $hook
+     */
+    protected $hook;
+
+    /**
+     * Config class instance
+     * @var \gplcart\core\Config $config
+     */
+    protected $config;
 
     /**
      * Request class instance
@@ -27,14 +45,16 @@ class Store extends Model
     protected $request;
 
     /**
-     * @param Config $config
      * @param Hook $hook
+     * @param Database $db
+     * @param Config $config
      * @param RequestHelper $request
      */
-    public function __construct(Config $config, Hook $hook, RequestHelper $request)
+    public function __construct(Hook $hook, Database $db, Config $config, RequestHelper $request)
     {
-        parent::__construct($config, $hook);
-
+        $this->db = $db;
+        $this->hook = $hook;
+        $this->config = $config;
         $this->request = $request;
     }
 

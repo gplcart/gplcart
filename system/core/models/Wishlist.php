@@ -9,9 +9,9 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Model,
-    gplcart\core\Config,
-    gplcart\core\Hook;
+use gplcart\core\Config,
+    gplcart\core\Hook,
+    gplcart\core\Database;
 use gplcart\core\models\User as UserModel,
     gplcart\core\models\Language as LanguageModel;
 use gplcart\core\helpers\Url as UrlHelper;
@@ -19,8 +19,26 @@ use gplcart\core\helpers\Url as UrlHelper;
 /**
  * Manages basic behaviors and data related to user wishlists
  */
-class Wishlist extends Model
+class Wishlist
 {
+
+    /**
+     * Database class instance
+     * @var \gplcart\core\Database $db
+     */
+    protected $db;
+
+    /**
+     * Hook class instance
+     * @var \gplcart\core\Hook $hook
+     */
+    protected $hook;
+
+    /**
+     * Config class instance
+     * @var \gplcart\core\Config $config
+     */
+    protected $config;
 
     /**
      * User model instance
@@ -41,16 +59,19 @@ class Wishlist extends Model
     protected $url;
 
     /**
-     * @param Config $config
      * @param Hook $hook
+     * @param Database $db
+     * @param Config $config
      * @param UserModel $user
      * @param LanguageModel $language
      * @param UrlHelper $url
      */
-    public function __construct(Config $config, Hook $hook, UserModel $user,
+    public function __construct(Hook $hook, Database $db, Config $config, UserModel $user,
             LanguageModel $language, UrlHelper $url)
     {
-        parent::__construct($config, $hook);
+        $this->db = $db;
+        $this->hook = $hook;
+        $this->config = $config;
 
         $this->url = $url;
         $this->user = $user;
