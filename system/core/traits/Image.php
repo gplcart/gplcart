@@ -19,17 +19,18 @@ trait Image
 
     /**
      * Adds images to an entity
+     * @param \gplcart\core\Database $db
      * @param \gplcart\core\models\File $model
      * @param array $data
      * @param string $entity
      * @param null|string $lang
      */
-    protected function attachImagesTrait($model, &$data, $entity, $lang = null)
+    protected function attachImagesTrait($db, $model, &$data, $entity, $lang = null)
     {
         if (!empty($data)) {
             $images = $this->getImagesTrait($model, $data, "{$entity}_id");
             foreach ($images as &$image) {
-                $this->attachTranslationTrait($model->getDb(), $image, 'file', $lang);
+                $this->attachTranslationTrait($db, $image, 'file', $lang);
             }
             $data['images'] = $images;
         }
