@@ -34,7 +34,7 @@ class ConfigTest extends PhpUnitTest
      */
     protected function setUp()
     {
-        $this->object = $this->tool->getInstance('gplcart\\core\\Config');
+        $this->object = $this->getInstance('gplcart\\core\\Config');
         $this->object->setDb($this->setUpTestDatabase('settings'));
     }
 
@@ -43,7 +43,7 @@ class ConfigTest extends PhpUnitTest
      */
     public function testGetDb()
     {
-        $this->assertInstanceOf('gplcart\core\Database', $this->object->getDb());
+        $this->assertInstanceOf('gplcart\\core\\Database', $this->object->getDb());
     }
 
     /**

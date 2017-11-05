@@ -28,7 +28,7 @@ class HandlerTest extends PhpUnitTest
      */
     protected function setUp()
     {
-        $this->object = $this->tool->getInstance('gplcart\\core\\Handler');
+        $this->object = $this->getInstance('gplcart\\core\\Handler');
     }
 
     /**

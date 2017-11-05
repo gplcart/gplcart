@@ -22,7 +22,7 @@ class CommonTest extends PhpUnitTest
      */
     protected function setUp()
     {
-        $this->object = $this->tool->getInstance('gplcart\\core\\handlers\\validator\\elements\\Common');
+        $this->object = $this->getInstance('gplcart\\core\\handlers\\validator\\elements\\Common');
     }
 
     /**

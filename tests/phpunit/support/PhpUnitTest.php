@@ -10,6 +10,9 @@
 namespace gplcart\tests\phpunit\support;
 
 use PDO;
+use ReflectionClass;
+use ReflectionMethod;
+use ReflectionException;
 use PHPUnit_Extensions_Database_TestCase;
 use PHPUnit_Extensions_Database_DataSet_CompositeDataSet;
 use gplcart\tests\phpunit\support\Tool as ToolHelper;
@@ -72,6 +75,109 @@ class PhpUnitTest extends PHPUnit_Extensions_Database_TestCase
     }
 
     /**
+     * Returns a class instance with auto-mocked class dependencies
+     * @param syring $class
+     * @param array $mock_config
+     * @return object
+     * @throws ReflectionException
+     */
+    protected function getInstance($class, array $mock_config = array())
+    {
+        if (!class_exists($class)) {
+            throw new ReflectionException("Class $class does not exist");
+        }
+
+        $reflection = new ReflectionClass($class);
+        $constructor = $reflection->getConstructor();
+
+        if (empty($constructor)) {
+            return new $class;
+        }
+
+        $parameters = $constructor->getParameters();
+
+        if (empty($parameters)) {
+            return new $class;
+        }
+
+        $mock_config = array_change_key_case($mock_config);
+
+        $dependencies = array();
+        foreach ($parameters as $pos => $parameter) {
+            /* @var $param_reflection \ReflectionClass */
+            $param_reflection = $parameter->getClass();
+            $param_class_name = strtolower($param_reflection->getName());
+            $config = empty($mock_config[$param_class_name]) ? array() : $mock_config[$param_class_name];
+            $dependencies[$pos] = $this->getMockFromConfig($param_reflection, $config);
+        }
+
+        return $reflection->newInstanceArgs($dependencies);
+    }
+
+    /**
+     * Create a mock object for a class
+     * @param \ReflectionClass $reflection
+     * @param array $config
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
+    protected function getMockFromConfig($reflection, array $config = array())
+    {
+        $config += array(
+            'disable_clone' => true,
+            'disable_autoload' => true,
+            'disable_constructor' => true,
+            'constructor_arguments' => null
+        );
+
+        $method_names = array();
+        /* @var $method \ReflectionMethod */
+        foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+            $method_name = $method->getName();
+            if (strpos($method_name, '__') !== 0) { // Exclude __construct() etc
+                $method_names[] = $method_name;
+            }
+        }
+
+        $builder = $this->getMockBuilder($reflection->getName())->setMethods($method_names);
+
+        if (isset($config['constructor_arguments'])) {
+            $builder->setConstructorArgs($config['constructor_arguments']);
+        }
+
+        if ($config['disable_constructor']) {
+            $builder->disableOriginalConstructor();
+        }
+
+        if ($config['disable_clone']) {
+            $builder->disableOriginalClone();
+        }
+
+        if ($config['disable_autoload']) {
+            $builder->disableAutoload();
+        }
+
+        $mock = $builder->getMock();
+
+        if (empty($config['methods'])) {
+            return $mock;
+        }
+
+        foreach ($config['methods'] as $method => $params) {
+            $params += array('expects' => $this->any(), 'with' => array(), 'will' => null);
+            /* @var $mocker \PHPUnit_Framework_MockObject_Builder_InvocationMocker */
+            $mocker = $mock->expects($params['expects'])->method($method);
+            $mocker->withConsecutive($params['with']);
+            if (isset($params['will'])) {
+                $mocker->will($params['will']);
+            } else if (array_key_exists('return', $params)) {
+                $mocker->will($this->returnValue($params['return']));
+            }
+        }
+
+        return $mock;
+    }
+
+    /**
      * Returns the test database connection
      * @return \PHPUnit_Extensions_Database_DB_IDatabaseConnection
      */
@@ -107,10 +213,11 @@ class PhpUnitTest extends PHPUnit_Extensions_Database_TestCase
     /**
      * Creates a dataset for the fixture
      * @param string $fixture
+     * @param string $dataset
      * @return \PHPUnit_Extensions_Database_DataSet_XmlDataSet
      * @throws \InvalidArgumentException
      */
-    protected function createFixtureDataSet($fixture)
+    protected function createFixtureDataSet($fixture, $dataset = '')
     {
         $dir = __DIR__ . '/fixtures';
         $file = "$dir/$fixture.xml";
@@ -119,7 +226,12 @@ class PhpUnitTest extends PHPUnit_Extensions_Database_TestCase
             throw new \InvalidArgumentException("File '$file' not found for fixture '$fixture'");
         }
 
-        return $this->createXmlDataSet($file);
+        $method = "create{$dataset}XmlDataSet";
+        if (!is_callable(array($this, $method))) {
+            throw new \InvalidArgumentException("Invalid dataset '$dataset'");
+        }
+
+        return $this->$method($file);
     }
 
     /**

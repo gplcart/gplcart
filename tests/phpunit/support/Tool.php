@@ -9,48 +9,11 @@
 
 namespace gplcart\tests\phpunit\support;
 
-use ReflectionClass;
-use ReflectionException;
-
 /**
  * Contains various helper methods
  */
 class Tool
 {
-
-    /**
-     * Returns a class instance
-     * @param string $class
-     * @return object
-     * @throws \ReflectionException
-     */
-    public function getInstance($class)
-    {
-        if (!class_exists($class)) {
-            throw new ReflectionException("Class $class is not callable");
-        }
-
-        $reflection = new ReflectionClass($class);
-        $constructor = $reflection->getConstructor();
-
-        if (empty($constructor)) {
-            return new $class;
-        }
-
-        $parameters = $constructor->getParameters();
-
-        if (empty($parameters)) {
-            return new $class;
-        }
-
-        $dependencies = array();
-        foreach ($parameters as $parameter) {
-            $parameter_class = $parameter->getClass();
-            $dependencies[] = $this->getInstance($parameter_class->getName());
-        }
-
-        return $reflection->newInstanceArgs($dependencies);
-    }
 
     /**
      * Returns a random string
