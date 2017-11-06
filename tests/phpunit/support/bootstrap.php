@@ -6,10 +6,6 @@
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
-if (version_compare(PHP_VERSION, '5.6.0') < 0) {
-    throw new \Exception('PHPUnit 5.7 requires at least PHP 5.6.0');
-}
-
 require_once __DIR__ . '/../../../system/bootstrap.php';
 
 if (!class_exists('PHPUnit_Extensions_Database_TestCase')) {
