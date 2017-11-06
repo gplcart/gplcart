@@ -35,6 +35,8 @@ class FileTypeTest extends PhpUnitTest
         $this->file->setCsv();
         $this->file->setJson();
         $this->file->setZip();
+
+        parent::setUp();
     }
 
     /**
@@ -43,7 +45,9 @@ class FileTypeTest extends PhpUnitTest
      */
     protected function tearDown()
     {
+        $this->object = null;
         $this->file->deleteCreated();
+        parent::tearDown();
     }
 
     /**

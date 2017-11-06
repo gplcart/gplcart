@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * @package GPL Cart core
+ * @author Iurii Makukh <gplcart.software@gmail.com>
+ * @copyright Copyright (c) 2015, Iurii Makukh
+ * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+ */
+
 namespace gplcart\core\handlers\validator\elements;
 
 use gplcart\tests\phpunit\support\PhpUnitTest;
@@ -23,6 +30,17 @@ class CommonTest extends PhpUnitTest
     protected function setUp()
     {
         $this->object = $this->getInstance('gplcart\\core\\handlers\\validator\\elements\\Common');
+        parent::setUp();
+    }
+
+    /**
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
+     */
+    protected function tearDown()
+    {
+        $this->object = null;
+        parent::tearDown();
     }
 
     /**

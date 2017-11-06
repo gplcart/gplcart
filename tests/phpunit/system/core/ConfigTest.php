@@ -35,7 +35,19 @@ class ConfigTest extends PhpUnitTest
     protected function setUp()
     {
         $this->object = $this->getInstance('gplcart\\core\\Config');
-        $this->object->setDb($this->setUpTestDatabase('settings'));
+        $this->object->setDb($this->setTestDatabase('settings'));
+        parent::setUp();
+    }
+
+    /**
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
+     */
+    protected function tearDown()
+    {
+        $this->object = null;
+        $this->dropTestDatabase();
+        parent::tearDown();
     }
 
     /**
