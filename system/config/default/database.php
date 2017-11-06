@@ -316,8 +316,8 @@ return array(
     'product' => array(
         'fields' => array(
             'product_id' => array('type' => 'int', 'length' => 10, 'auto_increment' => true, 'primary' => true),
-            'status' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 1),
-            'subtract' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 1),
+            'status' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 1),
+            'subtract' => array('type' => 'int', 'length' => 1, 'not_null' => true, 'default' => 1),
             'product_class_id' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
             'created' => array('type' => 'int', 'length' => 10, 'not_null' => true),
             'modified' => array('type' => 'int', 'length' => 10, 'not_null' => true, 'default' => 0),
