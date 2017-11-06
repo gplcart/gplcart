@@ -12,7 +12,7 @@ if (!class_exists('PHPUnit_Extensions_Database_TestCase')) {
     throw new \Exception('Looks like DBUnit extension not installed. See https://github.com/sebastianbergmann/dbunit');
 }
 
+ini_set('error_reporting', E_ALL);
 ini_set('memory_limit', '-1');
-ini_set('error_reporting', E_ALL | E_STRICT);
 ini_set('display_errors', '1');
 ini_set('display_startup_errors', '1');
