@@ -9,17 +9,23 @@
 
 namespace gplcart\tests\phpunit\support;
 
-use PDO;
-use ReflectionClass;
-use ReflectionMethod;
-use ReflectionException;
 use PHPUnit_Extensions_Database_TestCase;
-use PHPUnit_Extensions_Database_DataSet_CompositeDataSet;
+use gplcart\core\Database as SystemDatabase;
 use gplcart\tests\phpunit\support\Tool as ToolHelper;
 use gplcart\tests\phpunit\support\File as FileHelper;
+use gplcart\tests\phpunit\support\ArrayDataSet as ArrayDataSetHelper;
 
+/**
+ * A TestCase extension that provides extra functionality for testing GPLCart
+ */
 class PhpUnitTest extends PHPUnit_Extensions_Database_TestCase
 {
+
+    /**
+     * System database class instance
+     * @var \gplcart\core\Database $db
+     */
+    protected $db;
 
     /**
      * File helper class instance
@@ -79,15 +85,15 @@ class PhpUnitTest extends PHPUnit_Extensions_Database_TestCase
      * @param syring $class
      * @param array $mock_config
      * @return object
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
     protected function getInstance($class, array $mock_config = array())
     {
         if (!class_exists($class)) {
-            throw new ReflectionException("Class $class does not exist");
+            throw new \ReflectionException("Class $class does not exist");
         }
 
-        $reflection = new ReflectionClass($class);
+        $reflection = new \ReflectionClass($class);
         $constructor = $reflection->getConstructor();
 
         if (empty($constructor)) {
@@ -104,11 +110,17 @@ class PhpUnitTest extends PHPUnit_Extensions_Database_TestCase
 
         $dependencies = array();
         foreach ($parameters as $pos => $parameter) {
+
             /* @var $param_reflection \ReflectionClass */
             $param_reflection = $parameter->getClass();
             $param_class_name = strtolower($param_reflection->getName());
             $config = empty($mock_config[$param_class_name]) ? array() : $mock_config[$param_class_name];
-            $dependencies[$pos] = $this->getMockFromConfig($param_reflection, $config);
+
+            if (empty($config['object'])) {
+                $dependencies[$pos] = $this->getMockFromConfig($param_reflection, $config);
+            } else {
+                $dependencies[$pos] = $config['object'];
+            }
         }
 
         return $reflection->newInstanceArgs($dependencies);
@@ -131,7 +143,7 @@ class PhpUnitTest extends PHPUnit_Extensions_Database_TestCase
 
         $method_names = array();
         /* @var $method \ReflectionMethod */
-        foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+        foreach ($reflection->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
             $method_name = $method->getName();
             if (strpos($method_name, '__') !== 0) { // Exclude __construct() etc
                 $method_names[] = $method_name;
@@ -188,7 +200,7 @@ class PhpUnitTest extends PHPUnit_Extensions_Database_TestCase
         }
 
         if (!isset(self::$pdo)) {
-            static::$pdo = new PDO('sqlite::memory:');
+            static::$pdo = new \PDO('sqlite::memory:');
         }
 
         $this->conn = $this->createDefaultDBConnection(static::$pdo, ':memory:');
@@ -201,7 +213,7 @@ class PhpUnitTest extends PHPUnit_Extensions_Database_TestCase
      */
     protected function getDataSet()
     {
-        $dataset = new PHPUnit_Extensions_Database_DataSet_CompositeDataSet;
+        $dataset = new \PHPUnit_Extensions_Database_DataSet_CompositeDataSet;
 
         foreach ($this->fixtures as $fixture) {
             $dataset->addDataSet($this->createFixtureDataSet($fixture));
@@ -213,25 +225,49 @@ class PhpUnitTest extends PHPUnit_Extensions_Database_TestCase
     /**
      * Creates a dataset for the fixture
      * @param string $fixture
-     * @param string $dataset
      * @return \PHPUnit_Extensions_Database_DataSet_XmlDataSet
      * @throws \InvalidArgumentException
      */
-    protected function createFixtureDataSet($fixture, $dataset = '')
+    protected function createFixtureDataSet($fixture)
     {
-        $dir = __DIR__ . '/fixtures';
-        $file = "$dir/$fixture.xml";
+        $file = $this->getFixtureDirectory() . "/$fixture.php";
 
         if (!is_file($file)) {
             throw new \InvalidArgumentException("File '$file' not found for fixture '$fixture'");
         }
 
-        $method = "create{$dataset}XmlDataSet";
-        if (!is_callable(array($this, $method))) {
-            throw new \InvalidArgumentException("Invalid dataset '$dataset'");
+        $data = require $file;
+        return new ArrayDataSetHelper(array($fixture => $data));
+    }
+
+    /**
+     * Returns path to fixture directory
+     * @return string
+     */
+    protected function getFixtureDirectory()
+    {
+        return __DIR__ . '/fixtures';
+    }
+
+    /**
+     * Returns an array of all available fixture files
+     * @param bool $only_filenames
+     * @return array
+     */
+    protected function scanFixtures($only_filenames = true)
+    {
+        $files = glob($this->getFixtureDirectory() . "/*.php");
+
+        if (!$only_filenames) {
+            return $files;
         }
 
-        return $this->$method($file);
+        $names = array();
+        foreach ($files as $file) {
+            $names[] = pathinfo($file, PATHINFO_FILENAME);
+        }
+
+        return $names;
     }
 
     /**
@@ -257,11 +293,15 @@ class PhpUnitTest extends PHPUnit_Extensions_Database_TestCase
 
     /**
      * Set up test database using fixture(s)
-     * @param string|array $fixtures
+     * @param string|array|null $fixtures
      * @return \PDO
      */
-    protected function setUpTestDatabase($fixtures)
+    protected function setTestDatabase($fixtures = null)
     {
+        if (!isset($fixtures)) {
+            $fixtures = $this->scanFixtures();
+        }
+
         $this->fixtures = (array) $fixtures;
 
         $dataset = $this->getDataSet();
@@ -282,22 +322,30 @@ class PhpUnitTest extends PHPUnit_Extensions_Database_TestCase
             $pdo->exec($create);
         }
 
-        $this->setUp();
         return $pdo;
+    }
+
+    /**
+     * Set up system database class
+     * @param string|array|null $fixtures
+     */
+    protected function setSystemDatabase($fixtures = null)
+    {
+        $this->db = new SystemDatabase;
+        $this->db->set($this->setTestDatabase($fixtures));
+        return $this->db;
     }
 
     /**
      * Clear up database
      */
-    protected function tearDown()
+    protected function dropTestDatabase()
     {
         if (!empty($this->fixtures)) {
             $pdo = $this->getConnection()->getConnection();
             foreach ($this->getDataSet()->getTableNames() as $table) {
                 $pdo->exec("DROP TABLE IF EXISTS $table;");
             }
-
-            parent::tearDown();
         }
     }
 
