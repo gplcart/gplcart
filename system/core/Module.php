@@ -16,10 +16,10 @@ abstract class Module
 {
 
     /**
-     * Hook class instance
-     * @var \gplcart\core\Hook $hook
+     * Database class instance
+     * @var \gplcart\core\Database $db
      */
-    protected $hook;
+    protected $db;
 
     /**
      * Config class instance
@@ -28,18 +28,11 @@ abstract class Module
     protected $config;
 
     /**
-     * Database class instance
-     * @var \gplcart\core\Database $db
+     * @param \gplcart\core\Config $config
      */
-    protected $db;
-
-    /**
-     * Constructor
-     */
-    public function __construct()
+    public function __construct(\gplcart\core\Config $config)
     {
-        $this->hook = Container::get('gplcart\\core\\Hook');
-        $this->config = Container::get('gplcart\\core\\Config');
+        $this->config = $config;
         $this->db = $this->config->getDb();
     }
 
