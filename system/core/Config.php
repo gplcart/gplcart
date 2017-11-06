@@ -91,13 +91,6 @@ class Config
             error_reporting(E_ALL);
         }
 
-        if ($this->get('error_display', 0)) {
-            ini_set('display_errors', 1);
-            ini_set('track_errors', 1);
-            ini_set('display_startup_errors', 1);
-            ini_set('html_errors', 1);
-        }
-
         $this->logger->setDb($this->db);
 
         register_shutdown_function(array($this->logger, 'shutdownHandler'));
