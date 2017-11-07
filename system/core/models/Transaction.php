@@ -53,7 +53,7 @@ class Transaction
             $sql = ' SELECT COUNT(transaction_id) ';
         }
 
-        $sql .= ' FROM transaction WHERE transaction_id IS NOT NULL';
+        $sql .= ' FROM transactions WHERE transaction_id IS NOT NULL';
 
         $where = array();
 
@@ -117,7 +117,7 @@ class Transaction
         }
 
         $data['created'] = GC_TIME;
-        $result = $this->db->insert('transaction', $data);
+        $result = $this->db->insert('transactions', $data);
 
         $this->hook->attach('transaction.add.after', $data, $result, $this);
         return (int) $result;
@@ -137,7 +137,7 @@ class Transaction
             return $result;
         }
 
-        $sql = 'SELECT * FROM transaction WHERE transaction_id=?';
+        $sql = 'SELECT * FROM transactions WHERE transaction_id=?';
         $result = $this->db->fetch($sql, array($transaction_id), array('unserialize' => 'data'));
 
         $this->hook->attach('transaction.get.after', $transaction_id, $result, $this);
@@ -158,7 +158,7 @@ class Transaction
             return (bool) $result;
         }
 
-        $result = (bool) $this->db->delete('transaction', array('transaction_id' => $transaction_id));
+        $result = (bool) $this->db->delete('transactions', array('transaction_id' => $transaction_id));
 
         $this->hook->attach('transaction.delete.after', $transaction_id, $result, $this);
         return (bool) $result;
