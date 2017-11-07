@@ -15,6 +15,7 @@ use gplcart\core\exceptions\Database as DatabaseException;
 
 /**
  * Provides methods to work with the database
+ * @todo Sqlite compatibility
  */
 class Database
 {
@@ -59,7 +60,9 @@ class Database
         }
 
         try {
-            $this->pdo = new PDO($dns, $config['user'], $config['password']);
+            // Use pipes instead of CONCAT_WS - sqlite compatibility
+            $options = array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET sql_mode='PIPES_AS_CONCAT'");
+            $this->pdo = new PDO($dns, $config['user'], $config['password'], $options);
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $ex) {
             $this->pdo = null;
@@ -547,12 +550,12 @@ class Database
                 $string .= " DEFAULT '{$info['default']}'";
             }
 
-            if (!empty($info['auto_increment'])) {
-                $string .= " AUTO_INCREMENT";
-            }
-
             if (!empty($info['primary'])) {
                 $string .= " PRIMARY KEY";
+            }
+
+            if (!empty($info['auto_increment'])) {
+                $string .= " /*!40101 AUTO_INCREMENT */"; // SQLite will ignore the commented AUTO_INCREMENT
             }
 
             $sql[] = $name . ' ' . trim($string);
