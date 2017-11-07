@@ -33,8 +33,8 @@ return array(
     array(
         'order_id' => 2,
         'store_id' => 2,
-        'shipping_address' => 3,
-        'payment_address' => 4,
+        'shipping_address' => 1,
+        'payment_address' => 2,
         'created' => 1234567890,
         'modified' => 1234567891,
         'total' => 1111,
