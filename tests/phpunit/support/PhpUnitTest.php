@@ -22,12 +22,6 @@ class PhpUnitTest extends PHPUnit_Extensions_Database_TestCase
 {
 
     /**
-     * System database class instance
-     * @var \gplcart\core\Database $db
-     */
-    protected $db;
-
-    /**
      * File helper class instance
      * @var \gplcart\tests\phpunit\support\File $file
      */
@@ -43,19 +37,19 @@ class PhpUnitTest extends PHPUnit_Extensions_Database_TestCase
      * PDO object
      * @var \PDO $pdo
      */
-    static protected $pdo;
-
-    /**
-     * A new DefaultDatabaseConnection using the given PDO connection and database schema name
-     * @var \PHPUnit_Extensions_Database_DB_DefaultDatabaseConnection
-     */
-    protected $conn;
+    protected static $pdo;
 
     /**
      * An array of fixtures
      * @var array
      */
     protected $fixtures = array();
+
+    /**
+     * A new DefaultDatabaseConnection using the given PDO connection and database schema name
+     * @var \PHPUnit_Extensions_Database_DB_DefaultDatabaseConnection
+     */
+    protected $connection;
 
     /**
      * @param null|string $name
@@ -116,10 +110,10 @@ class PhpUnitTest extends PHPUnit_Extensions_Database_TestCase
             $param_class_name = strtolower($param_reflection->getName());
             $config = empty($mock_config[$param_class_name]) ? array() : $mock_config[$param_class_name];
 
-            if (empty($config['object'])) {
-                $dependencies[$pos] = $this->getMockFromConfig($param_reflection, $config);
+            if (is_object($config)) {
+                $dependencies[$pos] = $config;
             } else {
-                $dependencies[$pos] = $config['object'];
+                $dependencies[$pos] = $this->getMockFromConfig($param_reflection, $config);
             }
         }
 
@@ -195,16 +189,16 @@ class PhpUnitTest extends PHPUnit_Extensions_Database_TestCase
      */
     protected function getConnection()
     {
-        if (isset($this->conn)) {
-            return $this->conn;
+        if (isset($this->connection)) {
+            return $this->connection;
         }
 
-        if (!isset(self::$pdo)) {
+        if (!isset(static::$pdo)) {
             static::$pdo = new \PDO('sqlite::memory:');
         }
 
-        $this->conn = $this->createDefaultDBConnection(static::$pdo, ':memory:');
-        return $this->conn;
+        $this->connection = $this->createDefaultDBConnection(static::$pdo, ':memory:');
+        return $this->connection;
     }
 
     /**
@@ -230,14 +224,48 @@ class PhpUnitTest extends PHPUnit_Extensions_Database_TestCase
      */
     protected function createFixtureDataSet($fixture)
     {
+        return new ArrayDataSetHelper(array($fixture => $this->getFixtureData($fixture)));
+    }
+
+    /**
+     * Returns an array of fixture data
+     * @param string $fixture
+     * @return array
+     * @throws \InvalidArgumentException
+     */
+    protected function getFixtureData($fixture)
+    {
+        static $fixtures = array();
+
+        if (isset($fixtures[$fixture])) {
+            return $fixtures[$fixture];
+        }
+
         $file = $this->getFixtureDirectory() . "/$fixture.php";
 
         if (!is_file($file)) {
             throw new \InvalidArgumentException("File '$file' not found for fixture '$fixture'");
         }
 
-        $data = require $file;
-        return new ArrayDataSetHelper(array($fixture => $data));
+        $fixtures[$fixture] = require $file;
+        return $fixtures[$fixture];
+    }
+
+    /**
+     * Remove first auto-incremented field from the fixture data
+     * @param array $data
+     */
+    protected function removeFixtureAutoincrementField(array &$data)
+    {
+        foreach ($data as $pos => $row) {
+            $index = 0;
+            foreach ($row as $field => $value) {
+                if ($index == 0 && strpos($field, '_id') !== false && is_integer($value)) {
+                    unset($data[$pos][$field]);
+                }
+                $index++;
+            }
+        }
     }
 
     /**
@@ -251,23 +279,16 @@ class PhpUnitTest extends PHPUnit_Extensions_Database_TestCase
 
     /**
      * Returns an array of all available fixture files
-     * @param bool $only_filenames
      * @return array
      */
-    protected function scanFixtures($only_filenames = true)
+    protected function scanFixtures()
     {
-        $files = glob($this->getFixtureDirectory() . "/*.php");
-
-        if (!$only_filenames) {
-            return $files;
+        $fixtures = array();
+        foreach (glob($this->getFixtureDirectory() . "/*.php") as $file) {
+            $fixtures[] = pathinfo($file, PATHINFO_FILENAME);
         }
 
-        $names = array();
-        foreach ($files as $file) {
-            $names[] = pathinfo($file, PATHINFO_FILENAME);
-        }
-
-        return $names;
+        return $fixtures;
     }
 
     /**
@@ -282,21 +303,11 @@ class PhpUnitTest extends PHPUnit_Extensions_Database_TestCase
     }
 
     /**
-     * Performs assertions shared by all tests of a test case
-     */
-    protected function assertPreConditions()
-    {
-        foreach ($this->fixtures as $fixture) {
-            $this->assertFixtureTable($fixture);
-        }
-    }
-
-    /**
-     * Set up test database using fixture(s)
+     * Create test database using fixture(s)
      * @param string|array|null $fixtures
      * @return \PDO
      */
-    protected function setTestDatabase($fixtures = null)
+    protected function createDbFromFixture($fixtures = null)
     {
         if (!isset($fixtures)) {
             $fixtures = $this->scanFixtures();
@@ -309,13 +320,20 @@ class PhpUnitTest extends PHPUnit_Extensions_Database_TestCase
 
         foreach ($dataset->getTableNames() as $table) {
 
+            $data = $this->getFixtureData($table);
+
             $pdo->exec("DROP TABLE IF EXISTS $table;");
             $meta = $dataset->getTableMetaData($table);
             $create = "CREATE TABLE IF NOT EXISTS $table ";
 
+            $index = 0;
             $cols = array();
             foreach ($meta->getColumns() as $col) {
-                $cols[] = "$col VARCHAR(255)";
+                $cols[$index] = "$col VARCHAR(255)";
+                if ($index == 0 && isset($data[0][$col]) && strpos($col, '_id') !== false && is_integer($data[0][$col])) {
+                    $cols[$index] = "$col INTEGER NOT NULL PRIMARY KEY";
+                }
+                $index++;
             }
 
             $create .= '(' . implode(',', $cols) . ');';
@@ -326,27 +344,14 @@ class PhpUnitTest extends PHPUnit_Extensions_Database_TestCase
     }
 
     /**
-     * Set up system database class
+     * Returns the system database class
      * @param string|array|null $fixtures
+     * @return \gplcart\core\Database
      */
-    protected function setSystemDatabase($fixtures = null)
+    protected function getSystemDatabase($fixtures = null)
     {
-        $this->db = new SystemDatabase;
-        $this->db->set($this->setTestDatabase($fixtures));
-        return $this->db;
-    }
-
-    /**
-     * Clear up database
-     */
-    protected function dropTestDatabase()
-    {
-        if (!empty($this->fixtures)) {
-            $pdo = $this->getConnection()->getConnection();
-            foreach ($this->getDataSet()->getTableNames() as $table) {
-                $pdo->exec("DROP TABLE IF EXISTS $table;");
-            }
-        }
+        $db = new SystemDatabase;
+        return $db->set($this->createDbFromFixture($fixtures));
     }
 
 }
