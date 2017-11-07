@@ -238,19 +238,16 @@ class Alias
         }
 
         $alias = $pattern;
-
         if (!empty($options['placeholders'])) {
             $alias = gplcart_string_replace($pattern, $options['placeholders'], $options);
         }
 
         if (!empty($options['translit'])) {
-            $transliterated = $this->language->translit($alias, $options['language']);
-            $alias = gplcart_string_slug($transliterated);
+            $alias = gplcart_string_slug($this->language->translit($alias, $options['language']));
         }
 
         $trimmed = mb_strimwidth(str_replace(' ', '-', trim($alias)), 0, 100, '');
         $result = $this->getUnique($trimmed);
-
         $this->hook->attach('alias.generate.after', $pattern, $options, $result);
         return $result;
     }
