@@ -18,7 +18,7 @@ use gplcart\tests\phpunit\support\ArrayDataSet as ArrayDataSetHelper;
 /**
  * A TestCase extension that provides extra functionality for testing GPLCart
  */
-class PhpUnitTest extends PHPUnit_Extensions_Database_TestCase
+class UnitTest extends PHPUnit_Extensions_Database_TestCase
 {
 
     /**

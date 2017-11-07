@@ -9,12 +9,12 @@
 
 namespace gplcart\core\handlers\validator\elements;
 
-use gplcart\tests\phpunit\support\PhpUnitTest;
+use gplcart\tests\phpunit\support\UnitTest;
 
 /**
  * @coversDefaultClass gplcart\core\handlers\validator\elements\Common
  */
-class CommonTest extends PhpUnitTest
+class CommonTest extends UnitTest
 {
 
     /**

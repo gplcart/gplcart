@@ -9,12 +9,12 @@
 
 namespace gplcart\tests\phpunit\system\core;
 
-use gplcart\tests\phpunit\support\PhpUnitTest;
+use gplcart\tests\phpunit\support\UnitTest;
 
 /**
  * @coversDefaultClass \gplcart\core\Hook
  */
-class HookTest extends PhpUnitTest
+class HookTest extends UnitTest
 {
 
     /**

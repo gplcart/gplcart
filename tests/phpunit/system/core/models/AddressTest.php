@@ -9,12 +9,12 @@
 
 namespace gplcart\tests\phpunit\system\core\models;
 
-use gplcart\tests\phpunit\support\PhpUnitTest;
+use gplcart\tests\phpunit\support\UnitTest;
 
 /**
  * @coversDefaultClass \gplcart\core\models\Address
  */
-class AddressTest extends PhpUnitTest
+class AddressTest extends UnitTest
 {
 
     /**

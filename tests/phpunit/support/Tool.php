@@ -10,7 +10,7 @@
 namespace gplcart\tests\phpunit\support;
 
 /**
- * Contains various helper methods
+ * Contains various helper methods for unit testing
  */
 class Tool
 {
