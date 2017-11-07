@@ -65,12 +65,7 @@ class Address
      */
     public function get($address_id)
     {
-        $result = &gplcart_static("address.get.$address_id");
-
-        if (isset($result)) {
-            return $result;
-        }
-
+        $result = null;
         $this->hook->attach('address.get.before', $address_id, $result, $this);
 
         if (isset($result)) {
@@ -146,7 +141,8 @@ class Address
      */
     public function getList(array $data = array())
     {
-        $sql = 'SELECT a.*, CONCAT_WS(" ", a.first_name, a.middle_name, a.last_name) AS full_name,'
+        // Use pipes to concat to make compatible with sqlite
+        $sql = 'SELECT a.*, TRIM(a.first_name || " " || a.middle_name || " " || a.last_name) AS full_name,'
                 . ' u.email AS user_email, u.name AS user_name,'
                 . ' ci.city_id, COALESCE(ci.name, a.city_id) AS city_name, ci.status AS city_status,'
                 . ' c.name AS country_name, c.template AS country_address_template,'
@@ -177,7 +173,7 @@ class Address
         }
 
         if (isset($data['full_name'])) {
-            $sql .= ' AND CONCAT_WS(" ", a.first_name, a.middle_name, a.last_name) LIKE ?';
+            $sql .= ' AND TRIM(a.first_name || " " || a.middle_name || " " || a.last_name) LIKE ?';
             $conditions[] = "%{$data['full_name']}%";
         }
 
@@ -210,7 +206,7 @@ class Address
             'user_id' => 'a.user_id',
             'address_1' => 'a.address_1',
             'address_id' => 'a.address_id',
-            'full_name' => 'CONCAT_WS(" ", a.first_name, a.middle_name, a.last_name)'
+            'full_name' => 'TRIM(a.first_name || " " || a.middle_name || " " || a.last_name)'
         );
 
         if (isset($data['sort']) && isset($allowed_sort[$data['sort']])//
