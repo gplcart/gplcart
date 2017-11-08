@@ -140,9 +140,6 @@
   <?php } ?>
   </div>
   <?php } ?>
-  <?php if(!empty($_help)) { ?>
-  <div class="container-fluid help"><?php echo $this->filter($_help); ?></div>
-  <?php } ?>
   <div class="container-fluid content">
     <?php if (!empty($_messages)) { ?>
     <div class="row hidden-print" id="message">
