@@ -495,13 +495,12 @@ abstract class Controller
      * @param string $path
      * @param array $query
      * @param boolean $absolute
-     * @param boolean $exclude_langcode
+     * @param boolean $exclude_lang
      * @return string
      */
-    public function url($path = '', array $query = array(), $absolute = false,
-            $exclude_langcode = false)
+    public function url($path = '', array $query = array(), $absolute = false, $exclude_lang = false)
     {
-        return $this->url->get($path, $query, $absolute, $exclude_langcode);
+        return $this->url->get($path, $query, $absolute, $exclude_lang);
     }
 
     /**
@@ -1751,7 +1750,6 @@ abstract class Controller
     {
         $this->data = array_merge($this->data, $this->getDefaultData());
 
-        $this->data['_help'] = '';
         $this->data['_version'] = gplcart_version();
         $this->data['_user'] = $this->current_user;
         $this->data['_store'] = $this->current_store;
@@ -1970,10 +1968,10 @@ abstract class Controller
      * Validates a single element
      * @param string|array $field
      * @param string $handler_id
-     * @param string|array $args
+     * @param string|array $arguments
      * @return boolean
      */
-    protected function validateElement($field, $handler_id, $args = array())
+    protected function validateElement($field, $handler_id, $arguments = array())
     {
         if (is_array($field)) {
             $label = reset($field);
@@ -1982,7 +1980,7 @@ abstract class Controller
 
         $options = array(
             'field' => $field,
-            'arguments' => (array) $args,
+            'arguments' => (array) $arguments,
             'label' => empty($label) ? $this->text('Field') : $label
         );
 
