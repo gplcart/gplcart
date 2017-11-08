@@ -24,6 +24,12 @@ class AddressTest extends UnitTest
     protected $object;
 
     /**
+     * An array of fixture data
+     * @var array
+     */
+    protected $fixture_data;
+
+    /**
      * Returns an array of configuration used to mock the testing object
      * @return array
      */
@@ -46,6 +52,8 @@ class AddressTest extends UnitTest
     protected function setUp()
     {
         $this->object = $this->getInstance('gplcart\\core\\models\\Address', $this->getMockConfig());
+        $this->fixture_data = $this->getFixtureData('address');
+
         parent::setUp();
     }
 
@@ -54,8 +62,9 @@ class AddressTest extends UnitTest
      */
     public function testGet()
     {
-        $result = $this->object->get(1);
-        $this->assertEquals(1, $result['address_id']);
+        $first = reset($this->fixture_data);
+        $result = $this->object->get($first['address_id']);
+        $this->assertEquals($first['address_id'], $result['address_id']);
 
         $result = $this->object->get(999999);
         $this->assertEmpty($result);
@@ -67,14 +76,13 @@ class AddressTest extends UnitTest
      */
     public function testAdd()
     {
-        $data = $this->getFixtureData('address');
+        $data = $this->fixture_data;
         $this->removeFixtureAutoincrementField($data);
+        $first = reset($data);
 
-        $result = $this->object->add(reset($data));
+        $result = $this->object->add($first);
         $this->assertInternalType('int', $result);
-
-        $added = $this->object->get($result);
-        $this->assertEquals($result, $added['address_id']);
+        $this->assertDbRecordExists('address', 'address_id', $result);
     }
 
     /**
@@ -82,15 +90,19 @@ class AddressTest extends UnitTest
      */
     public function testDelete()
     {
-        $data = $this->getFixtureData('address');
+        $data = $this->fixture_data;
         $this->removeFixtureAutoincrementField($data);
 
+        // Passes
         $added = $this->object->add(reset($data));
-
+        $this->assertDbRecordExists('address', 'address_id', $added);
         $this->assertTrue($this->object->delete($added));
-        $this->assertEmpty($this->object->get($added));
+        $this->assertDbRecordNotExists('address', 'address_id', $added);
 
+        // Fails
+        // Try to delete by a fake ID
         $this->assertFalse($this->object->delete(999999));
+        // Address referenced
         $this->assertFalse($this->object->delete(1));
     }
 
@@ -101,10 +113,10 @@ class AddressTest extends UnitTest
     {
         $result = $this->object->getList();
         $this->assertInternalType('array', $result);
-        $this->assertCount(2, $result);
+        $this->assertCount(count($this->fixture_data), $result);
 
         $result = $this->object->getList(array('count' => true));
-        $this->assertSame(2, $result);
+        $this->assertSame(count($this->fixture_data), $result);
     }
 
     /**
@@ -112,20 +124,23 @@ class AddressTest extends UnitTest
      */
     public function testUpdate()
     {
-        $data = $this->getFixtureData('address');
-        $address = reset($data);
+        $address = reset($this->fixture_data);
 
-        $result = $this->object->update($address['address_id'], array('address_1' => 'Changed'));
-        $this->assertTrue($result);
-
-        $updated = $this->object->get($address['address_id']);
-        $this->assertNotEquals($address['address_1'], $updated['address_1']);
-
+        // Fails
+        // Update by fake field
         $result = $this->object->update($address['address_id'], array('some_fake_field' => 'Changed'));
         $this->assertFalse($result);
+        $this->assertDbRecordEquals($address, 'address', 'address_id', $address['address_id']);
 
+        // Update by a fake ID
         $result = $this->object->update(999999, array('address_1' => 'Changed'));
         $this->assertFalse($result);
+        $this->assertDbRecordEquals($address, 'address', 'address_id', $address['address_id']);
+
+        // Passes
+        $result = $this->object->update($address['address_id'], array('address_1' => 'Changed'));
+        $this->assertTrue($result);
+        $this->assertDbRecordNotEquals($address, 'address', 'address_id', $address['address_id']);
     }
 
 }

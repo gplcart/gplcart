@@ -23,6 +23,12 @@ class AliasTest extends UnitTest
     protected $object;
 
     /**
+     * An array of fixture data
+     * @var array
+     */
+    protected $fixture_data;
+
+    /**
      * Returns an array of configuration used to mock the testing object
      * @return array
      */
@@ -45,6 +51,8 @@ class AliasTest extends UnitTest
     protected function setUp()
     {
         $this->object = $this->getInstance('gplcart\\core\\models\\Alias', $this->getMockConfig());
+        $this->fixture_data = $this->getFixtureData('alias');
+
         parent::setUp();
     }
 
@@ -53,14 +61,13 @@ class AliasTest extends UnitTest
      */
     public function testAdd()
     {
-        $data = $this->getFixtureData('alias');
+        $data = $this->fixture_data;
         $this->removeFixtureAutoincrementField($data);
+        $first = reset($data);
 
-        $result = $this->object->add(reset($data));
-        $this->assertInternalType('int', $result);
-
-        $added = $this->object->get($result);
-        $this->assertEquals($result, $added['alias_id']);
+        $added_id = $this->object->add($first);
+        $this->assertInternalType('int', $added_id);
+        $this->assertDbRecordExists('alias', 'alias_id', $added_id);
     }
 
     /**
@@ -68,12 +75,14 @@ class AliasTest extends UnitTest
      */
     public function testGet()
     {
-        $result = $this->object->get(1);
-        $this->assertEquals(1, $result['alias_id']);
+        $first = reset($this->fixture_data);
+        $result = $this->object->get($first['alias_id']);
+        $this->assertEquals($first['alias_id'], $result['alias_id']);
 
-        $result = $this->object->get(1, 'product');
+        $result = $this->object->get($first['alias_id'], 'product');
         $this->assertEquals('product', $result['id_key']);
 
+        // Get by fake arguments
         $result = $this->object->get(999999);
         $this->assertEmpty($result);
         $this->assertInternalType('array', $result);
@@ -88,16 +97,15 @@ class AliasTest extends UnitTest
      */
     public function testDelete()
     {
-        $data = $this->getFixtureData('alias');
-        $this->removeFixtureAutoincrementField($data);
+        list($first, $second) = $this->fixture_data;
 
-        $added = $this->object->add(reset($data));
-        $this->assertTrue($this->object->delete($added));
-        $this->assertEmpty($this->object->get($added));
+        $this->assertDbRecordExists('alias', 'alias_id', $first['alias_id']);
+        $this->assertTrue($this->object->delete($first['alias_id']));
+        $this->assertDbRecordNotExists('alias', 'alias_id', $first['alias_id']);
 
-        $added = $this->object->get($this->object->add(reset($data)));
-        $this->assertTrue($this->object->delete($added['id_key'], $added['id_value']));
-        $this->assertEmpty($this->object->get($added['id_key'], $added['id_value']));
+        $this->assertDbRecordExists('alias', 'alias_id', $second['alias_id']);
+        $this->assertTrue($this->object->delete($second['id_key'], $second['id_value']));
+        $this->assertDbRecordNotExists('alias', 'alias_id', $second['alias_id']);
     }
 
     /**
@@ -107,10 +115,10 @@ class AliasTest extends UnitTest
     {
         $result = $this->object->getList();
         $this->assertInternalType('array', $result);
-        $this->assertCount(2, $result);
+        $this->assertCount(count($this->fixture_data), $result);
 
         $result = $this->object->getList(array('count' => true));
-        $this->assertSame(2, $result);
+        $this->assertSame(count($this->fixture_data), $result);
     }
 
     /**
@@ -119,8 +127,10 @@ class AliasTest extends UnitTest
     public function testGetIdKeys()
     {
         $result = $this->object->getIdKeys();
-        $this->assertCount(2, $result);
-        $this->assertTrue(in_array('page', $result) && in_array('product', $result));
+
+        $this->assertCount(count($this->fixture_data), $result);
+        $this->assertContains('page', $result);
+        $this->assertContains('product', $result);
     }
 
     /**
@@ -138,8 +148,7 @@ class AliasTest extends UnitTest
     public function testGetByPath()
     {
         $result = $this->object->getByPath('product.html');
-        $this->assertInternalType('array', $result);
-        $this->assertTrue($result['alias'] === 'product.html');
+        $this->assertEquals('product.html', $result['alias']);
 
         $result = $this->object->getByPath('some-fake-alias');
         $this->assertInternalType('array', $result);

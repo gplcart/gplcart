@@ -177,6 +177,8 @@ class UnitTest extends PHPUnit_Extensions_Database_TestCase
                 $mocker->will($params['will']);
             } else if (array_key_exists('return', $params)) {
                 $mocker->will($this->returnValue($params['return']));
+            } else if(!empty($params['callback'])){
+                $mocker->will($this->returnCallback($params['callback']));
             }
         }
 
@@ -217,7 +219,7 @@ class UnitTest extends PHPUnit_Extensions_Database_TestCase
     }
 
     /**
-     * Creates a dataset for the fixture
+     * Creates a dataset object from the fixture
      * @param string $fixture
      * @return \PHPUnit_Extensions_Database_DataSet_XmlDataSet
      * @throws \InvalidArgumentException
@@ -254,6 +256,7 @@ class UnitTest extends PHPUnit_Extensions_Database_TestCase
     /**
      * Remove first auto-incremented field from the fixture data
      * @param array $data
+     * @return array
      */
     protected function removeFixtureAutoincrementField(array &$data)
     {
@@ -266,6 +269,8 @@ class UnitTest extends PHPUnit_Extensions_Database_TestCase
                 $index++;
             }
         }
+
+        return $data;
     }
 
     /**
@@ -289,17 +294,6 @@ class UnitTest extends PHPUnit_Extensions_Database_TestCase
         }
 
         return $fixtures;
-    }
-
-    /**
-     * Assets that fixture table equals to the fixture source
-     * @param string $fixture
-     */
-    protected function assertFixtureTable($fixture)
-    {
-        $actual = $this->getConnection()->createQueryTable($fixture, "SELECT * FROM $fixture");
-        $expected = $this->createFixtureDataSet($fixture)->getTable($fixture);
-        $this->assertTablesEqual($expected, $actual, "Table for fixture $fixture does not match expected structure");
     }
 
     /**
@@ -352,6 +346,67 @@ class UnitTest extends PHPUnit_Extensions_Database_TestCase
     {
         $db = new SystemDatabase;
         return $db->set($this->createDbFromFixture($fixtures));
+    }
+
+    /**
+     * Assets that fixture table equals to the fixture source
+     * @param string $fixture
+     */
+    protected function assertFixtureTable($fixture)
+    {
+        $actual = $this->getConnection()->createQueryTable($fixture, "SELECT * FROM $fixture");
+        $expected = $this->createFixtureDataSet($fixture)->getTable($fixture);
+        $this->assertTablesEqual($expected, $actual, "Table for fixture $fixture does not match expected structure");
+    }
+
+    /**
+     * Asserts that a record exists in the database
+     * @param string $table
+     * @param string $field
+     * @param mixed $value
+     */
+    protected function assertDbRecordExists($table, $field, $value)
+    {
+        $result = static::$pdo->query("SELECT * FROM $table WHERE $field='$value'")->fetchObject();
+        $this->assertNotEmpty($result);
+    }
+
+    /**
+     * Asserts that a record does not exist in the database
+     * @param string $table
+     * @param string $field
+     * @param mixed $value
+     */
+    protected function assertDbRecordNotExists($table, $field, $value)
+    {
+        $result = static::$pdo->query("SELECT * FROM $table WHERE $field='$value'")->fetchObject();
+        $this->assertEmpty($result);
+    }
+
+    /**
+     * Asserts that a record equals to the expected array
+     * @param array $expected
+     * @param string $table
+     * @param string $field
+     * @param mixed $value
+     */
+    protected function assertDbRecordEquals(array $expected, $table, $field, $value)
+    {
+        $actual = static::$pdo->query("SELECT * FROM $table WHERE $field='$value'")->fetchObject();
+        $this->assertEquals($expected, (array) $actual);
+    }
+
+    /**
+     * Asserts that a record not equals to the expected array
+     * @param array $expected
+     * @param string $table
+     * @param string $field
+     * @param mixed $value
+     */
+    protected function assertDbRecordNotEquals(array $expected, $table, $field, $value)
+    {
+        $actual = static::$pdo->query("SELECT * FROM $table WHERE $field='$value'")->fetchObject();
+        $this->assertNotEquals($expected, (array) $actual);
     }
 
 }

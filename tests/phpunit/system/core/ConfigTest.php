@@ -9,12 +9,12 @@
 
 namespace gplcart\tests\phpunit\system\core;
 
-use gplcart\tests\phpunit\support\PhpUnitTest;
+use gplcart\tests\phpunit\support\UnitTest;
 
 /**
  * @coversDefaultClass \gplcart\core\Config
  */
-class ConfigTest extends PhpUnitTest
+class ConfigTest extends UnitTest
 {
 
     /**
@@ -24,9 +24,19 @@ class ConfigTest extends PhpUnitTest
     protected $object;
 
     /**
-     * Fixture name
+     * An array of fixture data
+     * @var array
      */
-    const FIXTURE = 'settings';
+    protected $fixture_data;
+
+    /**
+     * Returns an array of configuration used to mock the testing object
+     * @return array
+     */
+    protected function getMockConfig()
+    {
+        return array('gplcart\\core\\Database' => $this->getSystemDatabase());
+    }
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -34,28 +44,9 @@ class ConfigTest extends PhpUnitTest
      */
     protected function setUp()
     {
-        $this->object = $this->getInstance('gplcart\\core\\Config');
-        $this->object->setDb($this->setTestDatabase('settings'));
+        $this->fixture_data = $this->getFixtureData('settings');
+        $this->object = $this->getInstance('gplcart\\core\\Config', $this->getMockConfig());
         parent::setUp();
-    }
-
-    /**
-     * Tears down the fixture, for example, closes a network connection.
-     * This method is called after a test is executed.
-     */
-    protected function tearDown()
-    {
-        $this->object = null;
-        $this->dropTestDatabase();
-        parent::tearDown();
-    }
-
-    /**
-     * @covers gplcart\core\Config::getDb
-     */
-    public function testGetDb()
-    {
-        $this->assertInstanceOf('gplcart\\core\\Database', $this->object->getDb());
     }
 
     /**
@@ -65,7 +56,7 @@ class ConfigTest extends PhpUnitTest
     {
         $actual = $this->object->select();
         $this->assertInternalType('array', $actual);
-        $this->assertCount(2, $actual);
+        $this->assertCount(count($this->fixture_data), $actual);
 
         $this->assertTrue($this->object->select('test_1') === 'test_value_1');
         $this->assertArrayHasKey('test', $this->object->select('test_2'));
@@ -74,7 +65,6 @@ class ConfigTest extends PhpUnitTest
 
     /**
      * @covers gplcart\core\Config::set
-     * @depends testSelect
      */
     public function testSet()
     {
@@ -90,38 +80,14 @@ class ConfigTest extends PhpUnitTest
 
     /**
      * @covers gplcart\core\Config::reset
-     * @depends testSet
-     * @depends testSelect
      */
     public function testReset()
     {
-        $key = 'some_test_key';
-        $value = 'some_test_value';
+        $first = reset($this->fixture_data);
 
-        $this->object->set($key, $value);
-
-        $this->assertTrue($this->object->reset($key));
-        $this->assertEmpty($this->object->select($key));
-    }
-
-    /**
-     * @covers gplcart\core\Config::setKey
-     */
-    public function testSetKey()
-    {
-        $expected = $this->tool->getRandomString();
-        $this->assertEquals($expected, $this->object->setKey($expected));
-    }
-
-    /**
-     * @covers gplcart\core\Config::getKey
-     * @depends testSetKey
-     */
-    public function testGetKey()
-    {
-        $expected = $this->tool->getRandomString();
-        $this->object->setKey($expected);
-        $this->assertEquals($expected, $this->object->getKey());
+        $this->assertDbRecordExists('settings', 'id', $first['id']);
+        $this->assertTrue($this->object->reset($first['id']));
+        $this->assertDbRecordNotExists('settings', 'id', $first['id']);
     }
 
     /**
@@ -140,14 +106,6 @@ class ConfigTest extends PhpUnitTest
         foreach ($valid as $string) {
             $this->assertTrue($this->object->isValidModuleId($string));
         }
-    }
-
-    /**
-     * @covers gplcart\core\Config::getToken
-     */
-    public function testGetToken()
-    {
-        $this->assertInternalType('string', $this->object->getToken());
     }
 
 }
