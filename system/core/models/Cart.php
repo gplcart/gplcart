@@ -102,7 +102,6 @@ class Cart
             SkuModel $sku, CurrencyModel $currency, UserModel $user, WishlistModel $wishlist,
             LanguageModel $language, RequestHelper $request)
     {
-
         $this->db = $db;
         $this->hook = $hook;
         $this->config = $config;
