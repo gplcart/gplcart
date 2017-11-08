@@ -895,6 +895,9 @@ abstract class Controller
 
         if (strpos($file, '|') !== false) {
             list($module_id, $file) = explode('|', $file, 2);
+        } else if (gplcart_path_is_absolute($file)) {
+            $template = substr($file, 0, (strrpos($file, '.')));
+            return array($template, $template);
         }
 
         return array(

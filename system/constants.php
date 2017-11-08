@@ -145,16 +145,22 @@ define('GC_DIR_PRIVATE_MODULE', GC_DIR_PRIVATE . '/modules');
 define('GC_DIR_IMAGE', GC_DIR_FILE . '/image/upload');
 
 /**
- * Path to directory containing images created by image styles
+ * Path to a directory containing images created by image styles
  * @var string
  */
 define('GC_DIR_IMAGE_CACHE', GC_DIR_FILE . '/image/cache');
 
 /**
- * Path to directory containing core translation files
+ * Path to a directory containing core translation files
  * @var string
  */
 define('GC_DIR_TRANSLATION', GC_DIR_SYSTEM . '/translations');
+
+/**
+ * Path to a directory containing help files
+ * @var string
+ */
+define('GC_DIR_HELP', GC_DIR_SYSTEM . '/help');
 
 /**
  * Common configuration file

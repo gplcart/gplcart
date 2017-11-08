@@ -31,6 +31,11 @@
         <?php echo $_menu; ?>
         <?php } ?>
         <ul class="nav navbar-nav navbar-right right-links hidden-sm hidden-xs">
+          <li>
+            <a href="<?php echo $this->url('admin/help'); ?>">
+              <i class="fa fa-info-circle"></i>
+            </a>
+          </li>
           <?php if($this->access('bookmark')) { ?>
           <li class="dropdown">
             <a href="#" class="dropdown-toggle " data-toggle="dropdown">
@@ -70,20 +75,6 @@
             </ul>
           </li>
           <?php } ?>
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle " data-toggle="dropdown">
-              <i class="fa fa-globe"></i>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-right">
-              <?php foreach ($_stores as $store) { ?>
-              <li>
-                <a target="_blank" href="<?php echo $this->e("http://{$store['domain']}/{$store['basepath']}"); ?>">
-                  <?php echo $this->e("www.{$store['domain']}/{$store['basepath']}"); ?>
-                </a>
-              </li>
-              <?php } ?>
-            </ul>
-          </li>
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <i class="fa fa-user"></i>

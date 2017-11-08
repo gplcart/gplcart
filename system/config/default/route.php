@@ -174,6 +174,16 @@ return array(
             'controller' => array('gplcart\\core\\controllers\\backend\\Dashboard', 'indexDashboard')
         )
     ),
+    'admin/help' => array(
+        'handlers' => array(
+            'controller' => array('gplcart\\core\\controllers\\backend\\Help', 'listHelp')
+        )
+    ),
+    'admin/help/(\w+)' => array(
+        'handlers' => array(
+            'controller' => array('gplcart\\core\\controllers\\backend\\Help', 'viewHelp')
+        )
+    ),
     'admin/bookmark' => array(
         'access' => 'bookmark',
         'handlers' => array(
