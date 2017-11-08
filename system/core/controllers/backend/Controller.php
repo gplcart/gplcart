@@ -25,14 +25,19 @@ class Controller extends BaseController
     protected $job;
 
     /**
+     * Bookmark model instance
+     * @var \gplcart\core\models\Bookmark $bookmark
+     */
+    protected $bookmark;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
         parent::__construct();
 
-        $this->job = Container::get('gplcart\\core\\models\\Job');
-
+        $this->setDefaultInstancesBackend();
         $this->processCurrentJob();
         $this->setJsCron();
         $this->setDefaultDataBackend();
@@ -43,19 +48,33 @@ class Controller extends BaseController
     }
 
     /**
+     * Sets default class instances
+     */
+    protected function setDefaultInstancesBackend()
+    {
+        $this->job = Container::get('gplcart\\core\\models\\Job');
+        $this->bookmark = Container::get('gplcart\\core\\models\\Bookmark');
+    }
+
+    /**
      * Sets default variables for backend templates
      */
     protected function setDefaultDataBackend()
     {
         $this->data['_job'] = $this->renderJob();
         $this->data['_stores'] = $this->store->getList();
-        $this->data['_menu'] = $this->renderAdminMenu('admin', array());
+        $this->data['_menu'] = $this->renderAdminMenu('admin');
 
         foreach ($this->data['_stores'] as &$store) {
             if (empty($store['status'])) {
                 $store['name'] = $this->text('@store (disabled)', array('@store' => $store['name']));
             }
         }
+
+        $bookmarks = $this->bookmark->getList(array('user_id' => $this->uid));
+        $this->data['_is_bookmarked'] = isset($bookmarks[$this->path]);
+        unset($bookmarks[$this->path]);
+        $this->data['_bookmarks'] = array_splice($bookmarks, 0, $this->config('bookmark_limit', 5));
     }
 
     /**

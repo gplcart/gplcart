@@ -14,6 +14,7 @@ $config = array();
 
 # $config['account_order_limit']                  = 10; // Max number of orders per page in accout
 # $config['autocomplete_limit']                   = 10; // Max number of autocomplete suggestions
+# $config['bookmark_limit']                       = 5; // Max number of bookmarks to quick access
 # $config['image_style_ui']                       = 2; // Image style for admin UI
 # $config['list_limit']                           = 20; // Max number of items for UI
 # $config['dashboard_limit']                      = 10; // Max number of items in dashboard blocks

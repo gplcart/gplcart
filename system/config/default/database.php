@@ -36,6 +36,15 @@ return array(
             'alias' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
         )
     ),
+    'bookmark' => array(
+        'fields' => array(
+            'bookmark_id' => array('type' => 'integer', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+            'user_id' => array('type' => 'integer', 'length' => 10, 'not_null' => true),
+            'path' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+            'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+            'created' => array('type' => 'integer', 'length' => 10, 'not_null' => true)
+        )
+    ),
     'cart' => array(
         'fields' => array(
             'cart_id' => array('type' => 'integer', 'length' => 10, 'auto_increment' => true, 'primary' => true),

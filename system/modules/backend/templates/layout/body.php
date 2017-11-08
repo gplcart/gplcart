@@ -31,6 +31,45 @@
         <?php echo $_menu; ?>
         <?php } ?>
         <ul class="nav navbar-nav navbar-right right-links hidden-sm hidden-xs">
+          <?php if($this->access('bookmark')) { ?>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle " data-toggle="dropdown">
+              <i class="fa fa-star"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-right">
+              <?php if(!empty($_bookmarks)) { ?>
+              <?php foreach ($_bookmarks as $bookmark) { ?>
+              <li>
+                <a href="<?php echo $this->url($bookmark['path']); ?>">
+                  <?php if(empty($bookmark['title'])) { ?>
+                  <?php echo $this->e($this->truncate($bookmark['path'], 50)); ?>
+                  <?php } else { ?>
+                  <?php echo $this->e($this->truncate($bookmark['title'], 50)); ?>
+                  <?php } ?>
+                </a>
+              </li>
+              <?php } ?>
+              <li class="divider"></li>
+              <li>
+                <a href="<?php echo $this->url('admin/bookmark'); ?>"><?php echo $this->text('See all'); ?></a>
+              </li>
+              <?php } ?>
+              <?php if(empty($_is_bookmarked)) { ?>
+              <?php if($this->access('bookmark_add')) { ?>
+              <li>
+                <a href="<?php echo $this->url('admin/bookmark/add', array('title' => $_head_title, 'path' => $_path)); ?>"><?php echo $this->text('Add'); ?></a>
+              </li>
+              <?php } ?>
+              <?php } else { ?>
+              <?php if($this->access('bookmark_delete')) { ?>
+              <li>
+                <a href="<?php echo $this->url('admin/bookmark/delete', array('path' => $_path)); ?>"><?php echo $this->text('Delete'); ?></a>
+              </li>
+              <?php } ?>
+              <?php } ?>
+            </ul>
+          </li>
+          <?php } ?>
           <li class="dropdown">
             <a href="#" class="dropdown-toggle " data-toggle="dropdown">
               <i class="fa fa-globe"></i>

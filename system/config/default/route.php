@@ -174,6 +174,24 @@ return array(
             'controller' => array('gplcart\\core\\controllers\\backend\\Dashboard', 'indexDashboard')
         )
     ),
+    'admin/bookmark' => array(
+        'access' => 'bookmark',
+        'handlers' => array(
+            'controller' => array('gplcart\\core\\controllers\\backend\\Bookmark', 'listBookmark')
+        )
+    ),
+    'admin/bookmark/add' => array(
+        'access' => 'bookmark_add',
+        'handlers' => array(
+            'controller' => array('gplcart\\core\\controllers\\backend\\Bookmark', 'addBookmark')
+        )
+    ),
+    'admin/bookmark/delete' => array(
+        'access' => 'bookmark_delete',
+        'handlers' => array(
+            'controller' => array('gplcart\\core\\controllers\\backend\\Bookmark', 'deleteBookmark')
+        )
+    ),
     'admin/content' => array(
         'menu' => array('admin' => /* @text */'Content'),
         'arguments' => array('admin/content'),
