@@ -22,7 +22,7 @@ use gplcart\core\traits\Image as ImageTrait,
 /**
  * Manages basic behaviors and data related to pages
  */
-class Page extends Model
+class Page
 {
 
     use ImageTrait,
