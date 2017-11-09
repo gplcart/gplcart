@@ -42,25 +42,6 @@ class Handler
     }
 
     /**
-     * Call a handler and pass arguments by reference
-     * @param array $handlers
-     * @param string|null $handler_id
-     * @param string $method
-     * @param mixed $a
-     * @param mixed $b
-     * @param mixed $c
-     * @param mixed $d
-     * @param mixed $e
-     * @return mixed
-     */
-    public static function callRef($handlers, $handler_id, $method, &$a = null, &$b = null,
-            &$c = null, &$d = null, &$e = null)
-    {
-        $callback = static::get($handlers, $handler_id, $method);
-        return call_user_func_array($callback, array(&$a, &$b, &$c, &$d, &$e));
-    }
-
-    /**
      * Returns a handler
      * @param array $handlers
      * @param string $handler_id

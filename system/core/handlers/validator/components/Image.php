@@ -159,7 +159,8 @@ class Image extends ComponentValidator
         }
 
         try {
-            return static::callRef($handler, null, 'validate', $value);
+            $callback = static::get($handler, null, 'validate');
+            return call_user_func_array($callback, array(&$value));
         } catch (\Exception $ex) {
             return false;
         }
