@@ -9,7 +9,6 @@
 
 namespace gplcart\core\handlers\condition;
 
-use gplcart\core\Config;
 use gplcart\core\models\Price as PriceModel,
     gplcart\core\models\Currency as CurrencyModel;
 use gplcart\core\handlers\condition\Base as BaseHandler;
@@ -33,14 +32,11 @@ class Cart extends BaseHandler
     protected $currency;
 
     /**
-     * @param Config $config
      * @param PriceModel $price
      * @param CurrencyModel $currency
      */
-    public function __construct(Config $config, PriceModel $price, CurrencyModel $currency)
+    public function __construct(PriceModel $price, CurrencyModel $currency)
     {
-        parent::__construct($config);
-
         $this->price = $price;
         $this->currency = $currency;
     }

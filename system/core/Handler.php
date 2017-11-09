@@ -9,7 +9,6 @@
 
 namespace gplcart\core;
 
-use gplcart\core\Config;
 use InvalidArgumentException;
 
 /**
@@ -17,20 +16,6 @@ use InvalidArgumentException;
  */
 class Handler
 {
-
-    /**
-     * Config class instance
-     * @var \gplcart\core\Config $config
-     */
-    protected $config;
-
-    /**
-     * @param Config $config
-     */
-    public function __construct(Config $config)
-    {
-        $this->config = $config;
-    }
 
     /**
      * Call a handler

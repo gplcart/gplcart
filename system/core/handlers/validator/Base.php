@@ -20,6 +20,18 @@ class Base extends Handler
 {
 
     /**
+     * Config class instance
+     * @var \gplcart\core\Config $config
+     */
+    protected $config;
+
+    /**
+     * Language model instance
+     * @var \gplcart\core\models\Language $language
+     */
+    protected $language;
+
+    /**
      * An array of validation errors
      * @var array
      */
@@ -38,19 +50,12 @@ class Base extends Handler
     protected $options = array();
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
-     */
-    protected $language;
-
-    /**
      * @param Config $config
      * @param LanguageModel $language
      */
     public function __construct(Config $config, LanguageModel $language)
     {
-        parent::__construct($config);
-
+        $this->config = $config;
         $this->language = $language;
     }
 

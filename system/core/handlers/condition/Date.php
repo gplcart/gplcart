@@ -9,7 +9,6 @@
 
 namespace gplcart\core\handlers\condition;
 
-use gplcart\core\Config;
 use gplcart\core\handlers\condition\Base as BaseHandler;
 
 /**
@@ -17,15 +16,6 @@ use gplcart\core\handlers\condition\Base as BaseHandler;
  */
 class Date extends BaseHandler
 {
-
-    /**
-     * @param Config $config
-     */
-    public function __construct(Config $config)
-    {
-        parent::__construct($config);
-    }
-
     /**
      * Whether the date condition is met
      * @param array $condition

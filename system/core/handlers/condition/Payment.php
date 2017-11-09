@@ -9,7 +9,6 @@
 
 namespace gplcart\core\handlers\condition;
 
-use gplcart\core\Config;
 use gplcart\core\models\City as CityModel,
     gplcart\core\models\State as StateModel,
     gplcart\core\models\Country as CountryModel,
@@ -23,49 +22,51 @@ class Payment extends AddressBaseHandler
 {
 
     /**
-     * @param Config $config
      * @param CityModel $city
      * @param StateModel $state
      * @param CountryModel $country
      * @param AddressModel $address
      */
-    public function __construct(Config $config, CityModel $city, StateModel $state,
-            CountryModel $country, AddressModel $address)
+    public function __construct(CityModel $city, StateModel $state, CountryModel $country,
+            AddressModel $address)
     {
-        parent::__construct($config, $city, $state, $country, $address);
+        parent::__construct($city, $state, $country, $address);
     }
 
     /**
      * Whether the payment zone ID condition is met
      * @param array $condition
      * @param array $data
+     * @param string $key
      * @return boolean
      */
-    public function zoneId(array $condition, array $data)
+    public function zoneId(array $condition, array $data, $key = 'payment_address')
     {
-        return parent::zoneId($condition, $data, 'payment_address');
+        return parent::zoneId($condition, $data, $key);
     }
 
     /**
      * Whether the country condition is met
      * @param array $condition
      * @param array $data
+     * @param string $key
      * @return boolean
      */
-    public function countryCode(array $condition, array $data)
+    public function countryCode(array $condition, array $data, $key = 'payment_address')
     {
-        return parent::countryCode($condition, $data, 'payment_address');
+        return parent::countryCode($condition, $data, $key);
     }
 
     /**
      * Whether the state ID condition is met
      * @param array $condition
      * @param array $data
+     * @param string $key
      * @return boolean
      */
-    public function stateId(array $condition, array $data)
+    public function stateId(array $condition, array $data, $key = 'payment_address')
     {
-        return parent::stateId($condition, $data, 'payment_address');
+        return parent::stateId($condition, $data, $key);
     }
 
 }

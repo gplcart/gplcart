@@ -9,13 +9,18 @@
 
 namespace gplcart\core\handlers\search;
 
-use gplcart\core\Handler,
-    gplcart\core\Config;
+use gplcart\core\Config;
 use gplcart\core\models\Search as SearchModel,
     gplcart\core\models\Product as ProductModel;
 
-class Product extends Handler
+class Product
 {
+
+    /**
+     * Config class instance
+     * @var \gplcart\core\Config $config
+     */
+    protected $config;
 
     /**
      * Product model instance
@@ -36,9 +41,8 @@ class Product extends Handler
      */
     public function __construct(Config $config, SearchModel $search, ProductModel $product)
     {
-        parent::__construct($config);
-
         $this->search = $search;
+        $this->config = $config;
         $this->product = $product;
     }
 

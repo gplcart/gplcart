@@ -9,7 +9,6 @@
 
 namespace gplcart\core\handlers\condition;
 
-use gplcart\core\Config;
 use gplcart\core\models\User as UserModel;
 use gplcart\core\handlers\condition\Base as BaseHandler;
 
@@ -26,13 +25,10 @@ class User extends BaseHandler
     protected $user;
 
     /**
-     * @param Config $config
      * @param UserModel $user
      */
-    public function __construct(Config $config, UserModel $user)
+    public function __construct(UserModel $user)
     {
-        parent::__construct($config);
-
         $this->user = $user;
     }
 

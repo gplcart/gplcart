@@ -32,6 +32,12 @@ class Dashboard extends Handler
     use OrderTrait;
 
     /**
+     * Config class instance
+     * @var \gplcart\core\Config $config
+     */
+    protected $config;
+
+    /**
      * User model instance
      * @var \gplcart\core\models\User $user
      */
@@ -115,13 +121,12 @@ class Dashboard extends Handler
             ReportModel $report, ReviewModel $review, TransactionModel $transaction,
             PriceRuleModel $pricerule)
     {
-        parent::__construct($config);
-
         $this->cart = $cart;
         $this->user = $user;
         $this->price = $price;
         $this->order = $order;
         $this->report = $report;
+        $this->config = $config;
         $this->review = $review;
         $this->product = $product;
         $this->language = $language;

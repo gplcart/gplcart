@@ -9,7 +9,6 @@
 
 namespace gplcart\core\handlers\condition;
 
-use gplcart\core\Config;
 use gplcart\core\handlers\condition\Base as BaseHandler;
 
 /**
@@ -17,14 +16,6 @@ use gplcart\core\handlers\condition\Base as BaseHandler;
  */
 class Product extends BaseHandler
 {
-
-    /**
-     * @param Config $config
-     */
-    public function __construct(Config $config)
-    {
-        parent::__construct($config);
-    }
 
     /**
      * Whether the product ID condition is met

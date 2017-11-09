@@ -10,7 +10,6 @@
 namespace gplcart\core\handlers\install;
 
 use gplcart\core\Config,
-    gplcart\core\Handler,
     gplcart\core\Container;
 use gplcart\core\helpers\Cli as CliHelper,
     gplcart\core\helpers\Session as SessionHelper;
@@ -20,8 +19,14 @@ use gplcart\core\models\Install as InstallModel,
 /**
  * Base installer handlers class
  */
-class Base extends Handler
+class Base
 {
+    
+    /**
+     * Config class instance
+     * @var \gplcart\core\Config $config
+     */
+    protected $config;
 
     /**
      * Language model instance
@@ -75,11 +80,10 @@ class Base extends Handler
     public function __construct(Config $config, InstallModel $install, LanguageModel $language,
             SessionHelper $session, CliHelper $cli)
     {
-        parent::__construct($config);
-
         set_time_limit(0);
 
         $this->cli = $cli;
+        $this->config = $config;
         $this->session = $session;
         $this->install = $install;
         $this->language = $language;
