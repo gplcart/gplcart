@@ -149,7 +149,12 @@
   <?php } ?>
   <?php if(!empty($_page_title)) { ?>
   <div class="page-title">
-    <h1 class="h3"><?php echo $this->filter($_page_title); ?></h1>
+    <h1 class="h3">
+      <?php echo $this->filter($_page_title); ?>
+      <?php if(!empty($_help['path'])) { ?>
+        <a class="small" href="<?php echo $this->url($_help['path']); ?>"><i class="fa fa-question-circle"></i></a>
+      <?php } ?>
+    </h1>
   </div>
   <?php } ?>
   </div>

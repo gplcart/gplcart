@@ -31,6 +31,12 @@ class Controller extends BaseController
     protected $bookmark;
 
     /**
+     * Help model instance
+     * @var \gplcart\core\models\Help $help
+     */
+    protected $help;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -53,6 +59,7 @@ class Controller extends BaseController
     protected function setDefaultInstancesBackend()
     {
         $this->job = Container::get('gplcart\\core\\models\\Job');
+        $this->help = Container::get('gplcart\\core\\models\\Help');
         $this->bookmark = Container::get('gplcart\\core\\models\\Bookmark');
     }
 
@@ -64,6 +71,7 @@ class Controller extends BaseController
         $this->data['_job'] = $this->renderJob();
         $this->data['_stores'] = $this->store->getList();
         $this->data['_menu'] = $this->renderAdminMenu('admin');
+        $this->data['_help'] = $this->help->getByPattern($this->current_route['simple_pattern'], $this->langcode);
 
         foreach ($this->data['_stores'] as &$store) {
             if (empty($store['status'])) {
