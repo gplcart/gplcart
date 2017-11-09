@@ -29,6 +29,12 @@ class Category extends FrontendController
      * @var array
      */
     protected $data_limit;
+    
+    /**
+     * Tottal number of category items
+     * @var int
+     */
+    protected $data_total;
 
     /**
      * An array of category data
@@ -147,11 +153,13 @@ class Category extends FrontendController
         $options = $this->query_filter;
         $options['count'] = true;
         $options['category_id'] = $this->data_category['category_id'];
+        
+        $this->data_total = (int) $this->product->getList($options);
 
         $pager = array(
+            'total' => $this->data_total,
             'query' => $this->query_filter,
-            'limit' => $this->configTheme('catalog_limit', 20),
-            'total' => (int) $this->product->getList($options)
+            'limit' => $this->configTheme('catalog_limit', 20)
         );
 
         return $this->data_limit = $this->setPager($pager);
@@ -193,7 +201,7 @@ class Category extends FrontendController
     protected function setDataNavbarIndexCategory()
     {
         $data = array(
-            'total' => $this->data_limit,
+            'total' => $this->data_total,
             'view' => $this->query_filter['view'],
             'quantity' => count($this->data_products),
             'sort' => "{$this->query_filter['sort']}-{$this->query_filter['order']}"
