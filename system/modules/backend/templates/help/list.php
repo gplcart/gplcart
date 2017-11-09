@@ -14,7 +14,7 @@
 <ul class="list-unstyled">
   <?php foreach ($items as $item) { ?>
   <li>
-    <a href="<?php echo $this->url("admin/help/{$item['hash']}"); ?>">
+    <a href="<?php echo $this->url($item['path']); ?>">
       <?php echo $this->e($item['title']); ?>
     </a>
   </li>
