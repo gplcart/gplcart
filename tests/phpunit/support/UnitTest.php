@@ -129,9 +129,9 @@ class UnitTest extends PHPUnit_Extensions_Database_TestCase
     protected function getMockFromConfig($reflection, array $config = array())
     {
         $config += array(
-            'disable_clone' => true,
-            'disable_autoload' => true,
-            'disable_constructor' => true,
+            'clone' => false,
+            'autoload' => false,
+            'constructor' => false,
             'constructor_arguments' => null
         );
 
@@ -150,15 +150,15 @@ class UnitTest extends PHPUnit_Extensions_Database_TestCase
             $builder->setConstructorArgs($config['constructor_arguments']);
         }
 
-        if ($config['disable_constructor']) {
+        if (empty($config['constructor'])) {
             $builder->disableOriginalConstructor();
         }
 
-        if ($config['disable_clone']) {
+        if (empty($config['clone'])) {
             $builder->disableOriginalClone();
         }
 
-        if ($config['disable_autoload']) {
+        if (empty($config['autoload'])) {
             $builder->disableAutoload();
         }
 
@@ -177,7 +177,7 @@ class UnitTest extends PHPUnit_Extensions_Database_TestCase
                 $mocker->will($params['will']);
             } else if (array_key_exists('return', $params)) {
                 $mocker->will($this->returnValue($params['return']));
-            } else if(!empty($params['callback'])){
+            } else if (!empty($params['callback'])) {
                 $mocker->will($this->returnCallback($params['callback']));
             }
         }
