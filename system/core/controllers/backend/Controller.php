@@ -73,7 +73,6 @@ class Controller extends BaseController
 
         $bookmarks = $this->bookmark->getList(array('user_id' => $this->uid));
         $this->data['_is_bookmarked'] = isset($bookmarks[$this->path]);
-        unset($bookmarks[$this->path]);
         $this->data['_bookmarks'] = array_splice($bookmarks, 0, $this->config('bookmark_limit', 5));
     }
 
