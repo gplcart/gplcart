@@ -9,6 +9,8 @@
 
 namespace gplcart\core;
 
+use gplcart\core\Config;
+
 /**
  * Parent class for modules
  */
@@ -28,9 +30,9 @@ abstract class Module
     protected $config;
 
     /**
-     * @param \gplcart\core\Config $config
+     * @param Config $config
      */
-    public function __construct(\gplcart\core\Config $config)
+    public function __construct(Config $config)
     {
         $this->config = $config;
         $this->db = $this->config->getDb();

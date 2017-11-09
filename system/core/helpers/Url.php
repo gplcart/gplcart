@@ -35,7 +35,6 @@ class Url
      * @param array $options
      * @param boolean $full
      * @param boolean $nolangcode
-     * @return null
      */
     final public function redirect($url = '', $options = array(), $full = false, $nolangcode = false)
     {
