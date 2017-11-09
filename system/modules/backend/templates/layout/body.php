@@ -32,13 +32,27 @@
         <?php } ?>
         <ul class="nav navbar-nav navbar-right right-links hidden-sm hidden-xs">
           <li>
-            <a href="<?php echo $this->url('admin/help'); ?>">
+            <a href="<?php echo $this->url('admin/help'); ?>" title="<?php echo $this->text('Help'); ?>">
               <i class="fa fa-info-circle"></i>
             </a>
           </li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle " data-toggle="dropdown" title="<?php echo $this->text('Stores'); ?>">
+              <i class="fa fa-globe"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-right">
+              <?php foreach ($_stores as $store) { ?>
+              <li>
+                <a target="_blank" href="<?php echo $this->e("http://{$store['domain']}/{$store['basepath']}"); ?>">
+                  <?php echo $this->e("www.{$store['domain']}/{$store['basepath']}"); ?>
+                </a>
+              </li>
+              <?php } ?>
+            </ul>
+          </li>
           <?php if($this->access('bookmark')) { ?>
           <li class="dropdown">
-            <a href="#" class="dropdown-toggle " data-toggle="dropdown">
+            <a href="#" class="dropdown-toggle " data-toggle="dropdown" title="<?php echo $this->text('Bookmarks'); ?>">
               <i class="fa fa-star"></i>
             </a>
             <ul class="dropdown-menu dropdown-menu-right">
@@ -56,19 +70,19 @@
               <?php } ?>
               <li class="divider"></li>
               <li>
-                <a href="<?php echo $this->url('admin/bookmark'); ?>"><?php echo $this->text('See all'); ?></a>
+                <a href="<?php echo $this->url('admin/bookmark'); ?>"><i class="fa fa-list-ul"></i> <?php echo $this->text('See all'); ?></a>
               </li>
               <?php } ?>
               <?php if(empty($_is_bookmarked)) { ?>
               <?php if($this->access('bookmark_add')) { ?>
               <li>
-                <a href="<?php echo $this->url('admin/bookmark/add', array('title' => $_head_title, 'path' => $_path)); ?>"><?php echo $this->text('Add'); ?></a>
+                <a href="<?php echo $this->url('admin/bookmark/add', array('title' => $_head_title, 'path' => $_path)); ?>"><i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?></a>
               </li>
               <?php } ?>
               <?php } else { ?>
               <?php if($this->access('bookmark_delete')) { ?>
               <li>
-                <a href="<?php echo $this->url('admin/bookmark/delete', array('path' => $_path)); ?>"><?php echo $this->text('Delete'); ?></a>
+                <a href="<?php echo $this->url('admin/bookmark/delete', array('path' => $_path)); ?>"><i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?></a>
               </li>
               <?php } ?>
               <?php } ?>
@@ -76,7 +90,7 @@
           </li>
           <?php } ?>
           <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="<?php echo $this->text('Account'); ?>">
               <i class="fa fa-user"></i>
             </a>
             <ul class="dropdown-menu dropdown-menu-right">
