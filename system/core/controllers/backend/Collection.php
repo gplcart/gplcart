@@ -263,9 +263,11 @@ class Collection extends BackendController
     protected function addCollection()
     {
         $this->controlAccess('collection_add');
+
         if ($this->collection->add($this->getSubmitted())) {
             $this->redirect('admin/content/collection', $this->text('Collection has been added'), 'success');
         }
+
         $this->redirect('', $this->text('Collection has not been added'), 'danger');
     }
 

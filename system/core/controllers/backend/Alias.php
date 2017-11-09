@@ -113,6 +113,7 @@ class Alias extends BackendController
         $options = $this->query_filter;
         $options['limit'] = $this->data_limit;
         $aliases = (array) $this->alias->getList($options);
+
         return $this->prepareListAlias($aliases);
     }
 

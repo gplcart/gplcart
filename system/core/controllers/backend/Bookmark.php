@@ -66,7 +66,11 @@ class Bookmark extends BackendController
         $this->setBookmark();
         $this->controlAccess('bookmark_add');
 
-        $options = array('title' => $this->data_title, 'user_id' => $this->uid);
+        $options = array(
+            'user_id' => $this->uid,
+            'title' => $this->data_title
+        );
+
         $this->bookmark->set($this->data_path, $options);
         $this->redirect($this->data_path);
     }
@@ -129,7 +133,11 @@ class Bookmark extends BackendController
         $options = $this->query_filter;
         $options['count'] = true;
         $total = (int) $this->bookmark->getList($options);
-        $pager = array('total' => $total, 'query' => $this->query_filter);
+
+        $pager = array(
+            'total' => $total,
+            'query' => $this->query_filter
+        );
 
         return $this->data_limit = $this->setPager($pager);
     }

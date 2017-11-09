@@ -75,8 +75,8 @@ class City extends BackendController
      * @param CityModel $city
      * @param ZoneModel $zone
      */
-    public function __construct(CountryModel $country, StateModel $state,
-            CityModel $city, ZoneModel $zone)
+    public function __construct(CountryModel $country, StateModel $state, CityModel $city,
+            ZoneModel $zone)
     {
         parent::__construct();
 
@@ -206,6 +206,7 @@ class City extends BackendController
             'state_id' => $this->data_state['state_id']);
 
         $options += $this->query_filter;
+
         return (array) $this->city->getList($options);
     }
 

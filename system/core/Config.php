@@ -150,7 +150,7 @@ class Config
     }
 
     /**
-     * Saves a configuration value in the database (overrides defaults)
+     * Saves a configuration value in the database
      * @param string $key
      * @param mixed $value
      * @return boolean
@@ -240,7 +240,7 @@ class Config
     }
 
     /**
-     * Deletes a configuration value from the database
+     * Deletes a setting from the database
      * @param string $key
      * @return boolean
      */
@@ -322,7 +322,7 @@ class Config
     }
 
     /**
-     * Returns an array of scanned modules
+     * Returns an array of scanned module IDs
      * @param string $directory
      * @return array
      */
@@ -386,7 +386,7 @@ class Config
     }
 
     /**
-     * Clear module cache
+     * Delete cached module data
      * @return boolean
      */
     public function clearModuleCache()
@@ -400,7 +400,7 @@ class Config
     }
 
     /**
-     * Returns a module data
+     * Returns an array of module data
      * @param string $module_id
      * @return array
      */
@@ -411,7 +411,7 @@ class Config
     }
 
     /**
-     * Returns a server path to the module
+     * Returns an absolute path to the module directory
      * @param string $module_id
      * @return string
      */
@@ -421,8 +421,9 @@ class Config
     }
 
     /**
-     * Returns an array of module JSON definition
+     * Returns an array of module data from module.json file
      * @param string $module_id
+     * @todo - remove 'id' key everywhere
      * @return array
      */
     public function getModuleInfo($module_id)
@@ -441,7 +442,6 @@ class Config
         }
 
         if (is_array($decoded)) {
-            // @todo - remove id key everywhere
             $decoded['id'] = $decoded['module_id'] = $module_id;
             $information[$module_id] = $decoded;
         } else {
@@ -470,7 +470,7 @@ class Config
     }
 
     /**
-     * Returns a string containing base namespace for the given module ID
+     * Returns a base namespace for the module ID
      * @param string $module_id
      * @return string
      */
@@ -480,16 +480,16 @@ class Config
     }
 
     /**
-     * Returns a namespaced class for the given module id
+     * Returns a namespaced class for the module ID
      * @param string $module_id
      * @return string
      */
     public function getModuleClassNamespace($module_id)
     {
-        $class_name = $this->getModuleClassName($module_id);
-        $base_namespace = $this->getModuleBaseNamespace($module_id);
+        $class = $this->getModuleClassName($module_id);
+        $namespace = $this->getModuleBaseNamespace($module_id);
 
-        return "$base_namespace\\$class_name";
+        return "$namespace\\$class";
     }
 
     /**
@@ -503,7 +503,7 @@ class Config
     }
 
     /**
-     * Returns an array of all installed modules from the database
+     * Returns an array of all installed modules
      * @return array
      */
     public function getInstalledModules()
@@ -537,7 +537,7 @@ class Config
     }
 
     /**
-     * Returns an array of methods which are hooks
+     * Returns an array of class methods which are hooks
      * @param object|string $class
      * @return array
      */
@@ -565,7 +565,7 @@ class Config
     }
 
     /**
-     * Whether the module installed, e.g exists in database
+     * Whether the module is installed, i.e exists in database
      * @param string $module_id
      * @return boolean
      */
@@ -598,7 +598,7 @@ class Config
     }
 
     /**
-     * Validates a module id
+     * Validates a module ID
      * @param string $id
      * @return boolean
      */

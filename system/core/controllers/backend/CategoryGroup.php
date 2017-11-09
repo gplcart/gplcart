@@ -80,7 +80,11 @@ class CategoryGroup extends BackendController
         $query['count'] = true;
         $total = (int) $this->category_group->getList($query);
 
-        $pager = array('total' => $total, 'query' => $this->query_filter);
+        $pager = array(
+            'total' => $total,
+            'query' => $this->query_filter
+        );
+
         return $this->data_limit = $this->setPager($pager);
     }
 
@@ -92,6 +96,7 @@ class CategoryGroup extends BackendController
     {
         $query = $this->query_filter;
         $query['limit'] = $this->data_limit;
+
         return $this->category_group->getList($query);
     }
 
@@ -172,7 +177,6 @@ class CategoryGroup extends BackendController
         if ($this->isPosted('delete')) {
             $this->deleteCategoryGroup();
         } else if ($this->isPosted('save') && $this->validateEditCategoryGroup()) {
-
             if (isset($this->data_category_group['category_group_id'])) {
                 $this->updateCategoryGroup();
             } else {
