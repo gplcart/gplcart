@@ -76,14 +76,17 @@ class CliRoute
     /**
      * Set CLI arguments
      * @param array|null $arguments
+     * @return array
      */
     public function setArguments($arguments = null)
     {
-        if (!isset($arguments) && isset($_SERVER['argv'])) {
+        if (isset($arguments)) {
+            $this->arguments = (array) $arguments;
+        } else if (isset($_SERVER['argv'])) {
             $this->arguments = $this->cli->parseArguments($_SERVER['argv']);
         }
 
-        $this->arguments = (array) $arguments;
+        return $this->arguments;
     }
 
     /**
