@@ -149,7 +149,7 @@ class Store
      */
     public function get($store_id)
     {
-        if (empty($this->db)) {
+        if (!$this->db->isInitialized()) {
             return array();
         }
 

@@ -217,6 +217,7 @@ class Base
         Container::unregister();
 
         $this->config = Container::get('gplcart\\core\\Config');
+        $this->config->init();
         $this->db = $this->config->getDb();
 
         try {
