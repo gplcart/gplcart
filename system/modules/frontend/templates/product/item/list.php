@@ -24,7 +24,7 @@
             <?php echo $this->e($item['title']); ?>
           </a>
           <?php if(!empty($item['description'])) { ?>
-          <p><?php echo $this->truncate($this->summary(strip_tags($item['description']))); ?></p>
+          <p><?php echo $this->truncate($this->teaser(strip_tags($item['description']))); ?></p>
           <?php } ?>
         </div>
         <div class="col-md-3">

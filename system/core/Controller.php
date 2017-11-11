@@ -764,7 +764,22 @@ abstract class Controller
             $filter = $this->current_filter;
         }
 
+        $delimiter = $this->config('teaser_delimiter', '<!--teaser-->');
+        $string = str_replace($delimiter, htmlspecialchars($delimiter), $string);
         return $this->filter->run($string, $filter);
+    }
+
+    /**
+     * Explodes a text by teaser and full text
+     * @param string $text
+     * @return array
+     */
+    protected function explodeText($text)
+    {
+        $delimiter = $this->config('teaser_delimiter', '<!--teaser-->');
+        $text = str_replace(htmlspecialchars($delimiter), $delimiter, $text);
+        $parts = array_filter(array_map('trim', explode($delimiter, $text, 2)));
+        return array_pad($parts, 2, '');
     }
 
     /**
@@ -783,13 +798,13 @@ abstract class Controller
     }
 
     /**
-     * Returns a string from a text before the summary delimiter
+     * Returns a string from a text before the teaser delimiter
      * @param string $text
-     * @param boolean $xss
-     * @param mixed $filter
+     * @param boolean $enable_filter
+     * @param mixed $filter_id
      * @return string
      */
-    public function summary($text, $xss = true, $filter = null)
+    public function teaser($text, $enable_filter = true, $filter_id = null)
     {
         $summary = '';
         if ($text !== '') {
@@ -797,8 +812,8 @@ abstract class Controller
             $summary = reset($parts);
         }
 
-        if ($summary !== '' && $xss) {
-            $summary = $this->filter($summary, $filter);
+        if ($summary !== '' && $enable_filter) {
+            $summary = $this->filter($summary, $filter_id);
         }
 
         return $summary;
@@ -1652,7 +1667,7 @@ abstract class Controller
     protected function compressAssets(array $assets, $type)
     {
         if ($this->config("compress_$type", 0)) {
-            $directory = GC_DIR_ASSET_COMPRESSED . "/$type";
+            $directory = GC_DIR_ASSET_COMPILED . "/$type";
             return $this->asset->compress($assets, $type, $directory);
         }
 
@@ -2015,19 +2030,6 @@ abstract class Controller
                 }
             }
         }
-    }
-
-    /**
-     * Explodes a text by summary and full text
-     * @param string $text
-     * @return array
-     */
-    protected function explodeText($text)
-    {
-        $delimiter = $this->config('summary_delimiter', '<!--summary-->');
-        $parts = array_filter(array_map('trim', explode($delimiter, $text, 2)));
-
-        return array_pad($parts, 2, '');
     }
 
     /**
