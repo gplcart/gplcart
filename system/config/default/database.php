@@ -283,6 +283,7 @@ return array(
     'page' => array(
         'fields' => array(
             'page_id' => array('type' => 'integer', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+            'related_page_id' => array('type' => 'integer', 'length' => 10, 'not_null' => true, 'default' => 0), // Reserved
             'user_id' => array('type' => 'integer', 'length' => 10, 'not_null' => true),
             'status' => array('type' => 'integer', 'length' => 1, 'not_null' => true, 'default' => 0),
             'store_id' => array('type' => 'integer', 'length' => 10, 'not_null' => true, 'default' => 0),
