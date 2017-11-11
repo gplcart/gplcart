@@ -94,7 +94,7 @@ define('GC_DIR_ASSET_LIBRARY', GC_DIR_ASSET . '/libraries');
  * Path to directory containing compressed JS and CSS files
  * @var string
  */
-define('GC_DIR_ASSET_COMPRESSED', GC_DIR_ASSET . '/compressed');
+define('GC_DIR_ASSET_COMPILED', GC_DIR_ASSET . '/compiled');
 
 /**
  * Path to directory containing default configuration files
