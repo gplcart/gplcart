@@ -29,7 +29,7 @@ class Category extends FrontendController
      * @var array
      */
     protected $data_limit;
-    
+
     /**
      * Tottal number of category items
      * @var int
@@ -112,6 +112,7 @@ class Category extends FrontendController
 
         $this->setHtmlFilterIndexCategory();
 
+        $this->setTotalIndexCategory();
         $this->setFilterIndexCategory();
         $this->setPagerIndexCategory();
 
@@ -145,17 +146,24 @@ class Category extends FrontendController
     }
 
     /**
+     * Sets a total number of products found for the category
+     * @return int
+     */
+    protected function setTotalIndexCategory()
+    {
+        $options = $this->query_filter;
+        $options['count'] = true;
+        $options['category_id'] = $this->data_category['category_id'];
+
+        return $this->data_total = (int) $this->product->getList($options);
+    }
+
+    /**
      * Sets pager
      * @return array
      */
     protected function setPagerIndexCategory()
     {
-        $options = $this->query_filter;
-        $options['count'] = true;
-        $options['category_id'] = $this->data_category['category_id'];
-        
-        $this->data_total = (int) $this->product->getList($options);
-
         $pager = array(
             'total' => $this->data_total,
             'query' => $this->query_filter,
@@ -241,6 +249,7 @@ class Category extends FrontendController
 
     /**
      * Sets an array of products for the category
+     * @return array
      */
     protected function setListProductCategory()
     {
@@ -250,7 +259,7 @@ class Category extends FrontendController
             'limit' => $this->data_limit,
             'category_id' => $this->data_category['category_id']) + $this->query_filter;
 
-        $this->data_products = $this->getProducts($conditions, $options);
+        return $this->data_products = $this->getProducts($conditions, $options);
     }
 
     /**
@@ -267,6 +276,7 @@ class Category extends FrontendController
 
     /**
      * Sets an array of children categories for the given category
+     * @return array
      */
     protected function setChildrenCategory()
     {
@@ -277,7 +287,7 @@ class Category extends FrontendController
             }
         }
 
-        $this->data_children = $children;
+        return $this->data_children = $children;
     }
 
     /**
@@ -306,6 +316,7 @@ class Category extends FrontendController
     /**
      * Sets a category data
      * @param integer $category_id
+     * @return array
      */
     protected function setCategory($category_id)
     {
@@ -314,6 +325,8 @@ class Category extends FrontendController
         if (empty($this->data_category['status'])) {
             $this->outputHttpStatus(404);
         }
+
+        return $this->data_category;
     }
 
 }
