@@ -42,7 +42,7 @@ class Validator
     }
 
     /**
-     * Performs validation using a given handler
+     * Performs validation using the given handler
      * @param string $handler_id
      * @param mixed $submitted
      * @param array $options

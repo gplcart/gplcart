@@ -92,7 +92,7 @@ class CategoryGroup
         $sql .= ' FROM category_group cg'
                 . ' LEFT JOIN category_group_translation cgt'
                 . ' ON(cg.category_group_id = cgt.category_group_id AND cgt.language = ?)'
-                . ' WHERE cg.category_group_id > 0';
+                . ' WHERE cg.category_group_id IS NOT NULL';
 
         $language = $this->language->getLangcode();
         $where = array($language);
@@ -245,6 +245,7 @@ class CategoryGroup
     {
         return array(
             'brand' => $this->language->text('Brand'),
+            'common' => $this->language->text('Common'),
             'catalog' => $this->language->text('Catalog')
         );
     }
