@@ -7,14 +7,13 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 return array(
-    
     'order' => array(
         'title' => /* @text */'Recent orders',
         'status' => true,
         'weight' => 0,
         'template' => 'dashboard/panels/orders',
         'handlers' => array(
-            'data' => array('gplcart\core\handlers\dashboard\Dashboard', 'order'),
+            'data' => array('gplcart\\core\\handlers\\dashboard\\Dashboard', 'order'),
         )
     ),
     'cart' => array(
@@ -23,7 +22,7 @@ return array(
         'weight' => 1,
         'template' => 'dashboard/panels/cart',
         'handlers' => array(
-            'data' => array('gplcart\core\handlers\dashboard\Dashboard', 'cart'),
+            'data' => array('gplcart\\core\\handlers\\dashboard\\Dashboard', 'cart'),
         )
     ),
     'transaction' => array(
@@ -32,7 +31,7 @@ return array(
         'weight' => 2,
         'template' => 'dashboard/panels/transactions',
         'handlers' => array(
-            'data' => array('gplcart\core\handlers\dashboard\Dashboard', 'transaction'),
+            'data' => array('gplcart\\core\\handlers\\dashboard\\Dashboard', 'transaction'),
         )
     ),
     'pricerule' => array(
@@ -41,7 +40,7 @@ return array(
         'weight' => 3,
         'template' => 'dashboard/panels/pricerules',
         'handlers' => array(
-            'data' => array('gplcart\core\handlers\dashboard\Dashboard', 'pricerule'),
+            'data' => array('gplcart\\core\\handlers\\dashboard\\Dashboard', 'pricerule'),
         )
     ),
     'summary' => array(
@@ -50,7 +49,7 @@ return array(
         'weight' => 4,
         'template' => 'dashboard/panels/summary',
         'handlers' => array(
-            'data' => array('gplcart\core\handlers\dashboard\Dashboard', 'summary'),
+            'data' => array('gplcart\\core\\handlers\\dashboard\\Dashboard', 'summary'),
         )
     ),
     'review' => array(
@@ -59,7 +58,7 @@ return array(
         'weight' => 5,
         'template' => 'dashboard/panels/reviews',
         'handlers' => array(
-            'data' => array('gplcart\core\handlers\dashboard\Dashboard', 'review'),
+            'data' => array('gplcart\\core\\handlers\\dashboard\\Dashboard', 'review'),
         )
     ),
     'user' => array(
@@ -68,7 +67,7 @@ return array(
         'weight' => 6,
         'template' => 'dashboard/panels/users',
         'handlers' => array(
-            'data' => array('gplcart\core\handlers\dashboard\Dashboard', 'user'),
+            'data' => array('gplcart\\core\\handlers\\dashboard\\Dashboard', 'user'),
         )
     ),
     'event' => array(
@@ -77,7 +76,7 @@ return array(
         'weight' => 7,
         'template' => 'dashboard/panels/events',
         'handlers' => array(
-            'data' => array('gplcart\core\handlers\dashboard\Dashboard', 'event'),
+            'data' => array('gplcart\\core\\handlers\\dashboard\\Dashboard', 'event'),
         )
     )
 );
