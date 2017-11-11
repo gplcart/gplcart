@@ -48,6 +48,11 @@ return array(
             'controller' => array('gplcart\\core\\controllers\\frontend\\Image', 'outputCacheImage')
         )
     ),
+    'blog' => array(
+        'handlers' => array(
+            'controller' => array('gplcart\\core\\controllers\\frontend\\Blog', 'listBlog')
+        )
+    ),
     'install' => array(
         'handlers' => array(
             'controller' => array('gplcart\\core\\controllers\\frontend\\Install', 'editInstall')

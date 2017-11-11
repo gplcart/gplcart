@@ -11,7 +11,8 @@ namespace gplcart\core\controllers\backend;
 
 use gplcart\core\models\Module as ModuleModel,
     gplcart\core\models\Country as CountryModel,
-    gplcart\core\models\Collection as CollectionModel;
+    gplcart\core\models\Collection as CollectionModel,
+    gplcart\core\models\CategoryGroup as CategoryGroupModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -39,6 +40,12 @@ class Store extends BackendController
     protected $collection;
 
     /**
+     * Category group model instance
+     * @var \gplcart\core\models\CategoryGroup $category_group
+     */
+    protected $category_group;
+
+    /**
      * Pager limit
      * @var array
      */
@@ -51,18 +58,21 @@ class Store extends BackendController
     protected $data_store = array();
 
     /**
+     * 
      * @param ModuleModel $module
      * @param CollectionModel $collection
      * @param CountryModel $country
+     * @param CategoryGroupModel $category_group
      */
-    public function __construct(ModuleModel $module,
-            CollectionModel $collection, CountryModel $country)
+    public function __construct(ModuleModel $module, CollectionModel $collection,
+            CountryModel $country, CategoryGroupModel $category_group)
     {
         parent::__construct();
 
         $this->module = $module;
         $this->country = $country;
         $this->collection = $collection;
+        $this->category_group = $category_group;
     }
 
     /**
@@ -193,12 +203,26 @@ class Store extends BackendController
         $this->setData('countries', $this->getCountriesStore());
         $this->setData('collections', $this->getListCollectionStore());
         $this->setData('languages', $this->language->getList(false, true));
+        $this->setData('category_groups', $this->getListCategoryGroupStore());
 
         $this->submitEditStore();
         $this->setDataEditStore();
 
         $this->setJsEditStore();
         $this->outputEditStore();
+    }
+
+    /**
+     * Returns an array of category groups for the store
+     * @return array
+     */
+    protected function getListCategoryGroupStore()
+    {
+        $options = array(
+            'store_id' => $this->data_store['store_id']
+        );
+
+        return (array) $this->category_group->getList($options);
     }
 
     /**

@@ -20,6 +20,9 @@
             <li>
               <a rel="nofollow" href="<?php echo $this->url('page/2'); ?>"><?php echo $this->text('Help'); ?></a>
             </li>
+            <li>
+              <a href="<?php echo $this->url('blog'); ?>"><?php echo $this->text('Blog'); ?></a>
+            </li>
           </ul>
           <p class="nav pull-left navbar-text">
             <?php if (!empty($_store['data']['phone'][0])) { ?>

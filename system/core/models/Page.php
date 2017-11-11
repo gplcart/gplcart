@@ -112,7 +112,6 @@ class Page
                 . ' LEFT JOIN user u ON(p.user_id=u.user_id)'
                 . ' WHERE p.page_id=?';
 
-
         $result = $this->db->fetch($sql, array($page_id));
 
         $this->attachImagesTrait($this->db, $this->file, $result, 'page', $language);
@@ -222,7 +221,7 @@ class Page
      */
     public function getList(array $data = array())
     {
-        $sql = 'SELECT p.*, a.alias, COALESCE(NULLIF(pt.title, ""), p.title) AS title, u.email';
+        $sql = 'SELECT p.*, c.category_group_id, a.alias, COALESCE(NULLIF(pt.title, ""), p.title) AS title, u.email';
 
         if (!empty($data['count'])) {
             $sql = 'SELECT COUNT(p.page_id)';
@@ -233,6 +232,7 @@ class Page
 
         $sql .= ' FROM page p'
                 . ' LEFT JOIN page_translation pt ON(pt.page_id = p.page_id AND pt.language=?)'
+                . ' LEFT JOIN category c ON(p.category_id = c.category_id)'
                 . ' LEFT JOIN alias a ON(a.id_key=? AND a.id_value=p.page_id)'
                 . ' LEFT JOIN user u ON(p.user_id = u.user_id)';
 
@@ -260,6 +260,11 @@ class Page
         if (isset($data['store_id'])) {
             $sql .= ' AND p.store_id = ?';
             $where[] = (int) $data['store_id'];
+        }
+
+        if (isset($data['category_group_id'])) {
+            $sql .= ' AND c.category_group_id = ?';
+            $where[] = (int) $data['category_group_id'];
         }
 
         if (isset($data['status'])) {

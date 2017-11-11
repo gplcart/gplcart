@@ -300,6 +300,58 @@
         </div>
       </div>
     </div>
+    <div class="form-group<?php echo $this->error('logo', ' has-error'); ?>">
+      <label class="col-md-2 control-label"><?php echo $this->text('Logo'); ?></label>
+      <div class="col-md-4">
+        <?php if ($this->access('file_upload')) { ?>
+          <input type="file" name="logo" accept="image/*" class="form-control">
+        <?php } ?>
+        <input type="hidden" name="store[data][logo]" value="<?php echo isset($store['data']['logo']) ? $this->e($store['data']['logo']) : ''; ?>">
+        <div class="help-block">
+          <?php echo $this->error('logo'); ?>
+          <div class="text-muted"><?php echo $this->text('The main site logo. Appearance of the image is controlled by the current theme'); ?></div>
+        </div>
+      </div>
+    </div>
+    <?php if (!empty($store['logo_thumb'])) { ?>
+    <div class="form-group">
+      <div class="col-md-1 col-md-offset-2">
+        <img class="img-responsive" src="<?php echo $this->e($store['logo_thumb']); ?>">
+      </div>
+      <div class="col-md-2">
+        <div class="checkbox">
+          <label><input type="checkbox" name="store[delete_logo]" value="1"> <?php echo $this->text('Delete'); ?></label>
+        </div>
+      </div>
+    </div>
+    <?php } ?>
+    <div class="form-group<?php echo $this->error('favicon', ' has-error'); ?>">
+      <label class="col-md-2 control-label"><?php echo $this->text('Favicon'); ?></label>
+      <div class="col-md-4">
+        <?php if ($this->access('file_upload')) { ?>
+          <input type="file" name="favicon" accept="image/*" class="form-control">
+        <?php } ?>
+        <input type="hidden" name="store[data][favicon]" value="<?php echo isset($store['data']['favicon']) ? $this->e($store['data']['favicon']) : ''; ?>">
+        <div class="help-block">
+          <?php echo $this->error('favicon'); ?>
+          <div class="text-muted">
+            <?php echo $this->text('Favicon is a small image that represents your site. Appearance of the image is controlled by the current theme'); ?>
+          </div>
+        </div>
+      </div>
+    </div>
+    <?php if (isset($store['favicon_thumb'])) { ?>
+    <div class="form-group">
+      <div class="col-md-1 col-md-offset-2">
+        <img class="img-responsive" src="<?php echo $this->e($store['favicon_thumb']); ?>">
+      </div>
+      <div class="col-md-2">
+        <div class="checkbox">
+          <label><input type="checkbox" name="store[delete_favicon]" value="1"> <?php echo $this->text('Delete'); ?></label>
+        </div>
+      </div>
+    </div>
+    <?php } ?>
   </fieldset>
   <fieldset>
     <legend><?php echo $this->text('Options'); ?></legend>
@@ -325,6 +377,23 @@
         <textarea name="store[data][js]" rows="10" class="form-control"><?php echo $this->e($store['data']['js']); ?></textarea>
         <div class="help-block">
            <?php echo $this->text('Java-Script code without script tags to add on each public, non-admin and non-internal page, e.g Google Analytics tracking code'); ?>
+        </div>
+      </div>
+    </div>
+    <div class="form-group<?php echo $this->error('data.blog_category_group_id', ' has-error'); ?>">
+      <label class="col-md-2 control-label"><?php echo $this->text('Blog category group'); ?></label>
+      <div class="col-md-4">
+        <select name="store[data][blog_category_group_id]" class="form-control">
+          <option value="0"><?php echo $this->text('- select -'); ?></option>
+          <?php foreach ($category_groups as $category_group_id => $category_group) { ?>
+          <option value="<?php echo $category_group_id; ?>"<?php echo $store['data']['blog_category_group_id'] == $category_group_id ? ' selected' : ''; ?>><?php echo $this->e($category_group['title']); ?></option>
+          <?php } ?>
+        </select>
+        <div class="help-block">
+          <?php echo $this->error('data.blog_category_group_id'); ?>
+          <div class="text-muted">
+            <?php echo $this->text('All <a href="@url">pages</a> with the selected category group will be treated as blog posts', array('@url' => $this->url('admin/content/page'))); ?>
+          </div>
         </div>
       </div>
     </div>
@@ -394,61 +463,6 @@
     </div>
   </fieldset>
   <?php } ?>
-  <fieldset>
-    <legend><?php echo $this->text('Images'); ?></legend>
-    <div class="form-group<?php echo $this->error('logo', ' has-error'); ?>">
-      <label class="col-md-2 control-label"><?php echo $this->text('Logo'); ?></label>
-      <div class="col-md-4">
-        <?php if ($this->access('file_upload')) { ?>
-          <input type="file" name="logo" accept="image/*" class="form-control">
-        <?php } ?>
-        <input type="hidden" name="store[data][logo]" value="<?php echo isset($store['data']['logo']) ? $this->e($store['data']['logo']) : ''; ?>">
-        <div class="help-block">
-          <?php echo $this->error('logo'); ?>
-          <div class="text-muted"><?php echo $this->text('The main site logo. Appearance of the image is controlled by the current theme'); ?></div>
-        </div>
-      </div>
-    </div>
-    <?php if (!empty($store['logo_thumb'])) { ?>
-    <div class="form-group">
-      <div class="col-md-1 col-md-offset-2">
-        <img class="img-responsive" src="<?php echo $this->e($store['logo_thumb']); ?>">
-      </div>
-      <div class="col-md-2">
-        <div class="checkbox">
-          <label><input type="checkbox" name="store[delete_logo]" value="1"> <?php echo $this->text('Delete'); ?></label>
-        </div>
-      </div>
-    </div>
-    <?php } ?>
-    <div class="form-group<?php echo $this->error('favicon', ' has-error'); ?>">
-      <label class="col-md-2 control-label"><?php echo $this->text('Favicon'); ?></label>
-      <div class="col-md-4">
-        <?php if ($this->access('file_upload')) { ?>
-          <input type="file" name="favicon" accept="image/*" class="form-control">
-        <?php } ?>
-        <input type="hidden" name="store[data][favicon]" value="<?php echo isset($store['data']['favicon']) ? $this->e($store['data']['favicon']) : ''; ?>">
-        <div class="help-block">
-          <?php echo $this->error('favicon'); ?>
-          <div class="text-muted">
-            <?php echo $this->text('Favicon is a small image that represents your site. Appearance of the image is controlled by the current theme'); ?>
-          </div>
-        </div>
-      </div>
-    </div>
-    <?php if (isset($store['favicon_thumb'])) { ?>
-    <div class="form-group">
-      <div class="col-md-1 col-md-offset-2">
-        <img class="img-responsive" src="<?php echo $this->e($store['favicon_thumb']); ?>">
-      </div>
-      <div class="col-md-2">
-        <div class="checkbox">
-          <label><input type="checkbox" name="store[delete_favicon]" value="1"> <?php echo $this->text('Delete'); ?></label>
-        </div>
-      </div>
-    </div>
-    <?php } ?>
-  </fieldset>
   <div class="form-group">
     <div class="col-md-10 col-md-offset-2">
       <div class="btn-toolbar">
