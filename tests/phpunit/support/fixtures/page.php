@@ -18,7 +18,8 @@ return array(
         'title' => 'Page title',
         'meta_title' => 'Page meta title',
         'meta_description' => 'Page meta description',
-        'description' => 'Page description'
+        'description' => 'Page description',
+        'related_page_id' => ''
     ),
     array(
         'page_id' => 2,
@@ -31,6 +32,7 @@ return array(
         'title' => 'Page title 2',
         'meta_title' => 'Page meta title 2',
         'meta_description' => 'Page meta description 2',
-        'description' => 'Page description 2'
+        'description' => 'Page description 2',
+        'related_page_id' => ''
     )
 );
