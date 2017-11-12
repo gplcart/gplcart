@@ -36,7 +36,6 @@ class Backend extends Module
 
             $controller->addAssetLibrary('jquery_ui');
             $controller->addAssetLibrary('bootstrap');
-            $controller->addAssetLibrary('bootstrap_select');
             $controller->addAssetLibrary('html5shiv', array('aggregate' => false, 'condition' => 'if lt IE 9'));
             $controller->addAssetLibrary('respond', array('aggregate' => false, 'condition' => 'if lt IE 9'));
 

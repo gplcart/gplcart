@@ -130,24 +130,5 @@ return array(
         'dependencies' => array(
             'jquery' => '>= 1.9.1',
         )
-    ),
-    'bootstrap_select' => array(
-        'name' => /* @text */'Bootstrap Select',
-        'description' => /* @text */"A jQuery plugin that utilizes Bootstrap's dropdown.js to style and bring additional functionality to standard select elements",
-        'type' => 'asset',
-        'url' => 'https://github.com/silviomoreto/bootstrap-select',
-        'download' => 'https://github.com/silviomoreto/bootstrap-select/archive/v1.12.1.zip',
-        'version_source' => array(
-            'file' => 'dist/js/bootstrap-select.min.js',
-            'pattern' => '/v(\\d+\\.+\\d+\\.+\\d+)/',
-        ),
-        'files' => array(
-            'dist/js/bootstrap-select.min.js',
-            'dist/css/bootstrap-select.min.css',
-        ),
-        'dependencies' => array(
-            'jquery' => '>= 1.8',
-            'bootstrap' => '>= 3.0',
-        ),
     )
 );
