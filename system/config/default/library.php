@@ -36,23 +36,6 @@ return array(
             'src/js.cookie.js',
         )
     ),
-    'jquery_match_height' => array(
-        'name' => /* @text */'jQuery Match Height',
-        'description' => /* @text */'A responsive equal heights plugin for jQuery',
-        'type' => 'asset',
-        'url' => 'https://github.com/liabru/jquery-match-height',
-        'download' => 'https://github.com/liabru/jquery-match-height/archive/0.7.0.zip',
-        'version_source' => array(
-            'file' => 'dist/jquery.matchHeight-min.js',
-            'pattern' => '/(\\d+\\.+\\d+\\.+\\d+)/',
-        ),
-        'files' => array(
-            'dist/jquery.matchHeight-min.js',
-        ),
-        'dependencies' => array(
-            'jquery' => '>= 1.7.0',
-        )
-    ),
     'jquery_ui' => array(
         'name' => /* @text */'jQuery UI',
         'description' => /* @text */'jQuery user interface library',

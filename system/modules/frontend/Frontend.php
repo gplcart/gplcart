@@ -67,7 +67,6 @@ class Frontend extends Module
             $controller->setCss($this->getAsset('frontend', 'install.css'));
         } else {
             $controller->setCss($this->getAsset('frontend', 'style.css'));
-            $controller->addAssetLibrary('jquery_match_height');
             $controller->setJs($this->getAsset('frontend', 'common.js'));
         }
     }
