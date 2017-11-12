@@ -1,5 +1,10 @@
 /* global window, jQuery, Gplcart */
-var Gplcart = Gplcart || {settings: {}, translations: {}, onload: {}, modules: {}};
+var Gplcart = typeof Gplcart !== 'undefined' ? Gplcart : {
+    onload: {},
+    modules: {},
+    settings: {},
+    translations: {}
+};
 
 (function (window, $, Gplcart) {
 
@@ -15,6 +20,41 @@ var Gplcart = Gplcart || {settings: {}, translations: {}, onload: {}, modules: {
     });
 
     /**
+     * Attach a hook
+     * @param {String} name
+     * @param {Array} args
+     * @returns {undefined}
+     */
+    Gplcart.attachHook = function (name, args) {
+
+        var res, ret, args, hook, fargs = arguments;
+
+        hook = 'hook' + name.replace(/(^|\.)([a-z])/g, function (s) {
+            return s.toUpperCase();
+        }).replace(/\./g, '');
+
+        $.each(Gplcart.modules, function (i, mfuncs) {
+            $.each(mfuncs, function (fname, func) {
+                if (fname === hook && $.isFunction(func)) {
+
+                    args = [];
+                    for (var i = 1; i < fargs.length; i++) {
+                        args.push(fargs[i]);
+                    }
+
+                    res = func.apply(null, args);
+                    if (res !== undefined) {
+                        ret = res;
+                        return false;
+                    }
+                }
+            });
+        });
+
+        return ret;
+    };
+
+    /**
      * Translates a string
      * @param {String} text
      * @param {Object} options
@@ -22,7 +62,7 @@ var Gplcart = Gplcart || {settings: {}, translations: {}, onload: {}, modules: {
      */
     Gplcart.text = function (text, options) {
 
-        options = options || {};
+        options = typeof options === 'undefined' ? {} : options;
 
         if (Gplcart.translations[text]) {
             text = Gplcart.translations[text];
@@ -91,8 +131,8 @@ var Gplcart = Gplcart || {settings: {}, translations: {}, onload: {}, modules: {
      */
     Gplcart.job = function (settings) {
 
-        var job = settings || Gplcart.settings.job;
-        var selector = Gplcart.settings.job.selector || '#job-widget-' + Gplcart.settings.job.id;
+        var job = typeof settings === 'undefined' ? Gplcart.settings.job : settings;
+        var selector = typeof Gplcart.settings.job.selector === 'undefined' ? '#job-widget-' + Gplcart.settings.job.id : Gplcart.settings.job.selector;
         var widget = $(selector);
 
         $.ajax({
@@ -170,7 +210,7 @@ var Gplcart = Gplcart || {settings: {}, translations: {}, onload: {}, modules: {
 
         el = $(el);
 
-        if (els === undefined) {
+        if (typeof els === 'undefined') {
             els = el.closest('table').find('tbody tr').find('td:eq(0) input:checkbox');
         } else {
             els = $('input[type="checkbox"][name="' + els + '"]');
