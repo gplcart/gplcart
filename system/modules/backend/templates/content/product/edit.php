@@ -53,7 +53,7 @@
     <div class="form-group<?php echo $this->error('description', ' has-error'); ?>">
       <label class="col-md-2 control-label"><?php echo $this->text('Description'); ?></label>
       <div class="col-md-10">
-        <textarea class="form-control" data-wysiwyg="true" rows="10" name="product[description]"><?php echo isset($product['description']) ? $this->filter($product['description']) : ''; ?></textarea>
+        <textarea class="form-control" rows="10" name="product[description]"><?php echo isset($product['description']) ? $this->filter($product['description']) : ''; ?></textarea>
         <div class="help-block">
           <?php echo $this->error('description'); ?>
           <div class="text-muted"><?php echo $this->text('You can use any HTML but user can see only allowed tags'); ?></div>
@@ -85,7 +85,7 @@
       <div class="form-group<?php echo $this->error("translation.$code.description", ' has-error'); ?>">
         <label class="col-md-2 control-label"><?php echo $this->text('Description %language', array('%language' => $info['native_name'])); ?></label>
         <div class="col-md-10">
-          <textarea class="form-control" rows="10" data-wysiwyg="true" name="product[translation][<?php echo $code; ?>][description]"><?php echo isset($product['translation'][$code]['description']) ? $this->filter($product['translation'][$code]['description']) : ''; ?></textarea>
+          <textarea class="form-control" rows="10" name="product[translation][<?php echo $code; ?>][description]"><?php echo isset($product['translation'][$code]['description']) ? $this->filter($product['translation'][$code]['description']) : ''; ?></textarea>
           <div class="help-block">
             <?php echo $this->error("translation.$code.description"); ?>
             <div class="text-muted">

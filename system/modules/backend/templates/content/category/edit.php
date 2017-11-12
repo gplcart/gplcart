@@ -44,7 +44,7 @@
     <div class="form-group">
       <label class="col-md-2 control-label"><?php echo $this->text('First description'); ?></label>
       <div class="col-md-8">
-        <textarea class="form-control" data-wysiwyg="true" rows="10" name="category[description_1]"><?php echo isset($category['description_1']) ? $this->filter($category['description_1']) : ''; ?></textarea>
+        <textarea class="form-control" rows="10" name="category[description_1]"><?php echo isset($category['description_1']) ? $this->filter($category['description_1']) : ''; ?></textarea>
         <div class="help-block">
           <?php echo $this->text('Text that usually placed at the top of a category page'); ?>
         </div>
@@ -53,7 +53,7 @@
     <div class="form-group">
       <label class="col-md-2 control-label"><?php echo $this->text('Second description'); ?></label>
       <div class="col-md-8">
-        <textarea class="form-control" data-wysiwyg="true" rows="10" name="category[description_2]"><?php echo isset($category['description_2']) ? $this->filter($category['description_2']) : ''; ?></textarea>
+        <textarea class="form-control" rows="10" name="category[description_2]"><?php echo isset($category['description_2']) ? $this->filter($category['description_2']) : ''; ?></textarea>
         <div class="help-block">
           <?php echo $this->text('Text that usually placed at the bottom of a category page'); ?>
         </div>
@@ -79,13 +79,13 @@
       <div class="form-group">
         <label class="col-md-2 control-label"><?php echo $this->text('First description %language', array('%language' => $language['native_name'])); ?></label>
         <div class="col-md-8">
-          <textarea class="form-control" data-wysiwyg="true" rows="10" name="category[translation][<?php echo $code; ?>][description_1]"><?php echo isset($category['translation'][$code]['description_1']) ? $this->filter($category['translation'][$code]['description_1']) : ''; ?></textarea>
+          <textarea class="form-control" rows="10" name="category[translation][<?php echo $code; ?>][description_1]"><?php echo isset($category['translation'][$code]['description_1']) ? $this->filter($category['translation'][$code]['description_1']) : ''; ?></textarea>
         </div>
       </div>
       <div class="form-group">
         <label class="col-md-2 control-label"><?php echo $this->text('Second description %language', array('%language' => $language['native_name'])); ?></label>
         <div class="col-md-8">
-          <textarea class="form-control" data-wysiwyg="true" rows="10" name="category[translation][<?php echo $code; ?>][description_2]"><?php echo isset($category['translation'][$code]['description_2']) ? $this->filter($category['translation'][$code]['description_2']) : ''; ?></textarea>
+          <textarea class="form-control" rows="10" name="category[translation][<?php echo $code; ?>][description_2]"><?php echo isset($category['translation'][$code]['description_2']) ? $this->filter($category['translation'][$code]['description_2']) : ''; ?></textarea>
         </div>
       </div>
       <?php } ?>
