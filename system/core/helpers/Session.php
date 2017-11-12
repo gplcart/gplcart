@@ -21,9 +21,9 @@ class Session
      * Initialize a new session
      * @throws AuthorizationException
      */
-    public function start()
+    public function init()
     {
-        if (!GC_CLI && !$this->started() && !session_start()) {
+        if (!GC_CLI && !$this->isInitialized() && !session_start()) {
             throw new AuthorizationException('Failed to start the session');
         }
     }
@@ -32,7 +32,7 @@ class Session
      * Returns the current session status
      * @return bool
      */
-    public function started()
+    public function isInitialized()
     {
         return !GC_CLI && session_status() === PHP_SESSION_ACTIVE;
     }
@@ -84,7 +84,7 @@ class Session
      */
     public function delete($key = null)
     {
-        if (!$this->started()) {
+        if (!$this->isInitialized()) {
             return false;
         }
 
