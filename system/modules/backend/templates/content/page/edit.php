@@ -114,7 +114,7 @@
     <div class="form-group">
       <label class="col-md-2 control-label"><?php echo $this->text('Category'); ?></label>
       <div class="col-md-4">
-        <select data-live-search="true" name="page[category_id]" class="form-control selectpicker">
+        <select name="page[category_id]" class="form-control">
           <?php foreach ($categories as $category_group_name => $options) { ?>
           <optgroup label="<?php echo $category_group_name; ?>">
           <?php foreach ($options as $category_id => $category_name) { ?>

@@ -207,7 +207,7 @@
     <div class="form-group">
       <label class="col-md-2 control-label"><?php echo $this->text('Category'); ?></label>
       <div class="col-md-4">
-        <select data-live-search="true" name="product[category_id]" class="form-control selectpicker">
+        <select name="product[category_id]" class="form-control">
           <option value="0"><?php echo $this->text('- select -'); ?></option>
           <?php if (!empty($categories['catalog'])) { ?>
           <?php foreach ($categories['catalog'] as $id => $name) { ?>

@@ -100,7 +100,7 @@
         <?php if (isset($category['parent_id'])) { ?>
           <?php $parent_id = $category['parent_id']; ?>
         <?php } ?>
-        <select data-live-search="true" name="category[parent_id]" class="form-control selectpicker" id="parent_id">
+        <select name="category[parent_id]" class="form-control" id="parent_id">
           <option value="0"><?php echo $this->text('Root'); ?></option>
           <?php foreach ($categories as $category_id => $category_name) { ?>
           <option value="<?php echo $category_id; ?>"<?php echo $category_id == $parent_id ? ' selected' : ''; ?>><?php echo $this->e($category_name); ?></option>

@@ -26,7 +26,7 @@
               </td>
               <td>
                 <div class="<?php echo $this->error("attribute.$field_id", 'has-error'); ?>">
-                  <select title="<?php echo $this->text('- select -'); ?>" data-live-search="true" class="form-control selectpicker" name="product[field][attribute][<?php echo $field_id; ?>][]"<?php echo $attribute['multiple'] ? ' multiple' : ''; ?>>
+                  <select title="<?php echo $this->text('- select -'); ?>" class="form-control" name="product[field][attribute][<?php echo $field_id; ?>][]"<?php echo $attribute['multiple'] ? ' multiple' : ''; ?>>
                     <?php if (empty($attribute['multiple'])) { ?>
                     <option value="" selected disabled><?php echo $this->text('- select -'); ?></option>
                     <?php } ?>

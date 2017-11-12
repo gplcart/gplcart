@@ -14,7 +14,7 @@
   <div class="form-group required<?php echo $this->error('values', ' has-error'); ?>">
     <label class="col-md-2 control-label"><?php echo $this->text('Field'); ?></label>
     <div class="col-md-4">
-      <select data-live-search="true" class="form-control selectpicker" name="field[values][]" multiple>
+      <select class="form-control" name="field[values][]" multiple>
         <?php foreach ($fields as $field_id => $field_title) { ?>
         <option value="<?php echo $field_id; ?>"><?php echo $this->e($field_title); ?></option>
         <?php } ?>
