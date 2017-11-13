@@ -9,7 +9,7 @@
  */
 ?>
 <?php if (!empty($order['payment_address']) && $order['payment_address'] != $order['shipping_address']) { ?>
-<div class="panel panel-default order-payment-address" data-equal-height="true">
+<div class="panel panel-default order-payment-address">
   <div class="panel-heading clearfix"><?php echo $this->text('Payment address'); ?></div>
   <div class="panel-body">
     <?php if (empty($order['address_translated']['payment'])) { ?>

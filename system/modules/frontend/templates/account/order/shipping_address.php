@@ -9,7 +9,7 @@
  * To see available variables <?php print_r(get_defined_vars()); ?>
  */
 ?>
-<div class="panel panel-default order-shipping-address" data-equal-height="true">
+<div class="panel panel-default order-shipping-address">
   <div class="panel-heading clearfix"><?php echo $this->text('Shipping address'); ?></div>
   <div class="panel-body">
     <?php if(empty($order['address_translated']['shipping'])) { ?>

@@ -16,7 +16,7 @@
     </a>
     <?php } ?>
     <div class="caption text-center">
-      <div class="title" data-equal-height="true">
+      <div class="title">
         <a href="<?php echo empty($item['url']) ? $this->url("product/{$item['product_id']}") : $this->e($item['url']); ?>">
           <?php echo $this->e($this->truncate($item['title'], 50)); ?>
         </a>

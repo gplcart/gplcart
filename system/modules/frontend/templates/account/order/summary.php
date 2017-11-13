@@ -9,7 +9,7 @@
  * To see available variables <?php print_r(get_defined_vars()); ?>
  */
 ?>
-<div class="panel panel-default order-summary" data-equal-height="true">
+<div class="panel panel-default order-summary">
   <div class="panel-heading clearfix"><?php echo $this->text('Summary'); ?></div>
   <div class="panel-body">
     <table class="table table-condensed">
