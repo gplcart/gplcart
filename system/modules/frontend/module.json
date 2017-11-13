@@ -31,5 +31,9 @@
             "region_right": "layout/region_right",
             "region_top": "layout/region_top"
         }
+    },
+    "dependencies": {
+        "bootstrap": "1.x",
+        "fa": "1.x"
     }
 }

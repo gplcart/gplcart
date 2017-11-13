@@ -6,8 +6,10 @@ composer.lock
 vendor
 
 system/modules/*
-!system/modules/frontend
+!system/modules/fa
 !system/modules/backend
+!system/modules/frontend
+!system/modules/bootstrap
 
 files/private/*
 !files/private/.htaccess

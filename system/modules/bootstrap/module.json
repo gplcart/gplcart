@@ -1,0 +1,9 @@
+{
+    "name": "Bootstrap",
+    "core": "1.x",
+    "author": "Iurii Makukh <gplcart.software@gmail.com>",
+    "license": "GPL-3.0+",
+    "version": "1.0.0-dev",
+    "description": "Bootstrap CSS framework",
+    "status": true
+}
