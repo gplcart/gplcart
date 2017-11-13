@@ -15,7 +15,7 @@
      */
     var htmlModal = function (content, id, header, footer) {
 
-        var html = '';
+        var mod, html = '';
 
         html += '<div class="modal fade" id="' + id + '">';
         html += '<div class="modal-dialog">';
@@ -38,8 +38,8 @@
         html += '</div>';
         html += '</div>';
 
-        var modified = Gplcart.attachHook('modal.html', html);
-        return modified === undefined ? html : modified;
+        mod = Gplcart.attachHook('html.modal', html);
+        return mod === undefined ? html : mod;
     };
 
     /**
@@ -48,7 +48,7 @@
      */
     var htmlLoading = function () {
 
-        var html = '';
+        var mod, html = '';
 
         html += '<div class="modal loading show">';
         html += '<div class="modal-dialog">';
@@ -59,8 +59,8 @@
         html += '</div></div></div></div></div>';
         html += '<div class="modal-backdrop loading fade in"></div>';
 
-        var modified = Gplcart.attachHook('loading.html', html);
-        return modified === undefined ? html : modified;
+        mod = Gplcart.attachHook('html.loading', html);
+        return mod === undefined ? html : mod;
     };
 
     /**
@@ -72,7 +72,7 @@
      */
     var htmlAlert = function (message, id, type) {
 
-        var html = '';
+        var mod, html = '';
 
         html += '<div id="' + id + '" class="popup alert alert-' + type + ' alert-dismissible" role="alert">';
         html += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
@@ -80,123 +80,8 @@
         html += message;
         html += '</div>';
 
-        var modified = Gplcart.attachHook('alert.html', html);
-        return modified === undefined ? html : modified;
-    };
-
-    /**
-     * Displays a modal popup with a custom content
-     * @param {String} content
-     * @param {String} id
-     * @param {String} header
-     * @param {String} footer
-     * @returns {undefined}
-     */
-    var setModal = function (content, id, header, footer) {
-
-        var res = Gplcart.attachHook('modal.set.before', content, id, header, footer);
-
-        if (res !== undefined) {
-            return res;
-        }
-
-        $('.modal').remove();
-        $('.modal-backdrop').remove();
-        $('body').removeClass('modal-open').removeAttr('style');
-
-        var html = htmlModal(content, id, header, footer);
-
-        $('.modal').remove();
-        $('body').append(html);
-        $('#' + id).modal('show');
-
-        Gplcart.attachHook('modal.set.after', content, id, header, footer);
-    };
-
-    /**
-     * Displays a loading indicator
-     * @param {Boolean} mode
-     */
-    var setLoading = function (mode) {
-
-        if (mode === false) {
-            $('body').find('.loading').remove();
-        } else {
-            $('body').append(htmlLoading());
-        }
-    };
-
-    /**
-     * Set alert message
-     * @param {String} message
-     * @param {String} id
-     * @param {String} type
-     * @returns {undefined}
-     */
-    var setAlert = function (message, id, type) {
-
-        var res = Gplcart.attachHook('alert.set.before', message, id, type);
-
-        if (res !== undefined) {
-            return res;
-        }
-
-        $('body').append(htmlAlert(message, id, type));
-
-        setTimeout(function () {
-            $('#' + id + '.popup.alert').remove();
-        }, 3000);
-
-        Gplcart.attachHook('alert.set.after', message, id, type);
-    };
-
-    /**
-     * Loads product fields via AJAX
-     * @param {String} id
-     * @returns {undefined}
-     */
-    var loadProductFields = function (id) {
-        $.ajax({
-            dataType: 'html',
-            url: Gplcart.settings.urn + '?product_class_id=' + id,
-            success: function (response) {
-                $('#attribute-form-wrapper').html($(response).find('div#attribute-form').html());
-                $('#option-form-wrapper').html($(response).find('#option-form').html());
-            },
-            complete: function (response) {
-                Gplcart.attachHook('product.field.load.ajax.complete', id, response);
-            }
-        });
-    };
-
-    /**
-     * Marks those images in modal which are already set in product options
-     * @returns {undefined}
-     */
-    var markSelectedCombinationImage = function (modal) {
-        var path;
-        modal.find('img').each(function () {
-            path = $(this).attr('data-file-path');
-            if ($('#option-form-wrapper tbody input[name$="[path]"][value="' + path + '"]').length) {
-                $(this).css('opacity', 0.5);
-            }
-        });
-    };
-
-    /**
-     * Check if the button already has an image. If so, remove it
-     * @param {Object} button
-     * @returns {Boolean}
-     */
-    var toggleCombinationImageButton = function (button) {
-
-        if (button.find('img').length === 0) {
-            return false;
-        }
-
-        button.html('<i class="fa fa-image"></i>');
-        button.siblings('input').val('');
-        return true;
+        mod = Gplcart.attachHook('html.alert', html);
+        return mod === undefined ? html : mod;
     };
 
     /**
@@ -205,10 +90,9 @@
      */
     var htmlProductCombinationRow = function () {
 
-        var html = '', index = $('#option-form-wrapper tbody tr').length + 1;
+        var mod, html = '', index = $('#option-form-wrapper tbody tr').length + 1;
 
         html += '<tr>';
-
         $('#option-form-wrapper tfoot select').each(function () {
             html += '<td class="field-title">';
             html += '<select data-live-search="true" class="form-control" name="product[combination][' + index + '][fields][' + $(this).attr('data-field-id') + ']">';
@@ -247,8 +131,8 @@
         html += '</td>';
         html += '</tr>';
 
-        var modified = Gplcart.attachHook('product.combination.row.html', html);
-        return modified === undefined ? html : modified;
+        mod = Gplcart.attachHook('html.product.combination', html);
+        return mod === undefined ? html : mod;
     };
 
     /**
@@ -258,6 +142,7 @@
     var htmlProductImageModal = function () {
 
         var src,
+                mod,
                 path,
                 html = '',
                 images = $(image_container).find('.thumb');
@@ -282,8 +167,8 @@
 
         html += '</div>';
 
-        var modified = Gplcart.attachHook('product.image.modal.html', html);
-        return modified === undefined ? html : modified;
+        mod = Gplcart.attachHook('html.product.image.modal', html);
+        return mod === undefined ? html : mod;
     };
 
     /**
@@ -302,7 +187,7 @@
      */
     var htmlRelatedProducts = function (item) {
 
-        var html = '';
+        var mod, html = '';
         html += '<span class="related-product-item tag">';
         html += '<input type="hidden" name="product[related][]" value="' + item.value + '">';
         html += '<span class="btn btn-default">';
@@ -311,7 +196,116 @@
         html += '</span></span>';
         html += '</span>';
 
-        return html;
+        mod = Gplcart.attachHook('html.product.related', html);
+        return mod === undefined ? html : mod;
+    };
+
+    /**
+     * Displays a modal popup with a custom content
+     * @param {String} content
+     * @param {String} id
+     * @param {String} header
+     * @param {String} footer
+     * @returns {undefined}
+     */
+    var setModal = function (content, id, header, footer) {
+
+        if (Gplcart.attachHook('modal.set.before', content, id, header, footer) === undefined) {
+
+            $('.modal').remove();
+            $('.modal-backdrop').remove();
+            $('body').removeClass('modal-open').removeAttr('style');
+
+            $('.modal').remove();
+            $('body').append(htmlModal(content, id, header, footer));
+            $('#' + id).modal('show');
+
+            Gplcart.attachHook('modal.set.after', content, id, header, footer);
+        }
+    };
+
+    /**
+     * Displays a loading indicator
+     * @param {Boolean} mode
+     */
+    var setLoading = function (mode) {
+
+        if (Gplcart.attachHook('loading.set.before', mode) === undefined) {
+
+            if (mode === false) {
+                $('body').find('.loading').remove();
+            } else {
+                $('body').append(htmlLoading());
+            }
+
+            Gplcart.attachHook('loading.set.after', mode);
+        }
+    };
+
+    /**
+     * Set alert message
+     * @param {String} message
+     * @param {String} id
+     * @param {String} type
+     * @returns {undefined}
+     */
+    var setAlert = function (message, id, type) {
+
+        if (Gplcart.attachHook('alert.set.before', message, id, type) === undefined) {
+            $('body').append(htmlAlert(message, id, type));
+            setTimeout(function () {
+                $('#' + id + '.popup.alert').remove();
+            }, 3000);
+            Gplcart.attachHook('alert.set.after', message, id, type);
+        }
+    };
+
+    /**
+     * Loads product fields via AJAX
+     * @param {String} id
+     * @returns {undefined}
+     */
+    var loadProductFields = function (id) {
+        $.ajax({
+            dataType: 'html',
+            url: Gplcart.settings.urn + '?product_class_id=' + id,
+            success: function (response) {
+                $('#attribute-form-wrapper').html($(response).find('div#attribute-form').html());
+                $('#option-form-wrapper').html($(response).find('#option-form').html());
+            },
+            complete: function (response) {
+                Gplcart.attachHook('product.field.load.ajax.complete', id, response);
+            }
+        });
+    };
+
+    /**
+     * Marks those images in modal which are already set in product options
+     * @returns {undefined}
+     */
+    var markSelectedCombinationImage = function (modal) {
+        modal.find('img').each(function () {
+            var path = $(this).attr('data-file-path');
+            if ($('#option-form-wrapper tbody input[name$="[path]"][value="' + path + '"]').length) {
+                $(this).css('opacity', 0.5);
+            }
+        });
+    };
+
+    /**
+     * Check if the button already has an image. If so, remove it
+     * @param {Object} button
+     * @returns {Boolean}
+     */
+    var toggleCombinationImageButton = function (button) {
+
+        if (button.find('img').length === 0) {
+            return false;
+        }
+
+        button.html('<i class="fa fa-image"></i>');
+        button.siblings('input').val('');
+        return true;
     };
 
     /**
@@ -319,14 +313,12 @@
      * @returns {undefined}
      */
     Gplcart.onload.addProductCombination = function () {
-        $(document).on('click', '#option-form-wrapper .add-option-combination', function () {
-            var res = Gplcart.attachHook('product.combination.add.before');
-            if (res !== undefined) {
-                return res;
+        $(document).on('click', '#option-form-wrapper .add-option-combination', function (e) {
+            if (Gplcart.attachHook('product.combination.add.before', e) === undefined) {
+                $('#option-form-wrapper table tbody').append(htmlProductCombinationRow());
+                Gplcart.attachHook('product.combination.add.after', e);
+                return false;
             }
-            $('#option-form-wrapper table tbody').append(htmlProductCombinationRow());
-            Gplcart.attachHook('product.combination.add.after');
-            return false;
         });
     };
 
@@ -352,14 +344,12 @@
      * @returns {undefined}
      */
     Gplcart.onload.deleteProductCombination = function () {
-        $(document).on('click', '#option-form-wrapper .remove-option-combination', function () {
-            var res = Gplcart.attachHook('product.combination.delete.before');
-            if (res !== undefined) {
-                return res;
+        $(document).on('click', '#option-form-wrapper .remove-option-combination', function (e) {
+            if (Gplcart.attachHook('product.combination.delete.before', e) === undefined) {
+                $(this).closest('tr').remove();
+                Gplcart.attachHook('product.combination.delete.after', e);
+                return false;
             }
-            $(this).closest('tr').remove();
-            Gplcart.attachHook('product.combination.delete.after');
-            return false;
         });
     };
 
@@ -380,20 +370,17 @@
      * @returns {undefined}
      */
     Gplcart.onload.selectProductCombinationImage = function () {
-
-        var modal, html;
-
         $(document).on('click', '#option-form-wrapper .select-image', function () {
 
             if (toggleCombinationImageButton($(this))) {
                 return false;
             }
 
-            html = htmlProductImageModal();
+            var html = htmlProductImageModal();
 
             if (html.length) {
                 setModal(html, 'select-image-modal');
-                modal = $('#select-image-modal').attr('data-active-row', $(this).closest('tr').index());
+                var modal = $('#select-image-modal').attr('data-active-row', $(this).closest('tr').index());
                 markSelectedCombinationImage(modal);
             }
 
@@ -627,12 +614,9 @@
      * @returns {undefined}
      */
     Gplcart.onload.updateProductClassFields = function () {
-        var val;
-        $('[name$="[product_class_id]"]').change(function () {
-
-            val = $(this).val();
+        $(document).on('change', '[name$="[product_class_id]"]', function () {
+            var val = $(this).val();
             loadProductFields(val);
-
             if (val) {
                 $('body,html').animate({scrollTop: $('#option-form-wrapper').offset().top - 60});
             }
@@ -678,16 +662,14 @@
      * @returns {undefined}
      */
     Gplcart.onload.deleteUploadedImages = function () {
-        $(document).on('click', '[name="delete_images[]"]', function () {
-            var res = Gplcart.attachHook('product.images.delete.before');
-            if (res !== undefined) {
-                return res;
-            }
-            if (!$(this).val()) {
-                $(this).closest('div.thumb').remove();
+        $(document).on('click', '[name="delete_images[]"]', function (e) {
+            if (Gplcart.attachHook('product.images.delete.before', e)) {
+                if (!$(this).val()) {
+                    $(this).closest('div.thumb').remove();
+                }
+                Gplcart.attachHook('product.images.delete.after', e);
                 return false;
             }
-            Gplcart.attachHook('product.images.delete.after');
         });
     };
 
@@ -814,6 +796,7 @@
                 beforeSend: function () {
                     store.prop('disabled', true);
                     category.prop('disabled', true);
+                    Gplcart.attachHook('category.store.update.ajax.send', e);
                 },
                 success: function (response) {
                     options = '';
@@ -827,6 +810,8 @@
                         }
                         category.html(options);
                     }
+
+                    Gplcart.attachHook('category.store.update.ajax.success', e);
                 },
                 complete: function () {
                     store.prop('disabled', false);
