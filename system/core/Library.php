@@ -131,7 +131,7 @@ class Library
             }
 
             if (empty($library['basepath']) && $library['type'] === 'asset') {
-                $library['basepath'] = GC_DIR_ASSET_LIBRARY . "/$library_id";
+                $library['basepath'] = GC_DIR_ASSET_VENDOR . "/$library_id";
             }
 
             if (empty($library['basepath'])) {

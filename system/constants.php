@@ -85,10 +85,10 @@ define('GC_DIR_FILE', GC_DIR . '/files');
 define('GC_DIR_ASSET', GC_DIR_FILE . '/assets');
 
 /**
- * Path to directory containing core CSS/JS libraries
+ * Path to a directory containing 3-d party asset libraries
  * @var string
  */
-define('GC_DIR_ASSET_LIBRARY', GC_DIR_ASSET . '/libraries');
+define('GC_DIR_ASSET_VENDOR', GC_DIR_ASSET . '/vendor');
 
 /**
  * Path to directory containing compressed JS and CSS files
