@@ -412,7 +412,7 @@ abstract class Controller
      */
     protected function setLanguageProperties()
     {
-        if (empty($this->current_route['internal'])) {
+        if (!$this->isInternalRoute()) {
             $langcode = $this->route->getLangcode();
             if ($langcode) {
                 $this->language->set($langcode, $this->current_route['simple_pattern']);
@@ -472,7 +472,7 @@ abstract class Controller
      */
     protected function setDefaultAssets()
     {
-        if (empty($this->current_route['internal'])) {
+        if (!$this->isInternalRoute()) {
             $options = array('aggregate' => false);
             $this->addAssetLibrary('jquery', $options);
             $this->setJs('files/assets/system/js/common.js', $options);
@@ -636,8 +636,7 @@ abstract class Controller
      */
     public function getCss()
     {
-        $css = $this->asset->get('css', 'top');
-        return $this->compressAssets($css, 'css');
+        return $this->asset->get('css', 'top');
     }
 
     /**
@@ -654,7 +653,7 @@ abstract class Controller
             $js['js_settings']['asset'] = "Gplcart.settings=$json;";
         }
 
-        return $this->compressAssets($js, 'js');
+        return $js;
     }
 
     /**
@@ -859,6 +858,15 @@ abstract class Controller
     public function isMaintenance()
     {
         return $this->is_maintenance;
+    }
+
+    /**
+     * Whether the route is internal
+     * @return bool
+     */
+    public function isInternalRoute()
+    {
+        return !empty($this->current_route['internal']);
     }
 
     /**
@@ -1544,6 +1552,12 @@ abstract class Controller
         gplcart_array_sort($this->data['_css']);
         gplcart_array_sort($this->data['_js_top']);
         gplcart_array_sort($this->data['_js_bottom']);
+
+        $this->data['_css'] = $this->compressAssets($this->data['_css'], 'css');
+
+        foreach (array('top', 'bottom') as $position) {
+            $this->data["_js_$position"] = $this->compressAssets($this->data["_js_$position"], 'js');
+        }
     }
 
     /**
