@@ -938,7 +938,7 @@ class Product
             return gplcart_path_absolute($dirname, GC_DIR_IMAGE);
         }
 
-        return trim(substr(GC_DIR_IMAGE, strlen(GC_DIR_FILE)), '\\/') . "/$dirname";
+        return gplcart_path_relative(GC_DIR_IMAGE, GC_DIR_FILE) . "/$dirname";
     }
 
 }
