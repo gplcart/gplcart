@@ -1059,6 +1059,15 @@ abstract class Controller
     }
 
     /**
+     * Returns the current theme module ID
+     * @return string
+     */
+    public function getCurrentTheme()
+    {
+        return $this->theme;
+    }
+
+    /**
      * Whether a theme ID matches the current theme ID
      * @param string $name
      * @return boolean
