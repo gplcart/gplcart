@@ -117,19 +117,19 @@ function gplcart_path_absolute($file, $prefix = GC_DIR)
 
 /**
  * Converts the file path to a relative path
- * @param string $absolute
+ * @param string $path
  * @param mixed|string $prefix
  * @return string
  */
-function gplcart_path_relative($absolute, $prefix = GC_DIR)
+function gplcart_path_relative($path, $prefix = GC_DIR)
 {
-    if (gplcart_path_starts($absolute, $prefix)) {
+    if (gplcart_path_starts($path, $prefix)) {
+        $path_normalized = gplcart_path_normalize($path);
         $prefix_normalized = gplcart_path_normalize($prefix);
-        $absolute_normalized = gplcart_path_normalize($absolute);
-        return trim(substr($absolute_normalized, strlen($prefix_normalized)), '/');
+        return trim(substr($path_normalized, strlen($prefix_normalized)), '/');
     }
 
-    return $absolute;
+    return $path;
 }
 
 /**
