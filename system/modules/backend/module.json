@@ -6,6 +6,7 @@
     "type": "theme",
     "status": true,
     "lock": true,
+    "framework": "bootstrap 3",
     "version": "1.0.0",
     "dependencies": {
         "bootstrap": "1.x",
