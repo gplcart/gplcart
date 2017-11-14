@@ -85,7 +85,7 @@ define('GC_DIR_FILE', GC_DIR . '/files');
 define('GC_DIR_ASSET', GC_DIR_FILE . '/assets');
 
 /**
- * Path to a directory containing 3-d party asset libraries
+ * Path to directory containing 3-d party asset libraries
  * @var string
  */
 define('GC_DIR_ASSET_VENDOR', GC_DIR_ASSET . '/vendor');
