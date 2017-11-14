@@ -93,6 +93,7 @@ class Library
 
         $libraries = $this->prepareList($libraries);
         gplcart_config_set(GC_FILE_CONFIG_COMPILED_LIBRARY, $libraries);
+
         return (array) $libraries;
     }
 
@@ -155,6 +156,7 @@ class Library
         $this->validateDependenciesTrait($libraries);
         $prepared = $this->graph->build($libraries);
         gplcart_array_sort($prepared);
+
         return $prepared;
     }
 
@@ -166,7 +168,7 @@ class Library
     protected function validateFiles(array $library)
     {
         if (empty($library['files'])) {
-            return false;
+            return true; // Assume files will be loaded on dynamically
         }
 
         $readable = 0;
@@ -370,6 +372,11 @@ class Library
         foreach ($ids as $id) {
 
             $library = $libraries[$id];
+
+            if (empty($library['files'])) {
+                continue;
+            }
+
             array_walk($library['files'], function (&$file) use ($library) {
                 $file = "{$library['basepath']}/$file";
             });
