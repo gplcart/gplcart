@@ -37,7 +37,7 @@ class Frontend extends Module
      */
     public function hookTheme($controller)
     {
-        if ($controller->isCurrentTheme('frontend')) {
+        if ($controller->isCurrentTheme('frontend') && !$controller->isInternalRoute()) {
             $this->setThemeAssets($controller);
             $this->setThemeMetaTags($controller);
         }
@@ -49,19 +49,21 @@ class Frontend extends Module
      */
     public function hookConstructControllerFrontend($controller)
     {
-        $this->setThemeRegions($controller);
+        if ($controller->isCurrentTheme('frontend') && !$controller->isInternalRoute()) {
+            $this->setThemeRegions($controller);
+        }
     }
 
     /**
-     * Sets all required assets
+     * Sets theme specific assets
      * @param \gplcart\core\Controller $controller
      */
     protected function setThemeAssets($controller)
     {
-        $controller->addAssetLibrary('bootstrap');
         $controller->addAssetLibrary('html5shiv', array('aggregate' => false, 'condition' => 'if lt IE 9'));
         $controller->addAssetLibrary('respond', array('aggregate' => false, 'condition' => 'if lt IE 9'));
         $controller->addAssetLibrary('font_awesome');
+        $controller->addAssetLibrary('bootstrap');
 
         if ($controller->isInstall()) {
             $controller->setCss($this->getAsset('frontend', 'install.css'));
@@ -72,7 +74,7 @@ class Frontend extends Module
     }
 
     /**
-     * Sets meta-tags
+     * Sets meta tags
      * @param \gplcart\core\Controller $controller
      */
     protected function setThemeMetaTags($controller)
@@ -84,7 +86,7 @@ class Frontend extends Module
 
     /**
      * Set theme regions
-     * @param \gplcart\core\controllers\frontend\Controller $controller
+     * @param \gplcart\core\Controller $controller
      */
     protected function setThemeRegions($controller)
     {
