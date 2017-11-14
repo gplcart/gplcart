@@ -598,6 +598,23 @@ class Config
     }
 
     /**
+     * Returns the framework property for the given module
+     * Typically provided by themes, e.g "bootstrap 3" means compatibility with Bootstrap 3
+     * @param string $module_id
+     * @return array Firsts value - framework name, second - major version
+     */
+    public function getModuleFramework($module_id)
+    {
+        $info = $this->getModuleInfo($module_id);
+
+        if (empty($info['framework'])) {
+            return array();
+        }
+
+        return gplcart_string_explode_whitespace($info['framework'], 2);
+    }
+
+    /**
      * Validates a module ID
      * @param string $id
      * @return boolean
