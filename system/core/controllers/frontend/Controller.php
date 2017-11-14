@@ -94,7 +94,7 @@ class Controller extends BaseController
         $this->setFrontendInstancies();
         $this->setFrontendProperties();
 
-        if (empty($this->current_route['internal'])) {
+        if (!$this->isInternalRoute()) {
 
             $this->setDefaultDataFrontend();
             $this->setDefaultJsStoreFrontend();
@@ -156,12 +156,10 @@ class Controller extends BaseController
     protected function setFrontendProperties()
     {
         if (!$this->isInstall()) {
-
-            if (empty($this->current_route['internal'])) {
+            if (!$this->isInternalRoute()) {
                 $this->triggered = $this->getFiredTriggers();
                 $this->data_categories = $this->getCategories();
             }
-
             $this->current_currency = $this->currency->getCode();
         }
     }
