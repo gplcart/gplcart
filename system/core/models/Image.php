@@ -397,33 +397,50 @@ class Image
     /**
      * Returns a string containing an image cache URL
      * @param integer $imagestyle_id
-     * @param string $image
+     * @param string $path
      * @param boolean $absolute
      * @return string
      */
-    public function url($imagestyle_id, $image, $absolute = false)
+    public function url($imagestyle_id, $path, $absolute = false)
     {
-        if (empty($image)) {
+        if (empty($path)) {
             return $this->getPlaceholder($imagestyle_id, $absolute);
         }
 
-        $trimmed = trim($image, "/");
-        $file = GC_DIR_IMAGE_CACHE . "/$imagestyle_id/" . preg_replace('/^image\//', '', $trimmed);
+        $normalized_path = gplcart_path_normalize($path);
+        $file = GC_DIR_IMAGE_CACHE . "/$imagestyle_id/" . preg_replace('/^image\//', '', $normalized_path);
         $options = file_exists($file) ? array('v' => filemtime($file)) : array('v' => GC_TIME);
 
-        return $this->url->get("files/image/cache/$imagestyle_id/$trimmed", $options, $absolute);
+        $prefix = gplcart_path_relative(GC_DIR_IMAGE_CACHE);
+        return $this->url->get("$prefix/$imagestyle_id/$normalized_path", $options, $absolute);
     }
 
     /**
-     * Makes a relative to the root directory URL from a server path
-     * @param string $path
+     * Returns a string containing an image path
+     * @param string $path Either relative to the root/file directory or an absolute server path
      * @return string
      */
     public function urlFromPath($path)
     {
-        $expected = gplcart_file_absolute($path);
-        $query = is_file($expected) ? array('v' => filemtime($expected)) : array();
-        return $this->url->get('files/' . gplcart_path_relative($path), $query, false, true);
+        if (gplcart_path_is_absolute($path)) {
+            $file = $path;
+            $url = gplcart_path_relative($path);
+        } else {
+
+            $path = gplcart_path_normalize($path);
+            $prefix = gplcart_path_relative(GC_DIR_FILE);
+
+            if (strpos($path, "$prefix/") === 0) {
+                $url = $path;
+                $file = gplcart_file_absolute($path);
+            } else {
+                $url = "$prefix/$path";
+                $file = gplcart_path_absolute($path);
+            }
+        }
+
+        $query = is_file($file) ? array('v' => filemtime($file)) : array();
+        return $this->url->get($url, $query, false, true);
     }
 
 }
