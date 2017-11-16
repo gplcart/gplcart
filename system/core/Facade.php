@@ -74,8 +74,9 @@ class Facade
 
         $this->session->init();
         $this->config->init();
+        $this->route->init();
+        $this->hook->init();
 
-        $this->hook->registerAll();
         $this->hook->attach('construct', $this);
     }
 
