@@ -42,11 +42,11 @@ class HookTest extends UnitTest
     }
 
     /**
-     * @covers gplcart\core\Hook::registerAll
+     * @covers gplcart\core\Hook::init
      */
-    public function testRegisterAll()
+    public function testInit()
     {
-        $this->assertTrue(is_array($this->object->registerAll()));
+        $this->assertTrue(is_array($this->object->init()));
     }
 
     /**
