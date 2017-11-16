@@ -25,7 +25,7 @@ var Gplcart = typeof Gplcart !== 'undefined' ? Gplcart : {
      * @param {Array} args
      * @returns {undefined}
      */
-    Gplcart.attachHook = function (name, args) {
+    Gplcart.hook = function (name, args) {
 
         var res, ret, args, hook, fargs = arguments;
 

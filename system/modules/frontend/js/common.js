@@ -29,7 +29,7 @@
 
         html += '</div><div class="modal-body">' + content + '</div></div></div>';
         
-        mod = Gplcart.attachHook('html.modal', html);
+        mod = Gplcart.hook('html.modal', html);
         return mod === undefined ? html : mod;
     };
 
@@ -53,7 +53,7 @@
         html += '</div>';
         html += '</div>';
 
-        mod = Gplcart.attachHook('html.modal.gallery', html);
+        mod = Gplcart.hook('html.modal.gallery', html);
         return mod === undefined ? html : mod;
     };
 
@@ -68,7 +68,7 @@
         html += '<i class="fa fa-balance-scale"></i>';
         html += '</a>';
         
-        mod = Gplcart.attachHook('html.btn.in.compare', html);
+        mod = Gplcart.hook('html.btn.in.compare', html);
         return mod === undefined ? html : mod;
     };
 
@@ -86,7 +86,7 @@
         html += '<a title="' + title + '" href="' + url + '" class="btn btn-default active">';
         html += '<i class="fa fa-heart"></i></a>';
         
-        mod = Gplcart.attachHook('html.btn.in.wishlist', html);
+        mod = Gplcart.hook('html.btn.in.wishlist', html);
         return mod === undefined ? html : mod;
     };
 
@@ -105,7 +105,7 @@
         html += '<span class="fa fa-times"></span>';
         html += '</span>';
 
-        mod = Gplcart.attachHook('html.btn.selected.options', html);
+        mod = Gplcart.hook('html.btn.selected.options', html);
         return mod === undefined ? html : mod;
     };
 
@@ -118,7 +118,7 @@
      */
     var setModal = function (content, id, header) {
 
-        var res = Gplcart.attachHook('modal.set.before', content, id, header);
+        var res = Gplcart.hook('modal.set.before', content, id, header);
 
         if (res === undefined) {
             
@@ -129,7 +129,7 @@
             if (content.length) {
                 $('body').append(htmlModal(content, id, header));
                 $('#' + id).modal('show');
-                Gplcart.attachHook('modal.set.after', content, id, header);
+                Gplcart.hook('modal.set.after', content, id, header);
             }
         }
     };
@@ -142,7 +142,7 @@
      */
     var setModalGallery = function (src, id) {
 
-        var res = Gplcart.attachHook('modal.gallery.set.before', src, id);
+        var res = Gplcart.hook('modal.gallery.set.before', src, id);
 
         if (res === undefined) {
             
@@ -152,7 +152,7 @@
 
             $('body').append(htmlModalGallery(src, id));
             $('#' + id).modal('show');
-            Gplcart.attachHook('modal.gallery.set.after', src, id);
+            Gplcart.hook('modal.gallery.set.after', src, id);
         }
     };
 
@@ -164,11 +164,11 @@
      */
     var submitAddToCart = function (action, data) {
         
-        var res = Gplcart.attachHook('cart.add.before', action, data);
+        var res = Gplcart.hook('cart.add.before', action, data);
         
         if (res === undefined && action === 'add_to_cart' && data.hasOwnProperty('quantity')) {
             updateCartQuantity(data.quantity);
-            Gplcart.attachHook('cart.add.after', action, data);
+            Gplcart.hook('cart.add.after', action, data);
         }
     };
 
@@ -180,11 +180,11 @@
      */
     var submitDeleteFromCart = function (action, data) {
         
-        var res = Gplcart.attachHook('cart.delete.before', action, data);
+        var res = Gplcart.hook('cart.delete.before', action, data);
         
         if (res === undefined && action === 'remove_from_cart' && data.hasOwnProperty('quantity')) {
             updateCartQuantity(data.quantity);
-            Gplcart.attachHook('cart.delete.after', action, data);
+            Gplcart.hook('cart.delete.after', action, data);
         }
     };
 
@@ -197,12 +197,12 @@
      */
     var submitAddToCompare = function (action, data, button) {
         
-        var res = Gplcart.attachHook('compare.add.before', action, data, button);
+        var res = Gplcart.hook('compare.add.before', action, data, button);
         
         if (res === undefined && action === 'add_to_compare' && data.hasOwnProperty('quantity')) {
             $('#compare-quantity').text(data.quantity).show();
             button.replaceWith(htmlBtnInCompare());
-            Gplcart.attachHook('compare.add.after', action, data, button);
+            Gplcart.hook('compare.add.after', action, data, button);
         }
     };
 
@@ -215,12 +215,12 @@
      */
     var submitAddToWishlist = function (action, data, button) {
 
-        var res = Gplcart.attachHook('wishlist.add.before', action, data, button);
+        var res = Gplcart.hook('wishlist.add.before', action, data, button);
 
         if (res === undefined && action === 'add_to_wishlist' && data.hasOwnProperty('quantity')) {
             updateWishlistQuantity(data.quantity);
             button.replaceWith(htmlBtnInWishlist());
-            Gplcart.attachHook('wishlist.add.after', action, data, button);
+            Gplcart.hook('wishlist.add.after', action, data, button);
         }
     };
 
@@ -233,12 +233,12 @@
      */
     var submitDeleteFromWishlist = function (action, data, button) {
         
-        var res = Gplcart.attachHook('wishlist.delete.before', action, data, button);
+        var res = Gplcart.hook('wishlist.delete.before', action, data, button);
         
         if (res === undefined && action === 'remove_from_wishlist' && data.hasOwnProperty('quantity')) {
             updateWishlistQuantity(data.quantity);
             button.closest('.product.item').remove();
-            Gplcart.attachHook('wishlist.delete.after', action, data, button);
+            Gplcart.hook('wishlist.delete.after', action, data, button);
         }
     };
     
@@ -354,7 +354,7 @@
 
         $(document).on('click', '#cart-link', function (e) {
 
-            if (Gplcart.attachHook('cart.preview.on.click', e) === undefined) {
+            if (Gplcart.hook('cart.preview.on.click', e) === undefined) {
                 
                 $.ajax({
                     type: 'POST',
@@ -368,10 +368,10 @@
                         if (typeof data === 'object' && data.preview) {
                             setModal(data.preview, 'cart-preview', Gplcart.text('Cart'));
                         }
-                        Gplcart.attachHook('cart.preview.ajax.success', e);
+                        Gplcart.hook('cart.preview.ajax.success', e);
                     },
                     complete: function () {
-                        Gplcart.attachHook('cart.preview.ajax.complete', e);
+                        Gplcart.hook('cart.preview.ajax.complete', e);
                     }
                 });
 
@@ -390,7 +390,7 @@
 
         $(document).on('click', ':button[name][data-ajax="true"]', function (e) {
 
-            if (Gplcart.attachHook('submit.on.click', e) === undefined) {
+            if (Gplcart.hook('submit.on.click', e) === undefined) {
                 
                 e.preventDefault();
 
@@ -434,10 +434,10 @@
                             submitDeleteFromWishlist(action, data, button);
                         }
                         
-                        Gplcart.attachHook('submit.ajax.success', e);
+                        Gplcart.hook('submit.ajax.success', e);
                     },
                     complete: function () {
-                        Gplcart.attachHook('submit.ajax.complete', e);
+                        Gplcart.hook('submit.ajax.complete', e);
                     }
                 });
 
@@ -455,13 +455,13 @@
         var clicked;
 
         $(document).on('change', 'form#checkout :input:not([data-ajax="false"])', function (e) {
-            if (Gplcart.attachHook('checkout.on.change', e) === undefined) {
+            if (Gplcart.hook('checkout.on.change', e) === undefined) {
                 $('form#checkout').submit();
             }
         });
 
         $(document).on('click', 'form#checkout :submit', function (e) {
-            if (Gplcart.attachHook('checkout.on.click', e) === undefined) {
+            if (Gplcart.hook('checkout.on.click', e) === undefined) {
                 clicked = $(this);
                 clicked.closest('form').append($('<input>').attr({
                     type: 'hidden',
@@ -473,7 +473,7 @@
 
         $(document).off('submit').on('submit', 'form#checkout', function (e) {
 
-            if (Gplcart.attachHook('checkout.on.submit', e) === undefined) {
+            if (Gplcart.hook('checkout.on.submit', e) === undefined) {
                 
                 if (clicked && clicked.data('ajax') === false) {
                     return true;
@@ -490,15 +490,15 @@
                         if (data.length) {
                             $('#checkout-form-wrapper').html(data);
                         }
-                        Gplcart.attachHook('checkout.submit.ajax.success', e);
+                        Gplcart.hook('checkout.submit.ajax.success', e);
                     },
                     beforeSend: function () {
                         $('form#checkout :input').prop('disabled', true);
-                        Gplcart.attachHook('checkout.submit.ajax.send', e);
+                        Gplcart.hook('checkout.submit.ajax.send', e);
                     },
                     complete: function () {
                         $('form#checkout :input').prop('disabled', false);
-                        Gplcart.attachHook('checkout.submit.ajax.complete', e);
+                        Gplcart.hook('checkout.submit.ajax.complete', e);
                     }
                 });
             }
@@ -517,7 +517,7 @@
 
         $(document).on('change', '[name^="product[options]"]', function (e) {
 
-            if (Gplcart.attachHook('product.option.on.change', e, selected) === undefined) {
+            if (Gplcart.hook('product.option.on.change', e, selected) === undefined) {
                 
                 setSingleCheckedCheckbox(this);
                 selected = getSelectedOptions();
@@ -581,17 +581,17 @@
                         }
 
                         $('[name="add_to_cart"]').prop('disabled', !data.cart_access);
-                        Gplcart.attachHook('product.option.update.ajax.success', e);
+                        Gplcart.hook('product.option.update.ajax.success', e);
                     },
                     beforeSend: function () {
                         $('[data-field-id]').prop('disabled', true);
                         message.html('<span class="loading">' + Gplcart.text('Checking availability...') + '</span>');
-                        Gplcart.attachHook('product.option.update.ajax.send', e);
+                        Gplcart.hook('product.option.update.ajax.send', e);
                     },
                     complete: function () {
                         $('[data-field-id]').prop('disabled', false);
                         message.find('.loading').remove();
-                        Gplcart.attachHook('product.option.update.ajax.complete', e);
+                        Gplcart.hook('product.option.update.ajax.complete', e);
                     }
                 });
             }
@@ -604,7 +604,7 @@
      */
     Gplcart.onload.setCityAutocomplete = function () {
         $(document).on('change', '[name="address[state_id]"]', function (e) {
-            if (Gplcart.attachHook('address.state.on.change', e) === undefined) {
+            if (Gplcart.hook('address.state.on.change', e) === undefined) {
                 setCityAutocomplete();
             }
         });
@@ -761,7 +761,7 @@
         $('.panel').each(function () {
             id = $(this).attr('id');
             if (id) {
-                links = $(this).find('.pagination a');
+                links = $(this).find('[class^=pagination] a');
                 if (links) {
                     links.each(function () {
                         href = $(this).attr('href');
