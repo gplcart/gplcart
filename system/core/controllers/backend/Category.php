@@ -405,11 +405,22 @@ class Category extends BackendController
     protected function setTitleEditCategory()
     {
         if (isset($this->data_category['category_id'])) {
-            $vars = array('%name' => $this->data_category['title']);
-            $title = $this->text('Edit %name', $vars);
+            $title = $this->text('Edit %name', array('%name' => $this->data_category['title']));
         } else {
+
+            $parent_category_id = $this->getQuery('parent_id');
             $vars = array('%name' => $this->data_category_group['title']);
-            $title = $this->text('Add category to %name', $vars);
+
+            if (!empty($parent_category_id)) {
+                $parent_category = $this->category->get($parent_category_id);
+            }
+
+            if (isset($parent_category['title'])) {
+                $vars['%category'] = $parent_category['title'];
+                $title = $this->text('Add sub-category to %name / %category', $vars);
+            } else {
+                $title = $this->text('Add category to %name', $vars);
+            }
         }
 
         $this->setTitle($title);
