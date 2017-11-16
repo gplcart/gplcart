@@ -380,6 +380,7 @@ class Pager
             'page' => 1,
             'limit' => 0,
             'total' => 0,
+            'mini' => false,
             'max_pages' => 10,
             'query' => array()
         );
