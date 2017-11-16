@@ -21,7 +21,7 @@ use gplcart\core\models\Sku as SkuModel,
 use gplcart\core\helpers\Request as RequestHelper;
 
 /**
- * Manages basic behaviors and data related to user carts
+ * Manages basic behaviors and data related to shopping carts
  */
 class Cart
 {
@@ -116,7 +116,7 @@ class Cart
     }
 
     /**
-     * Returns a cart content for a given user ID
+     * Returns a cart content
      * @param array $data
      * @return array
      */
@@ -297,7 +297,7 @@ class Cart
     }
 
     /**
-     * Adds a product to the current cart
+     * Adds the product to the cart
      * @param array $product
      * @param array $data
      * @return array
@@ -375,7 +375,7 @@ class Cart
     }
 
     /**
-     * Adds/updates products in cart
+     * Adds/updates products in the cart
      * @param array $data
      * @return integer|boolean
      */

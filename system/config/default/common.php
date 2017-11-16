@@ -8,7 +8,6 @@
  */
 /**
  * To adjust a setting uncomment it by removing the leading #
- * WARNING! Invalid code can break down your site!
  */
 $config = array();
 

@@ -16,7 +16,7 @@ use gplcart\core\Hook,
 use gplcart\core\models\Language as LanguageModel;
 
 /**
- * Manages basic behaviors and data related to URL aliasing
+ * Manages basic behaviors and data related to URL aliases
  */
 class Alias
 {

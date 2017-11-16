@@ -106,9 +106,7 @@ class Url
         }
 
         array_unshift($segments, $code);
-
         $url = $this->request->base(true) . trim(implode('/', $segments), '/');
-
         return empty($options) ? $url : "$url?" . http_build_query($options);
     }
 

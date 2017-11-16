@@ -151,7 +151,7 @@ class Bookmark
     }
 
     /**
-     * Add a bookmark if it does not exists for the given path
+     * Add a bookmark if it doesn't exists for the path
      * @param string $path
      * @param array $data
      * @return boolean
