@@ -91,7 +91,6 @@ class Install
         }
 
         $handlers = array_merge($handlers, $this->getDefaultHandler());
-
         gplcart_array_sort($handlers);
         return $handlers;
     }
@@ -108,7 +107,7 @@ class Install
                 'module' => '',
                 'id' => 'default',
                 'title' => $this->language->text('Default'),
-                'description' => $this->language->text('Default'),
+                'description' => '',
                 'handlers' => array(
                     'install' => array('gplcart\\core\\handlers\\install\\DefaultProfile', 'install')
                 )
@@ -184,7 +183,7 @@ class Install
     }
 
     /**
-     * Tries to connect and validates the database
+     * Tries to connect to the database
      * @param array $settings
      * @return boolean|string
      */
@@ -238,7 +237,6 @@ class Install
         }
 
         $result = $this->callHandler($data['installer'], $data);
-
         $this->hook->attach('install.after', $data, $result, $cli_route, $this);
         return array_merge($default_result, (array) $result);
     }
