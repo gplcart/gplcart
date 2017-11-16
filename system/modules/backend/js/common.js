@@ -38,7 +38,7 @@
         html += '</div>';
         html += '</div>';
 
-        mod = Gplcart.attachHook('html.modal', html);
+        mod = Gplcart.hook('html.modal', html);
         return mod === undefined ? html : mod;
     };
 
@@ -59,7 +59,7 @@
         html += '</div></div></div></div></div>';
         html += '<div class="modal-backdrop loading fade in"></div>';
 
-        mod = Gplcart.attachHook('html.loading', html);
+        mod = Gplcart.hook('html.loading', html);
         return mod === undefined ? html : mod;
     };
 
@@ -80,7 +80,7 @@
         html += message;
         html += '</div>';
 
-        mod = Gplcart.attachHook('html.alert', html);
+        mod = Gplcart.hook('html.alert', html);
         return mod === undefined ? html : mod;
     };
 
@@ -131,7 +131,7 @@
         html += '</td>';
         html += '</tr>';
 
-        mod = Gplcart.attachHook('html.product.combination', html);
+        mod = Gplcart.hook('html.product.combination', html);
         return mod === undefined ? html : mod;
     };
 
@@ -167,7 +167,7 @@
 
         html += '</div>';
 
-        mod = Gplcart.attachHook('html.product.image.modal', html);
+        mod = Gplcart.hook('html.product.image.modal', html);
         return mod === undefined ? html : mod;
     };
 
@@ -196,7 +196,7 @@
         html += '</span></span>';
         html += '</span>';
 
-        mod = Gplcart.attachHook('html.product.related', html);
+        mod = Gplcart.hook('html.product.related', html);
         return mod === undefined ? html : mod;
     };
 
@@ -210,7 +210,7 @@
      */
     var setModal = function (content, id, header, footer) {
 
-        if (Gplcart.attachHook('modal.set.before', content, id, header, footer) === undefined) {
+        if (Gplcart.hook('modal.set.before', content, id, header, footer) === undefined) {
 
             $('.modal').remove();
             $('.modal-backdrop').remove();
@@ -220,7 +220,7 @@
             $('body').append(htmlModal(content, id, header, footer));
             $('#' + id).modal('show');
 
-            Gplcart.attachHook('modal.set.after', content, id, header, footer);
+            Gplcart.hook('modal.set.after', content, id, header, footer);
         }
     };
 
@@ -230,7 +230,7 @@
      */
     var setLoading = function (mode) {
 
-        if (Gplcart.attachHook('loading.set.before', mode) === undefined) {
+        if (Gplcart.hook('loading.set.before', mode) === undefined) {
 
             if (mode === false) {
                 $('body').find('.loading').remove();
@@ -238,7 +238,7 @@
                 $('body').append(htmlLoading());
             }
 
-            Gplcart.attachHook('loading.set.after', mode);
+            Gplcart.hook('loading.set.after', mode);
         }
     };
 
@@ -251,12 +251,12 @@
      */
     var setAlert = function (message, id, type) {
 
-        if (Gplcart.attachHook('alert.set.before', message, id, type) === undefined) {
+        if (Gplcart.hook('alert.set.before', message, id, type) === undefined) {
             $('body').append(htmlAlert(message, id, type));
             setTimeout(function () {
                 $('#' + id + '.popup.alert').remove();
             }, 3000);
-            Gplcart.attachHook('alert.set.after', message, id, type);
+            Gplcart.hook('alert.set.after', message, id, type);
         }
     };
 
@@ -274,7 +274,7 @@
                 $('#option-form-wrapper').html($(response).find('#option-form').html());
             },
             complete: function (response) {
-                Gplcart.attachHook('product.field.load.ajax.complete', id, response);
+                Gplcart.hook('product.field.load.ajax.complete', id, response);
             }
         });
     };
@@ -314,9 +314,9 @@
      */
     Gplcart.onload.addProductCombination = function () {
         $(document).on('click', '#option-form-wrapper .add-option-combination', function (e) {
-            if (Gplcart.attachHook('product.combination.add.before', e) === undefined) {
+            if (Gplcart.hook('product.combination.add.before', e) === undefined) {
                 $('#option-form-wrapper table tbody').append(htmlProductCombinationRow());
-                Gplcart.attachHook('product.combination.add.after', e);
+                Gplcart.hook('product.combination.add.after', e);
                 return false;
             }
         });
@@ -345,9 +345,9 @@
      */
     Gplcart.onload.deleteProductCombination = function () {
         $(document).on('click', '#option-form-wrapper .remove-option-combination', function (e) {
-            if (Gplcart.attachHook('product.combination.delete.before', e) === undefined) {
+            if (Gplcart.hook('product.combination.delete.before', e) === undefined) {
                 $(this).closest('tr').remove();
-                Gplcart.attachHook('product.combination.delete.after', e);
+                Gplcart.hook('product.combination.delete.after', e);
                 return false;
             }
         });
@@ -663,11 +663,11 @@
      */
     Gplcart.onload.deleteUploadedImages = function () {
         $(document).on('click', '[name="delete_images[]"]', function (e) {
-            if (Gplcart.attachHook('product.images.delete.before', e)) {
+            if (Gplcart.hook('product.images.delete.before', e)) {
                 if (!$(this).val()) {
                     $(this).closest('div.thumb').remove();
                 }
-                Gplcart.attachHook('product.images.delete.after', e);
+                Gplcart.hook('product.images.delete.after', e);
                 return false;
             }
         });
@@ -796,7 +796,7 @@
                 beforeSend: function () {
                     store.prop('disabled', true);
                     category.prop('disabled', true);
-                    Gplcart.attachHook('category.store.update.ajax.send', e);
+                    Gplcart.hook('category.store.update.ajax.send', e);
                 },
                 success: function (response) {
                     options = '';
@@ -811,12 +811,12 @@
                         category.html(options);
                     }
 
-                    Gplcart.attachHook('category.store.update.ajax.success', e);
+                    Gplcart.hook('category.store.update.ajax.success', e);
                 },
                 complete: function () {
                     store.prop('disabled', false);
                     category.prop('disabled', false);
-                    Gplcart.attachHook('category.store.update.ajax.complete', e);
+                    Gplcart.hook('category.store.update.ajax.complete', e);
                 }
             });
         });
