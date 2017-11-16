@@ -182,9 +182,6 @@ class Job
      */
     public function process(array $job)
     {
-        ini_set('max_execution_time', 0);
-        register_shutdown_function(array($this, 'shutdownHandler'), $job);
-
         $this->hook->attach('job.process.before', $job, $this);
 
         if (empty($job['status'])) {
@@ -257,19 +254,6 @@ class Job
             return (int) Handler::call($handlers, $handler_id, 'total', array($arguments));
         } catch (\Exception $ex) {
             return 0;
-        }
-    }
-
-    /**
-     * Shutdown handler
-     */
-    public function shutdownHandler()
-    {
-        $error = error_get_last();
-
-        if (isset($error['type']) && $error['type'] === E_ERROR) {
-            $text = $this->language->text('The job has not been properly completed');
-            $this->session->setMessage($text, 'danger');
         }
     }
 
