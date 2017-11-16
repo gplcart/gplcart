@@ -79,10 +79,16 @@ class Route
         $this->hook = $hook;
         $this->config = $config;
         $this->request = $request;
-        $this->db = $config->getDb();
+    }
 
+    /**
+     * Initialize route
+     */
+    public function init()
+    {
         $this->setLangcode();
         $this->path = $this->url->path();
+        $this->db = $this->config->getDb();
     }
 
     /**
@@ -103,7 +109,7 @@ class Route
     }
 
     /**
-     * Processes the current route
+     * Processes the route
      */
     public function output()
     {
@@ -113,25 +119,7 @@ class Route
     }
 
     /**
-     * Returns a language from the current URL
-     * @return string
-     */
-    public function getLangcode()
-    {
-        return $this->langcode;
-    }
-
-    /**
-     * Returns the current route
-     * @return array
-     */
-    public function getCurrent()
-    {
-        return $this->route;
-    }
-
-    /**
-     * Sets the current language
+     * Sets language
      */
     protected function setLangcode()
     {
@@ -200,6 +188,38 @@ class Route
         }
 
         return null;
+    }
+
+    /**
+     * Find an appropriate controller for the URL
+     * @throws RouteException
+     */
+    public function outputRoute()
+    {
+        foreach ($this->getList() as $pattern => $route) {
+
+            if (isset($route['status']) && empty($route['status'])) {
+                continue;
+            }
+
+            $arguments = array();
+            $path = empty($this->path) ? '/' : $this->path;
+
+            if (gplcart_path_match($path, $pattern, $arguments)) {
+                $this->callHandler($pattern, $arguments);
+                throw new RouteException('An error occurred while processing the route');
+            }
+        }
+    }
+
+    /**
+     * Displays 404 Not Found Page
+     */
+    public function output404()
+    {
+        $pattern = $this->url->isBackend() ? 'status-backend' : 'status-frontend';
+        $this->callHandler($pattern, array(404));
+        throw new RouteException('An error occurred while processing the route');
     }
 
     /**
@@ -279,7 +299,7 @@ class Route
     }
 
     /**
-     * Returns route handler
+     * Returns a route handler
      * @param array $route
      * @param string $method
      * @return array
@@ -297,44 +317,30 @@ class Route
     }
 
     /**
-     * Find an appropriate controller for the current URL
-     * @throws RouteException
-     */
-    public function outputRoute()
-    {
-        foreach ($this->getList() as $pattern => $route) {
-
-            if (isset($route['status']) && empty($route['status'])) {
-                continue;
-            }
-
-            $arguments = array();
-            $path = empty($this->path) ? '/' : $this->path;
-
-            if (gplcart_path_match($path, $pattern, $arguments)) {
-                $this->callHandler($pattern, $arguments);
-                throw new RouteException('An error occurred while processing the route');
-            }
-        }
-    }
-
-    /**
-     * Displays 404 Not Found Page
-     */
-    public function output404()
-    {
-        $pattern = $this->url->isBackend() ? 'status-backend' : 'status-frontend';
-        $this->callHandler($pattern, array(404));
-        throw new RouteException('An error occurred while processing the route');
-    }
-
-    /**
      * Returns the current path
      * @return string
      */
     public function getPath()
     {
         return $this->path;
+    }
+
+    /**
+     * Returns the current route
+     * @return array
+     */
+    public function getCurrent()
+    {
+        return $this->route;
+    }
+
+    /**
+     * Returns a language from the current URL
+     * @return string
+     */
+    public function getLangcode()
+    {
+        return $this->langcode;
     }
 
 }
