@@ -129,7 +129,11 @@ class Address
      */
     public function getTranslatedList($user_id, $status = true)
     {
-        $conditions = array('user_id' => $user_id, 'status' => $status);
+        $conditions = array(
+            'status' => $status,
+            'user_id' => $user_id
+        );
+
         $list = (array) $this->getList($conditions);
 
         $addresses = array();
@@ -141,13 +145,12 @@ class Address
     }
 
     /**
-     * Returns a list of addresses or counts them
+     * Returns an array of addresses or counts them
      * @param array $data
      * @return array|integer
      */
     public function getList(array $data = array())
     {
-        // Use pipes to concat to make compatible with sqlite
         $sql = 'SELECT a.*, TRIM(a.first_name || " " || a.middle_name || " " || a.last_name) AS full_name,'
                 . ' u.email AS user_email, u.name AS user_name,'
                 . ' ci.city_id, COALESCE(ci.name, a.city_id) AS city_name, ci.status AS city_status,'
@@ -328,7 +331,7 @@ class Address
     }
 
     /**
-     * Returns formatted address
+     * Returns the formatted address
      * @param integer|array $address
      * @return string
      */
@@ -350,7 +353,7 @@ class Address
     }
 
     /**
-     * Reduces max number of addresses that a user can have
+     * Reduces max number of addresses the user can have
      * @param integer $user_id
      */
     public function controlLimit($user_id)
@@ -361,7 +364,7 @@ class Address
     }
 
     /**
-     * Returns an array of excess address items for the user ID
+     * Returns an array of exceeding addresses for the user ID
      * @param string|integer $user_id
      * @param null|array $existing
      * @return array
@@ -388,7 +391,7 @@ class Address
     }
 
     /**
-     * Returns a number of addresses that a user can have
+     * Returns a number of addresses the user can have
      * @param string|integer
      * @return integer
      */
