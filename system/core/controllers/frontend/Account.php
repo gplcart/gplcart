@@ -96,9 +96,8 @@ class Account extends FrontendController
      * @param PaymentModel $payment
      * @param ShippingModel $shipping
      */
-    public function __construct(AddressModel $address, OrderModel $order,
-            UserRoleModel $role, PriceRuleModel $pricerule,
-            PaymentModel $payment, ShippingModel $shipping)
+    public function __construct(AddressModel $address, OrderModel $order, UserRoleModel $role,
+            PriceRuleModel $pricerule, PaymentModel $payment, ShippingModel $shipping)
     {
         parent::__construct();
 
@@ -411,6 +410,7 @@ class Account extends FrontendController
     protected function updateAccount()
     {
         $this->controlAccessEditAccount();
+
         $this->user->update($this->data_user['user_id'], $this->getSubmitted());
         $this->redirect('', $this->text('Account has been updated'), 'success');
     }
@@ -440,7 +440,7 @@ class Account extends FrontendController
      */
     protected function setTitleEditAccount()
     {
-        $this->setTitle($this->text('Edit account'), false);
+        $this->setTitle($this->text('Edit account'));
     }
 
     /**
@@ -536,7 +536,7 @@ class Account extends FrontendController
      */
     protected function setTitleListAddressAccount()
     {
-        $this->setTitle($this->text('Addresses'), false);
+        $this->setTitle($this->text('Addresses'));
     }
 
     /**
