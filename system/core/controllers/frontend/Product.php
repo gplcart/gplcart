@@ -522,7 +522,7 @@ class Product extends FrontendController
         $items = $this->product_view->set($this->data_product['product_id'], $this->cart_uid);
 
         $product_ids = array();
-        foreach ($items as $id => $item) {
+        foreach ((array) $items as $id => $item) {
             if ($item['product_id'] != $this->data_product['product_id']) {
                 $product_ids[$id] = $item['product_id'];
             }
