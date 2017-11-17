@@ -253,6 +253,8 @@ return array(
             'status' => array('type' => 'integer', 'length' => 1, 'not_null' => true, 'default' => 0),
             'weight' => array('type' => 'integer', 'length' => 2, 'not_null' => true, 'default' => 0),
             'settings' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
+            'created' => array('type' => 'integer', 'length' => 10, 'not_null' => true),
+            'modified' => array('type' => 'integer', 'length' => 10, 'not_null' => true, 'default' => 0)
         )
     ),
     'orders' => array(
