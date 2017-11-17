@@ -121,11 +121,20 @@
             <?php } ?>
           </td>
           <td class="middle">
-            <?php if ($this->access('store_edit')) { ?>
-            <a href="<?php echo $this->url("admin/settings/store/edit/$store_id"); ?>">
-              <?php echo $this->lower($this->text('Edit')); ?>
-            </a>
-            <?php } ?>
+            <ul class="list-inline">
+              <?php if ($this->access('store_edit')) { ?>
+              <li>
+                <a href="<?php echo $this->url("admin/settings/store/edit/$store_id"); ?>">
+                  <?php echo $this->lower($this->text('Edit')); ?>
+                </a>
+              </li>
+              <?php } ?>
+              <li>
+                <a target="_blank" href="<?php echo $this->e("http://{$store['domain']}/{$store['basepath']}"); ?>">
+                  <?php echo $this->lower($this->text('View')); ?>
+                </a>
+              </li>
+            </ul>
           </td>
         </tr>
         <?php } ?>
