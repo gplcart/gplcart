@@ -75,10 +75,10 @@ class Condition
             return false;
         }
 
-        $met = false;
+        $met = true;
         foreach ($trigger['data']['conditions'] as $condition) {
-            if ($this->callHandler($condition, $data) === true) {
-                $met = true;
+            if ($this->callHandler($condition, $data) !== true) {
+                $met = false;
                 break;
             }
         }
