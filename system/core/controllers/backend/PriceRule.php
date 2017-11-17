@@ -63,8 +63,8 @@ class PriceRule extends BackendController
      * @param PriceModel $price
      * @param TriggerModel $trigger
      */
-    public function __construct(PriceRuleModel $rule, CurrencyModel $currency,
-            PriceModel $price, TriggerModel $trigger)
+    public function __construct(PriceRuleModel $rule, CurrencyModel $currency, PriceModel $price,
+            TriggerModel $trigger)
     {
         parent::__construct();
 
@@ -252,6 +252,7 @@ class PriceRule extends BackendController
             if (empty($this->data_rule)) {
                 $this->outputHttpStatus(404);
             }
+            $this->data_rule = $this->preparePriceRule($this->data_rule);
         }
     }
 
@@ -336,8 +337,7 @@ class PriceRule extends BackendController
     protected function setTitleEditPriceRule()
     {
         if (isset($this->data_rule['price_rule_id'])) {
-            $vars = array('%name' => $this->data_rule['name']);
-            $title = $this->text('Edit %name', $vars);
+            $title = $this->text('Edit %name', array('%name' => $this->data_rule['name']));
         } else {
             $title = $this->text('Add price rule');
         }
