@@ -22,7 +22,8 @@ use gplcart\core\models\Sku as SkuModel,
     gplcart\core\models\Search as SearchModel,
     gplcart\core\models\Language as LanguageModel,
     gplcart\core\models\PriceRule as PriceRuleModel,
-    gplcart\core\models\ProductField as ProductFieldModel;
+    gplcart\core\models\ProductField as ProductFieldModel,
+    gplcart\core\models\ProductRelation as ProductRelationModel;
 use gplcart\core\helpers\Request as RequestHelper;
 
 /**
@@ -63,6 +64,12 @@ class Product
      * @var \gplcart\core\models\ProductField $product_field
      */
     protected $product_field;
+
+    /**
+     * Product relation model instance
+     * @var \gplcart\core\models\ProductRelation $product_relation
+     */
+    protected $product_relation;
 
     /**
      * Price model instance
@@ -125,12 +132,14 @@ class Product
      * @param SkuModel $sku
      * @param SearchModel $search
      * @param ProductFieldModel $product_field
+     * @param ProductRelationModel $product_relation
      * @param RequestHelper $request
      */
     public function __construct(Hook $hook, Database $db, Config $config, Cache $cache,
             LanguageModel $language, AliasModel $alias, FileModel $file, PriceModel $price,
             PriceRuleModel $pricerule, SkuModel $sku, SearchModel $search,
-            ProductFieldModel $product_field, RequestHelper $request)
+            ProductFieldModel $product_field, ProductRelationModel $product_relation,
+            RequestHelper $request)
     {
         $this->db = $db;
         $this->hook = $hook;
@@ -146,6 +155,7 @@ class Product
         $this->language = $language;
         $this->pricerule = $pricerule;
         $this->product_field = $product_field;
+        $this->product_relation = $product_relation;
     }
 
     /**
@@ -163,10 +173,7 @@ class Product
         }
 
         $data['created'] = $data['modified'] = GC_TIME;
-
-        $data += array(
-            'currency' => $this->config->get('currency', 'USD')
-        );
+        $data += array('currency' => $this->config->get('currency', 'USD'));
 
         $this->setPrice($data);
 
@@ -183,7 +190,6 @@ class Product
         $this->setRelated($data, false);
 
         $this->search->index('product', $data);
-
         $this->hook->attach('product.add.after', $data, $result, $this);
         return (int) $result;
     }
@@ -257,17 +263,15 @@ class Product
         $product_id = $data['product_id'];
 
         if ($update) {
-            $this->db->delete('product_related', array('product_id' => $product_id));
-            $this->db->delete('product_related', array('related_product_id' => $product_id));
+            $this->product_relation->delete($product_id);
         }
 
         if (empty($data['related'])) {
             return false;
         }
 
-        foreach ((array) $data['related'] as $id) {
-            $this->db->insert('product_related', array('product_id' => $product_id, 'related_product_id' => $id));
-            $this->db->insert('product_related', array('product_id' => $id, 'related_product_id' => $product_id));
+        foreach ((array) $data['related'] as $related_product_id) {
+            $this->product_relation->add($related_product_id, $product_id);
         }
 
         return true;
@@ -454,11 +458,14 @@ class Product
             $this->db->delete('review', $conditions);
             $this->db->delete('rating', $conditions);
             $this->db->delete('wishlist', $conditions);
-            $this->db->delete('product_sku', $conditions);
             $this->db->delete('rating_user', $conditions);
+
+            $this->db->delete('product_sku', $conditions);
             $this->db->delete('product_field', $conditions);
             $this->db->delete('product_translation', $conditions);
             $this->db->delete('product_view', $conditions);
+            $this->db->delete('product_related', $conditions);
+            $this->db->delete('product_related', array('related_product_id' => $product_id));
 
             $this->db->delete('file', $conditions2);
             $this->db->delete('alias', $conditions2);
@@ -535,21 +542,9 @@ class Product
      */
     public function getRelated(array $options)
     {
-        $options += array('load' => false);
+        $list = $this->product_relation->getList($options);
 
-        if (empty($options['product_id'])) {
-            return array();
-        }
-
-        $sql = 'SELECT related_product_id FROM product_related WHERE product_id=?';
-
-        if (!empty($options['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
-        }
-
-        $list = $this->db->fetchColumnAll($sql, array($options['product_id']));
-
-        if (!empty($list) && $options['load']) {
+        if (!empty($list) && !empty($options['load'])) {
             $options['product_id'] = $list;
             $list = $this->getList($options);
         }
