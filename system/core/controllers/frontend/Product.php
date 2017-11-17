@@ -13,6 +13,7 @@ use gplcart\core\traits\Product as ProductTrait;
 use gplcart\core\models\Sku as SkuModel,
     gplcart\core\models\Review as ReviewModel,
     gplcart\core\models\Rating as RatingModel,
+    gplcart\core\models\ProductView as ProductViewModel,
     gplcart\core\models\ProductClass as ProductClassModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 
@@ -29,6 +30,12 @@ class Product extends FrontendController
      * @var \gplcart\core\models\ProductClass $product_class
      */
     protected $product_class;
+
+    /**
+     * Product view model instance
+     * @var \gplcart\core\models\ProductView $product_view
+     */
+    protected $product_view;
 
     /**
      * SKU model instance
@@ -56,18 +63,20 @@ class Product extends FrontendController
 
     /**
      * @param ProductClassModel $product_class
+     * @param ProductViewModel $product_view
      * @param SkuModel $sku
      * @param ReviewModel $review
      * @param RatingModel $rating
      */
-    public function __construct(ProductClassModel $product_class, SkuModel $sku,
-            ReviewModel $review, RatingModel $rating)
+    public function __construct(ProductClassModel $product_class, ProductViewModel $product_view,
+            SkuModel $sku, ReviewModel $review, RatingModel $rating)
     {
         parent::__construct();
 
         $this->sku = $sku;
         $this->review = $review;
         $this->rating = $rating;
+        $this->product_view = $product_view;
         $this->product_class = $product_class;
     }
 
@@ -203,13 +212,13 @@ class Product extends FrontendController
         if (!empty($products)) {
 
             $total = count($products);
-            $max = $this->config('recent_pager_limit', 4);
-            $pager = $this->getPager(array('total' => $total, 'limit' => $max, 'key' => 'rcp'));
+            $max = $this->config('product_view_pager_limit', 4);
+            $pager = $this->getPager(array('total' => $total, 'limit' => $max, 'key' => 'pwp'));
             $limit = $this->getPagerLimit();
 
             if (!empty($limit)) {
                 list($from, $to) = $limit;
-                $products = array_slice($products, $from, $to);
+                $products = array_slice($products, $from, $to, true);
             }
 
             $data = array('products' => $products, 'pager' => $pager);
@@ -340,8 +349,7 @@ class Product extends FrontendController
      * @param integer $category_id
      * @param array $breadcrumbs
      */
-    protected function buildCategoryBreadcrumbsProduct($category_id,
-            array &$breadcrumbs)
+    protected function buildCategoryBreadcrumbsProduct($category_id, array &$breadcrumbs)
     {
         if (!empty($this->data_categories[$category_id]['parents'])) {
 
@@ -456,12 +464,10 @@ class Product extends FrontendController
      */
     protected function setItemThumbProduct(array &$product)
     {
-        $options = array(
-            'imagestyle' => $this->configTheme('image_style_product', 6));
+        $options = array('imagestyle' => $this->configTheme('image_style_product', 6));
 
         if (empty($product['images'])) {
-            $product['images'][] = array(
-                'thumb' => $this->image->getPlaceholder($options['imagestyle']));
+            $product['images'][] = array('thumb' => $this->image->getPlaceholder($options['imagestyle']));
         } else {
             $this->setItemThumb($product, $options);
         }
@@ -513,26 +519,27 @@ class Product extends FrontendController
      */
     protected function getRecentProduct()
     {
-        $product_ids = $this->setViewedProduct();
-        $current = array_search($this->data_product['product_id'], $product_ids);
-        unset($product_ids[$current]); // Exclude the current product iD
+        $items = $this->product_view->set($this->data_product['product_id'], $this->cart_uid);
+
+        $product_ids = array();
+        foreach ($items as $id => $item) {
+            if ($item['product_id'] != $this->data_product['product_id']) {
+                $product_ids[$id] = $item['product_id'];
+            }
+        }
 
         if (empty($product_ids)) {
             return array();
         }
 
-        return $this->getProducts(array('product_id' => $product_ids));
-    }
+        $products = $this->getProducts(array('product_id' => $product_ids));
 
-    /**
-     * Sets the current product is viewed
-     * @return array
-     */
-    protected function setViewedProduct()
-    {
-        $limit = $this->config('recent_limit', 12);
-        $lifespan = $this->config('recent_cookie_lifespan', 365 * 24 * 60 * 60);
-        return $this->product->setViewed($this->data_product['product_id'], $limit, $lifespan);
+        // Retain original order
+        uksort($products, function($key1, $key2) use ($product_ids) {
+            return (array_search($key1, $product_ids) < array_search($key2, $product_ids));
+        });
+
+        return $products;
     }
 
 }

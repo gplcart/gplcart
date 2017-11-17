@@ -458,6 +458,8 @@ class Product
             $this->db->delete('rating_user', $conditions);
             $this->db->delete('product_field', $conditions);
             $this->db->delete('product_translation', $conditions);
+            $this->db->delete('product_view', $conditions);
+
             $this->db->delete('file', $conditions2);
             $this->db->delete('alias', $conditions2);
             $this->db->delete('search_index', $conditions2);
@@ -640,9 +642,8 @@ class Product
         }
 
         if (empty($data['count'])) {
-            $sql .= ' GROUP BY p.product_id,'
-                    // Additional group by to prevent errors wnen sql_mode=only_full_group_by
-                    . 'a.alias, pt.title, ps.sku, ps.price, ps.stock, ps.file_id';
+            // Additional group by to prevent errors wnen sql_mode=only_full_group_by
+            $sql .= ' GROUP BY p.product_id, a.alias, pt.title, ps.sku, ps.price, ps.stock, ps.file_id';
         }
 
         $allowed_order = array('asc', 'desc');
@@ -673,60 +674,6 @@ class Product
 
         $this->hook->attach('product.list', $list, $this);
         return $list;
-    }
-
-    /**
-     * Saves a product to cookie
-     * @param integer $product_id
-     * @param integer $limit
-     * @param integer $lifespan
-     * @return array
-     */
-    public function setViewed($product_id, $limit, $lifespan)
-    {
-        $existing = $this->getViewed($limit);
-
-        if (in_array($product_id, $existing)) {
-            return $existing;
-        }
-
-        array_unshift($existing, $product_id);
-        $saved = array_unique($existing);
-
-        $this->controlViewedLimit($saved, $limit);
-
-        $this->request->setCookie('viewed_products', implode('|', $saved), $lifespan);
-        return $saved;
-    }
-
-    /**
-     * Returns an array of recently viewed product IDs
-     * @param integer|null $limit
-     * @return array
-     */
-    public function getViewed($limit = null)
-    {
-        $cookie = $this->request->cookie('viewed_products', '', 'string');
-        $products = array_filter(explode('|', $cookie), 'is_numeric');
-        $this->controlViewedLimit($products, $limit);
-
-        return $products;
-    }
-
-    /**
-     * Reduces an array of recently viewed products
-     * If the limit is set to X and > 0 it removes all but first X items in the array
-     * @param array $items
-     * @param integer $limit
-     * @return array
-     */
-    protected function controlViewedLimit(array &$items, $limit)
-    {
-        if (empty($limit)) {
-            return $items;
-        }
-
-        return array_slice($items, 0, $limit + 1);
     }
 
     /**

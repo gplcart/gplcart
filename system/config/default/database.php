@@ -406,6 +406,14 @@ return array(
             'related_product_id' => array('type' => 'integer', 'length' => 10, 'not_null' => true),
         )
     ),
+    'product_view' => array(
+        'fields' => array(
+            'product_view_id' => array('type' => 'integer', 'length' => 10, 'auto_increment' => true, 'primary' => true),
+            'product_id' => array('type' => 'integer', 'length' => 10, 'not_null' => true),
+            'user_id' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+            'created' => array('type' => 'integer', 'length' => 10, 'not_null' => true)
+        )
+    ),
     'review' => array(
         'fields' => array(
             'review_id' => array('type' => 'integer', 'length' => 10, 'auto_increment' => true, 'primary' => true),
