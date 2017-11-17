@@ -223,7 +223,7 @@ return array(
             'user_id' => array('type' => 'integer', 'length' => 10, 'not_null' => true),
             'id_value' => array('type' => 'integer', 'length' => 10, 'not_null' => true),
             'id_key' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
-            'time' => array('type' => 'integer', 'length' => 10, 'not_null' => true)
+            'created' => array('type' => 'integer', 'length' => 10, 'not_null' => true)
         )
     ),
     'log' => array(
