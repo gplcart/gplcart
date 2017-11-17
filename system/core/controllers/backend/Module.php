@@ -160,8 +160,7 @@ class Module extends BackendController
     {
         $this->controlAccess("module_$action");
 
-        // Don't call methods like $this->module->{$action}
-        // to make them visible in IDE
+        // Don't call methods like $this->module->{$action} to make them visible in IDE
         switch ($action) {
             case 'enable':
                 return $this->module->enable($this->data_module['id']);
