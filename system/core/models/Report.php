@@ -141,11 +141,11 @@ class Report
     }
 
     /**
-     * Clears log records
+     * Delete log records
      * @param array $error_types
      * @return boolean
      */
-    public function clear(array $error_types = array())
+    public function delete(array $error_types = array())
     {
         if (empty($error_types)) {
             return (bool) $this->db->query('DELETE FROM log');
