@@ -130,7 +130,7 @@ class Trigger
     }
 
     /**
-     * Adds a trigger to the database
+     * Adds a trigger
      * @param array $data
      * @return integer
      */
@@ -149,7 +149,7 @@ class Trigger
     }
 
     /**
-     * Returns a single trigger
+     * Load a trigger
      * @param integer $trigger_id
      * @return array
      */
@@ -208,12 +208,12 @@ class Trigger
     }
 
     /**
-     * Returns an array of fired trigger IDs for the given context
+     * Returns an array of triggered trigger IDs for the given context
      * @param array $options
      * @param array $data
      * @return array
      */
-    public function getFired(array $options = array(), array $data = array())
+    public function getTriggered(array $options = array(), array $data = array())
     {
         $options += array('status' => 1);
         $triggers = (array) $this->getList($options);
@@ -222,15 +222,14 @@ class Trigger
             return array();
         }
 
-        $fired = array();
+        $triggered = array();
         foreach ($triggers as $trigger) {
-            $result = $this->condition->isMet($trigger, $data);
-            if ($result === true) {
-                $fired[] = $trigger['trigger_id'];
+            if ($this->condition->isMet($trigger, $data)) {
+                $triggered[] = $trigger['trigger_id'];
             }
         }
 
-        return $fired;
+        return $triggered;
     }
 
 }
