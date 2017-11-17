@@ -157,7 +157,7 @@ class Controller extends BaseController
     {
         if (!$this->isInstall()) {
             if (!$this->isInternalRoute()) {
-                $this->triggered = $this->getFiredTriggers();
+                $this->triggered = $this->getTriggered();
                 $this->data_categories = $this->getCategories();
             }
             $this->current_currency = $this->currency->getCode();
@@ -168,10 +168,14 @@ class Controller extends BaseController
      * Returns an array of fired triggers for the current context
      * @return array
      */
-    public function getFiredTriggers()
+    public function getTriggered()
     {
-        $conditions = array('status' => 1, 'store_id' => $this->store_id);
-        return $this->trigger->getFired($conditions);
+        $conditions = array(
+            'status' => 1,
+            'store_id' => $this->store_id
+        );
+
+        return $this->trigger->getTriggered($conditions);
     }
 
     /**
@@ -563,7 +567,6 @@ class Controller extends BaseController
         $item = reset($items);
 
         $options += array(
-            'no_item_url' => true,
             'entity' => $item['collection_item']['type'],
             'template_item' => $item['collection_handler']['template']['item']
         );
@@ -783,12 +786,10 @@ class Controller extends BaseController
      */
     protected function setItemUrl(array &$item, array $options = array())
     {
-        if (isset($options['id_key']) && empty($options['no_item_url'])) {
-
+        if (isset($options['id_key'])) {
             $id = $item[$options['id_key']];
             $entity = preg_replace('/_id$/', '', $options['id_key']);
             $item['url'] = empty($item['alias']) ? $this->url("$entity/$id") : $this->url($item['alias']);
-
             // URL with preserved query to retain view, sort etc
             $item['url_query'] = empty($item['alias']) ? $this->url("$entity/$id", $this->query) : $this->url($item['alias'], $this->query);
         }
