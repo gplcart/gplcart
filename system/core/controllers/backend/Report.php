@@ -278,7 +278,7 @@ class Report extends BackendController
         $this->controlToken($key);
 
         if ($this->isQuery($key)) {
-            $this->report->clear();
+            $this->report->delete();
             $this->redirect('admin/report/events');
         }
     }
