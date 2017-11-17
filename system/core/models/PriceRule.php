@@ -80,7 +80,7 @@ class PriceRule
 
         $sql .= ' FROM price_rule p';
 
-        $where = array();
+        $conditions = array();
 
         if (empty($data['price_rule_id'])) {
             $sql .= ' WHERE p.price_rule_id IS NOT NULL';
@@ -88,44 +88,44 @@ class PriceRule
             settype($data['price_rule_id'], 'array');
             $placeholders = rtrim(str_repeat('?,', count($data['price_rule_id'])), ',');
             $sql .= " WHERE p.price_rule_id IN($placeholders)";
-            $where = array_merge($where, $data['price_rule_id']);
+            $conditions = array_merge($conditions, $data['price_rule_id']);
         }
 
         if (!empty($data['trigger_id'])) {
             settype($data['trigger_id'], 'array');
             $placeholders = rtrim(str_repeat('?,', count($data['trigger_id'])), ',');
             $sql .= " AND p.trigger_id IN($placeholders)";
-            $where = array_merge($where, $data['trigger_id']);
+            $conditions = array_merge($conditions, $data['trigger_id']);
         }
 
         if (isset($data['name'])) {
             $sql .= ' AND p.name LIKE ?';
-            $where[] = "%{$data['name']}%";
+            $conditions[] = "%{$data['name']}%";
         }
 
         if (isset($data['code'])) {
             $sql .= ' AND p.code LIKE ?';
-            $where[] = "%{$data['code']}%";
+            $conditions[] = "%{$data['code']}%";
         }
 
         if (isset($data['value'])) {
             $sql .= ' AND p.value = ?';
-            $where[] = (int) $data['value'];
+            $conditions[] = (int) $data['value'];
         }
 
         if (isset($data['value_type'])) {
             $sql .= ' AND p.value_type = ?';
-            $where[] = $data['value_type'];
+            $conditions[] = $data['value_type'];
         }
 
         if (isset($data['status'])) {
             $sql .= ' AND p.status = ?';
-            $where[] = (int) $data['status'];
+            $conditions[] = (int) $data['status'];
         }
 
         if (isset($data['currency'])) {
             $sql .= ' AND p.currency = ?';
-            $where[] = $data['currency'];
+            $conditions[] = $data['currency'];
         }
 
         $orders = array('asc', 'desc');
@@ -156,10 +156,10 @@ class PriceRule
         }
 
         if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $where);
+            return (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $list = $this->db->fetchAll($sql, $where, array('index' => 'price_rule_id'));
+        $list = $this->db->fetchAll($sql, $conditions, array('index' => 'price_rule_id'));
 
         $this->hook->attach('price.rule.list', $data, $list, $this);
         return $list;
