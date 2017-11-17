@@ -143,10 +143,10 @@ class Controller extends BaseController
         $this->price = Container::get('gplcart\\core\\models\\Price');
         $this->trigger = Container::get('gplcart\\core\\models\\Trigger');
         $this->product = Container::get('gplcart\\core\\models\\Product');
-        $this->compare = Container::get('gplcart\\core\\models\\Compare');
         $this->wishlist = Container::get('gplcart\\core\\models\\Wishlist');
         $this->category = Container::get('gplcart\\core\\models\\Category');
         $this->currency = Container::get('gplcart\\core\\models\\Currency');
+        $this->compare = Container::get('gplcart\\core\\models\\ProductCompare');
         $this->collection_item = Container::get('gplcart\\core\\models\\CollectionItem');
     }
 

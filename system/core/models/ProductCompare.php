@@ -17,7 +17,7 @@ use gplcart\core\models\Language as LanguageModel;
 /**
  * Manages basic behaviors and data related to product comparison
  */
-class Compare
+class ProductCompare
 {
 
     /**
@@ -67,7 +67,7 @@ class Compare
     public function add($product_id)
     {
         $result = null;
-        $this->hook->attach('compare.add.before', $product_id, $result, $this);
+        $this->hook->attach('product.compare.add.before', $product_id, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -83,7 +83,7 @@ class Compare
         $this->controlLimit($product_ids);
 
         $result = $this->set($product_ids);
-        $this->hook->attach('compare.add.after', $product_id, $result, $this);
+        $this->hook->attach('product.compare.add.after', $product_id, $result, $this);
         return (bool) $result;
     }
 
@@ -96,7 +96,7 @@ class Compare
     public function addProduct(array $product, array $data)
     {
         $result = array();
-        $this->hook->attach('compare.add.product.before', $product, $data, $result, $this);
+        $this->hook->attach('product.compare.add.product.before', $product, $data, $result, $this);
 
         if (!empty($result)) {
             return (array) $result;
@@ -126,7 +126,7 @@ class Compare
             );
         }
 
-        $this->hook->attach('compare.add.product.after', $product, $data, $result, $this);
+        $this->hook->attach('product.compare.add.product.after', $product, $data, $result, $this);
         return (array) $result;
     }
 
@@ -138,7 +138,7 @@ class Compare
     public function deleteProduct($product_id)
     {
         $result = null;
-        $this->hook->attach('compare.delete.product.before', $product_id, $result, $this);
+        $this->hook->attach('product.compare.delete.product.before', $product_id, $result, $this);
 
         if (!empty($result)) {
             return (array) $result;
@@ -160,7 +160,7 @@ class Compare
             );
         }
 
-        $this->hook->attach('compare.delete.product.after', $product_id, $result, $this);
+        $this->hook->attach('product.compare.delete.product.after', $product_id, $result, $this);
         return (array) $result;
     }
 
@@ -183,7 +183,16 @@ class Compare
      */
     public function getLimit()
     {
-        return (int) $this->config->get('comparison_limit', 10);
+        return (int) $this->config->get('product_compare_limit', 10);
+    }
+
+    /**
+     * Returns cookie lifespan (in seconds)
+     * @return int
+     */
+    public function getCookieLifespan()
+    {
+        return (int) $this->config->get('product_compare_cookie_lifespan', 30 * 24 * 60 * 60);
     }
 
     /**
@@ -192,14 +201,14 @@ class Compare
      */
     public function getList()
     {
-        $items = &gplcart_static('compare.list');
+        $items = &gplcart_static('product.compare.list');
 
         if (isset($items)) {
             return (array) $items;
         }
 
         $items = array();
-        $cookie = $this->request->cookie('comparison', '', 'string');
+        $cookie = $this->request->cookie('product_compare', '', 'string');
 
         if (empty($cookie)) {
             return $items;
@@ -208,7 +217,7 @@ class Compare
         $array = explode('|', urldecode($cookie));
         $items = array_filter(array_map('trim', $array), 'ctype_digit');
 
-        $this->hook->attach('compare.list', $items, $this);
+        $this->hook->attach('product.compare.list', $items, $this);
         return $items;
     }
 
@@ -230,8 +239,8 @@ class Compare
      */
     public function set(array $product_ids)
     {
-        $lifespan = $this->config->get('comparison_cookie_lifespan', 30 * 24 * 60 * 60);
-        $result = $this->request->setCookie('comparison', implode('|', (array) $product_ids), $lifespan);
+        $lifespan = $this->getCookieLifespan();
+        $result = $this->request->setCookie('product_compare', implode('|', (array) $product_ids), $lifespan);
 
         gplcart_static_clear();
         return $result;
@@ -245,7 +254,7 @@ class Compare
     public function delete($product_id)
     {
         $result = null;
-        $this->hook->attach('compare.delete.before', $product_id, $result, $this);
+        $this->hook->attach('product.compare.delete.before', $product_id, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -262,7 +271,7 @@ class Compare
         unset($product_ids[$product_id]);
 
         $result = $this->set(array_keys($product_ids));
-        $this->hook->attach('compare.delete.after', $product_id, $result, $this);
+        $this->hook->attach('product.compare.delete.after', $product_id, $result, $this);
 
         return (bool) $result;
     }
