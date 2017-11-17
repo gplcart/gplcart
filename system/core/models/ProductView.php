@@ -107,7 +107,7 @@ class ProductView
      */
     public function set($product_id, $user_id)
     {
-        $list = $this->getList(array('user_id' => $user_id));
+        $list = (array) $this->getList(array('user_id' => $user_id));
 
         foreach ($list as $item) {
             if ($item['product_id'] == $product_id) {
