@@ -406,6 +406,7 @@ class Module
      */
     public function update($module_id, array $data)
     {
+        $data['modified'] = GC_TIME;
         $this->db->update('module', $data, array('module_id' => $module_id));
     }
 
@@ -416,6 +417,7 @@ class Module
     public function add(array $data)
     {
         $data += array('weight' => $this->getNextWeight());
+        $data['created'] = $data['modified'] = GC_TIME;
         $this->db->insert('module', $data);
     }
 
