@@ -62,17 +62,16 @@ $config = array();
 # $config['page_image_dirname']                   = 'page'; // Default folder for uploaded page images
 # $config['product_alias_pattern']                = '%t.html'; // Pattern to generate product alias
 # $config['product_alias_placeholder']            = array('%t' => 'title'); // Replacement rule to generate product alias
-# $config['comparison_cookie_lifespan']           = 30*24*60*60; // Max number of seconds to keeps products to compare in cookie
-# $config['comparison_limit']                     = 10; // Max number of products to compare
+# $config['product_compare_cookie_lifespan']      = 30*24*60*60; // Max number of seconds to keeps products to compare in cookie
+# $config['product_compare_limit']                = 10; // Max number of products to compare
 # $config['product_height']                       = 0; // Default product height (dimension)
 # $config['product_length']                       = 0; // Default product length (dimension)
 # $config['product_weight']                       = 0; // Default product weight (dimension)
 # $config['product_width']                        = 0; // Default product width (dimension)
 # $config['product_image_dirname']                = 'product'; // Default folder for uploaded product images
-# $config['recent_cookie_lifespan']               = 365*24*60*60; // Max number of seconds to keeps recently viewed products in cookie
-# $config['recent_limit']                         = 12; // Max number of recently viewed products
+# $config['product_view_limit']                   = 100; // Max number of viewed products
+# $config['product_view_pager_limit']             = 4; // Max number of viewed products for pager
 # $config['related_limit']                        = 12; // Max number of related products
-# $config['recent_pager_limit']                   = 4; // Max number of recently viewed products for pager
 # $config['related_pager_limit']                  = 4; // Max number of related products for pager
 # $config['product_sku_pattern']                  = 'PRODUCT-%i'; // Pattern to generate product SKU
 # $config['product_sku_placeholder']              = array('%i' => 'product_id'); // Replacement rule to generate product SKU
