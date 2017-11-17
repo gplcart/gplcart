@@ -342,7 +342,7 @@ class PriceRule
      */
     public function getTriggered(array $options, array $data)
     {
-        $options['trigger_id'] = $this->trigger->getFired($options, $data);
+        $options['trigger_id'] = $this->trigger->getTriggered($options, $data);
 
         if (empty($options['trigger_id'])) {
             return array();
