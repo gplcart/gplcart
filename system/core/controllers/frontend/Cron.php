@@ -10,7 +10,8 @@
 namespace gplcart\core\controllers\frontend;
 
 use gplcart\core\Logger;
-use gplcart\core\models\Report as ReportModel;
+use gplcart\core\models\Report as ReportModel,
+    gplcart\core\models\History as HistoryModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
@@ -20,27 +21,35 @@ class Cron extends FrontendController
 {
 
     /**
-     * Report model instance
-     * @var \gplcart\core\models\Report $report
-     */
-    protected $report;
-
-    /**
      * Logger class instance
      * @var \gplcart\core\Logger $logger
      */
     protected $logger;
 
     /**
-     * @param ReportModel $report
-     * @param Logger $logger
+     * Report model instance
+     * @var \gplcart\core\models\Report $report
      */
-    public function __construct(ReportModel $report, Logger $logger)
+    protected $report;
+
+    /**
+     * History model instance
+     * @var \gplcart\core\models\History $history
+     */
+    protected $history;
+
+    /**
+     * @param Logger $logger
+     * @param ReportModel $report
+     * @param HistoryModel $history
+     */
+    public function __construct(Logger $logger, ReportModel $report, HistoryModel $history)
     {
         parent::__construct();
 
         $this->logger = $logger;
         $this->report = $report;
+        $this->history = $history;
     }
 
     /**
@@ -66,8 +75,7 @@ class Cron extends FrontendController
      */
     protected function controlAccessExecuteCron()
     {
-        $key = $this->getQuery('key', '');
-        if (strcmp($key, $this->config('cron_key', '')) !== 0) {
+        if (strcmp($this->getQuery('key', ''), $this->config('cron_key', '')) !== 0) {
             $this->response->outputError403(false);
         }
     }
@@ -88,8 +96,15 @@ class Cron extends FrontendController
      */
     protected function deleteExpiredHistoryCron()
     {
-        $ago = GC_TIME - (int) $this->config('history_lifespan', 30 * 24 * 60 * 60);
-        $this->config->getDb()->run('DELETE FROM history WHERE time < ?', array($ago));
+        $this->history->deleteExpired();
+    }
+
+    /**
+     * Deletes expired log records
+     */
+    protected function deleteExpiredLogsCron()
+    {
+        $this->report->deleteExpired();
     }
 
     /**
@@ -105,14 +120,6 @@ class Cron extends FrontendController
     }
 
     /**
-     * Deletes expired log records
-     */
-    protected function deleteExpiredLogsCron()
-    {
-        $this->report->deleteExpired();
-    }
-
-    /**
      * Checks file system and logs errors
      * @return boolean
      */
@@ -125,8 +132,7 @@ class Cron extends FrontendController
         }
 
         foreach ((array) $result as $message) {
-            $log = array('message' => $message);
-            $this->logger->log('system_status', $log, 'warning');
+            $this->logger->log('system_status', array('message' => $message), 'warning');
         }
 
         return false;
