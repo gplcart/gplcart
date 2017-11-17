@@ -29,6 +29,8 @@
         <th><a href="<?php echo $sort_version; ?>"><?php echo $this->text('Version'); ?> <i class="fa fa-sort"></i></a></th>
         <th><a href="<?php echo $sort_type; ?>"><?php echo $this->text('Type'); ?> <i class="fa fa-sort"></i></a></th>
         <th><?php echo $this->text('Dependencies'); ?></th>
+        <th><?php echo $this->text('Installed'); ?></th>
+        <th><?php echo $this->text('Updated'); ?></th>
         <th></th>
       </tr>
     </thead>
@@ -58,6 +60,20 @@
           <a data-toggle="collapse" href="#module-details-<?php echo $module_id; ?>">
             <?php echo $this->text('Yes'); ?>
           </a>
+          <?php } ?>
+        </td>
+        <td class="middle">
+          <?php if(empty($info['created'])) { ?>
+          --
+          <?php } else { ?>
+          <?php echo $this->date($info['created']); ?>
+          <?php } ?>
+        </td>
+        <td class="middle">
+          <?php if(isset($info['modified']) && isset($info['created']) && $info['modified'] != $info['created']) { ?>
+          <?php echo $this->date($info['modified']); ?>
+          <?php } else { ?>
+          --
           <?php } ?>
         </td>
         <td class="middle">
@@ -109,7 +125,7 @@
         </td>
       </tr>
       <tr class="collapse active" id="module-details-<?php echo $module_id; ?>">
-        <td colspan="6">
+        <td colspan="8">
           <?php if (!empty($info['author'])) { ?>
           <div class="author">
             <b><?php echo $this->text('Author'); ?></b>: <?php echo $this->e($this->truncate($info['author'], 100)); ?>
