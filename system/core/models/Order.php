@@ -17,7 +17,8 @@ use gplcart\core\models\Mail as MailModel,
     gplcart\core\models\User as UserModel,
     gplcart\core\models\Price as PriceModel,
     gplcart\core\models\Language as LanguageModel,
-    gplcart\core\models\PriceRule as PriceRuleModel;
+    gplcart\core\models\PriceRule as PriceRuleModel,
+    gplcart\core\models\History as HistoryModel;
 use gplcart\core\helpers\Convertor as ConvertorHelper;
 
 /**
@@ -49,6 +50,12 @@ class Order
      * @var \gplcart\core\models\User $user
      */
     protected $user;
+
+    /**
+     * History model instance
+     * @var \gplcart\core\models\History $history
+     */
+    protected $history;
 
     /**
      * Price rule model instance
@@ -96,11 +103,12 @@ class Order
      * @param CartModel $cart
      * @param LanguageModel $language
      * @param MailModel $mail
+     * @param HistoryModel $history
      * @param ConvertorHelper $convertor
      */
     public function __construct(Hook $hook, Database $db, Config $config, UserModel $user,
             PriceModel $price, PriceRuleModel $pricerule, CartModel $cart, LanguageModel $language,
-            MailModel $mail, ConvertorHelper $convertor)
+            MailModel $mail, HistoryModel $history, ConvertorHelper $convertor)
     {
         $this->db = $db;
         $this->hook = $hook;
@@ -110,9 +118,10 @@ class Order
         $this->user = $user;
         $this->cart = $cart;
         $this->price = $price;
+        $this->history = $history;
         $this->language = $language;
-        $this->convertor = $convertor;
         $this->pricerule = $pricerule;
+        $this->convertor = $convertor;
     }
 
     /**
@@ -154,7 +163,7 @@ class Order
         $sql = 'SELECT o.*, u.email AS creator,'
                 . 'uc.name AS customer_name, uc.email AS customer_email,'
                 . 'CONCAT(uc.name, "", uc.email) AS customer,'
-                . 'h.time AS viewed, a.country, a.city_id, a.address_1,'
+                . 'h.created AS viewed, a.country, a.city_id, a.address_1,'
                 . 'a.address_2, a.phone, a.postcode, a.first_name,'
                 . 'a.middle_name, a.last_name';
 
@@ -368,42 +377,7 @@ class Order
      */
     public function setViewed(array $order)
     {
-        $user_id = $this->user->getId();
-
-        if ($this->isViewed($order, $user_id)) {
-            return true; // Record already exists
-        }
-
-        $lifespan = $this->config->get('history_lifespan', 30 * 24 * 60 * 60);
-
-        // Do not mark again old orders.
-        // Their history records probably have been removed by cron
-        if ((GC_TIME - $order['created']) >= $lifespan) {
-            return true;
-        }
-
-        $values = array(
-            'time' => GC_TIME,
-            'user_id' => $user_id,
-            'id_key' => 'order_id',
-            'id_value' => $order['order_id']
-        );
-
-        return (bool) $this->db->insert('history', $values);
-    }
-
-    /**
-     * Whether the order is already viewed by the user
-     * @param array $order
-     * @param integer $user_id
-     * @return boolean
-     */
-    public function isViewed(array $order, $user_id)
-    {
-        $sql = 'SELECT history_id FROM history WHERE id_key=? AND id_value=? AND user_id=?';
-        $conditions = array('order_id', $order['order_id'], $user_id);
-
-        return (bool) $this->db->fetchColumn($sql, $conditions);
+        return $this->history->set('order_id', $order['order_id'], $order['created']);
     }
 
     /**
@@ -413,13 +387,7 @@ class Order
      */
     public function isNew(array $order)
     {
-        $lifespan = $this->config->get('history_lifespan', 30 * 24 * 60 * 60);
-
-        if (empty($order['viewed'])) {
-            return !((GC_TIME - $order['created']) > $lifespan);
-        }
-
-        return (GC_TIME - $order['viewed']) > $lifespan;
+        return $this->history->isNew($order['created'], $order['viewed']);
     }
 
     /**
