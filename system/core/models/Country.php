@@ -86,8 +86,7 @@ class Country
         }
 
         $sql = 'SELECT * FROM country WHERE code=?';
-        $options = array('unserialize' => 'format');
-        $result = $this->db->fetch($sql, array($code), $options);
+        $result = $this->db->fetch($sql, array($code), array('unserialize' => 'format'));
 
         if (!empty($result)) {
             $default_format = $this->getDefaultFormat();
@@ -137,9 +136,7 @@ class Country
             return (bool) $result;
         }
 
-        // Country table has no auto-incremented fields so we cannot get the last inserted ID
         $result = true;
-
         $this->db->insert('country', $data);
         $this->hook->attach('country.add.after', $data, $result, $this);
 
