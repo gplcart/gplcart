@@ -13,7 +13,7 @@
      * @returns {String}
      */
     var htmlModal = function (content, id, header) {
-        
+
         var html = '', mod;
 
         html = '<div class="modal fade" id="' + id + '">';
@@ -28,7 +28,7 @@
         }
 
         html += '</div><div class="modal-body">' + content + '</div></div></div>';
-        
+
         mod = Gplcart.hook('html.modal', html);
         return mod === undefined ? html : mod;
     };
@@ -40,12 +40,16 @@
      * @returns {String}
      */
     var htmlModalGallery = function (src, id) {
-        
+
         var html = '', mod;
 
         html = '<div class="modal fade gallery" id="' + id + '">';
         html += '<div class="modal-dialog">';
         html += '<div class="modal-content">';
+        html += '<div class="modal-header clearfix">';
+        html += '<a href="#" class="pull-right" data-dismiss="modal">';
+        html += '<i class="fa fa-times"></i></a>';
+        html += '</div>';
         html += '<div class="modal-body text-center">';
         html += '<img class="img-responsive" src="' + src + '">';
         html += '</div>';
@@ -67,7 +71,7 @@
         html += '<a title="' + Gplcart.text('Already in comparison') + '" href="' + Gplcart.settings.base + 'compare" class="btn btn-default active">';
         html += '<i class="fa fa-balance-scale"></i>';
         html += '</a>';
-        
+
         mod = Gplcart.hook('html.btn.in.compare', html);
         return mod === undefined ? html : mod;
     };
@@ -85,7 +89,7 @@
 
         html += '<a title="' + title + '" href="' + url + '" class="btn btn-default active">';
         html += '<i class="fa fa-heart"></i></a>';
-        
+
         mod = Gplcart.hook('html.btn.in.wishlist', html);
         return mod === undefined ? html : mod;
     };
@@ -121,7 +125,7 @@
         var res = Gplcart.hook('modal.set.before', content, id, header);
 
         if (res === undefined) {
-            
+
             $('.modal').remove();
             $('.modal-backdrop').remove();
             $('body').removeClass('modal-open').removeAttr('style');
@@ -133,7 +137,7 @@
             }
         }
     };
-    
+
     /**
      * Set gallery image modal
      * @param {String} src
@@ -145,7 +149,7 @@
         var res = Gplcart.hook('modal.gallery.set.before', src, id);
 
         if (res === undefined) {
-            
+
             $('.modal').remove();
             $('.modal-backdrop').remove();
             $('body').removeClass('modal-open').removeAttr('style');
@@ -163,9 +167,9 @@
      * @returns {undefined}
      */
     var submitAddToCart = function (action, data) {
-        
+
         var res = Gplcart.hook('cart.add.before', action, data);
-        
+
         if (res === undefined && action === 'add_to_cart' && data.hasOwnProperty('quantity')) {
             updateCartQuantity(data.quantity);
             Gplcart.hook('cart.add.after', action, data);
@@ -179,9 +183,9 @@
      * @returns {undefined}
      */
     var submitDeleteFromCart = function (action, data) {
-        
+
         var res = Gplcart.hook('cart.delete.before', action, data);
-        
+
         if (res === undefined && action === 'remove_from_cart' && data.hasOwnProperty('quantity')) {
             updateCartQuantity(data.quantity);
             Gplcart.hook('cart.delete.after', action, data);
@@ -196,9 +200,9 @@
      * @returns {undefined}
      */
     var submitAddToCompare = function (action, data, button) {
-        
+
         var res = Gplcart.hook('compare.add.before', action, data, button);
-        
+
         if (res === undefined && action === 'add_to_compare' && data.hasOwnProperty('quantity')) {
             $('#compare-quantity').text(data.quantity).show();
             button.replaceWith(htmlBtnInCompare());
@@ -232,16 +236,16 @@
      * @returns {undefined}
      */
     var submitDeleteFromWishlist = function (action, data, button) {
-        
+
         var res = Gplcart.hook('wishlist.delete.before', action, data, button);
-        
+
         if (res === undefined && action === 'remove_from_wishlist' && data.hasOwnProperty('quantity')) {
             updateWishlistQuantity(data.quantity);
             button.closest('.product.item').remove();
             Gplcart.hook('wishlist.delete.after', action, data, button);
         }
     };
-    
+
     /**
      * Inserts a number of cart items into a HTML element
      * @param {Integer} quantity
@@ -294,12 +298,12 @@
      * @returns {undefined}
      */
     var setSelectedMessage = function (data) {
-        
+
         var text = '';
         if (!$.isEmptyObject(data.titles)) {
             text = Gplcart.text('Selected: !combination', {'!combination': data.titles.join(' ')});
         }
-        
+
         $('.selected-combination').html(text);
     };
 
@@ -355,7 +359,7 @@
         $(document).on('click', '#cart-link', function (e) {
 
             if (Gplcart.hook('cart.preview.on.click', e) === undefined) {
-                
+
                 $.ajax({
                     type: 'POST',
                     url: Gplcart.settings.base + 'ajax',
@@ -391,7 +395,7 @@
         $(document).on('click', ':button[name][data-ajax="true"]', function (e) {
 
             if (Gplcart.hook('submit.on.click', e) === undefined) {
-                
+
                 e.preventDefault();
 
                 button = $(this);
@@ -433,7 +437,7 @@
                             submitAddToWishlist(action, data, button);
                             submitDeleteFromWishlist(action, data, button);
                         }
-                        
+
                         Gplcart.hook('submit.ajax.success', e);
                     },
                     complete: function () {
@@ -445,7 +449,7 @@
             }
         });
     };
-    
+
     /**
      * Handles checkout form submits
      * @returns {undefined}
@@ -474,7 +478,7 @@
         $(document).off('submit').on('submit', 'form#checkout', function (e) {
 
             if (Gplcart.hook('checkout.on.submit', e) === undefined) {
-                
+
                 if (clicked && clicked.data('ajax') === false) {
                     return true;
                 }
@@ -518,7 +522,7 @@
         $(document).on('change', '[name^="product[options]"]', function (e) {
 
             if (Gplcart.hook('product.option.on.change', e, selected) === undefined) {
-                
+
                 setSingleCheckedCheckbox(this);
                 selected = getSelectedOptions();
                 setSelectedMessage(selected);
@@ -609,7 +613,7 @@
             }
         });
     };
-    
+
     /**
      * Reset selected field options
      * @returns {undefined}
@@ -624,7 +628,7 @@
             return false;
         });
     };
-    
+
     /**
      * Shows only rows with different values
      * @returns {undefined}
@@ -656,7 +660,7 @@
             }
         });
     };
-    
+
     /**
      * Blocks submit for empty imputs
      * @returns {undefined}
@@ -721,11 +725,11 @@
      * @returns {undefined}
      */
     Gplcart.onload.setGallery = function () {
-        
+
         var el, id, target, a;
 
         $('[data-gallery]').on('click', function () {
-            
+
             el = $(this);
             id = el.data('gallery');
             if (el.data('gallery-main-image')) {
@@ -750,7 +754,7 @@
             }
         });
     };
-    
+
     /**
      * Adds hash to pager links inside panels
      * @returns {undefined}
