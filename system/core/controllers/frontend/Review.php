@@ -100,10 +100,12 @@ class Review extends FrontendController
      */
     protected function setProductReview($product_id)
     {
-        $this->data_product = $this->product->get($product_id);
-        if (empty($this->data_product['status']) || $this->data_product['store_id'] != $this->store_id) {
+        $product = $this->product->get($product_id);
+        if (empty($product['status']) || $product['store_id'] != $this->store_id) {
             $this->outputHttpStatus(404);
         }
+
+        $this->data_product = $this->prepareProductReview($product);
     }
 
     /**
@@ -231,19 +233,16 @@ class Review extends FrontendController
     protected function updateReview()
     {
         $submitted = $this->getSubmitted();
-        $updated = $this->review->update($this->data_review['review_id'], $submitted);
 
-        if (!$updated) {
-            $this->redirect("product/{$this->data_product['product_id']}");
+        if ($this->review->update($this->data_review['review_id'], $submitted)) {
+            $message = $this->text('Review has been updated');
+            if (empty($submitted['status'])) {
+                $message = $this->text('Review has been updated and will be published after approval');
+            }
+            $this->redirect("product/{$this->data_product['product_id']}", $message, 'success');
         }
 
-        $message = $this->text('Review has been updated');
-
-        if (empty($submitted['status'])) {
-            $message = $this->text('Review has been updated and will be published after approval');
-        }
-
-        $this->redirect("product/{$this->data_product['product_id']}", $message, 'success');
+        $this->redirect("product/{$this->data_product['product_id']}");
     }
 
     /**
@@ -302,6 +301,7 @@ class Review extends FrontendController
     protected function setReview($review_id)
     {
         if (is_numeric($review_id)) {
+
             $review = $this->review->get($review_id);
 
             if (empty($review)) {
@@ -326,6 +326,20 @@ class Review extends FrontendController
         $rating = $this->rating->getByUser($this->data_product['product_id'], $this->uid);
         $review['rating'] = isset($rating['rating']) ? $rating['rating'] : 0;
         return $review;
+    }
+
+    /**
+     * Prepares an array of product data
+     * @param array $product
+     * @return array
+     */
+    protected function prepareProductReview(array $product)
+    {
+        $this->setItemThumbProduct($product);
+        $this->setItemPriceCalculated($product);
+        $this->setItemPriceFormatted($product);
+
+        return $product;
     }
 
 }
