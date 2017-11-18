@@ -12,7 +12,7 @@
 <div class="panel panel-borderless panel-default collection collection-product">
   <h4 class="panel-title"><?php echo $this->e($title); ?></h4>
   <div class="panel-body">
-    <div class="row">
+    <div class="row row-no-padding">
       <?php foreach ($items as $item) { ?>
       <?php echo $item['rendered']; ?>
       <?php } ?>

@@ -10,8 +10,13 @@
 ?>
 <?php if (!empty($reviews)) { ?>
 <div id="reviews" class="panel panel-default panel-borderless reviews">
-  <div class="panel-heading">
-    <h4 class="panel-title"><?php echo $this->text('Reviews'); ?></h4>
+  <div class="panel-heading clearfix">
+    <h4 class="panel-title pull-left"><?php echo $this->text('Reviews'); ?></h4>
+    <?php if(!empty($pager)) { ?>
+    <div class="pull-right">
+      <?php echo $pager; ?>
+    </div>
+    <?php } ?>
   </div>
   <div class="panel-body">
     <div class="row">
@@ -35,16 +40,13 @@
       </div>
       <?php } ?>
     </div>
-    <div class="row">
-      <div class="col-md-6"><?php echo $pager; ?></div>
-      <div class="col-md-6 text-right">
-        <?php if ($this->config('review_editable', 1) && $_is_logged_in) { ?>
-        <a class="pull-right" rel="nofollow" href="<?php echo $this->url('review/add/' . $product['product_id']); ?>">
-          <?php echo $this->text('Add review'); ?>
-        </a>
-        <?php } ?>
-      </div>
+    <?php if ($this->config('review_editable', 1) && $_is_logged_in) { ?>
+    <div>
+      <a rel="nofollow" href="<?php echo $this->url("review/add/{$product['product_id']}"); ?>">
+        <?php echo $this->text('Add review'); ?>
+      </a>
     </div>
+    <?php } ?>
   </div>
 </div>
 <?php } ?>

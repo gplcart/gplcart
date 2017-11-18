@@ -39,12 +39,14 @@
     </div>
     <h1 class="h4"><?php echo $this->e($product['title']); ?></h1>
     <?php echo $this->text('SKU'); ?>: <span id="sku" class="small"><?php echo $this->e($product['selected_combination']['sku']); ?></span>
-    <s id="original-price">
+    <div class="price-wrapper h3">
       <?php if (isset($product['selected_combination']['original_price']) && $product['selected_combination']['original_price'] > $product['selected_combination']['price']) { ?>
-      <?php echo $this->e($product['selected_combination']['original_price_formatted']); ?>
+      <s id="original-price" class="small">
+        <?php echo $this->e($product['selected_combination']['original_price_formatted']); ?>
+      </s>
       <?php } ?>
-    </s>
-    <div id="price" class="h3"><?php echo $this->e($product['selected_combination']['price_formatted']); ?></div>
+      <div id="price"><?php echo $this->e($product['selected_combination']['price_formatted']); ?></div>
+    </div>
     <?php echo $cart_form; ?>
     <?php if (!empty($summary)) { ?>
     <div class="summary">

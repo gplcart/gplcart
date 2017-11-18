@@ -11,13 +11,27 @@
 <?php if (!empty($items)) { ?>
 <ul class="nav navbar-nav menu-top">
   <?php foreach ($items as $item) { ?>
-  <?php if ($item['depth'] <= $depth) { ?>
-  <li class="depth-<?php echo $this->e($item['depth']); ?><?php echo empty($item['active']) ? '' : ' active'; ?>">
-    <?php echo $item['indentation']; ?>
-    <?php if (empty($item['active'])) { ?>
-    <a title="<?php echo $this->e($item['title']); ?>" href="<?php echo $this->e($item['url']); ?>"><?php echo $this->e($this->truncate($item['title'], 30)); ?></a>
-    <?php } else { ?>
-    <a class="disabled"><?php echo $this->e($this->truncate($item['title'], 30)); ?></a>
+  <?php if ($item['depth'] == $depth) { ?>
+  <li>
+    <?php $children = array(); ?>
+    <?php foreach ($items as $child) { ?>
+    <?php if ($child['depth'] == ($depth + 1) && in_array($item['category_id'], $child['parents'])) { ?>
+    <?php $children[] = $child; ?>
+    <?php } ?>
+    <?php } ?>
+    <a href="<?php echo $this->e($item['url']); ?>"<?php echo empty($children) ? '' : ' data-toggle="dropdown"'; ?>>
+      <?php echo $this->e($item['title']); ?>
+    </a>
+    <?php if (!empty($children)) { ?>
+    <ul class="dropdown-menu">
+      <?php foreach ($children as $child) { ?>
+      <li>
+        <a href="<?php echo $this->e($child['url']); ?>">
+          <?php echo $this->e($child['title']); ?>
+        </a>
+      </li>
+      <?php } ?>
+    </ul>
     <?php } ?>
   </li>
   <?php } ?>

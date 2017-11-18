@@ -26,11 +26,6 @@
       </a>
       <?php } ?>
     </div>
-    <?php if ($_uid == $user['user_id']) { ?>
-    <a class="btn btn-default" href="<?php echo $this->url('logout'); ?>">
-      <span class="fa fa-sign-out"></span> <?php echo $this->text('Log out'); ?>
-    </a>
-    <?php } ?>
   </div>
   <div class="col-md-9">
     <?php if (!empty($addresses)) { ?>

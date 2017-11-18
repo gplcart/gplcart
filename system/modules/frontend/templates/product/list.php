@@ -9,7 +9,7 @@
  */
 ?>
 <?php if (!empty($products)) { ?>
-<div class="products row section">
+<div class="products row section display-flex">
   <?php foreach ($products as $product) { ?>
   <?php echo $product['rendered']; ?>
   <?php } ?>

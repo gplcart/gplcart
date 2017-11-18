@@ -25,10 +25,8 @@
 <?php } ?>
 <?php if (empty($products)) { ?>
 <?php if (empty($children)) { ?>
-<div class="row section empty">
-  <div class="col-md-12">
-    <?php echo $this->text('This category has no content'); ?>
-  </div>
+<div class="section empty">
+  <?php echo $this->text('This category has no content'); ?>
 </div>
 <?php } ?>
 <?php } else { ?>
@@ -37,11 +35,7 @@
 <?php } ?>
 <?php echo $products; ?>
 <?php if (!empty($_pager)) { ?>
-<div class="row">
-  <div class="col-md-12 text-right">
-    <?php echo $_pager; ?>
-  </div>
-</div>
+<?php echo $_pager; ?>
 <?php } ?>
 <?php } ?>
 <?php if (!empty($category['description_2'])) { ?>

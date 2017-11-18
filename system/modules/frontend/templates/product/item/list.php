@@ -9,13 +9,13 @@
  */
 ?>
 <div class="col-md-12 list product item">
-  <div class="panel panel-default product">
+  <div class="panel">
     <div class="panel-body">
       <div class="row">
         <div class="col-md-2">
           <?php if (!empty($item['thumb'])) { ?>
           <a href="<?php echo empty($item['url']) ? $this->url("product/{$item['product_id']}") : $this->e($item['url']); ?>">
-            <img class="img-responsive thumbnail" title="<?php echo $this->e($item['title']); ?>" alt="<?php echo $this->e($item['title']); ?>" src="<?php echo $this->e($item['thumb']); ?>">
+            <img class="img-responsive" title="<?php echo $this->e($item['title']); ?>" alt="<?php echo $this->e($item['title']); ?>" src="<?php echo $this->e($item['thumb']); ?>">
           </a>
           <?php } ?>
         </div>
@@ -24,7 +24,7 @@
             <?php echo $this->e($item['title']); ?>
           </a>
           <?php if(!empty($item['description'])) { ?>
-          <p><?php echo $this->truncate($this->teaser(strip_tags($item['description']))); ?></p>
+          <p><?php echo $this->truncate($this->teaser(strip_tags($item['description'])), 500); ?></p>
           <?php } ?>
         </div>
         <div class="col-md-3">
@@ -39,8 +39,7 @@
             </div>
           </div>
           <?php if(!empty($buttons)) { ?>
-          <div class="row">
-            <div class="col-md-12 text-right">
+            <div class="text-right">
               <form method="post" class="form-horizontal product-action">
                 <input type="hidden" name="token" value="<?php echo $_token; ?>">
                 <input type="hidden" name="product[product_id]" value="<?php echo $this->e($item['product_id']); ?>">
@@ -83,7 +82,6 @@
                 <?php } ?>
               </form>
             </div>
-          </div>
           <?php } ?>
         </div>
       </div>
