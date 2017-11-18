@@ -118,10 +118,8 @@ class Product extends FrontendController
     {
         $summary = '';
         if (!empty($this->data_product['description'])) {
-            list($summary, $body) = $this->explodeText($this->data_product['description']);
-            if ($body !== '') {
-                $summary = strip_tags($summary);
-            }
+            $exploded = $this->explodeText($this->data_product['description']);
+            $summary = strip_tags($exploded[0]);
         }
 
         $this->setData('summary', $summary);
@@ -173,13 +171,13 @@ class Product extends FrontendController
 
         if (!empty($description)) {
             $exploded = $this->explodeText($description);
-            $body = end($exploded);
-            if ($body !== '') {
-                $description = $body;
+            if (!empty($exploded[1])) {
+                $description = $exploded[1];
             }
         }
 
-        $this->setData('description', $this->render('product/description', array('description' => $description)));
+        $rendered = $this->render('product/description', array('description' => $description));
+        $this->setData('description', $rendered);
     }
 
     /**
@@ -189,12 +187,15 @@ class Product extends FrontendController
     {
         if ($this->config('review_enabled', 1) && !empty($this->data_product['total_reviews'])) {
 
-            $limit = (int) $this->config('review_limit', 5);
-            $pager = $this->getPager(array('total' => $this->data_product['total_reviews'], 'limit' => $limit));
+            $pager = array(
+                'key' => 'rep',
+                'total' => $this->data_product['total_reviews'],
+                'limit' => (int) $this->config('review_limit', 5)
+            );
 
             $data = array(
-                'pager' => $pager,
                 'product' => $this->data_product,
+                'pager' => $this->getPager($pager),
                 'reviews' => $this->getReviewsProduct($this->getPagerLimit())
             );
 
@@ -211,9 +212,13 @@ class Product extends FrontendController
 
         if (!empty($products)) {
 
-            $total = count($products);
-            $max = $this->config('product_view_pager_limit', 4);
-            $pager = $this->getPager(array('total' => $total, 'limit' => $max, 'key' => 'pwp'));
+            $options = array(
+                'key' => 'pwp',
+                'total' => count($products),
+                'limit' => $this->config('product_view_pager_limit', 4)
+            );
+
+            $pager = $this->getPager($options);
             $limit = $this->getPagerLimit();
 
             if (!empty($limit)) {
@@ -221,7 +226,11 @@ class Product extends FrontendController
                 $products = array_slice($products, $from, $to, true);
             }
 
-            $data = array('products' => $products, 'pager' => $pager);
+            $data = array(
+                'pager' => $pager,
+                'products' => $products
+            );
+
             $this->setData('recent', $this->render('product/recent', $data));
         }
     }
@@ -235,9 +244,13 @@ class Product extends FrontendController
 
         if (!empty($products)) {
 
-            $total = count($products);
-            $max = $this->config('related_pager_limit', 4);
-            $pager = $this->getPager(array('total' => $total, 'limit' => $max, 'key' => 'rlp'));
+            $options = array(
+                'key' => 'rlp',
+                'total' => count($products),
+                'limit' => $this->config('related_pager_limit', 4)
+            );
+
+            $pager = $this->getPager($options);
             $limit = $this->getPagerLimit();
 
             if (!empty($limit)) {
@@ -245,7 +258,11 @@ class Product extends FrontendController
                 $products = array_slice($products, $from, $to);
             }
 
-            $data = array('products' => $products, 'pager' => $pager);
+            $data = array(
+                'pager' => $pager,
+                'products' => $products
+            );
+
             $this->setData('related', $this->render('product/related', $data));
         }
     }
@@ -290,7 +307,6 @@ class Product extends FrontendController
         foreach ($reviews as &$review) {
 
             $rating = array('rating' => 0);
-
             if (isset($ratings[$review['user_id']]['rating'])) {
                 $rating['rating'] = $ratings[$review['user_id']]['rating'];
             }
@@ -353,9 +369,8 @@ class Product extends FrontendController
     {
         if (!empty($this->data_categories[$category_id]['parents'])) {
 
-            $parent = reset($this->data_categories[$category_id]['parents']);
             $category = $this->data_categories[$category_id];
-
+            $parent = reset($category['parents']);
             $url = empty($category['alias']) ? "category/$category_id" : $category['alias'];
 
             $breadcrumb = array(
@@ -456,21 +471,6 @@ class Product extends FrontendController
 
         $this->setProductFieldsTrait($product, $this->product_class, $this);
         return $product;
-    }
-
-    /**
-     * Sets product thumbs
-     * @param array $product
-     */
-    protected function setItemThumbProduct(array &$product)
-    {
-        $options = array('imagestyle' => $this->configTheme('image_style_product', 6));
-
-        if (empty($product['images'])) {
-            $product['images'][] = array('thumb' => $this->image->getPlaceholder($options['imagestyle']));
-        } else {
-            $this->setItemThumb($product, $options);
-        }
     }
 
     /**

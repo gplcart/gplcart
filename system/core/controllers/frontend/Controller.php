@@ -735,6 +735,20 @@ class Controller extends BaseController
     }
 
     /**
+     * Sets product thumbs
+     * @param array $product
+     */
+    protected function setItemThumbProduct(array &$product)
+    {
+        $options = array('imagestyle' => $this->configTheme('image_style_product', 6));
+        if (empty($product['images'])) {
+            $product['images'][] = array('thumb' => $this->image->getPlaceholder($options['imagestyle']));
+        } else {
+            $this->setItemThumb($product, $options);
+        }
+    }
+
+    /**
      * Sets a boolean flag indicating that the thumb is an image placeholder
      * @param array $item
      * @return array
