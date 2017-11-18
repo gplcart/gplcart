@@ -89,7 +89,7 @@
 <?php if ($this->access('file_upload')) { ?>
 <hr>
 <div class="form-group<?php echo $this->error('images', ' has-error'); ?>">
-  <div class="col-md-4 col-md-offset-2">
+  <div class="col-md-4">
     <input type="file" class="form-control" name="files[]" multiple accept="image/*">
     <div class="help-block">
        <?php echo $this->error('images'); ?>

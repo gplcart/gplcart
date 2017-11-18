@@ -254,7 +254,7 @@
         </div>
       </div>
     </div>
-    <div class="row">
+    <div class="form-group">
       <div class="col-md-12">
         <div id="related-products">
           <?php if (!empty($related)) { ?>
@@ -263,7 +263,7 @@
             <input type="hidden" name="product[related][]" value="<?php echo $related_product_id; ?>">
             <span class="btn btn-default">
               <a target="_blank" href="<?php echo $related_product['url']; ?>">
-                <?php echo $this->e($related_product['title']); ?> (<?php echo $this->e($related_product_id); ?>)
+                <?php echo $this->e($this->truncate($related_product['title'], 30)); ?> (<?php echo $this->e($related_product_id); ?>)
               </a>
               <span class="badge"><i class="fa fa-times remove"></i></span>
             </span>

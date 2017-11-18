@@ -36,20 +36,6 @@
               <i class="fa fa-info-circle"></i>
             </a>
           </li>
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle " data-toggle="dropdown" title="<?php echo $this->text('Stores'); ?>">
-              <i class="fa fa-globe"></i>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-right">
-              <?php foreach ($_stores as $store) { ?>
-              <li>
-                <a target="_blank" href="<?php echo $this->e("http://{$store['domain']}/{$store['basepath']}"); ?>">
-                  <?php echo $this->e("www.{$store['domain']}/{$store['basepath']}"); ?>
-                </a>
-              </li>
-              <?php } ?>
-            </ul>
-          </li>
           <?php if($this->access('bookmark')) { ?>
           <li class="dropdown">
             <a href="#" class="dropdown-toggle " data-toggle="dropdown" title="<?php echo $this->text('Bookmarks'); ?>">

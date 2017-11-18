@@ -78,7 +78,7 @@
           </td>
           <?php if ($this->access('field_value_edit')) { ?>
           <td class="middle">
-            <a href="<?php echo $this->url->get("admin/content/field/value/{$value['field_id']}/{$value['field_value_id']}/edit"); ?>" class="edit">
+            <a href="<?php echo $this->url("admin/content/field/value/{$value['field_id']}/{$value['field_value_id']}/edit"); ?>" class="edit">
               <?php echo $this->lower($this->text('Edit')); ?>
             </a>
           </td>

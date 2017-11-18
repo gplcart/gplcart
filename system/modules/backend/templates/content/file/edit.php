@@ -15,7 +15,7 @@
     <div class="col-md-4">
       <input maxlength="255" name="file[title]" class="form-control" value="<?php echo isset($file['title']) ? $this->e($file['title']) : ''; ?>" autofocus>
       <div class="help-block">
-        <?php echo $this->error('title', ''); ?>
+        <?php echo $this->error('title'); ?>
         <div class="text-muted"><?php echo $this->text('Short description of the file'); ?></div>
       </div>
     </div>
