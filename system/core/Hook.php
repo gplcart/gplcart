@@ -42,12 +42,17 @@ class Hook
     }
 
     /**
-     * Registers all hooks from all modules
+     * Registers module hooks
+     * @param array|null $modules
      * @return array
      */
-    public function init()
+    public function init($modules = null)
     {
-        foreach ($this->config->getEnabledModules() as $module) {
+        if (!isset($modules)) {
+            $modules = $this->config->getEnabledModules();
+        }
+
+        foreach ((array) $modules as $module) {
 
             if (empty($module['hooks'])) {
                 continue;
