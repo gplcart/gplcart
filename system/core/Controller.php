@@ -368,25 +368,31 @@ abstract class Controller
      */
     protected function setInstanceProperties()
     {
-        $this->cart = Container::get('gplcart\\core\\models\\Cart');
-        $this->user = Container::get('gplcart\\core\\models\\User');
-        $this->store = Container::get('gplcart\\core\\models\\Store');
-        $this->image = Container::get('gplcart\\core\\models\\Image');
-        $this->filter = Container::get('gplcart\\core\\models\\Filter');
-        $this->language = Container::get('gplcart\\core\\models\\Language');
-        $this->validator = Container::get('gplcart\\core\\models\\Validator');
+        $classes = array(
+            'gplcart\\core\\models' => array('cart', 'user', 'store', 'image', 'filter', 'language', 'validator'),
+            'gplcart\\core\\helpers' => array('url', 'asset', 'pager', 'session', 'request', 'response'),
+            'gplcart\\core' => array('hook', 'route', 'config', 'library')
+        );
 
-        $this->url = Container::get('gplcart\\core\\helpers\\Url');
-        $this->asset = Container::get('gplcart\\core\\helpers\\Asset');
-        $this->pager = Container::get('gplcart\\core\\helpers\\Pager');
-        $this->session = Container::get('gplcart\\core\\helpers\\Session');
-        $this->request = Container::get('gplcart\\core\\helpers\\Request');
-        $this->response = Container::get('gplcart\\core\\helpers\\Response');
+        foreach ($classes as $base_namespace => $class_names) {
+            foreach ($class_names as $class_name) {
+                $this->{$class_name} = Container::get("$base_namespace\\$class_name");
+            }
+        }
+    }
 
-        $this->hook = Container::get('gplcart\\core\\Hook');
-        $this->route = Container::get('gplcart\\core\\Route');
-        $this->config = Container::get('gplcart\\core\\Config');
-        $this->library = Container::get('gplcart\\core\\Library');
+    /**
+     * Set a class instance
+     * @param object $instance
+     * @param null|string $property
+     */
+    public function setInstance($instance, $property = null)
+    {
+        if (!isset($property)) {
+            $property = substr(strrchr(strtolower(get_class($instance)), '\\'), 1);
+        }
+
+        $this->{$property} = $instance;
     }
 
     /**
@@ -2197,11 +2203,7 @@ abstract class Controller
      */
     public function renderMenu(array $options)
     {
-        $options += array(
-            'depth' => 0,
-            'template' => 'common/menu'
-        );
-
+        $options += array('depth' => 0, 'template' => 'common/menu');
         return empty($options['items']) ? '' : $this->render($options['template'], $options);
     }
 
