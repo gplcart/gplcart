@@ -3,56 +3,24 @@ html {
     min-height: 100%;
 }
 
-body {
-    margin-bottom: 50px;
-}
-
-.navbar-logo {
-    float: left;
-    height: 50px;
-    padding: 0 15px 0 0;
-    margin-left: -15px;
-}
-
 .navbar-logo > img {
     height: 100%;
     padding: 0;
     width: auto;
 }
 
-.navbar-brand {
-    padding-left: 0;
+.navbar-unstyled {
+    background: transparent;
+    box-shadow: none;
 }
 
-.navbar-header .navbar-hidden-label {
-    padding-left: 15px;
+.content-wrapper {
+    min-height: calc(100vh - 70px);
 }
 
-.footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: 50px;
-    line-height: 50px;
-}
-
-.footer .container {
-    height: 100%;
-    padding-top: 20px;
-    background-color: #eee;
-}
-
-.row.main {
-    padding-top: 20px;
-}
-
-.row.main h1:first-child {
-    margin-top: 0;
-}
-
-.container-fluid.wrapper {
-    background-color: #fff;
-    min-height: calc(100vh - 50px);
+.panel {
+    box-shadow: none;
+    border-radius: 0 !important;
 }
 
 .panel.panel-borderless {
@@ -63,42 +31,28 @@ body {
     border: none;
 }
 
-.panel {
-    box-shadow: none;
-    border-radius: 0 !important;
-}
-
-.panel-default > .panel-heading {
-    background-color: #fff;
-}
-
-.panel-body .pagination {
-    margin: 0;
-}
-
-.panel-footer .pagination {
-    margin: 0;
-}
-
-.list.product.item .panel .thumbnail {
-    margin-bottom: 0;
-    border: none;
+.section {
+    margin-bottom: 15px;
 }
 
 .breadcrumb {
-    background-color: #fff;
-    margin: 0;
-    padding-left: 0;
-    padding-right: 0;
-    padding-bottom: 0;
+    background: none;
 }
 
 .breadcrumb h1 {
-    margin:0;
+    margin: 0;
     padding: 0;
     font-size: 100%;
-    line-height: 1;
-    display: inline;
+    display: inline-block;
+    font-weight: bolder;
+}
+
+.panel-heading .pagination {
+    margin: 0;
+}
+
+.panel-heading .pagination-unstyled {
+    margin: 0;
 }
 
 .badge:empty + .fa {
@@ -106,45 +60,39 @@ body {
 }
 
 .navbar {
-    margin-bottom: 0;
     border: none !important;
     position: static; /* Fix overlapping dropdowns */
 }
 
-.navbar.first {
-    padding-top: 5px;
-    padding-bottom: 5px;
-    min-height: 20px;
+@media (min-width: 768px) {
+    .navbar-center {
+        position: absolute;
+        left: 50%;
+        transform: translatex(-50%);
+    }
 }
 
-.navbar.first .navbar-text,
-.navbar.first .list-inline {
-    margin-top: 0;
-    margin-bottom: 0;
+.row.display-flex {
+    display: flex;
+    display: -webkit-flex;
+    flex-wrap: wrap;
 }
 
-.navbar.second {
-    background-color: transparent;
-    min-height: 80px;
-    padding-top: 15px;
+.product.item .thumbnail {
+    height: 100%;
 }
 
-.navbar.second .navbar-nav > .open > a,
-.navbar.second .navbar-nav > .open > a:focus,
-.navbar.second .navbar-nav > .open > a:hover {
-    background-color: transparent !important;
+.product.item .thumbnail, .product.item > .panel {
+    border-color: transparent;
 }
 
-.navbar.category {
-    margin-bottom: 20px;
+.product.item .thumbnail:hover, .product.item > .panel:hover {
+    border-color: #ddd;
 }
 
-.section {
-    margin-bottom: 20px;
-}
-
-.section.collection {
-    background: #fff;
+.row-no-padding > [class*="col-"] {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
 }
 
 .form-group.required .control-label:before, span.required:before {
@@ -190,6 +138,8 @@ table.compare-products .thumbnail {
 td.middle {
     vertical-align: middle !important;
 }
+
+/**  Rating widget **/
 
 .product-rating .star-rating {
     float: left;
@@ -240,6 +190,8 @@ td.middle {
 {
     content: "\f005";
 }
+
+/** Options **/
 
 .option-combination:not(.field-widget-radio) input {
     display: none;
@@ -302,16 +254,6 @@ a.disabled {
     text-align: left;
 }
 
-.fill {
-    width: 100%;
-    height: 100%;
-    background-position: center;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    background-size: cover;
-    -o-background-size: cover;
-}
-
 #cart-preview .items {
     max-height: 300px;
     overflow-y: auto;
@@ -320,42 +262,6 @@ a.disabled {
 .product-thumbs {
     overflow-y: auto;
     max-height: 400px;
-}
-
-code,
-kbd,
-pre,
-.img-rounded,
-.img-thumbnail,
-.img-circle,
-.form-control,
-.btn,
-.btn-link,
-.dropdown-menu,
-.list-group-item,
-.input-group-addon,
-.input-group-btn,
-.nav-tabs a,
-.nav-pills a,
-.navbar,
-.navbar-toggle,
-.icon-bar,
-.breadcrumb,
-.pagination *,
-.pager *,
-.label,
-.jumbotron,
-.thumbnail,
-.alert,
-.progress,
-.panel,
-.well,
-.modal-content,
-.tooltip-inner,
-.popover,
-.popover-title,
-.carousel-indicators li {
-    border-radius:0 !important;
 }
 
 .order-component-title {
