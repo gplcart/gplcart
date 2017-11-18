@@ -65,14 +65,10 @@ var Gplcart = typeof Gplcart !== 'undefined' ? Gplcart : {
         options = typeof options === 'undefined' ? {} : options;
 
         if (Gplcart.translations[text]) {
-            text = Gplcart.translations[text];
+            text = Gplcart.translations[text][0];
         }
 
-        if (options) {
-            text = Gplcart.formatString(text, options);
-        }
-
-        return text;
+        return Gplcart.formatString(text, options);
     };
 
     /**
@@ -109,8 +105,7 @@ var Gplcart = typeof Gplcart !== 'undefined' ? Gplcart : {
      */
     Gplcart.escape = function (str) {
 
-        var character, regex,
-                replace = {'&': '&amp;', '"': '&quot;', '<': '&lt;', '>': '&gt;'};
+        var character, regex, replace = {'&': '&amp;', '"': '&quot;', '<': '&lt;', '>': '&gt;'};
 
         str = String(str);
 
@@ -132,7 +127,8 @@ var Gplcart = typeof Gplcart !== 'undefined' ? Gplcart : {
     Gplcart.job = function (settings) {
 
         var job = typeof settings === 'undefined' ? Gplcart.settings.job : settings;
-        var selector = typeof Gplcart.settings.job.selector === 'undefined' ? '#job-widget-' + Gplcart.settings.job.id : Gplcart.settings.job.selector;
+        var selector = typeof Gplcart.settings.job.selector === 'undefined' ?
+                '#job-widget-' + Gplcart.settings.job.id : Gplcart.settings.job.selector;
         var widget = $(selector);
 
         $.ajax({
