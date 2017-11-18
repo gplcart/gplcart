@@ -44,17 +44,6 @@ class Frontend extends Module
     }
 
     /**
-     * Implements hook "construct.controller.frontend"
-     * @param \gplcart\core\controllers\frontend\Controller $controller
-     */
-    public function hookConstructControllerFrontend($controller)
-    {
-        if ($controller->isCurrentTheme('frontend') && !$controller->isInternalRoute()) {
-            $this->setThemeRegions($controller);
-        }
-    }
-
-    /**
      * Sets theme specific assets
      * @param \gplcart\core\Controller $controller
      */
@@ -82,23 +71,6 @@ class Frontend extends Module
         $controller->setMeta(array('charset' => 'utf-8'));
         $controller->setMeta(array('http-equiv' => 'X-UA-Compatible', 'content' => 'IE=edge'));
         $controller->setMeta(array('name' => 'viewport', 'content' => 'width=device-width, initial-scale=1'));
-    }
-
-    /**
-     * Set theme regions
-     * @param \gplcart\core\Controller $controller
-     */
-    protected function setThemeRegions($controller)
-    {
-        $pattern = $controller->getRoute('simple_pattern');
-
-        if (in_array($pattern, array('wishlist', 'compare', 'category/*'))) {
-            $categories = $controller->getCategories();
-            if (!empty($categories)) {
-                $options = array('template' => 'category/menu', 'items' => $categories);
-                $controller->setRegion('left', $controller->renderMenu($options));
-            }
-        }
     }
 
 }
