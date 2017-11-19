@@ -253,18 +253,18 @@ class Currency
     /**
      * Converts currencies
      * @param integer $amount
-     * @param string $code
-     * @param string $target_code
+     * @param string $from_currency
+     * @param string $to_currency
      * @return integer
      */
-    public function convert($amount, $code, $target_code)
+    public function convert($amount, $from_currency, $to_currency)
     {
-        if ($code === $target_code) {
+        if ($from_currency === $to_currency) {
             return $amount; // Nothing to convert
         }
 
-        $currency = $this->get($code);
-        $target_currency = $this->get($target_code);
+        $currency = $this->get($from_currency);
+        $target_currency = $this->get($to_currency);
 
         $exponent = $target_currency['decimals'] - $currency['decimals'];
         $amount *= pow(10, $exponent);
