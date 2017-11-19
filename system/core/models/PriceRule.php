@@ -10,6 +10,7 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Hook,
+    gplcart\core\Handler,
     gplcart\core\Database;
 use gplcart\core\models\Trigger as TriggerModel,
     gplcart\core\models\Currency as CurrencyModel;
@@ -60,7 +61,7 @@ class PriceRule
     }
 
     /**
-     * Returns an array of rules or total number of rules
+     * Returns an array of price rules or total number of rules
      * @param array $data
      * @return array|integer
      */
@@ -284,10 +285,7 @@ class PriceRule
      */
     public function calculate(&$total, $data, &$components = array())
     {
-        $options = array(
-            'status' => 1,
-            'store_id' => $data['store_id']
-        );
+        $options = array('status' => 1, 'store_id' => $data['store_id']);
 
         foreach ($this->getTriggered($options, $data) as $rule) {
             $this->calculateComponent($total, $data, $components, $rule);
@@ -301,41 +299,50 @@ class PriceRule
      * @param integer $amount
      * @param array $data
      * @param array $components
-     * @param array $rule
+     * @param array $price_rule
      * @return integer
      */
-    protected function calculateComponent(&$amount, $data, &$components, $rule)
+    protected function calculateComponent(&$amount, $data, &$components, $price_rule)
     {
-        $rule_id = $rule['price_rule_id'];
-
-        if ($rule['code'] !== '') {
-            if (!isset($data['order']['data']['pricerule_code']) || !$this->codeMatches($rule_id, $data['order']['data']['pricerule_code'])) {
-                $components[$rule_id] = array('rule' => $rule, 'price' => 0);
+        if ($price_rule['code'] !== '') {
+            if (!isset($data['order']['data']['pricerule_code'])//
+                    || !$this->codeMatches($price_rule['price_rule_id'], $data['order']['data']['pricerule_code'])) {
+                $components[$price_rule['price_rule_id']] = array('rule' => $price_rule, 'price' => 0);
                 return $amount;
             }
         }
 
-        if ($rule['value_type'] === 'percent') {
-            $value = $amount * ((float) $rule['value'] / 100);
-            $components[$rule_id] = array('rule' => $rule, 'price' => $value);
-            $amount += $value;
+        try {
+            $callback = Handler::get($this->getTypes(), $price_rule['value_type'], 'calculate');
+            call_user_func_array($callback, array(&$amount, &$components, $price_rule, $data['currency']));
+        } catch (\Exception $ex) {
+            trigger_error($ex->getMessage());
             return $amount;
         }
 
-        if ($data['currency'] != $rule['currency']) {
-            $converted = $this->currency->convert(abs($rule['value']), $rule['currency'], $data['currency']);
-            $rule['value'] = ($rule['value'] < 0) ? -$converted : $converted;
-        }
-
-        $components[$rule_id] = array('rule' => $rule, 'price' => $rule['value']);
-        $amount += $rule['value'];
-
-        $this->hook->attach('price.rule.calculate.component', $amount, $data, $components, $rule, $this);
+        $this->hook->attach('price.rule.calculate.component', $amount, $data, $components, $price_rule, $this);
         return $amount;
     }
 
     /**
-     * Returns an array of suitable rules for a given context
+     * Returns an array of price rule types
+     * @return array
+     */
+    public function getTypes()
+    {
+        $handlers = &gplcart_static('price.rule.types');
+
+        if (isset($handlers)) {
+            return $handlers;
+        }
+
+        $handlers = gplcart_config_get(GC_FILE_CONFIG_PRICE_RULE_TYPE);
+        $this->hook->attach('price.rule.types', $handlers, $this);
+        return $handlers;
+    }
+
+    /**
+     * Returns an array of suitable price rules for a given context
      * @param array $options
      * @param array $data
      * @return array

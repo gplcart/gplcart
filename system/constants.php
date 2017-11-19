@@ -211,6 +211,12 @@ define('GC_FILE_CONFIG_ROUTE_CLI', GC_DIR_CONFIG . '/cli_route.php');
 define('GC_FILE_CONFIG_PERMISSION', GC_DIR_CONFIG . '/permission.php');
 
 /**
+ * Configuration file containing price rule type handlers
+ * @var string
+ */
+define('GC_FILE_CONFIG_PRICE_RULE_TYPE', GC_DIR_CONFIG . '/price_rule_type.php');
+
+/**
  * Configuration file containing validators
  * @var string
  */

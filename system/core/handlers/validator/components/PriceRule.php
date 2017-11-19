@@ -34,7 +34,7 @@ class PriceRule extends ComponentValidator
      * Price rule model instance
      * @var \gplcart\core\models\PriceRule $rule
      */
-    protected $rule;
+    protected $price_rule;
 
     /**
      * Trigger model instance
@@ -73,8 +73,8 @@ class PriceRule extends ComponentValidator
     {
         parent::__construct($config, $language, $file, $user, $store, $alias, $request);
 
-        $this->rule = $rule;
         $this->price = $price;
+        $this->price_rule = $rule;
         $this->trigger = $trigger;
         $this->currency = $currency;
     }
@@ -115,7 +115,7 @@ class PriceRule extends ComponentValidator
             return null;
         }
 
-        $data = $this->rule->get($id);
+        $data = $this->price_rule->get($id);
 
         if (empty($data)) {
             $this->setErrorUnavailable('update', $this->language->text('Price rule'));
@@ -156,6 +156,7 @@ class PriceRule extends ComponentValidator
             $this->setErrorUnavailable($field, $label);
             return false;
         }
+
         return true;
     }
 
@@ -182,6 +183,7 @@ class PriceRule extends ComponentValidator
             $this->setErrorLengthRange($field, $label, 0, 10);
             return false;
         }
+
         return true;
     }
 
@@ -210,6 +212,7 @@ class PriceRule extends ComponentValidator
             $this->setErrorUnavailable($field, $label);
             return false;
         }
+
         return true;
     }
 
@@ -226,10 +229,13 @@ class PriceRule extends ComponentValidator
             return null;
         }
 
-        if (empty($type) || !in_array($type, array('percent', 'fixed'))) {
+        $types = $this->price_rule->getTypes();
+
+        if (empty($types[$type])) {
             $this->setErrorInvalid($field, $this->language->text('Value type'));
             return false;
         }
+
         return true;
     }
 
@@ -258,14 +264,12 @@ class PriceRule extends ComponentValidator
             return false;
         }
 
-        $rules = $this->rule->getList(array('code' => $code));
+        $rules = $this->price_rule->getList(array('code' => $code));
 
         if (empty($rules)) {
             return true;
         }
 
-        // Search for exact match
-        // because $this->rule->getList() uses LIKE for "code" field
         foreach ((array) $rules as $rule) {
             if ($rule['code'] === $code) {
                 $this->setErrorExists($field, $label);
@@ -281,48 +285,108 @@ class PriceRule extends ComponentValidator
      */
     protected function validateValuePriceRule()
     {
+        if ($this->isError()) {
+            return null;
+        }
+
         $field = 'value';
-        $label = $this->language->text('Value');
         $value = $this->getSubmitted($field);
+        $label = $this->language->text('Value');
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
         }
 
-        if (!isset($value) || strlen($value) > 10) {
-            $this->setErrorLengthRange($field, $label, 1, 10);
+        if (!isset($value)) {
+            $this->setErrorRequired($field, $label);
             return false;
         }
+
+        $updating = $this->getUpdating();
+        $submitted_value_type = $this->getSubmitted('value_type');
+
+        if (isset($submitted_value_type)) {
+            $value_type = $submitted_value_type;
+        } else if (isset($updating['value_type'])) {
+            $value_type = $updating['value_type'];
+        } else {
+            $this->setErrorUnavailable('value_type', $this->language->text('Value type'));
+            return false;
+        }
+
+        try {
+            $handlers = $this->price_rule->getTypes();
+            return static::call($handlers, $value_type, 'validate', array($value, $this));
+        } catch (\Exception $ex) {
+            $this->setError($field, $ex->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Validates the value of percent type
+     * @param string $value
+     * @return boolean
+     */
+    public function validateValuePercentPriceRule($value)
+    {
+        $field = 'value';
+        $label = $this->language->text('Value');
 
         if (!is_numeric($value)) {
             $this->setErrorNumeric($field, $label);
             return false;
         }
 
-        if ($this->isError()) {
-            return true;
+        if ($value == 0 || abs($value) > 100) {
+            $this->setErrorInvalid($field, $label);
+            return false;
         }
 
-        $updating = $this->getUpdating();
-        $submitted_currency = $this->getSubmitted('currency');
-        $submitted_value_type = $this->getSubmitted('value_type');
+        return true;
+    }
 
-        // Prepare value
-        if (isset($submitted_value_type)) {
-            $value_type = $submitted_value_type;
-        } else if (isset($updating['value_type'])) {
-            $value_type = $updating['value_type'];
+    /**
+     * Validates the value of fixed type
+     * @param string $value
+     * @return boolean
+     */
+    public function validateValueFixedPriceRule($value)
+    {
+        $field = 'value';
+        $label = $this->language->text('Value');
+
+        if (!is_numeric($value)) {
+            $this->setErrorNumeric($field, $label);
+            return false;
         }
 
-        if (isset($submitted_currency)) {
-            $currency = $submitted_currency;
-        } else if (isset($updating['currency'])) {
-            $currency = $updating['currency'];
+        if (strlen($value) > 8) {
+            $this->setErrorInvalid($field, $label);
+            return false;
         }
 
-        if (isset($value_type) && isset($currency) && $value_type === 'fixed') {
-            $value = $this->price->amount((float) $value, $currency, false);
-            $this->setSubmitted('value', $value);
+        return true;
+    }
+
+    /**
+     * Validates the value of final type
+     * @param string $value
+     * @return boolean
+     */
+    public function validateValueFinalPriceRule($value)
+    {
+        $field = 'value';
+        $label = $this->language->text('Value');
+
+        if (!is_numeric($value)) {
+            $this->setErrorNumeric($field, $label);
+            return false;
+        }
+
+        if ($value < 0 || strlen($value) > 8) {
+            $this->setErrorInvalid($field, $label);
+            return false;
         }
 
         return true;

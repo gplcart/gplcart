@@ -9,7 +9,7 @@
 return array(
     array(
         'log_id' => 'log1',
-        'time' => 1234567890,
+        'created' => 1234567890,
         'text' => 'Text 1',
         'type' => 'php',
         'severity' => 'warning',
@@ -18,7 +18,7 @@ return array(
     ),
     array(
         'log_id' => 'log2',
-        'time' => 1234567890,
+        'created' => 1234567890,
         'text' => 'Text 2',
         'type' => 'php',
         'severity' => 'danger',

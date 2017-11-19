@@ -83,15 +83,23 @@
       </div>
     </div>
   </div>
-  <div class="form-group">
+  <div class="form-group required<?php echo $this->error('value_type', ' has-error'); ?>">
     <label class="col-md-2 control-label"><?php echo $this->text('Value type'); ?></label>
     <div class="col-md-4">
       <select name="price_rule[value_type]" class="form-control">
-        <option value="percent"<?php echo isset($price_rule['value_type']) && $price_rule['value_type'] == 'percent' ? ' selected' : ''; ?>><?php echo $this->text('Percent'); ?></option>
-        <option value="fixed"<?php echo isset($price_rule['value_type']) && $price_rule['value_type'] == 'fixed' ? ' selected' : ''; ?>><?php echo $this->text('Fixed'); ?></option>
+        <?php foreach($types as $id => $type) { ?>
+        <option value="<?php echo $this->e($id); ?>"<?php echo isset($price_rule['value_type']) && $price_rule['value_type'] == $id ? ' selected' : ''; ?>><?php echo $this->text($type['title']); ?></option>
+        <?php } ?>
       </select>
       <div class="help-block">
-        <?php echo $this->text('Select how to apply the price rule value, e.g for discount 10% use "Percent"'); ?>
+        <?php echo $this->error('value_type'); ?>
+        <ul class="list-unstyled text-muted">
+          <?php foreach($types as $id => $type) { ?>
+          <?php if(!empty($type['description'])) { ?>
+          <li><i><?php echo $this->e($type['title']); ?></i> - <?php echo $this->e($type['description']); ?></li>
+          <?php } ?>
+          <?php } ?>
+        </ul>
       </div>
     </div>
   </div>

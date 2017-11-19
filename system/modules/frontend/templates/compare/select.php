@@ -21,7 +21,7 @@
 </a>
 <?php } else { ?>
 <a class="btn btn-default disabled">
-  <?php echo $this->text('Add more to compare'); ?>
+  <?php echo $this->text('Compare'); ?>
 </a>
 <?php } ?>
 <hr>

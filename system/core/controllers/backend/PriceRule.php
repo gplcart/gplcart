@@ -31,7 +31,7 @@ class PriceRule extends BackendController
      * Price rule model instance
      * @var \gplcart\core\models\PriceRule $rule
      */
-    protected $rule;
+    protected $price_rule;
 
     /**
      * Currency model instance
@@ -68,8 +68,8 @@ class PriceRule extends BackendController
     {
         parent::__construct();
 
-        $this->rule = $rule;
         $this->price = $price;
+        $this->price_rule = $rule;
         $this->trigger = $trigger;
         $this->currency = $currency;
     }
@@ -104,7 +104,7 @@ class PriceRule extends BackendController
 
         $pager = array(
             'query' => $this->query_filter,
-            'total' => (int) $this->rule->getList($options)
+            'total' => (int) $this->price_rule->getList($options)
         );
 
         return $this->data_limit = $this->setPager($pager);
@@ -132,11 +132,11 @@ class PriceRule extends BackendController
         foreach ($selected as $rule_id) {
 
             if ($action === 'status' && $this->access('price_rule_edit')) {
-                $updated += (int) $this->rule->update($rule_id, array('status' => $value));
+                $updated += (int) $this->price_rule->update($rule_id, array('status' => $value));
             }
 
             if ($action === 'delete' && $this->access('price_rule_delete')) {
-                $deleted += (int) $this->rule->delete($rule_id);
+                $deleted += (int) $this->price_rule->delete($rule_id);
             }
         }
 
@@ -159,25 +159,7 @@ class PriceRule extends BackendController
     {
         $options = $this->query_filter;
         $options['limit'] = $this->data_limit;
-        $rules = (array) $this->rule->getList($options);
-
-        return $this->prepareListPriceRule($rules);
-    }
-
-    /**
-     * Prepare an array of price rules
-     * @param array $rules
-     * @return array
-     */
-    protected function prepareListPriceRule($rules)
-    {
-        foreach ($rules as &$rule) {
-            if ($rule['value_type'] === 'fixed') {
-                $rule['value'] = $this->price->decimal($rule['value'], $rule['currency']);
-            }
-        }
-
-        return $rules;
+        return (array) $this->price_rule->getList($options);
     }
 
     /**
@@ -216,6 +198,7 @@ class PriceRule extends BackendController
         $this->setBreadcrumbEditPriceRule();
 
         $this->setData('price_rule', $this->data_rule);
+        $this->setData('types', $this->price_rule->getTypes());
         $this->setData('triggers', $this->getTriggersPriceRule());
         $this->setData('currencies', $this->getCurrenciesPriceRule());
 
@@ -248,26 +231,11 @@ class PriceRule extends BackendController
     protected function setPriceRule($rule_id)
     {
         if (is_numeric($rule_id)) {
-            $this->data_rule = $this->rule->get($rule_id);
+            $this->data_rule = $this->price_rule->get($rule_id);
             if (empty($this->data_rule)) {
                 $this->outputHttpStatus(404);
             }
-            $this->data_rule = $this->preparePriceRule($this->data_rule);
         }
-    }
-
-    /**
-     * Prepares an array of price rule data
-     * @param array $rule
-     * @return array
-     */
-    protected function preparePriceRule(array $rule)
-    {
-        if ($rule['value_type'] === 'fixed') {
-            $rule['value'] = $this->price->decimal($rule['value'], $rule['currency']);
-        }
-
-        return $rule;
     }
 
     /**
@@ -307,7 +275,7 @@ class PriceRule extends BackendController
     protected function deletePriceRule()
     {
         $this->controlAccess('price_rule_delete');
-        $this->rule->delete($this->data_rule['price_rule_id']);
+        $this->price_rule->delete($this->data_rule['price_rule_id']);
         $this->redirect('admin/sale/price', $this->text('Price rule has been deleted'), 'success');
     }
 
@@ -317,7 +285,7 @@ class PriceRule extends BackendController
     protected function updatePriceRule()
     {
         $this->controlAccess('price_rule_edit');
-        $this->rule->update($this->data_rule['price_rule_id'], $this->getSubmitted());
+        $this->price_rule->update($this->data_rule['price_rule_id'], $this->getSubmitted());
         $this->redirect('admin/sale/price', $this->text('Price rule has been updated'), 'success');
     }
 
@@ -327,7 +295,7 @@ class PriceRule extends BackendController
     protected function addPriceRule()
     {
         $this->controlAccess('price_rule_add');
-        $this->rule->add($this->getSubmitted());
+        $this->price_rule->add($this->getSubmitted());
         $this->redirect('admin/sale/price', $this->text('Price rule has been added'), 'success');
     }
 
