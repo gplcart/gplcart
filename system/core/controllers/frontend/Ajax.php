@@ -106,7 +106,7 @@ class Ajax extends FrontendController
         }
 
         $options = array(
-            'title' => $this->getPosted('term'),
+            'title_sku' => $this->getPosted('term'),
             'status' => $this->getPosted('status'),
             'store_id' => $this->getPosted('store_id'),
             'limit' => array(0, $this->config('autocomplete_limit', 10))

@@ -250,7 +250,7 @@
       <div class="col-md-6">
         <input class="form-control related-product" value="">
         <div class="help-block">
-          <?php echo $this->text('Autocomplete field. Select some products to be related to this product'); ?>
+          <?php echo $this->text('Autocomplete field. Start to type product title or SKU'); ?>
         </div>
       </div>
     </div>

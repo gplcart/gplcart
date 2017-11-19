@@ -573,67 +573,75 @@ class Product
                 . ' LEFT JOIN product_sku ps ON(p.product_id = ps.product_id AND LENGTH(ps.combination_id) = 0)';
 
         $language = $this->language->getLangcode();
-        $where = array($language, 'product_id');
+        $conditions = array($language, 'product_id');
 
         if (!empty($data['product_id'])) {
             settype($data['product_id'], 'array');
             $placeholders = rtrim(str_repeat('?,', count($data['product_id'])), ',');
             $sql .= " WHERE p.product_id IN($placeholders)";
-            $where = array_merge($where, $data['product_id']);
+            $conditions = array_merge($conditions, $data['product_id']);
         } else {
-            $sql .= ' WHERE p.product_id > 0';
+            $sql .= ' WHERE p.product_id IS NOT NULL';
         }
 
         if (isset($data['title'])) {
             $sql .= ' AND (p.title LIKE ? OR (pt.title LIKE ? AND pt.language=?))';
-            $where[] = "%{$data['title']}%";
-            $where[] = "%{$data['title']}%";
-            $where[] = $language;
+            $conditions[] = "%{$data['title']}%";
+            $conditions[] = "%{$data['title']}%";
+            $conditions[] = $language;
+        }
+        
+        if (isset($data['title_sku'])) {
+            $sql .= ' AND (p.title LIKE ? OR (pt.title LIKE ? AND pt.language=?) OR ps.sku LIKE ?)';
+            $conditions[] = "%{$data['title_sku']}%";
+            $conditions[] = "%{$data['title_sku']}%";
+            $conditions[] = $language;
+            $conditions[] = "%{$data['title_sku']}%";
         }
 
         if (isset($data['language'])) {
             $sql .= ' AND pt.language = ?';
-            $where[] = $data['language'];
+            $conditions[] = $data['language'];
         }
 
         if (isset($data['sku'])) {
             $sql .= ' AND ps.sku=?';
-            $where[] = $data['sku'];
+            $conditions[] = $data['sku'];
         }
 
         if (isset($data['sku_like'])) {
             $sql .= ' AND ps.sku LIKE ?';
-            $where[] = "%{$data['sku_like']}%";
+            $conditions[] = "%{$data['sku_like']}%";
         }
 
         if (isset($data['price']) && isset($data['currency'])) {
             $sql .= ' AND ps.price = ?';
-            $where[] = $this->price->amount((int) $data['price'], $data['currency']);
+            $conditions[] = $this->price->amount((int) $data['price'], $data['currency']);
         }
 
         if (isset($data['currency'])) {
             $sql .= ' AND p.currency = ?';
-            $where[] = $data['currency'];
+            $conditions[] = $data['currency'];
         }
 
         if (isset($data['stock'])) {
             $sql .= ' AND ps.stock = ?';
-            $where[] = (int) $data['stock'];
+            $conditions[] = (int) $data['stock'];
         }
 
         if (isset($data['category_id'])) {
             $sql .= ' AND p.category_id = ?';
-            $where[] = (int) $data['category_id'];
+            $conditions[] = (int) $data['category_id'];
         }
 
         if (isset($data['status'])) {
             $sql .= ' AND p.status = ?';
-            $where[] = (int) $data['status'];
+            $conditions[] = (int) $data['status'];
         }
 
         if (isset($data['store_id'])) {
             $sql .= ' AND p.store_id = ?';
-            $where[] = (int) $data['store_id'];
+            $conditions[] = (int) $data['store_id'];
         }
 
         if (empty($data['count'])) {
@@ -662,11 +670,10 @@ class Product
         }
 
         if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $where);
+            return (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $list = $this->db->fetchAll($sql, $where, array('index' => 'product_id'));
-
+        $list = $this->db->fetchAll($sql, $conditions, array('index' => 'product_id'));
         $this->hook->attach('product.list', $list, $this);
         return $list;
     }
