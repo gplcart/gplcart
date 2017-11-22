@@ -34,30 +34,41 @@ class Price
     /**
      * Format a price
      * @param integer $amount
-     * @param string $currency
+     * @param string $currency_code
      * @param bool $decimal
      * @param bool $full
      * @return string
      */
-    public function format($amount, $currency, $decimal = true, $full = true)
+    public function format($amount, $currency_code, $decimal = true, $full = true)
     {
-        $data = $this->currency->get($currency);
+        $currency = $this->currency->get($currency_code);
 
-        if (empty($data)) {
-            return '';
+        if (empty($currency)) {
+            return 'n/a';
         }
 
         if ($decimal) {
-            $amount = $this->decimal($amount, $currency);
+            $amount = $this->decimal($amount, $currency_code);
         }
 
-        $rounded = $this->round(abs($amount), $data);
-        $data['price'] = number_format($rounded, $data['decimals'], $data['decimal_separator'], $data['thousands_separator']);
+        // Pass the amount to the currency template as %price variable
+        $currency['price'] = $this->formatNumber($amount, $currency);
 
-        if (!$full) {
-            return $amount < 0 ? "-{$data['price']}" : $data['price'];
+        if ($full) {
+            return $this->formatTemplate($amount, $currency);
         }
 
+        return $amount < 0 ? '-' . $currency['price'] : $currency['price'];
+    }
+
+    /**
+     * Format an amount using the currency template
+     * @param int|float $amount
+     * @param array $data
+     * @return string
+     */
+    public function formatTemplate($amount, array $data)
+    {
         $placeholders = array();
         foreach (array_keys($data) as $key) {
             $placeholders["%$key"] = $key;
@@ -68,7 +79,19 @@ class Price
     }
 
     /**
-     * Converts a price from minor to major units
+     * Format an amount with grouped thousands
+     * @param int|float $amount
+     * @param array $currency
+     * @return string
+     */
+    public function formatNumber($amount, array $currency)
+    {
+        $rounded = $this->round(abs($amount), $currency);
+        return number_format($rounded, $currency['decimals'], $currency['decimal_separator'], $currency['thousands_separator']);
+    }
+
+    /**
+     * Converts an amount from minor to major units
      * @param integer $amount
      * @param string $currency_code
      * @return float
@@ -86,7 +109,7 @@ class Price
     }
 
     /**
-     * Rounds a price value
+     * Rounds an amount
      * @param integer $amount
      * @param array $currency
      * @return integer
@@ -128,6 +151,18 @@ class Price
         }
 
         return $decimal * $factors[$currency_code];
+    }
+
+    /**
+     * Converts currencies
+     * @param int $amount
+     * @param string $from_currency
+     * @param string $to_currency
+     * @return int
+     */
+    public function convert($amount, $from_currency, $to_currency)
+    {
+        return $this->currency->convert($amount, $from_currency, $to_currency);
     }
 
 }
