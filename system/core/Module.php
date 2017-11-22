@@ -157,17 +157,4 @@ abstract class Module
         return "$directory/templates/$template";
     }
 
-    /**
-     * Delete all module settings
-     * @param string $module_id
-     */
-    protected function deleteModuleSettings($module_id)
-    {
-        foreach (array_keys($this->config->select()) as $key) {
-            if (strpos($key, "module_{$module_id}_") === 0) {
-                $this->config->reset($key);
-            }
-        }
-    }
-
 }
