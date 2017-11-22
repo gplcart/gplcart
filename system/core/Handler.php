@@ -22,23 +22,18 @@ class Handler
      * @param array $handlers
      * @param string|null $handler_id
      * @param string $method
-     * @param array $args
+     * @param array $arguments
      * @return mixed
      * @throws \InvalidArgumentException
      */
-    public static function call($handlers, $handler_id, $method, $args = array())
+    public static function call($handlers, $handler_id, $method, $arguments = array())
     {
         try {
-            $handler = static::get($handlers, $handler_id, $method);
+            $callback = static::get($handlers, $handler_id, $method);
+            return call_user_func_array($callback, $arguments);
         } catch (\Exception $ex) {
             throw new InvalidArgumentException($ex->getMessage());
         }
-
-        if (empty($handler)) {
-            throw new InvalidArgumentException('Invalid handler instance');
-        }
-
-        return call_user_func_array($handler, $args);
     }
 
     /**
@@ -46,32 +41,34 @@ class Handler
      * @param array $handlers
      * @param string $handler_id
      * @param string $name
-     * @return mixed
+     * @return object|array
+     * @throws InvalidArgumentException
      */
     public static function get($handlers, $handler_id, $name)
     {
         if (isset($handler_id)) {
             if (empty($handlers[$handler_id]['handlers'][$name])) {
-                return false;
+                throw new InvalidArgumentException("No such handler name '$name'");
             }
             $handler = $handlers[$handler_id]['handlers'][$name];
         } else {
             if (empty($handlers['handlers'][$name])) {
-                return false;
+                throw new InvalidArgumentException("No such handler name '$name'");
             }
             $handler = $handlers['handlers'][$name];
         }
 
-        if (!is_callable($handler)) {
+        if (is_array($handler)) {
+            if (is_callable($handler)) {
+                $handler[0] = Container::get($handler[0]);
+                return $handler;
+            }
             throw new InvalidArgumentException(implode('::', $handler) . ' is not callable');
-        }
-
-        if ($handler instanceof \Closure) {
+        } else if ($handler instanceof \Closure) {
             return $handler;
         }
 
-        $handler[0] = Container::get($handler[0]);
-        return $handler;
+        throw new InvalidArgumentException('Unexpected handler format');
     }
 
 }
