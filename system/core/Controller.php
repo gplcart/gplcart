@@ -356,7 +356,7 @@ abstract class Controller
     public function __get($name)
     {
         if (property_exists($this, $name)) {
-            return $this->$name;
+            return $this->{$name};
         }
 
         user_error("Property $name does not exist");
@@ -383,15 +383,11 @@ abstract class Controller
 
     /**
      * Set a class instance
+     * @param string $property
      * @param object $instance
-     * @param null|string $property
      */
-    public function setInstance($instance, $property = null)
+    public function setInstance($property, $instance)
     {
-        if (!isset($property)) {
-            $property = substr(strrchr(strtolower(get_class($instance)), '\\'), 1);
-        }
-
         $this->{$property} = $instance;
     }
 
@@ -686,6 +682,22 @@ abstract class Controller
         }
 
         return date($dateformat, $timestamp);
+    }
+
+    /**
+     * Return a formatted string
+     * @param string|array $format
+     * @param array $arguments
+     * @param string $glue
+     * @return string
+     */
+    public function format($format, array $arguments = array(), $glue = '<br>')
+    {
+        if (is_array($format)) {
+            $format = implode($glue, gplcart_array_flatten($format));
+        }
+
+        return vsprintf($format, $arguments);
     }
 
     /**
