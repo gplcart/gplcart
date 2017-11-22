@@ -257,7 +257,7 @@ class PriceRule
     }
 
     /**
-     * Deletes a price value
+     * Deletes a price rule
      * @param integer $price_rule_id
      * @return boolean
      */
@@ -277,7 +277,7 @@ class PriceRule
     }
 
     /**
-     * Applies all suited rules and calculates totals
+     * Applies all suited price rules and calculates totals
      * @param integer $total
      * @param array $data
      * @param array $components
@@ -342,7 +342,7 @@ class PriceRule
     }
 
     /**
-     * Returns an array of suitable price rules for a given context
+     * Returns an array triggered price rules
      * @param array $options
      * @param array $data
      * @return array
