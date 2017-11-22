@@ -231,10 +231,8 @@ class Job
     {
         try {
             $handlers = $this->getHandlers();
-            $handler = Handler::get($handlers, $job['id'], 'process');
-            if (!empty($handler)) {
-                call_user_func_array($handler, array(&$job));
-            }
+            $callback = Handler::get($handlers, $job['id'], 'process');
+            call_user_func_array($callback, array(&$job));
         } catch (\Exception $ex) {
             $job['status'] = false;
             $job['errors'] ++;
