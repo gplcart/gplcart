@@ -78,8 +78,8 @@ class Validator
     {
         try {
             $handlers = $this->getHandlers();
-            $handler = Handler::get($handlers, $handler_id, 'validate');
-            return call_user_func_array($handler, array(&$submitted, $options));
+            $callback = Handler::get($handlers, $handler_id, 'validate');
+            return call_user_func_array($callback, array(&$submitted, $options));
         } catch (\Exception $ex) {
             return $ex->getMessage();
         }
