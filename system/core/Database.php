@@ -254,14 +254,75 @@ class Database
         $fields = implode(',', $keys);
         $values = ':' . implode(',:', $keys);
 
-        $sth = $this->pdo->prepare("INSERT INTO $table ($fields) VALUES ($values)");
+        $this->run("INSERT INTO $table ($fields) VALUES ($values)", $data);
+        return $this->pdo->lastInsertId();
+    }
 
-        foreach ($data as $key => $value) {
-            $sth->bindValue(":$key", $value);
+    /**
+     * Performs a UPDATE query
+     * @param $table
+     * @param array $data
+     * @param array $conditions
+     * @param bool $filter
+     * @return integer
+     */
+    public function update($table, array $data, array $conditions, $filter = true)
+    {
+        if ($filter) {
+            $data = $this->filterValues($table, $data);
         }
 
-        $sth->execute();
-        return $this->pdo->lastInsertId();
+        if (empty($data)) {
+            return 0;
+        }
+
+        $farray = array();
+        foreach (array_keys($data) as $key) {
+            $farray[] = "$key=:$key";
+        }
+
+        $carray = array();
+        foreach (array_keys($conditions) as $key) {
+            $carray[] = "$key=:$key";
+        }
+
+        $fields = implode(',', $farray);
+        $sql = "UPDATE $table SET $fields WHERE " . implode(' AND ', $carray);
+
+        $stmt = $this->pdo->prepare($sql);
+
+        foreach ($data as $key => $value) {
+            $stmt->bindValue(":$key", $value);
+        }
+
+        foreach ($conditions as $key => $value) {
+            $stmt->bindValue(":$key", $value);
+        }
+
+        $stmt->execute();
+        $this->logs[] = $sql;
+        return $stmt->rowCount();
+    }
+
+    /**
+     * Performs a DELETE query
+     * @param string $table
+     * @param array $conditions
+     * @return integer
+     */
+    public function delete($table, array $conditions)
+    {
+        if (empty($conditions)) {
+            return 0;
+        }
+
+        $carray = array();
+        foreach (array_keys($conditions) as $key) {
+            $carray[] = "$key=:$key";
+        }
+
+        $sql = "DELETE FROM $table WHERE " . implode(' AND ', $carray);
+        return $this->run($sql, $conditions)->rowCount();
     }
 
     /**
@@ -386,80 +447,6 @@ class Database
     }
 
     /**
-     * Performs a UPDATE query
-     * @param $table
-     * @param array $data
-     * @param array $conditions
-     * @param bool $filter
-     * @return integer
-     */
-    public function update($table, array $data, array $conditions, $filter = true
-    )
-    {
-        if ($filter) {
-            $data = $this->filterValues($table, $data);
-        }
-
-        if (empty($data)) {
-            return 0;
-        }
-
-        $farray = array();
-        foreach ($data as $key => $value) {
-            $farray[] = "$key=:$key";
-        }
-
-        $fields = implode(',', $farray);
-
-        $carray = array();
-        foreach ($conditions as $key => $value) {
-            $carray[] = "$key=:$key";
-        }
-
-        $where = implode(' AND ', $carray);
-        $stmt = $this->pdo->prepare("UPDATE $table SET $fields WHERE $where");
-
-        foreach ($data as $key => $value) {
-            $stmt->bindValue(":$key", $value);
-        }
-
-        foreach ($conditions as $key => $value) {
-            $stmt->bindValue(":$key", $value);
-        }
-
-        $stmt->execute();
-        return $stmt->rowCount();
-    }
-
-    /**
-     * Performs a DELETE query
-     * @param string $table
-     * @param array $conditions
-     * @return integer
-     */
-    public function delete($table, array $conditions)
-    {
-        if (empty($conditions)) {
-            return 0;
-        }
-
-        $carray = array();
-        foreach ($conditions as $key => $value) {
-            $carray[] = "$key=:$key";
-        }
-
-        $where = implode(' AND ', $carray);
-        $stmt = $this->pdo->prepare("DELETE FROM $table WHERE $where");
-
-        foreach ($conditions as $key => $value) {
-            $stmt->bindValue(":$key", $value);
-        }
-
-        $stmt->execute();
-        return $stmt->rowCount();
-    }
-
-    /**
      * Drop a table
      * @param string $table
      */
@@ -555,7 +542,7 @@ class Database
             }
 
             if (!empty($info['auto_increment'])) {
-                $string .= " /*!40101 AUTO_INCREMENT */"; // SQLite will ignore the commented AUTO_INCREMENT
+                $string .= " /*!40101 AUTO_INCREMENT */"; // SQLite will ignore this comment
             }
 
             $sql[] = $name . ' ' . trim($string);
