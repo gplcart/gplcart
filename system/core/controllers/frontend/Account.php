@@ -145,10 +145,10 @@ class Account extends FrontendController
      */
     protected function setDataPanelComponentsOrderAccount()
     {
-        $this->prepareOrderComponentCartTrait($this->data_order, $this, $this->price);
-        $this->prepareOrderComponentPriceRuleTrait($this->data_order, $this, $this->price, $this->pricerule);
-        $this->prepareOrderComponentPaymentTrait($this->data_order, $this, $this->price, $this->payment, $this->order);
-        $this->prepareOrderComponentShippingTrait($this->data_order, $this, $this->price, $this->shipping, $this->order);
+        $this->prepareOrderComponentCartTrait($this->data_order, $this->price);
+        $this->prepareOrderComponentPriceRuleTrait($this->data_order, $this->price, $this->pricerule);
+        $this->prepareOrderComponentPaymentTrait($this->data_order, $this->price, $this->payment, $this->order);
+        $this->prepareOrderComponentShippingTrait($this->data_order, $this->price, $this->shipping, $this->order);
 
         ksort($this->data_order['data']['components']);
 
@@ -235,10 +235,10 @@ class Account extends FrontendController
     {
         $this->prepareOrderTotalTrait($order, $this->price);
         $this->prepareOrderAddressTrait($order, $this->address);
-        $this->prepareOrderStoreTrait($order, $this->store, $this);
-        $this->prepareOrderStatusTrait($order, $this->order, $this);
-        $this->prepareOrderPaymentTrait($order, $this->payment, $this);
-        $this->prepareOrderShippingTrait($order, $this->shipping, $this);
+        $this->prepareOrderStoreTrait($order, $this->store);
+        $this->prepareOrderStatusTrait($order, $this->order);
+        $this->prepareOrderPaymentTrait($order, $this->payment);
+        $this->prepareOrderShippingTrait($order, $this->shipping);
     }
 
     /**

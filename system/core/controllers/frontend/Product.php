@@ -106,6 +106,7 @@ class Product extends FrontendController
         $this->setDataReviewsIndexProduct();
         $this->setDataRecentIndexProduct();
         $this->setDataRelatedIndexProduct();
+        $this->setDataBundledIndexProduct();
 
         $this->setJsIndexProduct();
         $this->outputIndexProduct();
@@ -130,7 +131,11 @@ class Product extends FrontendController
      */
     protected function setDataCartFormIndexProduct()
     {
-        $data = array('product' => $this->data_product, 'share' => $this->renderShareWidget());
+        $data = array(
+            'product' => $this->data_product,
+            'share' => $this->getWidgetShare($this)
+        );
+
         $this->setData('cart_form', $this->render('cart/add', $data, true));
     }
 
@@ -157,8 +162,11 @@ class Product extends FrontendController
      */
     protected function setDataRatingWidgetIndexProduct()
     {
-        $rating = $this->rating->getByProduct($this->data_product['product_id']);
-        $data = array('rating' => $rating, 'product' => $this->data_product);
+        $data = array(
+            'product' => $this->data_product,
+            'rating' => $this->rating->getByProduct($this->data_product['product_id'])
+        );
+
         $this->setData('rating', $this->render('common/rating/static', $data));
     }
 
@@ -187,16 +195,18 @@ class Product extends FrontendController
     {
         if ($this->config('review_enabled', 1) && !empty($this->data_product['total_reviews'])) {
 
-            $pager = array(
+            $pager_options = array(
                 'key' => 'rep',
                 'total' => $this->data_product['total_reviews'],
                 'limit' => (int) $this->config('review_limit', 5)
             );
 
+            $pager = $this->getPager($pager_options);
+
             $data = array(
                 'product' => $this->data_product,
-                'pager' => $this->getPager($pager),
-                'reviews' => $this->getReviewsProduct($this->getPagerLimit())
+                'pager' => $pager['rendered'],
+                'reviews' => $this->getReviewsProduct($pager['limit'])
             );
 
             $this->setData('reviews', $this->render('review/list', $data, true));
@@ -212,25 +222,20 @@ class Product extends FrontendController
 
         if (!empty($products)) {
 
-            $options = array(
+            $pager_options = array(
                 'key' => 'pwp',
                 'total' => count($products),
                 'limit' => $this->config('product_view_pager_limit', 4)
             );
 
-            $pager = $this->getPager($options);
-            $limit = $this->getPagerLimit();
+            $pager = $this->getPager($pager_options);
 
-            if (!empty($limit)) {
-                list($from, $to) = $limit;
+            if (!empty($pager['limit'])) {
+                list($from, $to) = $pager['limit'];
                 $products = array_slice($products, $from, $to, true);
             }
 
-            $data = array(
-                'pager' => $pager,
-                'products' => $products
-            );
-
+            $data = array('pager' => $pager['rendered'], 'products' => $products);
             $this->setData('recent', $this->render('product/recent', $data));
         }
     }
@@ -244,27 +249,31 @@ class Product extends FrontendController
 
         if (!empty($products)) {
 
-            $options = array(
+            $pager_options = array(
                 'key' => 'rlp',
                 'total' => count($products),
                 'limit' => $this->config('related_pager_limit', 4)
             );
 
-            $pager = $this->getPager($options);
-            $limit = $this->getPagerLimit();
+            $pager = $this->getPager($pager_options);
 
-            if (!empty($limit)) {
-                list($from, $to) = $limit;
+            if (!empty($pager['limit'])) {
+                list($from, $to) = $pager['limit'];
                 $products = array_slice($products, $from, $to);
             }
 
-            $data = array(
-                'pager' => $pager,
-                'products' => $products
-            );
+            $data = array('pager' => $pager['rendered'], 'products' => $products);
 
             $this->setData('related', $this->render('product/related', $data));
         }
+    }
+
+    /**
+     * 
+     */
+    protected function setDataBundledIndexProduct()
+    {
+        $this->setData('bundle', $this->render('product/bundle', array('products' => $this->data_product['bundle'])));
     }
 
     /**
@@ -460,16 +469,18 @@ class Product extends FrontendController
 
         $this->unshiftSelectedImageProduct($selected, $product);
 
-        $this->setItemInComparison($product);
-        $this->setItemInWishlist($product);
-        $this->setItemThumbProduct($product);
-        $this->setItemPriceCalculated($selected);
-        $this->setItemPriceFormatted($selected);
+        $this->setItemThumbProduct($product, $this->image);
+        $this->setItemInComparison($product, $this->product_compare);
+        $this->setItemProductBundle($product, $this->product, $this->image);
+        $this->setItemInWishlist($product, $this->cart_uid, $this->store_id, $this->wishlist);
+
+        $this->setItemPriceCalculated($selected, $this->product);
+        $this->setItemPriceFormatted($selected, $this->price, $this->current_currency);
 
         $product['selected_combination'] = $selected;
         $product['total_reviews'] = $this->getTotalReviewsProduct($product);
 
-        $this->setProductFieldsTrait($product, $this->product_class, $this);
+        $this->setProductFieldsTrait($product, $this->product_class, $this->image);
         return $product;
     }
 
@@ -503,13 +514,14 @@ class Product extends FrontendController
     {
         $options = array(
             'status' => 1,
-            'load' => true,
             'store_id' => $this->store_id,
             'product_id' => $this->data_product['product_id'],
             'limit' => array(0, $this->config('related_limit', 12))
         );
 
-        $products = (array) $this->product->getRelated($options);
+        $product_ids = (array) $this->product->getRelated($options);
+        $products = $this->product->getList(array('product_id' => $product_ids));
+
         return $this->prepareEntityItems($products, array('entity' => 'product'));
     }
 

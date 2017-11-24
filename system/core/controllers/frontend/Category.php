@@ -194,13 +194,9 @@ class Category extends FrontendController
      */
     protected function setDataImagesIndexCategory()
     {
-        $options = array(
-            'imagestyle' => $this->configTheme('image_style_category', 3));
-
-        $this->setItemThumb($this->data_category, $options);
-
-        $data = array('category' => $this->data_category);
-        $this->setData('images', $this->render('category/images', $data));
+        $options = array('imagestyle' => $this->configTheme('image_style_category', 3));
+        $this->setItemThumb($this->data_category, $this->image, $options);
+        $this->setData('images', $this->render('category/images', array('category' => $this->data_category)));
     }
 
     /**
@@ -236,7 +232,7 @@ class Category extends FrontendController
             'items' => $this->data_categories
         );
 
-        $this->setData('menu', $this->renderMenu($options));
+        $this->setData('menu', $this->getWidgetMenu($this, $options));
     }
 
     /**

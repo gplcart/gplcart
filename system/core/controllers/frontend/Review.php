@@ -335,9 +335,9 @@ class Review extends FrontendController
      */
     protected function prepareProductReview(array $product)
     {
-        $this->setItemThumbProduct($product);
-        $this->setItemPriceCalculated($product);
-        $this->setItemPriceFormatted($product);
+        $this->setItemThumbProduct($product, $this->image);
+        $this->setItemPriceCalculated($product, $this->product);
+        $this->setItemPriceFormatted($product, $this->price, $this->current_currency);
 
         return $product;
     }

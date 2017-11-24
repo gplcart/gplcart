@@ -9,14 +9,16 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\Container;
 use gplcart\core\Controller as BaseController;
+use gplcart\core\traits\Item as ItemTrait,
+    gplcart\core\traits\Widget as WidgetTrait;
 
 /**
  * Contents specific to the front-end methods
  */
 class Controller extends BaseController
 {
+    use WidgetTrait, ItemTrait;
 
     /**
      * Trigger model instance
@@ -44,9 +46,9 @@ class Controller extends BaseController
 
     /**
      * Compare model instance
-     * @var \gplcart\core\models\Compare $compare
+     * @var \gplcart\core\models\ProductCompare $compare
      */
-    protected $compare;
+    protected $product_compare;
 
     /**
      * Wishlist model instance
@@ -105,7 +107,6 @@ class Controller extends BaseController
         }
 
         $this->hook->attach('construct.controller.frontend', $this);
-
         $this->controlHttpStatus();
     }
 
@@ -119,10 +120,10 @@ class Controller extends BaseController
         $this->data['_cart'] = $this->getCart();
         $this->data['_currencies'] = $currencies;
         $this->data['_wishlist'] = $this->getWishlist();
-        $this->data['_menu'] = $this->getCategoryMenu();
-        $this->data['_captcha'] = $this->renderCaptcha();
         $this->data['_comparison'] = $this->getComparison();
+        $this->data['_captcha'] = $this->getWidgetCaptcha($this);
         $this->data['_currency'] = $currencies[$this->current_currency];
+        $this->data['_menu'] = $this->getWidgetCategoryMenu($this, $this->data_categories);
     }
 
     /**
@@ -140,14 +141,14 @@ class Controller extends BaseController
      */
     protected function setFrontendInstancies()
     {
-        $this->price = Container::get('gplcart\\core\\models\\Price');
-        $this->trigger = Container::get('gplcart\\core\\models\\Trigger');
-        $this->product = Container::get('gplcart\\core\\models\\Product');
-        $this->wishlist = Container::get('gplcart\\core\\models\\Wishlist');
-        $this->category = Container::get('gplcart\\core\\models\\Category');
-        $this->currency = Container::get('gplcart\\core\\models\\Currency');
-        $this->compare = Container::get('gplcart\\core\\models\\ProductCompare');
-        $this->collection_item = Container::get('gplcart\\core\\models\\CollectionItem');
+        $this->price = $this->getInstance('gplcart\\core\\models\\Price');
+        $this->trigger = $this->getInstance('gplcart\\core\\models\\Trigger');
+        $this->product = $this->getInstance('gplcart\\core\\models\\Product');
+        $this->wishlist = $this->getInstance('gplcart\\core\\models\\Wishlist');
+        $this->category = $this->getInstance('gplcart\\core\\models\\Category');
+        $this->currency = $this->getInstance('gplcart\\core\\models\\Currency');
+        $this->product_compare = $this->getInstance('gplcart\\core\\models\\ProductCompare');
+        $this->collection_item = $this->getInstance('gplcart\\core\\models\\CollectionItem');
     }
 
     /**
@@ -194,7 +195,7 @@ class Controller extends BaseController
      */
     public function getComparison()
     {
-        return $this->compare->getList();
+        return $this->product_compare->getList();
     }
 
     /**
@@ -210,15 +211,6 @@ class Controller extends BaseController
         );
 
         return (array) $this->wishlist->getList($options);
-    }
-
-    /**
-     * Returns rendered main menu
-     * @return string
-     */
-    public function getCategoryMenu()
-    {
-        return $this->renderMenu(array('items' => $this->data_categories));
     }
 
     /**
@@ -255,14 +247,14 @@ class Controller extends BaseController
             $submitted = $this->getSubmitted();
             $result = $this->cart->addProduct($submitted['product'], $submitted);
         } else {
-            $result['message'] = implode('<br>', gplcart_array_flatten($errors));
+            $result['message'] = $this->format($errors);
         }
 
         if ($this->isAjax()) {
             if ($result['severity'] === 'success') {
                 $result += array('modal' => $this->renderCartPreview());
             }
-            $this->response->outputJson($result);
+            $this->outputJson($result);
         }
         $this->redirect($result['redirect'], $result['message'], $result['severity']);
     }
@@ -307,7 +299,7 @@ class Controller extends BaseController
 
         if ($this->isAjax()) {
             $result['modal'] = $preview;
-            $this->response->outputJson($result);
+            $this->outputJson($result);
         }
 
         $this->redirect($result['redirect'], $result['message'], $result['severity']);
@@ -365,12 +357,12 @@ class Controller extends BaseController
     {
         foreach ($cart['items'] as &$item) {
             $item['currency'] = $cart['currency'];
-            $this->setItemThumbCart($item);
-            $this->setItemPriceFormatted($item);
-            $this->setItemTotalFormatted($item);
+            $this->setItemThumbCart($item, $this->image);
+            $this->setItemPriceFormatted($item, $this->price, $this->current_currency);
+            $this->setItemTotalFormatted($item, $this->price);
         }
 
-        $this->setItemTotalFormatted($cart);
+        $this->setItemTotalFormatted($cart, $this->price);
         return $cart;
     }
 
@@ -405,13 +397,13 @@ class Controller extends BaseController
 
         if (empty($errors)) {
             $submitted = $this->getSubmitted();
-            $result = $this->compare->addProduct($submitted['product'], $submitted);
+            $result = $this->product_compare->addProduct($submitted['product'], $submitted);
         } else {
-            $result['message'] = implode('<br>', gplcart_array_flatten($errors));
+            $result['message'] = $this->format($errors);
         }
 
         if ($this->isAjax()) {
-            $this->response->outputJson($result);
+            $this->outputJson($result);
         }
 
         $this->redirect($result['redirect'], $result['message'], $result['severity']);
@@ -423,10 +415,10 @@ class Controller extends BaseController
     protected function deleteFromCompare()
     {
         $product_id = $this->getSubmitted('product_id');
-        $result = $this->compare->deleteProduct($product_id);
+        $result = $this->product_compare->deleteProduct($product_id);
 
         if ($this->isAjax()) {
-            $this->response->outputJson($result);
+            $this->outputJson($result);
         } else {
             $this->controlDeleteFromCompare($result, $product_id);
         }
@@ -501,11 +493,11 @@ class Controller extends BaseController
         if (empty($errors)) {
             $result = $this->wishlist->addProduct($this->getSubmitted());
         } else {
-            $result['message'] = implode('<br>', gplcart_array_flatten($errors));
+            $result['message'] = $this->format($errors);
         }
 
         if ($this->isAjax()) {
-            $this->response->outputJson($result);
+            $this->outputJson($result);
         }
         $this->redirect($result['redirect'], $result['message'], $result['severity']);
     }
@@ -524,7 +516,7 @@ class Controller extends BaseController
         $result = $this->wishlist->deleteProduct($condititons);
 
         if ($this->isAjax()) {
-            $this->response->outputJson($result);
+            $this->outputJson($result);
         }
 
         $this->redirect($result['redirect'], $result['message'], $result['severity']);
@@ -538,15 +530,21 @@ class Controller extends BaseController
      */
     public function getProducts($conditions = array(), $options = array())
     {
-        $options += array('entity' => 'product');
-        $conditions += array('status' => 1, 'store_id' => $this->store_id);
+        $options += array(
+            'entity' => 'product'
+        );
+
+        $conditions += array(
+            'status' => 1,
+            'store_id' => $this->store_id
+        );
 
         if (isset($conditions['product_id']) && empty($conditions['product_id'])) {
             return array();
         }
 
-        $products = (array) $this->product->getList($conditions);
-        return $this->prepareEntityItems($products, $options);
+        $list = (array) $this->product->getList($conditions);
+        return $this->prepareEntityItems($list, $options);
     }
 
     /**
@@ -557,7 +555,11 @@ class Controller extends BaseController
      */
     public function getCollectionItems(array $conditions, array $options)
     {
-        $conditions += array('status' => 1, 'store_id' => $this->store_id);
+        $conditions += array(
+            'status' => 1,
+            'store_id' => $this->store_id
+        );
+
         $items = $this->collection_item->getItems($conditions);
 
         if (empty($items)) {
@@ -616,7 +618,7 @@ class Controller extends BaseController
         }
 
         $options += array(
-            'ids' => array_keys($items),
+            'id_value' => array_keys($items),
             'id_key' => "{$options['entity']}_id",
             'template_item' => "{$options['entity']}/item/{$options['view']}",
             'imagestyle' => $this->configTheme("image_style_{$options['entity']}_{$options['view']}", 3)
@@ -624,300 +626,24 @@ class Controller extends BaseController
 
         foreach ($items as &$item) {
 
-            $this->setItemIndentation($item);
-            $this->setItemUrl($item, $options);
-            $this->setItemUrlActive($item);
-            $this->setItemThumb($item, $options);
+            $this->setItemThumb($item, $this->image, $options);
 
-            if ($options['entity'] == 'product') {
-                $this->setItemInComparison($item);
-                $this->setItemPriceCalculated($item);
-                $this->setItemInWishlist($item);
-                $this->setItemPriceFormatted($item);
+            if ($options['entity'] === 'product') {
+                $this->setItemInComparison($item, $this->product_compare);
+                $this->setItemPriceCalculated($item, $this->product);
+                $this->setItemInWishlist($item, $this->cart_uid, $this->store_id, $this->wishlist);
+                $this->setItemPriceFormatted($item, $this->price, $this->current_currency);
+                $this->setItemProductBundle($item, $this->product, $this->image);
                 $this->setItemRenderedProduct($item, $options);
             } else {
+                $this->setItemIndentation($item);
+                $this->setItemUrl($item, $options);
+                $this->setItemUrlActive($item, $this->base, $this->path);
                 $this->setItemRendered($item, array('item' => $item), $options);
             }
         }
 
         return $items;
-    }
-
-    /**
-     * Returns rendered "Share this" widget
-     * @param array $options
-     * @return string
-     */
-    public function renderShareWidget(array $options = array())
-    {
-        $options += array('url' => $this->url('', array(), true));
-        return $this->render('common/share', $options);
-    }
-
-    /**
-     * Adds the "In comparison" boolean flag
-     * @param array $item
-     * @return array
-     */
-    protected function setItemInComparison(array &$item)
-    {
-        $item['in_comparison'] = $this->compare->exists($item['product_id']);
-        return $item;
-    }
-
-    /**
-     * Adds the "In wishlist" boolean flag to the item
-     * @param array $item
-     * @return array
-     */
-    protected function setItemInWishlist(&$item)
-    {
-        $conditions = array(
-            'user_id' => $this->cart_uid,
-            'store_id' => $this->store_id,
-            'product_id' => $item['product_id']
-        );
-
-        $item['in_wishlist'] = $this->wishlist->exists($conditions);
-        return $item;
-    }
-
-    /**
-     * Adds a full formatted total amount to the item
-     * @param array $item
-     * @return array
-     */
-    protected function setItemTotalFormatted(array &$item)
-    {
-        $item['total_formatted'] = $this->price->format($item['total'], $item['currency']);
-        return $item;
-    }
-
-    /**
-     * Add a formatted total amount without currency sign to the item
-     * @param array $item
-     * @return array
-     */
-    protected function setItemTotalFormattedNumber(array &$item)
-    {
-        $item['total_formatted_number'] = $this->price->format($item['total'], $item['currency'], true, false);
-        return $item;
-    }
-
-    /**
-     * Add a thumb URL to the item
-     * @param array $item
-     * @param array $options
-     * @return array
-     */
-    protected function setItemThumb(array &$item, array $options = array())
-    {
-        if (empty($options['imagestyle'])) {
-            return $item;
-        }
-
-        if (!empty($options['path'])) {
-            $item['thumb'] = $this->image($options['path'], $options['imagestyle']);
-        } else if (!empty($item['path'])) {
-            $item['thumb'] = $this->image($item['path'], $options['imagestyle']);
-        } else if (empty($item['images'])) {
-            $item['thumb'] = $this->image->getThumb($item, $options);
-        } else {
-            foreach ($item['images'] as &$image) {
-                $image['url'] = $this->image($image['path']);
-                $image['thumb'] = $this->image($image['path'], $options['imagestyle']);
-                $this->setItemIsThumbPlaceholder($image);
-            }
-        }
-
-        $this->setItemIsThumbPlaceholder($item);
-        return $item;
-    }
-
-    /**
-     * Sets product thumbs
-     * @param array $product
-     */
-    protected function setItemThumbProduct(array &$product)
-    {
-        $options = array('imagestyle' => $this->configTheme('image_style_product', 6));
-        if (empty($product['images'])) {
-            $product['images'][] = array('thumb' => $this->image->getPlaceholder($options['imagestyle']));
-        } else {
-            $this->setItemThumb($product, $options);
-        }
-    }
-
-    /**
-     * Sets a boolean flag indicating that the thumb is an image placeholder
-     * @param array $item
-     * @return array
-     */
-    protected function setItemIsThumbPlaceholder(array &$item)
-    {
-        if (!empty($item['thumb'])) {
-            $item['thumb_placeholder'] = $this->image->isPlaceholder($item['thumb']);
-        }
-
-        return $item;
-    }
-
-    /**
-     * Add thumb URLs to the cart items
-     * @param array $item
-     * @return array
-     */
-    protected function setItemThumbCart(array &$item)
-    {
-        $options = array(
-            'path' => '',
-            'imagestyle' => $this->configTheme('image_style_cart', 3)
-        );
-
-        if (empty($item['product']['combination_id']) && !empty($item['product']['images'])) {
-            $imagefile = reset($item['product']['images']);
-            $options['path'] = $imagefile['path'];
-        }
-
-        if (!empty($item['product']['file_id']) && !empty($item['product']['images'][$item['product']['file_id']]['path'])) {
-            $options['path'] = $item['product']['images'][$item['product']['file_id']]['path'];
-        }
-
-        if (empty($options['path'])) {
-            $item['thumb'] = $this->image->getPlaceholder($options['imagestyle']);
-        } else {
-            $this->setItemThumb($item, $options);
-        }
-
-        return $item;
-    }
-
-    /**
-     * Add alias URL to an entity
-     * @param array $item
-     * @param array $options
-     * @return array
-     */
-    protected function setItemUrl(array &$item, array $options = array())
-    {
-        if (isset($options['id_key'])) {
-            $id = $item[$options['id_key']];
-            $entity = preg_replace('/_id$/', '', $options['id_key']);
-            $item['url'] = empty($item['alias']) ? $this->url("$entity/$id") : $this->url($item['alias']);
-            // URL with preserved query to retain view, sort etc
-            $item['url_query'] = empty($item['alias']) ? $this->url("$entity/$id", $this->query) : $this->url($item['alias'], $this->query);
-        }
-
-        return $item;
-    }
-
-    /**
-     * Adds a rendered product to the item
-     * @param array $item
-     * @param array $options
-     * @return array
-     */
-    protected function setItemRenderedProduct(array &$item, $options = array())
-    {
-        if (!empty($options['template_item'])) {
-
-            $options += array(
-                'buttons' => array(
-                    'cart_add', 'wishlist_add', 'compare_add'));
-
-            $data = array(
-                'item' => $item,
-                'buttons' => $options['buttons']
-            );
-
-            $this->setItemRendered($item, $data, $options);
-        }
-
-        return $item;
-    }
-
-    /**
-     * Add a rendered content to the item
-     * @param array $item
-     * @param array $data
-     * @param array $options
-     * @return array
-     */
-    protected function setItemRendered(array &$item, $data, $options = array())
-    {
-        if (!empty($options['template_item'])) {
-            $item['rendered'] = $this->render($options['template_item'], $data, true);
-        }
-
-        return $item;
-    }
-
-    /**
-     * Add a formatted price to the item
-     * @param array $item
-     * @return array
-     */
-    protected function setItemPriceFormatted(array &$item)
-    {
-        $price = $this->currency->convert($item['price'], $item['currency'], $this->current_currency);
-        $item['price_formatted'] = $this->price->format($price, $this->current_currency);
-
-        if (isset($item['original_price'])) {
-            $price = $this->currency->convert($item['original_price'], $item['currency'], $this->current_currency);
-            $item['original_price_formatted'] = $this->price->format($price, $this->current_currency);
-        }
-
-        return $item;
-    }
-
-    /**
-     * Add a calculated product price to the item
-     * @param array $item
-     * @return array
-     */
-    protected function setItemPriceCalculated(array &$item)
-    {
-        $calculated = $this->product->calculate($item);
-
-        if (!empty($calculated)) {
-
-            if ($item['price'] != $calculated['total']) {
-                $item['original_price'] = $item['price'];
-            }
-
-            $item['price'] = $calculated['total'];
-            $item['price_rule_components'] = $calculated['components'];
-        }
-
-        return $item;
-    }
-
-    /**
-     * Sets boolean flag indicating that item's URL matches the current URL
-     * @param array $item
-     * @return array
-     */
-    protected function setItemUrlActive(array &$item)
-    {
-        if (isset($item['url'])) {
-            $item['active'] = $this->path(substr($item['url'], strlen($this->base)));
-        }
-
-        return $item;
-    }
-
-    /**
-     * Add indentation string indicating item's depth (only for categories)
-     * @param array $item
-     * @return array
-     */
-    protected function setItemIndentation(array &$item)
-    {
-        if (isset($item['depth'])) {
-            $item['indentation'] = str_repeat('<span class="indentation"></span>', $item['depth']);
-        }
-
-        return $item;
     }
 
     /**

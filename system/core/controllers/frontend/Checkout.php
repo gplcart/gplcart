@@ -263,8 +263,8 @@ class Checkout extends FrontendController
             $this->outputHttpStatus(404);
         }
 
-        $this->setItemTotalFormatted($order);
-        $this->setItemTotalFormattedNumber($order);
+        $this->setItemTotalFormatted($order, $this->price);
+        $this->setItemTotalFormattedNumber($order, $this->price);
 
         $this->order_id = $order_id;
         $this->order_user_id = $order['user_id'];
@@ -728,12 +728,7 @@ class Checkout extends FrontendController
      */
     protected function setMessageFormCheckout($key, $message)
     {
-        settype($message, 'array');
-
-        $flatten = gplcart_array_flatten($message);
-        $string = implode('<br>', array_unique($flatten));
-
-        gplcart_array_set($this->data_form['messages'], $key, $string);
+        gplcart_array_set($this->data_form['messages'], $key, $this->format($message));
     }
 
     /**

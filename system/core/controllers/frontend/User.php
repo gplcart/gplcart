@@ -52,7 +52,7 @@ class User extends FrontendController
         $this->setTitleEditLoginUser();
         $this->setBreadcrumbEditLoginUser();
 
-        $this->setData('oauth_buttons', $this->getOauthButtonsTrait($this, $this->oauth));
+        $this->setData('oauth_buttons', $this->getOauthButtonsTrait($this->oauth));
 
         $this->submitLoginUser();
         $this->outputEditLoginUser();

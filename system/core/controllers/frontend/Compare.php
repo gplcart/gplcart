@@ -43,8 +43,7 @@ class Compare extends FrontendController
      * @param ProductClassModel $product_class
      * @param ProductFieldModel $product_field
      */
-    public function __construct(ProductClassModel $product_class,
-            ProductFieldModel $product_field)
+    public function __construct(ProductClassModel $product_class, ProductFieldModel $product_field)
     {
         parent::__construct();
 
@@ -175,8 +174,7 @@ class Compare extends FrontendController
             )
         );
 
-        $conditions = array('product_id' => $ids);
-        return $this->getProducts($conditions, $options);
+        return $this->getProducts(array('product_id' => $ids), $options);
     }
 
     /**
@@ -188,8 +186,9 @@ class Compare extends FrontendController
     {
         foreach ($products as $product_id => &$product) {
             $product['field'] = $this->product_field->getList($product_id);
-            $this->setProductFieldsTrait($product, $this->product_class, $this);
+            $this->setProductFieldsTrait($product, $this->product_class, $this->image);
         }
+
         return $products;
     }
 
@@ -202,9 +201,11 @@ class Compare extends FrontendController
     {
         $labels = array();
         foreach ($products as $product) {
+
             if (empty($product['field_value_labels'])) {
                 continue;
             }
+
             foreach ($product['field_value_labels'] as $type => $fields) {
                 foreach (array_keys($fields) as $field_id) {
                     $labels[$type][$field_id] = $product['fields'][$type][$field_id]['title'];
