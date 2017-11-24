@@ -25,6 +25,7 @@ return array(
     'product_class_add' => /* @text */'Product class: add',
     'product_class_edit' => /* @text */'Product class: edit',
     'product_class_delete' => /* @text */'Product class: delete',
+    'product_bundle_edit' => /* @text */'Product bundle: edit',
     'price_rule' => /* @text */'Price rule: access',
     'price_rule_add' => /* @text */'Price rule: add',
     'price_rule_edit' => /* @text */'Price rule: edit',

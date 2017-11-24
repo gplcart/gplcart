@@ -233,6 +233,12 @@ return array(
             'controller' => array('gplcart\\core\\controllers\\backend\\Product', 'editProduct')
         )
     ),
+    'admin/content/product/bundle/(\d+)' => array(
+        'access' => 'product_bundle_edit',
+        'handlers' => array(
+            'controller' => array('gplcart\\core\\controllers\\backend\\ProductBundle', 'editProductBundle')
+        )
+    ),
     'admin/content/product-class' => array(
         'access' => 'product_class',
         'menu' => array('admin' => /* @text */'Product classes'),
