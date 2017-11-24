@@ -181,22 +181,25 @@
     };
 
     /**
-     * Returns HTML of selected related products
+     * Returns HTML of selected product items
      * @param {Object} item
+     * @param {Object} el
      * @returns {String}
      */
-    var htmlRelatedProducts = function (item) {
+    var htmlProductPicker = function (item, el) {
 
         var mod, html = '';
-        html += '<span class="related-product-item tag">';
-        html += '<input type="hidden" name="product[related][]" value="' + item.value + '">';
-        html += '<span class="btn btn-default">';
-        html += '<a target="_blank" href="' + item.url + '">' + item.label + '</a> <span class="badge">';
-        html += '<i class="fa fa-times remove"></i>';
-        html += '</span></span>';
-        html += '</span>';
+        
+        html += '<div class="selected-item">';
+        if (el.data('multiple')) {
+            html += '<input type="hidden" name="' + el.data('name') + '[]" value="' + item.value + '">';
+        } else {
+            html += '<input type="hidden" name="' + el.data('name') + '" value="' + item.value + '">';
+        }
+        html += item.rendered;
+        html += '</div>';
 
-        mod = Gplcart.hook('html.product.related', html);
+        mod = Gplcart.hook('html.product.picker', html);
         return mod === undefined ? html : mod;
     };
 
@@ -329,6 +332,7 @@
     Gplcart.onload.checkDefaultProductCombination = function () {
 
         var radio = '.option input[name$="[is_default]"]';
+        
         $(document).on('click', '.uncheck-default-combination', function () {
             $(radio).prop('checked', false);
             return false;
@@ -411,12 +415,12 @@
     };
 
     /**
-     * Removes a related product item
+     * Removes a product picker item
      * @returns {undefined}
      */
-    Gplcart.onload.removeRelated = function () {
-        $(document).on('click', '.related-product-item .remove', function () {
-            $(this).closest('.related-product-item').remove();
+    Gplcart.onload.removeProductPickerItem = function () {
+        $(document).on('click', '.product-picker-results .selected-item', function () {
+            $(this).remove();
         });
     };
 
@@ -427,6 +431,7 @@
     Gplcart.onload.setPager = function () {
 
         var links, id, href;
+        
         $('.panel').each(function () {
             id = $(this).attr('id');
             if (id) {
@@ -443,43 +448,58 @@
     };
 
     /**
-     * Adds autocomplete functionality to the related products input
+     * Set up product picker
      * @returns {undefined}
      */
-    Gplcart.onload.setAutocompleteRelatedProducts = function () {
+    Gplcart.onload.setProductPicker = function () {
 
-        var params, input = $('.related-product');
+        var params, store_id, input = $('input.product-picker');
 
         if (input.length) {
             input.autocomplete({
                 minLength: 2,
+                classes: {
+                    "ui-autocomplete": "product-picker-popup"
+                },
                 source: function (request, response) {
+
+                    store_id = input.data('store-id');
+
+                    if (!store_id) {
+                        store_id = input.closest('form').find('[name$="[store_id]"]').val();
+                    }
 
                     params = {
                         status: 1,
                         term: request.term,
                         action: 'getProductsAjax',
-                        token: Gplcart.settings.token,
-                        store_id: $('select[name$="[store_id]"] option:selected').val()
+                        store_id: store_id || null,
+                        token: Gplcart.settings.token
                     };
 
                     $.post(Gplcart.settings.base + 'ajax', params, function (data) {
-                        response($.map(data, function (value, key) {
-                            return {
-                                url: value.url,
-                                value: value.product_id,
-                                label: value.title ? value.title + ' (' + value.product_id + ')' : '--'
-                            };
+                        response($.map(data, function (value) {
+                            return {value: value.sku, rendered: value.rendered};
                         }));
                     });
                 },
-                select: function (event, ui) {
-                    $('#related-products').append(htmlRelatedProducts(ui.item));
-                    $('.related-product').val('');
+                select: function (e, ui) {
+
+                    if (input.data('multiple')) {
+                        input.prev('.product-picker-results').append(htmlProductPicker(ui.item, input));
+                    } else {
+                        input.prev('.product-picker-results').html(htmlProductPicker(ui.item, input));
+                    }
+
+                    input.val('');
                     return false;
+                },
+                open: function () {
+                    $('.product-picker-popup').css('width', input.closest('div').width());
+                    //debugger;
                 }
             }).autocomplete("instance")._renderItem = function (ul, item) {
-                return $("<li>").append("<a>" + item.label + "</a>").appendTo(ul);
+                return $("<li>").append(item.rendered).appendTo(ul);
             };
         }
     };
@@ -570,7 +590,7 @@
     /**
      * Adds autocomplete functionality to a product input
      * @returns {undefined}
-     */
+
     Gplcart.onload.setAutocompleteProduct = function () {
 
         var params,
@@ -608,6 +628,7 @@
             };
         }
     };
+         */
 
     /**
      * Updates product fields when product class was changed
@@ -828,8 +849,8 @@
      */
     Gplcart.onload.setDatepicker = function () {
 
-        var el = $('[data-datepicker="true"]');
-        var settings = {dateFormat: 'dd.mm.yy'},
+        var el = $('[data-datepicker="true"]'),
+                settings = {dateFormat: 'dd.mm.yy'},
                 inline = el.data('datepicker-settings') || {};
 
         if (typeof inline === 'object') {
