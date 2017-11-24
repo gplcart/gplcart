@@ -260,21 +260,18 @@ class Product
             return false;
         }
 
-        $product_id = $data['product_id'];
-
         if ($update) {
-            $this->product_relation->delete($product_id);
+            $this->product_relation->delete($data['product_id']);
         }
 
-        if (empty($data['related'])) {
-            return false;
+        if (!empty($data['related'])) {
+            foreach ((array) $data['related'] as $related_product_id) {
+                $this->product_relation->add($related_product_id, $data['product_id']);
+            }
+            return true;
         }
 
-        foreach ((array) $data['related'] as $related_product_id) {
-            $this->product_relation->add($related_product_id, $product_id);
-        }
-
-        return true;
+        return false;
     }
 
     /**
@@ -304,18 +301,15 @@ class Product
 
         $this->hook->attach('product.get.before', $product_id, $options, $result, $this);
 
-        if (empty($product_id)) {
-            return $result = array();
-        }
-
         if (isset($result)) {
             return $result;
         }
 
         $options += array('language' => null);
-        $list = $this->getList(array('product_id' => $product_id));
 
-        if (empty($list)) {
+        $list = $this->getList(array('product_id' => (int) $product_id));
+
+        if (count($list) != 1) {
             return $result = array();
         }
 
@@ -332,42 +326,28 @@ class Product
     }
 
     /**
-     * Returns a product by the SKU
+     * Returns a product by SKU
      * @param string $sku
      * @param integer $store_id
      * @param string|null $language
      * @return array
-     * @todo Reuse getList(), but tune up its query (LENGTH)
      */
     public function getBySku($sku, $store_id, $language = null)
     {
-        $product = &gplcart_static("product.get.sku.$sku.$store_id.$language");
-
-        if (isset($product)) {
-            return $product;
-        }
-
-        if (!isset($language)) {
-            $language = $this->language->getLangcode();
-        }
-
-        $sql = 'SELECT p.*, COALESCE(NULLIF(pt.title, ""), p.title) AS title,'
-                . ' ps.sku, ps.price, ps.stock, ps.file_id'
-                . ' FROM product p'
-                . ' LEFT JOIN product_sku ps ON(p.product_id=ps.product_id)'
-                . ' LEFT JOIN product_translation pt ON(p.product_id=pt.product_id'
-                . ' AND pt.language=:language)'
-                . ' WHERE ps.sku=:sku AND ps.store_id=:store_id';
-
-        $conditions = array(
-            'sku' => $sku,
+        $options = array(
+            'sku' => (string) $sku,
             'language' => $language,
-            'store_id' => $store_id
+            'store_id' => (int) $store_id
         );
 
-        $product = $this->db->fetch($sql, $conditions);
-        $this->attachImagesTrait($this->db, $this->file, $product, 'product', $language);
+        $list = $this->getList($options);
 
+        if (count($list) != 1) {
+            return array();
+        }
+
+        $product = reset($list);
+        $this->attachImagesTrait($this->db, $this->file, $product, 'product', $language);
         return $product;
     }
 
@@ -449,6 +429,7 @@ class Product
 
         $conditions = array('product_id' => $product_id);
         $conditions2 = array('id_key' => 'product_id', 'id_value' => $product_id);
+        $conditions3 = array('item_product_id' => $product_id);
 
         $result = (bool) $this->db->delete('product', $conditions);
 
@@ -464,8 +445,12 @@ class Product
             $this->db->delete('product_field', $conditions);
             $this->db->delete('product_translation', $conditions);
             $this->db->delete('product_view', $conditions);
+
             $this->db->delete('product_related', $conditions);
-            $this->db->delete('product_related', array('related_product_id' => $product_id));
+            $this->db->delete('product_related', $conditions3);
+
+            $this->db->delete('product_bundle', $conditions);
+            $this->db->delete('product_bundle', $conditions3);
 
             $this->db->delete('file', $conditions2);
             $this->db->delete('alias', $conditions2);
@@ -536,20 +521,13 @@ class Product
     }
 
     /**
-     * Returns an array of related products
+     * Returns an array of related product IDs
      * @param array $options
      * @return array
      */
     public function getRelated(array $options)
     {
-        $list = $this->product_relation->getList($options);
-
-        if (!empty($list) && !empty($options['load'])) {
-            $options['product_id'] = $list;
-            $list = $this->getList($options);
-        }
-
-        return (array) $list;
+        return (array) $this->product_relation->getList($options);
     }
 
     /**
@@ -560,7 +538,8 @@ class Product
     public function getList(array $data = array())
     {
         $sql = 'SELECT p.*, a.alias, COALESCE(NULLIF(pt.title, ""), p.title) AS title,'
-                . 'pt.language, ps.sku, ps.price, ps.stock, ps.file_id, u.role_id';
+                . 'pt.language, ps.sku, ps.price, ps.stock, ps.file_id, u.role_id,'
+                . 'GROUP_CONCAT(pb.item_sku) AS bundle';
 
         if (!empty($data['count'])) {
             $sql = 'SELECT COUNT(p.product_id)';
@@ -570,7 +549,15 @@ class Product
                 . ' LEFT JOIN product_translation pt ON(p.product_id = pt.product_id AND pt.language=?)'
                 . ' LEFT JOIN alias a ON(a.id_key=? AND a.id_value=p.product_id)'
                 . ' LEFT JOIN user u ON(u.user_id=p.user_id)'
-                . ' LEFT JOIN product_sku ps ON(p.product_id = ps.product_id AND LENGTH(ps.combination_id) = 0)';
+                . ' LEFT JOIN product_sku ps ON(p.product_id = ps.product_id';
+
+        if (!isset($data['sku'])) {
+            $sql .= ' AND LENGTH(ps.combination_id) = 0';
+        }
+
+        $sql .= ')';
+        $sql .= ' LEFT JOIN product_bundle pb ON(p.product_id = pb.product_id)';
+
 
         $language = $this->language->getLangcode();
         $conditions = array($language, 'product_id');
@@ -590,14 +577,6 @@ class Product
             $conditions[] = "%{$data['title']}%";
             $conditions[] = $language;
         }
-        
-        if (isset($data['title_sku'])) {
-            $sql .= ' AND (p.title LIKE ? OR (pt.title LIKE ? AND pt.language=?) OR ps.sku LIKE ?)';
-            $conditions[] = "%{$data['title_sku']}%";
-            $conditions[] = "%{$data['title_sku']}%";
-            $conditions[] = $language;
-            $conditions[] = "%{$data['title_sku']}%";
-        }
 
         if (isset($data['language'])) {
             $sql .= ' AND pt.language = ?';
@@ -605,8 +584,10 @@ class Product
         }
 
         if (isset($data['sku'])) {
-            $sql .= ' AND ps.sku=?';
-            $conditions[] = $data['sku'];
+            settype($data['sku'], 'array');
+            $placeholders = rtrim(str_repeat('?,', count($data['sku'])), ',');
+            $sql .= " AND ps.sku IN($placeholders)";
+            $conditions = array_merge($conditions, $data['sku']);
         }
 
         if (isset($data['sku_like'])) {
