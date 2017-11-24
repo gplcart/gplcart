@@ -63,7 +63,7 @@ class ProductRelation
             return (bool) $result;
         }
 
-        foreach (array('product_id', 'related_product_id') as $field) {
+        foreach (array('product_id', 'item_product_id') as $field) {
             if (!$this->db->delete('product_related', array($field => $product_id))) {
                 return false;
             }
@@ -87,8 +87,8 @@ class ProductRelation
             return (bool) $result;
         }
 
-        $this->db->insert('product_related', array('product_id' => $product_id, 'related_product_id' => $related_product_id));
-        $this->db->insert('product_related', array('product_id' => $related_product_id, 'related_product_id' => $product_id));
+        $this->db->insert('product_related', array('product_id' => $product_id, 'item_product_id' => $related_product_id));
+        $this->db->insert('product_related', array('product_id' => $related_product_id, 'item_product_id' => $product_id));
 
         $this->hook->attach('product.related.add.after', $related_product_id, $product_id, $result, $this);
         return (bool) $result;
@@ -105,7 +105,7 @@ class ProductRelation
             return array();
         }
 
-        $sql = 'SELECT related_product_id FROM product_related WHERE product_id=?';
+        $sql = 'SELECT item_product_id FROM product_related WHERE product_id=?';
 
         if (!empty($data['limit'])) {
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
