@@ -80,6 +80,7 @@ html {
 
 .product.item .thumbnail {
     height: 100%;
+    position: relative;
 }
 
 .product.item .thumbnail, .product.item > .panel {
@@ -88,6 +89,59 @@ html {
 
 .product.item .thumbnail:hover, .product.item > .panel:hover {
     border-color: #ddd;
+}
+
+.item .bundle-items {
+    clear: both;
+}
+
+.bundle-item .image {
+    float: left;
+    margin-right: 5px;
+}
+
+.item .bundle-item img {
+    max-height: 30px;
+    border: 1px solid #ccc;
+    padding: 3px;
+    margin-bottom: 3px;
+    margin-right: 3px;
+}
+
+.grid.item .bundle-items {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+}
+
+.item .bundle-items .title {
+    display: none;
+}
+
+.item .bundle-title {
+    color: red;
+}
+
+.panel.bundled-items {
+    margin-top: 20px;
+}
+
+.panel .bundle-item img {
+    max-height: 50px;
+    border: 1px solid #ccc;
+    padding: 3px;
+}
+
+.panel .bundle-item {
+    padding: 5px 0;
+    overflow: hidden;
+    width: 100%;
+}
+
+.panel .bundle-item .title {
+    top: 50%;
+    position: relative;
+    transform: translateY(50%);
 }
 
 .row-no-padding > [class*="col-"] {

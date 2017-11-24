@@ -251,10 +251,14 @@ td.required:before {
     color:red;
 }
 
-.ui-menu .ui-menu-item:hover {
+.ui-autocomplete .ui-menu-item:hover {
     background-color: #0088cc !important;
     background-image: none !important;
     color: #fff !important;
+}
+
+.ui-autocomplete .ui-menu-item {
+    list-style-image: none;
 }
 
 .ui-autocomplete {
@@ -272,6 +276,25 @@ td.required:before {
 .ui-autocomplete .ui-menu-item-wrapper {
     background: transparent;
     border: none;
+}
+
+.autocomplete-suggestion {
+    margin: 0 !important;
+}
+
+.autocomplete-suggestion img {
+    max-height: 60px;
+    max-width: 60px;
+}
+
+.product-picker-results .selected-item {
+    border: 1px solid #ccc;
+    margin-bottom: 5px;
+    padding: 5px;
+    cursor: not-allowed;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
 }
 
 .address-book:not(.active) .panel-body {
