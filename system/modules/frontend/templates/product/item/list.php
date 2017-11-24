@@ -20,11 +20,25 @@
           <?php } ?>
         </div>
         <div class="col-md-7">
-          <a href="<?php echo empty($item['url']) ? $this->url("product/{$item['product_id']}") : $this->e($item['url']); ?>">
-            <?php echo $this->e($item['title']); ?>
-          </a>
+          <div class="title">
+            <a href="<?php echo empty($item['url']) ? $this->url("product/{$item['product_id']}") : $this->e($item['url']); ?>">
+              <?php echo $this->e($item['title']); ?>
+            </a>
+          </div>
           <?php if(!empty($item['description'])) { ?>
-          <p><?php echo $this->truncate($this->teaser(strip_tags($item['description'])), 500); ?></p>
+          <div class="description">
+            <p><?php echo $this->truncate($this->teaser(strip_tags($item['description'])), 500); ?></p>
+          </div>
+          <?php } ?>
+          <?php if(!empty($item['bundle'])) { ?>
+          <div class="bundle-title">
+            <?php echo $this->text('+ @num bundled products!', array('@num' => count($item['bundle']))); ?>
+          </div>
+          <div class="bundle-items">
+            <?php foreach($item['bundle'] as $bundle_item) { ?>
+            <?php echo $bundle_item['rendered']; ?>
+            <?php } ?>
+          </div>
           <?php } ?>
         </div>
         <div class="col-md-3">

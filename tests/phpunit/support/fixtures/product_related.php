@@ -10,11 +10,11 @@ return array(
     array(
         'product_related_id' => 1,
         'product_id' => 1,
-        'related_product_id' => 2,
+        'item_product_id' => 2,
     ),
     array(
         'product_related_id' => 2,
         'product_id' => 2,
-        'related_product_id' => 1,
+        'item_product_id' => 1,
     )
 );

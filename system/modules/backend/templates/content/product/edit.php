@@ -245,34 +245,7 @@
   </fieldset>
   <fieldset>
     <legend><?php echo $this->text('Related'); ?></legend>
-    <div class="form-group">
-      <label class="col-md-2 control-label"><?php echo $this->text('Product'); ?></label>
-      <div class="col-md-6">
-        <input class="form-control related-product" value="">
-        <div class="help-block">
-          <?php echo $this->text('Autocomplete field. Start to type product title or SKU'); ?>
-        </div>
-      </div>
-    </div>
-    <div class="form-group">
-      <div class="col-md-12">
-        <div id="related-products">
-          <?php if (!empty($related)) { ?>
-          <?php foreach ($related as $related_product_id => $related_product) { ?>
-          <span class="related-product-item tag">
-            <input type="hidden" name="product[related][]" value="<?php echo $related_product_id; ?>">
-            <span class="btn btn-default">
-              <a target="_blank" href="<?php echo $related_product['url']; ?>">
-                <?php echo $this->e($this->truncate($related_product['title'], 30)); ?> (<?php echo $this->e($related_product_id); ?>)
-              </a>
-              <span class="badge"><i class="fa fa-times remove"></i></span>
-            </span>
-          </span>
-          <?php } ?>
-          <?php } ?>
-        </div>
-      </div>
-    </div>
+    <?php echo $attached_related; ?>
   </fieldset>
   <fieldset>
     <legend><?php echo $this->text('Meta'); ?></legend>

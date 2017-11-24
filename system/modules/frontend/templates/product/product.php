@@ -39,6 +39,9 @@
     </div>
     <h1 class="h4"><?php echo $this->e($product['title']); ?></h1>
     <?php echo $this->text('SKU'); ?>: <span id="sku" class="small"><?php echo $this->e($product['selected_combination']['sku']); ?></span>
+    <?php if(!empty($bundle)) { ?>
+    <?php echo $bundle; ?>
+    <?php } ?>
     <div class="price-wrapper h3">
       <?php if (isset($product['selected_combination']['original_price']) && $product['selected_combination']['original_price'] > $product['selected_combination']['price']) { ?>
       <s id="original-price" class="small">

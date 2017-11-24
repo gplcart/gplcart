@@ -380,6 +380,7 @@
         </div>
       </div>
     </div>
+    <?php if(isset($store['store_id'])) { ?>
     <div class="form-group<?php echo $this->error('data.blog_category_group_id', ' has-error'); ?>">
       <label class="col-md-2 control-label"><?php echo $this->text('Blog category group'); ?></label>
       <div class="col-md-4">
@@ -397,6 +398,7 @@
         </div>
       </div>
     </div>
+    <?php } ?>
   </fieldset>
   <?php if (isset($store['store_id']) && !empty($collections)) { ?>
   <fieldset>

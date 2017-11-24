@@ -10,6 +10,13 @@
 ?>
 <div class="grid product item col-md-3 col-sm-4 col-xs-12">
   <div class="thumbnail">
+    <?php if(!empty($item['bundle'])) { ?>
+    <div class="bundle-items">
+      <?php foreach($item['bundle'] as $bundle_item) { ?>
+      <?php echo $bundle_item['rendered']; ?>
+      <?php } ?>
+    </div>
+    <?php } ?>
     <?php if (!empty($item['thumb'])) { ?>
     <a href="<?php echo empty($item['url']) ? $this->url("product/{$item['product_id']}") : $this->e($item['url']); ?>">
       <img class="img-responsive" title="<?php echo $this->e($item['title']); ?>" alt="<?php echo $this->e($item['title']); ?>" src="<?php echo $this->e($item['thumb']); ?>">
@@ -21,6 +28,11 @@
           <?php echo $this->e($this->truncate($item['title'], 50)); ?>
         </a>
       </div>
+      <?php if(!empty($item['bundle'])) { ?>
+      <div class="bundle-title">
+        <?php echo $this->text('+ @num bundled products!', array('@num' => count($item['bundle']))); ?>
+      </div>
+      <?php } ?>
       <p>
         <?php if (isset($item['original_price']) && $item['original_price'] > $item['price']) { ?>
         <s><?php echo $this->e($item['original_price_formatted']); ?></s>

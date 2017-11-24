@@ -160,13 +160,15 @@
           </td>
           <td class="middle"><?php echo $id; ?></td>
           <td class="middle">
-            <?php echo $this->truncate($this->e($product['title']), 30); ?>
+            <a href="<?php echo $product['url']; ?>">
+              <?php echo $this->truncate($this->e($product['title']), 30); ?>
+            </a>
           </td>
           <td class="middle">
             <?php echo $this->e($product['sku']); ?>
           </td>
           <td class="middle">
-            <?php echo $this->e($product['price']); ?>
+            <?php echo $this->e($product['price_formatted']); ?>
           </td>
           <td class="middle">
             <?php echo $this->e($product['currency']); ?>
@@ -190,15 +192,17 @@
           </td>
           <td class="middle">
             <ul class="list-inline">
-              <li>
-                <a href="<?php echo $product['url']; ?>">
-                  <?php echo $this->lower($this->text('View')); ?>
-                </a>
-              </li>
               <?php if ($this->access('product_edit')) { ?>
               <li>
                 <a href="<?php echo $this->url("admin/content/product/edit/$id"); ?>">
                   <?php echo $this->lower($this->text('Edit')); ?>
+                </a>
+              </li>
+              <?php } ?>
+              <?php if ($this->access('product_bundle_edit')) { ?>
+              <li>
+                <a href="<?php echo $this->url("admin/content/product/bundle/$id"); ?>">
+                  <?php echo $this->lower($this->text('Bundle')); ?>
                 </a>
               </li>
               <?php } ?>

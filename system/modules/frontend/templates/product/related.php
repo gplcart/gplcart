@@ -24,13 +24,6 @@
       <?php echo $product['rendered']; ?>
       <?php } ?>
     </div>
-    <?php if(!empty($pager)) { ?>
-    <div class="row">
-      <div class="col-md-12">
-        <?php echo $pager; ?>
-      </div>
-    </div>
-    <?php } ?>
   </div>
 </div>
 <?php } ?>
