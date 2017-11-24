@@ -74,10 +74,10 @@ class Ajax extends FrontendController
         $action = $this->getPosted('action');
 
         if (empty($action)) {
-            $this->response->outputJson(array('error' => $this->text('Missing handler')));
+            $this->outputJson(array('error' => $this->text('Missing handler')));
         }
 
-        $this->response->outputJson(call_user_func(array($this, $action)));
+        $this->outputJson(call_user_func(array($this, $action)));
     }
 
     /**
@@ -106,13 +106,26 @@ class Ajax extends FrontendController
         }
 
         $options = array(
-            'title_sku' => $this->getPosted('term'),
             'status' => $this->getPosted('status'),
+            'title_sku' => $this->getPosted('term'),
             'store_id' => $this->getPosted('store_id'),
             'limit' => array(0, $this->config('autocomplete_limit', 10))
         );
 
-        return $this->getProducts($options);
+        $products = $this->sku->getList($options);
+
+        $product_ids = array();
+        foreach ($products as $product) {
+            $product_ids[] = $product['product_id'];
+        }
+
+        foreach ($products as &$product) {
+            $this->setItemPriceFormatted($product, $this->price);
+            $this->setItemThumb($product, $this->image, array('id_key' => 'product_id', 'id_value' => $product_ids));
+            $this->setItemRendered($product, array('item' => $product), array('template_item' => 'backend|content/product/suggestion'));
+        }
+
+        return $products;
     }
 
     /**
@@ -164,8 +177,8 @@ class Ajax extends FrontendController
         $response = $this->sku->selectCombination($product, $field_value_ids);
         $response += $product;
 
-        $this->setItemPriceCalculated($response);
-        $this->setItemPriceFormatted($response);
+        $this->setItemPriceCalculated($response, $this->product);
+        $this->setItemPriceFormatted($response, $this->price, $this->current_currency);
 
         return $response;
     }
