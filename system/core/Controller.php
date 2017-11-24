@@ -349,18 +349,42 @@ abstract class Controller
     }
 
     /**
-     * Access protected properties
+     * Returns a property
      * @param string $name
      * @return mixed
+     * @throws \InvalidArgumentException
      */
-    public function __get($name)
+    public function getProperty($name)
     {
         if (property_exists($this, $name)) {
             return $this->{$name};
         }
 
-        user_error("Property $name does not exist");
-        return null;
+        throw new \InvalidArgumentException("Property $name does not exist");
+    }
+
+    /**
+     * Set a property
+     * @param string $property
+     * @param object $value
+     */
+    public function setProperty($property, $value)
+    {
+        $this->{$property} = $value;
+    }
+
+    /**
+     * Returns an object instance
+     * @param string|null $class
+     * @return object
+     */
+    public function getInstance($class = null)
+    {
+        if (isset($class)) {
+            return Container::get($class);
+        }
+
+        return $this;
     }
 
     /**
@@ -376,19 +400,9 @@ abstract class Controller
 
         foreach ($classes as $base_namespace => $class_names) {
             foreach ($class_names as $class_name) {
-                $this->{$class_name} = Container::get("$base_namespace\\$class_name");
+                $this->{$class_name} = $this->getInstance("$base_namespace\\$class_name");
             }
         }
-    }
-
-    /**
-     * Set a class instance
-     * @param string $property
-     * @param object $instance
-     */
-    public function setInstance($property, $instance)
-    {
-        $this->{$property} = $instance;
     }
 
     /**
@@ -1505,22 +1519,6 @@ abstract class Controller
     }
 
     /**
-     * Outputs rendered page
-     * @param null|array|string $templates
-     * @param array $options
-     */
-    final public function output($templates = null, array $options = array())
-    {
-        if (empty($templates)) {
-            $templates = $this->templates;
-        }
-
-        $this->prepareDataOutput();
-        $this->prepareOutput($templates, $options);
-        $this->response->outputHtml($this->renderOutput($templates), $options);
-    }
-
-    /**
      * Extracts translatable strings from JS files and creates translation
      * @param array $scripts
      */
@@ -1641,6 +1639,32 @@ abstract class Controller
     }
 
     /**
+     * Outputs rendered page
+     * @param null|array|string $templates
+     * @param array $options
+     */
+    final public function output($templates = null, array $options = array())
+    {
+        if (empty($templates)) {
+            $templates = $this->templates;
+        }
+
+        $this->prepareDataOutput();
+        $this->prepareOutput($templates, $options);
+        $this->response->outputHtml($this->renderOutput($templates), $options);
+    }
+
+    /**
+     * Output JSON string
+     * @param mixed $data
+     * @param array $options
+     */
+    public function outputJson($data, array $options = array())
+    {
+        $this->response->outputJson($data, $options);
+    }
+
+    /**
      * Displays an error page
      * @param integer $code
      */
@@ -1741,8 +1765,7 @@ abstract class Controller
             $this->setJsSettings(ltrim($key, '_'), $value, 60);
         }
 
-        $translations = $this->language->loadJsTranslation();
-        $json = gplcart_json_encode($translations);
+        $json = gplcart_json_encode($this->language->loadJsTranslation());
         $this->setJs("Gplcart.translations=$json;");
     }
 
@@ -1757,9 +1780,9 @@ abstract class Controller
         $asset = array(
             'type' => 'js',
             'weight' => $weight,
+            'aggregate' => false,
             'key' => 'js_settings',
             'merge' => 'js_settings',
-            'aggregate' => false,
             'asset' => array($key => $data)
         );
 
@@ -1839,7 +1862,7 @@ abstract class Controller
             $pattern = $this->current_route['pattern'] ? $this->current_route['pattern'] : 'front';
             foreach (explode('/', $pattern) as $part) {
                 if (ctype_alpha($part)) {
-                    $classes[] = "gc-$part"; // Add prefix to prevent conflicts
+                    $classes[] = "gc-$part";
                 }
             }
         }
@@ -2156,23 +2179,15 @@ abstract class Controller
      */
     public function setPager(array $options)
     {
-        $this->data['_pager'] = $this->getPager($options);
-        return $this->getPagerLimit();
-    }
-
-    /**
-     * Returns pager limits
-     * @return array
-     */
-    public function getPagerLimit()
-    {
-        return $this->pager->getLimit();
+        $pager = $this->getPager($options);
+        $this->data['_pager'] = $pager['rendered'];
+        return $pager['limit'];
     }
 
     /**
      * Returns a rendered pager
      * @param array $options
-     * @return string
+     * @return array
      */
     public function getPager(array $options = array())
     {
@@ -2181,21 +2196,23 @@ abstract class Controller
             'limit' => $this->config('list_limit', 20)
         );
 
-        return $this->renderPager($options);
+        $rendered = $this->getRenderedPager($options);
+        $limit = $this->pager->getLimit();
+        return array('limit' => $limit, 'rendered' => $rendered);
     }
 
     /**
-     * Returns a rendered pager
+     * Returns the rendered pager
      * @param array $options
      * @return string
      */
-    public function renderPager(array $options)
+    public function getRenderedPager(array $options)
     {
         $options += array(
             'key' => 'p',
             'page' => 1,
-            'query' => $this->query,
-            'template' => 'common/pager'
+            'template' => 'common/pager',
+            'query' => $this->getQuery(null, array(), 'array')
         );
 
         if (isset($options['query'][$options['key']])) {
@@ -2203,29 +2220,13 @@ abstract class Controller
         }
 
         $options['query'][$options['key']] = '%num';
-        $pager = $this->pager->build($options)->get();
 
-        return $this->render($options['template'], array('pager' => $pager, 'options' => $options));
-    }
+        $data = array(
+            'options' => $options,
+            'pager' => $this->pager->build($options)->get()
+        );
 
-    /**
-     * Returns the rendered menu
-     * @param array $options
-     * @return string
-     */
-    public function renderMenu(array $options)
-    {
-        $options += array('depth' => 0, 'template' => 'common/menu');
-        return empty($options['items']) ? '' : $this->render($options['template'], $options);
-    }
-
-    /**
-     * Returns rendered honey pot input
-     * @return string
-     */
-    public function renderCaptcha()
-    {
-        return $this->render('common/honeypot');
+        return $this->render($options['template'], $data);
     }
 
 }
