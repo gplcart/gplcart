@@ -65,52 +65,60 @@ class Sku
      */
     public function getList(array $data = array())
     {
-        $sql = 'SELECT *';
+        $sql = 'SELECT ps.*, p.title, p.currency';
 
         if (!empty($data['count'])) {
-            $sql = 'SELECT COUNT(product_sku_id)';
+            $sql = 'SELECT COUNT(ps.product_sku_id)';
         }
 
-        $sql .= ' FROM product_sku WHERE product_sku_id > 0';
+        $sql .= ' FROM product_sku ps'
+                . ' LEFT JOIN product p ON(ps.product_id = p.product_id)'
+                . ' WHERE ps.product_sku_id IS NOT NULL';
 
-        $where = array();
+        $conditions = array();
 
         if (isset($data['sku'])) {
-            $sql .= ' AND sku LIKE ?';
-            $where[] = "%{$data['sku']}%";
+            $sql .= ' AND ps.sku LIKE ?';
+            $conditions[] = "%{$data['sku']}%";
+        }
+        
+        if (isset($data['title_sku'])) {
+            $sql .= ' AND (p.title LIKE ? OR ps.sku LIKE ?)';
+            $conditions[] = "%{$data['title_sku']}%";
+            $conditions[] = "%{$data['title_sku']}%";
         }
 
         if (isset($data['product_id'])) {
-            $sql .= ' AND product_id=?';
-            $where[] = (int) $data['product_id'];
+            $sql .= ' AND ps.product_id=?';
+            $conditions[] = (int) $data['product_id'];
         }
 
         if (isset($data['combination_id'])) {
-            $sql .= ' AND combination_id=?';
-            $where[] = $data['combination_id'];
+            $sql .= ' AND ps.combination_id=?';
+            $conditions[] = $data['combination_id'];
         }
 
         if (isset($data['status'])) {
-            $sql .= ' AND status=?';
-            $where[] = (int) $data['status'];
+            $sql .= ' AND ps.status=?';
+            $conditions[] = (int) $data['status'];
         }
 
         if (isset($data['store_id'])) {
-            $sql .= ' AND store_id=?';
-            $where[] = (int) $data['store_id'];
+            $sql .= ' AND p.store_id=?';
+            $conditions[] = (int) $data['store_id'];
         }
 
-        $sql .= " ORDER BY sku ASC";
+        $sql .= " ORDER BY ps.sku ASC";
 
         if (!empty($data['limit'])) {
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
         if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $where);
+            return (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $results = $this->db->fetchAll($sql, $where, array('index' => 'product_sku_id'));
+        $results = $this->db->fetchAll($sql, $conditions, array('index' => 'product_sku_id'));
 
         foreach ($results as &$result) {
             $result['fields'] = $this->getFieldValues($result['combination_id']);
