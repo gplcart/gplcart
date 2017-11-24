@@ -26,47 +26,47 @@ class Container
 
     /**
      * Instantiates and registers a class
-     * @param string $namespace
+     * @param string $class
      * @return object
      * @throws ReflectionException
      */
-    public static function get($namespace)
+    public static function get($class)
     {
-        $key = strtolower($namespace);
+        $key = strtolower($class);
 
         if (isset(static::$instances[$key])) {
             return static::$instances[$key];
         }
 
-        static::override($namespace);
+        static::override($class);
 
-        if (!class_exists($namespace)) {
-            throw new ReflectionException("Class $namespace does not exist");
+        if (!class_exists($class)) {
+            throw new ReflectionException("Class $class does not exist");
         }
 
-        $instance = static::getInstance($namespace);
-        static::register($namespace, $instance);
+        $instance = static::getInstance($class);
+        static::register($class, $instance);
         return $instance;
     }
 
     /**
-     * Returns an instance using its namespace
-     * @param string $namespace
+     * Returns an instance using a class name
+     * @param string $class
      * @return object
      */
-    public static function getInstance($namespace)
+    public static function getInstance($class)
     {
-        $reflection = new ReflectionClass($namespace);
+        $reflection = new ReflectionClass($class);
         $constructor = $reflection->getConstructor();
 
         if (empty($constructor)) {
-            return new $namespace;
+            return new $class;
         }
 
         $parameters = $constructor->getParameters();
 
         if (empty($parameters)) {
-            return new $namespace;
+            return new $class;
         }
 
         $dependencies = array();
@@ -80,42 +80,42 @@ class Container
 
     /**
      * Override a class namespace
-     * @param string $namespace
+     * @param string $class
      * @return string
      */
-    protected static function override(&$namespace)
+    protected static function override(&$class)
     {
         $map = gplcart_config_get(GC_FILE_CONFIG_COMPILED_OVERRIDE);
 
-        if (isset($map[$namespace])) {
-            $override = end($map[$namespace]);
-            $namespace = $override;
+        if (isset($map[$class])) {
+            $override = end($map[$class]);
+            $class = $override;
         }
 
-        return $namespace;
+        return $class;
     }
 
     /**
      * Adds a class instance to the storage
-     * @param string $namespace
+     * @param string $class
      * @param object $instance
      * @return array
      */
-    public static function register($namespace, $instance)
+    public static function register($class, $instance)
     {
-        static::$instances[strtolower($namespace)] = $instance;
+        static::$instances[strtolower($class)] = $instance;
         return static::$instances;
     }
 
     /**
      * Removes one or all instances from the storage
-     * @param null|string $namespace
+     * @param null|string $class
      * @return array
      */
-    public static function unregister($namespace = null)
+    public static function unregister($class = null)
     {
-        if (isset($namespace)) {
-            unset(static::$instances[strtolower($namespace)]);
+        if (isset($class)) {
+            unset(static::$instances[strtolower($class)]);
             return static::$instances;
         }
 
@@ -124,12 +124,12 @@ class Container
 
     /**
      * Whether the namespace already registered
-     * @param string $namespace
+     * @param string $class
      * @return bool
      */
-    public static function registered($namespace)
+    public static function registered($class)
     {
-        return isset(static::$instances[strtolower($namespace)]);
+        return isset(static::$instances[strtolower($class)]);
     }
 
 }
