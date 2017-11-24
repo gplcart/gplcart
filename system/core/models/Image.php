@@ -99,8 +99,8 @@ class Image
     public function processAction(&$source, &$target, $handler, &$action)
     {
         try {
-            $callable = Handler::get($handler, null, 'process');
-            return call_user_func_array($callable, array(&$source, &$target, &$action));
+            $callback = Handler::get($handler, null, 'process');
+            return call_user_func_array($callback, array(&$source, &$target, &$action));
         } catch (\Exception $ex) {
             return false;
         }
@@ -114,9 +114,11 @@ class Image
      */
     public function getThumb(array $data, array $options)
     {
-        $options += array('placeholder' => true, 'imagestyle' => 3);
+        $options += array(
+            'placeholder' => true,
+            'imagestyle' => $this->config->get('image_style', 3));
 
-        if (empty($options['ids'])) {
+        if (empty($options['id_value'])) {
             return empty($options['placeholder']) ? '' : $this->getPlaceholder($options['imagestyle']);
         }
 
@@ -124,12 +126,12 @@ class Image
             'order' => 'asc',
             'sort' => 'weight',
             'file_type' => 'image',
-            'id_value' => $options['ids'],
-            'id_key' => $options['id_key']
+            'id_key' => $options['id_key'],
+            'id_value' => (array) $options['id_value']
         );
 
         foreach ((array) $this->file->getList($conditions) as $file) {
-            if ($file['id_value'] == $data[$options['id_key']]) {
+            if (isset($data[$options['id_key']]) && $file['id_value'] == $data[$options['id_key']]) {
                 return $this->url($options['imagestyle'], $file['path']);
             }
         }
@@ -144,12 +146,13 @@ class Image
      */
     public function deleteMultiple(array $options)
     {
-        $deleted = 0;
+        $deleted = $count = 0;
         foreach ((array) $this->file->getList($options) as $file) {
+            $count ++;
             $deleted += (int) $this->file->delete($file['file_id']);
         }
 
-        return $deleted > 0;
+        return $count && $deleted == $count;
     }
 
     /**
