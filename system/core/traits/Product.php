@@ -18,14 +18,14 @@ trait Product
     /**
      * Attach prepared fields to a product
      * @param array $product
-     * @param \gplcart\core\models\ProductClass $product_model
-     * @param \gplcart\core\controllers\frontend\Controller $controller
+     * @param \gplcart\core\models\ProductClass $class_model
+     * @param \gplcart\core\models\Image $image_model
      */
-    protected function setProductFieldsTrait(array &$product, $product_model, $controller)
+    protected function setProductFieldsTrait(&$product, $class_model, $image_model)
     {
-        $fields = $product_model->getFieldData($product['product_class_id']);
-        $this->prepareProductFieldsTrait($product, $fields, 'option', $controller);
-        $this->prepareProductFieldsTrait($product, $fields, 'attribute', $controller);
+        $fields = $class_model->getFieldData($product['product_class_id']);
+        $this->prepareProductFieldsTrait($product, $fields, 'option', $image_model);
+        $this->prepareProductFieldsTrait($product, $fields, 'attribute', $image_model);
     }
 
     /**
@@ -33,16 +33,15 @@ trait Product
      * @param array $product
      * @param array $fields
      * @param string $type
-     * @param \gplcart\core\controllers\frontend\Controller $controller
-     * @return null
+     * @param \gplcart\core\models\Image $image_model
      */
-    protected function prepareProductFieldsTrait(array &$product, array $fields, $type, $controller)
+    protected function prepareProductFieldsTrait(&$product, $fields, $type, $image_model)
     {
         if (empty($product['field'][$type])) {
             return null;
         }
 
-        $imagestyle = $controller->configTheme('image_style_option', 1);
+        $imagestyle = $this->configTheme('image_style_option', 1);
 
         foreach ($product['field'][$type] as $field_id => $field_values) {
             foreach ($field_values as $field_value_id) {
@@ -53,7 +52,8 @@ trait Product
                     'path' => $fields[$type][$field_id]['values'][$field_value_id]['path']
                 );
 
-                $controller->setItemThumb($fields[$type][$field_id]['values'][$field_value_id], $options);
+                $this->setItemThumb($fields[$type][$field_id]['values'][$field_value_id], $image_model, $options);
+
                 if (isset($fields[$type][$field_id]['values'][$field_value_id]['title'])) {
                     $product['field_value_labels'][$type][$field_id][$field_value_id] = $fields[$type][$field_id]['values'][$field_value_id]['title'];
                 }
@@ -61,7 +61,6 @@ trait Product
         }
 
         $product['fields'][$type] = $fields[$type];
-        return null;
     }
 
 }

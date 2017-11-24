@@ -17,11 +17,10 @@ trait Oauth
 
     /**
      * Returns an array of Oauth login buttons
-     * @param \gplcart\core\Controller $controller
      * @param \gplcart\core\models\Oauth $model
      * @return array
      */
-    protected function getOauthButtonsTrait($controller, $model)
+    protected function getOauthButtonsTrait($model)
     {
         $options = array('type' => 'login', 'status' => true);
         $providers = $model->getProviders($options);
@@ -33,7 +32,7 @@ trait Oauth
                 $buttons[$provider_id]['url'] = $url;
                 $buttons[$provider_id]['provider'] = $provider;
                 $data = array('provider' => $provider, 'url' => $url);
-                $buttons[$provider_id]['rendered'] = $controller->render($provider['template']['button'], $data);
+                $buttons[$provider_id]['rendered'] = $this->render($provider['template']['button'], $data);
             }
         }
 
