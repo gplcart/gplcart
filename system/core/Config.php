@@ -371,7 +371,10 @@ class Config
 
         if (isset($installed[$module_id])) {
             $info['installed'] = true;
-            $info = array_replace_recursive($info, $installed[$module_id]);
+            if (empty($installed[$module_id]['settings'])) {
+                unset($installed[$module_id]['settings']);
+            }
+            $info = array_replace($info, $installed[$module_id]);
         }
 
         if (!empty($info['status'])) {
