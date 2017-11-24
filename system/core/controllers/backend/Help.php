@@ -68,14 +68,19 @@ class Help extends BackendController
      */
     protected function setBreadcrumbViewHelp()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumbs = array();
 
-        $breadcrumb = array(
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $breadcrumbs[] = array(
             'url' => $this->url('admin/help'),
             'text' => $this->text('Help')
         );
 
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -133,7 +138,19 @@ class Help extends BackendController
      */
     protected function setBreadcrumbListHelp()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumbs = array();
+
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**

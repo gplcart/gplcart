@@ -61,8 +61,7 @@ class State extends BackendController
      * @param StateModel $state
      * @param ZoneModel $zone
      */
-    public function __construct(CountryModel $country, StateModel $state,
-            ZoneModel $zone)
+    public function __construct(CountryModel $country, StateModel $state, ZoneModel $zone)
     {
         parent::__construct();
 
@@ -202,14 +201,19 @@ class State extends BackendController
      */
     protected function setBreadcrumbListState()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumbs = array();
 
-        $breadcrumb = array(
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $breadcrumbs[] = array(
             'url' => $this->url('admin/settings/country'),
             'text' => $this->text('Countries')
         );
 
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -300,8 +304,8 @@ class State extends BackendController
     protected function deleteState()
     {
         $this->controlAccess('state_delete');
-        $url = "admin/settings/states/{$this->data_country['code']}";
 
+        $url = "admin/settings/states/{$this->data_country['code']}";
         if ($this->state->delete($this->data_state['state_id'])) {
             $this->redirect($url, $this->text('Country state has been deleted'), 'success');
         }
@@ -315,8 +319,8 @@ class State extends BackendController
     protected function updateState()
     {
         $this->controlAccess('state_edit');
-        $this->state->update($this->data_state['state_id'], $this->getSubmitted());
 
+        $this->state->update($this->data_state['state_id'], $this->getSubmitted());
         $url = "admin/settings/states/{$this->data_country['code']}";
         $this->redirect($url, $this->text('Country state has been updated'), 'success');
     }
@@ -327,8 +331,8 @@ class State extends BackendController
     protected function addState()
     {
         $this->controlAccess('state_add');
-        $this->state->add($this->getSubmitted());
 
+        $this->state->add($this->getSubmitted());
         $url = "admin/settings/states/{$this->data_country['code']}";
         $this->redirect($url, $this->text('Country state has been added'), 'success');
     }
@@ -339,11 +343,9 @@ class State extends BackendController
     protected function setTitleEditState()
     {
         if (isset($this->data_state['state_id'])) {
-            $vars = array('%name' => $this->data_state['name']);
-            $title = $this->text('Edit %name', $vars);
+            $title = $this->text('Edit %name', array('%name' => $this->data_state['name']));
         } else {
-            $vars = array('%name' => $this->data_country['name']);
-            $title = $this->text('Add country state for %name', $vars);
+            $title = $this->text('Add country state for %name', array('%name' => $this->data_country['name']));
         }
 
         $this->setTitle($title);
@@ -354,9 +356,12 @@ class State extends BackendController
      */
     protected function setBreadcrumbEditState()
     {
-        $this->setBreadcrumbHome();
-
         $breadcrumbs = array();
+
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
 
         $breadcrumbs[] = array(
             'url' => $this->url('admin/settings/country'),

@@ -168,7 +168,12 @@ class Bookmark extends BackendController
      */
     protected function setBreadcrumbListBookmark()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**

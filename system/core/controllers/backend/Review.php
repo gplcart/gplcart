@@ -188,7 +188,12 @@ class Review extends BackendController
      */
     protected function setBreadcrumbListReview()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -267,6 +272,7 @@ class Review extends BackendController
     protected function deleteReview()
     {
         $this->controlAccess('review_delete');
+
         $this->review->delete($this->data_review['review_id']);
         $this->redirect('admin/content/review', $this->text('Review has been deleted'), 'success');
     }
@@ -277,6 +283,7 @@ class Review extends BackendController
     protected function updateReview()
     {
         $this->controlAccess('review_edit');
+
         $this->review->update($this->data_review['review_id'], $this->getSubmitted());
         $this->redirect('admin/content/review', $this->text('Review has been updated'), 'success');
     }
@@ -287,6 +294,7 @@ class Review extends BackendController
     protected function addReview()
     {
         $this->controlAccess('review_add');
+
         $this->review->add($this->getSubmitted());
         $this->redirect('admin/content/review', $this->text('Review has been added'), 'success');
     }
@@ -331,14 +339,19 @@ class Review extends BackendController
      */
     protected function setBreadcrumbEditReview()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumbs = array();
 
-        $breadcrumb = array(
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $breadcrumbs[] = array(
             'text' => $this->text('Reviews'),
             'url' => $this->url('admin/content/review')
         );
 
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**

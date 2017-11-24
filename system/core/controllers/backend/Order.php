@@ -99,9 +99,8 @@ class Order extends BackendController
      * @param PaymentModel $payment
      * @param ShippingModel $shipping
      */
-    public function __construct(OrderModel $order, AddressModel $address,
-            PriceModel $price, PriceRuleModel $pricerule, PaymentModel $payment,
-            ShippingModel $shipping)
+    public function __construct(OrderModel $order, AddressModel $address, PriceModel $price,
+            PriceRuleModel $pricerule, PaymentModel $payment, ShippingModel $shipping)
     {
         parent::__construct();
 
@@ -247,6 +246,7 @@ class Order extends BackendController
         if ($this->order->setNotificationUpdated($order) === true) {
             return static::NOTIFICATION_SENT;
         }
+
         return static::NOTIFICATION_ERROR;
     }
 
@@ -335,14 +335,19 @@ class Order extends BackendController
      */
     protected function setBreadcrumbIndexOrder()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumbs = array();
 
-        $breadcrumb = array(
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $breadcrumbs[] = array(
             'text' => $this->text('Orders'),
             'url' => $this->url('admin/sale/order')
         );
 
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -373,10 +378,10 @@ class Order extends BackendController
     {
         $this->prepareOrderTotalTrait($order, $this->price);
         $this->prepareOrderAddressTrait($order, $this->address);
-        $this->prepareOrderStoreTrait($order, $this->store, $this);
-        $this->prepareOrderStatusTrait($order, $this->order, $this);
-        $this->prepareOrderPaymentTrait($order, $this->payment, $this);
-        $this->prepareOrderShippingTrait($order, $this->shipping, $this);
+        $this->prepareOrderStoreTrait($order, $this->store);
+        $this->prepareOrderStatusTrait($order, $this->order);
+        $this->prepareOrderPaymentTrait($order, $this->payment);
+        $this->prepareOrderShippingTrait($order, $this->shipping);
 
         $order['user'] = array();
         if (is_numeric($order['user_id'])) {
@@ -408,13 +413,17 @@ class Order extends BackendController
      */
     protected function setDataPanelLogsIndexOrder()
     {
-        $total = $this->getTotalLogOrder();
-        $limit = $this->config('order_log_limit', 5);
+        $pager_options = array(
+            'total' => $this->getTotalLogOrder(),
+            'limit' => $this->config('order_log_limit', 5)
+        );
+
+        $pager = $this->getPager($pager_options);
 
         $data = array(
             'order' => $this->data_order,
-            'pager' => $this->getPager(array('total' => $total, 'limit' => $limit)),
-            'items' => $this->getListLogOrder($this->getPagerLimit())
+            'pager' => $pager['rendered'],
+            'items' => $this->getListLogOrder($pager['limit'])
         );
 
         $this->setData('pane_log', $this->render('sale/order/panes/log', $data));
@@ -425,7 +434,11 @@ class Order extends BackendController
      */
     protected function setDataPanelSummaryIndexOrder()
     {
-        $data = array('order' => $this->data_order, 'statuses' => $this->order->getStatuses());
+        $data = array(
+            'order' => $this->data_order,
+            'statuses' => $this->order->getStatuses()
+        );
+
         $this->setData('pane_summary', $this->render('sale/order/panes/summary', $data));
     }
 
@@ -452,10 +465,10 @@ class Order extends BackendController
      */
     protected function setDataPanelComponentsIndexOrder()
     {
-        $this->prepareOrderComponentCartTrait($this->data_order, $this, $this->price);
-        $this->prepareOrderComponentPriceRuleTrait($this->data_order, $this, $this->price, $this->pricerule);
-        $this->prepareOrderComponentPaymentTrait($this->data_order, $this, $this->price, $this->payment, $this->order);
-        $this->prepareOrderComponentShippingTrait($this->data_order, $this, $this->price, $this->shipping, $this->order);
+        $this->prepareOrderComponentCartTrait($this->data_order, $this->price);
+        $this->prepareOrderComponentPriceRuleTrait($this->data_order, $this->price, $this->pricerule);
+        $this->prepareOrderComponentPaymentTrait($this->data_order, $this->price, $this->payment, $this->order);
+        $this->prepareOrderComponentShippingTrait($this->data_order, $this->price, $this->shipping, $this->order);
 
         ksort($this->data_order['data']['components']);
 
@@ -584,7 +597,12 @@ class Order extends BackendController
      */
     protected function setBreadcrumbListOrder()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**

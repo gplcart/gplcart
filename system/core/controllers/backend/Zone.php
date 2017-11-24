@@ -143,7 +143,12 @@ class Zone extends BackendController
      */
     protected function setBreadcrumbListZone()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -234,9 +239,11 @@ class Zone extends BackendController
     protected function deleteZone()
     {
         $this->controlAccess('zone_delete');
+
         if ($this->zone->delete($this->data_zone['zone_id'])) {
             $this->redirect('admin/settings/zone', $this->text('Zone has been deleted'), 'success');
         }
+
         $this->redirect('', $this->text('Unable to delete'), 'danger');
     }
 
@@ -246,6 +253,7 @@ class Zone extends BackendController
     protected function updateZone()
     {
         $this->controlAccess('zone_edit');
+
         $this->zone->update($this->data_zone['zone_id'], $this->getSubmitted());
         $this->redirect('admin/settings/zone', $this->text('Zone has been updated'), 'success');
     }
@@ -256,6 +264,7 @@ class Zone extends BackendController
     protected function addZone()
     {
         $this->controlAccess('zone_add');
+
         $this->zone->add($this->getSubmitted());
         $this->redirect('admin/settings/zone', $this->text('Zone has been added'), 'success');
     }
@@ -266,8 +275,7 @@ class Zone extends BackendController
     protected function setTitleEditZone()
     {
         if (isset($this->data_zone['zone_id'])) {
-            $vars = array('%name' => $this->data_zone['title']);
-            $title = $this->text('Edit %name', $vars);
+            $title = $this->text('Edit %name', array('%name' => $this->data_zone['title']));
         } else {
             $title = $this->text('Add zone');
         }
@@ -280,14 +288,19 @@ class Zone extends BackendController
      */
     protected function setBreadcrumbEditZone()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumbs = array();
 
-        $breadcrumb = array(
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $breadcrumbs[] = array(
             'text' => $this->text('Zones'),
             'url' => $this->url('admin/settings/zone')
         );
 
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**

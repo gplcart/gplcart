@@ -224,9 +224,12 @@ class City extends BackendController
      */
     protected function setBreadcrumbListCity()
     {
-        $this->setBreadcrumbHome();
-
         $breadcrumbs = array();
+
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
 
         $breadcrumbs[] = array(
             'url' => $this->url('admin/settings/country'),
@@ -362,8 +365,8 @@ class City extends BackendController
     protected function updateCity()
     {
         $this->controlAccess('city_edit');
-        $this->city->update($this->data_city['city_id'], $this->getSubmitted());
 
+        $this->city->update($this->data_city['city_id'], $this->getSubmitted());
         $url = "admin/settings/cities/{$this->data_country['code']}/{$this->data_state['state_id']}";
         $this->redirect($url, $this->text('City has been updated'), 'success');
     }
@@ -374,8 +377,8 @@ class City extends BackendController
     protected function addCity()
     {
         $this->controlAccess('city_add');
-        $this->city->add($this->getSubmitted());
 
+        $this->city->add($this->getSubmitted());
         $url = "admin/settings/cities/{$this->data_country['code']}/{$this->data_state['state_id']}";
         $this->redirect($url, $this->text('City has been added'), 'success');
     }
@@ -386,8 +389,7 @@ class City extends BackendController
     protected function setTitleEditCity()
     {
         if (isset($this->data_city['city_id'])) {
-            $vars = array('%name' => $this->data_city['name']);
-            $title = $this->text('Edit %name', $vars);
+            $title = $this->text('Edit %name', array('%name' => $this->data_city['name']));
         } else {
             $title = $this->text('Add city');
         }
@@ -400,9 +402,12 @@ class City extends BackendController
      */
     protected function setBreadcrumbEditCity()
     {
-        $this->setBreadcrumbHome();
-
         $breadcrumbs = array();
+
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
 
         $breadcrumbs[] = array(
             'url' => $this->url('admin/settings/country'),

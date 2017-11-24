@@ -154,7 +154,12 @@ class Trigger extends BackendController
      */
     protected function setBreadcrumbListTrigger()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -341,14 +346,19 @@ class Trigger extends BackendController
      */
     protected function setBreadcrumbEditTrigger()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumbs = array();
 
-        $breadcrumb = array(
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $breadcrumbs[] = array(
             'url' => $this->url('admin/settings/trigger'),
             'text' => $this->text('Triggers')
         );
 
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**

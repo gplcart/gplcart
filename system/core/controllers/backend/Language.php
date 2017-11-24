@@ -97,9 +97,11 @@ class Language extends BackendController
     protected function deleteLanguage()
     {
         $this->controlAccess('language_delete');
+
         if ($this->language->delete($this->data_language['code'])) {
             $this->redirect('admin/settings/language', $this->text('Language has been deleted'), 'success');
         }
+
         $this->redirect('', $this->text('Unable to delete'), 'danger');
     }
 
@@ -125,8 +127,8 @@ class Language extends BackendController
     protected function updateLanguage()
     {
         $this->controlAccess('language_edit');
+
         $this->language->update($this->data_language['code'], $this->getSubmitted());
-        // Redirect to a path without language code to avoid "Page not found" if the current language has been disabled
         $this->redirect('admin/settings/language', $this->text('Language has been updated'), 'success', true);
     }
 
@@ -136,6 +138,7 @@ class Language extends BackendController
     protected function addLanguage()
     {
         $this->controlAccess('language_add');
+
         $this->language->add($this->getSubmitted());
         $this->redirect('admin/settings/language', $this->text('Language has been added'), 'success');
     }
@@ -146,8 +149,7 @@ class Language extends BackendController
     protected function setTitleEditLanguage()
     {
         if (isset($this->data_language['code'])) {
-            $vars = array('%name' => $this->data_language['native_name']);
-            $title = $this->text('Edit %name', $vars);
+            $title = $this->text('Edit %name', array('%name' => $this->data_language['native_name']));
         } else {
             $title = $this->text('Add language');
         }
@@ -160,14 +162,19 @@ class Language extends BackendController
      */
     protected function setBreadcrumbEditLanguage()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumbs = array();
 
-        $breadcrumb = array(
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $breadcrumbs[] = array(
             'url' => $this->url('admin/settings/language'),
             'text' => $this->text('Languages')
         );
 
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -199,8 +206,18 @@ class Language extends BackendController
     protected function getListLanguage()
     {
         $languages = $this->language->getList();
+        return $this->prepareListLanguage($languages);
+    }
 
+    /**
+     * Prepare an array of languages
+     * @param array $languages
+     * @return array
+     */
+    protected function prepareListLanguage(array $languages)
+    {
         $in_database = $codes = $statuses = array();
+
         foreach ($languages as $code => &$language) {
             $codes[$code] = $code;
             $statuses[$code] = !empty($language['status']);
@@ -218,6 +235,7 @@ class Language extends BackendController
     protected function refreshLanguage()
     {
         $this->controlToken('refresh');
+
         $code = $this->getQuery('refresh');
         if (!empty($code) && $this->access('language_edit') && $this->language->refresh($code)) {
             $this->redirect('', $this->text('Language has been refreshed'), 'success');
@@ -237,7 +255,12 @@ class Language extends BackendController
      */
     protected function setBreadcrumbListLanguage()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**

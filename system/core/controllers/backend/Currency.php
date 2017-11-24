@@ -61,7 +61,16 @@ class Currency extends BackendController
     protected function getListCurrency()
     {
         $currencies = $this->currency->getList();
+        return $this->preparelistCurrency($currencies);
+    }
 
+    /**
+     * Prepare an array of currencies
+     * @param array $currencies
+     * @return array
+     */
+    protected function preparelistCurrency(array $currencies)
+    {
         $in_database = $codes = $statuses = array();
         foreach ($currencies as $code => &$currency) {
             $codes[$code] = $code;
@@ -86,7 +95,12 @@ class Currency extends BackendController
      */
     protected function setBreadcrumbListCurrency()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -180,9 +194,11 @@ class Currency extends BackendController
     protected function deleteCurrency()
     {
         $this->controlAccess('currency_delete');
+
         if ($this->currency->delete($this->data_currency['code'])) {
             $this->redirect('admin/settings/currency', $this->text('Currency has been deleted'), 'success');
         }
+
         $this->redirect('', $this->text('Unable to delete'), 'danger');
     }
 
@@ -192,6 +208,7 @@ class Currency extends BackendController
     protected function updateCurrency()
     {
         $this->controlAccess('currency_edit');
+
         $this->currency->update($this->data_currency['code'], $this->getSubmitted());
         $this->redirect('admin/settings/currency', $this->text('Currency has been updated'), 'success');
     }
@@ -202,6 +219,7 @@ class Currency extends BackendController
     protected function addCurrency()
     {
         $this->controlAccess('currency_add');
+
         $this->currency->add($this->getSubmitted());
         $this->redirect('admin/settings/currency', $this->text('Currency has been added'), 'success');
     }
@@ -212,8 +230,7 @@ class Currency extends BackendController
     protected function setTitleEditCurrency()
     {
         if (isset($this->data_currency['code'])) {
-            $vars = array('%name' => $this->data_currency['name']);
-            $title = $this->text('Edit %name', $vars);
+            $title = $this->text('Edit %name', array('%name' => $this->data_currency['name']));
         } else {
             $title = $this->text('Add currency');
         }
@@ -226,14 +243,19 @@ class Currency extends BackendController
      */
     protected function setBreadcrumbEditCurrency()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumbs = array();
 
-        $breadcrumb = array(
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $breadcrumbs[] = array(
             'url' => $this->url('admin/settings/currency'),
             'text' => $this->text('Currencies')
         );
 
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**

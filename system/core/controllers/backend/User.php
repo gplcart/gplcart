@@ -171,7 +171,12 @@ class User extends BackendController
      */
     protected function setBreadcrumbListUser()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -301,6 +306,7 @@ class User extends BackendController
     protected function updateUser()
     {
         $this->controlAccess('user_edit');
+
         $this->user->update($this->data_user['user_id'], $this->getSubmitted());
         $this->redirect('admin/user/list', $this->text('User has been updated'), 'success');
     }
@@ -311,6 +317,7 @@ class User extends BackendController
     protected function addUser()
     {
         $this->controlAccess('user_add');
+
         $this->user->add($this->getSubmitted());
         $this->redirect('admin/user/list', $this->text('User has been added'), 'success');
     }
@@ -334,14 +341,19 @@ class User extends BackendController
      */
     protected function setBreadcrumbEditUser()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumbs = array();
 
-        $breadcrumb = array(
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $breadcrumbs[] = array(
             'text' => $this->text('Users'),
             'url' => $this->url('admin/user/list')
         );
 
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**

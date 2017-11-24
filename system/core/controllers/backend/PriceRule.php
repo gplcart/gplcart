@@ -175,7 +175,12 @@ class PriceRule extends BackendController
      */
     protected function setBreadcrumbListPriceRule()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -275,6 +280,7 @@ class PriceRule extends BackendController
     protected function deletePriceRule()
     {
         $this->controlAccess('price_rule_delete');
+
         $this->price_rule->delete($this->data_rule['price_rule_id']);
         $this->redirect('admin/sale/price', $this->text('Price rule has been deleted'), 'success');
     }
@@ -285,6 +291,7 @@ class PriceRule extends BackendController
     protected function updatePriceRule()
     {
         $this->controlAccess('price_rule_edit');
+
         $this->price_rule->update($this->data_rule['price_rule_id'], $this->getSubmitted());
         $this->redirect('admin/sale/price', $this->text('Price rule has been updated'), 'success');
     }
@@ -295,6 +302,7 @@ class PriceRule extends BackendController
     protected function addPriceRule()
     {
         $this->controlAccess('price_rule_add');
+
         $this->price_rule->add($this->getSubmitted());
         $this->redirect('admin/sale/price', $this->text('Price rule has been added'), 'success');
     }
@@ -318,14 +326,19 @@ class PriceRule extends BackendController
      */
     protected function setBreadcrumbEditPriceRule()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumbs = array();
 
-        $breadcrumb = array(
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $breadcrumbs[] = array(
             'text' => $this->text('Price rules'),
             'url' => $this->url('admin/sale/price')
         );
 
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**

@@ -142,7 +142,7 @@ class Category extends BackendController
             $this->category->update($category_id, array('weight' => $weight));
         }
 
-        $this->response->outputJson(array('success' => $this->text('Items have been reordered')));
+        $this->outputJson(array('success' => $this->text('Items have been reordered')));
     }
 
     /**
@@ -154,9 +154,7 @@ class Category extends BackendController
         $options = array(
             'category_group_id' => $this->data_category_group['category_group_id']);
 
-        $categories = $this->category->getTree($options);
-
-        return $this->prepareListCategory($categories);
+        return $this->prepareListCategory($this->category->getTree($options));
     }
 
     /**
@@ -166,10 +164,9 @@ class Category extends BackendController
      */
     protected function prepareListCategory(array $categories)
     {
-        $this->attachEntityUrl($categories, 'category');
-
         foreach ($categories as &$category) {
-            $category['indentation'] = str_repeat('— ', $category['depth']);
+            $this->setItemIndentation($category, '— ');
+            $this->setItemEntityUrl($category, $this->store, 'category');
         }
 
         return $categories;
@@ -180,14 +177,19 @@ class Category extends BackendController
      */
     protected function setBreadcrumbListCategory()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumbs = array();
 
-        $breadcrumb = array(
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $breadcrumbs[] = array(
             'url' => $this->url('admin/content/category-group'),
             'text' => $this->text('Category groups')
         );
 
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -288,15 +290,35 @@ class Category extends BackendController
         if ($this->isPosted('delete')) {
             $this->deleteCategory();
         } else if ($this->isPosted('save') && $this->validateEditCategory()) {
-
-            $this->deleteImages($this->data_category, 'category');
-
+            $this->deleteImagesCategory();
             if (isset($this->data_category['category_id'])) {
                 $this->updateCategory();
             } else {
                 $this->addCategory();
             }
         }
+    }
+
+    /**
+     * Delete category images
+     * @return boolean
+     */
+    protected function deleteImagesCategory()
+    {
+        $file_ids = $this->getPosted('delete_images', array(), true, 'array');
+
+        if (empty($file_ids)) {
+            return false;
+        }
+
+        $options = array(
+            'file_id' => $file_ids,
+            'file_type' => 'image',
+            'id_key' => 'category_id',
+            'id_value' => $this->data_category['category_id']
+        );
+
+        return $this->image->deleteMultiple($options);
     }
 
     /**
@@ -394,9 +416,13 @@ class Category extends BackendController
      */
     protected function setDataImagesEditCategory()
     {
-        $images = $this->getData('category.images', array());
-        $this->attachThumbs($images);
-        $this->setDataAttachedImages($images, 'category');
+        $options = array(
+            'entity' => 'category',
+            'images' => $this->getData('category.images', array())
+        );
+
+        $this->setItemThumb($options, $this->image);
+        $this->setData('attached_images', $this->getWidgetImages($this, $this->language, $options));
     }
 
     /**
@@ -431,9 +457,12 @@ class Category extends BackendController
      */
     protected function setBreadcrumbEditCategory()
     {
-        $this->setBreadcrumbHome();
-
         $breadcrumbs = array();
+
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
 
         $breadcrumbs[] = array(
             'url' => $this->url('admin/content/category-group'),

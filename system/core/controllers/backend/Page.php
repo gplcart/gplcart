@@ -55,8 +55,7 @@ class Page extends BackendController
      * @param CategoryModel $category
      * @param AliasModel $alias
      */
-    public function __construct(PageModel $page, CategoryModel $category,
-            AliasModel $alias)
+    public function __construct(PageModel $page, CategoryModel $category, AliasModel $alias)
     {
         parent::__construct();
 
@@ -148,9 +147,22 @@ class Page extends BackendController
         $options = $this->query_filter;
         $options['limit'] = $this->data_limit;
 
-        $pages = (array) $this->page->getList($options);
-        $this->attachEntityUrl($pages, 'page');
-        return $pages;
+        $list = (array) $this->page->getList($options);
+        return $this->prepareListPage($list);
+    }
+
+    /**
+     * Prepare an array of pages
+     * @param array $items
+     * @return array
+     */
+    protected function prepareListPage(array $items)
+    {
+        foreach ($items as &$item) {
+            $this->setItemEntityUrl($item, $this->store, 'page');
+        }
+
+        return $items;
     }
 
     /**
@@ -166,7 +178,12 @@ class Page extends BackendController
      */
     protected function setBreadcrumbListPage()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -222,6 +239,7 @@ class Page extends BackendController
     protected function preparePage(array $page)
     {
         $user = $this->user->get($page['user_id']);
+
         $page['author'] = isset($user['email']) ? $user['email'] : $this->text('Unknown');
         $page['alias'] = $this->alias->get('page_id', $page['page_id']);
 
@@ -236,13 +254,35 @@ class Page extends BackendController
         if ($this->isPosted('delete')) {
             $this->deletePage();
         } else if ($this->isPosted('save') && $this->validateEditPage()) {
-            $this->deleteImages($this->data_page, 'page');
+            $this->deleteImagesPage();
             if (isset($this->data_page['page_id'])) {
                 $this->updatePage();
             } else {
                 $this->addPage();
             }
         }
+    }
+
+    /**
+     * Delete page images
+     * @return boolean
+     */
+    protected function deleteImagesPage()
+    {
+        $file_ids = $this->getPosted('delete_images', array(), true, 'array');
+
+        if (empty($file_ids)) {
+            return false;
+        }
+
+        $options = array(
+            'file_id' => $file_ids,
+            'file_type' => 'image',
+            'id_key' => 'page_id',
+            'id_value' => $this->data_page['page_id']
+        );
+
+        return $this->image->deleteMultiple($options);
     }
 
     /**
@@ -271,6 +311,7 @@ class Page extends BackendController
     protected function deletePage()
     {
         $this->controlAccess('page_delete');
+
         $this->page->delete($this->data_page['page_id']);
         $this->redirect('admin/content/page', $this->text('Page has been deleted'), 'success');
     }
@@ -281,6 +322,7 @@ class Page extends BackendController
     protected function updatePage()
     {
         $this->controlAccess('page_edit');
+
         $this->page->update($this->data_page['page_id'], $this->getSubmitted());
         $this->redirect('admin/content/page', $this->text('Page has been updated'), 'success');
     }
@@ -291,6 +333,7 @@ class Page extends BackendController
     protected function addPage()
     {
         $this->controlAccess('page_add');
+
         $this->page->add($this->getSubmitted());
         $this->redirect('admin/content/page', $this->text('Page has been added'), 'success');
     }
@@ -300,9 +343,13 @@ class Page extends BackendController
      */
     protected function setDataImagesEditPage()
     {
-        $images = $this->getData('page.images', array());
-        $this->attachThumbs($images);
-        $this->setDataAttachedImages($images, 'page');
+        $options = array(
+            'entity' => 'page',
+            'images' => $this->getData('page.images', array())
+        );
+
+        $this->setItemThumb($options, $this->image);
+        $this->setData('attached_images', $this->getWidgetImages($this, $this->language, $options));
     }
 
     /**
@@ -323,8 +370,7 @@ class Page extends BackendController
     protected function setTitleEditPage()
     {
         if (isset($this->data_page['page_id'])) {
-            $vars = array('%name' => $this->data_page['title']);
-            $title = $this->text('Edit %name', $vars);
+            $title = $this->text('Edit %name', array('%name' => $this->data_page['title']));
         } else {
             $title = $this->text('Add page');
         }
@@ -337,14 +383,19 @@ class Page extends BackendController
      */
     protected function setBreadcrumbEditPage()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumbs = array();
 
-        $breadcrumb = array(
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $breadcrumbs[] = array(
             'text' => $this->text('Pages'),
             'url' => $this->url('admin/content/page')
         );
 
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**

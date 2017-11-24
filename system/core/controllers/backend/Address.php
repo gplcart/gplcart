@@ -98,7 +98,11 @@ class Address extends BackendController
         $options['count'] = true;
         $total = (int) $this->address->getList($options);
 
-        $pager = array('total' => $total, 'query' => $this->query_filter);
+        $pager = array(
+            'total' => $total,
+            'query' => $this->query_filter
+        );
+
         return $this->data_limit = $this->setPager($pager);
     }
 
@@ -142,7 +146,12 @@ class Address extends BackendController
      */
     protected function setBreadcrumbListAddress()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**

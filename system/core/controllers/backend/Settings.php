@@ -59,8 +59,9 @@ class Settings extends BackendController
      */
     protected function getSettings()
     {
-        $default = $this->getDefaultSettings();
         $saved = $this->config();
+        $default = $this->getDefaultSettings();
+
         return gplcart_array_merge($default, $saved);
     }
 
@@ -132,7 +133,12 @@ class Settings extends BackendController
      */
     protected function setBreadcrumbEditSettings()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**

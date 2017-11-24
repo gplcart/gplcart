@@ -47,8 +47,7 @@ class ProductClass extends BackendController
      * @param ProductClassModel $product_class
      * @param FieldModel $field
      */
-    public function __construct(ProductClassModel $product_class,
-            FieldModel $field)
+    public function __construct(ProductClassModel $product_class, FieldModel $field)
     {
         parent::__construct();
 
@@ -152,7 +151,12 @@ class ProductClass extends BackendController
      */
     protected function setBreadcrumbListProductClass()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -243,9 +247,11 @@ class ProductClass extends BackendController
     protected function deleteProductClass()
     {
         $this->controlAccess('product_class_delete');
+
         if ($this->product_class->delete($this->data_product_class['product_class_id'])) {
             $this->redirect('admin/content/product-class', $this->text('Product class has been deleted'), 'success');
         }
+
         $this->redirect('', $this->text('Unable to delete'), 'danger');
     }
 
@@ -255,6 +261,7 @@ class ProductClass extends BackendController
     protected function updateProductClass()
     {
         $this->controlAccess('product_class_edit');
+
         $this->product_class->update($this->data_product_class['product_class_id'], $this->getSubmitted());
         $this->redirect('admin/content/product-class', $this->text('Product class has been updated'), 'success');
     }
@@ -265,6 +272,7 @@ class ProductClass extends BackendController
     protected function addProductClass()
     {
         $this->controlAccess('product_class_add');
+
         $this->product_class->add($this->getSubmitted());
         $this->redirect('admin/content/product-class', $this->text('Product class has been added'), 'success');
     }
@@ -275,8 +283,7 @@ class ProductClass extends BackendController
     protected function setTitleEditProductClass()
     {
         if (isset($this->data_product_class['product_class_id'])) {
-            $vars = array('%name' => $this->data_product_class['title']);
-            $title = $this->text('Edit %name', $vars);
+            $title = $this->text('Edit %name', array('%name' => $this->data_product_class['title']));
         } else {
             $title = $this->text('Add product class');
         }
@@ -289,14 +296,19 @@ class ProductClass extends BackendController
      */
     protected function setBreadcrumbEditProductClass()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumbs = array();
 
-        $breadcrumb = array(
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $breadcrumbs[] = array(
             'text' => $this->text('Product classes'),
             'url' => $this->url('admin/content/product-class')
         );
 
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -386,6 +398,7 @@ class ProductClass extends BackendController
     protected function updateFieldsProductClass()
     {
         $this->controlAccess('product_class_edit');
+
         $id = $this->data_product_class['product_class_id'];
         $this->product_class->deleteField($id);
 
@@ -419,14 +432,19 @@ class ProductClass extends BackendController
      */
     protected function setBreadcrumbFieldsProductClass()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumbs = array();
 
-        $breadcrumb = array(
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $breadcrumbs[] = array(
             'text' => $this->text('Product classes'),
             'url' => $this->url('admin/content/product-class')
         );
 
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -483,6 +501,7 @@ class ProductClass extends BackendController
     protected function addFieldProductClass()
     {
         $this->controlAccess('product_class_edit');
+
         $id = $this->data_product_class['product_class_id'];
         foreach (array_values($this->getSubmitted('values')) as $field_id) {
             $field = array('field_id' => $field_id, 'product_class_id' => $id);
@@ -506,9 +525,12 @@ class ProductClass extends BackendController
      */
     protected function setBreadcrumbEditFieldProductClass()
     {
-        $this->setBreadcrumbHome();
-
         $breadcrumbs = array();
+
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
 
         $breadcrumbs[] = array(
             'text' => $this->text('Product classes'),

@@ -74,19 +74,16 @@ class Alias extends BackendController
     {
         list($selected, $action) = $this->getPostedAction();
 
-        if (!empty($action)) {
-
-            $deleted = 0;
-            foreach ($selected as $id) {
-                if ($action === 'delete' && $this->access('alias_delete')) {
-                    $deleted += (int) $this->alias->delete($id);
-                }
+        $deleted = 0;
+        foreach ($selected as $id) {
+            if ($action === 'delete' && $this->access('alias_delete')) {
+                $deleted += (int) $this->alias->delete($id);
             }
+        }
 
-            if ($deleted > 0) {
-                $message = $this->text('Deleted %num item(s)', array('%num' => $deleted));
-                $this->setMessage($message, 'success');
-            }
+        if ($deleted > 0) {
+            $message = $this->text('Deleted %num item(s)', array('%num' => $deleted));
+            $this->setMessage($message, 'success');
         }
     }
 
@@ -100,7 +97,11 @@ class Alias extends BackendController
         $options['count'] = true;
         $total = (int) $this->alias->getList($options);
 
-        $pager = array('total' => $total, 'query' => $this->query_filter);
+        $pager = array(
+            'total' => $total,
+            'query' => $this->query_filter
+        );
+
         return $this->data_limit = $this->setPager($pager);
     }
 
@@ -145,7 +146,12 @@ class Alias extends BackendController
      */
     protected function setBreadcrumbListAlias()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**

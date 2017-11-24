@@ -41,8 +41,7 @@ class CollectionItem extends BackendController
      * @param CollectionModel $collection
      * @param CollectionItemModel $collection_item
      */
-    public function __construct(CollectionModel $collection,
-            CollectionItemModel $collection_item)
+    public function __construct(CollectionModel $collection, CollectionItemModel $collection_item)
     {
         parent::__construct();
 
@@ -128,7 +127,7 @@ class CollectionItem extends BackendController
         }
 
         $response = array('success' => $this->text('Items have been reordered'));
-        $this->response->outputJson($response);
+        $this->outputJson($response);
     }
 
     /**
@@ -159,14 +158,19 @@ class CollectionItem extends BackendController
      */
     protected function setBreadcrumbListCollectionItem()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumbs = array();
 
-        $breadcrumb = array(
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $breadcrumbs[] = array(
             'text' => $this->text('Collections'),
             'url' => $this->url('admin/content/collection')
         );
 
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -245,10 +249,12 @@ class CollectionItem extends BackendController
     protected function addCollectionItem()
     {
         $this->controlAccess('collection_item_add');
+
         if ($this->collection_item->add($this->getSubmitted())) {
             $url = "admin/content/collection-item/{$this->data_collection['collection_id']}";
             $this->redirect($url, $this->text('Collection item has been added'), 'success');
         }
+
         $this->redirect('', $this->text('Collection item has not been added'), 'warning');
     }
 
@@ -274,9 +280,12 @@ class CollectionItem extends BackendController
      */
     protected function setBreadcrumbEditCollectionItem()
     {
-        $this->setBreadcrumbHome();
-
         $breadcrumbs = array();
+
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
 
         $breadcrumbs[] = array(
             'url' => $this->url('admin/content/collection'),

@@ -120,7 +120,11 @@ class Country extends BackendController
         $query['count'] = true;
         $total = (int) $this->country->getList($query);
 
-        $pager = array('total' => $total, 'query' => $this->query_filter);
+        $pager = array(
+            'total' => $total,
+            'query' => $this->query_filter
+        );
+
         return $this->data_limit = $this->setPager($pager);
     }
 
@@ -149,7 +153,12 @@ class Country extends BackendController
      */
     protected function setBreadcrumbListCountry()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -266,6 +275,7 @@ class Country extends BackendController
     protected function updateCountry()
     {
         $this->controlAccess('country_edit');
+
         $this->country->update($this->data_country['code'], $this->getSubmitted());
         $this->redirect('admin/settings/country', $this->text('Country has been updated'), 'success');
     }
@@ -276,6 +286,7 @@ class Country extends BackendController
     protected function addCountry()
     {
         $this->controlAccess('country_add');
+
         $this->country->add($this->getSubmitted());
         $this->redirect('admin/settings/country', $this->text('Country has been added'), 'success');
     }
@@ -299,14 +310,19 @@ class Country extends BackendController
      */
     protected function setBreadcrumbEditCountry()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumbs = array();
 
-        $breadcrumb = array(
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $breadcrumbs[] = array(
             'url' => $this->url('admin/settings/country'),
             'text' => $this->text('Countries')
         );
 
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**

@@ -41,8 +41,7 @@ class Transaction extends BackendController
      * @param PaymentModel $payment
      * @param TransactionModel $transaction
      */
-    public function __construct(PaymentModel $payment,
-            TransactionModel $transaction)
+    public function __construct(PaymentModel $payment, TransactionModel $transaction)
     {
         parent::__construct();
 
@@ -143,7 +142,12 @@ class Transaction extends BackendController
      */
     protected function setBreadcrumbListTransaction()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**

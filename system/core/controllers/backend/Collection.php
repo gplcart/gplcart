@@ -146,7 +146,12 @@ class Collection extends BackendController
      */
     protected function setBreadcrumbListCollection()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -239,9 +244,11 @@ class Collection extends BackendController
     protected function deleteCollection()
     {
         $this->controlAccess('collection_delete');
+
         if ($this->collection->delete($this->data_collection['collection_id'])) {
             $this->redirect('admin/content/collection', $this->text('Collection has been deleted'), 'success');
         }
+
         $this->redirect('', $this->text('Unable to delete'), 'danger');
     }
 
@@ -251,9 +258,11 @@ class Collection extends BackendController
     protected function updateCollection()
     {
         $this->controlAccess('collection_edit');
+
         if ($this->collection->update($this->data_collection['collection_id'], $this->getSubmitted())) {
             $this->redirect('admin/content/collection', $this->text('Collection has been updated'), 'success');
         }
+
         $this->redirect('', $this->text('Collection has not been updated'), 'danger');
     }
 
@@ -277,8 +286,7 @@ class Collection extends BackendController
     protected function setTitleEditCollection()
     {
         if (isset($this->data_collection['title'])) {
-            $vars = array('%name' => $this->data_collection['title']);
-            $title = $this->text('Edit %name', $vars);
+            $title = $this->text('Edit %name', array('%name' => $this->data_collection['title']));
         } else {
             $title = $this->text('Add collection');
         }
@@ -291,14 +299,19 @@ class Collection extends BackendController
      */
     protected function setBreadcrumbEditCollection()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumbs = array();
 
-        $breadcrumb = array(
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $breadcrumbs[] = array(
             'text' => $this->text('Collections'),
             'url' => $this->url('admin/content/collection'),
         );
 
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**

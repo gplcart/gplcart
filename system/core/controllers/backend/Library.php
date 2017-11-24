@@ -79,7 +79,12 @@ class Library extends BackendController
      */
     protected function setBreadcrumbListLibrary()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**

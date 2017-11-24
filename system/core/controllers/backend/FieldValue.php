@@ -154,7 +154,7 @@ class FieldValue extends BackendController
         }
 
         $response = array('success' => $this->text('Items have been reordered'));
-        $this->response->outputJson($response);
+        $this->outputJson($response);
     }
 
     /**
@@ -196,12 +196,8 @@ class FieldValue extends BackendController
      */
     protected function prepareFieldValues(array $values)
     {
-        $imagestyle = $this->config('image_style', 3);
-
         foreach ($values as &$value) {
-            if (!empty($value['path'])) {
-                $value['thumb'] = $this->image($value['path'], $imagestyle);
-            }
+            $this->setItemThumb($value, $this->image);
         }
 
         return $values;
@@ -221,14 +217,19 @@ class FieldValue extends BackendController
      */
     protected function setBreadcrumbListFieldValue()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumbs = array();
 
-        $breadcrumb = array(
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $breadcrumbs[] = array(
             'url' => $this->url('admin/content/field'),
             'text' => $this->text('Fields')
         );
 
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -398,9 +399,12 @@ class FieldValue extends BackendController
      */
     protected function setBreadcrumbEditFieldValue()
     {
-        $this->setBreadcrumbHome();
-
         $breadcrumbs = array();
+
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
 
         $breadcrumbs[] = array(
             'url' => $this->url('admin/content/field'),

@@ -57,8 +57,8 @@ class Report extends BackendController
      * @param PaymentModel $payment
      * @param ShippingModel $shipping
      */
-    public function __construct(ReportModel $report, UserRoleModel $role,
-            PaymentModel $payment, ShippingModel $shipping)
+    public function __construct(ReportModel $report, UserRoleModel $role, PaymentModel $payment,
+            ShippingModel $shipping)
     {
         parent::__construct();
 
@@ -93,7 +93,12 @@ class Report extends BackendController
      */
     protected function setBreadcrumbListPaymentMethodsReport()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -130,7 +135,12 @@ class Report extends BackendController
      */
     protected function setBreadcrumbListShippingMethodsReport()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -213,7 +223,12 @@ class Report extends BackendController
      */
     protected function setBreadcrumbListRoutesReport()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -339,7 +354,12 @@ class Report extends BackendController
      */
     protected function setBreadcrumbListEventReport()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -376,7 +396,12 @@ class Report extends BackendController
      */
     protected function setBreadcrumbListStatusReport()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**

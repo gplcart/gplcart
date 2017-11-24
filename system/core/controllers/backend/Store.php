@@ -174,7 +174,12 @@ class Store extends BackendController
      */
     protected function setBreadcrumbListStore()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -218,10 +223,11 @@ class Store extends BackendController
      */
     protected function getListCategoryGroupStore()
     {
-        $options = array(
-            'store_id' => $this->data_store['store_id']
-        );
+        if (empty($this->data_store['store_id'])) {
+            return array();
+        }
 
+        $options = array('store_id' => $this->data_store['store_id']);
         return (array) $this->category_group->getList($options);
     }
 
@@ -365,6 +371,7 @@ class Store extends BackendController
     protected function updateStore()
     {
         $this->controlAccess('store_edit');
+
         $this->store->update($this->data_store['store_id'], $this->getSubmitted());
         $this->redirect('admin/settings/store', $this->text('Store has been updated'), 'success');
     }
@@ -375,6 +382,7 @@ class Store extends BackendController
     protected function addStore()
     {
         $this->controlAccess('store_add');
+
         $this->store->add($this->getSubmitted());
         $this->redirect('admin/settings/store', $this->text('Store has been added'), 'success');
     }
@@ -415,8 +423,7 @@ class Store extends BackendController
     protected function seTitleEditStore()
     {
         if (isset($this->data_store['store_id'])) {
-            $vars = array('%name' => $this->data_store['name']);
-            $title = $this->text('Edit %name', $vars);
+            $title = $this->text('Edit %name', array('%name' => $this->data_store['name']));
         } else {
             $title = $this->text('Add store');
         }
@@ -429,14 +436,19 @@ class Store extends BackendController
      */
     protected function setBreadcrumbEditStore()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumbs = array();
 
-        $breadcrumb = array(
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $breadcrumbs[] = array(
             'url' => $this->url('admin/settings/store'),
             'text' => $this->text('Stores')
         );
 
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**

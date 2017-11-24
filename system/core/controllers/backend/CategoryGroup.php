@@ -113,7 +113,12 @@ class CategoryGroup extends BackendController
      */
     protected function setBreadcrumbListCategoryGroup()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -204,6 +209,7 @@ class CategoryGroup extends BackendController
     protected function deleteCategoryGroup()
     {
         $this->controlAccess('category_group_delete');
+
         if ($this->category_group->delete($this->data_category_group['category_group_id'])) {
             $this->redirect('admin/content/category-group', $this->text('Category group has been deleted'), 'success');
         }
@@ -239,8 +245,7 @@ class CategoryGroup extends BackendController
     protected function setTitleEditCategoryGroup()
     {
         if (isset($this->data_category_group['category_group_id'])) {
-            $vars = array('%name' => $this->data_category_group['title']);
-            $title = $this->text('Edit %name', $vars);
+            $title = $this->text('Edit %name', array('%name' => $this->data_category_group['title']));
         } else {
             $title = $this->text('Add category group');
         }
@@ -253,14 +258,19 @@ class CategoryGroup extends BackendController
      */
     protected function setBreadcrumbEditCategoryGroup()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumbs = array();
 
-        $breadcrumb = array(
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $breadcrumbs[] = array(
             'url' => $this->url('admin/content/category-group'),
             'text' => $this->text('Category groups')
         );
 
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**

@@ -136,7 +136,12 @@ class Field extends BackendController
      */
     protected function setBreadcrumbListField()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -229,9 +234,11 @@ class Field extends BackendController
     protected function deleteField()
     {
         $this->controlAccess('field_delete');
+
         if ($this->field->delete($this->data_field['field_id'])) {
             $this->redirect('admin/content/field', $this->text('Field has been deleted'), 'success');
         }
+
         $this->redirect('', $this->text('Unable to delete'), 'danger');
     }
 
@@ -241,6 +248,7 @@ class Field extends BackendController
     protected function updateField()
     {
         $this->controlAccess('field_edit');
+
         $this->field->update($this->data_field['field_id'], $this->getSubmitted());
         $this->redirect('admin/content/field', $this->text('Field has been updated'), 'success');
     }
@@ -251,6 +259,7 @@ class Field extends BackendController
     protected function addField()
     {
         $this->controlAccess('field_add');
+
         $this->field->add($this->getSubmitted());
         $this->redirect('admin/content/field', $this->text('Field has been added'), 'success');
     }
@@ -274,14 +283,19 @@ class Field extends BackendController
      */
     protected function setBreadcrumbEditField()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumbs = array();
 
-        $breadcrumb = array(
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $breadcrumbs[] = array(
             'url' => $this->url('admin/content/field'),
             'text' => $this->text('Fields')
         );
 
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**

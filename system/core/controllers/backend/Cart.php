@@ -89,7 +89,11 @@ class Cart extends BackendController
         $options['count'] = true;
         $total = (int) $this->cart->getList($options, 'cart_id');
 
-        $pager = array('total' => $total, 'query' => $this->query_filter);
+        $pager = array(
+            'total' => $total,
+            'query' => $this->query_filter
+        );
+
         return $this->data_limit = $this->setPager($pager);
     }
 
@@ -101,10 +105,23 @@ class Cart extends BackendController
     {
         $options = $this->query_filter;
         $options['limit'] = $this->data_limit;
-        $list = (array) $this->cart->getList($options, 'cart_id');
 
-        $this->attachEntityUrl($list, 'product');
-        return $list;
+        $list = (array) $this->cart->getList($options, 'cart_id');
+        return $this->prepareListCart($list);
+    }
+
+    /**
+     * Prepare an array of cart items
+     * @param array $items
+     * @return array
+     */
+    protected function prepareListCart(array $items)
+    {
+        foreach ($items as &$item) {
+            $this->setItemEntityUrl($item, $this->store, 'product');
+        }
+
+        return $items;
     }
 
     /**
@@ -120,7 +137,12 @@ class Cart extends BackendController
      */
     protected function setBreadcrumbListCart()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**

@@ -83,7 +83,12 @@ class ImageStyle extends BackendController
      */
     protected function setBreadcrumbListImageStyle()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -191,6 +196,7 @@ class ImageStyle extends BackendController
     protected function updateImageStyle()
     {
         $this->controlAccess('image_style_edit');
+
         $this->image->updateStyle($this->data_imagestyle['imagestyle_id'], $this->getSubmitted());
         $this->image->clearCache($this->data_imagestyle['imagestyle_id']);
         $this->redirect('admin/settings/imagestyle', $this->text('Image style has been updated'), 'success');
@@ -202,6 +208,7 @@ class ImageStyle extends BackendController
     protected function addImageStyle()
     {
         $this->controlAccess('image_style_add');
+
         $this->image->addStyle($this->getSubmitted());
         $this->redirect('admin/settings/imagestyle', $this->text('Image style has been added'), 'success');
     }
@@ -243,8 +250,7 @@ class ImageStyle extends BackendController
     protected function setTitleEditImageStyle()
     {
         if (isset($this->data_imagestyle['imagestyle_id'])) {
-            $vars = array('%name' => $this->data_imagestyle['name']);
-            $title = $this->text('Edit %name', $vars);
+            $title = $this->text('Edit %name', array('%name' => $this->data_imagestyle['name']));
         } else {
             $title = $this->text('Add image style');
         }
@@ -257,14 +263,19 @@ class ImageStyle extends BackendController
      */
     protected function setBreadcrumbEditImageStyle()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumbs = array();
 
-        $breadcrumb = array(
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $breadcrumbs[] = array(
             'url' => $this->url('admin/settings/imagestyle'),
             'text' => $this->text('Image styles')
         );
 
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**

@@ -46,7 +46,12 @@ class Section extends BackendController
      */
     protected function setDataListSection($parent)
     {
-        $this->setData('menu', $this->renderAdminMenu($parent, array('template' => 'section/menu')));
+        $options = array(
+            'parent_url' => $parent,
+            'template' => 'section/menu'
+        );
+
+        $this->setData('menu', $this->getWidgetAdminMenu($this, $this->route, $options));
     }
 
     /**
@@ -68,7 +73,12 @@ class Section extends BackendController
      */
     protected function setBreadcrumbListSection()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**

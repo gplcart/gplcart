@@ -87,9 +87,8 @@ class Product extends BackendController
      * @param CurrencyModel $currency
      * @param AliasModel $alias
      */
-    public function __construct(ProductModel $product,
-            ProductClassModel $product_class, CategoryModel $category,
-            CategoryGroupModel $category_group, PriceModel $price,
+    public function __construct(ProductModel $product, ProductClassModel $product_class,
+            CategoryModel $category, CategoryGroupModel $category_group, PriceModel $price,
             CurrencyModel $currency, AliasModel $alias)
     {
         parent::__construct();
@@ -200,10 +199,9 @@ class Product extends BackendController
      */
     protected function prepareListProduct(array $products)
     {
-        $this->attachEntityUrl($products, 'product');
-
         foreach ($products as &$product) {
-            $product['price'] = $this->price->decimal($product['price'], $product['currency']);
+            $this->setItemPriceFormatted($product, $this->price);
+            $this->setItemEntityUrl($product, $this->store, 'product');
         }
 
         return $products;
@@ -222,7 +220,12 @@ class Product extends BackendController
      */
     protected function setBreadcrumbListProduct()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -245,13 +248,12 @@ class Product extends BackendController
         $this->setBreadcrumbEditProduct();
 
         $this->setData('product', $this->data_product);
-        $this->setData('related', $this->getRelatedProduct());
-        $this->setData('classes', $this->getClassesProduct());
         $this->setData('size_units', $this->product->getSizeUnits());
         $this->setData('weight_units', $this->product->getWeightUnits());
         $this->setData('default_currency', $this->currency->getDefault());
-        $this->setData('subtract_default', $this->config->get('product_subtract', 0));
         $this->setData('languages', $this->language->getList(false, true));
+        $this->setData('subtract_default', $this->config->get('product_subtract', 0));
+        $this->setData('classes', $this->product_class->getList(array('status' => 1)));
 
         $this->submitEditProduct();
 
@@ -263,15 +265,6 @@ class Product extends BackendController
 
         $this->setJsEditProduct();
         $this->outputEditProduct();
-    }
-
-    /**
-     * Returns an array of enabled product classes
-     * @return array
-     */
-    protected function getClassesProduct()
-    {
-        return $this->product_class->getList(array('status' => 1));
     }
 
     /**
@@ -317,6 +310,13 @@ class Product extends BackendController
         $product['alias'] = $this->alias->get('product_id', $product['product_id']);
         $product['price'] = $this->price->decimal($product['price'], $product['currency']);
 
+        $options = array(
+            'store_id' => $product['store_id'],
+            'product_id' => $product['product_id']
+        );
+
+        $product['related'] = $this->product->getRelated($options);
+
         return $this->prepareCombinationsProduct($product);
     }
 
@@ -335,34 +335,13 @@ class Product extends BackendController
             $combination['path'] = $combination['thumb'] = '';
             if (!empty($product['images'][$combination['file_id']])) {
                 $combination['path'] = $product['images'][$combination['file_id']]['path'];
-                $this->attachThumb($combination);
+                $this->setItemThumb($combination, $this->image);
             }
+
             $combination['price'] = $this->price->decimal($combination['price'], $product['currency']);
         }
 
         return $product;
-    }
-
-    /**
-     * Returns an array of related products
-     * @return array
-     */
-    protected function getRelatedProduct()
-    {
-        if (empty($this->data_product['product_id'])) {
-            return array();
-        }
-
-        $options = array(
-            'load' => true,
-            'store_id' => $this->data_product['store_id'],
-            'product_id' => $this->data_product['product_id']
-        );
-
-        $products = $this->product->getRelated($options);
-        $this->attachEntityUrl($products, 'product');
-
-        return $products;
     }
 
     /**
@@ -373,13 +352,35 @@ class Product extends BackendController
         if ($this->isPosted('delete')) {
             $this->deleteProduct();
         } else if ($this->isPosted('save') && $this->validateEditProduct()) {
-            $this->deleteImages($this->data_product, 'product');
+            $this->deleteImagesProduct();
             if (isset($this->data_product['product_id'])) {
                 $this->updateProduct();
             } else {
                 $this->addProduct();
             }
         }
+    }
+
+    /**
+     * Delete product images
+     * @return boolean
+     */
+    protected function deleteImagesProduct()
+    {
+        $file_ids = $this->getPosted('delete_images', array(), true, 'array');
+
+        if (empty($file_ids)) {
+            return false;
+        }
+
+        $options = array(
+            'file_id' => $file_ids,
+            'file_type' => 'image',
+            'id_key' => 'product_id',
+            'id_value' => $this->data_product['product_id']
+        );
+
+        return $this->image->deleteMultiple($options);
     }
 
     /**
@@ -429,6 +430,7 @@ class Product extends BackendController
     protected function updateProduct()
     {
         $this->controlAccess('product_edit');
+
         $this->product->update($this->data_product['product_id'], $this->getSubmitted());
         $this->redirect('admin/content/product', $this->text('Product has been updated'), 'success');
     }
@@ -439,6 +441,7 @@ class Product extends BackendController
     protected function addProduct()
     {
         $this->controlAccess('product_add');
+
         $this->product->add($this->getSubmitted());
         $this->redirect('admin/content/product', $this->text('Product has been added'), 'success');
     }
@@ -501,13 +504,16 @@ class Product extends BackendController
      */
     protected function setDataRelatedEditProduct()
     {
-        $related = $this->getData('product.related');
+        $product_ids = $this->getData('product.related');
+        $products = empty($product_ids) ? array() : (array) $this->product->getList(array('product_id' => $product_ids));
 
-        if (!empty($related)) {
-            $products = (array) $this->product->getList(array('product_id' => $related));
-            $this->attachEntityUrl($products, 'product');
-            $this->setData('related', $products);
-        }
+        $vars = array(
+            'multiple' => true,
+            'products' => $products,
+            'name' => gplcart_array_form(array('product', 'related'))
+        );
+
+        $this->setData('attached_related', $this->render('content/product/picker', $vars));
     }
 
     /**
@@ -515,9 +521,13 @@ class Product extends BackendController
      */
     protected function setDataImagesEditProduct()
     {
-        $images = $this->getData('product.images', array());
-        $this->attachThumbs($images);
-        $this->setDataAttachedImages($images, 'product');
+        $options = array(
+            'entity' => 'product',
+            'images' => $this->getData('product.images', array())
+        );
+
+        $this->setItemThumb($options, $this->image);
+        $this->setData('attached_images', $this->getWidgetImages($this, $this->language, $options));
     }
 
     /**
@@ -534,8 +544,7 @@ class Product extends BackendController
     protected function setTitleEditProduct()
     {
         if (isset($this->data_product['product_id'])) {
-            $vars = array('%name' => $this->data_product['title']);
-            $title = $this->text('Edit %name', $vars);
+            $title = $this->text('Edit %name', array('%name' => $this->data_product['title']));
         } else {
             $title = $this->text('Add product');
         }
@@ -548,14 +557,19 @@ class Product extends BackendController
      */
     protected function setBreadcrumbEditProduct()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumbs = array();
 
-        $breadcrumb = array(
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $breadcrumbs[] = array(
             'text' => $this->text('Products'),
             'url' => $this->url('admin/content/product')
         );
 
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**

@@ -144,6 +144,7 @@ class UserRole extends BackendController
     protected function updateUserRole()
     {
         $this->controlAccess('user_role_edit');
+
         $this->role->update($this->data_role['role_id'], $this->getSubmitted());
         $this->redirect('', $this->text('Role has been updated'), 'success');
     }
@@ -154,6 +155,7 @@ class UserRole extends BackendController
     protected function addUserRole()
     {
         $this->controlAccess('user_role_add');
+
         $this->role->add($this->getSubmitted());
         $this->redirect('admin/user/role', $this->text('Role has been added'), 'success');
     }
@@ -164,8 +166,7 @@ class UserRole extends BackendController
     protected function setTitleEditUserRole()
     {
         if (isset($this->data_role['role_id'])) {
-            $vars = array('%name' => $this->data_role['name']);
-            $title = $this->text('Edit %name', $vars);
+            $title = $this->text('Edit %name', array('%name' => $this->data_role['name']));
         } else {
             $title = $this->text('Add role');
         }
@@ -178,14 +179,19 @@ class UserRole extends BackendController
      */
     protected function setBreadcrumbEditUserRole()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumbs = array();
 
-        $breadcrumb = array(
+        $breadcrumbs[] = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $breadcrumbs[] = array(
             'text' => $this->text('Roles'),
             'url' => $this->url('admin/user/role')
         );
 
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**
@@ -313,7 +319,12 @@ class UserRole extends BackendController
      */
     protected function setBreadcrumbListUserRole()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('admin'),
+            'text' => $this->text('Dashboard')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
