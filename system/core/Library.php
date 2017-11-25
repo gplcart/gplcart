@@ -153,7 +153,7 @@ class Library
             }
         }
 
-        $this->validateDependenciesTrait($libraries);
+        $this->validateDependencies($libraries);
         $prepared = $this->graph->build($libraries);
         gplcart_array_sort($prepared);
 

@@ -21,61 +21,57 @@ trait Dependency
      * @param bool $enabled
      * @return array
      */
-    protected function validateDependenciesTrait(array &$items, $enabled = false)
+    public function validateDependencies(array &$items, $enabled = false)
     {
         foreach ($items as &$item) {
-            $this->validateDependencyTrait($items, $item, $enabled);
+            $this->validateDependency($item, $items, $enabled);
         }
+
         return $items;
     }
 
     /**
      * Validates dependency for a single item
-     * @param array $items
      * @param array $item
+     * @param array $items
      * @param bool $enabled
      * @return null
      */
-    protected function validateDependencyTrait($items, &$item, $enabled = false)
+    protected function validateDependency(&$item, $items, $enabled = false)
     {
-        if (empty($item['dependencies'])) {
-            return null;
-        }
+        if (!empty($item['dependencies'])) {
+            foreach ($item['dependencies'] as $id => $version) {
 
-        foreach ($item['dependencies'] as $id => $version) {
+                if (!isset($items[$id])) {
+                    $item['errors'][] = array('Unknown dependency @id', array('@id' => $id));
+                    continue;
+                }
 
-            if (!isset($items[$id])) {
-                $item['errors'][] = array('Unknown dependency @id', array('@id' => $id));
-                continue;
-            }
+                if ($enabled && empty($items[$id]['status'])) {
+                    $item['errors'][] = array('Requires @id to be enabled', array('@id' => $items[$id]['name']));
+                    continue;
+                }
 
-            if ($enabled && empty($items[$id]['status'])) {
-                $item['errors'][] = array('Requires @id to be enabled', array('@id' => $items[$id]['name']));
-                continue;
-            }
+                $components = $this->getVersionComponents($version);
 
-            $components = $this->getVersionComponentsTrait($version);
+                if (empty($components)) {
+                    $item['errors'][] = array('Unknown version of @name', array('@name' => $id));
+                    continue;
+                }
 
-            if (empty($components)) {
-                $item['errors'][] = array('Unknown version of @name', array('@name' => $id));
-                continue;
-            }
+                list($operator, $number) = $components;
 
-            list($operator, $number) = $components;
+                if ($operator === '=' && strpos($number, 'x') !== false) {
+                    $allowed = version_compare($items[$id]['version'], $number);
+                } else {
+                    $allowed = version_compare($items[$id]['version'], $number, $operator);
+                }
 
-            if ($operator === '=' && strpos($number, 'x') !== false) {
-                // Check versions like 1.x
-                $allowed = version_compare($items[$id]['version'], $number);
-            } else {
-                $allowed = version_compare($items[$id]['version'], $number, $operator);
-            }
-
-            if (!$allowed) {
-                $item['errors'][] = array('Requires incompatible version of @name', array('@name' => $id));
+                if (!$allowed) {
+                    $item['errors'][] = array('Requires incompatible version of @name', array('@name' => $id));
+                }
             }
         }
-
-        return null;
     }
 
     /**
@@ -83,7 +79,7 @@ trait Dependency
      * @param string $data
      * @return array
      */
-    protected function getVersionComponentsTrait($data)
+    public function getVersionComponents($data)
     {
         $string = str_replace(' ', '', $data);
 

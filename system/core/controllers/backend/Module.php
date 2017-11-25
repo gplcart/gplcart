@@ -198,7 +198,7 @@ class Module extends BackendController
      */
     protected function checkDependenciesListModule(array &$modules)
     {
-        $this->validateDependenciesTrait($modules);
+        $this->validateDependencies($modules);
         $modules = $this->graph->build($modules);
     }
 
