@@ -42,6 +42,7 @@ trait Job
         }
 
         $controller->setJsSettings('job', $job);
+
         if ($controller->getQuery('process_job') === $job['id'] && $controller->isAjax()) {
             $controller->outputJson($job_model->process($job));
         }
