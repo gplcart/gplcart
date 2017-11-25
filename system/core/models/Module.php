@@ -318,7 +318,7 @@ class Module
             return true;
         }
 
-        $components = $this->getVersionComponentsTrait($module['php']);
+        $components = $this->getVersionComponents($module['php']);
 
         if (empty($components)) {
             return $this->language->text('Requires incompatible version of @name', array('@name' => 'PHP'));
@@ -341,7 +341,7 @@ class Module
     protected function checkDependenciesModule($module_id)
     {
         $modules = $this->getList();
-        $validated = $this->validateDependenciesTrait($modules, true);
+        $validated = $this->validateDependencies($modules, true);
 
         if (empty($validated[$module_id]['errors'])) {
             return true;
