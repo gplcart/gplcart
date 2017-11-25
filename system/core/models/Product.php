@@ -11,10 +11,7 @@ namespace gplcart\core\models;
 
 use gplcart\core\Config,
     gplcart\core\Hook,
-    gplcart\core\Cache,
     gplcart\core\Database;
-use gplcart\core\traits\Image as ImageTrait,
-    gplcart\core\traits\Alias as AliasTrait;
 use gplcart\core\models\Sku as SkuModel,
     gplcart\core\models\File as FileModel,
     gplcart\core\models\Alias as AliasModel,
@@ -22,9 +19,12 @@ use gplcart\core\models\Sku as SkuModel,
     gplcart\core\models\Search as SearchModel,
     gplcart\core\models\Language as LanguageModel,
     gplcart\core\models\PriceRule as PriceRuleModel,
+    gplcart\core\models\Translation as TranslationModel,
     gplcart\core\models\ProductField as ProductFieldModel,
     gplcart\core\models\ProductRelation as ProductRelationModel;
 use gplcart\core\helpers\Request as RequestHelper;
+use gplcart\core\traits\Image as ImageTrait,
+    gplcart\core\traits\Alias as AliasTrait;
 
 /**
  * Manages basic behaviors and data related to products
@@ -52,12 +52,6 @@ class Product
      * @var \gplcart\core\Config $config
      */
     protected $config;
-
-    /**
-     * Cache instance
-     * @var \gplcart\core\Cache $cache
-     */
-    protected $cache;
 
     /**
      * Product field model instance
@@ -114,6 +108,12 @@ class Product
     protected $file;
 
     /**
+     * Translation model instance
+     * @var \gplcart\core\models\Translation $translation
+     */
+    protected $translation;
+
+    /**
      * Request class instance
      * @var \gplcart\core\helpers\Request $request
      */
@@ -123,7 +123,6 @@ class Product
      * @param Hook $hook
      * @param Database $db
      * @param Config $config
-     * @param Cache $cache
      * @param LanguageModel $language
      * @param AliasModel $alias
      * @param FileModel $file
@@ -133,12 +132,13 @@ class Product
      * @param SearchModel $search
      * @param ProductFieldModel $product_field
      * @param ProductRelationModel $product_relation
+     * @param TranslationModel $translation
      * @param RequestHelper $request
      */
-    public function __construct(Hook $hook, Database $db, Config $config, Cache $cache,
-            LanguageModel $language, AliasModel $alias, FileModel $file, PriceModel $price,
-            PriceRuleModel $pricerule, SkuModel $sku, SearchModel $search,
-            ProductFieldModel $product_field, ProductRelationModel $product_relation,
+    public function __construct(Hook $hook, Database $db, Config $config, LanguageModel $language,
+            AliasModel $alias, FileModel $file, PriceModel $price, PriceRuleModel $pricerule,
+            SkuModel $sku, SearchModel $search, ProductFieldModel $product_field,
+            ProductRelationModel $product_relation, TranslationModel $translation,
             RequestHelper $request)
     {
         $this->db = $db;
@@ -149,11 +149,11 @@ class Product
         $this->file = $file;
         $this->alias = $alias;
         $this->price = $price;
-        $this->cache = $cache;
         $this->search = $search;
         $this->request = $request;
         $this->language = $language;
         $this->pricerule = $pricerule;
+        $this->translation = $translation;
         $this->product_field = $product_field;
         $this->product_relation = $product_relation;
     }
@@ -179,14 +179,14 @@ class Product
 
         $result = $data['product_id'] = $this->db->insert('product', $data);
 
-        $this->setTranslationTrait($this->db, $data, 'product', false);
-        $this->setImagesTrait($this->file, $data, 'product');
+        $this->setTranslations($data, $this->translation, 'product', false);
+        $this->setImages($data, $this->file, 'product');
 
         $this->setSku($data, false);
         $this->setSkuCombinations($data, false);
         $this->setOptions($data, false);
         $this->setAttributes($data, false);
-        $this->setAliasTrait($this->alias, $data, 'product', false);
+        $this->setAlias($data, $this->alias, 'product', false);
         $this->setRelated($data, false);
 
         $this->search->index('product', $data);
@@ -218,9 +218,9 @@ class Product
         $updated = $this->db->update('product', $data, $conditions);
 
         $updated += (int) $this->setSku($data);
-        $updated += (int) $this->setTranslationTrait($this->db, $data, 'product');
-        $updated += (int) $this->setImagesTrait($this->file, $data, 'product');
-        $updated += (int) $this->setAliasTrait($this->alias, $data, 'product');
+        $updated += (int) $this->setTranslations($data, $this->translation, 'product');
+        $updated += (int) $this->setImages($data, $this->file, 'product');
+        $updated += (int) $this->setAlias($data, $this->alias, 'product');
         $updated += (int) $this->setSkuCombinations($data);
         $updated += (int) $this->setOptions($data);
         $updated += (int) $this->setAttributes($data);
@@ -230,7 +230,6 @@ class Product
 
         if ($result) {
             $this->search->index('product', $product_id);
-            $this->cache->clear("product.$product_id.", array('pattern' => '*'));
         }
 
         $this->hook->attach('product.update.after', $product_id, $data, $result, $this);
@@ -317,8 +316,8 @@ class Product
 
         $this->attachFields($result);
         $this->attachSku($result);
-        $this->attachImagesTrait($this->db, $this->file, $result, 'product', $options['language']);
-        $this->attachTranslationTrait($this->db, $result, 'product', $options['language']);
+        $this->attachImages($result, $this->file, $this->translation, 'product', $options['language']);
+        $this->attachTranslations($result, $this->translation, 'product', $options['language']);
 
         $this->hook->attach('product.get.after', $product_id, $options, $result, $this);
 
@@ -346,9 +345,9 @@ class Product
             return array();
         }
 
-        $product = reset($list);
-        $this->attachImagesTrait($this->db, $this->file, $product, 'product', $language);
-        return $product;
+        $result = reset($list);
+        $this->attachImages($result, $this->file, $this->translation, 'product', $language);
+        return $result;
     }
 
     /**
