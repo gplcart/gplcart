@@ -10,13 +10,13 @@
 namespace gplcart\core\traits;
 
 /**
- * Contains methods to get rendered widgets
+ * Collection of widgets
  */
 trait Widget
 {
 
     /**
-     * Returns the rendered admin menu
+     * Returns rendered admin menu
      * @param \gplcart\core\Controller $controller
      * @param \gplcart\core\Route $route_class
      * @param array $options
@@ -50,7 +50,7 @@ trait Widget
     }
 
     /**
-     * Returns the rendered menu
+     * Returns rendered menu
      * @param \gplcart\core\Controller $controller
      * @param array $options
      * @return string
@@ -103,17 +103,47 @@ trait Widget
     /**
      * Returns rendered image widget
      * @param \gplcart\core\Controller $controller
-     * @param \gplcart\core\models\Language $language
+     * @param \gplcart\core\models\Language $language_model
      * @param array $options
      * @return string
      */
-    public function getWidgetImages($controller, $language, array $options)
+    public function getWidgetImages($controller, $language_model, array $options)
     {
         $options += array(
-            'languages' => $language->getList(false, true)
+            'languages' => $language_model->getList(false, true)
         );
 
         return $controller->render('common/image', $options);
+    }
+
+    /**
+     * Returns render widget with buttons from Oauth providers
+     * @param \gplcart\core\Controller $controller
+     * @param \gplcart\core\models\Oauth $oauth_model
+     * @param array $options
+     * @return string
+     */
+    public function getWidgetOauthButtons($controller, $oauth_model, array $options = array())
+    {
+        $options += array(
+            'type' => 'login',
+            'status' => true
+        );
+
+        $providers = $oauth_model->getProviders($options);
+
+        $buttons = array();
+        foreach ($providers as $provider_id => $provider) {
+            if (!empty($provider['template']['button'])) {
+                $url = $oauth_model->url($provider);
+                $buttons[$provider_id]['url'] = $url;
+                $buttons[$provider_id]['provider'] = $provider;
+                $data = array('provider' => $provider, 'url' => $url);
+                $buttons[$provider_id]['rendered'] = $controller->render($provider['template']['button'], $data);
+            }
+        }
+
+        return $controller->render('common/oauth', array('buttons' => $buttons));
     }
 
 }
