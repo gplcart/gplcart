@@ -70,8 +70,7 @@ class Shipping
                 continue;
             }
 
-            if (!empty($data['module']) && (empty($method['module'])//
-                    || !in_array($method['module'], (array) $data['module']))) {
+            if (!empty($data['module']) && (empty($method['module']) || !in_array($method['module'], (array) $data['module']))) {
                 unset($methods[$id]);
                 continue;
             }
