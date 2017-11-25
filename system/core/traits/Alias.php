@@ -17,24 +17,24 @@ trait Alias
 
     /**
      * Deletes and/or adds an alias
-     * @param \gplcart\core\models\Alias $model
      * @param array $data
+     * @param \gplcart\core\models\Alias $alias_model
      * @param string $entity
-     * @param boolean $update
+     * @param boolean $delete_existing
      * @return mixed
      */
-    protected function setAliasTrait($model, $data, $entity, $update = true)
+    public function setAlias(array $data, $alias_model, $entity, $delete_existing = true)
     {
-        if (empty($data['form']) && empty($data['alias'])) {
+        if ((empty($data['form']) && empty($data['alias'])) || empty($data["{$entity}_id"])) {
             return null;
         }
 
-        if ($update) {
-            $model->delete("{$entity}_id", $data["{$entity}_id"]);
+        if ($delete_existing) {
+            $alias_model->delete("{$entity}_id", $data["{$entity}_id"]);
         }
 
         if (empty($data['alias'])) {
-            $data['alias'] = $model->generateEntity($entity, $data);
+            $data['alias'] = $alias_model->generateEntity($entity, $data);
         }
 
         $alias = array(
@@ -43,7 +43,7 @@ trait Alias
             'id_value' => $data["{$entity}_id"]
         );
 
-        return $model->add($alias);
+        return $alias_model->add($alias);
     }
 
 }
