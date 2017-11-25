@@ -317,6 +317,17 @@ class Order
     }
 
     /**
+     * Returns a component type name
+     * @param string $name
+     * @return string
+     */
+    public function getComponentType($name)
+    {
+        $types = $this->getComponentTypes();
+        return empty($types[$name]) ? '' : $types[$name];
+    }
+
+    /**
      * Updates an order
      * @param integer $order_id
      * @param array $data
