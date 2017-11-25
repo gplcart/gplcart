@@ -11,7 +11,8 @@ namespace gplcart\core\models;
 
 use gplcart\core\Hook,
     gplcart\core\Database;
-use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\models\Language as LanguageModel,
+    gplcart\core\models\Translation as TranslationModel;
 use gplcart\core\traits\Translation as TranslationTrait;
 
 /**
@@ -35,21 +36,30 @@ class Field
     protected $hook;
 
     /**
-     * Language model instance
+     * Language model class instance
      * @var \gplcart\core\models\Language $language
      */
     protected $language;
 
     /**
+     * Translation model class instance
+     * @var \gplcart\core\models\Translation $translation
+     */
+    protected $translation;
+
+    /**
      * @param Hook $hook
      * @param Database $db
      * @param LanguageModel $language
+     * @param TranslationModel $translation
      */
-    public function __construct(Hook $hook, Database $db, LanguageModel $language)
+    public function __construct(Hook $hook, Database $db, LanguageModel $language,
+            TranslationModel $translation)
     {
         $this->db = $db;
         $this->hook = $hook;
         $this->language = $language;
+        $this->translation = $translation;
     }
 
     /**
@@ -111,7 +121,7 @@ class Field
 
         $result = $data['field_id'] = $this->db->insert('field', $data);
 
-        $this->setTranslationTrait($this->db, $data, 'field', false);
+        $this->setTranslations($data, $this->translation, 'field', false);
 
         $this->hook->attach('field.add.after', $data, $result, $this);
         return (int) $result;
@@ -204,7 +214,7 @@ class Field
         $sql = 'SELECT * FROM field WHERE field_id=?';
         $result = $this->db->fetch($sql, array($field_id));
 
-        $this->attachTranslationTrait($this->db, $result, 'field', $language);
+        $this->attachTranslations($result, $this->translation, 'field', $language);
 
         $this->hook->attach('field.get.after', $field_id, $language, $result, $this);
         return $result;
@@ -281,7 +291,7 @@ class Field
 
         $updated = $this->db->update('field', $data, array('field_id' => $field_id));
         $data['field_id'] = $field_id;
-        $updated += (int) $this->setTranslationTrait($this->db, $data, 'field');
+        $updated += (int) $this->setTranslations($data, $this->translation, 'field');
 
         $result = $updated > 0;
         $this->hook->attach('field.update.after', $field_id, $data, $result, $this);
