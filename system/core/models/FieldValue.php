@@ -13,7 +13,8 @@ use gplcart\core\Config,
     gplcart\core\Hook,
     gplcart\core\Database;
 use gplcart\core\models\File as FileModel,
-    gplcart\core\models\Language as LanguageModel;
+    gplcart\core\models\Language as LanguageModel,
+    gplcart\core\models\Translation as TranslationModel;
 use gplcart\core\traits\Translation as TranslationTrait;
 
 /**
@@ -55,14 +56,21 @@ class FieldValue
     protected $language;
 
     /**
+     * Translation model instance
+     * @var \gplcart\core\models\Translation $translation
+     */
+    protected $translation;
+
+    /**
      * @param Hook $hook
      * @param Database $db
      * @param Config $config
      * @param FileModel $file
      * @param LanguageModel $language
+     * @param TranslationModel $translation
      */
     public function __construct(Hook $hook, Database $db, Config $config, FileModel $file,
-            LanguageModel $language)
+            LanguageModel $language, TranslationModel $translation)
     {
         $this->db = $db;
         $this->hook = $hook;
@@ -70,6 +78,7 @@ class FieldValue
 
         $this->file = $file;
         $this->language = $language;
+        $this->translation = $translation;
     }
 
     /**
@@ -153,7 +162,7 @@ class FieldValue
                 . ' WHERE fv.field_value_id=?';
 
         $result = $this->db->fetch($sql, array($field_value_id));
-        $this->attachTranslationTrait($this->db, $result, 'field_value', $language);
+        $this->attachTranslations($result, $this->translation, 'field_value', $language);
 
         $this->hook->attach('field.value.get.after', $field_value_id, $language, $result, $this);
         return $result;
@@ -176,7 +185,7 @@ class FieldValue
         $result = $data['field_value_id'] = $this->db->insert('field_value', $data);
 
         $this->setFile($data, false);
-        $this->setTranslationTrait($this->db, $data, 'field_value', false);
+        $this->setTranslations($data, $this->translation, 'field_value', false);
 
         $this->hook->attach('field.value.add.after', $data, $result, $this);
         return (int) $result;
@@ -231,7 +240,7 @@ class FieldValue
         $data['field_value_id'] = $field_value_id;
 
         $updated += (int) $this->setFile($data);
-        $updated += (int) $this->setTranslationTrait($this->db, $data, 'field_value');
+        $updated += (int) $this->setTranslations($data, $this->translation, 'field_value');
 
         $result = $updated > 0;
         $this->hook->attach('field.value.update.after', $field_value_id, $data, $result, $this);
