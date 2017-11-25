@@ -11,6 +11,7 @@ namespace gplcart\core\models;
 
 use gplcart\core\Hook,
     gplcart\core\Database;
+use gplcart\core\models\Translation as TranslationModel;
 use gplcart\core\traits\Translation as TranslationTrait;
 
 /**
@@ -34,13 +35,21 @@ class Collection
     protected $hook;
 
     /**
+     * Translation model class instance
+     * @var \gplcart\core\models\Translation $translation
+     */
+    protected $translation;
+
+    /**
      * @param Hook $hook
      * @param Database $db
+     * @param TranslationModel $translation
      */
-    public function __construct(Hook $hook, Database $db)
+    public function __construct(Hook $hook, Database $db, TranslationModel $translation)
     {
         $this->db = $db;
         $this->hook = $hook;
+        $this->translation = $translation;
     }
 
     /**
@@ -119,7 +128,7 @@ class Collection
         }
 
         $result = $data['collection_id'] = $this->db->insert('collection', $data);
-        $this->setTranslationTrait($this->db, $data, 'collection', false);
+        $this->setTranslations($data, $this->translation, 'collection', false);
 
         $this->hook->attach('collection.add.after', $data, $result, $this);
         return (int) $result;
@@ -141,7 +150,7 @@ class Collection
         }
 
         $result = $this->db->fetch('SELECT * FROM collection WHERE collection_id=?', array($collection_id));
-        $this->attachTranslationTrait($this->db, $result, 'collection', $language);
+        $this->attachTranslations($result, $this->translation, 'collection', $language);
 
         $this->hook->attach('collection.get.after', $collection_id, $language, $result, $this);
         return $result;
@@ -211,7 +220,7 @@ class Collection
 
         $updated = $this->db->update('collection', $data, array('collection_id' => $collection_id));
         $data['collection_id'] = $collection_id;
-        $updated += (int) $this->setTranslationTrait($this->db, $data, 'collection');
+        $updated += (int) $this->setTranslations($data, $this->translation, 'collection');
 
         $result = $updated > 0;
         $this->hook->attach('collection.update.after', $collection_id, $data, $result, $this);
