@@ -9,7 +9,6 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\traits\Product as ProductTrait;
 use gplcart\core\models\Sku as SkuModel,
     gplcart\core\models\Review as ReviewModel,
     gplcart\core\models\Rating as RatingModel,
@@ -22,8 +21,6 @@ use gplcart\core\controllers\frontend\Controller as FrontendController;
  */
 class Product extends FrontendController
 {
-
-    use ProductTrait;
 
     /**
      * Product class model instance
@@ -273,7 +270,7 @@ class Product extends FrontendController
      */
     protected function setDataBundledIndexProduct()
     {
-        $this->setData('bundle', $this->render('product/bundle', array('products' => $this->data_product['bundle'])));
+        $this->setData('bundle', $this->render('product/bundle', array('products' => $this->data_product['bundled_products'])));
     }
 
     /**
@@ -480,7 +477,7 @@ class Product extends FrontendController
         $product['selected_combination'] = $selected;
         $product['total_reviews'] = $this->getTotalReviewsProduct($product);
 
-        $this->setProductFieldsTrait($product, $this->product_class, $this->image);
+        $this->setItemProductFields($product, $this->product_class, $this->image);
         return $product;
     }
 
