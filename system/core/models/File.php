@@ -15,7 +15,8 @@ use gplcart\core\Config,
 use gplcart\core\helpers\Url as UrlHelper,
     gplcart\core\helpers\Curl as CurlHelper;
 use gplcart\core\models\Language as LanguageModel,
-    gplcart\core\models\Validator as ValidatorModel;
+    gplcart\core\models\Validator as ValidatorModel,
+    gplcart\core\models\Translation as TranslationModel;
 use gplcart\core\traits\Translation as TranslationTrait;
 
 /**
@@ -55,6 +56,12 @@ class File
      * @var \gplcart\core\models\Validator $validator
      */
     protected $validator;
+
+    /**
+     * Translation model instance
+     * @var \gplcart\core\models\Translation $translation
+     */
+    protected $translation;
 
     /**
      * URL class instance
@@ -98,11 +105,13 @@ class File
      * @param Config $config
      * @param LanguageModel $language
      * @param ValidatorModel $validator
+     * @param TranslationModel $translation
      * @param UrlHelper $url
      * @param CurlHelper $curl
      */
     public function __construct(Hook $hook, Database $db, Config $config, LanguageModel $language,
-            ValidatorModel $validator, UrlHelper $url, CurlHelper $curl)
+            ValidatorModel $validator, TranslationModel $translation, UrlHelper $url,
+            CurlHelper $curl)
     {
         $this->db = $db;
         $this->hook = $hook;
@@ -112,6 +121,7 @@ class File
         $this->curl = $curl;
         $this->language = $language;
         $this->validator = $validator;
+        $this->translation = $translation;
     }
 
     /**
@@ -143,7 +153,7 @@ class File
         $data['created'] = GC_TIME;
         $result = $data['file_id'] = $this->db->insert('file', $data);
 
-        $this->setTranslationTrait($this->db, $data, 'file', false);
+        $this->setTranslations($data, $this->translation, 'file', false);
 
         $this->hook->attach('file.add.after', $data, $result, $this);
         return (int) $result;
@@ -166,7 +176,7 @@ class File
 
         $updated = $this->db->update('file', $data, array('file_id' => $file_id));
         $data['file_id'] = $file_id;
-        $updated += (int) $this->setTranslationTrait($this->db, $data, 'file');
+        $updated += (int) $this->setTranslations($data, $this->translation, 'file');
 
         $result = $updated > 0;
         $this->hook->attach('file.update.after', $file_id, $data, $result, $this);
@@ -189,7 +199,7 @@ class File
         }
 
         $result = $this->db->fetch('SELECT * FROM file WHERE file_id=?', array($file_id));
-        $this->attachTranslationTrait($this->db, $result, 'file', $language);
+        $this->attachTranslations($result, $this->translation, 'file', $language);
 
         $this->hook->attach('file.get.after', $file_id, $language, $result, $this);
         return $result;
