@@ -10,24 +10,25 @@
 namespace gplcart\core\traits;
 
 /**
- * CRUD methods for entity translations
+ * CRUD methods for entity translation
  */
 trait Translation
 {
 
     /**
-     * Adds translations
-     * @param \gplcart\core\Database $db
+     * Adds array key containing translations to the entity
      * @param array $data
+     * @param \gplcart\core\models\Translation $model
      * @param string $entity
-     * @param string $language
+     * @param string|null $language
      */
-    protected function attachTranslationTrait($db, &$data, $entity, $language)
+    public function attachTranslations(array &$data, $model, $entity, $language)
     {
-        if (!empty($data)) {
+        if (isset($data["{$entity}_id"])) {
 
             $data['language'] = 'und';
-            $translations = $this->getTranslationTrait($db, $data["{$entity}_id"], $entity);
+            $entity_id = $data["{$entity}_id"];
+            $translations = $model->getList($entity, $entity_id, $language);
 
             foreach ($translations as $translation) {
                 $data['translation'][$translation['language']] = $translation;
@@ -40,80 +41,31 @@ trait Translation
     }
 
     /**
-     * Returns an array of translations
-     * @param \gplcart\core\Database $db
-     * @param integer $id
-     * @param string $entity
-     * @return array
-     */
-    public function getTranslationTrait($db, $id, $entity)
-    {
-        $sql = "SELECT * FROM {$entity}_translation WHERE {$entity}_id=?";
-        return $db->fetchAll($sql, array($id));
-    }
-
-    /**
      * Deletes and/or adds translations
-     * @param \gplcart\core\Database $db
      * @param array $data
+     * @param \gplcart\core\models\Translation $model
      * @param string $entity
-     * @param boolean $update
-     * @return null|bool
+     * @param bool $delete_existing
+     * @return boolean
      */
-    protected function setTranslationTrait($db, $data, $entity, $update = true)
+    public function setTranslations(array $data, $model, $entity, $delete_existing = true)
     {
-        if (empty($data['form']) && empty($data['translation'])) {
-            return null;
-        }
-
-        if (empty($data['translation'])) {
+        if (empty($data['translation']) || empty($data["{$entity}_id"])) {
             return null;
         }
 
         foreach ($data['translation'] as $language => $translation) {
 
-            if ($update) {
-                $this->deleteTranslationTrait($db, $data["{$entity}_id"], $entity, $language);
+            if ($delete_existing) {
+                $model->delete($entity, $data["{$entity}_id"], $language);
             }
 
-            $this->addTranslationTrait($db, $data["{$entity}_id"], $entity, $language, $translation);
+            $translation['language'] = $language;
+            $translation["{$entity}_id"] = $data["{$entity}_id"];
+            $model->add($entity, $translation);
         }
 
         return true;
-    }
-
-    /**
-     * Deletes translation(s)
-     * @param \gplcart\core\Database $db
-     * @param integer $id
-     * @param string $entity
-     * @param null|string $language
-     */
-    public function deleteTranslationTrait($db, $id, $entity, $language = null)
-    {
-        $conditions = array("{$entity}_id" => $id);
-
-        if (isset($language)) {
-            $conditions['language'] = $language;
-        }
-
-        $db->delete("{$entity}_translation", $conditions);
-    }
-
-    /**
-     * Adds translation
-     * @param \gplcart\core\Database $db
-     * @param integer $id
-     * @param string $entity
-     * @param string $lang
-     * @param array $translation
-     */
-    public function addTranslationTrait($db, $id, $entity, $lang, $translation)
-    {
-        $translation['language'] = $lang;
-        $translation["{$entity}_id"] = $id;
-
-        $db->insert("{$entity}_translation", $translation);
     }
 
 }
