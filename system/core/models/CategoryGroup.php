@@ -11,7 +11,8 @@ namespace gplcart\core\models;
 
 use gplcart\core\Hook,
     gplcart\core\Database;
-use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\models\Language as LanguageModel,
+    gplcart\core\models\Translation as TranslationModel;
 use gplcart\core\traits\Translation as TranslationTrait;
 
 /**
@@ -41,15 +42,24 @@ class CategoryGroup
     protected $language;
 
     /**
+     * Translation model instance
+     * @var \gplcart\core\models\Translation $translation
+     */
+    protected $translation;
+
+    /**
      * @param Hook $hook
      * @param Database $db
      * @param LanguageModel $language
+     * @param TranslationModel $translation
      */
-    public function __construct(Hook $hook, Database $db, LanguageModel $language)
+    public function __construct(Hook $hook, Database $db, LanguageModel $language,
+            TranslationModel $translation)
     {
         $this->db = $db;
         $this->hook = $hook;
         $this->language = $language;
+        $this->translation = $translation;
     }
 
     /**
@@ -70,7 +80,7 @@ class CategoryGroup
         $sql = 'SELECT * FROM category_group WHERE category_group_id=?';
         $result = $this->db->fetch($sql, array($group_id));
 
-        $this->attachTranslationTrait($this->db, $result, 'category_group', $language);
+        $this->attachTranslations($result, $this->translation, 'category_group', $language);
 
         $this->hook->attach('category.group.get.after', $result, $language, $this);
         return $result;
@@ -154,7 +164,7 @@ class CategoryGroup
         }
 
         $result = $data['category_group_id'] = $this->db->insert('category_group', $data);
-        $this->setTranslationTrait($this->db, $data, 'category_group', false);
+        $this->setTranslations($data, $this->translation, 'category_group', false);
 
         $this->hook->attach('category.group.add.after', $data, $result, $this);
         return (int) $result;
@@ -219,7 +229,7 @@ class CategoryGroup
 
         $updated = $this->db->update('category_group', $data, array('category_group_id' => $category_group_id));
         $data['category_group_id'] = $category_group_id;
-        $updated += (int) $this->setTranslationTrait($this->db, $data, 'category_group');
+        $updated += (int) $this->setTranslations($data, $this->translation, 'category_group');
 
         $result = $updated > 0;
         $this->hook->attach('category.group.update.after', $category_group_id, $data, $result, $this);
