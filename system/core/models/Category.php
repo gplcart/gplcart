@@ -17,6 +17,7 @@ use gplcart\core\traits\Image as ImageTrait,
 use gplcart\core\models\File as FileModel,
     gplcart\core\models\Alias as AliasModel,
     gplcart\core\models\Language as LanguageModel,
+    gplcart\core\models\Translation as TranslationModel,
     gplcart\core\models\CategoryGroup as CategoryGroupModel;
 
 /**
@@ -59,6 +60,12 @@ class Category
     protected $language;
 
     /**
+     * Translation model instance
+     * @var \gplcart\core\models\Translation $translation
+     */
+    protected $translation;
+
+    /**
      * Alias model instance
      * @var \gplcart\core\models\Alias $alias
      */
@@ -78,9 +85,11 @@ class Category
      * @param FileModel $file
      * @param LanguageModel $language
      * @param CategoryGroupModel $category_group
+     * @param TranslationModel $translation
      */
     public function __construct(Hook $hook, Database $db, Config $config, AliasModel $alias,
-            FileModel $file, LanguageModel $language, CategoryGroupModel $category_group)
+            FileModel $file, LanguageModel $language, CategoryGroupModel $category_group,
+            TranslationModel $translation)
     {
         $this->db = $db;
         $this->hook = $hook;
@@ -89,6 +98,7 @@ class Category
         $this->file = $file;
         $this->alias = $alias;
         $this->language = $language;
+        $this->translation = $translation;
         $this->category_group = $category_group;
     }
 
@@ -121,13 +131,13 @@ class Category
             $conditions[] = $store_id;
         }
 
-        $category = $this->db->fetch($sql, $conditions);
+        $result = $this->db->fetch($sql, $conditions);
 
-        $this->attachTranslationTrait($this->db, $category, 'category', $language);
-        $this->attachImagesTrait($this->db, $this->file, $category, 'category', $language);
+        $this->attachTranslations($result, $this->translation, 'category', $language);
+        $this->attachImages($result, $this->file, $this->translation, 'category', $language);
 
-        $this->hook->attach('category.get.after', $category, $language, $store_id, $this);
-        return $category;
+        $this->hook->attach('category.get.after', $result, $language, $store_id, $this);
+        return $result;
     }
 
     /**
@@ -177,77 +187,113 @@ class Category
     }
 
     /**
-     * Creates a hierarchical representation of the category group
-     * @param array $data
+     * Returns an array of categories
+     * @param array $options
+     * @return array|integer
+     */
+    public function getList(array $options = array())
+    {
+        $sql = 'SELECT c.*, a.alias, cg.type, cg.store_id,'
+                . ' COALESCE(NULLIF(ct.title, ""), c.title) AS title';
+
+        if (!empty($options['count'])) {
+            $sql = 'SELECT COUNT(c.category_id)';
+        }
+
+        $sql .= ' FROM category c'
+                . ' LEFT JOIN alias a ON(a.id_key=? AND a.id_value=c.category_id)'
+                . ' LEFT JOIN category_group cg ON(cg.category_group_id = c.category_group_id)'
+                . ' LEFT JOIN category_translation ct ON(c.category_id = ct.category_id AND ct.language = ?)'
+                . ' WHERE c.category_id IS NOT NULL';
+
+        if (!isset($options['language'])) {
+            $options['language'] = $this->language->getLangcode();
+        }
+
+        $conditions = array('category_id', $options['language']);
+
+        if (isset($options['title'])) {
+            $sql .= ' AND (c.title LIKE ? OR (ct.title LIKE ? AND ct.language=?))';
+            $conditions[] = "%{$options['title']}%";
+            $conditions[] = "%{$options['title']}%";
+            $conditions[] = $options['language'];
+        }
+
+        if (isset($options['category_group_id'])) {
+            $sql .= ' AND c.category_group_id=?';
+            $conditions[] = (int) $options['category_group_id'];
+        }
+
+        if (isset($options['type'])) {
+            $sql .= ' AND cg.type=?';
+            $conditions[] = $options['type'];
+        }
+
+        if (isset($options['store_id'])) {
+            $sql .= ' AND cg.store_id=?';
+            $conditions[] = (int) $options['store_id'];
+        }
+
+        if (isset($options['status'])) {
+            $sql .= ' AND c.status=?';
+            $conditions[] = (int) $options['status'];
+        }
+
+        $sql .= " ORDER BY c.weight ASC";
+
+        if (!empty($options['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
+        }
+
+        if (!empty($options['count'])) {
+            return (int) $this->db->fetchColumn($sql, $conditions);
+        }
+
+        $list = $this->db->fetchAll($sql, $conditions, array('index' => 'category_id'));
+        $this->hook->attach('category.list', $list, $this);
+        return $list;
+    }
+
+    /**
+     * Returns an array of categories with parent categories set
+     * @param array $options
      * @return array
      */
-    public function getTree(array $data)
+    public function getTree(array $options)
     {
-        $tree = &gplcart_static(gplcart_array_hash(array('category.tree' => $data)));
+        $tree = &gplcart_static(gplcart_array_hash(array('category.tree' => $options)));
 
         if (isset($tree)) {
             return $tree;
         }
 
+        $tree = $this->prepareTree($this->getList($options), $options);
+        $this->hook->attach('category.tree', $tree, $this);
+        return $tree;
+    }
+
+    /**
+     * Create tree structure from an array of categories
+     * @param array $categories
+     * @param array $options
+     * @return array
+     */
+    protected function prepareTree(array $categories, array $options)
+    {
         $tree = array();
         $children_tree = array();
         $parents_tree = array();
         $categories_tree = array();
 
-        $parent = isset($data['parent_id']) ? (int) $data['parent_id'] : 0;
+        $parent = isset($options['parent_id']) ? (int) $options['parent_id'] : 0;
 
-        $sql = 'SELECT c.*, a.alias, COALESCE(NULLIF(ct.title, ""), c.title) AS title, cg.store_id'
-                . ' FROM category c'
-                . ' LEFT JOIN category_group cg ON(c.category_group_id = cg.category_group_id)'
-                . ' LEFT JOIN category_translation ct ON(c.category_id=ct.category_id AND ct.language=?)'
-                . ' LEFT JOIN alias a ON(a.id_key=? AND a.id_value=c.category_id)'
-                . ' WHERE c.category_id > 0';
-
-        $language = isset($data['language']) ? $data['language'] : $this->language->getLangcode();
-
-        $where = array($language, 'category_id');
-
-        if (isset($data['category_group_id'])) {
-            $sql .= ' AND c.category_group_id=?';
-            $where[] = (int) $data['category_group_id'];
-        }
-
-        if (isset($data['store_id'])) {
-            $sql .= ' AND cg.store_id=?';
-            $where[] = (int) $data['store_id'];
-        }
-
-        if (isset($data['type'])) {
-            $sql .= ' AND cg.type=?';
-            $where[] = $data['type'];
-        }
-
-        if (isset($data['status'])) {
-            $sql .= ' AND c.status=?';
-            $where[] = (int) $data['status'];
-        }
-
-        if (isset($data['store_id'])) {
-            $sql .= ' AND cg.store_id=?';
-            $where[] = (int) $data['store_id'];
-        }
-
-        if (isset($data['type'])) {
-            $sql .= ' AND cg.type=?';
-            $where[] = (string) $data['type'];
-        }
-
-        $sql .= ' ORDER BY c.weight ASC';
-
-        $results = $this->db->fetchAll($sql, $where);
-
-        foreach ($results as $category) {
+        foreach ($categories as $category) {
             $children_tree[$category['parent_id']][] = $category['category_id'];
             $parents_tree[$category['category_id']][] = $category['parent_id'];
             $categories_tree[$category['category_id']] = $category;
         }
 
-        $max_depth = isset($data['depth']) ? (int) $data['depth'] : count($children_tree);
+        $max_depth = isset($options['depth']) ? (int) $options['depth'] : count($children_tree);
 
         $process_parents = array();
         $process_parents[] = $parent;
@@ -291,64 +337,7 @@ class Category
             }
         }
 
-        $this->hook->attach('category.tree', $tree, $this);
         return $tree;
-    }
-
-    /**
-     * Returns an array of categories
-     * @param array $data
-     * @return array|integer
-     */
-    public function getList(array $data = array())
-    {
-        $sql = 'SELECT c.*, a.alias, cg.type, cg.store_id,'
-                . ' COALESCE(NULLIF(ct.title, ""), c.title) AS title';
-
-        if (!empty($data['count'])) {
-            $sql = 'SELECT COUNT(c.category_id)';
-        }
-
-        $sql .= ' FROM category c'
-                . ' LEFT JOIN alias a ON(a.id_key=? AND a.id_value=c.category_id)'
-                . ' LEFT JOIN category_group cg ON(cg.category_group_id = c.category_group_id)'
-                . ' LEFT JOIN category_translation ct ON(c.category_id = ct.category_id AND ct.language = ?)'
-                . ' WHERE c.category_id > 0';
-
-        $language = $this->language->getLangcode();
-        $where = array('category_id', $language);
-
-        if (isset($data['title'])) {
-            $sql .= ' AND (c.title LIKE ? OR (ct.title LIKE ? AND ct.language=?))';
-            $where[] = "%{$data['title']}%";
-            $where[] = "%{$data['title']}%";
-            $where[] = $language;
-        }
-
-        if (isset($data['category_group_id'])) {
-            $sql .= ' AND c.category_group_id=?';
-            $where[] = (int) $data['category_group_id'];
-        }
-
-        if (isset($data['type'])) {
-            $sql .= ' AND cg.type=?';
-            $where[] = $data['type'];
-        }
-
-        $sql .= " ORDER BY ct.title DESC";
-
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
-        }
-
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $where);
-        }
-
-        $list = $this->db->fetchAll($sql, $where, array('index' => 'category_id'));
-
-        $this->hook->attach('category.list', $list, $this);
-        return $list;
     }
 
     /**
@@ -367,9 +356,9 @@ class Category
 
         $result = $data['category_id'] = $this->db->insert('category', $data);
 
-        $this->setTranslationTrait($this->db, $data, 'category', false);
-        $this->setImagesTrait($this->file, $data, 'category');
-        $this->setAliasTrait($this->alias, $data, 'category', false);
+        $this->setTranslations($data, $this->translation, 'category', false);
+        $this->setImages($data, $this->file, 'category');
+        $this->setAlias($data, $this->alias, 'category', false);
 
         $this->hook->attach('category.add.after', $data, $result, $this);
 
@@ -395,9 +384,9 @@ class Category
 
         $data['category_id'] = $category_id;
 
-        $updated += (int) $this->setTranslationTrait($this->db, $data, 'category');
-        $updated += (int) $this->setImagesTrait($this->file, $data, 'category');
-        $updated += (int) $this->setAliasTrait($this->alias, $data, 'category');
+        $updated += (int) $this->setTranslations($data, $this->translation, 'category');
+        $updated += (int) $this->setImages($data, $this->file, 'category');
+        $updated += (int) $this->setAlias($data, $this->alias, 'category');
 
         $result = $updated > 0;
 
