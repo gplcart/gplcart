@@ -21,15 +21,12 @@ use gplcart\core\models\Cart as CartModel,
     gplcart\core\models\Language as LanguageModel,
     gplcart\core\models\PriceRule as PriceRuleModel,
     gplcart\core\models\Transaction as TransactionModel;
-use gplcart\core\traits\Order as OrderTrait;
 
 /**
  * Dashboard handlers
  */
 class Dashboard extends Handler
 {
-
-    use OrderTrait;
 
     /**
      * Config class instance
@@ -166,8 +163,8 @@ class Dashboard extends Handler
         $items = $this->order->getList($options);
 
         array_walk($items, function (&$item) {
-            $this->prepareOrderNewTrait($item, $this->order);
-            $this->prepareOrderTotalTrait($item, $this->price);
+            $this->setItemOrderNew($item, $this->order);
+            $this->setItemTotalFormatted($item, $this->price);
         });
 
         return $items;

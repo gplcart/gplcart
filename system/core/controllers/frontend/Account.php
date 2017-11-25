@@ -15,8 +15,6 @@ use gplcart\core\models\Order as OrderModel,
     gplcart\core\models\UserRole as UserRoleModel,
     gplcart\core\models\Shipping as ShippingModel,
     gplcart\core\models\PriceRule as PriceRuleModel;
-use gplcart\core\traits\Order as OrderTrait,
-    gplcart\core\traits\OrderComponent as OrderComponentTrait;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
@@ -24,9 +22,6 @@ use gplcart\core\controllers\frontend\Controller as FrontendController;
  */
 class Account extends FrontendController
 {
-
-    use OrderTrait,
-        OrderComponentTrait;
 
     /**
      * Address model instance
@@ -145,10 +140,10 @@ class Account extends FrontendController
      */
     protected function setDataPanelComponentsOrderAccount()
     {
-        $this->prepareOrderComponentCartTrait($this->data_order, $this->price);
-        $this->prepareOrderComponentPriceRuleTrait($this->data_order, $this->price, $this->pricerule);
-        $this->prepareOrderComponentPaymentTrait($this->data_order, $this->price, $this->payment, $this->order);
-        $this->prepareOrderComponentShippingTrait($this->data_order, $this->price, $this->shipping, $this->order);
+        $this->setItemOrderCartComponent($this->data_order, $this->price);
+        $this->setItemOrderPriceRuleComponent($this->data_order, $this, $this->price, $this->pricerule);
+        $this->setItemOrderPaymentComponent($this->data_order, $this, $this->price, $this->payment, $this->order);
+        $this->setItemOrderShippingComponent($this->data_order, $this, $this->price, $this->shipping, $this->order);
 
         ksort($this->data_order['data']['components']);
 
@@ -233,12 +228,12 @@ class Account extends FrontendController
      */
     protected function prepareOrderAccount(array &$order)
     {
-        $this->prepareOrderTotalTrait($order, $this->price);
-        $this->prepareOrderAddressTrait($order, $this->address);
-        $this->prepareOrderStoreTrait($order, $this->store);
-        $this->prepareOrderStatusTrait($order, $this->order);
-        $this->prepareOrderPaymentTrait($order, $this->payment);
-        $this->prepareOrderShippingTrait($order, $this->shipping);
+        $this->setItemTotalFormatted($order, $this->price);
+        $this->setItemAddress($order, $this->address);
+        $this->setItemStoreName($order, $this->store);
+        $this->setItemOrderStatusName($order, $this->order);
+        $this->setItemPaymentName($order, $this->payment);
+        $this->setItemShippingName($order, $this->shipping);
     }
 
     /**

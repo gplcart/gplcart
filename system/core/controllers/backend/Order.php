@@ -16,17 +16,12 @@ use gplcart\core\models\Order as OrderModel,
     gplcart\core\models\Shipping as ShippingModel,
     gplcart\core\models\PriceRule as PriceRuleModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
-use gplcart\core\traits\Order as OrderTrait,
-    gplcart\core\traits\OrderComponent as OrderComponentTrait;
 
 /**
  * Handles incoming requests and outputs data related to order management
  */
 class Order extends BackendController
 {
-
-    use OrderTrait,
-        OrderComponentTrait;
 
     /**
      * Code of successfully sent notification
@@ -376,12 +371,12 @@ class Order extends BackendController
      */
     protected function prepareOrder(array &$order)
     {
-        $this->prepareOrderTotalTrait($order, $this->price);
-        $this->prepareOrderAddressTrait($order, $this->address);
-        $this->prepareOrderStoreTrait($order, $this->store);
-        $this->prepareOrderStatusTrait($order, $this->order);
-        $this->prepareOrderPaymentTrait($order, $this->payment);
-        $this->prepareOrderShippingTrait($order, $this->shipping);
+        $this->setItemTotalFormatted($order, $this->price);
+        $this->setItemAddress($order, $this->address);
+        $this->setItemStoreName($order, $this->store);
+        $this->setItemOrderStatusName($order, $this->order);
+        $this->setItemPaymentName($order, $this->payment);
+        $this->setItemShippingName($order, $this->shipping);
 
         $order['user'] = array();
         if (is_numeric($order['user_id'])) {
@@ -465,10 +460,10 @@ class Order extends BackendController
      */
     protected function setDataPanelComponentsIndexOrder()
     {
-        $this->prepareOrderComponentCartTrait($this->data_order, $this->price);
-        $this->prepareOrderComponentPriceRuleTrait($this->data_order, $this->price, $this->pricerule);
-        $this->prepareOrderComponentPaymentTrait($this->data_order, $this->price, $this->payment, $this->order);
-        $this->prepareOrderComponentShippingTrait($this->data_order, $this->price, $this->shipping, $this->order);
+        $this->setItemOrderCartComponent($this->data_order, $this, $this->price);
+        $this->setItemOrderPriceRuleComponent($this->data_order, $this, $this->price, $this->pricerule);
+        $this->setItemOrderPaymentComponent($this->data_order, $this, $this->price, $this->payment, $this->order);
+        $this->setItemOrderShippingComponent($this->data_order, $this, $this->price, $this->shipping, $this->order);
 
         ksort($this->data_order['data']['components']);
 
@@ -634,8 +629,8 @@ class Order extends BackendController
     protected function prepareListOrder(array $orders)
     {
         foreach ($orders as &$order) {
-            $this->prepareOrderNewTrait($order, $this->order);
-            $this->prepareOrderTotalTrait($order, $this->price);
+            $this->setItemOrderNew($order, $this->order);
+            $this->setItemTotalFormatted($order, $this->price);
         }
 
         return $orders;
