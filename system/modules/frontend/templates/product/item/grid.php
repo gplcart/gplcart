@@ -10,9 +10,9 @@
 ?>
 <div class="grid product item col-md-3 col-sm-4 col-xs-12">
   <div class="thumbnail">
-    <?php if(!empty($item['bundle'])) { ?>
+    <?php if(!empty($item['bundled_products'])) { ?>
     <div class="bundle-items">
-      <?php foreach($item['bundle'] as $bundle_item) { ?>
+      <?php foreach($item['bundled_products'] as $bundle_item) { ?>
       <?php echo $bundle_item['rendered']; ?>
       <?php } ?>
     </div>
@@ -28,9 +28,9 @@
           <?php echo $this->e($this->truncate($item['title'], 50)); ?>
         </a>
       </div>
-      <?php if(!empty($item['bundle'])) { ?>
+      <?php if(!empty($item['bundled_products'])) { ?>
       <div class="bundle-title">
-        <?php echo $this->text('+ @num bundled products!', array('@num' => count($item['bundle']))); ?>
+        <?php echo $this->text('+ @num bundled products!', array('@num' => count($item['bundled_products']))); ?>
       </div>
       <?php } ?>
       <p>
