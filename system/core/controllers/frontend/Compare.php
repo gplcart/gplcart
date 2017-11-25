@@ -19,8 +19,6 @@ use gplcart\core\controllers\frontend\Controller as FrontendController;
 class Compare extends FrontendController
 {
 
-    use \gplcart\core\traits\Product;
-
     /**
      * Product class model instance
      * @var \gplcart\core\models\ProductClass $product_class
@@ -186,7 +184,7 @@ class Compare extends FrontendController
     {
         foreach ($products as $product_id => &$product) {
             $product['field'] = $this->product_field->getList($product_id);
-            $this->setProductFieldsTrait($product, $this->product_class, $this->image);
+            $this->setItemProductFields($product, $this->product_class, $this->image);
         }
 
         return $products;
