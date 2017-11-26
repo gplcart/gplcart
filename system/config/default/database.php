@@ -200,7 +200,7 @@ return array(
             'entity_id' => array('type' => 'integer', 'length' => 10, 'not_null' => true, 'default' => 0),
             'created' => array('type' => 'integer', 'length' => 10, 'not_null' => true),
             'weight' => array('type' => 'integer', 'length' => 2, 'not_null' => true, 'default' => 0),
-            'entity' => array('type' => 'varchar', 'length' => 50, 'not_null' => true, 'default' => ''),
+            'entity' => array('type' => 'varchar', 'length' => 50, 'not_null' => true, 'default' => 'file'),
             'file_type' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
             'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
             'mime_type' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
