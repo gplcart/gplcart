@@ -184,7 +184,7 @@ class Compare extends FrontendController
     {
         foreach ($products as $product_id => &$product) {
             $product['field'] = $this->product_field->getList($product_id);
-            $this->setItemProductFields($product, $this->product_class, $this->image);
+            $this->setItemProductFields($product, $this->image, $this->product_class);
         }
 
         return $products;

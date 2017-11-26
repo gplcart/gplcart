@@ -11,6 +11,7 @@ namespace gplcart\core\handlers\dashboard;
 
 use gplcart\core\Handler,
     gplcart\core\Config;
+use gplcart\core\traits\Item as ItemTrait;
 use gplcart\core\models\Cart as CartModel,
     gplcart\core\models\User as UserModel,
     gplcart\core\models\Order as OrderModel,
@@ -27,6 +28,8 @@ use gplcart\core\models\Cart as CartModel,
  */
 class Dashboard extends Handler
 {
+
+    use ItemTrait;
 
     /**
      * Config class instance
@@ -184,7 +187,7 @@ class Dashboard extends Handler
         $items = $this->transaction->getList($options);
 
         array_walk($items, function (&$item) {
-            $item['total_formatted'] = $this->price->format($item['total'], $item['currency']);
+            $this->setItemTotalFormatted($item, $this->price);
         });
 
         return $items;

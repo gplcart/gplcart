@@ -477,7 +477,7 @@ class Product extends FrontendController
         $product['selected_combination'] = $selected;
         $product['total_reviews'] = $this->getTotalReviewsProduct($product);
 
-        $this->setItemProductFields($product, $this->product_class, $this->image);
+        $this->setItemProductFields($product, $this->image, $this->product_class);
         return $product;
     }
 
