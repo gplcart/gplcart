@@ -61,6 +61,16 @@
             </a>
           </th>
           <th>
+            <a href="<?php echo $sort_entity; ?>">
+              <?php echo $this->text('Entity'); ?> <i class="fa fa-sort"></i>
+            </a>
+          </th>
+          <th>
+            <a href="<?php echo $sort_entity_id; ?>">
+              <?php echo $this->text('Entity ID'); ?> <i class="fa fa-sort"></i>
+            </a>
+          </th>
+          <th>
             <a href="<?php echo $sort_created; ?>">
               <?php echo $this->text('Created'); ?> <i class="fa fa-sort"></i>
             </a>
@@ -73,6 +83,17 @@
           <th><input class="form-control" name="title" value="<?php echo $filter_title; ?>" placeholder="<?php echo $this->text('Any'); ?>"></th>
           <th><input class="form-control" name="mime_type" value="<?php echo $filter_mime_type; ?>" placeholder="<?php echo $this->text('Any'); ?>"></th>
           <th><input class="form-control" name="path" value="<?php echo $filter_path; ?>" placeholder="<?php echo $this->text('Any'); ?>"></th>
+          <th>
+            <select name="entity" class="form-control">
+              <option value=""><?php echo $this->text('Any'); ?></option>
+              <?php foreach ($entities as $entity) { ?>
+              <option value="<?php echo $this->e($entity); ?>"<?php echo $filter_entity == $entity ? ' selected' : '' ?>>
+                <?php echo $this->e($this->text(ucfirst($entity))); ?>
+              </option>
+              <?php } ?>
+            </select>
+          </th>
+          <th><input class="form-control" name="entity_id" value="<?php echo $filter_entity_id; ?>" placeholder="<?php echo $this->text('Any'); ?>"></th>
           <th></th>
           <th>
             <a href="<?php echo $this->url($_path); ?>" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
@@ -87,7 +108,7 @@
       <tbody>
         <?php if ($_filtering && empty($files)) { ?>
         <tr>
-          <td colspan="6">
+          <td colspan="8">
             <?php echo $this->text('No results'); ?>
             <a href="<?php echo $this->url($_path); ?>" class="clear-filter"><?php echo $this->text('Reset'); ?></a>
           </td>
@@ -106,6 +127,8 @@
             <span class="text-danger"><?php echo $this->text('Unknown'); ?></span>
             <?php } ?>
           </td>
+          <td class="middle"><?php echo $this->e($this->text(ucfirst($file['entity']))); ?></td>
+          <td class="middle"><?php echo $this->e($file['entity_id']); ?></td>
           <td class="middle"><?php echo $this->date($file['created']); ?></td>
           <td class="middle">
             <ul class="list-inline">

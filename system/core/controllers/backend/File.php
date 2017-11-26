@@ -61,6 +61,8 @@ class File extends BackendController
         $this->setPagerListFile();
 
         $this->setData('files', $this->getListFile());
+        $this->setData('entities', $this->file->getEntities());
+
         $this->outputListFile();
     }
 
@@ -69,7 +71,10 @@ class File extends BackendController
      */
     protected function setFilterListFile()
     {
-        $this->setFilter(array('title', 'mime_type', 'file_id', 'created', 'path'));
+        $filter = array('title', 'mime_type', 'file_id',
+            'created', 'path', 'entity', 'entity_id');
+
+        $this->setFilter($filter);
     }
 
     /**

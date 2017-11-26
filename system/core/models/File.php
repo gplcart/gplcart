@@ -304,10 +304,13 @@ class File
         }
 
         $extension = ltrim($name, '.');
+
         foreach ($handlers as $handler) {
+
             if (empty($handler['extensions'])) {
                 continue;
             }
+
             foreach ((array) $handler['extensions'] as $allowed_extension) {
                 if ($extension === $allowed_extension) {
                     return $handler;
@@ -421,9 +424,12 @@ class File
 
         $allowed_order = array('asc', 'desc');
 
-        $allowed_sort = array('title' => 'title', 'path' => 'f.path',
+        $allowed_sort = array(
+            'title' => 'title', 'path' => 'f.path',
             'file_id' => 'f.file_id', 'created' => 'f.created',
-            'weight' => 'f.weight', 'mime_type' => 'f.mime_type');
+            'weight' => 'f.weight', 'mime_type' => 'f.mime_type',
+            'entity' => 'f.entity', 'entity_id' => 'f.entity_id'
+        );
 
         if (isset($data['sort']) && isset($allowed_sort[$data['sort']])//
                 && isset($data['order']) && in_array($data['order'], $allowed_order)) {
@@ -444,6 +450,15 @@ class File
 
         $this->hook->attach('file.list', $files, $this);
         return $files;
+    }
+
+    /**
+     * Returns a array of entities
+     * @return array
+     */
+    public function getEntities()
+    {
+        return $this->db->fetchColumnAll('SELECT entity FROM file GROUP BY entity');
     }
 
     /**
