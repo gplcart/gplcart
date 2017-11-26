@@ -189,7 +189,7 @@ class Page
         }
 
         $conditions = array('page_id' => $page_id);
-        $conditions2 = array('id_key' => 'page_id', 'id_value' => $page_id);
+        $conditions2 = array('entity' => 'page', 'entity_id' => $page_id);
 
         $result = (bool) $this->db->delete('page', $conditions);
 
@@ -225,12 +225,12 @@ class Page
         }
 
         $language = $this->language->getLangcode();
-        $where = array($language, 'page_id');
+        $where = array($language, 'page');
 
         $sql .= ' FROM page p'
                 . ' LEFT JOIN page_translation pt ON(pt.page_id = p.page_id AND pt.language=?)'
                 . ' LEFT JOIN category c ON(p.category_id = c.category_id)'
-                . ' LEFT JOIN alias a ON(a.id_key=? AND a.id_value=p.page_id)'
+                . ' LEFT JOIN alias a ON(a.entity=? AND a.entity_id=p.page_id)'
                 . ' LEFT JOIN user u ON(p.user_id = u.user_id)';
 
         if (!empty($data['page_id'])) {
@@ -239,7 +239,7 @@ class Page
             $sql .= " WHERE p.page_id IN($placeholders)";
             $where = array_merge($where, $data['page_id']);
         } else {
-            $sql .= ' WHERE p.page_id > 0';
+            $sql .= ' WHERE p.page_id IS NOT NULL';
         }
 
         if (isset($data['title'])) {

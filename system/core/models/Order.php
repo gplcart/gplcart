@@ -175,10 +175,10 @@ class Order
                 . ' LEFT JOIN user u ON(o.creator=u.user_id)'
                 . ' LEFT JOIN user uc ON(o.user_id=uc.user_id)'
                 . ' LEFT JOIN address a ON(o.shipping_address=a.address_id)'
-                . ' LEFT JOIN history h ON(h.user_id=? AND h.id_key=? AND h.id_value=o.order_id)'
+                . ' LEFT JOIN history h ON(h.user_id=? AND h.entity=? AND h.entity_id=o.order_id)'
                 . ' WHERE o.order_id IS NOT NULL';
 
-        $where = array($this->user->getId(), 'order_id');
+        $where = array($this->user->getId(), 'order');
 
         if (isset($data['store_id'])) {
             $sql .= ' AND o.store_id = ?';
@@ -367,7 +367,7 @@ class Order
         }
 
         $conditions = array('order_id' => $order_id);
-        $conditions2 = array('id_key' => 'order_id', 'id_value' => $order_id);
+        $conditions2 = array('entity' => 'order', 'entity_id' => $order_id);
 
         $result = (bool) $this->db->delete('orders', $conditions);
 
@@ -388,7 +388,7 @@ class Order
      */
     public function setViewed(array $order)
     {
-        return $this->history->set('order_id', $order['order_id'], $order['created']);
+        return $this->history->set('order', $order['order_id'], $order['created']);
     }
 
     /**

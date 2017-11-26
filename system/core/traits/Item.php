@@ -156,12 +156,12 @@ trait Item
      */
     public function setItemUrl(array &$item, array $options = array())
     {
-        if (!empty($options['id_key'])) {
-            $id = $item[$options['id_key']];
-            $entity = preg_replace('/_id$/', '', $options['id_key']);
-            $item['url'] = empty($item['alias']) ? $this->url("$entity/$id") : $this->url($item['alias']);
+        if (!empty($options['entity']) && !empty($item[$options['entity'] . '_id'])) {
+            $entity = $options['entity'];
+            $entity_id = $item["{$entity}_id"];
+            $item['url'] = empty($item['alias']) ? $this->url("$entity/$entity_id") : $this->url($item['alias']);
             $query = $this->getQuery(null, array(), 'array');
-            $item['url_query'] = empty($item['alias']) ? $this->url("$entity/$id", $query) : $this->url($item['alias'], $query);
+            $item['url_query'] = empty($item['alias']) ? $this->url("$entity/$entity_id", $query) : $this->url($item['alias'], $query);
         }
     }
 
@@ -225,7 +225,7 @@ trait Item
             $product_ids = array_keys($products);
 
             foreach ($products as &$product) {
-                $this->setItemThumb($product, $image_model, array('id_key' => 'product_id', 'id_value' => $product_ids));
+                $this->setItemThumb($product, $image_model, array('entity' => 'product', 'entity_id' => $product_ids));
                 $this->setItemRenderedBundleProduct($product, $options);
             }
 
@@ -562,6 +562,27 @@ trait Item
     {
         $this->setItemProductFieldType($item, $image_model, $class_model, 'option', $options);
         $this->setItemProductFieldType($item, $image_model, $class_model, 'attribute', $options);
+    }
+
+    /**
+     * Set a data to product combinations
+     * @param array $item
+     * @param \gplcart\core\models\Image $image_model
+     * @param \gplcart\core\models\Price $price_model
+     */
+    public function setItemProductCombination(array &$item, $image_model, $price_model)
+    {
+        if (!empty($item['combination'])) {
+            foreach ($item['combination'] as &$combination) {
+                $combination['path'] = $combination['thumb'] = '';
+                if (!empty($item['images'][$combination['file_id']])) {
+                    $combination['path'] = $item['images'][$combination['file_id']]['path'];
+                    $this->setItemThumb($combination, $image_model);
+                }
+                // @todo reuse a trait
+                $combination['price'] = $price_model->decimal($combination['price'], $item['currency']);
+            }
+        }
     }
 
 }

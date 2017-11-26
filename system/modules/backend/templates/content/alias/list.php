@@ -44,12 +44,12 @@
             </a>
           </th>
           <th>
-            <a href="<?php echo $sort_id_key; ?>">
-              <?php echo $this->text('Entity type'); ?> <i class="fa fa-sort"></i>
+            <a href="<?php echo $sort_entity; ?>">
+              <?php echo $this->text('Entity'); ?> <i class="fa fa-sort"></i>
             </a>
           </th>
           <th>
-            <a href="<?php echo $sort_id_value; ?>">
+            <a href="<?php echo $sort_entity_id; ?>">
               <?php echo $this->text('Entity ID'); ?> <i class="fa fa-sort"></i>
             </a>
           </th>
@@ -62,11 +62,11 @@
             <input class="form-control" name="alias" value="<?php echo $filter_alias; ?>" placeholder="<?php echo $this->text('Any'); ?>">
           </th>
           <th>
-            <select name="id_key" class="form-control">
+            <select name="entity" class="form-control">
               <option value=""><?php echo $this->text('Any'); ?></option>
-              <?php foreach ($id_keys as $id_key) { ?>
-              <option value="<?php echo $this->e($id_key); ?>"<?php echo $filter_id_key == $id_key ? ' selected' : '' ?>>
-                <?php echo $this->e($id_key); ?>
+              <?php foreach ($entities as $entity) { ?>
+              <option value="<?php echo $this->e($entity); ?>"<?php echo $filter_entity == $entity ? ' selected' : '' ?>>
+                <?php echo $this->e($entity); ?>
               </option>
               <?php } ?>
             </select>
@@ -103,10 +103,10 @@
             <?php echo $this->e($alias['alias']); ?>
           </td>
           <td class="middle">
-            <?php echo $this->e($alias['entity']); ?>
+            <?php echo $this->e($this->text(ucfirst($alias['entity']))); ?>
           </td>
           <td class="middle">
-            <?php echo $this->e($alias['id_value']); ?>
+            <?php echo $this->e($alias['entity_id']); ?>
           </td>
           <td></td>
         </tr>

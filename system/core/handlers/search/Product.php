@@ -76,32 +76,32 @@ class Product
      */
     public function search($query, array $data)
     {
-        $sql = 'SELECT si.id_value';
+        $sql = 'SELECT si.entity_id';
 
         if (!empty($data['count'])) {
-            $sql = 'SELECT COUNT(si.id_value)';
+            $sql = 'SELECT COUNT(si.entity_id)';
         }
 
-        $where = array($query, $data['language'], 'und', 'product_id');
+        $conditions = array($query, $data['language'], 'und', 'product');
 
         $sql .= ' FROM search_index si'
-                . ' LEFT JOIN product p ON(p.product_id = si.id_value)'
+                . ' LEFT JOIN product p ON(p.product_id = si.entity_id)'
                 . ' WHERE MATCH(si.text) AGAINST (? IN BOOLEAN MODE)'
                 . ' AND (si.language=? OR si.language=?)'
-                . ' AND si.id_key=? AND p.product_id > 0';
+                . ' AND si.entity=? AND p.product_id IS NOT NULL';
 
         if (isset($data['status'])) {
             $sql .= ' AND p.status=?';
-            $where[] = (int) $data['status'];
+            $conditions[] = (int) $data['status'];
         }
 
         if (isset($data['store_id'])) {
             $sql .= ' AND p.store_id=?';
-            $where[] = (int) $data['store_id'];
+            $conditions[] = (int) $data['store_id'];
         }
 
         if (empty($data['count'])) {
-            $sql .= ' GROUP BY si.id_value';
+            $sql .= ' GROUP BY si.entity_id';
         }
 
         if (!empty($data['limit'])) {
@@ -109,10 +109,10 @@ class Product
         }
 
         if (!empty($data['count'])) {
-            return $this->config->getDb()->fetchColumn($sql, $where);
+            return $this->config->getDb()->fetchColumn($sql, $conditions);
         }
 
-        $data['product_id'] = $this->config->getDb()->fetchColumnAll($sql, $where);
+        $data['product_id'] = $this->config->getDb()->fetchColumnAll($sql, $conditions);
 
         if (empty($data['product_id'])) {
             return array();
@@ -130,7 +130,7 @@ class Product
     protected function indexProduct(array $product)
     {
         $snippet = $this->search->getSnippet($product, 'und');
-        return $this->search->setIndex($snippet, 'product_id', $product['product_id'], 'und');
+        return $this->search->setIndex($snippet, 'product', $product['product_id'], 'und');
     }
 
     /**
@@ -148,7 +148,7 @@ class Product
         foreach ($product['translation'] as $language => $translation) {
             $translation += $product;
             $snippet = $this->search->getSnippet($translation, $language);
-            $indexed += (int) $this->search->setIndex($snippet, 'product_id', $product['product_id'], $language);
+            $indexed += (int) $this->search->setIndex($snippet, 'product', $product['product_id'], $language);
         }
 
         return $indexed > 0;

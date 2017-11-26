@@ -25,12 +25,12 @@ trait Alias
      */
     public function setAlias(array $data, $alias_model, $entity, $delete_existing = true)
     {
-        if ((empty($data['form']) && empty($data['alias'])) || empty($data["{$entity}_id"])) {
+        if ((empty($data['form']) && empty($data['alias'])) || empty($data[$entity . '_id'])) {
             return null;
         }
 
         if ($delete_existing) {
-            $alias_model->delete("{$entity}_id", $data["{$entity}_id"]);
+            $alias_model->delete($entity, $data[$entity . '_id']);
         }
 
         if (empty($data['alias'])) {
@@ -39,8 +39,8 @@ trait Alias
 
         $alias = array(
             'alias' => $data['alias'],
-            'id_key' => "{$entity}_id",
-            'id_value' => $data["{$entity}_id"]
+            'entity' => $entity,
+            'entity_id' => $data[$entity . '_id']
         );
 
         return $alias_model->add($alias);

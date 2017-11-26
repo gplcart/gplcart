@@ -201,7 +201,7 @@ class Category
         }
 
         $sql .= ' FROM category c'
-                . ' LEFT JOIN alias a ON(a.id_key=? AND a.id_value=c.category_id)'
+                . ' LEFT JOIN alias a ON(a.entity=? AND a.entity_id=c.category_id)'
                 . ' LEFT JOIN category_group cg ON(cg.category_group_id = c.category_group_id)'
                 . ' LEFT JOIN category_translation ct ON(c.category_id = ct.category_id AND ct.language = ?)'
                 . ' WHERE c.category_id IS NOT NULL';
@@ -210,7 +210,7 @@ class Category
             $options['language'] = $this->language->getLangcode();
         }
 
-        $conditions = array('category_id', $options['language']);
+        $conditions = array('category', $options['language']);
 
         if (isset($options['title'])) {
             $sql .= ' AND (c.title LIKE ? OR (ct.title LIKE ? AND ct.language=?))';
@@ -414,7 +414,7 @@ class Category
         }
 
         $conditions = array('category_id' => $category_id);
-        $conditions2 = array('id_key' => 'category_id', 'id_value' => $category_id);
+        $conditions2 = array('entity' => 'category', 'entity_id' => $category_id);
 
         $this->db->delete('category', $conditions);
         $this->db->delete('category_translation', $conditions);

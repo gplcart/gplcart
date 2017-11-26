@@ -89,54 +89,54 @@ class Alias
 
     /**
      * Returns an alias
-     * @param string $id_key
-     * @param null|integer $id_value
+     * @param string $entity
+     * @param null|integer $entity_id
      * @return string|array
      */
-    public function get($id_key, $id_value = null)
+    public function get($entity, $entity_id = null)
     {
         $result = null;
-        $this->hook->attach('alias.get.before', $id_key, $id_value, $result);
+        $this->hook->attach('alias.get.before', $entity, $entity_id, $result);
 
         if (isset($result)) {
             return $result;
         }
 
-        if (is_numeric($id_key)) {
+        if (is_numeric($entity)) {
             $sql = 'SELECT * FROM alias WHERE alias_id=?';
-            $result = $this->db->fetch($sql, array($id_key));
+            $result = $this->db->fetch($sql, array($entity));
         } else {
-            $sql = 'SELECT alias FROM alias WHERE id_key=? AND id_value=?';
-            $result = $this->db->fetchColumn($sql, array($id_key, $id_value));
+            $sql = 'SELECT alias FROM alias WHERE entity=? AND entity_id=?';
+            $result = $this->db->fetchColumn($sql, array($entity, $entity_id));
         }
 
-        $this->hook->attach('alias.get.after', $id_key, $id_value, $result);
+        $this->hook->attach('alias.get.after', $entity, $entity_id, $result);
         return $result;
     }
 
     /**
      * Deletes an alias
-     * @param string $id_key
-     * @param null|integer $id_value
+     * @param string $entity
+     * @param null|integer $entity_id
      * @return bool
      */
-    public function delete($id_key, $id_value = null)
+    public function delete($entity, $entity_id = null)
     {
         $result = null;
-        $this->hook->attach('alias.delete.before', $id_key, $id_value, $result);
+        $this->hook->attach('alias.delete.before', $entity, $entity_id, $result);
 
         if (isset($result)) {
             return (bool) $result;
         }
 
-        if (is_numeric($id_key)) {
-            $result = $this->db->delete('alias', array('alias_id' => $id_key));
+        if (is_numeric($entity)) {
+            $result = $this->db->delete('alias', array('alias_id' => $entity));
         } else {
-            $conditions = array('id_key' => $id_key, 'id_value' => $id_value);
+            $conditions = array('entity' => $entity, 'entity_id' => $entity_id);
             $result = $this->db->delete('alias', $conditions);
         }
 
-        $this->hook->attach('alias.delete.after', $id_key, $id_value, $result);
+        $this->hook->attach('alias.delete.after', $entity, $entity_id, $result);
         return (bool) $result;
     }
 
@@ -162,32 +162,32 @@ class Alias
 
         $sql .= ' FROM alias WHERE alias_id > 0';
 
-        $where = array();
+        $conditions = array();
 
         if (isset($data['alias_id'])) {
             $sql .= ' AND alias_id = ?';
-            $where[] = $data['alias_id'];
+            $conditions[] = $data['alias_id'];
         }
 
-        if (isset($data['id_key'])) {
-            $sql .= ' AND id_key = ?';
-            $where[] = $data['id_key'];
+        if (isset($data['entity'])) {
+            $sql .= ' AND entity = ?';
+            $conditions[] = $data['entity'];
         }
 
         if (isset($data['alias'])) {
             $sql .= ' AND alias LIKE ?';
-            $where[] = "%{$data['alias']}%";
+            $conditions[] = "%{$data['alias']}%";
         }
 
-        if (!empty($data['id_value'])) {
-            settype($data['id_value'], 'array');
-            $placeholders = rtrim(str_repeat('?,', count($data['id_value'])), ',');
-            $sql .= " AND id_value IN($placeholders)";
-            $where = array_merge($where, $data['id_value']);
+        if (!empty($data['entity_id'])) {
+            settype($data['entity_id'], 'array');
+            $placeholders = rtrim(str_repeat('?,', count($data['entity_id'])), ',');
+            $sql .= " AND entity_id IN($placeholders)";
+            $conditions = array_merge($conditions, $data['entity_id']);
         }
 
         $allowed_order = array('asc', 'desc');
-        $allowed_sort = array('id_value', 'id_key', 'alias', 'alias_id');
+        $allowed_sort = array('entity_id', 'entity', 'alias', 'alias_id');
 
         if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)//
                 && isset($data['order'])//
@@ -203,21 +203,21 @@ class Alias
         }
 
         if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $where);
+            return (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $result = $this->db->fetchAll($sql, $where, array('index' => 'alias_id'));
+        $result = $this->db->fetchAll($sql, $conditions, array('index' => 'alias_id'));
         $this->hook->attach('alias.list.after', $data, $result);
         return $result;
     }
 
     /**
-     * Returns a array of id keys (entity types)
+     * Returns a array of entities
      * @return array
      */
-    public function getIdKeys()
+    public function getEntities()
     {
-        return $this->db->fetchColumnAll('SELECT id_key FROM alias GROUP BY id_key');
+        return $this->db->fetchColumnAll('SELECT entity FROM alias GROUP BY entity');
     }
 
     /**
@@ -260,7 +260,9 @@ class Alias
      */
     public function generateEntity($entity_name, array $data)
     {
-        $data += array('placeholders' => $this->getEntityPatternPlaceholders($entity_name));
+        $data += array(
+            'placeholders' => $this->getEntityPatternPlaceholders($entity_name));
+
         return $this->generate($this->getEntityPattern($entity_name), $data);
     }
 

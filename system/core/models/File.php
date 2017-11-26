@@ -384,16 +384,16 @@ class File
             $params[] = (int) $data['created'];
         }
 
-        if (isset($data['id_key'])) {
-            $sql .= ' AND f.id_key = ?';
-            $params[] = $data['id_key'];
+        if (isset($data['entity'])) {
+            $sql .= ' AND f.entity = ?';
+            $params[] = $data['entity'];
         }
 
-        if (!empty($data['id_value'])) {
-            settype($data['id_value'], 'array');
-            $placeholders = rtrim(str_repeat('?,', count($data['id_value'])), ',');
-            $sql .= " AND f.id_value IN($placeholders)";
-            $params = array_merge($params, $data['id_value']);
+        if (!empty($data['entity_id'])) {
+            settype($data['entity_id'], 'array');
+            $placeholders = rtrim(str_repeat('?,', count($data['entity_id'])), ',');
+            $sql .= " AND f.entity_id IN($placeholders)";
+            $params = array_merge($params, $data['entity_id']);
         }
 
         if (isset($data['language'])) {

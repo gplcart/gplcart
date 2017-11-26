@@ -53,17 +53,17 @@ class Search
     /**
      * Adds an item to the search index
      * @param string $text
-     * @param string $id_key
-     * @param integer $id_value
+     * @param string $entity
+     * @param integer $entity_id
      * @param string $language
      * @return boolean
      */
-    public function addIndex($text, $id_key, $id_value, $language)
+    public function addIndex($text, $entity, $entity_id, $language)
     {
         $values = array(
             'text' => $text,
-            'id_key' => $id_key,
-            'id_value' => $id_value,
+            'entity' => $entity,
+            'entity_id' => $entity_id,
             'language' => $language
         );
 
@@ -72,16 +72,16 @@ class Search
 
     /**
      * Deletes an item from the search index
-     * @param string $id_key
-     * @param integer $id_value
+     * @param string $entity
+     * @param integer $entity_id
      * @param string $language
      * @return boolean
      */
-    public function deleteIndex($id_key, $id_value, $language)
+    public function deleteIndex($entity, $entity_id, $language)
     {
         $values = array(
-            'id_key' => $id_key,
-            'id_value' => $id_value,
+            'entity' => $entity,
+            'entity_id' => $entity_id,
             'language' => $language
         );
 
@@ -91,20 +91,20 @@ class Search
     /**
      * Sets an item to the search index
      * @param string $text
-     * @param string $id_key
-     * @param integer $id_value
+     * @param string $entity
+     * @param integer $entity_id
      * @param string $language
      * @return boolean
      */
-    public function setIndex($text, $id_key, $id_value, $language)
+    public function setIndex($text, $entity, $entity_id, $language)
     {
-        $this->deleteIndex($id_key, $id_value, $language);
+        $this->deleteIndex($entity, $entity_id, $language);
 
         if (empty($text)) {
             return false;
         }
 
-        return $this->addIndex($text, $id_key, $id_value, $language);
+        return $this->addIndex($text, $entity, $entity_id, $language);
     }
 
     /**

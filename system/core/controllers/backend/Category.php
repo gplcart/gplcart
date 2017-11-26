@@ -278,7 +278,7 @@ class Category extends BackendController
      */
     protected function prepareCategory(array $category)
     {
-        $category['alias'] = $this->alias->get('category_id', $category['category_id']);
+        $category['alias'] = $this->alias->get('category', $category['category_id']);
         return $category;
     }
 
@@ -314,8 +314,8 @@ class Category extends BackendController
         $options = array(
             'file_id' => $file_ids,
             'file_type' => 'image',
-            'id_key' => 'category_id',
-            'id_value' => $this->data_category['category_id']
+            'entity' => 'category',
+            'entity_id' => $this->data_category['category_id']
         );
 
         return $this->image->deleteMultiple($options);

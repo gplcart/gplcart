@@ -31,8 +31,8 @@ return array(
     'alias' => array(
         'fields' => array(
             'alias_id' => array('type' => 'integer', 'length' => 10, 'auto_increment' => true, 'primary' => true),
-            'id_value' => array('type' => 'integer', 'length' => 10, 'not_null' => true),
-            'id_key' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
+            'entity_id' => array('type' => 'integer', 'length' => 10, 'not_null' => true),
+            'entity' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
             'alias' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
         )
     ),
@@ -197,10 +197,10 @@ return array(
     'file' => array(
         'fields' => array(
             'file_id' => array('type' => 'integer', 'length' => 10, 'auto_increment' => true, 'primary' => true),
-            'id_value' => array('type' => 'integer', 'length' => 10, 'not_null' => true, 'default' => 0),
+            'entity_id' => array('type' => 'integer', 'length' => 10, 'not_null' => true, 'default' => 0),
             'created' => array('type' => 'integer', 'length' => 10, 'not_null' => true),
             'weight' => array('type' => 'integer', 'length' => 2, 'not_null' => true, 'default' => 0),
-            'id_key' => array('type' => 'varchar', 'length' => 50, 'not_null' => true, 'default' => ''),
+            'entity' => array('type' => 'varchar', 'length' => 50, 'not_null' => true, 'default' => ''),
             'file_type' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
             'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
             'mime_type' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
@@ -221,8 +221,8 @@ return array(
         'fields' => array(
             'history_id' => array('type' => 'integer', 'length' => 10, 'auto_increment' => true, 'primary' => true),
             'user_id' => array('type' => 'integer', 'length' => 10, 'not_null' => true),
-            'id_value' => array('type' => 'integer', 'length' => 10, 'not_null' => true),
-            'id_key' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
+            'entity_id' => array('type' => 'integer', 'length' => 10, 'not_null' => true),
+            'entity' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
             'created' => array('type' => 'integer', 'length' => 10, 'not_null' => true)
         )
     ),
@@ -545,8 +545,8 @@ return array(
     'search_index' => array(
         'fields' => array(
             'search_index_id' => array('type' => 'integer', 'length' => 10, 'auto_increment' => true, 'primary' => true),
-            'id_value' => array('type' => 'integer', 'length' => 10, 'not_null' => true),
-            'id_key' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
+            'entity_id' => array('type' => 'integer', 'length' => 10, 'not_null' => true),
+            'entity' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
             'language' => array('type' => 'varchar', 'length' => 4, 'not_null' => true),
             'text' => array('type' => 'longtext', 'not_null' => true),
         ),

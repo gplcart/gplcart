@@ -121,7 +121,7 @@ class Ajax extends FrontendController
 
         foreach ($products as &$product) {
             $this->setItemPriceFormatted($product, $this->price);
-            $this->setItemThumb($product, $this->image, array('id_key' => 'product_id', 'id_value' => $product_ids));
+            $this->setItemThumb($product, $this->image, array('entity' => 'product', 'entity_id' => $product_ids));
             $this->setItemRendered($product, array('item' => $product), array('template_item' => 'backend|content/product/suggestion'));
         }
 

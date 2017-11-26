@@ -27,14 +27,14 @@ trait Image
      */
     public function attachImages(&$data, $file_model, $translation_model, $entity, $lang = null)
     {
-        if (!empty($data)) {
+        if (!empty($data[$entity . '_id'])) {
 
             $options = array(
                 'order' => 'asc',
                 'sort' => 'weight',
                 'file_type' => 'image',
-                'id_key' => "{$entity}_id",
-                'id_value' => $data["{$entity}_id"]
+                'entity' => $entity,
+                'entity_id' => $data[$entity . '_id']
             );
 
             $images = (array) $file_model->getList($options);
@@ -56,14 +56,14 @@ trait Image
      */
     public function setImages(array &$data, $file_model, $entity)
     {
-        if (empty($data['images']) || empty($data["{$entity}_id"])) {
+        if (empty($data['images']) || empty($data[$entity . '_id'])) {
             return array();
         }
 
         foreach ($data['images'] as &$image) {
             if (empty($image['file_id'])) {
-                $image['id_key'] = "{$entity}_id";
-                $image['id_value'] = $data["{$entity}_id"];
+                $image['entity'] = $entity;
+                $image['entity_id'] = $data[$entity . '_id'];
                 $image['file_id'] = (int) $file_model->add($image);
             } else {
                 $file_model->update($image['file_id'], $image);

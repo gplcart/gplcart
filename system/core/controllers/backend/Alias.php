@@ -53,7 +53,7 @@ class Alias extends BackendController
         $this->setFilterListAlias();
         $this->setPagerListAlias();
 
-        $this->setData('id_keys', $this->alias->getIdKeys());
+        $this->setData('entities', $this->alias->getEntities());
         $this->setData('aliases', $this->getListAlias());
         $this->outputListAlias();
     }
@@ -63,7 +63,7 @@ class Alias extends BackendController
      */
     protected function setFilterListAlias()
     {
-        $allowed = array('id_value', 'id_key', 'alias', 'alias_id');
+        $allowed = array('entity_id', 'entity', 'alias', 'alias_id');
         $this->setFilter($allowed);
     }
 
@@ -113,24 +113,7 @@ class Alias extends BackendController
     {
         $options = $this->query_filter;
         $options['limit'] = $this->data_limit;
-        $aliases = (array) $this->alias->getList($options);
-
-        return $this->prepareListAlias($aliases);
-    }
-
-    /**
-     * Prepare an array of aliases
-     * @param array $aliases
-     * @return array
-     */
-    protected function prepareListAlias(array $aliases)
-    {
-        foreach ($aliases as &$alias) {
-            $entity = preg_replace('/_id$/', '', $alias['id_key']);
-            $alias['entity'] = $this->text(ucfirst($entity));
-        }
-
-        return $aliases;
+        return (array) $this->alias->getList($options);
     }
 
     /**

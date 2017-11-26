@@ -241,7 +241,7 @@ class Page extends BackendController
         $user = $this->user->get($page['user_id']);
 
         $page['author'] = isset($user['email']) ? $user['email'] : $this->text('Unknown');
-        $page['alias'] = $this->alias->get('page_id', $page['page_id']);
+        $page['alias'] = $this->alias->get('page', $page['page_id']);
 
         return $page;
     }
@@ -278,8 +278,8 @@ class Page extends BackendController
         $options = array(
             'file_id' => $file_ids,
             'file_type' => 'image',
-            'id_key' => 'page_id',
-            'id_value' => $this->data_page['page_id']
+            'entity' => 'page',
+            'entity_id' => $this->data_page['page_id']
         );
 
         return $this->image->deleteMultiple($options);

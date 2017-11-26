@@ -63,19 +63,19 @@ class History
 
     /**
      * Set a history record
-     * @param string $id_key
-     * @param int $id_value
+     * @param string $entity
+     * @param int $entity_id
      * @param int $created
      * @param null|int $user_id
      * @return boolean
      */
-    public function set($id_key, $id_value, $created, $user_id = null)
+    public function set($entity, $entity_id, $created, $user_id = null)
     {
         if (!isset($user_id)) {
             $user_id = $this->user->getId(); // Current user
         }
 
-        if ($this->exists($id_key, $id_value, $user_id)) {
+        if ($this->exists($entity, $entity_id, $user_id)) {
             return true;
         }
 
@@ -84,9 +84,9 @@ class History
         }
 
         $data = array(
-            'id_key' => $id_key,
+            'entity' => $entity,
             'user_id' => $user_id,
-            'id_value' => $id_value
+            'entity_id' => $entity_id
         );
 
         return $this->add($data);
@@ -94,15 +94,15 @@ class History
 
     /**
      * Whether a record exists in the history table
-     * @param string $id_key
-     * @param int $id_value
+     * @param string $entity
+     * @param int $entity_id
      * @param int $user_id
      * @return bool
      */
-    public function exists($id_key, $id_value, $user_id)
+    public function exists($entity, $entity_id, $user_id)
     {
-        $sql = 'SELECT history_id FROM history WHERE id_key=? AND id_value=? AND user_id=?';
-        return (bool) $this->db->fetchColumn($sql, array($id_key, $id_value, $user_id));
+        $sql = 'SELECT history_id FROM history WHERE entity=? AND entity_id=? AND user_id=?';
+        return (bool) $this->db->fetchColumn($sql, array($entity, $entity_id, $user_id));
     }
 
     /**

@@ -9,15 +9,15 @@
 return array(
     array(
         'search_index_id' => 1,
-        'id_value' => 1,
-        'id_key' => 'product',
+        'entity_id' => 1,
+        'entity' => 'product',
         'language' => 'en',
         'text' => 'Product index text'
     ),
     array(
         'search_index_id' => 2,
-        'id_value' => 2,
-        'id_key' => 'product',
+        'entity_id' => 2,
+        'entity' => 'product',
         'language' => 'en',
         'text' => 'Product index text 2'
     )

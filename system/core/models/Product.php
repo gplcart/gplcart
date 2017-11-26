@@ -427,7 +427,7 @@ class Product
         }
 
         $conditions = array('product_id' => $product_id);
-        $conditions2 = array('id_key' => 'product_id', 'id_value' => $product_id);
+        $conditions2 = array('entity' => 'product', 'entity_id' => $product_id);
         $conditions3 = array('item_product_id' => $product_id);
 
         $result = (bool) $this->db->delete('product', $conditions);
@@ -546,7 +546,7 @@ class Product
 
         $sql .= ' FROM product p'
                 . ' LEFT JOIN product_translation pt ON(p.product_id = pt.product_id AND pt.language=?)'
-                . ' LEFT JOIN alias a ON(a.id_key=? AND a.id_value=p.product_id)'
+                . ' LEFT JOIN alias a ON(a.entity=? AND a.entity_id=p.product_id)'
                 . ' LEFT JOIN user u ON(u.user_id=p.user_id)'
                 . ' LEFT JOIN product_sku ps ON(p.product_id = ps.product_id';
 
@@ -559,7 +559,7 @@ class Product
 
 
         $language = $this->language->getLangcode();
-        $conditions = array($language, 'product_id');
+        $conditions = array($language, 'product');
 
         if (!empty($data['product_id'])) {
             settype($data['product_id'], 'array');

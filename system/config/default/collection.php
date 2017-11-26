@@ -9,7 +9,7 @@
 return array(
     'product' => array(
         'title' => /* @text */'Product',
-        'id_key' => 'product_id',
+        'entity' => 'product',
         'handlers' => array(
             'list' => array('gplcart\\core\\models\\Product', 'getList'),
             'validate' => array('gplcart\\core\\handlers\\validator\\components\\CollectionItem', 'validateProductCollectionItem'),
@@ -21,7 +21,7 @@ return array(
     ),
     'file' => array(
         'title' => /* @text */'File',
-        'id_key' => 'file_id',
+        'entity' => 'file',
         'handlers' => array(
             'list' => array('gplcart\\core\\models\\File', 'getList'),
             'validate' => array('gplcart\\core\\handlers\\validator\\components\\CollectionItem', 'validateFileCollectionItem'),
@@ -33,7 +33,7 @@ return array(
     ),
     'page' => array(
         'title' => /* @text */'Page',
-        'id_key' => 'page_id',
+        'entity' => 'page',
         'handlers' => array(
             'list' => array('gplcart\\core\\models\\Page', 'getList'),
             'validate' => array('gplcart\\core\\handlers\\validator\\components\\CollectionItem', 'validatePageCollectionItem'),

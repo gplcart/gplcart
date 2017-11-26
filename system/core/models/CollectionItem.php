@@ -224,35 +224,24 @@ class CollectionItem
         }
 
         $handlers = $this->collection->getHandlers();
-        $conditions[$handlers[$handler_id]['id_key']] = array_keys($items);
-        $results = $this->getListEntities($handler_id, $conditions);
+        $conditions[$handlers[$handler_id]['entity'] . '_id'] = array_keys($items);
 
-        if (empty($results)) {
+        $entities = $this->getListEntities($handler_id, $conditions);
+
+        if (empty($entities)) {
             return array();
         }
 
-        foreach ($results as $entity_id => &$result) {
+        foreach ($entities as $entity_id => &$entity) {
             if (isset($items[$entity_id])) {
-                $result['weight'] = $items[$entity_id]['weight'];
-                $result['collection_item'] = $items[$entity_id];
-                $result['collection_handler'] = $handlers[$handler_id];
+                $entity['weight'] = $items[$entity_id]['weight'];
+                $entity['collection_item'] = $items[$entity_id];
+                $entity['collection_handler'] = $handlers[$handler_id];
             }
         }
 
-        gplcart_array_sort($results);
-        return $results;
-    }
-
-    /**
-     * Returns the next possible weight for a collection item
-     * @param integer $collection_id
-     * @return integer
-     */
-    public function getNextWeight($collection_id)
-    {
-        $sql = 'SELECT MAX(weight) FROM collection_item WHERE collection_id=?';
-        $weight = (int) $this->db->fetchColumn($sql, array($collection_id));
-        return ++$weight;
+        gplcart_array_sort($entities);
+        return $entities;
     }
 
     /**
@@ -270,6 +259,18 @@ class CollectionItem
             trigger_error($ex->getMessage());
             return array();
         }
+    }
+
+    /**
+     * Returns the next possible weight for a collection item
+     * @param integer $collection_id
+     * @return integer
+     */
+    public function getNextWeight($collection_id)
+    {
+        $sql = 'SELECT MAX(weight) FROM collection_item WHERE collection_id=?';
+        $weight = (int) $this->db->fetchColumn($sql, array($collection_id));
+        return ++$weight;
     }
 
 }

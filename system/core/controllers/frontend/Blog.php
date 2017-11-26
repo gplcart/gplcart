@@ -108,7 +108,7 @@ class Blog extends FrontendController
                 $page['teaser'] = strip_tags($teaser);
             }
 
-            $this->setItemUrl($page, array('id_key' => 'page_id'));
+            $this->setItemUrl($page, array('entity' => 'page'));
         }
 
         return $pages;

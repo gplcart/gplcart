@@ -80,7 +80,7 @@ class AliasTest extends UnitTest
         $this->assertEquals($first['alias_id'], $result['alias_id']);
 
         $result = $this->object->get($first['alias_id'], 'product');
-        $this->assertEquals('product', $result['id_key']);
+        $this->assertEquals('product', $result['entity']);
 
         // Get by fake arguments
         $result = $this->object->get(999999);
@@ -104,7 +104,7 @@ class AliasTest extends UnitTest
         $this->assertDbRecordNotExists('alias', 'alias_id', $first['alias_id']);
 
         $this->assertDbRecordExists('alias', 'alias_id', $second['alias_id']);
-        $this->assertTrue($this->object->delete($second['id_key'], $second['id_value']));
+        $this->assertTrue($this->object->delete($second['entity'], $second['entity_id']));
         $this->assertDbRecordNotExists('alias', 'alias_id', $second['alias_id']);
     }
 
@@ -126,7 +126,7 @@ class AliasTest extends UnitTest
      */
     public function testGetIdKeys()
     {
-        $result = $this->object->getIdKeys();
+        $result = $this->object->getEntities();
 
         $this->assertCount(count($this->fixture_data), $result);
         $this->assertContains('page', $result);

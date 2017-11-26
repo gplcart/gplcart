@@ -9,10 +9,10 @@
 return array(
     array(
         'file_id' => 1,
-        'id_value' => 1,
+        'entity_id' => 1,
         'created' => 1234567890,
         'weight' => -9,
-        'id_key' => 'product',
+        'entity' => 'product',
         'file_type' => 'image',
         'title' => 'File title 1',
         'mime_type' => 'image/png',
@@ -21,10 +21,10 @@ return array(
     ),
     array(
         'file_id' => 2,
-        'id_value' => 1,
+        'entity_id' => 1,
         'created' => 1234567890,
         'weight' => 9,
-        'id_key' => 'page',
+        'entity' => 'page',
         'file_type' => 'text',
         'title' => 'File title 2',
         'mime_type' => 'text/csv',

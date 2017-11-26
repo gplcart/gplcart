@@ -9,14 +9,14 @@
 return array(
     array(
         'alias_id' => 1,
-        'id_value' => 1,
-        'id_key' => 'product',
+        'entity_id' => 1,
+        'entity' => 'product',
         'alias' => 'product.html',
     ),
     array(
         'alias_id' => 2,
-        'id_value' => 1,
-        'id_key' => 'page',
+        'entity_id' => 1,
+        'entity' => 'page',
         'alias' => 'page.html',
     )
 );

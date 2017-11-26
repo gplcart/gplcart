@@ -118,7 +118,7 @@ class Image
             'placeholder' => true,
             'imagestyle' => $this->config->get('image_style', 3));
 
-        if (empty($options['id_value'])) {
+        if (empty($options['entity_id'])) {
             return empty($options['placeholder']) ? '' : $this->getPlaceholder($options['imagestyle']);
         }
 
@@ -126,12 +126,12 @@ class Image
             'order' => 'asc',
             'sort' => 'weight',
             'file_type' => 'image',
-            'id_key' => $options['id_key'],
-            'id_value' => (array) $options['id_value']
+            'entity' => $options['entity'],
+            'entity_id' => (array) $options['entity_id']
         );
 
         foreach ((array) $this->file->getList($conditions) as $file) {
-            if (isset($data[$options['id_key']]) && $file['id_value'] == $data[$options['id_key']]) {
+            if (isset($data[$options['entity'] . '_id']) && $file['entity_id'] == $data[$options['entity'] . '_id']) {
                 return $this->url($options['imagestyle'], $file['path']);
             }
         }

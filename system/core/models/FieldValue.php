@@ -95,25 +95,25 @@ class FieldValue
         }
 
         $sql .= ' FROM field_value fv'
-                . ' LEFT JOIN file f ON(fv.field_value_id = f.id_value AND f.id_key = ?)'
+                . ' LEFT JOIN file f ON(fv.field_value_id = f.entity_id AND f.entity = ?)'
                 . ' LEFT JOIN field_value_translation fvt ON(fv.field_value_id = fvt.field_value_id AND fvt.language=?)'
-                . ' WHERE fv.field_value_id > 0';
+                . ' WHERE fv.field_value_id IS NOT NULL';
 
         $language = $this->language->getLangcode();
-        $where = array('field_value_id', $language);
+        $conditions = array('field_value', $language);
 
         if (isset($data['title'])) {
             $sql .= ' AND (fv.title LIKE ? OR (fvt.title LIKE ? AND fvt.language=?))';
-            $where[] = "%{$data['title']}%";
-            $where[] = "%{$data['title']}%";
-            $where[] = $language;
+            $conditions[] = "%{$data['title']}%";
+            $conditions[] = "%{$data['title']}%";
+            $conditions[] = $language;
         }
 
         if (!empty($data['field_id'])) {
             settype($data['field_id'], 'array');
             $placeholders = rtrim(str_repeat('?,', count($data['field_id'])), ',');
             $sql .= " AND fv.field_id IN($placeholders)";
-            $where = array_merge($where, $data['field_id']);
+            $conditions = array_merge($conditions, $data['field_id']);
         }
 
         $allowed_order = array('asc', 'desc');
@@ -132,10 +132,10 @@ class FieldValue
         }
 
         if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $where);
+            return (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $list = $this->db->fetchAll($sql, $where, array('index' => 'field_value_id'));
+        $list = $this->db->fetchAll($sql, $conditions, array('index' => 'field_value_id'));
 
         $this->hook->attach('field.value.list', $data, $list, $this);
         return $list;
@@ -204,8 +204,8 @@ class FieldValue
         }
 
         $conditions = array(
-            'id_key' => 'field_value_id',
-            'id_value' => $data['field_value_id']
+            'entity' => 'field_value',
+            'entity_id' => $data['field_value_id']
         );
 
         if ($delete) {
@@ -267,7 +267,7 @@ class FieldValue
         }
 
         $conditions = array('field_value_id' => $field_value_id);
-        $conditions2 = array('id_key' => 'field_value_id', 'id_value' => $field_value_id);
+        $conditions2 = array('entity' => 'field_value', 'entity_id' => $field_value_id);
 
         $result = (bool) $this->db->delete('field_value', $conditions);
 

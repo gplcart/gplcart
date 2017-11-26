@@ -292,10 +292,13 @@ class Product extends BackendController
     protected function setProduct($product_id)
     {
         if (is_numeric($product_id)) {
+
             $product = $this->product->get($product_id);
+
             if (empty($product)) {
                 $this->outputHttpStatus(404);
             }
+
             $this->data_product = $this->prepareProduct($product);
         }
     }
@@ -307,7 +310,8 @@ class Product extends BackendController
      */
     protected function prepareProduct(array $product)
     {
-        $product['alias'] = $this->alias->get('product_id', $product['product_id']);
+        // @todo reuse traits
+        $product['alias'] = $this->alias->get('product', $product['product_id']);
         $product['price'] = $this->price->decimal($product['price'], $product['currency']);
 
         $options = array(
@@ -317,30 +321,7 @@ class Product extends BackendController
 
         $product['related'] = $this->product->getRelated($options);
 
-        return $this->prepareCombinationsProduct($product);
-    }
-
-    /**
-     * Prepare an array of product combination data
-     * @param array $product
-     * @return array
-     */
-    protected function prepareCombinationsProduct(array $product)
-    {
-        if (empty($product['combination'])) {
-            return $product;
-        }
-
-        foreach ($product['combination'] as &$combination) {
-            $combination['path'] = $combination['thumb'] = '';
-            if (!empty($product['images'][$combination['file_id']])) {
-                $combination['path'] = $product['images'][$combination['file_id']]['path'];
-                $this->setItemThumb($combination, $this->image);
-            }
-
-            $combination['price'] = $this->price->decimal($combination['price'], $product['currency']);
-        }
-
+        $this->setItemProductCombination($product, $this->image, $this->price);
         return $product;
     }
 
@@ -376,8 +357,8 @@ class Product extends BackendController
         $options = array(
             'file_id' => $file_ids,
             'file_type' => 'image',
-            'id_key' => 'product_id',
-            'id_value' => $this->data_product['product_id']
+            'entity' => 'product',
+            'entity_id' => $this->data_product['product_id']
         );
 
         return $this->image->deleteMultiple($options);
@@ -389,9 +370,11 @@ class Product extends BackendController
     protected function deleteProduct()
     {
         $this->controlAccess('product_delete');
+
         if ($this->product->delete($this->data_product['product_id'])) {
             $this->redirect('admin/content/product', $this->text('Product has been deleted'), 'success');
         }
+
         $this->redirect('admin/content/product', $this->text('Unable to delete'), 'danger');
     }
 
@@ -466,6 +449,7 @@ class Product extends BackendController
     {
         $store_id = $this->getData('store_id');
         $categories = $this->getListCategoryProduct($store_id);
+
         $this->setData('categories', $categories);
     }
 

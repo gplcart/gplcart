@@ -165,7 +165,7 @@ class Route
             return null;
         }
 
-        $alias = $this->db->fetch('SELECT id_key, id_value FROM alias WHERE alias=?', array($path));
+        $alias = $this->db->fetch('SELECT entity, entity_id FROM alias WHERE alias=?', array($path));
 
         $routes = $this->getList();
         foreach ($routes as $pattern => $route) {
@@ -255,10 +255,9 @@ class Route
      */
     public function findAlias($path, $pattern, $alias)
     {
-        if (!empty($alias['id_key']) && !empty($alias['id_value'])) {
-            $entity = substr($alias['id_key'], 0, -3);
-            if (strpos($pattern, "$entity/") === 0) {
-                $this->callHandler($pattern, array($alias['id_value']));
+        if (!empty($alias['entity']) && !empty($alias['entity_id'])) {
+            if (strpos($pattern, "{$alias['entity']}/") === 0) {
+                $this->callHandler($pattern, array($alias['entity_id']));
                 throw new RouteException('An error occurred while processing the route');
             }
         }
@@ -267,8 +266,8 @@ class Route
             $arguments = array();
             if (gplcart_path_match($path, $pattern, $arguments)) {
                 $entity_id = reset($arguments);
-                $entity = strtok($pattern, '/') . '_id';
-                $alias_path = $this->db->fetchColumn('SELECT alias FROM alias WHERE id_key=? AND id_value=?', array($entity, $entity_id));
+                $entity = strtok($pattern, '/');
+                $alias_path = $this->db->fetchColumn('SELECT alias FROM alias WHERE entity=? AND entity_id=?', array($entity, $entity_id));
             }
 
             if (!empty($alias_path)) {
