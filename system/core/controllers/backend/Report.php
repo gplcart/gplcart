@@ -245,6 +245,7 @@ class Report extends BackendController
     public function listEventReport()
     {
         $this->clearEventReport();
+        $this->actionListEventReport();
 
         $this->setTitleListEventReport();
         $this->setBreadcrumbListEventReport();
@@ -257,6 +258,21 @@ class Report extends BackendController
         $this->setData('records', $this->getListEventReport());
 
         $this->outputListEventReport();
+    }
+
+    /**
+     * Applies an action to the selected aliases
+     */
+    protected function actionListEventReport()
+    {
+        list($selected, $action) = $this->getPostedAction();
+
+        if ($action === 'delete' && $this->access('report_events')) {
+            if ($this->report->delete(array('log_id' => $selected))) {
+                $message = $this->text('Deleted %num item(s)', array('%num' => count($selected)));
+                $this->setMessage($message, 'success');
+            }
+        }
     }
 
     /**

@@ -142,19 +142,32 @@ class Report
 
     /**
      * Delete log records
-     * @param array $error_types
+     * @param array $data
      * @return boolean
      */
-    public function delete(array $error_types = array())
+    public function delete(array $data = array())
     {
-        if (empty($error_types)) {
-            return (bool) $this->db->query('DELETE FROM log');
+        $sql = 'DELETE FROM log';
+
+        $conditions = array();
+
+        if (empty($data['log_id'])) {
+            $sql .= " WHERE log_id IS NOT NULL";
+        } else {
+            settype($data['log_id'], 'array');
+            $placeholders = rtrim(str_repeat('?,', count($data['log_id'])), ',');
+            $sql .= " WHERE log_id IN($placeholders)";
+            $conditions = array_merge($conditions, $data['log_id']);
         }
 
-        $placeholders = rtrim(str_repeat('?,', count($error_types)), ',');
-        $sql = "DELETE FROM log WHERE log_id IN($placeholders)";
+        if (!empty($data['type'])) {
+            settype($data['type'], 'array');
+            $placeholders = rtrim(str_repeat('?,', count($data['type'])), ',');
+            $sql .= " AND type IN($placeholders)";
+            $conditions = array_merge($conditions, $data['type']);
+        }
 
-        $this->db->run($sql);
+        $this->db->run($sql, $conditions);
         return true;
     }
 

@@ -9,16 +9,29 @@
  */
 ?>
 <?php if (!empty($records) || $_filtering) { ?>
-<form data-filter-empty="true">
-  <div class="btn-toolbar actions">
+<form method="post">
+  <input type="hidden" name="token" value="<?php echo $_token; ?>">
+  <div class="form-inline actions">
+    <div class="input-group">
+      <select name="action[name]" class="form-control" onchange="Gplcart.action(this);">
+        <option value=""><?php echo $this->text('With selected'); ?></option>
+        <option value="delete">
+          <?php echo $this->text('Delete'); ?>
+        </option>
+      </select>
+      <span class="input-group-btn hidden-js">
+        <button class="btn btn-default" name="action[submit]" value="1"><?php echo $this->text('OK'); ?></button>
+      </span>
+    </div>
     <a class="btn btn-default" href="<?php echo $this->url('', array('clear' => true, 'token' => $_token)); ?>">
-      <?php echo $this->text('Clear'); ?>
+      <?php echo $this->text('Clear all'); ?>
     </a>
   </div>
   <div class="table-responsive">
     <table class="table report-events">
       <thead>
         <tr>
+          <th class="middle"><input type="checkbox" onchange="Gplcart.selectAll(this);"></th>
           <th><a href="<?php echo $sort_text; ?>"><?php echo $this->text('Message'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_type; ?>"><?php echo $this->text('Type'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_severity; ?>"><?php echo $this->text('Severity'); ?> <i class="fa fa-sort"></i></a></th>
@@ -26,6 +39,7 @@
           <th></th>
         </tr>
         <tr class="filters active">
+          <th></th>
           <th>
             <input class="form-control" name="text" value="<?php echo $filter_text; ?>" placeholder="<?php echo $this->text('Any'); ?>">
           </th>
@@ -71,6 +85,9 @@
         <?php } ?>
         <?php foreach ($records as $record) { ?>
         <tr>
+          <td class="middle">
+            <input type="checkbox" class="select-all" name="action[items][]" value="<?php echo $record['log_id']; ?>">
+          </td>
           <td>
             <a href="#" onclick="return false;" data-toggle="collapse" data-target="#message-<?php echo $record['log_id']; ?>">
               <?php echo $this->e(strip_tags($record['summary'])); ?>
