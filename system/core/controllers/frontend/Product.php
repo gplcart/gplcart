@@ -259,18 +259,21 @@ class Product extends FrontendController
                 $products = array_slice($products, $from, $to);
             }
 
-            $data = array('pager' => $pager['rendered'], 'products' => $products);
+            $data = array(
+                'products' => $products,
+                'pager' => $pager['rendered']
+            );
 
             $this->setData('related', $this->render('product/related', $data));
         }
     }
 
     /**
-     * 
+     * Sets bundled products
      */
     protected function setDataBundledIndexProduct()
     {
-        $this->setData('bundle', $this->render('product/bundle', array('products' => $this->data_product['bundled_products'])));
+        $this->setData('bundle', $this->render('product/bundle', array('product' => $this->data_product)));
     }
 
     /**
@@ -485,6 +488,7 @@ class Product extends FrontendController
      * Put default selected image on the first position
      * @param array $selected
      * @param array $product
+     * @todo Replace with a trait
      */
     protected function unshiftSelectedImageProduct($selected, &$product)
     {
