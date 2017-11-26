@@ -9,7 +9,7 @@
  */
 ?>
 <?php if (!empty($groups) || $_filtering) { ?>
-<form data-filter-empty="true">
+<form>
   <?php if ($this->access('category_group_add')) { ?>
   <div class="btn-toolbar actions">
     <a class="btn btn-default" href="<?php echo $this->url('admin/content/category-group/add'); ?>">
