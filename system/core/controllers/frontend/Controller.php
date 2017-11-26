@@ -357,7 +357,7 @@ class Controller extends BaseController
     {
         foreach ($cart['items'] as &$item) {
             $item['currency'] = $cart['currency'];
-            $this->setItemThumbCart($item, $this->image);
+            $this->setItemCartThumb($item, $this->image);
             $this->setItemPriceFormatted($item, $this->price, $this->current_currency);
             $this->setItemTotalFormatted($item, $this->price);
         }
@@ -629,12 +629,12 @@ class Controller extends BaseController
             $this->setItemThumb($item, $this->image, $options);
 
             if ($options['entity'] === 'product') {
-                $this->setItemInComparison($item, $this->product_compare);
+                $this->setItemProductInComparison($item, $this->product_compare);
                 $this->setItemPriceCalculated($item, $this->product);
-                $this->setItemInWishlist($item, $this->cart_uid, $this->store_id, $this->wishlist);
+                $this->setItemProductInWishlist($item, $this->cart_uid, $this->store_id, $this->wishlist);
                 $this->setItemPriceFormatted($item, $this->price, $this->current_currency);
                 $this->setItemProductBundle($item, $this->product, $this->image);
-                $this->setItemRenderedProduct($item, $options);
+                $this->setItemProductRendered($item, $options);
             } else {
                 $this->setItemIndentation($item);
                 $this->setItemUrl($item, $options);

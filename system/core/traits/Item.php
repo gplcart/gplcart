@@ -16,34 +16,6 @@ trait Item
 {
 
     /**
-     * Adds "in_comparison" key
-     * @param array $item
-     * @param \gplcart\core\models\ProductCompare $compare_model
-     */
-    public function setItemInComparison(array &$item, $compare_model)
-    {
-        $item['in_comparison'] = $compare_model->exists($item['product_id']);
-    }
-
-    /**
-     * Adds "in_wishlist" key
-     * @param array $item
-     * @param string|int $user_id
-     * @param int $store_id
-     * @param \gplcart\core\models\Wishlist $wishlist_model
-     */
-    public function setItemInWishlist(&$item, $user_id, $store_id, $wishlist_model)
-    {
-        $conditions = array(
-            'user_id' => $user_id,
-            'store_id' => $store_id,
-            'product_id' => $item['product_id']
-        );
-
-        $item['in_wishlist'] = $wishlist_model->exists($conditions);
-    }
-
-    /**
      * Adds "total_formatted" key
      * @param array $item
      * @param \gplcart\core\models\Price $price_model
@@ -93,23 +65,6 @@ trait Item
     }
 
     /**
-     * Adds product thumb(s)
-     * @param array $item
-     * @param \gplcart\core\models\Image $image_model
-     */
-    public function setItemThumbProduct(array &$item, $image_model)
-    {
-        $options = array(
-            'imagestyle' => $this->configTheme('image_style_product', 6));
-
-        if (empty($item['images'])) {
-            $item['images'][] = array('thumb' => $image_model->getPlaceholder($options['imagestyle']));
-        } else {
-            $this->setItemThumb($item, $image_model, $options);
-        }
-    }
-
-    /**
      * Adds "thumb_placeholder" key
      * @param array $item
      * @param \gplcart\core\models\Image $image_model
@@ -126,7 +81,7 @@ trait Item
      * @param array $item
      * @param \gplcart\core\models\Image $image_model
      */
-    public function setItemThumbCart(array &$item, $image_model)
+    public function setItemCartThumb(array &$item, $image_model)
     {
         $options = array(
             'path' => '',
@@ -180,68 +135,6 @@ trait Item
                 $item['url'] = "$url/$entity/{$item["{$entity}_id"]}";
             }
         }
-    }
-
-    /**
-     * Adds "rendered" key containing rendered product item
-     * @param array $item
-     * @param array $options
-     */
-    public function setItemRenderedProduct(array &$item, $options = array())
-    {
-        if (!empty($options['template_item'])) {
-
-            $options += array(
-                'buttons' => array(
-                    'cart_add', 'wishlist_add', 'compare_add'));
-
-            $data = array(
-                'item' => $item,
-                'buttons' => $options['buttons']
-            );
-
-            $this->setItemRendered($item, $data, $options);
-        }
-    }
-
-    /**
-     * Adds "bundled_products" key
-     * @param array $item
-     * @param \gplcart\core\models\Product $product_model
-     * @param \gplcart\core\models\Image $image_model
-     * @param array $options
-     */
-    public function setItemProductBundle(&$item, $product_model, $image_model, $options = array())
-    {
-        if (!empty($item['bundle'])) {
-
-            $data = array(
-                'status' => 1,
-                'store_id' => $item['store_id'],
-                'sku' => explode(',', $item['bundle'])
-            );
-
-            $products = $product_model->getList($data);
-            $product_ids = array_keys($products);
-
-            foreach ($products as &$product) {
-                $this->setItemThumb($product, $image_model, array('entity' => 'product', 'entity_id' => $product_ids));
-                $this->setItemRenderedBundleProduct($product, $options);
-            }
-
-            $item['bundled_products'] = $products;
-        }
-    }
-
-    /**
-     * Sets rendered product bundled item
-     * @param array $item
-     * @param array $options
-     */
-    public function setItemRenderedBundleProduct(array &$item, array $options = array())
-    {
-        $options += array('template_item' => 'product/item/bundle');
-        $this->setItemRendered($item, array('item' => $item), $options);
     }
 
     /**
@@ -363,6 +256,200 @@ trait Item
     }
 
     /**
+     * Adds an address information for the order item
+     * @param array $order
+     * @param \gplcart\core\models\Address $address_model
+     */
+    public function setItemAddress(&$order, $address_model)
+    {
+        $order['address'] = array();
+
+        foreach (array('shipping', 'payment') as $type) {
+            $address = $address_model->get($order["{$type}_address"]);
+            if (!empty($address)) {
+                $order['address'][$type] = $address;
+                $order['address_translated'][$type] = $address_model->getTranslated($order['address'][$type], true);
+            }
+        }
+    }
+
+    /**
+     * Adds product thumb(s)
+     * @param array $item
+     * @param \gplcart\core\models\Image $image_model
+     */
+    public function setItemProductThumb(array &$item, $image_model)
+    {
+        $options = array(
+            'imagestyle' => $this->configTheme('image_style_product', 6));
+
+        if (empty($item['images'])) {
+            $item['images'][] = array('thumb' => $image_model->getPlaceholder($options['imagestyle']));
+        } else {
+            $this->setItemThumb($item, $image_model, $options);
+        }
+    }
+
+    /**
+     * Adds "in_comparison" key
+     * @param array $item
+     * @param \gplcart\core\models\ProductCompare $compare_model
+     */
+    public function setItemProductInComparison(array &$item, $compare_model)
+    {
+        $item['in_comparison'] = $compare_model->exists($item['product_id']);
+    }
+
+    /**
+     * Adds "in_wishlist" key
+     * @param array $item
+     * @param string|int $user_id
+     * @param int $store_id
+     * @param \gplcart\core\models\Wishlist $wishlist_model
+     */
+    public function setItemProductInWishlist(&$item, $user_id, $store_id, $wishlist_model)
+    {
+        $conditions = array(
+            'user_id' => $user_id,
+            'store_id' => $store_id,
+            'product_id' => $item['product_id']
+        );
+
+        $item['in_wishlist'] = $wishlist_model->exists($conditions);
+    }
+
+    /**
+     * Adds "rendered" key containing rendered product item
+     * @param array $item
+     * @param array $options
+     */
+    public function setItemProductRendered(array &$item, $options = array())
+    {
+        if (!empty($options['template_item'])) {
+
+            $options += array(
+                'buttons' => array(
+                    'cart_add', 'wishlist_add', 'compare_add'));
+
+            $data = array(
+                'item' => $item,
+                'buttons' => $options['buttons']
+            );
+
+            $this->setItemRendered($item, $data, $options);
+        }
+    }
+
+    /**
+     * Adds "bundled_products" key
+     * @param array $item
+     * @param \gplcart\core\models\Product $product_model
+     * @param \gplcart\core\models\Image $image_model
+     * @param array $options
+     */
+    public function setItemProductBundle(&$item, $product_model, $image_model, $options = array())
+    {
+        if (!empty($item['bundle'])) {
+
+            $data = array(
+                'status' => 1,
+                'store_id' => $item['store_id'],
+                'sku' => explode(',', $item['bundle'])
+            );
+
+            $products = $product_model->getList($data);
+            $product_ids = array_keys($products);
+
+            foreach ($products as &$product) {
+                $this->setItemThumb($product, $image_model, array('entity' => 'product', 'entity_id' => $product_ids));
+                $this->setItemProductBundleRendered($product, $options);
+            }
+
+            $item['bundled_products'] = $products;
+        }
+    }
+
+    /**
+     * Sets rendered product bundled item
+     * @param array $item
+     * @param array $options
+     */
+    public function setItemProductBundleRendered(array &$item, array $options = array())
+    {
+        $options += array('template_item' => 'product/item/bundle');
+        $this->setItemRendered($item, array('item' => $item), $options);
+    }
+
+    /**
+     * Adds "fields" key
+     * @param array $item
+     * @param \gplcart\core\models\Image $imodel
+     * @param \gplcart\core\models\ProductClass $pcmodel
+     * @param string $type
+     * @param array $options
+     */
+    public function setItemProductFieldType(&$item, $imodel, $pcmodel, $type, $options = [])
+    {
+        if (empty($item['field'][$type]) || empty($item['product_class_id'])) {
+            return null;
+        }
+
+        $fields = $pcmodel->getFieldData($item['product_class_id']);
+
+        foreach ($item['field'][$type] as $field_id => $field_values) {
+            foreach ($field_values as $field_value_id) {
+
+                $options += array(
+                    'placeholder' => false,
+                    'path' => $fields[$type][$field_id]['values'][$field_value_id]['path']
+                );
+
+                $this->setItemThumb($fields[$type][$field_id]['values'][$field_value_id], $imodel, $options);
+
+                if (isset($fields[$type][$field_id]['values'][$field_value_id]['title'])) {
+                    $item['field_value_labels'][$type][$field_id][$field_value_id] = $fields[$type][$field_id]['values'][$field_value_id]['title'];
+                }
+            }
+        }
+
+        $item['fields'][$type] = $fields[$type];
+    }
+
+    /**
+     * Set a field data to the product item
+     * @param array $item
+     * @param \gplcart\core\models\Image $image_model
+     * @param \gplcart\core\models\ProductClass $class_model
+     * @param array $options
+     */
+    public function setItemProductFields(&$item, $image_model, $class_model, $options = array())
+    {
+        $this->setItemProductFieldType($item, $image_model, $class_model, 'option', $options);
+        $this->setItemProductFieldType($item, $image_model, $class_model, 'attribute', $options);
+    }
+
+    /**
+     * Set a data to product combinations
+     * @param array $item
+     * @param \gplcart\core\models\Image $image_model
+     * @param \gplcart\core\models\Price $price_model
+     */
+    public function setItemProductCombination(array &$item, $image_model, $price_model)
+    {
+        if (!empty($item['combination'])) {
+            foreach ($item['combination'] as &$combination) {
+                $combination['path'] = $combination['thumb'] = '';
+                if (!empty($item['images'][$combination['file_id']])) {
+                    $combination['path'] = $item['images'][$combination['file_id']]['path'];
+                    $this->setItemThumb($combination, $image_model);
+                }
+                // @todo reuse a trait
+                $combination['price'] = $price_model->decimal($combination['price'], $item['currency']);
+            }
+        }
+    }
+
+    /**
      * Adds "status_name" key
      * @param array $item
      * @param \gplcart\core\models\Order $order_model
@@ -383,24 +470,6 @@ trait Item
     public function setItemOrderNew(&$item, $order_model)
     {
         $item['is_new'] = $order_model->isNew($item);
-    }
-
-    /**
-     * Adds an address information for the order item
-     * @param array $order
-     * @param \gplcart\core\models\Address $address_model
-     */
-    public function setItemAddress(&$order, $address_model)
-    {
-        $order['address'] = array();
-
-        foreach (array('shipping', 'payment') as $type) {
-            $address = $address_model->get($order["{$type}_address"]);
-            if (!empty($address)) {
-                $order['address'][$type] = $address;
-                $order['address_translated'][$type] = $address_model->getTranslated($order['address'][$type], true);
-            }
-        }
     }
 
     /**
@@ -513,75 +582,6 @@ trait Item
 
             $html = $controller->render('backend|sale/order/panes/components/rule', $data);
             $item['data']['components'][$price_rule_id]['rendered'] = $html;
-        }
-    }
-
-    /**
-     * Adds "fields" key
-     * @param array $item
-     * @param \gplcart\core\models\Image $imodel
-     * @param \gplcart\core\models\ProductClass $pcmodel
-     * @param string $type
-     * @param array $options
-     */
-    public function setItemProductFieldType(&$item, $imodel, $pcmodel, $type, $options = [])
-    {
-        if (empty($item['field'][$type]) || empty($item['product_class_id'])) {
-            return null;
-        }
-
-        $fields = $pcmodel->getFieldData($item['product_class_id']);
-
-        foreach ($item['field'][$type] as $field_id => $field_values) {
-            foreach ($field_values as $field_value_id) {
-
-                $options += array(
-                    'placeholder' => false,
-                    'path' => $fields[$type][$field_id]['values'][$field_value_id]['path']
-                );
-
-                $this->setItemThumb($fields[$type][$field_id]['values'][$field_value_id], $imodel, $options);
-
-                if (isset($fields[$type][$field_id]['values'][$field_value_id]['title'])) {
-                    $item['field_value_labels'][$type][$field_id][$field_value_id] = $fields[$type][$field_id]['values'][$field_value_id]['title'];
-                }
-            }
-        }
-
-        $item['fields'][$type] = $fields[$type];
-    }
-
-    /**
-     * Set a field data to the product item
-     * @param array $item
-     * @param \gplcart\core\models\Image $image_model
-     * @param \gplcart\core\models\ProductClass $class_model
-     * @param array $options
-     */
-    public function setItemProductFields(&$item, $image_model, $class_model, $options = array())
-    {
-        $this->setItemProductFieldType($item, $image_model, $class_model, 'option', $options);
-        $this->setItemProductFieldType($item, $image_model, $class_model, 'attribute', $options);
-    }
-
-    /**
-     * Set a data to product combinations
-     * @param array $item
-     * @param \gplcart\core\models\Image $image_model
-     * @param \gplcart\core\models\Price $price_model
-     */
-    public function setItemProductCombination(array &$item, $image_model, $price_model)
-    {
-        if (!empty($item['combination'])) {
-            foreach ($item['combination'] as &$combination) {
-                $combination['path'] = $combination['thumb'] = '';
-                if (!empty($item['images'][$combination['file_id']])) {
-                    $combination['path'] = $item['images'][$combination['file_id']]['path'];
-                    $this->setItemThumb($combination, $image_model);
-                }
-                // @todo reuse a trait
-                $combination['price'] = $price_model->decimal($combination['price'], $item['currency']);
-            }
         }
     }
 
