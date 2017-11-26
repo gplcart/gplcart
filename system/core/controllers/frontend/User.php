@@ -18,8 +18,6 @@ use gplcart\core\controllers\frontend\Controller as FrontendController;
 class User extends FrontendController
 {
 
-    use \gplcart\core\traits\Oauth;
-
     /**
      * Oauth model instance
      * @var \gplcart\core\models\Oauth $oauth
