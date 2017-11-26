@@ -8,8 +8,8 @@
  * To see available variables <?php print_r(get_defined_vars()); ?>
  */
 ?>
-<?php if (count($_currencies) > 1) { ?>
 <?php $show_currency_selector = false; ?>
+<?php if (count($_currencies) > 1) { ?>
 <?php foreach ($_currencies as $currency) { ?>
 <?php if ($_currency['code'] !== $currency['code']) { ?>
 <?php $show_currency_selector = true; break; ?>
@@ -46,7 +46,7 @@ $region_content_class = 'col-md-8';
                   <?php } ?>
                 </ul>
               </li>
-              <?php } else { ?>
+              <?php } else if(count($_currencies) > 1) { ?>
               <li><?php echo $this->e($_currency['name']); ?></li>
               <?php } ?>
               <?php if (count($_languages) > 1) { ?>
