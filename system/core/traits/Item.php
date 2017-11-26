@@ -552,7 +552,7 @@ trait Item
     }
 
     /**
-     * Set prepared field data to the product item
+     * Set a field data to the product item
      * @param array $item
      * @param \gplcart\core\models\Image $image_model
      * @param \gplcart\core\models\ProductClass $class_model
