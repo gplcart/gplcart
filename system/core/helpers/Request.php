@@ -338,6 +338,47 @@ class Request
             throw new \InvalidArgumentException('Missing URL scheme');
         }
 
+        $errno = $errstr = $socket = '';
+        $this->prepareSendData($socket, $options, $uri);
+        $fp = stream_socket_client($socket, $errno, $errstr, $options['timeout']);
+
+        if (!empty($errstr)) {
+            throw new \InvalidArgumentException($errstr);
+        }
+
+        $path = isset($uri['path']) ? $uri['path'] : '/';
+        if (isset($uri['query'])) {
+            $path .= "?{$uri['query']}";
+        }
+
+        $request = "{$options['method']} $path HTTP/1.0\r\n";
+        foreach ($options['headers'] as $name => $value) {
+            $request .= "$name: " . trim($value) . "\r\n";
+        }
+        $request .= "\r\n{$options['data']}";
+
+        fwrite($fp, $request);
+
+        $response = '';
+        while (!feof($fp)) {
+            $response .= fgets($fp, 1024);
+        }
+
+        fclose($fp);
+
+        return $this->prepareSendResponse($response);
+    }
+
+    /**
+     * Prepare an array of options for sending an HTTP request
+     * @param string $socket
+     * @param array $options
+     * @param array $uri
+     * @return string
+     * @throws \InvalidArgumentException
+     */
+    protected function prepareSendData(&$socket, array &$options, array $uri)
+    {
         $options += array(
             'headers' => array(),
             'method' => 'GET',
@@ -365,21 +406,7 @@ class Request
             throw new \InvalidArgumentException("Invalid schema '{$uri['scheme']}'");
         }
 
-        $errno = $errstr = null;
-        $fp = stream_socket_client($socket, $errno, $errstr, $options['timeout']);
-
-        if (!empty($errstr)) {
-            throw new \InvalidArgumentException($errstr);
-        }
-
-        $path = isset($uri['path']) ? $uri['path'] : '/';
-
-        if (isset($uri['query'])) {
-            $path .= "?{$uri['query']}";
-        }
-
         $content_length = strlen($options['data']);
-
         if ($content_length > 0 || $options['method'] === 'POST' || $options['method'] === 'PUT') {
             $options['headers']['Content-Length'] = $content_length;
         }
@@ -388,21 +415,16 @@ class Request
             $options['headers']['Authorization'] = 'Basic ' . base64_encode($uri['user'] . (isset($uri['pass']) ? ':' . $uri['pass'] : ':'));
         }
 
-        $request = "{$options['method']} $path HTTP/1.0\r\n";
-        foreach ($options['headers'] as $name => $value) {
-            $request .= "$name: " . trim($value) . "\r\n";
-        }
-        $request .= "\r\n{$options['data']}";
+        return $options;
+    }
 
-        fwrite($fp, $request);
-
-        $response = '';
-        while (!feof($fp)) {
-            $response .= fgets($fp, 1024);
-        }
-
-        fclose($fp);
-
+    /**
+     * Converts a response string to an array containing the response body and status data
+     * @param string $response
+     * @return array
+     */
+    protected function prepareSendResponse($response)
+    {
         list($header, $data) = preg_split("/\r\n\r\n|\n\n|\r\r/", $response, 2);
 
         $headers = preg_split("/\r\n|\n|\r/", $header);
