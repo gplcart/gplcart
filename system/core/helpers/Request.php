@@ -334,12 +334,9 @@ class Request
     {
         $uri = parse_url($url);
 
-        if (empty($uri['scheme'])) {
-            throw new \InvalidArgumentException('Missing URL scheme');
-        }
-
         $errno = $errstr = $socket = '';
         $this->prepareSendData($socket, $options, $uri);
+
         $fp = stream_socket_client($socket, $errno, $errstr, $options['timeout']);
 
         if (!empty($errstr)) {
@@ -373,12 +370,16 @@ class Request
      * Prepare an array of options for sending an HTTP request
      * @param string $socket
      * @param array $options
-     * @param array $uri
+     * @param mixed $uri
      * @return string
      * @throws \InvalidArgumentException
      */
-    protected function prepareSendData(&$socket, array &$options, array $uri)
+    protected function prepareSendData(&$socket, array &$options, $uri)
     {
+        if (empty($uri['scheme'])) {
+            throw new \InvalidArgumentException('Missing URL scheme');
+        }
+
         $options += array(
             'headers' => array(),
             'method' => 'GET',
