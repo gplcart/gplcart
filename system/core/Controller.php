@@ -375,16 +375,12 @@ abstract class Controller
 
     /**
      * Returns an object instance
-     * @param string|null $class
+     * @param string $class
      * @return object
      */
-    public function getInstance($class = null)
+    public function getInstance($class)
     {
-        if (isset($class)) {
-            return Container::get($class);
-        }
-
-        return $this;
+        return Container::get($class);
     }
 
     /**
