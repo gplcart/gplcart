@@ -323,4 +323,100 @@ class Request
         return true;
     }
 
+    /**
+     * Performs an HTTP request
+     * @param string $url
+     * @param array $options
+     * @return array
+     * @throws \InvalidArgumentException
+     */
+    public function send($url, array $options = array())
+    {
+        $uri = parse_url($url);
+
+        if (empty($uri['scheme'])) {
+            throw new \InvalidArgumentException('Missing URL scheme');
+        }
+
+        $options += array(
+            'headers' => array(),
+            'method' => 'GET',
+            'data' => null,
+            'timeout' => 30
+        );
+
+        $options['headers'] += array('User-Agent' => 'GPLCart');
+
+        settype($options['timeout'], 'float');
+
+        if ($uri['scheme'] === 'http') {
+            $port = isset($uri['port']) ? $uri['port'] : 80;
+            $socket = "tcp://{$uri['host']}:$port";
+            if (!isset($options['headers']['Host'])) {
+                $options['headers']['Host'] = $uri['host'] . ($port != 80 ? ':' . $port : '');
+            }
+        } else if ($uri['scheme'] === 'https') {
+            $port = isset($uri['port']) ? $uri['port'] : 443;
+            $socket = "ssl://{$uri['host']}:$port";
+            if (!isset($options['headers']['Host'])) {
+                $options['headers']['Host'] = $uri['host'] . ($port != 443 ? ':' . $port : '');
+            }
+        } else {
+            throw new \InvalidArgumentException("Invalid schema '{$uri['scheme']}'");
+        }
+
+        $errno = $errstr = null;
+        $fp = stream_socket_client($socket, $errno, $errstr, $options['timeout']);
+
+        if (!empty($errstr)) {
+            throw new \InvalidArgumentException($errstr);
+        }
+
+        $path = isset($uri['path']) ? $uri['path'] : '/';
+
+        if (isset($uri['query'])) {
+            $path .= "?{$uri['query']}";
+        }
+
+        $content_length = strlen($options['data']);
+
+        if ($content_length > 0 || $options['method'] === 'POST' || $options['method'] === 'PUT') {
+            $options['headers']['Content-Length'] = $content_length;
+        }
+
+        if (isset($uri['user'])) {
+            $options['headers']['Authorization'] = 'Basic ' . base64_encode($uri['user'] . (isset($uri['pass']) ? ':' . $uri['pass'] : ':'));
+        }
+
+        $request = "{$options['method']} $path HTTP/1.0\r\n";
+        foreach ($options['headers'] as $name => $value) {
+            $request .= "$name: " . trim($value) . "\r\n";
+        }
+        $request .= "\r\n{$options['data']}";
+
+        fwrite($fp, $request);
+
+        $response = '';
+        while (!feof($fp)) {
+            $response .= fgets($fp, 1024);
+        }
+
+        fclose($fp);
+
+        list($header, $data) = preg_split("/\r\n\r\n|\n\n|\r\r/", $response, 2);
+
+        $headers = preg_split("/\r\n|\n|\r/", $header);
+        $status = explode(' ', trim(reset($headers)), 3);
+
+        $result = array('status' => '');
+        $result['http'] = $status[0];
+        $result['code'] = $status[1];
+
+        if (isset($status[2])) {
+            $result['status'] = $status[2];
+        }
+
+        return array('data' => $data, 'status' => $result);
+    }
+
 }
