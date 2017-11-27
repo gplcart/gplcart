@@ -459,14 +459,7 @@ class Product extends FrontendController
      */
     protected function prepareProduct(array $product)
     {
-        $field_value_ids = array();
-        if (!empty($product['default_field_values'])) {
-            $field_value_ids = $product['default_field_values'];
-        }
-
-        $selected = $this->sku->selectCombination($product, $field_value_ids);
-        $selected += $product;
-
+        $selected = $this->getSelectedCombinationProduct($product);
         $this->unshiftSelectedImageProduct($selected, $product);
 
         $this->setItemProductThumb($product, $this->image);
@@ -482,6 +475,24 @@ class Product extends FrontendController
 
         $this->setItemProductFields($product, $this->image, $this->product_class);
         return $product;
+    }
+
+    /**
+     * Returns selected product combination
+     * @param array $product
+     * @return array
+     */
+    protected function getSelectedCombinationProduct(array $product)
+    {
+        $field_value_ids = array();
+        if (!empty($product['default_field_values'])) {
+            $field_value_ids = $product['default_field_values'];
+        }
+
+        $selected = $this->sku->selectCombination($product, $field_value_ids);
+        $selected += $product;
+
+        return $selected;
     }
 
     /**
@@ -520,8 +531,12 @@ class Product extends FrontendController
             'limit' => array(0, $this->config('related_limit', 12))
         );
 
+        $products = array();
         $product_ids = (array) $this->product->getRelated($options);
-        $products = $this->product->getList(array('product_id' => $product_ids));
+
+        if (!empty($product_ids)) {
+            $products = $this->product->getList(array('product_id' => $product_ids));
+        }
 
         return $this->prepareEntityItems($products, array('entity' => 'product'));
     }
