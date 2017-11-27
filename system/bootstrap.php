@@ -6,8 +6,6 @@
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
-error_reporting(E_ALL);
-
 require_once 'constants.php';
 require_once 'core/functions/common.php';
 require_once 'core/functions/setup.php';
