@@ -18,7 +18,9 @@ use gplcart\core\traits\Item as ItemTrait,
  */
 class Controller extends BaseController
 {
-    use WidgetTrait, ItemTrait;
+
+    use WidgetTrait,
+        ItemTrait;
 
     /**
      * Trigger model instance
@@ -166,17 +168,17 @@ class Controller extends BaseController
     }
 
     /**
-     * Returns an array of fired triggers for the current context
+     * Returns an array of fired triggers
      * @return array
      */
     public function getTriggered()
     {
-        $conditions = array(
+        $options = array(
             'status' => 1,
             'store_id' => $this->store_id
         );
 
-        return $this->trigger->getTriggered($conditions);
+        return $this->trigger->getTriggered(array(), $options);
     }
 
     /**
@@ -187,6 +189,27 @@ class Controller extends BaseController
     public function isTriggered($trigger_id)
     {
         return in_array($trigger_id, $this->triggered);
+    }
+
+    /**
+     * Returns the current cart data
+     * @param array $options
+     * @return array
+     */
+    public function getCart(array $options = array())
+    {
+        $options += array(
+            'user_id' => $this->cart_uid,
+            'store_id' => $this->store_id
+        );
+
+        $cart = $this->cart->getContent($options);
+        
+        if(empty($cart['items'])){
+            return array();
+        }
+        
+        return $this->prepareCart($cart);
     }
 
     /**
@@ -341,7 +364,7 @@ class Controller extends BaseController
         }
 
         $options = array(
-            'cart' => $this->prepareCart($cart),
+            'cart' => $cart,
             'limit' => $this->config('cart_preview_limit', 5)
         );
 
@@ -360,6 +383,7 @@ class Controller extends BaseController
             $this->setItemCartThumb($item, $this->image);
             $this->setItemPriceFormatted($item, $this->price, $this->current_currency);
             $this->setItemTotalFormatted($item, $this->price);
+            $this->setItemProductBundle($item['product'], $this->product, $this->image);
         }
 
         $this->setItemTotalFormatted($cart, $this->price);
