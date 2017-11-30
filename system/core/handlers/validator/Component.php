@@ -201,7 +201,7 @@ class Component extends BaseValidator
         $status = $this->getSubmitted($field);
 
         if (isset($status)) {
-            $value = (int) gplcart_string_bool($status);
+            $value = (int) filter_var($status, FILTER_VALIDATE_BOOLEAN);
             $this->setSubmitted($field, $value);
         }
 
@@ -218,7 +218,7 @@ class Component extends BaseValidator
         $default = $this->getSubmitted($field);
 
         if (isset($default)) {
-            $value = (int) gplcart_string_bool($default);
+            $value = (int) filter_var($default, FILTER_VALIDATE_BOOLEAN);
             $this->setSubmitted($field, $value);
         }
 
