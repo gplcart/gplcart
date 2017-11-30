@@ -7,24 +7,48 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 return array(
+    'scope_product' => array(
+        'title' => /* @text */'Product scope',
+        'description' => /* @text */'Make a trigger available only for products. Only = and != operators allowed. One boolean parameter',
+        'handlers' => array(
+            'process' => array('gplcart\\core\\handlers\\condition\\Scope', 'product'),
+            'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Scope', 'product')
+        ),
+    ),
+    'scope_cart' => array(
+        'title' => /* @text */'Cart scope',
+        'description' => /* @text */'Make a trigger available only for cart items. Only = and != operators allowed. One boolean parameter',
+        'handlers' => array(
+            'process' => array('gplcart\\core\\handlers\\condition\\Scope', 'cart'),
+            'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Scope', 'cart')
+        ),
+    ),
+    'scope_order' => array(
+        'title' => /* @text */'Order scope',
+        'description' => /* @text */'Make a trigger available only for orders. Only = and != operators allowed. One boolean parameter',
+        'handlers' => array(
+            'process' => array('gplcart\\core\\handlers\\condition\\Scope', 'order'),
+            'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Scope', 'order')
+        ),
+    ),
     'url_route' => array(
-        'title' => /* @text */'System URL route (global)',
-        'description' => /* @text */'Parameters: system route pattern. Only = and != operators allowed',
+        'title' => /* @text */'System URL route',
+        'description' => /* @text */'Parameters: system route pattern, e.g "product/(\d+)". Only = and != operators allowed',
         'handlers' => array(
             'process' => array('gplcart\\core\\handlers\\condition\\Url', 'route'),
             'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Url', 'route'),
         ),
     ),
     'url_path' => array(
-        'title' => /* @text */'URL path (global)',
-        'description' => /* @text */'Parameters: path with regexp pattern. Only = and != operators allowed. Do not use trailing slashes. Example: account/(\d+)',
+        'title' => /* @text */'URL path',
+        'description' => /* @text */'Parameters: URL path with regexp pattern, e.g "account/(\d+)". Only = and != operators allowed. No trailing slashes!',
         'handlers' => array(
             'process' => array('gplcart\\core\\handlers\\condition\\Url', 'path'),
             'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Url', 'path'),
         ),
     ),
     'user_id' => array(
-        'title' => /* @text */'User ID (global)',
+        'title' => /* @text */'User ID',
         'description' => /* @text */'Parameters: list of ID, separated by comma',
         'handlers' => array(
             'process' => array('gplcart\\core\\handlers\\condition\\User', 'id'),
@@ -32,7 +56,7 @@ return array(
         ),
     ),
     'user_role_id' => array(
-        'title' => /* @text */'User role ID (global)',
+        'title' => /* @text */'User role ID',
         'description' => /* @text */'Parameters: list of ID, separated by comma',
         'handlers' => array(
             'process' => array('gplcart\\core\\handlers\\condition\\User', 'roleId'),
@@ -40,7 +64,7 @@ return array(
         ),
     ),
     'date' => array(
-        'title' => /* @text */'Current date (global)',
+        'title' => /* @text */'Current date',
         'description' => /* @text */'Parameters: One value in time format. See http://php.net/manual/en/datetime.formats.php',
         'handlers' => array(
             'process' => array('gplcart\\core\\handlers\\condition\\Date', 'date'),
@@ -48,39 +72,39 @@ return array(
         ),
     ),
     'pricerule_used' => array(
-        'title' => /* @text */'Number of times a price rule code (coupon) has been used (checkout)',
+        'title' => /* @text */'Number of times a price rule code (coupon) has been used',
         'description' => /* @text */'Parameters: One numeric value',
         'handlers' => array(
             'process' => array('gplcart\\core\\handlers\\condition\\PriceRule', 'used'),
-            'validate' => array('gplcart\\core\\handlers\\validator\\condition\\PriceRule', 'used'),
+            'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Base', 'validateInteger'),
         ),
     ),
     'order_shipping_method' => array(
-        'title' => /* @text */'Shipping method (checkout)',
-        'description' => /* @text */'Parameters: list of ID, separated by comma',
+        'title' => /* @text */'Shipping method',
+        'description' => /* @text */'Parameters: list of shipping method ID, separated by comma',
         'handlers' => array(
             'process' => array('gplcart\\core\\handlers\\condition\\Order', 'shippingMethod'),
             'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Order', 'shippingMethod'),
         ),
     ),
     'order_payment_method' => array(
-        'title' => /* @text */'Payment method (checkout)',
-        'description' => /* @text */'Parameters: list of ID, separated by comma',
+        'title' => /* @text */'Order payment method',
+        'description' => /* @text */'Parameters: list of payment method ID, separated by comma',
         'handlers' => array(
             'process' => array('gplcart\\core\\handlers\\condition\\Order', 'paymentMethod'),
             'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Order', 'paymentMethod'),
         ),
     ),
     'shipping_country_code' => array(
-        'title' => /* @text */'Shipping country code (checkout)',
-        'description' => /* @text */'Parameters: list of ID, separated by comma',
+        'title' => /* @text */'Order shipping country code',
+        'description' => /* @text */'Parameters: list of country codes, separated by comma',
         'handlers' => array(
             'process' => array('gplcart\\core\\handlers\\condition\\Shipping', 'countryCode'),
             'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Shipping', 'countryCode'),
         ),
     ),
     'shipping_state_id' => array(
-        'title' => /* @text */'Shipping state ID (checkout)',
+        'title' => /* @text */'Order shipping state ID',
         'description' => /* @text */'Parameters: list of ID, separated by comma',
         'handlers' => array(
             'process' => array('gplcart\\core\\handlers\\condition\\Shipping', 'stateId'),
@@ -88,7 +112,7 @@ return array(
         ),
     ),
     'shipping_zone_id' => array(
-        'title' => /* @text */'Shipping address zone ID (checkout)',
+        'title' => /* @text */'Order shipping address zone ID',
         'description' => /* @text */'Parameters: list of ID, separated by comma',
         'handlers' => array(
             'process' => array('gplcart\\core\\handlers\\condition\\Shipping', 'zoneId'),
@@ -96,15 +120,15 @@ return array(
         ),
     ),
     'payment_country_code' => array(
-        'title' => /* @text */'Payment country code (checkout)',
-        'description' => 'Parameters: list of ID, separated by comma',
+        'title' => /* @text */'Order payment country code',
+        'description' => 'Parameters: list of country codes, separated by comma',
         'handlers' => array(
             'process' => array('gplcart\\core\\handlers\\condition\\Payment', 'countryCode'),
             'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Payment', 'countryCode'),
         ),
     ),
     'payment_state_id' => array(
-        'title' => /* @text */'Payment state ID (checkout)',
+        'title' => /* @text */'Order payment state ID',
         'description' => /* @text */'Parameters: list of ID, separated by comma',
         'handlers' => array(
             'process' => array('gplcart\\core\\handlers\\condition\\Payment', 'stateId'),
@@ -112,7 +136,7 @@ return array(
         ),
     ),
     'payment_zone_id' => array(
-        'title' => /* @text */'Payment address zone ID (checkout)',
+        'title' => /* @text */'Order payment address zone ID',
         'description' => /* @text */'Parameters: list of ID, separated by comma',
         'handlers' => array(
             'process' => array('gplcart\\core\\handlers\\condition\\Payment', 'zoneId'),
@@ -120,7 +144,7 @@ return array(
         ),
     ),
     'cart_total' => array(
-        'title' => /* @text */'Cart total (checkout)',
+        'title' => /* @text */'Cart total',
         'description' => /* @text */'Parameters: one value in format "price|currency". If only price specified, default currency will be used',
         'handlers' => array(
             'process' => array('gplcart\\core\\handlers\\condition\\Cart', 'total'),
@@ -128,7 +152,7 @@ return array(
         ),
     ),
     'cart_product_id' => array(
-        'title' => /* @text */'Cart contains product ID (checkout)',
+        'title' => /* @text */'Cart contains product ID',
         'description' => /* @text */'Parameters: list of ID, separated by comma',
         'handlers' => array(
             'process' => array('gplcart\\core\\handlers\\condition\\Cart', 'productId'),
@@ -136,7 +160,7 @@ return array(
         ),
     ),
     'cart_sku' => array(
-        'title' => /* @text */'Cart contains SKU (checkout)',
+        'title' => /* @text */'Cart contains SKU',
         'description' => /* @text */'Parameters: list of SKU, separated by comma',
         'handlers' => array(
             'process' => array('gplcart\\core\\handlers\\condition\\Cart', 'sku'),
@@ -165,6 +189,22 @@ return array(
         'handlers' => array(
             'process' => array('gplcart\\core\\handlers\\condition\\Product', 'brandCategoryId'),
             'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Product', 'categoryId'),
+        ),
+    ),
+    'product_bundle_item_id' => array(
+        'title' => /* @text */'Product ID that is bundled item',
+        'description' => /* @text */'Parameters: list of ID, separated by comma',
+        'handlers' => array(
+            'process' => array('gplcart\\core\\handlers\\condition\\ProductBundle', 'itemId'),
+            'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Product', 'id')
+        ),
+    ),
+    'product_bundle_item_count' => array(
+        'title' => /* @text */'Number of bundled product items',
+        'description' => /* @text */'Number of bundled product items. One numeric parameter',
+        'handlers' => array(
+            'process' => array('gplcart\\core\\handlers\\condition\\ProductBundle', 'itemCount'),
+            'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Base', 'validateInteger')
         ),
     )
 );
