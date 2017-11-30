@@ -151,9 +151,8 @@ class Checkout extends FrontendController
      * @param ShippingModel $shipping
      * @param PaymentModel $payment
      */
-    public function __construct(CountryModel $country, StateModel $state,
-            AddressModel $address, OrderModel $order, ShippingModel $shipping,
-            PaymentModel $payment)
+    public function __construct(CountryModel $country, StateModel $state, AddressModel $address,
+            OrderModel $order, ShippingModel $shipping, PaymentModel $payment)
     {
         parent::__construct();
 
@@ -280,13 +279,13 @@ class Checkout extends FrontendController
      */
     protected function setCartContentCheckout()
     {
-        $data = array(
+        $options = array(
             'user_id' => $this->cart_uid,
             'order_id' => $this->order_id,
             'store_id' => $this->order_store_id
         );
 
-        return $this->data_cart = $this->cart->getContent($data);
+        return $this->data_cart = $this->getCart($options);
     }
 
     /**
@@ -418,7 +417,7 @@ class Checkout extends FrontendController
             return null;
         }
 
-        $this->data_form['cart'] = $this->prepareCart($this->data_cart);
+        $this->data_form['cart'] = $this->data_cart;
 
         $this->setFormDataAddressCheckout();
 
@@ -710,7 +709,7 @@ class Checkout extends FrontendController
         foreach ($items as $sku => $item) {
             $errors += $this->validateCartItemCheckout($sku, $item);
             if (empty($errors)) {
-                $this->updateCartQuantityCheckout($sku, $item['quantity']);
+                $this->updateCartQuantityCheckout($sku, $item);
             }
         }
 
@@ -734,13 +733,13 @@ class Checkout extends FrontendController
     /**
      * Updates cart quantity
      * @param string $sku
-     * @param integer $quantity
+     * @param array $item
      * @return bool
      */
-    protected function updateCartQuantityCheckout($sku, $quantity)
+    protected function updateCartQuantityCheckout($sku, array $item)
     {
         $cart_id = $this->data_cart['items'][$sku]['cart_id'];
-        return $this->cart->update($cart_id, array('quantity' => $quantity));
+        return $this->cart->update($cart_id, array('quantity' => $item['quantity']));
     }
 
     /**
@@ -770,18 +769,10 @@ class Checkout extends FrontendController
      */
     protected function moveCartWishlistCheckout()
     {
-        $sku = $this->getSubmitted('cart.action.wishlist');
+        $cart_id = $this->getSubmitted('cart.action.wishlist');
 
-        if (!empty($sku)) {
-
-            $options = array(
-                'sku' => $sku,
-                'user_id' => $this->order_user_id,
-                'store_id' => $this->order_store_id
-            );
-
-            $result = $this->cart->moveToWishlist($options);
-
+        if (!empty($cart_id)) {
+            $result = $this->cart->moveToWishlist($cart_id);
             if (isset($result['wishlist_id'])) {
                 $this->setSubmitted('cart.action.update', true);
                 $this->setMessage($result['message'], 'success');
