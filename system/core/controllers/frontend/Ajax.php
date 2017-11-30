@@ -112,7 +112,7 @@ class Ajax extends FrontendController
             'limit' => array(0, $this->config('autocomplete_limit', 10))
         );
 
-        $products = $this->sku->getList($options);
+        $products = (array) $this->sku->getList($options);
 
         $product_ids = array();
         foreach ($products as $product) {
