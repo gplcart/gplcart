@@ -54,7 +54,7 @@ class Cart extends BackendController
     protected function setFilterListCart()
     {
         $allowed = array('user_email', 'user_id', 'store_id', 'sku',
-            'order_id', 'created', 'quantity');
+            'order_id', 'created', 'quantity', 'sku_like');
 
         $this->setFilter($allowed);
     }
