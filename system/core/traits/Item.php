@@ -180,15 +180,11 @@ trait Item
     {
         $calculated = $product_model->calculate($item);
 
-        if (!empty($calculated)) {
-
-            if ($item['price'] != $calculated['total']) {
-                $item['original_price'] = $item['price'];
-            }
-
-            $item['price'] = $calculated['total'];
-            $item['price_rule_components'] = $calculated['components'];
+        if ($item['price'] != $calculated) {
+            $item['original_price'] = $item['price'];
         }
+
+        $item['price'] = $calculated;
     }
 
     /**
@@ -354,14 +350,19 @@ trait Item
             $data = array(
                 'status' => 1,
                 'store_id' => $item['store_id'],
-                'sku' => explode(',', $item['bundle'])
+                'product_id' => explode(',', $item['bundle'])
             );
 
             $products = $product_model->getList($data);
-            $product_ids = array_keys($products);
+
+            $options += array(
+                'entity' => 'product',
+                'entity_id' => array_keys($products)
+            );
 
             foreach ($products as &$product) {
-                $this->setItemThumb($product, $image_model, array('entity' => 'product', 'entity_id' => $product_ids));
+                $this->setItemUrl($product, $options);
+                $this->setItemThumb($product, $image_model, $options);
                 $this->setItemProductBundleRendered($product, $options);
             }
 
@@ -447,6 +448,26 @@ trait Item
                 $combination['price'] = $price_model->decimal($combination['price'], $item['currency']);
             }
         }
+    }
+
+    /**
+     * Sets item auto-complete product suggestion
+     * @param array $item
+     * @param \gplcart\core\models\Image $image_model
+     * @param \gplcart\core\models\Price $price_model
+     * @param array $options
+     */
+    public function setItemProductSuggestion(&$item, $image_model, $price_model, $options = array())
+    {
+        $options += array(
+            'entity' => 'product',
+            'entity_id' => array(),
+            'template_item' => 'backend|content/product/suggestion'
+        );
+
+        $this->setItemThumb($item, $image_model, $options);
+        $this->setItemPriceFormatted($item, $price_model);
+        $this->setItemRendered($item, array('item' => $item), $options);
     }
 
     /**

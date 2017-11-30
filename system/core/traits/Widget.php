@@ -146,4 +146,23 @@ trait Widget
         return $controller->render('common/oauth', array('buttons' => $buttons));
     }
 
+    /**
+     * Returns rendered product picker widget
+     * @param \gplcart\core\Controller $controller
+     * @param array $options
+     * @return string
+     */
+    public function getWidgetProductPicker($controller, array $options = array())
+    {
+        $options += array(
+            'name' => '',
+            'key' => 'product_id',
+            'store_id' => null,
+            'multiple' => false,
+            'products' => array()
+        );
+
+        return $this->render('content/product/picker', $options);
+    }
+
 }
