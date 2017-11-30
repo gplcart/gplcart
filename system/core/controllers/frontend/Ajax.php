@@ -120,9 +120,7 @@ class Ajax extends FrontendController
         }
 
         foreach ($products as &$product) {
-            $this->setItemPriceFormatted($product, $this->price);
-            $this->setItemThumb($product, $this->image, array('entity' => 'product', 'entity_id' => $product_ids));
-            $this->setItemRendered($product, array('item' => $product), array('template_item' => 'backend|content/product/suggestion'));
+            $this->setItemProductSuggestion($product, $this->image, $this->price, array('entity_id' => $product_ids));
         }
 
         return $products;
@@ -189,17 +187,7 @@ class Ajax extends FrontendController
      */
     public function getCartPreviewAjax()
     {
-        $cart = $this->getCart();
-
-        if (empty($cart['items'])) {
-            return array();
-        }
-
-        $content = $this->prepareCart($cart);
-        $limit = $this->config('cart_preview_limit', 5);
-
-        $data = array('cart' => $content, 'limit' => $limit);
-        return array('preview' => $this->render('cart/preview', $data, true));
+        return array('preview' => $this->renderCartPreview());
     }
 
     /**
