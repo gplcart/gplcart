@@ -104,11 +104,7 @@ class ProductBundle extends BackendController
      */
     protected function prepareProductBundle(array $product)
     {
-        $product['bundle'] = array();
-        foreach ($this->product_bundle->getByProduct($product['product_id']) as $item) {
-            $product['bundle'][] = $item['item_sku'];
-        }
-
+        $product['bundle'] = $this->product_bundle->getBundledProducts($product['product_id']);
         return $product;
     }
 
@@ -117,27 +113,25 @@ class ProductBundle extends BackendController
      */
     protected function setDataItemsProductBundle()
     {
-        $skus = $this->getData('product.bundle', array());
+        $product_ids = $this->getData('product.bundle', array());
 
         $products = array();
-        foreach ($skus as $sku) {
-            $product = $this->product->getBySku($sku, $this->data_product['store_id']);
+        foreach ($product_ids as $product_id) {
+            $product = $this->product->get($product_id);
             if (!empty($product)) {
-                $this->setItemThumb($product, $this->image);
-                $this->setItemPriceFormatted($product, $this->price);
-                $this->setItemRendered($product, array('item' => $product), array('template_item' => 'content/product/suggestion'));
+                $this->setItemProductSuggestion($product, $this->image, $this->price);
                 $products[] = $product;
             }
         }
 
-        $data = array(
+        $options = array(
             'multiple' => true,
+            'name' => 'bundle',
             'products' => $products,
-            'store_id' => $this->data_product['store_id'],
-            'name' => gplcart_array_form(array('product', 'bundle'))
+            'store_id' => $this->data_product['store_id']
         );
 
-        $this->setData('product_picker', $this->render('content/product/picker', $data));
+        $this->setData('product_picker', $this->getWidgetProductPicker($this, $options));
     }
 
     /**
@@ -175,7 +169,6 @@ class ProductBundle extends BackendController
         $products = $this->getSubmitted('products', array());
 
         $this->product_bundle->set($product_id, $products);
-
         $this->redirect('admin/content/product', $this->text('Product bundle has been updated'), 'success');
     }
 
