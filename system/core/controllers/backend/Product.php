@@ -189,7 +189,7 @@ class Product extends BackendController
         $options['limit'] = $this->data_limit;
         $products = (array) $this->product->getList($options);
 
-        return empty($products) ? array() : $this->prepareListProduct($products);
+        return $this->prepareListProduct($products);
     }
 
     /**
@@ -292,9 +292,7 @@ class Product extends BackendController
     protected function setProduct($product_id)
     {
         if (is_numeric($product_id)) {
-
             $product = $this->product->get($product_id);
-
             if (empty($product)) {
                 $this->outputHttpStatus(404);
             }
@@ -310,16 +308,14 @@ class Product extends BackendController
      */
     protected function prepareProduct(array $product)
     {
-        // @todo reuse traits
-        $product['alias'] = $this->alias->get('product', $product['product_id']);
-        $product['price'] = $this->price->decimal($product['price'], $product['currency']);
-
         $options = array(
             'store_id' => $product['store_id'],
             'product_id' => $product['product_id']
         );
 
         $product['related'] = $this->product->getRelated($options);
+        $product['alias'] = $this->alias->get('product', $product['product_id']);
+        $product['price'] = $this->price->decimal($product['price'], $product['currency']);
 
         $this->setItemProductCombination($product, $this->image, $this->price);
         return $product;
@@ -489,15 +485,23 @@ class Product extends BackendController
     protected function setDataRelatedEditProduct()
     {
         $product_ids = $this->getData('product.related');
-        $products = empty($product_ids) ? array() : (array) $this->product->getList(array('product_id' => $product_ids));
 
-        $vars = array(
+        $products = array();
+        if (!empty($product_ids)) {
+            $products = (array) $this->product->getList(array('product_id' => $product_ids));
+        }
+
+        foreach ($products as &$product) {
+            $this->setItemProductSuggestion($product, $this->image, $this->price, array('entity_id' => $product_ids));
+        }
+
+        $options = array(
             'multiple' => true,
-            'products' => $products,
-            'name' => gplcart_array_form(array('product', 'related'))
+            'name' => 'related',
+            'products' => $products
         );
 
-        $this->setData('attached_related', $this->render('content/product/picker', $vars));
+        $this->setData('product_picker_widget', $this->getWidgetProductPicker($this, $options));
     }
 
     /**
@@ -511,7 +515,7 @@ class Product extends BackendController
         );
 
         $this->setItemThumb($options, $this->image);
-        $this->setData('attached_images', $this->getWidgetImages($this, $this->language, $options));
+        $this->setData('image_widget', $this->getWidgetImages($this, $this->language, $options));
     }
 
     /**
