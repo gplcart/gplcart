@@ -509,16 +509,16 @@ class Cart
             return (array) $result;
         }
 
+        $cart = $this->get($cart_id);
+
         $result = array(
             'message' => '',
             'severity' => '',
             'redirect' => null
         );
 
-        $cart = $this->get($cart_id);
-
         if (empty($cart) || !$this->delete($cart_id)) {
-            return false;
+            return $result;
         }
 
         $data['wishlist_id'] = $this->setWishlist($cart);
