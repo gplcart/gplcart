@@ -197,21 +197,3 @@ function gplcart_array_hash(array $data)
     return "$key." . md5(json_encode($hash));
 }
 
-/**
- * Converts a regular PHP array into HTML form array
- * @param array $array An array of keys, e.g ['one', 'two']
- * @return string A string that can be used in "name" input attribute, e.g one[two]
- */
-function gplcart_array_form(array $array)
-{
-    $stack = array();
-    gplcart_array_set($stack, $array, '');
-
-    $string = '';
-    foreach (explode('&', http_build_query($stack)) as $entry) {
-        list($key, $value) = explode('=', $entry);
-        $string .= urldecode($key) . urldecode($value);
-    }
-
-    return $string;
-}
