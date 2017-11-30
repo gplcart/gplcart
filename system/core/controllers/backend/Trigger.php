@@ -78,7 +78,7 @@ class Trigger extends BackendController
      */
     protected function setFilterListTrigger()
     {
-        $this->setFilter(array('store_id', 'status', 'name'));
+        $this->setFilter(array('store_id', 'status', 'name', 'trigger_id'));
     }
 
     /**
@@ -183,31 +183,13 @@ class Trigger extends BackendController
 
         $this->setData('trigger', $this->data_trigger);
         $this->setData('can_delete', $this->canDeleteTrigger());
-        $this->setData('conditions', $this->getConditionsTrigger());
-        $this->setData('operators', $this->getConditionOperatorsTrigger());
+        $this->setData('conditions', $this->condition->getHandlers());
+        $this->setData('operators', $this->condition->getOperators());
 
         $this->submitEditTrigger();
 
         $this->setDataEditTrigger();
         $this->outputEditTrigger();
-    }
-
-    /**
-     * Returns an array of trigger conditions
-     * @return array
-     */
-    protected function getConditionsTrigger()
-    {
-        return $this->condition->getHandlers();
-    }
-
-    /**
-     * Returns an array of condition operators
-     * @return array
-     */
-    protected function getConditionOperatorsTrigger()
-    {
-        return $this->condition->getOperators();
     }
 
     /**
