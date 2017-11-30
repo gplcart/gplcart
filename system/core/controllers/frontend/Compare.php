@@ -54,11 +54,33 @@ class Compare extends FrontendController
      */
     public function selectCompare()
     {
+        $this->controlProductsCompare();
+
         $this->setTitleSelectCompare();
         $this->setBreadcrumbSelectCompare();
 
         $this->setData('products', $this->getProductsSelectCompare());
         $this->outputSelectCompare();
+    }
+
+    /**
+     * Make sure that products saved in cookie are all valid and available to the user
+     * If some products were removed, disabled or moved to another store they will be removes from cookie
+     */
+    protected function controlProductsCompare()
+    {
+        $options = array(
+            'status' => 1,
+            'store_id' => $this->store_id,
+            'product_id' => $this->product_compare->getList()
+        );
+
+        if (!empty($options['product_id'])) {
+            $existing = array_keys($this->product->getList($options));
+            if (array_diff($options['product_id'], $existing)) {
+                $this->product_compare->set($existing);
+            }
+        }
     }
 
     /**
@@ -199,14 +221,11 @@ class Compare extends FrontendController
     {
         $labels = array();
         foreach ($products as $product) {
-
-            if (empty($product['field_value_labels'])) {
-                continue;
-            }
-
-            foreach ($product['field_value_labels'] as $type => $fields) {
-                foreach (array_keys($fields) as $field_id) {
-                    $labels[$type][$field_id] = $product['fields'][$type][$field_id]['title'];
+            if (!empty($product['field_value_labels'])) {
+                foreach ($product['field_value_labels'] as $type => $fields) {
+                    foreach (array_keys($fields) as $field_id) {
+                        $labels[$type][$field_id] = $product['fields'][$type][$field_id]['title'];
+                    }
                 }
             }
         }
