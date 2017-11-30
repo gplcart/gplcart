@@ -153,13 +153,11 @@ class Cart
 
             $prepared = $this->prepareItem($item, $result);
 
-            if (empty($prepared)) {
-                continue;
+            if (!empty($prepared)) {
+                $result['items'][$sku] = $prepared;
+                $total += (int) $prepared['total'];
+                $quantity += (int) $prepared['quantity'];
             }
-
-            $result['items'][$sku] = $prepared;
-            $total += (int) $prepared['total'];
-            $quantity += (int) $prepared['quantity'];
         }
 
         $result['total'] = $total;
@@ -186,12 +184,12 @@ class Cart
         $product['price'] = $this->currency->convert($product['price'], $product['currency'], $data['currency']);
         $calculated = $this->product->calculate($product);
 
-        if ($calculated['total'] != $product['price']) {
+        if ($calculated != $product['price']) {
             $item['original_price'] = $product['price'];
         }
 
         $item['product'] = $product;
-        $item['price'] = $calculated['total'];
+        $item['price'] = $calculated;
         $item['total'] = $item['price'] * $item['quantity'];
 
         return $item;
@@ -217,33 +215,38 @@ class Cart
                 . ' LEFT JOIN product p ON(c.product_id=p.product_id)'
                 . ' LEFT JOIN product_translation pt ON(c.product_id = pt.product_id AND pt.language=?)'
                 . ' LEFT JOIN user u ON(c.user_id = u.user_id)'
-                . ' WHERE cart_id > 0';
+                . ' WHERE cart_id IS NOT NULL';
 
-        $where = array($this->language->getLangcode());
+        $conditions = array($this->language->getLangcode());
 
         if (isset($data['user_id'])) {
             $sql .= ' AND c.user_id=?';
-            $where[] = $data['user_id'];
+            $conditions[] = $data['user_id'];
         }
 
         if (isset($data['order_id'])) {
             $sql .= ' AND c.order_id=?';
-            $where[] = (int) $data['order_id'];
+            $conditions[] = (int) $data['order_id'];
         }
 
         if (isset($data['store_id'])) {
             $sql .= ' AND c.store_id=?';
-            $where[] = (int) $data['store_id'];
+            $conditions[] = (int) $data['store_id'];
         }
 
         if (isset($data['user_email'])) {
             $sql .= ' AND u.email LIKE ?';
-            $where[] = "%{$data['user_email']}%";
+            $conditions[] = "%{$data['user_email']}%";
         }
 
         if (isset($data['sku'])) {
+            $sql .= ' AND c.sku=?';
+            $conditions[] = $data['sku'];
+        }
+
+        if (isset($data['sku_like'])) {
             $sql .= ' AND c.sku LIKE ?';
-            $where[] = "%{$data['sku']}%";
+            $conditions[] = "%{$data['sku_like']}%";
         }
 
         $allowed_order = array('asc', 'desc');
@@ -271,12 +274,10 @@ class Cart
         }
 
         if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $where);
+            return (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $options = array('unserialize' => 'data', 'index' => $index);
-        $list = $this->db->fetchAll($sql, $where, $options);
-
+        $list = $this->db->fetchAll($sql, $conditions, array('unserialize' => 'data', 'index' => $index));
         $this->hook->attach('cart.list', $list, $this);
         return $list;
     }
@@ -324,7 +325,7 @@ class Cart
             'product_id' => $product['product_id']
         );
 
-        $cart_id = $this->setProduct($data);
+        $cart_id = $this->set($data);
 
         if (!empty($cart_id)) {
 
@@ -350,6 +351,37 @@ class Cart
     }
 
     /**
+     * Adds/updates a cart item
+     * @param array $data
+     * @param bool $increment
+     * @return integer
+     */
+    public function set(array $data, $increment = true)
+    {
+        $options = array(
+            'order_id' => 0,
+            'sku' => $data['sku'],
+            'user_id' => $data['user_id'],
+            'store_id' => $data['store_id']
+        );
+
+        $list = $this->getList($options);
+
+        if (empty($list)) {
+            return $this->add($data);
+        }
+
+        $cart = reset($list);
+
+        if ($increment) {
+            $data['quantity'] += $cart['quantity'];
+        }
+
+        $this->update($cart['cart_id'], array('quantity' => $data['quantity']));
+        return $cart['cart_id'];
+    }
+
+    /**
      * Returns the cart user ID
      * @return string
      */
@@ -372,32 +404,6 @@ class Cart
         $lifespan = $this->getCookieLifespan();
         $this->request->setCookie($cookie_name, $user_id, $lifespan);
         return $user_id;
-    }
-
-    /**
-     * Adds/updates products in the cart
-     * @param array $data
-     * @return integer|boolean
-     */
-    protected function setProduct(array $data)
-    {
-        $sql = 'SELECT cart_id, quantity'
-                . ' FROM cart'
-                . ' WHERE sku=? AND user_id=? AND store_id=? AND order_id=?';
-
-        $conditions = array($data['sku'], $data['user_id'], $data['store_id'], 0);
-        $existing = $this->db->fetch($sql, $conditions);
-
-        if (empty($existing['cart_id'])) {
-            return $this->add($data);
-        }
-
-        $existing['quantity'] += $data['quantity'];
-
-        $conditions2 = array('quantity' => $existing['quantity']);
-        $this->update($existing['cart_id'], $conditions2);
-
-        return $existing['cart_id'];
     }
 
     /**
@@ -457,10 +463,12 @@ class Cart
     {
         $options += array('order_id' => 0);
 
-        $items = $this->getList($options);
-        $result = array('total' => 0, 'sku' => array());
+        $result = array(
+            'total' => 0,
+            'sku' => array()
+        );
 
-        foreach ((array) $items as $item) {
+        foreach ((array) $this->getList($options) as $item) {
             $result['total'] += (int) $item['quantity'];
             $result['sku'][$item['sku']] = (int) $item['quantity'];
         }
@@ -482,56 +490,95 @@ class Cart
             return $result;
         }
 
-        $result = $this->db->fetch('SELECT * FROM cart WHERE cart_id=?', array($cart_id));
-
+        $result = $this->db->fetch('SELECT * FROM cart WHERE cart_id=?', array($cart_id), array('unserialize' => 'data'));
         $this->hook->attach('cart.get.after', $cart_id, $result, $this);
         return $result;
     }
 
     /**
      * Moves a cart item to the wishlist
-     * @param array $data
+     * @param int $cart_id
      * @return array
      */
-    public function moveToWishlist(array $data)
+    public function moveToWishlist($cart_id)
     {
-        $result = array();
-        $this->hook->attach('cart.move.wishlist.before', $data, $result, $this);
+        $result = null;
+        $this->hook->attach('cart.move.wishlist.before', $cart_id, $result, $this);
 
-        if (!empty($result)) {
+        if (isset($result)) {
             return (array) $result;
         }
 
-        $sku_info = $this->sku->get($data['sku'], $data['store_id']);
+        $result = array(
+            'message' => '',
+            'severity' => '',
+            'redirect' => null
+        );
 
-        if (empty($sku_info['product_id'])) {
-            return array('redirect' => null, 'severity' => '', 'message' => '');
+        $cart = $this->get($cart_id);
+
+        if (empty($cart) || !$this->delete($cart_id)) {
+            return false;
         }
 
-        $this->db->delete('cart', $data);
-
-        $data['product_id'] = $sku_info['product_id'];
-
-        $conditions = $data;
-        unset($conditions['sku']);
-        $this->db->delete('wishlist', $conditions);
-
-        $data['wishlist_id'] = $this->wishlist->addProduct($data);
+        $data['wishlist_id'] = $this->setWishlist($cart);
 
         gplcart_static_clear();
 
-        $url = $this->request->base() . 'wishlist';
-        $message = $this->language->text('Product has been moved to your <a href="@url">wishlist</a>', array('@url' => $url));
-
         $result = array(
             'redirect' => '',
-            'message' => $message,
             'severity' => 'success',
-            'wishlist_id' => $data['wishlist_id']
+            'wishlist_id' => $data['wishlist_id'],
+            'message' => $this->language->text('Product has been moved to your <a href="@url">wishlist</a>', array(
+                '@url' => $this->request->base() . 'wishlist'))
         );
 
         $this->hook->attach('cart.move.wishlist.after', $data, $result, $this);
         return (array) $result;
+    }
+
+    /**
+     * Adds a product from the cart item
+     * @param array $cart
+     * @return int
+     */
+    protected function setWishlist(array $cart)
+    {
+        $data = array(
+            'user_id' => $cart['user_id'],
+            'store_id' => $cart['store_id'],
+            'product_id' => $cart['product_id']
+        );
+
+        $this->db->delete('wishlist', $data);
+        return $this->wishlist->addProduct($data);
+    }
+
+    /**
+     * Deletes a cart record from the database
+     * @param integer $cart_id
+     * @param bool $check
+     * @return boolean
+     */
+    public function delete($cart_id, $check = true)
+    {
+        $result = null;
+        $this->hook->attach('cart.delete.before', $cart_id, $check, $result, $this);
+
+        if (isset($result)) {
+            return (bool) $result;
+        }
+
+        if ($check && !$this->canDelete($cart_id)) {
+            return false;
+        }
+
+        $result = (bool) $this->db->delete('cart', array('cart_id' => $cart_id));
+
+        gplcart_static_clear();
+
+        $this->hook->attach('cart.delete.after', $cart_id, $check, $result, $this);
+        return (bool) $result;
     }
 
     /**
@@ -572,34 +619,6 @@ class Cart
 
         $this->hook->attach('cart.login.after', $user, $cart, $result, $this);
         return (array) $result;
-    }
-
-    /**
-     * Deletes a cart record from the database
-     * @param integer $cart_id
-     * @param bool $check
-     * @return boolean
-     */
-    public function delete($cart_id, $check = true)
-    {
-        $result = null;
-        $this->hook->attach('cart.delete.before', $cart_id, $check, $result, $this);
-
-        if (isset($result)) {
-            return (bool) $result;
-        }
-
-        if ($check && !$this->canDelete($cart_id)) {
-            return false;
-        }
-
-        $result = (bool) $this->db->delete('cart', array('cart_id' => $cart_id));
-
-        gplcart_static_clear();
-
-        $this->hook->attach('cart.delete.after', $cart_id, $check, $result, $this);
-
-        return (bool) $result;
     }
 
     /**

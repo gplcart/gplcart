@@ -61,7 +61,7 @@ class Order
      * Price rule model instance
      * @var \gplcart\core\models\PriceRule $pricerule
      */
-    protected $pricerule;
+    protected $price_rule;
 
     /**
      * Cart model instance
@@ -120,7 +120,7 @@ class Order
         $this->price = $price;
         $this->history = $history;
         $this->language = $language;
-        $this->pricerule = $pricerule;
+        $this->price_rule = $pricerule;
         $this->convertor = $convertor;
     }
 
@@ -416,24 +416,27 @@ class Order
             return (array) $result;
         }
 
+        $result = array(
+            'redirect' => '',
+            'severity' => 'warning',
+            'message' => $this->language->text('An error occurred')
+        );
+
         $this->prepareComponents($data);
 
-        $order_id = $this->add($data);
+        $data['order_id'] = $this->add($data);
 
-        if (empty($order_id)) {
-            return array(
-                'redirect' => '',
-                'severity' => 'warning',
-                'message' => $this->language->text('An error occurred')
-            );
+        if (empty($data['order_id'])) {
+            return $result;
         }
 
-        $order = $this->get($order_id);
+        $order = $this->get($data['order_id']);
+        $this->setBundledProducts($order, $data);
 
         $result = array(
             'order' => $order,
             'severity' => 'success',
-            'redirect' => "admin/sale/order/$order_id",
+            'redirect' => "admin/sale/order/{$data['order_id']}",
             'message' => $this->language->text('Order has been created')
         );
 
@@ -444,13 +447,49 @@ class Order
             $this->setNotificationCreatedByCustomer($order);
 
             $result['message'] = '';
-            $result['redirect'] = "checkout/complete/$order_id";
+            $result['redirect'] = "checkout/complete/{$data['order_id']}";
         } else {
             $this->cloneCart($order, $data['cart']);
         }
 
         $this->hook->attach('order.submit.after', $data, $options, $result, $this);
         return (array) $result;
+    }
+
+    /**
+     * Adds bundled products
+     * @param array $order
+     * @param array $data
+     */
+    protected function setBundledProducts(array $order, array $data)
+    {
+        $update = false;
+        foreach ($data['cart']['items'] as $item) {
+
+            if (empty($item['product']['bundled_products'])) {
+                continue;
+            }
+
+            foreach ($item['product']['bundled_products'] as $product) {
+
+                $cart = array(
+                    'sku' => $product['sku'],
+                    'user_id' => $data['user_id'],
+                    'quantity' => $item['quantity'],
+                    'store_id' => $data['store_id'],
+                    'order_id' => $order['order_id'],
+                    'product_id' => $product['product_id'],
+                );
+
+                $update = true;
+                $order['data']['components']['cart']['items'][$product['sku']]['price'] = 0;
+                $this->cart->add($cart);
+            }
+        }
+
+        if ($update) {
+            $this->update($order['order_id'], array('data' => $order['data']));
+        }
     }
 
     /**
@@ -503,10 +542,10 @@ class Order
                 continue; // We need only rules
             }
 
-            $rule = $this->pricerule->get($component_id);
+            $rule = $this->price_rule->get($component_id);
 
             if ($rule['code'] !== '') {
-                $this->pricerule->setUsed($rule['price_rule_id']);
+                $this->price_rule->setUsed($rule['price_rule_id']);
             }
         }
     }
@@ -751,25 +790,16 @@ class Order
             return (array) $result;
         }
 
+        $components = array();
         $total = $data['cart']['total'];
 
-        $components = array();
-        foreach (array('shipping', 'payment') as $type) {
-
-            if (isset($data['order'][$type]) && isset($data[$type . '_methods'][$data['order'][$type]]['price'])) {
-                $price = $data[$type . '_methods'][$data['order'][$type]]['price'];
-                $components[$type] = array('price' => $price);
-                $total += $components[$type]['price'];
-            }
-        }
-
-        $this->pricerule->calculate($total, $data, $components);
+        $this->calculateComponents($total, $data, $components);
+        $this->calculatePriceRules($total, $data, $components);
 
         $result = array(
             'total' => $total,
             'components' => $components,
             'currency' => $data['cart']['currency'],
-            // Other modules can use these formatted totals
             'total_decimal' => $this->price->decimal($total, $data['cart']['currency']),
             'total_formatted' => $this->price->format($total, $data['cart']['currency']),
             'total_formatted_number' => $this->price->format($total, $data['cart']['currency'], true, false),
@@ -780,6 +810,57 @@ class Order
     }
 
     /**
+     * Calculate order components (e.g shipping) using predefined values which can be provided by different modules
+     * @param int $total
+     * @param array $data
+     * @param array $components
+     */
+    protected function calculateComponents(&$total, array &$data, array &$components)
+    {
+        foreach (array('shipping', 'payment') as $type) {
+            if (isset($data['order'][$type]) && isset($data[$type . '_methods'][$data['order'][$type]]['price'])) {
+                $price = $data[$type . '_methods'][$data['order'][$type]]['price'];
+                $components[$type] = array('price' => $price);
+                $total += $components[$type]['price'];
+            }
+        }
+    }
+
+    /**
+     * Calculate order price rules
+     * @param int $total
+     * @param array $data
+     * @param array $components
+     */
+    protected function calculatePriceRules(&$total, array &$data, array &$components)
+    {
+        $options = array(
+            'status' => 1,
+            'store_id' => $data['order']['store_id']
+        );
+
+        $code = null;
+        if (isset($data['order']['data']['pricerule_code'])) {
+            $code = $data['order']['data']['pricerule_code'];
+        }
+
+        foreach ($this->price_rule->getTriggered($data, $options) as $price_rule) {
+
+            if ($price_rule['code'] !== '' && !isset($code)) {
+                $components[$price_rule['price_rule_id']] = array('rule' => $price_rule, 'price' => 0);
+                continue;
+            }
+
+            if (isset($code) && !$this->priceRuleCodeMatches($price_rule['price_rule_id'], $code)) {
+                $components[$price_rule['price_rule_id']] = array('rule' => $price_rule, 'price' => 0);
+                continue;
+            }
+
+            $this->price_rule->calculate($total, $data, $components, $price_rule);
+        }
+    }
+
+    /**
      * Whether a given code matches the price rule
      * @param integer $price_rule_id
      * @param string $code
@@ -787,7 +868,7 @@ class Order
      */
     public function priceRuleCodeMatches($price_rule_id, $code)
     {
-        return $this->pricerule->codeMatches($price_rule_id, $code);
+        return $this->price_rule->codeMatches($price_rule_id, $code);
     }
 
     /**

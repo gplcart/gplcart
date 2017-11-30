@@ -11,7 +11,8 @@ namespace gplcart\core\models;
 
 use gplcart\core\Hook,
     gplcart\core\Database;
-use gplcart\core\models\Condition as ConditionModel;
+use gplcart\core\models\Condition as ConditionModel,
+    gplcart\core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to triggers
@@ -38,14 +39,23 @@ class Trigger
     protected $condition;
 
     /**
+     * Language model instance
+     * @var \gplcart\core\models\Language $language
+     */
+    protected $language;
+
+    /**
      * @param Hook $hook
      * @param Database $db
      * @param ConditionModel $condition
+     * @param LanguageModel $language
      */
-    public function __construct(Hook $hook, Database $db, ConditionModel $condition)
+    public function __construct(Hook $hook, Database $db, ConditionModel $condition,
+            LanguageModel $language)
     {
         $this->db = $db;
         $this->hook = $hook;
+        $this->language = $language;
         $this->condition = $condition;
     }
 
@@ -70,30 +80,30 @@ class Trigger
 
         $sql .= ' FROM triggers WHERE trigger_id > 0';
 
-        $where = array();
+        $conditions = array();
 
         if (isset($data['status'])) {
             $sql .= ' AND status = ?';
-            $where[] = (int) $data['status'];
+            $conditions[] = (int) $data['status'];
         }
 
         if (isset($data['store_id'])) {
             $sql .= ' AND store_id = ?';
-            $where[] = (int) $data['store_id'];
+            $conditions[] = (int) $data['store_id'];
         }
 
         if (isset($data['weight'])) {
             $sql .= ' AND weight = ?';
-            $where[] = (int) $data['weight'];
+            $conditions[] = (int) $data['weight'];
         }
 
         if (isset($data['name'])) {
             $sql .= ' AND name LIKE ?';
-            $where[] = "%{$data['name']}%";
+            $conditions[] = "%{$data['name']}%";
         }
 
         $allowed_order = array('asc', 'desc');
-        $allowed_sort = array('name', 'status', 'store_id');
+        $allowed_sort = array('name', 'status', 'store_id', 'trigger_id');
 
         if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort))//
                 && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
@@ -107,22 +117,15 @@ class Trigger
         }
 
         if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $where);
+            return (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $results = $this->db->fetchAll($sql, $where);
+        $triggers = $this->db->fetchAll($sql, $conditions, array('index' => 'trigger_id', 'unserialize' => 'data'));
 
-        $triggers = array();
-        foreach ($results as $trigger) {
-
-            $trigger['database'] = true;
-            $trigger['data'] = unserialize($trigger['data']);
-
+        foreach ($triggers as &$trigger) {
             if (!empty($trigger['data']['conditions'])) {
                 gplcart_array_sort($trigger['data']['conditions']);
             }
-
-            $triggers[$trigger['trigger_id']] = $trigger;
         }
 
         $this->hook->attach('trigger.list', $triggers, $this);
@@ -209,11 +212,11 @@ class Trigger
 
     /**
      * Returns an array of triggered trigger IDs for the given context
-     * @param array $options
      * @param array $data
+     * @param array $options
      * @return array
      */
-    public function getTriggered(array $options = array(), array $data = array())
+    public function getTriggered(array $data = array(), array $options = array())
     {
         $options += array('status' => 1);
         $triggers = (array) $this->getList($options);

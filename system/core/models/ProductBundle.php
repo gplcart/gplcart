@@ -116,7 +116,6 @@ class ProductBundle
 
             $data = array(
                 'product_id' => $product_id,
-                'item_sku' => $product['sku'],
                 'item_product_id' => $product['product_id']
             );
 
@@ -129,24 +128,75 @@ class ProductBundle
     }
 
     /**
-     * Load all bundled items for the product
-     * @param int $product_id
+     * Returns an array of bundled products
+     * @param array $data
+     * @param string $index
      * @return array
      */
-    public function getByProduct($product_id)
+    public function getList(array $data = array(), $index = 'product_bundle_id')
     {
-        $result = null;
-        $this->hook->attach('product.bundle.get.product.before', $product_id, $result, $this);
+        $result = &gplcart_static(gplcart_array_hash(array('product.bundle.list' => $data)));
 
         if (isset($result)) {
-            return (array) $result;
+            return $result;
         }
 
-        $sql = 'SELECT * FROM product_bundle WHERE product_id = ?';
+        $conditions = array();
 
-        $result = $this->db->fetchAll($sql, array($product_id));
-        $this->hook->attach('product.bundle.get.product.after', $product_id, $result, $this);
+        $sql = 'SELECT pb.*, p.store_id'
+                . ' FROM product_bundle pb'
+                . ' LEFT JOIN product p ON(pb.product_id = p.product_id)'
+                . ' LEFT JOIN product p2 ON(pb.item_product_id = p2.product_id)'
+                . ' WHERE pb.product_bundle_id IS NOT NULL';
+
+        if (isset($data['store_id'])) {
+            $sql .= ' AND p.store_id = ? AND p2.store_id = ?';
+            $conditions[] = (int) $data['store_id'];
+            $conditions[] = (int) $data['store_id'];
+        }
+
+        if (isset($data['status'])) {
+            $sql .= ' AND p.status = ? AND p2.status = ?';
+            $conditions[] = (int) $data['status'];
+            $conditions[] = (int) $data['status'];
+        }
+
+        if (isset($data['product_id'])) {
+            $sql .= ' AND pb.product_id = ?';
+            $conditions[] = (int) $data['product_id'];
+        }
+
+        $result = $this->db->fetchAll($sql, $conditions, array('index' => $index));
+        $this->hook->attach('product.bundle.list', $data, $result, $this);
         return (array) $result;
+    }
+
+    /**
+     * Load all bundled items for the product
+     * @param int $product_id
+     * @param array $options
+     * @return array
+     */
+    public function getByProduct($product_id, array $options = array())
+    {
+        $options['product_id'] = $product_id;
+        return $this->getList($options);
+    }
+
+    /**
+     * Returns an array of bundled product IDs for the product
+     * @param int $product_id
+     * @param array $options
+     * @return array
+     */
+    public function getBundledProducts($product_id, array $options = array())
+    {
+        $product_ids = array();
+        foreach ($this->getByProduct($product_id, $options) as $item) {
+            $product_ids[] = $item['item_product_id'];
+        }
+
+        return $product_ids;
     }
 
     /**

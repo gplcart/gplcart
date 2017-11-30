@@ -196,7 +196,7 @@ class ProductCompare
     }
 
     /**
-     * Returns an array of products to be compared
+     * Returns an array of product ID to be compared
      * @return array
      */
     public function getList()

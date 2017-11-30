@@ -277,51 +277,21 @@ class PriceRule
     }
 
     /**
-     * Applies all suited price rules and calculates totals
-     * @param integer $total
-     * @param array $data
-     * @param array $components
-     * @return array
-     */
-    public function calculate(&$total, $data, &$components = array())
-    {
-        $options = array('status' => 1, 'store_id' => $data['store_id']);
-
-        foreach ($this->getTriggered($options, $data) as $rule) {
-            $this->calculateComponent($total, $data, $components, $rule);
-        }
-
-        return array('total' => $total, 'components' => $components);
-    }
-
-    /**
-     * Calculates a price rule component
-     * @param integer $amount
+     * Calculate a price rule
+     * @param int $total
      * @param array $data
      * @param array $components
      * @param array $price_rule
-     * @return integer
+     * @return array
      */
-    protected function calculateComponent(&$amount, $data, &$components, $price_rule)
+    public function calculate(&$total, $data, &$components, array $price_rule)
     {
-        if ($price_rule['code'] !== '') {
-            if (!isset($data['order']['data']['pricerule_code'])//
-                    || !$this->codeMatches($price_rule['price_rule_id'], $data['order']['data']['pricerule_code'])) {
-                $components[$price_rule['price_rule_id']] = array('rule' => $price_rule, 'price' => 0);
-                return $amount;
-            }
-        }
-
         try {
             $callback = Handler::get($this->getTypes(), $price_rule['value_type'], 'calculate');
-            call_user_func_array($callback, array(&$amount, &$components, $price_rule, $data['currency']));
+            call_user_func_array($callback, array(&$total, &$components, $price_rule, $data));
         } catch (\Exception $ex) {
             trigger_error($ex->getMessage());
-            return $amount;
         }
-
-        $this->hook->attach('price.rule.calculate.component', $amount, $data, $components, $price_rule, $this);
-        return $amount;
     }
 
     /**
@@ -343,13 +313,13 @@ class PriceRule
 
     /**
      * Returns an array triggered price rules
-     * @param array $options
      * @param array $data
+     * @param array $options
      * @return array
      */
-    public function getTriggered(array $options, array $data)
+    public function getTriggered(array $data, array $options)
     {
-        $options['trigger_id'] = $this->trigger->getTriggered($options, $data);
+        $options['trigger_id'] = $this->trigger->getTriggered($data, $options);
 
         if (empty($options['trigger_id'])) {
             return array();

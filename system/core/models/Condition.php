@@ -64,27 +64,27 @@ class Condition
      */
     public function isMet(array $trigger, array $data)
     {
-        $met = null;
-        $this->hook->attach('condition.met.before', $trigger, $data, $met, $this);
+        $result = null;
+        $this->hook->attach('condition.met.before', $trigger, $data, $result, $this);
 
-        if (isset($met)) {
-            return (bool) $met;
+        if (isset($result)) {
+            return (bool) $result;
         }
 
         if (empty($trigger['data']['conditions'])) {
             return false;
         }
 
-        $met = true;
+        $result = true;
         foreach ($trigger['data']['conditions'] as $condition) {
             if ($this->callHandler($condition, $data) !== true) {
-                $met = false;
+                $result = false;
                 break;
             }
         }
 
-        $this->hook->attach('condition.met.after', $trigger, $data, $met, $this);
-        return (bool) $met;
+        $this->hook->attach('condition.met.after', $trigger, $data, $result, $this);
+        return (bool) $result;
     }
 
     /**

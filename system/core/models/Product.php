@@ -81,7 +81,7 @@ class Product
      * Price rule model instance
      * @var \gplcart\core\models\PriceRule $pricerule
      */
-    protected $pricerule;
+    protected $price_rule;
 
     /**
      * SKU model instance
@@ -152,7 +152,7 @@ class Product
         $this->search = $search;
         $this->request = $request;
         $this->language = $language;
-        $this->pricerule = $pricerule;
+        $this->price_rule = $pricerule;
         $this->translation = $translation;
         $this->product_field = $product_field;
         $this->product_relation = $product_relation;
@@ -447,9 +447,7 @@ class Product
 
             $this->db->delete('product_related', $conditions);
             $this->db->delete('product_related', $conditions3);
-
             $this->db->delete('product_bundle', $conditions);
-            $this->db->delete('product_bundle', $conditions3);
 
             $this->db->delete('file', $conditions2);
             $this->db->delete('alias', $conditions2);
@@ -474,22 +472,33 @@ class Product
      */
     public function canDelete($product_id)
     {
-        $sql = 'SELECT cart_id'
-                . ' FROM cart'
-                . ' WHERE product_id=? AND order_id > 0';
+        $sql = 'SELECT NOT EXISTS (SELECT cart_id FROM cart WHERE product_id=:id AND order_id > 0)'
+                . ' AND NOT EXISTS (SELECT product_bundle_id FROM product_bundle WHERE item_product_id=:id)';
 
-        $result = $this->db->fetchColumn($sql, array($product_id));
-        return empty($result);
+        return (bool) $this->db->fetchColumn($sql, array('id' => $product_id));
     }
 
     /**
      * Calculates the product price
      * @param array $product
-     * @return array
+     * @param array $options
+     * @return int
      */
-    public function calculate(array $product)
+    public function calculate(array $product, array $options = array())
     {
-        return $this->pricerule->calculate($product['price'], $product);
+        $options += array(
+            'status' => 1,
+            'store_id' => $product['store_id']
+        );
+
+        $components = array();
+        $total = $product['price'];
+
+        foreach ($this->price_rule->getTriggered($product, $options) as $price_rule) {
+            $this->price_rule->calculate($total, $product, $components, $price_rule);
+        }
+
+        return $total;
     }
 
     /**
@@ -538,7 +547,7 @@ class Product
     {
         $sql = 'SELECT p.*, a.alias, COALESCE(NULLIF(pt.title, ""), p.title) AS title,'
                 . 'pt.language, ps.sku, ps.price, ps.stock, ps.file_id, u.role_id,'
-                . 'GROUP_CONCAT(pb.item_sku) AS bundle';
+                . 'GROUP_CONCAT(pb.item_product_id) AS bundle';
 
         if (!empty($data['count'])) {
             $sql = 'SELECT COUNT(p.product_id)';
