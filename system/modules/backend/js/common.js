@@ -188,15 +188,20 @@
      */
     var htmlProductPicker = function (item, el) {
 
-        var mod, html = '';
-        
+        var mod,
+                html = '',
+                name = el.data('name'),
+                val = item.data[el.data('key')];
+
         html += '<div class="selected-item">';
+
         if (el.data('multiple')) {
-            html += '<input type="hidden" name="' + el.data('name') + '[]" value="' + item.value + '">';
+            html += '<input type="hidden" name="product[' + name + '][]" value="' + val + '">';
         } else {
-            html += '<input type="hidden" name="' + el.data('name') + '" value="' + item.value + '">';
+            html += '<input type="hidden" name="product[' + name + ']" value="' + val + '">';
         }
-        html += item.rendered;
+
+        html += item.data.rendered;
         html += '</div>';
 
         mod = Gplcart.hook('html.product.picker', html);
@@ -332,7 +337,7 @@
     Gplcart.onload.checkDefaultProductCombination = function () {
 
         var radio = '.option input[name$="[is_default]"]';
-        
+
         $(document).on('click', '.uncheck-default-combination', function () {
             $(radio).prop('checked', false);
             return false;
@@ -431,7 +436,7 @@
     Gplcart.onload.setPager = function () {
 
         var links, id, href;
-        
+
         $('.panel').each(function () {
             id = $(this).attr('id');
             if (id) {
@@ -479,7 +484,7 @@
 
                     $.post(Gplcart.settings.base + 'ajax', params, function (data) {
                         response($.map(data, function (value) {
-                            return {value: value.sku, rendered: value.rendered};
+                            return {data: value};
                         }));
                     });
                 },
@@ -496,10 +501,9 @@
                 },
                 open: function () {
                     $('.product-picker-popup').css('width', input.closest('div').width());
-                    //debugger;
                 }
             }).autocomplete("instance")._renderItem = function (ul, item) {
-                return $("<li>").append(item.rendered).appendTo(ul);
+                return $("<li>").append(item.data.rendered).appendTo(ul);
             };
         }
     };
@@ -590,45 +594,45 @@
     /**
      * Adds autocomplete functionality to a product input
      * @returns {undefined}
-
-    Gplcart.onload.setAutocompleteProduct = function () {
-
-        var params,
-                input = $('[data-autocomplete-source="product"]'),
-                inputId = $('[data-autocomplete-target="product"]');
-
-        if (input.length) {
-            input.autocomplete({
-                minLength: 2,
-                source: function (request, response) {
-                    params = {
-                        term: request.term,
-                        action: 'getProductsAjax',
-                        token: Gplcart.settings.token
-                    };
-                    $.post(Gplcart.settings.base + 'ajax', params, function (data) {
-                        response($.map(data, function (value, key) {
-                            return {
-                                value: value.product_id,
-                                label: value.title ? value.title + ' (' + value.product_id + ')' : '--'
-                            };
-                        }));
-                    });
-                },
-                select: function (event, ui) {
-                    input.val(ui.item.label);
-                    inputId.val(ui.item.value);
-                    return false;
-                },
-                search: function () {
-                    inputId.val('');
-                }
-            }).autocomplete("instance")._renderItem = function (ul, item) {
-                return $("<li>").append("<a>" + item.label + "</a>").appendTo(ul);
-            };
-        }
-    };
-         */
+     
+     Gplcart.onload.setAutocompleteProduct = function () {
+     
+     var params,
+     input = $('[data-autocomplete-source="product"]'),
+     inputId = $('[data-autocomplete-target="product"]');
+     
+     if (input.length) {
+     input.autocomplete({
+     minLength: 2,
+     source: function (request, response) {
+     params = {
+     term: request.term,
+     action: 'getProductsAjax',
+     token: Gplcart.settings.token
+     };
+     $.post(Gplcart.settings.base + 'ajax', params, function (data) {
+     response($.map(data, function (value, key) {
+     return {
+     value: value.product_id,
+     label: value.title ? value.title + ' (' + value.product_id + ')' : '--'
+     };
+     }));
+     });
+     },
+     select: function (event, ui) {
+     input.val(ui.item.label);
+     inputId.val(ui.item.value);
+     return false;
+     },
+     search: function () {
+     inputId.val('');
+     }
+     }).autocomplete("instance")._renderItem = function (ul, item) {
+     return $("<li>").append("<a>" + item.label + "</a>").appendTo(ul);
+     };
+     }
+     };
+     */
 
     /**
      * Updates product fields when product class was changed
