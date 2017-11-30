@@ -1867,20 +1867,6 @@ abstract class Controller
     }
 
     /**
-     * Returns the current cart data
-     * @return array
-     */
-    public function getCart()
-    {
-        $conditions = array(
-            'user_id' => $this->cart_uid,
-            'store_id' => $this->store_id
-        );
-
-        return $this->cart->getContent($conditions);
-    }
-
-    /**
      * Adds a JS on the page
      * @param string $script
      * @param array $data
