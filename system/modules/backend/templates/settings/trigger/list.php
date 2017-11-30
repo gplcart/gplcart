@@ -51,6 +51,9 @@
         <tr>
           <th><input type="checkbox" onchange="Gplcart.selectAll(this);"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
           <th>
+            <a href="<?php echo $sort_trigger_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a>
+          </th>
+          <th>
             <a href="<?php echo $sort_name; ?>"><?php echo $this->text('Name'); ?> <i class="fa fa-sort"></i></a>
           </th>
           <th>
@@ -62,6 +65,7 @@
           <th></th>
         </tr>
         <tr class="filters active hidden-no-js">
+          <th></th>
           <th></th>
           <th>
             <input class="form-control" name="name" maxlength="255" value="<?php echo $filter_name; ?>" placeholder="<?php echo $this->text('Any'); ?>">
@@ -100,7 +104,7 @@
       <tbody>
         <?php if ($_filtering && empty($triggers)) { ?>
         <tr>
-          <td colspan="5">
+          <td colspan="6">
             <?php echo $this->text('No results'); ?>
             <a href="<?php echo $this->url($_path); ?>" class="clear-filter"><?php echo $this->text('Reset'); ?></a>
           </td>
@@ -111,6 +115,7 @@
           <td class="middle">
             <input type="checkbox" class="select-all" name="action[items][]" value="<?php echo $id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>>
           </td>
+          <td class="middle"><?php echo $this->e($id); ?></td>
           <td class="middle"><?php echo $this->e($trigger['name']); ?></td>
           <td class="middle">
             <?php if (isset($_stores[$trigger['store_id']])) { ?>

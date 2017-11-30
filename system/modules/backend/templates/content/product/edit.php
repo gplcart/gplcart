@@ -239,13 +239,11 @@
   </fieldset>
   <fieldset>
     <legend><?php echo $this->text('Image'); ?></legend>
-    <?php if (!empty($attached_images)) { ?>
-    <?php echo $attached_images; ?>
-    <?php } ?>
+    <?php echo $image_widget; ?>
   </fieldset>
   <fieldset>
     <legend><?php echo $this->text('Related'); ?></legend>
-    <?php echo $attached_related; ?>
+    <?php echo $product_picker_widget; ?>
   </fieldset>
   <fieldset>
     <legend><?php echo $this->text('Meta'); ?></legend>

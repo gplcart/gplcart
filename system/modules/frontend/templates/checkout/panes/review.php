@@ -29,18 +29,26 @@
         </a>
       </div>
       <div class="col-md-6">
+        <div class="title">
         <a target="_blank" href="<?php echo $this->url("product/{$item['product']['product_id']}"); ?>">
           <?php echo $this->e($this->truncate($item['product']['title'], 50)); ?>
         </a>
-        <br>
-        <span class="sku"><?php echo $this->text('SKU'); ?> : <?php echo $this->e($item['sku']); ?></span><br>
-        <span class="price">
-          <?php echo $this->text('Price'); ?> :
-          <?php if (isset($item['original_price']) && $item['original_price'] > $item['price']) { ?>
-          <s><?php echo $this->e($item['original_price_formatted']); ?></s>
-          <?php } ?>
-          <?php echo $this->e($item['price_formatted']); ?>
-        </span>
+        </div>
+        <?php if(!empty($item['product']['bundled_products'])) { ?>
+        <div class="bundle">
+          <?php echo $this->text('+ @num bundled products!', array('@num' => count($item['product']['bundled_products']))); ?>
+        </div>
+        <?php } ?>
+        <div class="price-sku">
+          <span class="sku"><?php echo $this->text('SKU'); ?> : <?php echo $this->e($item['sku']); ?></span><br>
+          <span class="price">
+            <?php echo $this->text('Price'); ?> :
+            <?php if (isset($item['original_price']) && $item['original_price'] > $item['price']) { ?>
+            <s class="text-muted"><?php echo $this->e($item['original_price_formatted']); ?></s>
+            <?php } ?>
+            <?php echo $this->e($item['price_formatted']); ?>
+          </span>
+        </div>
         <div>
           <div class="input-group">
             <span class="input-group-btn">
@@ -69,7 +77,7 @@
             <i class="fa fa-trash"></i>
           </button>
           <?php if (!$admin) { ?>
-          <button title="<?php echo $this->text('Move to wishlist'); ?>" class="btn btn-default" data-ajax="false" name="order[cart][action][wishlist]" value="<?php echo $this->e($sku); ?>">
+          <button title="<?php echo $this->text('Move to wishlist'); ?>" class="btn btn-default" data-ajax="false" name="order[cart][action][wishlist]" value="<?php echo $this->e($item['cart_id']); ?>">
             <i class="fa fa-star"></i>
           </button>
           <?php } ?>

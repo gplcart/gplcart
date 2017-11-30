@@ -12,5 +12,9 @@
   <div class="image" title="<?php echo $this->e($item['title']); ?>">
     <img src="<?php echo $this->e($item['thumb']); ?>" alt="<?php echo $this->e($item['title']); ?>">
   </div>
-  <div class="title"><?php echo $this->e($item['title']); ?></div>
+  <div class="title">
+    <a href="<?php echo $this->e($item['url']); ?>">
+      <?php echo $this->e($item['title']); ?>
+    </a>
+  </div>
 </div>

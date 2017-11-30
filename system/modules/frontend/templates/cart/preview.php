@@ -34,7 +34,21 @@
             <a href="<?php echo $this->url("product/{$item['product']['product_id']}"); ?>">
               <?php echo $this->truncate($this->e($item['product']['title']), 100); ?>
             </a>
-            <div class="price"><?php echo $this->e($item['quantity']); ?> X <?php echo $this->e($item['price_formatted']); ?> = <?php echo $this->e($item['total_formatted']); ?></div>
+            <div class="price">
+              <?php if(isset($item['original_price']) && $item['original_price'] > $item['price']) { ?>
+              <div class="original-price">
+                <s class="text-muted">
+                  <?php echo $this->e($item['original_price_formatted']); ?>
+                </s>
+              </div>
+              <?php } ?>
+              <?php echo $this->e($item['quantity']); ?> X <?php echo $this->e($item['price_formatted']); ?> = <?php echo $this->e($item['total_formatted']); ?>
+            </div>
+            <?php if(!empty($item['product']['bundled_products'])) { ?>
+            <div class="bundle">
+              <?php echo $this->text('+ @num bundled products!', array('@num' => count($item['product']['bundled_products']))); ?>
+            </div>
+            <?php } ?>
           </div>
         </div>
       </div>

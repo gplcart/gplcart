@@ -79,7 +79,7 @@
             </select>
           </th>
           <th>
-            <input class="form-control" name="sku" value="<?php echo $filter_sku; ?>" placeholder="<?php echo $this->text('Any'); ?>">
+            <input class="form-control" name="sku_like" value="<?php echo $filter_sku_like; ?>" placeholder="<?php echo $this->text('Any'); ?>">
           </th>
           <th>
             <input class="form-control" name="order_id" value="<?php echo $filter_order_id; ?>" placeholder="<?php echo $this->text('Any'); ?>">
