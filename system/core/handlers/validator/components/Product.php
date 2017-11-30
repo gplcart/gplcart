@@ -178,7 +178,7 @@ class Product extends ComponentValidator
         $subtract = $this->getSubmitted('subtract');
 
         if (isset($subtract)) {
-            $subtract = gplcart_string_bool($subtract);
+            $subtract = filter_var($subtract, FILTER_VALIDATE_BOOLEAN);
             $this->setSubmitted('subtract', $subtract);
         }
 
@@ -210,6 +210,7 @@ class Product extends ComponentValidator
             $this->setErrorUnavailable($field, $label);
             return false;
         }
+
         return true;
     }
 
@@ -272,14 +273,8 @@ class Product extends ComponentValidator
 
         $errors = 0;
         foreach ($fields as $field => $label) {
-
             $value = $this->getSubmitted($field);
-
-            if (!isset($value)) {
-                continue;
-            }
-
-            if (!isset($allowed[$field][$value])) {
+            if (isset($value) && !isset($allowed[$field][$value])) {
                 $errors++;
                 $this->setErrorUnavailable($field, $label);
             }
@@ -382,25 +377,45 @@ class Product extends ComponentValidator
      */
     protected function validateRelatedProduct()
     {
-        $value = $this->getSubmitted('related');
-
-        if (empty($value)) {
-            $this->setSubmitted('related', array());
+        if ($this->isError('store_id')) {
             return null;
         }
 
-        // Remove duplicates
-        $modified = array_flip($value);
+        $field = 'related';
+        $value = $this->getSubmitted($field);
+        $store_id = $this->getSubmitted('store_id');
 
-        // Exclude the current product from related products
+        if (empty($value)) {
+            $this->setSubmitted($field, array());
+            return null;
+        }
+
+        $product_ids = array();
+        foreach (array_unique($value) as $product_id) {
+
+            $product = $this->product->get($product_id);
+
+            if (empty($product['store_id'])) {
+                $this->setError($field, $this->language->text('Some of related products are invalid'));
+                return false;
+            }
+
+            if ($product['store_id'] != $store_id) {
+                $this->setError($field, $this->language->text('All related product must belong to the same store'));
+                return false;
+            }
+
+            $product_ids[$product['product_id']] = $product['product_id'];
+        }
+
         $updating = $this->getUpdating();
 
         if (isset($updating['product_id'])) {
-            unset($modified[$updating['product_id']]);
+            // Exclude the current product from the related products
+            unset($product_ids[$updating['product_id']]);
         }
 
-        // Set filtered product IDs
-        $this->setSubmitted('related', array_flip($modified));
+        $this->setSubmitted('related', $product_ids);
         return true;
     }
 

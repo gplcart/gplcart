@@ -88,13 +88,13 @@ class Trigger extends ComponentValidator
      */
     protected function validateTrigger()
     {
-        $id = $this->getUpdatingId();
+        $trigger_id = $this->getUpdatingId();
 
-        if ($id === false) {
+        if ($trigger_id === false) {
             return null;
         }
 
-        $data = $this->trigger->get($id);
+        $data = $this->trigger->get($trigger_id);
 
         if (empty($data)) {
             $this->setErrorUnavailable('update', $this->language->text('Trigger'));
@@ -111,14 +111,15 @@ class Trigger extends ComponentValidator
      */
     public function validateConditionsTrigger()
     {
-        $value = $this->getSubmitted('data.conditions');
+        $field = 'data.conditions';
+        $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
         }
 
         if (empty($value)) {
-            $this->setErrorRequired('data.conditions', $this->language->text('Conditions'));
+            $this->setErrorRequired($field, $this->language->text('Conditions'));
             return false;
         }
 
@@ -130,14 +131,7 @@ class Trigger extends ComponentValidator
         foreach ($value as $line => $condition) {
 
             $line++;
-            $parts = gplcart_string_explode_whitespace($condition, 3);
-
-            $condition_id = array_shift($parts);
-            $operator = array_shift($parts);
-
-            $parameters = array_filter(explode(',', implode('', $parts)), function ($value) {
-                return ($value !== "");
-            });
+            list($condition_id, $operator, $parameters) = $this->getParameters($condition);
 
             if (empty($parameters)) {
                 $errors[] = $this->language->text('Error on line @num: !error', array(
@@ -153,7 +147,6 @@ class Trigger extends ComponentValidator
                 continue;
             }
 
-            $parameters = array_unique($parameters);
             $result = $this->callValidator($condition_id, array($parameters, $operator, $condition_id, $submitted));
 
             if ($result !== true) {
@@ -171,15 +164,34 @@ class Trigger extends ComponentValidator
         }
 
         if (!empty($errors)) {
-            $this->setError('data.conditions', implode('<br>', $errors));
+            $this->setError($field, implode('<br>', $errors));
         }
 
         if (!$this->isError()) {
-            $this->setSubmitted('data.conditions', $modified);
+            $this->setSubmitted($field, $modified);
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * Returns exploded and prepared condition parameters
+     * @param string $string
+     * @return array
+     */
+    protected function getParameters($string)
+    {
+        $parts = gplcart_string_explode_whitespace($string, 3);
+
+        $condition_id = array_shift($parts);
+        $operator = array_shift($parts);
+
+        $parameters = array_filter(explode(',', implode('', $parts)), function ($value) {
+            return ($value !== "");
+        });
+
+        return array($condition_id, $operator, array_unique($parameters));
     }
 
     /**

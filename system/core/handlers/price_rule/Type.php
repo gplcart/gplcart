@@ -59,12 +59,12 @@ class Type
      * @param int $amount
      * @param array $components
      * @param array $price_rule
-     * @param string $original_currency
+     * @param array $data
      * @return int
      */
-    public function fixed(&$amount, array &$components, array $price_rule, $original_currency)
+    public function fixed(&$amount, array &$components, array $price_rule, array $data)
     {
-        $value = $this->convertValue($price_rule, $original_currency);
+        $value = $this->convertValue($price_rule, $data['currency']);
         $components[$price_rule['price_rule_id']] = array('rule' => $price_rule, 'price' => $value);
         return $amount += $value;
     }
@@ -74,12 +74,12 @@ class Type
      * @param int $amount
      * @param array $components
      * @param array $price_rule
-     * @param string $original_currency
+     * @param array $data
      * @return int
      */
-    public function finalAmount(&$amount, array &$components, array $price_rule, $original_currency)
+    public function finalAmount(&$amount, array &$components, array $price_rule, array $data)
     {
-        $value = $this->convertValue($price_rule, $original_currency);
+        $value = $this->convertValue($price_rule, $data['currency']);
         $components[$price_rule['price_rule_id']] = array('rule' => $price_rule, 'price' => $value);
         return $amount = $value;
     }

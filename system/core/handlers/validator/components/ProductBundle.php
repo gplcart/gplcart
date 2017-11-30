@@ -103,30 +103,28 @@ class ProductBundle extends ComponentValidator
     protected function validateItemsProductBundle()
     {
         $field = 'bundle';
-        $label = $this->language->text('Bundle');
-
-        $skus = $this->getSubmitted($field);
+        $value = $this->getSubmitted($field);
         $main_product = $this->getSubmitted('product');
 
-        if (empty($skus)) {
+        if (empty($value)) {
             return null;
         }
 
-        $processed = $loaded = array();
+        $loaded = array();
 
-        foreach ($skus as $sku) {
+        foreach ($value as $product_id) {
 
-            if (in_array($sku, $processed)) {
-                $this->setErrorExists($field, $label);
+            if (isset($loaded[$product_id])) {
+                $this->setError($field, $this->language->text('All bundled products must be unique'));
                 return false;
             }
 
-            $processed[] = $sku;
+            $product = $this->product->get($product_id);
 
-            $product = $this->product->getBySku($sku, $main_product['store_id']);
+            $loaded[$product_id] = $product;
 
             if (empty($product['status'])) {
-                $this->setErrorUnavailable($field, $label);
+                $this->setError($field, $this->language->text('Some of bundled products are either disabled or non-existing'));
                 return false;
             }
 
@@ -136,11 +134,9 @@ class ProductBundle extends ComponentValidator
             }
 
             if ($main_product['store_id'] != $product['store_id']) {
-                $this->setError($field, $this->language->text("Bundled products must belong to the main product's store"));
+                $this->setError($field, $this->language->text('All bundled products must belong to the same store'));
                 return false;
             }
-
-            $loaded[$sku] = $product;
         }
 
         $this->setSubmitted('products', $loaded);
