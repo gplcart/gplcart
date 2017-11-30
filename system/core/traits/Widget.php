@@ -162,7 +162,7 @@ trait Widget
             'products' => array()
         );
 
-        return $this->render('content/product/picker', $options);
+        return $controller->render('content/product/picker', $options);
     }
 
 }

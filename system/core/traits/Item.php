@@ -353,7 +353,7 @@ trait Item
                 'product_id' => explode(',', $item['bundle'])
             );
 
-            $products = $product_model->getList($data);
+            $products = (array) $product_model->getList($data);
 
             $options += array(
                 'entity' => 'product',
