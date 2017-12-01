@@ -657,6 +657,15 @@ abstract class Controller
     }
 
     /**
+     * Returns base path
+     * @return string
+     */
+    public function getBase()
+    {
+        return $this->base;
+    }
+
+    /**
      * Returns a data of the current user
      * @param mixed $item
      * @return mixed
