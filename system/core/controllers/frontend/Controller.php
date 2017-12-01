@@ -407,6 +407,7 @@ class Controller extends BaseController
         } else {
             $this->controlDeleteFromCompare($result, $product_id);
         }
+
         $this->redirect($result['redirect'], $result['message'], $result['severity']);
     }
 

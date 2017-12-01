@@ -164,7 +164,7 @@ trait Widget
 
         return $controller->render('content/product/picker', $options);
     }
-    
+
     /**
      * Returns a rendered collection
      * @param \gplcart\core\Controller $controller
@@ -187,7 +187,7 @@ trait Widget
 
         return $controller->render($item['collection_handler']['template']['list'], $data, true);
     }
-    
+
     /**
      * Returns rendered cart preview
      * @param \gplcart\core\Controller $controller
