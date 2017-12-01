@@ -164,5 +164,48 @@ trait Widget
 
         return $controller->render('content/product/picker', $options);
     }
+    
+    /**
+     * Returns a rendered collection
+     * @param \gplcart\core\Controller $controller
+     * @param array $items
+     * @return string
+     */
+    protected function getWidgetCollection($controller, array $items)
+    {
+        if (empty($items)) {
+            return '';
+        }
+
+        $item = reset($items);
+
+        $data = array(
+            'items' => $items,
+            'title' => $item['collection_item']['collection_title'],
+            'collection_id' => $item['collection_item']['collection_id']
+        );
+
+        return $controller->render($item['collection_handler']['template']['list'], $data, true);
+    }
+    
+    /**
+     * Returns rendered cart preview
+     * @param \gplcart\core\Controller $controller
+     * @param array $cart
+     * @return string
+     */
+    protected function getWidgetCartPreview($controller, array $cart)
+    {
+        if (empty($cart['items'])) {
+            return '';
+        }
+
+        $options = array(
+            'cart' => $cart,
+            'limit' => $controller->config('cart_preview_limit', 5)
+        );
+
+        return $controller->render('cart/preview', $options, true);
+    }
 
 }
