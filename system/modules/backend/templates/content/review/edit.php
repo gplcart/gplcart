@@ -10,7 +10,6 @@
 ?>
 <form method="post" class="form-horizontal">
   <input type="hidden" name="token" value="<?php echo $_token; ?>">
-  <input type="hidden" data-autocomplete-target="product" name="review[product_id]" value="<?php echo isset($review['product_id']) ? $review['product_id'] : ''; ?>">
   <div class="form-group">
     <label class="col-md-2 control-label"><?php echo $this->text('Status'); ?></label>
     <div class="col-md-6">
@@ -40,21 +39,17 @@
   <div class="form-group required<?php echo $this->error('email', ' has-error'); ?>">
     <label class="col-md-2 control-label"><?php echo $this->text('Email'); ?></label>
     <div class="col-md-4">
-      <input name="review[email]" data-autocomplete-source="user" class="form-control" value="<?php echo isset($review['email']) ? $this->e($review['email']) : ''; ?>">
+      <input name="review[email]" class="form-control" value="<?php echo isset($review['email']) ? $this->e($review['email']) : ''; ?>">
       <div class="help-block">
         <?php echo $this->error('email'); ?>
-        <div class="text-muted"><?php echo $this->text('Autocomplete field. An E-mail of the person who will be author of the review'); ?></div>
+        <div class="text-muted"><?php echo $this->text('An E-mail of the person who will be author of the review'); ?></div>
       </div>
     </div>
   </div>
   <div class="form-group required<?php echo $this->error('product_id', ' has-error'); ?>">
     <label class="col-md-2 control-label"><?php echo $this->text('Product'); ?></label>
     <div class="col-md-4">
-      <input name="review[product]" data-autocomplete-source="product" class="form-control" value="<?php echo isset($review['product']) ? $this->e($review['product']) : ''; ?>">
-      <div class="help-block">
-        <?php echo $this->error('product_id'); ?>
-        <div class="text-muted"><?php echo $this->text('Autocomplete field. Select a product that is related to this review'); ?></div>
-      </div>
+      <?php echo $product_picker; ?>
     </div>
   </div>
   <div class="form-group required<?php echo $this->error('text', ' has-error'); ?>">

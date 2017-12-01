@@ -52,8 +52,8 @@
           <th class="middle"><input type="checkbox" onchange="Gplcart.selectAll(this);"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
           <th class="middle"><a href="<?php echo $sort_review_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a></th>
           <th class="middle"><a href="<?php echo $sort_text; ?>"><?php echo $this->text('Text'); ?> <i class="fa fa-sort"></i></a></th>
-          <th class="middle"><a href="<?php echo $sort_product_id; ?>"><?php echo $this->text('Product'); ?> <i class="fa fa-sort"></i></a></th>
-          <th class="middle"><a href="<?php echo $sort_email; ?>"><?php echo $this->text('Author'); ?> <i class="fa fa-sort"></i></a></th>
+          <th class="middle"><a href="<?php echo $sort_product_title; ?>"><?php echo $this->text('Product'); ?> <i class="fa fa-sort"></i></a></th>
+          <th class="middle"><a href="<?php echo $sort_email_like; ?>"><?php echo $this->text('Author'); ?> <i class="fa fa-sort"></i></a></th>
           <th class="middle"><a href="<?php echo $sort_status; ?>"><?php echo $this->text('Enabled'); ?> <i class="fa fa-sort"></i></a></th>
           <th class="middle"><a href="<?php echo $sort_created; ?>"><?php echo $this->text('Created'); ?> <i class="fa fa-sort"></i></a></th>
           <th></th>
@@ -65,11 +65,10 @@
             <input class="form-control" name="text" value="<?php echo $filter_text; ?>" placeholder="<?php echo $this->text('Any'); ?>">
           </th>
           <th class="middle">
-            <input class="form-control product" data-autocomplete-source="product" value="<?php echo $product; ?>" placeholder="<?php echo $this->text('Any'); ?>">
-            <input type="hidden" name="product_id" data-autocomplete-target="product" value="<?php echo $filter_product_id; ?>">
+            <input class="form-control product" name="product_title" value="<?php echo $filter_product_title; ?>" placeholder="<?php echo $this->text('Any'); ?>">
           </th>
           <th class="middle">
-            <input class="form-control" data-autocomplete-source="user" name="email" value="<?php echo $filter_email; ?>" placeholder="<?php echo $this->text('Any'); ?>">
+            <input class="form-control" name="email_like" value="<?php echo $filter_email_like; ?>" placeholder="<?php echo $this->text('Any'); ?>">
           </th>
           <th class="middle">
             <select class="form-control" name="status">
@@ -112,7 +111,7 @@
           <td class="middle">
             <?php if (!empty($review['product_id'])) { ?>
             <a target="_blank" href="<?php echo $this->url("product/{$review['product_id']}"); ?>">
-              <?php echo $this->truncate($this->e($review['product']), 30); ?>
+              <?php echo $this->truncate($this->e($review['product_title']), 30); ?>
             </a>
             <?php } else { ?>
             <span class="text-danger"><?php echo $this->text('Missing'); ?></span>

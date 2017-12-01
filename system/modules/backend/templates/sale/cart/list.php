@@ -68,7 +68,7 @@
         <tr class="filters active hidden-no-js">
           <th></th>
           <th>
-            <input class="form-control" data-autocomplete-source="user" name="user_email" value="<?php echo $filter_user_email; ?>" placeholder="<?php echo $this->text('Any'); ?>">
+            <input class="form-control" name="user_email" value="<?php echo $filter_user_email; ?>" placeholder="<?php echo $this->text('Any'); ?>">
           </th>
           <th>
             <select class="form-control" name="store_id">

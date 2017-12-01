@@ -243,7 +243,7 @@
   </fieldset>
   <fieldset>
     <legend><?php echo $this->text('Related'); ?></legend>
-    <?php echo $product_picker_widget; ?>
+    <?php echo $product_picker; ?>
   </fieldset>
   <fieldset>
     <legend><?php echo $this->text('Meta'); ?></legend>

@@ -45,7 +45,7 @@
           <th></th>
           <th></th>
           <th>
-            <input class="form-control" data-autocomplete-source="user" name="user_email" maxlength="255" value="<?php echo $filter_user_email; ?>" placeholder="<?php echo $this->text('Any'); ?>">
+            <input class="form-control" name="user_email" maxlength="255" value="<?php echo $filter_user_email; ?>" placeholder="<?php echo $this->text('Any'); ?>">
           </th>
           <th>
             <input class="form-control" name="full_name" maxlength="255" value="<?php echo $filter_full_name; ?>" placeholder="<?php echo $this->text('Any'); ?>">
