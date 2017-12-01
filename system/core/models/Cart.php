@@ -538,6 +538,50 @@ class Cart
     }
 
     /**
+     * Deletes a cart item and returns an array of data with message and redirect path
+     * @param int $cart_id
+     * @return array
+     */
+    public function submitDelete($cart_id)
+    {
+        $result = array();
+        $this->hook->attach('cart.delete.item.before', $cart_id, $result, $this);
+
+        if (!empty($result)) {
+            return (array) $result;
+        }
+
+        $cart = $this->get($cart_id);
+
+        $result = array(
+            'redirect' => '',
+            'severity' => 'warning',
+            'message' => $this->language->text('Cannot delete cart item')
+        );
+
+        if (empty($cart) || !$this->delete($cart_id)) {
+            return $result;
+        }
+
+        $options = array(
+            'user_id' => $cart['user_id'],
+            'store_id' => $cart['store_id'],
+        );
+
+        $cart = $this->getContent($options);
+
+        $result = array(
+            'redirect' => '',
+            'severity' => 'success',
+            'message' => $this->language->text('Product has been deleted from cart'),
+            'quantity' => empty($cart['quantity']) ? 0 : $cart['quantity']
+        );
+
+        $this->hook->attach('cart.delete.item.after', $cart_id, $result, $this);
+        return $result;
+    }
+
+    /**
      * Adds a product from the cart item
      * @param array $cart
      * @return int
