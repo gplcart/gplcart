@@ -593,7 +593,7 @@ class Controller extends BaseController
             if ($options['entity'] === 'product') {
                 $this->setItemProductInComparison($item, $this->productcompare);
                 $this->setItemPriceCalculated($item, $this->product);
-                $this->setItemProductInWishlist($item, $this->cart_uid, $this->store_id, $this->wishlist);
+                $this->setItemProductInWishlist($item, $this->wishlist);
                 $this->setItemPriceFormatted($item, $this->price, $this->current_currency);
                 $this->setItemProductBundle($item, $this->product, $this->image);
                 $this->setItemProductRendered($item, $options);

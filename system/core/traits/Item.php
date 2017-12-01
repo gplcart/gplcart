@@ -18,27 +18,38 @@ trait Item
     /**
      * @see \gplcart\core\Controller::render()
      */
-    abstract function render($file, $data = array(), $merge = true, $default = '');
+    protected abstract function render($file, $data = array(), $merge = true, $default = '');
 
     /**
      * @see \gplcart\core\Controller::access()
      */
-    abstract function access($permission);
+    protected abstract function access($permission);
 
     /**
      * @see \gplcart\core\Controller::url()
      */
-    abstract function url($path = '', array $query = array(), $absolute = false, $exclude = false);
+    protected abstract function url($path = '', array $query = array(), $absolute = false,
+            $exclude = false);
 
     /**
      * @see \gplcart\core\Controller::config()
      */
-    abstract function config($key = null, $default = null);
+    protected abstract function config($key = null, $default = null);
+
+    /**
+     * @see \gplcart\core\Controller::getCartUid()
+     */
+    protected abstract function getCartUid();
+
+    /**
+     * @see \gplcart\core\Controller::getStoreId()
+     */
+    protected abstract function getStoreId();
 
     /**
      * @see \gplcart\core\Controller::text()
      */
-    abstract function text($string = null, array $arguments = array());
+    protected abstract function text($string = null, array $arguments = array());
 
     /**
      * Adds "total_formatted" key
@@ -323,15 +334,13 @@ trait Item
     /**
      * Adds "in_wishlist" key
      * @param array $item
-     * @param string|int $user_id
-     * @param int $store_id
      * @param \gplcart\core\models\Wishlist $wishlist_model
      */
-    public function setItemProductInWishlist(&$item, $user_id, $store_id, $wishlist_model)
+    public function setItemProductInWishlist(&$item, $wishlist_model)
     {
         $conditions = array(
-            'user_id' => $user_id,
-            'store_id' => $store_id,
+            'user_id' => $this->getCartUid(),
+            'store_id' => $this->getStoreId(),
             'product_id' => $item['product_id']
         );
 

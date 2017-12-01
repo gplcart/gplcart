@@ -468,7 +468,7 @@ class Product extends FrontendController
         $this->setItemProductThumb($product, $this->image);
         $this->setItemProductInComparison($product, $this->productcompare);
         $this->setItemProductBundle($product, $this->product, $this->image);
-        $this->setItemProductInWishlist($product, $this->cart_uid, $this->store_id, $this->wishlist);
+        $this->setItemProductInWishlist($product, $this->wishlist);
 
         $this->setItemPriceCalculated($selected, $this->product);
         $this->setItemPriceFormatted($selected, $this->price, $this->current_currency);
