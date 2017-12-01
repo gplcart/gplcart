@@ -14,6 +14,31 @@ namespace gplcart\core\traits;
  */
 trait Widget
 {
+    /**
+     * @see \gplcart\core\Controller::render()
+     */
+    abstract function render($file, $data = array(), $merge = true, $default = '');
+
+    /**
+     * @see \gplcart\core\Controller::access()
+     */
+    abstract function access($permission);
+
+    /**
+     * @see \gplcart\core\Controller::url()
+     */
+    abstract function url($path = '', array $query = array(), $absolute = false, $exclude = false);
+
+    /**
+     * @see \gplcart\core\Controller::config()
+     */
+    abstract function config($key = null, $default = null);
+
+    /**
+     * @see \gplcart\core\Controller::text()
+     */
+    abstract function text($string = null, array $arguments = array());
+    
 
     /**
      * Returns rendered admin menu

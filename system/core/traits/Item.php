@@ -16,6 +16,31 @@ trait Item
 {
 
     /**
+     * @see \gplcart\core\Controller::render()
+     */
+    abstract function render($file, $data = array(), $merge = true, $default = '');
+
+    /**
+     * @see \gplcart\core\Controller::access()
+     */
+    abstract function access($permission);
+
+    /**
+     * @see \gplcart\core\Controller::url()
+     */
+    abstract function url($path = '', array $query = array(), $absolute = false, $exclude = false);
+
+    /**
+     * @see \gplcart\core\Controller::config()
+     */
+    abstract function config($key = null, $default = null);
+
+    /**
+     * @see \gplcart\core\Controller::text()
+     */
+    abstract function text($string = null, array $arguments = array());
+
+    /**
      * Adds "total_formatted" key
      * @param array $item
      * @param \gplcart\core\models\Price $price_model
@@ -259,7 +284,6 @@ trait Item
     public function setItemAddress(&$order, $address_model)
     {
         $order['address'] = array();
-
         foreach (array('shipping', 'payment') as $type) {
             $address = $address_model->get($order["{$type}_address"]);
             if (!empty($address)) {
@@ -377,7 +401,9 @@ trait Item
      */
     public function setItemProductBundleRendered(array &$item, array $options = array())
     {
-        $options += array('template_item' => 'product/item/bundle');
+        $options += array(
+            'template_item' => 'product/item/bundle');
+
         $this->setItemRendered($item, array('item' => $item), $options);
     }
 
@@ -444,7 +470,7 @@ trait Item
                     $combination['path'] = $item['images'][$combination['file_id']]['path'];
                     $this->setItemThumb($combination, $image_model);
                 }
-                // @todo reuse a trait
+
                 $combination['price'] = $price_model->decimal($combination['price'], $item['currency']);
             }
         }
