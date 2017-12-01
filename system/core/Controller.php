@@ -384,6 +384,16 @@ abstract class Controller
     }
 
     /**
+     * Returns the current object instance
+     * Used by traits
+     * @return $this
+     */
+    protected function getController()
+    {
+        return $this;
+    }
+
+    /**
      * Sets instance properties
      */
     protected function setInstanceProperties()
