@@ -139,32 +139,4 @@ class Controller extends BaseController
         return array(array(), null, null);
     }
 
-    /**
-     * 
-     * @param array $product_ids
-     * @param array $options
-     * @return type
-     */
-    protected function prepareProductPicker(array $product_ids, array $options = array())
-    {
-        $products = array();
-        if (!empty($product_ids)) {
-            $products = (array) $this->product->getList(array('product_id' => $product_ids));
-        }
-
-        $options += array(
-            'entity' => 'product',
-            'entity_id' => $product_ids,
-            'template_item' => 'backend|content/product/suggestion'
-        );
-
-        foreach ($products as &$product) {
-            $this->setItemThumb($product, $this->image, $options);
-            $this->setItemPriceFormatted($product, $this->price);
-            $this->setItemRendered($product, array('item' => $product), $options);
-        }
-
-        return $products;
-    }
-
 }
