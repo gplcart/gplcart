@@ -224,6 +224,11 @@ class Cart
             $conditions[] = $data['user_id'];
         }
 
+        if (isset($data['user_email'])) {
+            $sql .= ' AND u.email LIKE ?';
+            $conditions[] = "%{$data['user_email']}%";
+        }
+
         if (isset($data['order_id'])) {
             $sql .= ' AND c.order_id=?';
             $conditions[] = (int) $data['order_id'];
@@ -232,11 +237,6 @@ class Cart
         if (isset($data['store_id'])) {
             $sql .= ' AND c.store_id=?';
             $conditions[] = (int) $data['store_id'];
-        }
-
-        if (isset($data['user_email'])) {
-            $sql .= ' AND u.email LIKE ?';
-            $conditions[] = "%{$data['user_email']}%";
         }
 
         if (isset($data['sku'])) {
