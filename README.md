@@ -1,3 +1,4 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/a1031e12e2564299a97e85005833e0f0)](https://www.codacy.com/app/gplcart/gplcart?utm_source=github.com&utm_medium=referral&utm_content=gplcart/gplcart&utm_campaign=badger)
 [![Crowdin](https://d322cqt584bo4o.cloudfront.net/gplcart/localized.svg)](https://crowdin.com/project/gplcart)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/gplcart/gplcart/badges/quality-score.png?b=dev)](https://scrutinizer-ci.com/g/gplcart/gplcart/?branch=dev)
 [![Build Status](https://travis-ci.org/gplcart/gplcart.svg?branch=dev)](https://travis-ci.org/gplcart/gplcart)
