@@ -105,22 +105,30 @@ class Ajax extends FrontendController
             return array('error' => $this->text('No access'));
         }
 
-        $options = array(
+        $params = array(
             'status' => $this->getPosted('status'),
             'title_sku' => $this->getPosted('term'),
             'store_id' => $this->getPosted('store_id'),
             'limit' => array(0, $this->config('autocomplete_limit', 10))
         );
 
-        $products = (array) $this->sku->getList($options);
+        $products = (array) $this->sku->getList($params);
 
         $product_ids = array();
         foreach ($products as $product) {
             $product_ids[] = $product['product_id'];
         }
 
+        $options = array(
+            'entity' => 'product',
+            'entity_id' => $product_ids,
+            'template_item' => 'backend|content/product/suggestion'
+        );
+
         foreach ($products as &$product) {
-            $this->setItemProductSuggestion($product, $this->image, $this->price, array('entity_id' => $product_ids));
+            $this->setItemThumb($product, $this->image, $options);
+            $this->setItemPriceFormatted($product, $this->price);
+            $this->setItemRendered($product, array('item' => $product), $options);
         }
 
         return $products;

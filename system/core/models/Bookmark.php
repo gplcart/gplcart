@@ -133,7 +133,7 @@ class Bookmark
 
     /**
      * Deletes a bookmark
-     * @param path $path
+     * @param string $path
      * @return boolean
      */
     public function delete($path)

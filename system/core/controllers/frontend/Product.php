@@ -465,7 +465,7 @@ class Product extends FrontendController
         $selected = $this->getSelectedCombinationProduct($product);
         $this->unshiftSelectedImageProduct($selected, $product);
 
-        $this->setItemProductThumb($product, $this->image);
+        $this->setItemThumbProduct($product, $this->image);
         $this->setItemProductInComparison($product, $this->productcompare);
         $this->setItemProductBundle($product, $this->product, $this->image);
         $this->setItemProductInWishlist($product, $this->wishlist);
@@ -534,11 +534,11 @@ class Product extends FrontendController
             'limit' => array(0, $this->config('related_limit', 12))
         );
 
-        $products = array();
         $product_ids = (array) $this->product->getRelated($options);
 
+        $products = array();
         if (!empty($product_ids)) {
-            $products = $this->product->getList(array('product_id' => $product_ids));
+            $products = (array) $this->product->getList(array('product_id' => $product_ids));
         }
 
         return $this->prepareEntityItems($products, array('entity' => 'product'));

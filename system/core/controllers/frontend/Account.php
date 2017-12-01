@@ -16,12 +16,15 @@ use gplcart\core\models\Order as OrderModel,
     gplcart\core\models\Shipping as ShippingModel,
     gplcart\core\models\PriceRule as PriceRuleModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
+use gplcart\core\traits\ItemOrder as ItemOrderTrait;
 
 /**
  * Handles incoming requests and outputs data related to user accounts
  */
 class Account extends FrontendController
 {
+    
+    use ItemOrderTrait;
 
     /**
      * Address model instance
@@ -229,11 +232,11 @@ class Account extends FrontendController
     protected function prepareOrderAccount(array &$order)
     {
         $this->setItemTotalFormatted($order, $this->price);
-        $this->setItemAddress($order, $this->address);
-        $this->setItemStoreName($order, $this->store);
+        $this->setItemOrderAddress($order, $this->address);
+        $this->setItemOrderStoreName($order, $this->store);
         $this->setItemOrderStatusName($order, $this->order);
-        $this->setItemPaymentName($order, $this->payment);
-        $this->setItemShippingName($order, $this->shipping);
+        $this->setItemOrderPaymentName($order, $this->payment);
+        $this->setItemOrderShippingName($order, $this->shipping);
     }
 
     /**

@@ -21,26 +21,6 @@ trait Item
     protected abstract function getController();
 
     /**
-     * Adds "total_formatted" key
-     * @param array $item
-     * @param \gplcart\core\models\Price $price_model
-     */
-    public function setItemTotalFormatted(array &$item, $price_model)
-    {
-        $item['total_formatted'] = $price_model->format($item['total'], $item['currency']);
-    }
-
-    /**
-     * Adds "total_formatted_number" key
-     * @param array $item
-     * @param \gplcart\core\models\Price $price_model
-     */
-    public function setItemTotalFormattedNumber(array &$item, $price_model)
-    {
-        $item['total_formatted_number'] = $price_model->format($item['total'], $item['currency'], true, false);
-    }
-
-    /**
      * Adds "thumb" key
      * @param array $item
      * @param \gplcart\core\models\Image $image_model
@@ -63,11 +43,11 @@ trait Item
             foreach ($item['images'] as &$image) {
                 $image['url'] = $image_model->urlFromPath($image['path']);
                 $image['thumb'] = $image_model->url($options['imagestyle'], $image['path']);
-                $this->setItemIsThumbPlaceholder($image, $image_model);
+                $this->setItemThumbIsPlaceholder($image, $image_model);
             }
         }
 
-        $this->setItemIsThumbPlaceholder($item, $image_model);
+        $this->setItemThumbIsPlaceholder($item, $image_model);
     }
 
     /**
@@ -75,7 +55,7 @@ trait Item
      * @param array $item
      * @param \gplcart\core\models\Image $image_model
      */
-    public function setItemIsThumbPlaceholder(array &$item, $image_model)
+    public function setItemThumbIsPlaceholder(array &$item, $image_model)
     {
         if (!empty($item['thumb'])) {
             $item['thumb_placeholder'] = $image_model->isPlaceholder($item['thumb']);
@@ -87,7 +67,7 @@ trait Item
      * @param array $item
      * @param \gplcart\core\models\Image $image_model
      */
-    public function setItemCartThumb(array &$item, $image_model)
+    public function setItemThumbCart(array &$item, $image_model)
     {
         $options = array(
             'path' => '',
@@ -131,7 +111,7 @@ trait Item
      * @param \gplcart\core\models\Store $store_model
      * @param string $entity
      */
-    public function setItemEntityUrl(array &$item, $store_model, $entity)
+    public function setItemUrlEntity(array &$item, $store_model, $entity)
     {
         if (isset($item['store_id']) && isset($item["{$entity}_id"])) {
             $store = $store_model->get($item['store_id']);
@@ -153,43 +133,6 @@ trait Item
         if (!empty($options['template_item'])) {
             $item['rendered'] = $this->getController()->render($options['template_item'], $data, true);
         }
-    }
-
-    /**
-     * Add keys with formatted prices
-     * @param array $item
-     * @param \gplcart\core\models\Price $price_model
-     * @param string|null $currency
-     */
-    public function setItemPriceFormatted(array &$item, $price_model, $currency = null)
-    {
-        if (!isset($currency)) {
-            $currency = $item['currency'];
-        }
-
-        $price = $price_model->convert($item['price'], $item['currency'], $currency);
-        $item['price_formatted'] = $price_model->format($price, $currency);
-
-        if (isset($item['original_price'])) {
-            $price = $price_model->convert($item['original_price'], $item['currency'], $currency);
-            $item['original_price_formatted'] = $price_model->format($price, $currency);
-        }
-    }
-
-    /**
-     * Adjust an original price according to applied price rules
-     * @param array $item
-     * @param \gplcart\core\models\Product $product_model
-     */
-    public function setItemPriceCalculated(array &$item, $product_model)
-    {
-        $calculated = $product_model->calculate($item);
-
-        if ($item['price'] != $calculated) {
-            $item['original_price'] = $item['price'];
-        }
-
-        $item['price'] = $calculated;
     }
 
     /**
@@ -217,67 +160,11 @@ trait Item
     }
 
     /**
-     * Adds "shipping_name" key
-     * @param array $item
-     * @param \gplcart\core\models\Shipping $shipping_model
-     */
-    public function setItemShippingName(&$item, $shipping_model)
-    {
-        if (isset($item['shipping'])) {
-            $data = $shipping_model->get($item['shipping']);
-            $item['shipping_name'] = empty($data['title']) ? 'Unknown' : $data['title'];
-        }
-    }
-
-    /**
-     * Adds "payment_name" key
-     * @param array $item
-     * @param \gplcart\core\models\Payment $payment_model
-     */
-    public function setItemPaymentName(&$item, $payment_model)
-    {
-        if (isset($item['payment'])) {
-            $data = $payment_model->get($item['payment']);
-            $item['payment_name'] = empty($data['title']) ? 'Unknown' : $data['title'];
-        }
-    }
-
-    /**
-     * Adds "store_name" key
-     * @param array $item
-     * @param \gplcart\core\models\Store $store_model
-     */
-    public function setItemStoreName(&$item, $store_model)
-    {
-        if (isset($item['store_id'])) {
-            $data = $store_model->get($item['store_id']);
-            $item['store_name'] = empty($data['name']) ? 'Unknown' : $data['name'];
-        }
-    }
-
-    /**
-     * Adds an address information for the order item
-     * @param array $order
-     * @param \gplcart\core\models\Address $address_model
-     */
-    public function setItemAddress(&$order, $address_model)
-    {
-        $order['address'] = array();
-        foreach (array('shipping', 'payment') as $type) {
-            $address = $address_model->get($order["{$type}_address"]);
-            if (!empty($address)) {
-                $order['address'][$type] = $address;
-                $order['address_translated'][$type] = $address_model->getTranslated($order['address'][$type], true);
-            }
-        }
-    }
-
-    /**
      * Adds product thumb(s)
      * @param array $item
      * @param \gplcart\core\models\Image $image_model
      */
-    public function setItemProductThumb(array &$item, $image_model)
+    public function setItemThumbProduct(array &$item, $image_model)
     {
         $options = array(
             'imagestyle' => $this->getController()->configTheme('image_style_product', 6));
@@ -322,7 +209,7 @@ trait Item
      * @param array $item
      * @param array $options
      */
-    public function setItemProductRendered(array &$item, $options = array())
+    public function setItemRenderedProduct(array &$item, $options = array())
     {
         if (!empty($options['template_item'])) {
 
@@ -366,7 +253,7 @@ trait Item
             foreach ($products as &$product) {
                 $this->setItemUrl($product, $options);
                 $this->setItemThumb($product, $image_model, $options);
-                $this->setItemProductBundleRendered($product, $options);
+                $this->setItemRenderedProductBundle($product, $options);
             }
 
             $item['bundled_products'] = $products;
@@ -378,7 +265,7 @@ trait Item
      * @param array $item
      * @param array $options
      */
-    public function setItemProductBundleRendered(array &$item, array $options = array())
+    public function setItemRenderedProductBundle(array &$item, array $options = array())
     {
         $options += array(
             'template_item' => 'product/item/bundle');
@@ -453,49 +340,6 @@ trait Item
                 $combination['price'] = $price_model->decimal($combination['price'], $item['currency']);
             }
         }
-    }
-
-    /**
-     * Sets item auto-complete product suggestion
-     * @param array $item
-     * @param \gplcart\core\models\Image $image_model
-     * @param \gplcart\core\models\Price $price_model
-     * @param array $options
-     */
-    public function setItemProductSuggestion(&$item, $image_model, $price_model, $options = array())
-    {
-        $options += array(
-            'entity' => 'product',
-            'entity_id' => array(),
-            'template_item' => 'backend|content/product/suggestion'
-        );
-
-        $this->setItemThumb($item, $image_model, $options);
-        $this->setItemPriceFormatted($item, $price_model);
-        $this->setItemRendered($item, array('item' => $item), $options);
-    }
-
-    /**
-     * Adds "status_name" key
-     * @param array $item
-     * @param \gplcart\core\models\Order $order_model
-     */
-    public function setItemOrderStatusName(&$item, $order_model)
-    {
-        if (isset($item['status'])) {
-            $data = $order_model->getStatusName($item['status']);
-            $item['status_name'] = empty($data) ? 'Unknown' : $data;
-        }
-    }
-
-    /**
-     * Adds "is_new" key
-     * @param array $item
-     * @param \gplcart\core\models\Order $order_model
-     */
-    public function setItemOrderNew(&$item, $order_model)
-    {
-        $item['is_new'] = $order_model->isNew($item);
     }
 
     /**

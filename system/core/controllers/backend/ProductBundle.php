@@ -116,22 +116,30 @@ class ProductBundle extends BackendController
         $product_ids = $this->getData('product.bundle', array());
 
         $products = array();
-        foreach ($product_ids as $product_id) {
-            $product = $this->product->get($product_id);
-            if (!empty($product)) {
-                $this->setItemProductSuggestion($product, $this->image, $this->price);
-                $products[] = $product;
-            }
+        if (!empty($product_ids)) {
+            $products = (array) $this->product->getList(array('product_id' => $product_ids));
         }
 
         $options = array(
+            'entity' => 'product',
+            'entity_id' => $product_ids,
+            'template_item' => 'backend|content/product/suggestion'
+        );
+
+        foreach ($products as &$product) {
+            $this->setItemThumb($product, $this->image, $options);
+            $this->setItemPriceFormatted($product, $this->price);
+            $this->setItemRendered($product, array('item' => $product), $options);
+        }
+
+        $widget = array(
             'multiple' => true,
             'name' => 'product[bundle]',
             'products' => $products,
             'store_id' => $this->data_product['store_id']
         );
 
-        $this->setData('product_picker', $this->getWidgetProductPicker($options));
+        $this->setData('product_picker', $this->getWidgetProductPicker($widget));
     }
 
     /**

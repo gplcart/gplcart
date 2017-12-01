@@ -159,7 +159,7 @@ class Page extends BackendController
     protected function prepareListPage(array $items)
     {
         foreach ($items as &$item) {
-            $this->setItemEntityUrl($item, $this->store, 'page');
+            $this->setItemUrlEntity($item, $this->store, 'page');
         }
 
         return $items;

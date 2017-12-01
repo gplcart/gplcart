@@ -16,12 +16,15 @@ use gplcart\core\models\Order as OrderModel,
     gplcart\core\models\Shipping as ShippingModel,
     gplcart\core\models\PriceRule as PriceRuleModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\traits\ItemOrder as ItemOrderTrait;
 
 /**
  * Handles incoming requests and outputs data related to order management
  */
 class Order extends BackendController
 {
+    
+    use ItemOrderTrait;
 
     /**
      * Code of successfully sent notification
@@ -372,11 +375,11 @@ class Order extends BackendController
     protected function prepareOrder(array &$order)
     {
         $this->setItemTotalFormatted($order, $this->price);
-        $this->setItemAddress($order, $this->address);
-        $this->setItemStoreName($order, $this->store);
+        $this->setItemOrderAddress($order, $this->address);
+        $this->setItemOrderStoreName($order, $this->store);
         $this->setItemOrderStatusName($order, $this->order);
-        $this->setItemPaymentName($order, $this->payment);
-        $this->setItemShippingName($order, $this->shipping);
+        $this->setItemOrderPaymentName($order, $this->payment);
+        $this->setItemOrderShippingName($order, $this->shipping);
 
         $order['user'] = array();
         if (is_numeric($order['user_id'])) {

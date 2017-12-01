@@ -201,7 +201,7 @@ class Product extends BackendController
     {
         foreach ($products as &$product) {
             $this->setItemPriceFormatted($product, $this->price);
-            $this->setItemEntityUrl($product, $this->store, 'product');
+            $this->setItemUrlEntity($product, $this->store, 'product');
         }
 
         return $products;
@@ -491,17 +491,25 @@ class Product extends BackendController
             $products = (array) $this->product->getList(array('product_id' => $product_ids));
         }
 
+        $options = array(
+            'entity' => 'product',
+            'entity_id' => $product_ids,
+            'template_item' => 'backend|content/product/suggestion'
+        );
+
         foreach ($products as &$product) {
-            $this->setItemProductSuggestion($product, $this->image, $this->price, array('entity_id' => $product_ids));
+            $this->setItemThumb($product, $this->image, $options);
+            $this->setItemPriceFormatted($product, $this->price);
+            $this->setItemRendered($product, array('item' => $product), $options);
         }
 
-        $options = array(
+        $widget = array(
             'multiple' => true,
             'name' => 'product[related]',
             'products' => $products
         );
 
-        $this->setData('product_picker', $this->getWidgetProductPicker($options));
+        $this->setData('product_picker', $this->getWidgetProductPicker($widget));
     }
 
     /**

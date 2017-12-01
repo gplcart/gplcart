@@ -118,7 +118,7 @@ class Cart extends BackendController
     protected function prepareListCart(array $items)
     {
         foreach ($items as &$item) {
-            $this->setItemEntityUrl($item, $this->store, 'product');
+            $this->setItemUrlEntity($item, $this->store, 'product');
         }
 
         return $items;

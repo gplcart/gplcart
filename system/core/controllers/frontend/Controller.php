@@ -11,16 +11,17 @@ namespace gplcart\core\controllers\frontend;
 
 use gplcart\core\Controller as BaseController;
 use gplcart\core\traits\Item as ItemTrait,
-    gplcart\core\traits\Widget as WidgetTrait;
+    gplcart\core\traits\Widget as WidgetTrait,
+    gplcart\core\traits\ItemPrice as ItemPriceTrait;
 
 /**
  * Contents specific to the front-end methods
  */
 class Controller extends BaseController
 {
-
     use WidgetTrait,
-        ItemTrait;
+        ItemTrait,
+        ItemPriceTrait;
 
     /**
      * Trigger model instance
@@ -110,6 +111,15 @@ class Controller extends BaseController
 
         $this->hook->attach('construct.controller.frontend', $this);
         $this->controlHttpStatus();
+    }
+
+    /**
+     * Used by traits
+     * @return $this
+     */
+    protected function getController()
+    {
+        return $this;
     }
 
     /**
@@ -341,7 +351,7 @@ class Controller extends BaseController
     {
         foreach ($cart['items'] as &$item) {
             $item['currency'] = $cart['currency'];
-            $this->setItemCartThumb($item, $this->image);
+            $this->setItemThumbCart($item, $this->image);
             $this->setItemPriceFormatted($item, $this->price, $this->current_currency);
             $this->setItemTotalFormatted($item, $this->price);
             $this->setItemProductBundle($item['product'], $this->product, $this->image);
@@ -596,7 +606,7 @@ class Controller extends BaseController
                 $this->setItemProductInWishlist($item, $this->wishlist);
                 $this->setItemPriceFormatted($item, $this->price, $this->current_currency);
                 $this->setItemProductBundle($item, $this->product, $this->image);
-                $this->setItemProductRendered($item, $options);
+                $this->setItemRenderedProduct($item, $options);
             } else {
                 $this->setItemIndentation($item);
                 $this->setItemUrl($item, $options);

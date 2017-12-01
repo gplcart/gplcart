@@ -283,7 +283,7 @@ class Review extends BackendController
     protected function setDataUserEditReview()
     {
         $user = $this->user->get($this->getData('review.user_id'));
-        if(isset($user['email'])){
+        if (isset($user['email'])) {
             $this->setData('review.email', $user['email']);
         }
     }
@@ -296,20 +296,28 @@ class Review extends BackendController
         $product_id = $this->getData('review.product_id');
 
         $products = array();
-        $product = $this->product->get($product_id);
+        if (!empty($product_id)) {
+            $product = $this->product->get($product_id);
 
-        if (!empty($product)) {
-            $this->setItemProductSuggestion($product, $this->image, $this->price, array('entity_id' => $product_id));
+            $options = array(
+                'entity' => 'product',
+                'entity_id' => $product_id,
+                'template_item' => 'backend|content/product/suggestion'
+            );
+
+            $this->setItemThumb($product, $this->image, $options);
+            $this->setItemPriceFormatted($product, $this->price);
+            $this->setItemRendered($product, array('item' => $product), $options);
             $products = array($product);
         }
 
-        $options = array(
+        $widget = array(
             'multiple' => false,
             'products' => $products,
             'name' => 'review[product_id]'
         );
 
-        $this->setData('product_picker', $this->getWidgetProductPicker($options));
+        $this->setData('product_picker', $this->getWidgetProductPicker($widget));
     }
 
     /**

@@ -12,6 +12,7 @@ namespace gplcart\core\controllers\backend;
 use gplcart\core\Controller as BaseController;
 use gplcart\core\traits\Job as JobTrait,
     gplcart\core\traits\Item as ItemTrait,
+    gplcart\core\traits\ItemPrice as ItemPriceTrait,
     gplcart\core\traits\Widget as WidgetTrait;
 
 /**
@@ -22,7 +23,8 @@ class Controller extends BaseController
 
     use ItemTrait,
         WidgetTrait,
-        JobTrait;
+        JobTrait,
+        ItemPriceTrait;
 
     /**
      * Job model instance
@@ -60,6 +62,15 @@ class Controller extends BaseController
     }
 
     /**
+     * Used by traits
+     * @return $this
+     */
+    protected function getController()
+    {
+        return $this;
+    }
+
+    /**
      * Sets default class instances
      */
     protected function setInstancesBackend()
@@ -74,16 +85,10 @@ class Controller extends BaseController
      */
     protected function setDataBackend()
     {
+        $this->data['_stores'] = (array) $this->store->getList();
         $this->data['_job'] = $this->getWidgetJob($this, $this->job);
         $this->data['_menu'] = $this->getWidgetAdminMenu($this->route);
         $this->data['_help'] = $this->help->getByPattern($this->current_route['simple_pattern'], $this->langcode);
-
-        $this->data['_stores'] = $this->store->getList();
-        foreach ($this->data['_stores'] as &$store) {
-            if (empty($store['status'])) {
-                $store['name'] = $this->text('@store (disabled)', array('@store' => $store['name']));
-            }
-        }
 
         $bookmarks = $this->bookmark->getList(array('user_id' => $this->uid));
         $this->data['_is_bookmarked'] = isset($bookmarks[$this->path]);
@@ -132,6 +137,34 @@ class Controller extends BaseController
         }
 
         return array(array(), null, null);
+    }
+
+    /**
+     * 
+     * @param array $product_ids
+     * @param array $options
+     * @return type
+     */
+    protected function prepareProductPicker(array $product_ids, array $options = array())
+    {
+        $products = array();
+        if (!empty($product_ids)) {
+            $products = (array) $this->product->getList(array('product_id' => $product_ids));
+        }
+
+        $options += array(
+            'entity' => 'product',
+            'entity_id' => $product_ids,
+            'template_item' => 'backend|content/product/suggestion'
+        );
+
+        foreach ($products as &$product) {
+            $this->setItemThumb($product, $this->image, $options);
+            $this->setItemPriceFormatted($product, $this->price);
+            $this->setItemRendered($product, array('item' => $product), $options);
+        }
+
+        return $products;
     }
 
 }

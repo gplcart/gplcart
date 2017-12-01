@@ -11,7 +11,6 @@ namespace gplcart\core\handlers\dashboard;
 
 use gplcart\core\Handler,
     gplcart\core\Config;
-use gplcart\core\traits\Item as ItemTrait;
 use gplcart\core\models\Cart as CartModel,
     gplcart\core\models\User as UserModel,
     gplcart\core\models\Order as OrderModel,
@@ -22,6 +21,8 @@ use gplcart\core\models\Cart as CartModel,
     gplcart\core\models\Language as LanguageModel,
     gplcart\core\models\PriceRule as PriceRuleModel,
     gplcart\core\models\Transaction as TransactionModel;
+use gplcart\core\traits\ItemPrice as ItemPriceTrait,
+    gplcart\core\traits\ItemOrder as ItemOrderTrait;
 
 /**
  * Dashboard handlers
@@ -29,7 +30,7 @@ use gplcart\core\models\Cart as CartModel,
 class Dashboard extends Handler
 {
 
-    use ItemTrait;
+    use ItemPriceTrait,ItemOrderTrait;
 
     /**
      * Config class instance

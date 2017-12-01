@@ -70,7 +70,7 @@ class Address extends BaseHandler
     public function zoneId(array $condition, array $data, $key)
     {
         if (isset($data['data']['order'][$key])) {
-            return $this->checkZoneIdByAddressId($condition, $data);
+            return $this->checkZoneIdByAddressId($condition, $data, $key);
         }
 
         return $this->checkZoneIdByAddressData($condition, $data);

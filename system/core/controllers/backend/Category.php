@@ -166,7 +166,7 @@ class Category extends BackendController
     {
         foreach ($categories as &$category) {
             $this->setItemIndentation($category, '— ');
-            $this->setItemEntityUrl($category, $this->store, 'category');
+            $this->setItemUrlEntity($category, $this->store, 'category');
         }
 
         return $categories;

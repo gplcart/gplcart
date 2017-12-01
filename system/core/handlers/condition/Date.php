@@ -16,6 +16,9 @@ use gplcart\core\handlers\condition\Base as BaseHandler;
  */
 class Date extends BaseHandler
 {
+
+    public function __construct();
+
     /**
      * Whether the date condition is met
      * @param array $condition
