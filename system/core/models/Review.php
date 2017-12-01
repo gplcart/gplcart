@@ -12,6 +12,7 @@ namespace gplcart\core\models;
 use gplcart\core\Config,
     gplcart\core\Hook,
     gplcart\core\Database;
+use gplcart\core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to the review system
@@ -38,15 +39,23 @@ class Review
     protected $config;
 
     /**
+     * Language model class instance
+     * @var \gplcart\core\models\Language $language
+     */
+    protected $language;
+
+    /**
      * @param Hook $hook
      * @param Database $db
      * @param Config $config
+     * @param LanguageModel $language
      */
-    public function __construct(Hook $hook, Database $db, Config $config)
+    public function __construct(Hook $hook, Database $db, Config $config, LanguageModel $language)
     {
         $this->db = $db;
         $this->hook = $hook;
         $this->config = $config;
+        $this->language = $language;
     }
 
     /**
@@ -145,7 +154,7 @@ class Review
      */
     public function getList(array $data = array())
     {
-        $sql = 'SELECT r.*, u.name, u.email';
+        $sql = 'SELECT r.*, u.name, u.email, COALESCE(NULLIF(pt.title, ""), p.title) AS product_title';
 
         if (!empty($data['count'])) {
             $sql = 'SELECT COUNT(r.review_id)';
@@ -153,54 +162,69 @@ class Review
 
         $sql .= ' FROM review r'
                 . ' LEFT JOIN user u ON(r.user_id = u.user_id)'
-                . ' WHERE r.review_id > 0';
+                . ' LEFT JOIN product p ON(r.product_id = p.product_id)'
+                . ' LEFT JOIN product_translation pt ON(r.product_id = pt.product_id AND pt.language=?)'
+                . ' WHERE r.review_id IS NOT NULL';
 
-        $where = array();
+        $language = $this->language->getLangcode();
+        $conditions = array($language);
 
         if (isset($data['text'])) {
             $sql .= ' AND r.text LIKE ?';
-            $where[] = "%{$data['text']}%";
+            $conditions[] = "%{$data['text']}%";
+        }
+
+        if (isset($data['product_title'])) {
+            $sql .= ' AND (p.title LIKE ? OR (pt.title LIKE ? AND pt.language=?))';
+            $conditions[] = "%{$data['product_title']}%";
+            $conditions[] = "%{$data['product_title']}%";
+            $conditions[] = $language;
         }
 
         if (isset($data['user_id'])) {
             $sql .= ' AND r.user_id = ?';
-            $where[] = (int) $data['user_id'];
+            $conditions[] = (int) $data['user_id'];
         }
 
         if (isset($data['email'])) {
             $sql .= ' AND u.email = ?';
-            $where[] = $data['email'];
+            $conditions[] = $data['email'];
+        }
+
+        if (isset($data['email_like'])) {
+            $sql .= ' AND u.email LIKE ?';
+            $conditions[] = "%{$data['email_like']}%";
         }
 
         if (isset($data['product_id'])) {
             $sql .= ' AND r.product_id = ?';
-            $where[] = (int) $data['product_id'];
+            $conditions[] = (int) $data['product_id'];
         }
 
         if (isset($data['status'])) {
             $sql .= ' AND r.status = ?';
-            $where[] = (bool) $data['status'];
+            $conditions[] = (bool) $data['status'];
         }
 
         if (isset($data['created'])) {
             $sql .= ' AND r.created = ?';
-            $where[] = (int) $data['created'];
+            $conditions[] = (int) $data['created'];
         }
 
         if (isset($data['modified'])) {
             $sql .= ' AND r.modified = ?';
-            $where[] = (int) $data['modified'];
+            $conditions[] = (int) $data['modified'];
         }
 
         if (isset($data['user_status'])) {
             $sql .= ' AND u.status = ?';
-            $where[] = (int) $data['user_status'];
+            $conditions[] = (int) $data['user_status'];
         }
 
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array(
             'product_id' => 'r.product_id', 'email' => 'u.email', 'review_id' => 'r.review_id',
-            'status' => 'r.status', 'created' => 'r.created', 'text' => 'r.text');
+            'status' => 'r.status', 'created' => 'r.created', 'text' => 'r.text', 'product_title' => 'p.title');
 
         if (isset($data['sort']) && isset($allowed_sort[$data['sort']])//
                 && isset($data['order']) && in_array($data['order'], $allowed_order)) {
@@ -214,12 +238,11 @@ class Review
         }
 
         if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $where);
+            return (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $list = $this->db->fetchAll($sql, $where, array('index' => 'review_id'));
+        $list = $this->db->fetchAll($sql, $conditions, array('index' => 'review_id'));
         $this->hook->attach('review.list', $list, $this);
-
         return $list;
     }
 
