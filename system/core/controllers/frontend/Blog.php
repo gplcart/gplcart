@@ -142,7 +142,12 @@ class Blog extends FrontendController
      */
     protected function setBreadcrumbListBlog()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('/'),
+            'text' => $this->text('Home')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**

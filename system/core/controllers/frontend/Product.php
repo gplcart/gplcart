@@ -361,9 +361,12 @@ class Product extends FrontendController
      */
     protected function setBreadcrumbIndexProduct()
     {
-        $this->setBreadcrumbHome();
-
         $breadcrumbs = array();
+
+        $breadcrumbs[] = array(
+            'url' => $this->url('/'),
+            'text' => $this->text('Home')
+        );
 
         $categories = $this->getCategorytBreadcrumbsProduct($this->data_product['category_id']);
         $this->setBreadcrumbs(array_merge($breadcrumbs, $categories));
@@ -463,7 +466,7 @@ class Product extends FrontendController
         $this->unshiftSelectedImageProduct($selected, $product);
 
         $this->setItemProductThumb($product, $this->image);
-        $this->setItemProductInComparison($product, $this->product_compare);
+        $this->setItemProductInComparison($product, $this->productcompare);
         $this->setItemProductBundle($product, $this->product, $this->image);
         $this->setItemProductInWishlist($product, $this->cart_uid, $this->store_id, $this->wishlist);
 

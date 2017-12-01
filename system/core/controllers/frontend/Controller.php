@@ -50,7 +50,7 @@ class Controller extends BaseController
      * Compare model instance
      * @var \gplcart\core\models\ProductCompare $compare
      */
-    protected $product_compare;
+    protected $productcompare;
 
     /**
      * Wishlist model instance
@@ -68,7 +68,7 @@ class Controller extends BaseController
      * Collection item model instance
      * @var \gplcart\core\models\CollectionItem $collection_item
      */
-    protected $collection_item;
+    protected $collectionitem;
 
     /**
      * The current currency code
@@ -143,14 +143,12 @@ class Controller extends BaseController
      */
     protected function setFrontendInstancies()
     {
-        $this->price = $this->getInstance('gplcart\\core\\models\\Price');
-        $this->trigger = $this->getInstance('gplcart\\core\\models\\Trigger');
-        $this->product = $this->getInstance('gplcart\\core\\models\\Product');
-        $this->wishlist = $this->getInstance('gplcart\\core\\models\\Wishlist');
-        $this->category = $this->getInstance('gplcart\\core\\models\\Category');
-        $this->currency = $this->getInstance('gplcart\\core\\models\\Currency');
-        $this->product_compare = $this->getInstance('gplcart\\core\\models\\ProductCompare');
-        $this->collection_item = $this->getInstance('gplcart\\core\\models\\CollectionItem');
+        $classes = array('price', 'trigger', 'product', 'wishlist', 'category',
+            'currency', 'productcompare', 'collectionitem');
+
+        foreach ($classes as $class) {
+            $this->{$class} = $this->getInstance("gplcart\\core\\models\\$class");
+        }
     }
 
     /**
@@ -204,11 +202,11 @@ class Controller extends BaseController
         );
 
         $cart = $this->cart->getContent($options);
-        
-        if(empty($cart['items'])){
+
+        if (empty($cart['items'])) {
             return array();
         }
-        
+
         return $this->prepareCart($cart);
     }
 
@@ -218,11 +216,11 @@ class Controller extends BaseController
      */
     public function getComparison()
     {
-        return $this->product_compare->getList();
+        return $this->productcompare->getList();
     }
 
     /**
-     * Returns wishlist items for the current user
+     * Returns an array of wishlist items for the current user
      * @return array
      */
     public function getWishlist()
@@ -237,7 +235,7 @@ class Controller extends BaseController
     }
 
     /**
-     * Handles "Add to cart" event
+     * Handles submitted cart products
      */
     protected function submitCart()
     {
@@ -254,7 +252,7 @@ class Controller extends BaseController
     }
 
     /**
-     * Performs "Add to cart" action
+     * Adds a product to the cart
      */
     protected function addToCart()
     {
@@ -274,16 +272,15 @@ class Controller extends BaseController
         }
 
         if ($this->isAjax()) {
-            if ($result['severity'] === 'success') {
-                $result += array('modal' => $this->renderCartPreview());
-            }
+            $result['modal'] = $this->getWidgetCartPreview($this, $this->getCart());
             $this->outputJson($result);
         }
+
         $this->redirect($result['redirect'], $result['message'], $result['severity']);
     }
 
     /**
-     * Validates "Add to cart" action
+     * Validates adding a product to the cart
      */
     protected function validateAddToCart()
     {
@@ -295,38 +292,22 @@ class Controller extends BaseController
     }
 
     /**
-     * Deletes a cart item
-     * @return null|array
+     * Deletes a submitted cart item
      */
     protected function deleteFromCart()
     {
-        if (!$this->cart->delete($this->getSubmitted('cart_id'))) {
-            return array('redirect' => '', 'severity' => 'success');
-        }
+        $result = $this->cart->submitDelete($this->getSubmitted('cart_id'));
 
-        $cart = $this->getCart();
-
-        $result = array(
-            'redirect' => '',
-            'severity' => 'success',
-            'message' => $this->text('Product has been deleted from cart'),
-            'quantity' => empty($cart['quantity']) ? 0 : $cart['quantity']
-        );
-
-        $preview = $this->renderCartPreview();
-
-        if (empty($preview)) {
+        if (empty($result['quantity'])) {
             $result['message'] = '';
-            $result['quantity'] = 0;
         }
 
         if ($this->isAjax()) {
-            $result['modal'] = $preview;
+            $result['modal'] = $this->getWidgetCartPreview($this, $this->getCart());
             $this->outputJson($result);
         }
 
         $this->redirect($result['redirect'], $result['message'], $result['severity']);
-        return null;
     }
 
     /**
@@ -349,26 +330,6 @@ class Controller extends BaseController
 
         $categories = $this->category->getTree($conditions);
         return $this->prepareEntityItems($categories, $options);
-    }
-
-    /**
-     * Returns rendered cart preview
-     * @return string
-     */
-    protected function renderCartPreview()
-    {
-        $cart = $this->getCart();
-
-        if (empty($cart['items'])) {
-            return '';
-        }
-
-        $options = array(
-            'cart' => $cart,
-            'limit' => $this->config('cart_preview_limit', 5)
-        );
-
-        return $this->render('cart/preview', $options, true);
     }
 
     /**
@@ -421,7 +382,7 @@ class Controller extends BaseController
 
         if (empty($errors)) {
             $submitted = $this->getSubmitted();
-            $result = $this->product_compare->addProduct($submitted['product'], $submitted);
+            $result = $this->productcompare->addProduct($submitted['product'], $submitted);
         } else {
             $result['message'] = $this->format($errors);
         }
@@ -439,7 +400,7 @@ class Controller extends BaseController
     protected function deleteFromCompare()
     {
         $product_id = $this->getSubmitted('product_id');
-        $result = $this->product_compare->deleteProduct($product_id);
+        $result = $this->productcompare->deleteProduct($product_id);
 
         if ($this->isAjax()) {
             $this->outputJson($result);
@@ -494,14 +455,6 @@ class Controller extends BaseController
     }
 
     /**
-     * Validates "Add to compare" action
-     */
-    protected function validateAddToCompare()
-    {
-        $this->validateComponent('compare');
-    }
-
-    /**
      * Add a product to the wishlist
      */
     protected function addToWishlist()
@@ -523,6 +476,7 @@ class Controller extends BaseController
         if ($this->isAjax()) {
             $this->outputJson($result);
         }
+
         $this->redirect($result['redirect'], $result['message'], $result['severity']);
     }
 
@@ -544,6 +498,14 @@ class Controller extends BaseController
         }
 
         $this->redirect($result['redirect'], $result['message'], $result['severity']);
+    }
+
+    /**
+     * Validates "Add to compare" action
+     */
+    protected function validateAddToCompare()
+    {
+        $this->validateComponent('compare');
     }
 
     /**
@@ -584,7 +546,7 @@ class Controller extends BaseController
             'store_id' => $this->store_id
         );
 
-        $items = $this->collection_item->getItems($conditions);
+        $items = $this->collectionitem->getItems($conditions);
 
         if (empty($items)) {
             return array();
@@ -598,31 +560,6 @@ class Controller extends BaseController
         );
 
         return $this->prepareEntityItems($items, $options);
-    }
-
-    /**
-     * Returns a rendered collection
-     * @param array $conditions
-     * @param array $options
-     * @return string
-     */
-    protected function renderCollection(array $conditions, $options = array())
-    {
-        $items = $this->getCollectionItems($conditions, $options);
-
-        if (empty($items)) {
-            return '';
-        }
-
-        $item = reset($items);
-
-        $data = array(
-            'items' => $items,
-            'title' => $item['collection_item']['collection_title'],
-            'collection_id' => $item['collection_item']['collection_id']
-        );
-
-        return $this->render($item['collection_handler']['template']['list'], $data, true);
     }
 
     /**
@@ -653,7 +590,7 @@ class Controller extends BaseController
             $this->setItemThumb($item, $this->image, $options);
 
             if ($options['entity'] === 'product') {
-                $this->setItemProductInComparison($item, $this->product_compare);
+                $this->setItemProductInComparison($item, $this->productcompare);
                 $this->setItemPriceCalculated($item, $this->product);
                 $this->setItemProductInWishlist($item, $this->cart_uid, $this->store_id, $this->wishlist);
                 $this->setItemPriceFormatted($item, $this->price, $this->current_currency);
@@ -668,19 +605,6 @@ class Controller extends BaseController
         }
 
         return $items;
-    }
-
-    /**
-     * Sets a breadcrumb item that points to home page
-     */
-    protected function setBreadcrumbHome()
-    {
-        $breadcrumb = array(
-            'url' => $this->url('/'),
-            'text' => $this->text('Home')
-        );
-
-        $this->setBreadcrumb($breadcrumb);
     }
 
 }

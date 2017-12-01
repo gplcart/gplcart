@@ -311,7 +311,12 @@ class Checkout extends FrontendController
      */
     protected function setBreadcrumbEditCheckout()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('/'),
+            'text' => $this->text('Home')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -1156,7 +1161,12 @@ class Checkout extends FrontendController
      */
     protected function setBreadcrumbCompleteCheckout()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('/'),
+            'text' => $this->text('Home')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**

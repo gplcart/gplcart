@@ -49,9 +49,8 @@ class Front extends FrontendController
 
         if (!empty($collection_id)) {
             $options = array('imagestyle' => $this->configTheme("image_style_collection_$type"));
-            $conditions = array('collection_id' => $collection_id);
-            $html = $this->renderCollection($conditions, array_filter($options));
-            $this->setData("collection_$type", $html);
+            $items = $this->getCollectionItems(array('collection_id' => $collection_id), array_filter($options));
+            $this->setData("collection_$type", $this->getWidgetCollection($this, $items));
         }
     }
 
@@ -60,8 +59,7 @@ class Front extends FrontendController
      */
     protected function setTitleIndexFront()
     {
-        $title = $this->getStore('data.title');
-        $this->setTitle($title, false);
+        $this->setTitle($this->getStore('data.title'), false);
     }
 
     /**

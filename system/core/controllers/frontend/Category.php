@@ -89,7 +89,12 @@ class Category extends FrontendController
      */
     protected function setBreadcrumbListCategory()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('/'),
+            'text' => $this->text('Home')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -178,7 +183,12 @@ class Category extends FrontendController
      */
     protected function setBreadcrumbIndexCategory()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('/'),
+            'text' => $this->text('Home')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**

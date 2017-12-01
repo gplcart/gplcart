@@ -120,7 +120,12 @@ class User extends FrontendController
      */
     protected function setBreadcrumbEditLoginUser()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('/'),
+            'text' => $this->text('Home')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -208,7 +213,12 @@ class User extends FrontendController
      */
     protected function setBreadcrumbEditRegisterUser()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('/'),
+            'text' => $this->text('Home')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
@@ -334,7 +344,12 @@ class User extends FrontendController
      */
     protected function setBreadcrumbEditResetPasswordUser()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('/'),
+            'text' => $this->text('Home')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**

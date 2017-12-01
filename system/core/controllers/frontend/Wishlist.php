@@ -51,7 +51,12 @@ class Wishlist extends FrontendController
      */
     protected function setBreadcrumbIndexWishlist()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('/'),
+            'text' => $this->text('Home')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**

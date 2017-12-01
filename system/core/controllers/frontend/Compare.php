@@ -72,13 +72,13 @@ class Compare extends FrontendController
         $options = array(
             'status' => 1,
             'store_id' => $this->store_id,
-            'product_id' => $this->product_compare->getList()
+            'product_id' => $this->productcompare->getList()
         );
 
         if (!empty($options['product_id'])) {
             $existing = array_keys($this->product->getList($options));
             if (array_diff($options['product_id'], $existing)) {
-                $this->product_compare->set($existing);
+                $this->productcompare->set($existing);
             }
         }
     }
@@ -129,7 +129,12 @@ class Compare extends FrontendController
      */
     protected function setBreadcrumbSelectCompare()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('/'),
+            'text' => $this->text('Home')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**

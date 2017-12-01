@@ -129,14 +129,19 @@ class Review extends FrontendController
      */
     protected function setBreadcrumbEditReview()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumbs = array();
 
-        $breadcrumb = array(
+        $breadcrumbs[] = array(
+            'url' => $this->url('/'),
+            'text' => $this->text('Home')
+        );
+
+        $breadcrumbs[] = array(
             'url' => $this->url("product/{$this->data_product['product_id']}"),
             'text' => $this->data_product['title']
         );
 
-        $this->setBreadcrumb($breadcrumb);
+        $this->setBreadcrumbs($breadcrumbs);
     }
 
     /**

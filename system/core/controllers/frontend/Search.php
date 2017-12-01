@@ -167,7 +167,12 @@ class Search extends FrontendController
      */
     protected function setBreadcrumbListSearch()
     {
-        $this->setBreadcrumbHome();
+        $breadcrumb = array(
+            'url' => $this->url('/'),
+            'text' => $this->text('Home')
+        );
+
+        $this->setBreadcrumb($breadcrumb);
     }
 
     /**
