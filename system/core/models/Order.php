@@ -283,7 +283,7 @@ class Order
 
         $result = $this->db->fetch($sql, array($order_id), array('unserialize' => 'data'));
 
-        $this->attachCart($result);
+        $this->setCart($result);
 
         $this->hook->attach('order.get.after', $order_id, $result, $this);
         return $result;
@@ -293,7 +293,7 @@ class Order
      * Sets cart items to the order
      * @param array $order
      */
-    protected function attachCart(array &$order)
+    protected function setCart(array &$order)
     {
         if (isset($order['order_id'])) {
             $order['cart'] = $this->cart->getList(array('order_id' => $order['order_id']));
@@ -519,10 +519,7 @@ class Order
         foreach ($cart['items'] as $item) {
 
             $values = array(
-                // Replace default order ID (0) with order ID we just created
                 'order_id' => $order['order_id'],
-                // Make sure that cart items have the same user ID with order.
-                // It can be different e.g admin created the order using own cart
                 'user_id' => $order['user_id']
             );
 
@@ -537,15 +534,11 @@ class Order
     protected function setPriceRules(array $order)
     {
         foreach (array_keys($order['data']['components']) as $component_id) {
-
-            if (!is_numeric($component_id)) {
-                continue; // We need only rules
-            }
-
-            $rule = $this->price_rule->get($component_id);
-
-            if ($rule['code'] !== '') {
-                $this->price_rule->setUsed($rule['price_rule_id']);
+            if (is_numeric($component_id)) {
+                $rule = $this->price_rule->get($component_id);
+                if (!empty($rule['code'])) {
+                    $this->price_rule->setUsed($rule['price_rule_id']);
+                }
             }
         }
     }
@@ -707,7 +700,9 @@ class Order
         unset($order['order_id']);
 
         $order['created'] = $order['modified'] = GC_TIME;
-        $order += array('status' => $this->getDefaultStatus());
+
+        $order += array(
+            'status' => $this->getDefaultStatus());
 
         $result = $this->db->insert('orders', $order);
         $this->hook->attach('order.add.after', $order, $result, $this);
@@ -810,7 +805,7 @@ class Order
     }
 
     /**
-     * Calculate order components (e.g shipping) using predefined values which can be provided by different modules
+     * Calculate order components (e.g shipping) using predefined values which can be provided by modules
      * @param int $total
      * @param array $data
      * @param array $components
