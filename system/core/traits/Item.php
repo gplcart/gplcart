@@ -16,40 +16,9 @@ trait Item
 {
 
     /**
-     * @see \gplcart\core\Controller::render()
+     * @return \gplcart\core\Controller
      */
-    protected abstract function render($file, $data = array(), $merge = true, $default = '');
-
-    /**
-     * @see \gplcart\core\Controller::access()
-     */
-    protected abstract function access($permission);
-
-    /**
-     * @see \gplcart\core\Controller::url()
-     */
-    protected abstract function url($path = '', array $query = array(), $absolute = false,
-            $exclude = false);
-
-    /**
-     * @see \gplcart\core\Controller::config()
-     */
-    protected abstract function config($key = null, $default = null);
-
-    /**
-     * @see \gplcart\core\Controller::getCartUid()
-     */
-    protected abstract function getCartUid();
-
-    /**
-     * @see \gplcart\core\Controller::getStoreId()
-     */
-    protected abstract function getStoreId();
-
-    /**
-     * @see \gplcart\core\Controller::text()
-     */
-    protected abstract function text($string = null, array $arguments = array());
+    protected abstract function getController();
 
     /**
      * Adds "total_formatted" key
@@ -79,7 +48,8 @@ trait Item
      */
     public function setItemThumb(array &$item, $image_model, $options = array())
     {
-        $options += array('imagestyle' => $this->config('image_style', 3));
+        $options += array(
+            'imagestyle' => $this->getController()->config('image_style', 3));
 
         if (!empty($options['path'])) {
             $item['thumb'] = $image_model->url($options['imagestyle'], $options['path']);
@@ -121,7 +91,7 @@ trait Item
     {
         $options = array(
             'path' => '',
-            'imagestyle' => $this->configTheme('image_style_cart', 3)
+            'imagestyle' => $this->getController()->configTheme('image_style_cart', 3)
         );
 
         if (empty($item['product']['combination_id']) && !empty($item['product']['images'])) {
@@ -148,11 +118,10 @@ trait Item
     public function setItemUrl(array &$item, array $options = array())
     {
         if (!empty($options['entity']) && !empty($item[$options['entity'] . '_id'])) {
-            $entity = $options['entity'];
-            $entity_id = $item["{$entity}_id"];
-            $item['url'] = empty($item['alias']) ? $this->url("$entity/$entity_id") : $this->url($item['alias']);
-            $query = $this->getQuery(null, array(), 'array');
-            $item['url_query'] = empty($item['alias']) ? $this->url("$entity/$entity_id", $query) : $this->url($item['alias'], $query);
+            $path = empty($item['alias']) ? "{$options['entity']}/{$item["{$options['entity']}_id"]}" : $item['alias'];
+            $controller = $this->getController();
+            $item['url'] = $controller->url($path);
+            $item['url_query'] = $controller->url($path, $controller->getQuery(null, array(), 'array'));
         }
     }
 
@@ -182,7 +151,7 @@ trait Item
     public function setItemRendered(array &$item, $data, $options = array())
     {
         if (!empty($options['template_item'])) {
-            $item['rendered'] = $this->render($options['template_item'], $data, true);
+            $item['rendered'] = $this->getController()->render($options['template_item'], $data, true);
         }
     }
 
@@ -226,13 +195,12 @@ trait Item
     /**
      * Add "active"
      * @param array $item
-     * @param string $base
-     * @param string $path
      */
-    public function setItemUrlActive(array &$item, $base, $path)
+    public function setItemUrlActive(array &$item)
     {
         if (isset($item['url'])) {
-            $item['active'] = substr($item['url'], strlen($base)) === $path;
+            $controller = $this->getController();
+            $item['active'] = substr($item['url'], strlen($controller->getBase())) === $controller->path();
         }
     }
 
@@ -312,7 +280,7 @@ trait Item
     public function setItemProductThumb(array &$item, $image_model)
     {
         $options = array(
-            'imagestyle' => $this->configTheme('image_style_product', 6));
+            'imagestyle' => $this->getController()->configTheme('image_style_product', 6));
 
         if (empty($item['images'])) {
             $item['images'][] = array('thumb' => $image_model->getPlaceholder($options['imagestyle']));
@@ -338,9 +306,11 @@ trait Item
      */
     public function setItemProductInWishlist(&$item, $wishlist_model)
     {
+        $controller = $this->getController();
+
         $conditions = array(
-            'user_id' => $this->getCartUid(),
-            'store_id' => $this->getStoreId(),
+            'user_id' => $controller->getCartUid(),
+            'store_id' => $controller->getStoreId(),
             'product_id' => $item['product_id']
         );
 
@@ -543,7 +513,7 @@ trait Item
                 $item['cart'][$sku]['price_formatted'] = $price_model->format($component['price'], $item['currency']);
             }
 
-            $html = $this->render('backend|sale/order/panes/components/cart', array('order' => $item));
+            $html = $this->getController()->render('backend|sale/order/panes/components/cart', array('order' => $item));
             $item['data']['components']['cart']['rendered'] = $html;
         }
     }
@@ -573,7 +543,7 @@ trait Item
                 'title' => $omodel->getComponentType('shipping')
             );
 
-            $html = $this->render('backend|sale/order/panes/components/method', $data);
+            $html = $this->getController()->render('backend|sale/order/panes/components/method', $data);
             $item['data']['components']['shipping']['rendered'] = $html;
         }
     }
@@ -603,7 +573,7 @@ trait Item
                 'title' => $omodel->getComponentType('payment')
             );
 
-            $html = $this->render('backend|sale/order/panes/components/method', $data);
+            $html = $this->getController()->render('backend|sale/order/panes/components/method', $data);
             $item['data']['components']['payment']['rendered'] = $html;
         }
     }
@@ -632,7 +602,7 @@ trait Item
                 'rule' => $price_rule,
                 'price' => $pmodel->format($component['price'], $price_rule['currency']));
 
-            $html = $this->render('backend|sale/order/panes/components/rule', $data);
+            $html = $this->getController()->render('backend|sale/order/panes/components/rule', $data);
             $item['data']['components'][$price_rule_id]['rendered'] = $html;
         }
     }

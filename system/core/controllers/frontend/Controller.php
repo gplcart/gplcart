@@ -600,7 +600,7 @@ class Controller extends BaseController
             } else {
                 $this->setItemIndentation($item);
                 $this->setItemUrl($item, $options);
-                $this->setItemUrlActive($item, $this->base, $this->path);
+                $this->setItemUrlActive($item);
                 $this->setItemRendered($item, array('item' => $item), $options);
             }
         }
