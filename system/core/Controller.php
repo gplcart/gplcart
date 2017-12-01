@@ -629,6 +629,24 @@ abstract class Controller
     }
 
     /**
+     * Returns the current store ID
+     * @return int
+     */
+    public function getStoreId()
+    {
+        return $this->store_id;
+    }
+
+    /**
+     * Returns the current cart user ID
+     * @return int|string
+     */
+    public function getCartUid()
+    {
+        return $this->cart_uid;
+    }
+
+    /**
      * Returns a data of the current user
      * @param mixed $item
      * @return mixed
