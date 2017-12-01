@@ -196,9 +196,9 @@
         html += '<div class="selected-item">';
 
         if (el.data('multiple')) {
-            html += '<input type="hidden" name="product[' + name + '][]" value="' + val + '">';
+            html += '<input type="hidden" name="' + name + '[]" value="' + val + '">';
         } else {
-            html += '<input type="hidden" name="product[' + name + ']" value="' + val + '">';
+            html += '<input type="hidden" name="' + name + '" value="' + val + '">';
         }
 
         html += item.data.rendered;
@@ -467,20 +467,19 @@
                     "ui-autocomplete": "product-picker-popup"
                 },
                 source: function (request, response) {
-
-                    store_id = input.data('store-id');
-
-                    if (!store_id) {
-                        store_id = input.closest('form').find('[name$="[store_id]"]').val();
-                    }
-
+                    
                     params = {
                         status: 1,
                         term: request.term,
                         action: 'getProductsAjax',
-                        store_id: store_id || null,
                         token: Gplcart.settings.token
                     };
+
+                    store_id = input.data('store-id') || input.closest('form').find('[name$="[store_id]"]').val();
+                    
+                    if(store_id){
+                        params.store_id = store_id;
+                    }
 
                     $.post(Gplcart.settings.base + 'ajax', params, function (data) {
                         response($.map(data, function (value) {
@@ -554,85 +553,6 @@
             return $("<li>").append("<a>" + item.label + "</a>").appendTo(ul);
         };
     };
-
-    /**
-     * Adds autocomplete functionality to a user input
-     * @returns {undefined}
-     */
-    Gplcart.onload.setAutocompleteUser = function () {
-
-        var params, input = $('[data-autocomplete-source="user"]');
-
-        if (input.length) {
-            input.autocomplete({
-                minLength: 2,
-                source: function (request, response) {
-                    params = {
-                        term: request.term,
-                        action: 'getUsersAjax',
-                        token: Gplcart.settings.token
-                    };
-                    $.post(Gplcart.settings.base + 'ajax', params, function (data) {
-                        response($.map(data, function (value, key) {
-                            return {
-                                value: value.email,
-                                label: value.email
-                            };
-                        }));
-                    });
-                },
-                select: function (event, ui) {
-                    input.val(ui.item.label);
-                    return false;
-                }
-            }).autocomplete("instance")._renderItem = function (ul, item) {
-                return $("<li>").append("<a>" + item.label + "</a>").appendTo(ul);
-            };
-        }
-    };
-
-    /**
-     * Adds autocomplete functionality to a product input
-     * @returns {undefined}
-     
-     Gplcart.onload.setAutocompleteProduct = function () {
-     
-     var params,
-     input = $('[data-autocomplete-source="product"]'),
-     inputId = $('[data-autocomplete-target="product"]');
-     
-     if (input.length) {
-     input.autocomplete({
-     minLength: 2,
-     source: function (request, response) {
-     params = {
-     term: request.term,
-     action: 'getProductsAjax',
-     token: Gplcart.settings.token
-     };
-     $.post(Gplcart.settings.base + 'ajax', params, function (data) {
-     response($.map(data, function (value, key) {
-     return {
-     value: value.product_id,
-     label: value.title ? value.title + ' (' + value.product_id + ')' : '--'
-     };
-     }));
-     });
-     },
-     select: function (event, ui) {
-     input.val(ui.item.label);
-     inputId.val(ui.item.value);
-     return false;
-     },
-     search: function () {
-     inputId.val('');
-     }
-     }).autocomplete("instance")._renderItem = function (ul, item) {
-     return $("<li>").append("<a>" + item.label + "</a>").appendTo(ul);
-     };
-     }
-     };
-     */
 
     /**
      * Updates product fields when product class was changed
