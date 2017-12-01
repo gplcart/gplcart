@@ -422,7 +422,7 @@ class Category extends BackendController
         );
 
         $this->setItemThumb($options, $this->image);
-        $this->setData('attached_images', $this->getWidgetImages($this, $this->language, $options));
+        $this->setData('attached_images', $this->getWidgetImages($this->language, $options));
     }
 
     /**

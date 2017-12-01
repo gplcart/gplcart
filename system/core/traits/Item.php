@@ -496,10 +496,9 @@ trait Item
     /**
      * Adds a cart component information for the order item
      * @param array $item
-     * @param \gplcart\core\Controller $controller
      * @param \gplcart\core\models\Price $price_model
      */
-    public function setItemOrderCartComponent(&$item, $controller, $price_model)
+    public function setItemOrderCartComponent(&$item, $price_model)
     {
         if (!empty($item['data']['components']['cart']['items'])) {
             foreach ($item['data']['components']['cart']['items'] as $sku => $component) {
@@ -509,7 +508,7 @@ trait Item
                 $item['cart'][$sku]['price_formatted'] = $price_model->format($component['price'], $item['currency']);
             }
 
-            $html = $controller->render('backend|sale/order/panes/components/cart', array('order' => $item));
+            $html = $this->render('backend|sale/order/panes/components/cart', array('order' => $item));
             $item['data']['components']['cart']['rendered'] = $html;
         }
     }
@@ -517,12 +516,11 @@ trait Item
     /**
      * Adds a shipping component information for the order item
      * @param array $item
-     * @param \gplcart\core\Controller $controller
      * @param \gplcart\core\models\Price $pmodel
      * @param \gplcart\core\models\Shipping $shmodel
      * @param \gplcart\core\models\Order $omodel
      */
-    public function setItemOrderShippingComponent(&$item, $controller, $pmodel, $shmodel, $omodel)
+    public function setItemOrderShippingComponent(&$item, $pmodel, $shmodel, $omodel)
     {
         if (isset($item['data']['components']['shipping']['price'])) {
 
@@ -540,7 +538,7 @@ trait Item
                 'title' => $omodel->getComponentType('shipping')
             );
 
-            $html = $controller->render('backend|sale/order/panes/components/method', $data);
+            $html = $this->render('backend|sale/order/panes/components/method', $data);
             $item['data']['components']['shipping']['rendered'] = $html;
         }
     }
@@ -548,12 +546,11 @@ trait Item
     /**
      * Adds a payment component information for the order item
      * @param array $item
-     * @param \gplcart\core\Controller $controller
      * @param \gplcart\core\models\Price $pmodel
      * @param \gplcart\core\models\Payment $pamodel
      * @param \gplcart\core\models\Order $omodel
      */
-    public function setItemOrderPaymentComponent(&$item, $controller, $pmodel, $pamodel, $omodel)
+    public function setItemOrderPaymentComponent(&$item, $pmodel, $pamodel, $omodel)
     {
         if (isset($item['data']['components']['payment']['price'])) {
 
@@ -571,7 +568,7 @@ trait Item
                 'title' => $omodel->getComponentType('payment')
             );
 
-            $html = $controller->render('backend|sale/order/panes/components/method', $data);
+            $html = $this->render('backend|sale/order/panes/components/method', $data);
             $item['data']['components']['payment']['rendered'] = $html;
         }
     }
@@ -579,11 +576,10 @@ trait Item
     /**
      * Adds a price rule component information for the order item
      * @param array $item
-     * @param \gplcart\core\Controller $controller
      * @param \gplcart\core\models\Price $pmodel
      * @param \gplcart\core\models\PriceRule $prmodel
      */
-    public function setItemOrderPriceRuleComponent(&$item, $controller, $pmodel, $prmodel)
+    public function setItemOrderPriceRuleComponent(&$item, $pmodel, $prmodel)
     {
         foreach ($item['data']['components'] as $price_rule_id => $component) {
 
@@ -601,7 +597,7 @@ trait Item
                 'rule' => $price_rule,
                 'price' => $pmodel->format($component['price'], $price_rule['currency']));
 
-            $html = $controller->render('backend|sale/order/panes/components/rule', $data);
+            $html = $this->render('backend|sale/order/panes/components/rule', $data);
             $item['data']['components'][$price_rule_id]['rendered'] = $html;
         }
     }

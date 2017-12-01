@@ -130,7 +130,7 @@ class Product extends FrontendController
     {
         $data = array(
             'product' => $this->data_product,
-            'share' => $this->getWidgetShare($this)
+            'share' => $this->getWidgetShare()
         );
 
         $this->setData('cart_form', $this->render('cart/add', $data, true));

@@ -309,7 +309,7 @@ class Review extends BackendController
             'name' => 'review[product_id]'
         );
 
-        $this->setData('product_picker', $this->getWidgetProductPicker($this, $options));
+        $this->setData('product_picker', $this->getWidgetProductPicker($options));
     }
 
     /**

@@ -123,9 +123,9 @@ class Controller extends BaseController
         $this->data['_currencies'] = $currencies;
         $this->data['_wishlist'] = $this->getWishlist();
         $this->data['_comparison'] = $this->getComparison();
-        $this->data['_captcha'] = $this->getWidgetCaptcha($this);
+        $this->data['_captcha'] = $this->getWidgetCaptcha();
         $this->data['_currency'] = $currencies[$this->current_currency];
-        $this->data['_menu'] = $this->getWidgetCategoryMenu($this, $this->data_categories);
+        $this->data['_menu'] = $this->getWidgetCategoryMenu($this->data_categories);
     }
 
     /**
@@ -272,7 +272,7 @@ class Controller extends BaseController
         }
 
         if ($this->isAjax()) {
-            $result['modal'] = $this->getWidgetCartPreview($this, $this->getCart());
+            $result['modal'] = $this->getWidgetCartPreview($this->getCart());
             $this->outputJson($result);
         }
 
@@ -303,7 +303,7 @@ class Controller extends BaseController
         }
 
         if ($this->isAjax()) {
-            $result['modal'] = $this->getWidgetCartPreview($this, $this->getCart());
+            $result['modal'] = $this->getWidgetCartPreview($this->getCart());
             $this->outputJson($result);
         }
 

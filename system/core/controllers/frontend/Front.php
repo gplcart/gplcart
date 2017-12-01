@@ -50,7 +50,7 @@ class Front extends FrontendController
         if (!empty($collection_id)) {
             $options = array('imagestyle' => $this->configTheme("image_style_collection_$type"));
             $items = $this->getCollectionItems(array('collection_id' => $collection_id), array_filter($options));
-            $this->setData("collection_$type", $this->getWidgetCollection($this, $items));
+            $this->setData("collection_$type", $this->getWidgetCollection($items));
         }
     }
 

@@ -51,7 +51,7 @@ class Section extends BackendController
             'template' => 'section/menu'
         );
 
-        $this->setData('menu', $this->getWidgetAdminMenu($this, $this->route, $options));
+        $this->setData('menu', $this->getWidgetAdminMenu($this->route, $options));
     }
 
     /**

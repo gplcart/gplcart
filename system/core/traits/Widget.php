@@ -17,12 +17,11 @@ trait Widget
 
     /**
      * Returns rendered admin menu
-     * @param \gplcart\core\Controller $controller
      * @param \gplcart\core\Route $route_class
      * @param array $options
      * @return string
      */
-    public function getWidgetAdminMenu($controller, $route_class, array $options = array())
+    public function getWidgetAdminMenu($route_class, array $options = array())
     {
         $options += array('parent_url' => 'admin');
 
@@ -33,104 +32,98 @@ trait Widget
                 continue;
             }
 
-            if (isset($route['access']) && !$controller->access($route['access'])) {
+            if (isset($route['access']) && !$this->access($route['access'])) {
                 continue;
             }
 
             $items[$path] = array(
-                'url' => $controller->url($path),
-                'text' => $controller->text($route['menu']['admin']),
+                'url' => $this->url($path),
+                'text' => $this->text($route['menu']['admin']),
                 'depth' => substr_count(substr($path, strlen("{$options['parent_url']}/")), '/'),
             );
         }
 
         ksort($items);
         $options += array('items' => $items);
-        return $this->getWidgetMenu($controller, $options);
+        return $this->getWidgetMenu($options);
     }
 
     /**
      * Returns rendered menu
-     * @param \gplcart\core\Controller $controller
      * @param array $options
      * @return string
      */
-    public function getWidgetMenu($controller, array $options)
+    public function getWidgetMenu(array $options)
     {
         $options += array(
             'depth' => 0,
             'template' => 'common/menu'
         );
 
-        return $controller->render($options['template'], $options);
+        return $this->render($options['template'], $options);
     }
 
     /**
      * Returns rendered category menu
-     * @param \gplcart\core\Controller $controller
      * @param array $categories
      * @return string
      */
-    public function getWidgetCategoryMenu($controller, $categories)
+    public function getWidgetCategoryMenu($categories)
     {
-        return $this->getWidgetMenu($controller, array('items' => $categories));
+        return $this->getWidgetMenu(array('items' => $categories));
     }
 
     /**
      * Returns rendered honey pot input
-     * @param \gplcart\core\Controller $controller
      * @return string
      */
-    public function getWidgetCaptcha($controller)
+    public function getWidgetCaptcha()
     {
-        return $controller->render('common/honeypot');
+        return $this->render('common/honeypot');
     }
 
     /**
      * Returns rendered "Share this" widget
-     * @param \gplcart\core\Controller $controller
      * @param array $options
      * @return string
      */
-    public function getWidgetShare($controller, array $options = array())
+    public function getWidgetShare(array $options = array())
     {
         $options += array(
-            'url' => $controller->url('', array(), true));
+            'url' => $this->url('', array(), true));
 
-        return $controller->render('common/share', $options);
+        return $this->render('common/share', $options);
     }
 
     /**
      * Returns rendered image widget
-     * @param \gplcart\core\Controller $controller
      * @param \gplcart\core\models\Language $language_model
      * @param array $options
      * @return string
      */
-    public function getWidgetImages($controller, $language_model, array $options)
+    public function getWidgetImages($language_model, array $options)
     {
         $options += array(
             'languages' => $language_model->getList(false, true)
         );
 
-        return $controller->render('common/image', $options);
+        return $this->render('common/image', $options);
     }
 
     /**
      * Returns render widget with buttons from Oauth providers
-     * @param \gplcart\core\Controller $controller
      * @param \gplcart\core\models\Oauth $oauth_model
      * @param array $options
      * @return string
      */
-    public function getWidgetOauthButtons($controller, $oauth_model, array $options = array())
+    public function getWidgetOauthButtons($oauth_model, array $options = array())
     {
         $options += array(
             'type' => 'login',
             'status' => true
         );
 
-        $providers = $oauth_model->getProviders($options);
+        $providers = $this->getProviders($options);
 
         $buttons = array();
         foreach ($providers as $provider_id => $provider) {
@@ -139,20 +132,19 @@ trait Widget
                 $buttons[$provider_id]['url'] = $url;
                 $buttons[$provider_id]['provider'] = $provider;
                 $data = array('provider' => $provider, 'url' => $url);
-                $buttons[$provider_id]['rendered'] = $controller->render($provider['template']['button'], $data);
+                $buttons[$provider_id]['rendered'] = $this->render($provider['template']['button'], $data);
             }
         }
 
-        return $controller->render('common/oauth', array('buttons' => $buttons));
+        return $this->render('common/oauth', array('buttons' => $buttons));
     }
 
     /**
      * Returns rendered product picker widget
-     * @param \gplcart\core\Controller $controller
      * @param array $options
      * @return string
      */
-    public function getWidgetProductPicker($controller, array $options = array())
+    public function getWidgetProductPicker(array $options = array())
     {
         $options += array(
             'name' => '',
@@ -162,16 +154,15 @@ trait Widget
             'products' => array()
         );
 
-        return $controller->render('content/product/picker', $options);
+        return $this->render('content/product/picker', $options);
     }
 
     /**
      * Returns a rendered collection
-     * @param \gplcart\core\Controller $controller
      * @param array $items
      * @return string
      */
-    protected function getWidgetCollection($controller, array $items)
+    protected function getWidgetCollection(array $items)
     {
         if (empty($items)) {
             return '';
@@ -185,16 +176,15 @@ trait Widget
             'collection_id' => $item['collection_item']['collection_id']
         );
 
-        return $controller->render($item['collection_handler']['template']['list'], $data, true);
+        return $this->render($item['collection_handler']['template']['list'], $data, true);
     }
 
     /**
      * Returns rendered cart preview
-     * @param \gplcart\core\Controller $controller
      * @param array $cart
      * @return string
      */
-    protected function getWidgetCartPreview($controller, array $cart)
+    protected function getWidgetCartPreview(array $cart)
     {
         if (empty($cart['items'])) {
             return '';
@@ -202,10 +192,10 @@ trait Widget
 
         $options = array(
             'cart' => $cart,
-            'limit' => $controller->config('cart_preview_limit', 5)
+            'limit' => $this->config('cart_preview_limit', 5)
         );
 
-        return $controller->render('cart/preview', $options, true);
+        return $this->render('cart/preview', $options, true);
     }
 
 }

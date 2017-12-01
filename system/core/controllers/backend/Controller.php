@@ -75,7 +75,7 @@ class Controller extends BaseController
     protected function setDataBackend()
     {
         $this->data['_job'] = $this->getWidgetJob($this, $this->job);
-        $this->data['_menu'] = $this->getWidgetAdminMenu($this, $this->route);
+        $this->data['_menu'] = $this->getWidgetAdminMenu($this->route);
         $this->data['_help'] = $this->help->getByPattern($this->current_route['simple_pattern'], $this->langcode);
 
         $this->data['_stores'] = $this->store->getList();

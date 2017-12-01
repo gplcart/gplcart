@@ -141,9 +141,9 @@ class Account extends FrontendController
     protected function setDataPanelComponentsOrderAccount()
     {
         $this->setItemOrderCartComponent($this->data_order, $this->price);
-        $this->setItemOrderPriceRuleComponent($this->data_order, $this, $this->price, $this->pricerule);
-        $this->setItemOrderPaymentComponent($this->data_order, $this, $this->price, $this->payment, $this->order);
-        $this->setItemOrderShippingComponent($this->data_order, $this, $this->price, $this->shipping, $this->order);
+        $this->setItemOrderPriceRuleComponent($this->data_order, $this->price, $this->pricerule);
+        $this->setItemOrderPaymentComponent($this->data_order, $this->price, $this->payment, $this->order);
+        $this->setItemOrderShippingComponent($this->data_order, $this->price, $this->shipping, $this->order);
 
         ksort($this->data_order['data']['components']);
 

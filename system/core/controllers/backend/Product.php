@@ -501,7 +501,7 @@ class Product extends BackendController
             'products' => $products
         );
 
-        $this->setData('product_picker', $this->getWidgetProductPicker($this, $options));
+        $this->setData('product_picker', $this->getWidgetProductPicker($options));
     }
 
     /**
@@ -515,7 +515,7 @@ class Product extends BackendController
         );
 
         $this->setItemThumb($options, $this->image);
-        $this->setData('image_widget', $this->getWidgetImages($this, $this->language, $options));
+        $this->setData('image_widget', $this->getWidgetImages($this->language, $options));
     }
 
     /**

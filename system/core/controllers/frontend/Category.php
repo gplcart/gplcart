@@ -242,7 +242,7 @@ class Category extends FrontendController
             'items' => $this->data_categories
         );
 
-        $this->setData('menu', $this->getWidgetMenu($this, $options));
+        $this->setData('menu', $this->getWidgetMenu($options));
     }
 
     /**

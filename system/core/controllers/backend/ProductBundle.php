@@ -131,7 +131,7 @@ class ProductBundle extends BackendController
             'store_id' => $this->data_product['store_id']
         );
 
-        $this->setData('product_picker', $this->getWidgetProductPicker($this, $options));
+        $this->setData('product_picker', $this->getWidgetProductPicker($options));
     }
 
     /**
