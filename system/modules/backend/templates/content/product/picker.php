@@ -15,9 +15,9 @@
       <?php foreach ($products as $product) { ?>
       <div class="selected-item">
         <?php if(empty($multiple)) { ?>
-        <input type="hidden" name="product[<?php echo $name; ?>]" value="<?php echo $product[$key]; ?>">
+        <input type="hidden" name="<?php echo $name; ?>" value="<?php echo $product[$key]; ?>">
         <?php } else { ?>
-        <input type="hidden" name="product[<?php echo $name; ?>][]" value="<?php echo $product[$key]; ?>">
+        <input type="hidden" name="<?php echo $name; ?>[]" value="<?php echo $product[$key]; ?>">
         <?php } ?>
         <?php echo $product['rendered']; ?>
       </div>

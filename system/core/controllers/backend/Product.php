@@ -497,11 +497,11 @@ class Product extends BackendController
 
         $options = array(
             'multiple' => true,
-            'name' => 'related',
+            'name' => 'product[related]',
             'products' => $products
         );
 
-        $this->setData('product_picker_widget', $this->getWidgetProductPicker($this, $options));
+        $this->setData('product_picker', $this->getWidgetProductPicker($this, $options));
     }
 
     /**

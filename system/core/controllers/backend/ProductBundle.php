@@ -126,7 +126,7 @@ class ProductBundle extends BackendController
 
         $options = array(
             'multiple' => true,
-            'name' => 'bundle',
+            'name' => 'product[bundle]',
             'products' => $products,
             'store_id' => $this->data_product['store_id']
         );
