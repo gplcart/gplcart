@@ -9,7 +9,8 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Review as ReviewModel,
+use gplcart\core\models\Price as PriceModel,
+    gplcart\core\models\Review as ReviewModel,
     gplcart\core\models\Product as ProductModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
@@ -18,6 +19,12 @@ use gplcart\core\controllers\backend\Controller as BackendController;
  */
 class Review extends BackendController
 {
+
+    /**
+     * Price model instance
+     * @var \gplcart\core\models\Price $price
+     */
+    protected $price;
 
     /**
      * Review model instance
@@ -46,11 +53,13 @@ class Review extends BackendController
     /**
      * @param ReviewModel $review
      * @param ProductModel $product
+     * @param PriceModel $price
      */
-    public function __construct(ReviewModel $review, ProductModel $product)
+    public function __construct(ReviewModel $review, ProductModel $product, PriceModel $price)
     {
         parent::__construct();
 
+        $this->price = $price;
         $this->review = $review;
         $this->product = $product;
     }
@@ -69,7 +78,6 @@ class Review extends BackendController
         $this->setPagerListReview();
 
         $this->setData('reviews', $this->getListReview());
-        $this->setDataListReview();
 
         $this->outputListReview();
     }
@@ -79,8 +87,8 @@ class Review extends BackendController
      */
     protected function setFilterListReview()
     {
-        $allowed = array('product_id', 'email',
-            'status', 'created', 'text', 'review_id');
+        $allowed = array('product_id', 'email_like',
+            'status', 'created', 'text', 'review_id', 'product_title');
 
         $this->setFilter($allowed);
     }
@@ -140,39 +148,7 @@ class Review extends BackendController
     {
         $options = $this->query_filter;
         $options['limit'] = $this->data_limit;
-        $reviews = (array) $this->review->getList($options);
-
-        return $this->prepareListReview($reviews);
-    }
-
-    /**
-     * Prepare an array of reviews
-     * @param array $reviews
-     * @return array
-     */
-    protected function prepareListReview(array $reviews)
-    {
-        foreach ($reviews as &$review) {
-            $product = $this->product->get($review['product_id']);
-            $review['product'] = empty($product) ? '' : $product['title'];
-        }
-
-        return $reviews;
-    }
-
-    /**
-     * Prepare the template data on the overview reviews page
-     */
-    protected function setDataListReview()
-    {
-        $product_id = $this->getQuery('product_id');
-
-        $product = null;
-        if (!empty($product_id)) {
-            $product = $this->product->get($product_id);
-        }
-
-        $this->setData('product', isset($product['title']) ? $product['title'] : '');
+        return (array) $this->review->getList($options);
     }
 
     /**
@@ -217,7 +193,9 @@ class Review extends BackendController
         $this->setData('review', $this->data_review);
 
         $this->submitEditReview();
-        $this->setDataEditReview();
+
+        $this->setDataUserEditReview();
+        $this->setDataProductEditReview();
         $this->outputEditReview();
     }
 
@@ -300,24 +278,38 @@ class Review extends BackendController
     }
 
     /**
-     * Set a template data on the edit review page
+     * Set user template data
      */
-    protected function setDataEditReview()
+    protected function setDataUserEditReview()
     {
-        $user_id = $this->getData('review.user_id');
+        $user = $this->user->get($this->getData('review.user_id'));
+        if(isset($user['email'])){
+            $this->setData('review.email', $user['email']);
+        }
+    }
+
+    /**
+     * Set product template data
+     */
+    protected function setDataProductEditReview()
+    {
         $product_id = $this->getData('review.product_id');
 
-        if (!empty($user_id)) {
-            $user = $this->user->get($user_id);
-            $email = isset($user['email']) ? $user['email'] : '';
-            $this->setData('review.email', $email);
+        $products = array();
+        $product = $this->product->get($product_id);
+
+        if (!empty($product)) {
+            $this->setItemProductSuggestion($product, $this->image, $this->price, array('entity_id' => $product_id));
+            $products = array($product);
         }
 
-        if (!empty($product_id)) {
-            $product = $this->product->get($product_id);
-            $title = isset($product['title']) ? $product['title'] : '';
-            $this->setData('review.product', $title);
-        }
+        $options = array(
+            'multiple' => false,
+            'products' => $products,
+            'name' => 'review[product_id]'
+        );
+
+        $this->setData('product_picker', $this->getWidgetProductPicker($this, $options));
     }
 
     /**
