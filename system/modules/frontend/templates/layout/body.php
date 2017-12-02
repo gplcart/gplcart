@@ -115,7 +115,7 @@ $region_content_class = 'col-md-8';
               <li class="cart">
                 <a rel="nofollow" id="cart-link" href="<?php echo $this->url('checkout'); ?>">
                   <?php echo $this->text('Cart'); ?>
-                  <span class="badge" id="cart-quantity"><?php echo empty($_cart['quantity']) ? 0 : $_cart['quantity']; ?></span>
+                  <span class="badge" id="cart-quantity"><?php echo $_cart['total']; ?></span>
                 </a>
               </li>
               <li class="wishlist">
