@@ -16,12 +16,17 @@ trait Job
 {
 
     /**
+     * @return \gplcart\core\Controller
+     */
+    protected abstract function getController();
+
+    /**
      * Processes the current job
-     * @param \gplcart\core\Controller $controller
      * @param \gplcart\core\models\Job $job_model
      */
-    protected function setJob($controller, $job_model)
+    protected function setJob($job_model)
     {
+        $controller = $this->getController();
         $cancel_job_id = $controller->getQuery('cancel_job');
 
         if (!empty($cancel_job_id)) {
@@ -42,7 +47,6 @@ trait Job
         }
 
         $controller->setJsSettings('job', $job);
-
         if ($controller->getQuery('process_job') === $job['id'] && $controller->isAjax()) {
             $controller->outputJson($job_model->process($job));
         }
@@ -50,13 +54,14 @@ trait Job
 
     /**
      * Returns the rendered job widget
-     * @param \gplcart\core\Controller $controller
      * @param \gplcart\core\models\Job $job_model
      * @param null|array $job
      * @return string
      */
-    public function getWidgetJob($controller, $job_model, $job = null)
+    public function getWidgetJob($job_model, $job = null)
     {
+        $controller = $this->getController();
+
         if (!isset($job)) {
             $job = $job_model->get($controller->getQuery('job_id', ''));
         }
