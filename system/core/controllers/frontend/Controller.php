@@ -11,17 +11,24 @@ namespace gplcart\core\controllers\frontend;
 
 use gplcart\core\Controller as BaseController;
 use gplcart\core\traits\Item as ItemTrait,
+    gplcart\core\traits\Cart as CartTrait,
     gplcart\core\traits\Widget as WidgetTrait,
-    gplcart\core\traits\ItemPrice as ItemPriceTrait;
+    gplcart\core\traits\Wishlist as WishlistTrait,
+    gplcart\core\traits\ItemPrice as ItemPriceTrait,
+    gplcart\core\traits\ProductCompare as ProductCompareTrait;
 
 /**
  * Contents specific to the front-end methods
  */
 class Controller extends BaseController
 {
-    use WidgetTrait,
-        ItemTrait,
-        ItemPriceTrait;
+
+    use ItemTrait,
+        CartTrait,
+        WidgetTrait,
+        WishlistTrait,
+        ItemPriceTrait,
+        ProductCompareTrait;
 
     /**
      * Trigger model instance
@@ -104,13 +111,26 @@ class Controller extends BaseController
             $this->setDefaultDataFrontend();
             $this->setDefaultJsStoreFrontend();
 
-            $this->submitCart();
-            $this->submitCompare();
-            $this->submitWishlist();
+            $this->submitCart($this->cart);
+            $this->submitWishlist($this->wishlist);
+            $this->submitProductCompare($this->productcompare);
         }
 
         $this->hook->attach('construct.controller.frontend', $this);
         $this->controlHttpStatus();
+    }
+
+    /**
+     * Returns the number of cart items for the current user
+     */
+    public function getCartQuantity(array $options = array())
+    {
+        $options += array(
+            'user_id' => $this->cart_uid,
+            'store_id' => $this->store_id
+        );
+
+        return $this->cart->getQuantity($options);
     }
 
     /**
@@ -129,11 +149,11 @@ class Controller extends BaseController
     {
         $currencies = $this->currency->getList(true);
 
-        $this->data['_cart'] = $this->getCart();
         $this->data['_currencies'] = $currencies;
+        $this->data['_cart'] = $this->getCartQuantity();
         $this->data['_wishlist'] = $this->getWishlist();
-        $this->data['_comparison'] = $this->getComparison();
         $this->data['_captcha'] = $this->getWidgetCaptcha();
+        $this->data['_comparison'] = $this->getProductComparison();
         $this->data['_currency'] = $currencies[$this->current_currency];
         $this->data['_menu'] = $this->getWidgetCategoryMenu($this->data_categories);
     }
@@ -177,16 +197,17 @@ class Controller extends BaseController
 
     /**
      * Returns an array of fired triggers
+     * @param array $conditions
      * @return array
      */
-    public function getTriggered()
+    public function getTriggered(array $conditions = array())
     {
-        $options = array(
+        $conditions += array(
             'status' => 1,
             'store_id' => $this->store_id
         );
 
-        return $this->trigger->getTriggered(array(), $options);
+        return $this->trigger->getTriggered(array(), $conditions);
     }
 
     /**
@@ -201,30 +222,47 @@ class Controller extends BaseController
 
     /**
      * Returns the current cart data
-     * @param array $options
+     * @param array $conditions
      * @return array
      */
-    public function getCart(array $options = array())
+    public function getCart(array $conditions = array())
     {
-        $options += array(
+        $conditions += array(
             'user_id' => $this->cart_uid,
             'store_id' => $this->store_id
         );
 
-        $cart = $this->cart->getContent($options);
+        return $this->prepareCart($this->cart->getContent($conditions));
+    }
 
+    /**
+     * Prepares an array of cart items
+     * @param array $cart
+     * @return array
+     */
+    protected function prepareCart(array $cart)
+    {
         if (empty($cart['items'])) {
             return array();
         }
 
-        return $this->prepareCart($cart);
+        foreach ($cart['items'] as &$item) {
+            $item['currency'] = $cart['currency'];
+            $this->setItemThumbCart($item, $this->image);
+            $this->setItemPriceFormatted($item, $this->price, $this->current_currency);
+            $this->setItemTotalFormatted($item, $this->price);
+            $this->setItemProductBundle($item['product'], $this->product, $this->image);
+        }
+
+        $this->setItemTotalFormatted($cart, $this->price);
+        return $cart;
     }
 
     /**
      * Returns an array of product IDs to compare
      * @return array
      */
-    public function getComparison()
+    public function getProductComparison()
     {
         return $this->productcompare->getList();
     }
@@ -235,89 +273,22 @@ class Controller extends BaseController
      */
     public function getWishlist()
     {
-        $options = array(
+        $conditions = array(
             'product_status' => 1,
             'user_id' => $this->cart_uid,
             'store_id' => $this->store_id
         );
 
-        return (array) $this->wishlist->getList($options);
+        return (array) $this->wishlist->getList($conditions);
     }
 
     /**
-     * Handles submitted cart products
+     * Returns rendered cart preview
+     * @return string
      */
-    protected function submitCart()
+    public function getCartPreview()
     {
-        $this->setSubmitted('product');
-        $this->filterSubmitted(array('product_id'));
-
-        if ($this->isPosted('add_to_cart')) {
-            $this->validateAddToCart();
-            $this->addToCart();
-        } else if ($this->isPosted('remove_from_cart')) {
-            $this->setSubmitted('cart');
-            $this->deleteFromCart();
-        }
-    }
-
-    /**
-     * Adds a product to the cart
-     */
-    protected function addToCart()
-    {
-        $result = array(
-            'redirect' => '',
-            'severity' => 'warning',
-            'message' => $this->text('An error occurred')
-        );
-
-        $errors = $this->error();
-
-        if (empty($errors)) {
-            $submitted = $this->getSubmitted();
-            $result = $this->cart->addProduct($submitted['product'], $submitted);
-        } else {
-            $result['message'] = $this->format($errors);
-        }
-
-        if ($this->isAjax()) {
-            $result['modal'] = $this->getWidgetCartPreview($this->getCart());
-            $this->outputJson($result);
-        }
-
-        $this->redirect($result['redirect'], $result['message'], $result['severity']);
-    }
-
-    /**
-     * Validates adding a product to the cart
-     */
-    protected function validateAddToCart()
-    {
-        $this->setSubmitted('user_id', $this->cart_uid);
-        $this->setSubmitted('store_id', $this->store_id);
-        $this->setSubmitted('quantity', $this->getSubmitted('quantity', 1));
-
-        $this->validateComponent('cart');
-    }
-
-    /**
-     * Deletes a submitted cart item
-     */
-    protected function deleteFromCart()
-    {
-        $result = $this->cart->submitDelete($this->getSubmitted('cart_id'));
-
-        if (empty($result['quantity'])) {
-            $result['message'] = '';
-        }
-
-        if ($this->isAjax()) {
-            $result['modal'] = $this->getWidgetCartPreview($this->getCart());
-            $this->outputJson($result);
-        }
-
-        $this->redirect($result['redirect'], $result['message'], $result['severity']);
+        return $this->getWidgetCartPreview($this->getCart());
     }
 
     /**
@@ -338,185 +309,7 @@ class Controller extends BaseController
             'entity' => 'category',
             'imagestyle' => $this->configTheme('image_style_category_child', 3));
 
-        $categories = $this->category->getTree($conditions);
-        return $this->prepareEntityItems($categories, $options);
-    }
-
-    /**
-     * Prepares an array of cart items
-     * @param array $cart
-     * @return array
-     */
-    protected function prepareCart(array $cart)
-    {
-        foreach ($cart['items'] as &$item) {
-            $item['currency'] = $cart['currency'];
-            $this->setItemThumbCart($item, $this->image);
-            $this->setItemPriceFormatted($item, $this->price, $this->current_currency);
-            $this->setItemTotalFormatted($item, $this->price);
-            $this->setItemProductBundle($item['product'], $this->product, $this->image);
-        }
-
-        $this->setItemTotalFormatted($cart, $this->price);
-        return $cart;
-    }
-
-    /**
-     * Adds/removes a product from comparison
-     */
-    protected function submitCompare()
-    {
-        $this->setSubmitted('product');
-        $this->filterSubmitted(array('product_id'));
-
-        if ($this->isPosted('remove_from_compare')) {
-            $this->deleteFromCompare();
-        } else if ($this->isPosted('add_to_compare')) {
-            $this->validateAddToCompare();
-            $this->addToCompare();
-        }
-    }
-
-    /**
-     * Adds a product to comparison
-     */
-    protected function addToCompare()
-    {
-        $errors = $this->error();
-
-        $result = array(
-            'redirect' => '',
-            'severity' => 'warning',
-            'message' => $this->text('An error occurred')
-        );
-
-        if (empty($errors)) {
-            $submitted = $this->getSubmitted();
-            $result = $this->productcompare->addProduct($submitted['product'], $submitted);
-        } else {
-            $result['message'] = $this->format($errors);
-        }
-
-        if ($this->isAjax()) {
-            $this->outputJson($result);
-        }
-
-        $this->redirect($result['redirect'], $result['message'], $result['severity']);
-    }
-
-    /**
-     * Deletes a submitted product from the comparison
-     */
-    protected function deleteFromCompare()
-    {
-        $product_id = $this->getSubmitted('product_id');
-        $result = $this->productcompare->deleteProduct($product_id);
-
-        if ($this->isAjax()) {
-            $this->outputJson($result);
-        } else {
-            $this->controlDeleteFromCompare($result, $product_id);
-        }
-
-        $this->redirect($result['redirect'], $result['message'], $result['severity']);
-    }
-
-    /**
-     * Controls redirect after a product has been deleted from comparison
-     * @param array $result
-     * @param integer $product_id
-     */
-    protected function controlDeleteFromCompare(array &$result, $product_id)
-    {
-        if (empty($result['redirect'])) {
-            $segments = $this->url->getSegments();
-            if (isset($segments[0]) && $segments[0] === 'compare' && !empty($segments[1])) {
-                $ids = array_filter(array_map('trim', explode(',', $segments[1])), 'ctype_digit');
-                unset($ids[array_search($product_id, $ids)]);
-                $result['redirect'] = $segments[0] . '/' . implode(',', $ids);
-            }
-        }
-    }
-
-    /**
-     * Adds/removes a product from the wishlist
-     */
-    protected function submitWishlist()
-    {
-        $this->setSubmitted('product');
-        $this->filterSubmitted(array('product_id'));
-
-        if ($this->isPosted('remove_from_wishlist')) {
-            $this->deleteFromWishlist();
-        } else if ($this->isPosted('add_to_wishlist')) {
-            $this->validateAddToWishlist();
-            $this->addToWishlist();
-        }
-    }
-
-    /**
-     * Validates "Add to wishlist" action
-     */
-    protected function validateAddToWishlist()
-    {
-        $this->setSubmitted('user_id', $this->cart_uid);
-        $this->setSubmitted('store_id', $this->store_id);
-
-        $this->validateComponent('wishlist');
-    }
-
-    /**
-     * Add a product to the wishlist
-     */
-    protected function addToWishlist()
-    {
-        $errors = $this->error();
-
-        $result = array(
-            'redirect' => '',
-            'severity' => 'warning',
-            'message' => $this->text('An error occurred')
-        );
-
-        if (empty($errors)) {
-            $result = $this->wishlist->addProduct($this->getSubmitted());
-        } else {
-            $result['message'] = $this->format($errors);
-        }
-
-        if ($this->isAjax()) {
-            $this->outputJson($result);
-        }
-
-        $this->redirect($result['redirect'], $result['message'], $result['severity']);
-    }
-
-    /**
-     * Deletes a submitted product from the wishlist
-     */
-    protected function deleteFromWishlist()
-    {
-        $condititons = array(
-            'user_id' => $this->cart_uid,
-            'store_id' => $this->store_id,
-            'product_id' => $this->getSubmitted('product_id')
-        );
-
-        $result = $this->wishlist->deleteProduct($condititons);
-
-        if ($this->isAjax()) {
-            $this->outputJson($result);
-        }
-
-        $this->redirect($result['redirect'], $result['message'], $result['severity']);
-    }
-
-    /**
-     * Validates "Add to compare" action
-     */
-    protected function validateAddToCompare()
-    {
-        $this->validateComponent('compare');
+        return $this->prepareEntityItems($this->category->getTree($conditions), $options);
     }
 
     /**
@@ -527,10 +320,6 @@ class Controller extends BaseController
      */
     public function getProducts($conditions = array(), $options = array())
     {
-        $options += array(
-            'entity' => 'product'
-        );
-
         $conditions += array(
             'status' => 1,
             'store_id' => $this->store_id
@@ -540,8 +329,10 @@ class Controller extends BaseController
             return array();
         }
 
-        $list = (array) $this->product->getList($conditions);
-        return $this->prepareEntityItems($list, $options);
+        $options += array(
+            'entity' => 'product');
+
+        return $this->prepareEntityItems((array) $this->product->getList($conditions), $options);
     }
 
     /**
@@ -590,8 +381,8 @@ class Controller extends BaseController
         }
 
         $options += array(
-            'entity_id' => array_keys($items),
             'entity' => $options['entity'],
+            'entity_id' => array_keys($items),
             'template_item' => "{$options['entity']}/item/{$options['view']}",
             'imagestyle' => $this->configTheme("image_style_{$options['entity']}_{$options['view']}", 3)
         );
