@@ -1248,7 +1248,7 @@ abstract class Controller
      * @param array $allowed
      * @return array
      */
-    protected function filterSubmitted(array $allowed)
+    public function filterSubmitted(array $allowed)
     {
         $this->submitted = array_intersect_key($this->submitted, array_flip($allowed));
         return $this->submitted;
@@ -2044,7 +2044,7 @@ abstract class Controller
      * @param array $options
      * @return array
      */
-    protected function validateComponent($handler_id, array $options = array())
+    public function validateComponent($handler_id, array $options = array())
     {
         $result = $this->validator->run($handler_id, $this->submitted, $options);
 
