@@ -90,7 +90,7 @@ class Compare extends FrontendController
     protected function getProductsSelectCompare()
     {
         $conditions = array(
-            'product_id' => $this->getComparison());
+            'product_id' => $this->getProductComparison());
 
         $options = array(
             'view' => $this->configTheme('compare_view', 'grid'),
