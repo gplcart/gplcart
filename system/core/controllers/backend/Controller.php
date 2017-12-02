@@ -52,7 +52,7 @@ class Controller extends BaseController
         parent::__construct();
 
         $this->setInstancesBackend();
-        $this->setJob($this, $this->job);
+        $this->setJob($this->job);
         $this->setCron();
         $this->setDataBackend();
         $this->getPostedAction();
@@ -86,7 +86,7 @@ class Controller extends BaseController
     protected function setDataBackend()
     {
         $this->data['_stores'] = (array) $this->store->getList();
-        $this->data['_job'] = $this->getWidgetJob($this, $this->job);
+        $this->data['_job'] = $this->getWidgetJob($this->job);
         $this->data['_menu'] = $this->getWidgetAdminMenu($this->route);
         $this->data['_help'] = $this->help->getByPattern($this->current_route['simple_pattern'], $this->langcode);
 
