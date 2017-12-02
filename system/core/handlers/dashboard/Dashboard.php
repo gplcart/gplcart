@@ -30,7 +30,8 @@ use gplcart\core\traits\ItemPrice as ItemPriceTrait,
 class Dashboard extends Handler
 {
 
-    use ItemPriceTrait,ItemOrderTrait;
+    use ItemPriceTrait,
+        ItemOrderTrait;
 
     /**
      * Config class instance
@@ -99,12 +100,6 @@ class Dashboard extends Handler
     protected $language;
 
     /**
-     * Dashboard items limit
-     * @var integer
-     */
-    protected $limit;
-
-    /**
      * @param Config $config
      * @param CartModel $cart
      * @param UserModel $user
@@ -133,8 +128,6 @@ class Dashboard extends Handler
         $this->language = $language;
         $this->pricerule = $pricerule;
         $this->transaction = $transaction;
-
-        $this->limit = $this->config->get('dashboard_limit', 10);
     }
 
     /**
@@ -162,7 +155,7 @@ class Dashboard extends Handler
         $options = array(
             'order' => 'desc',
             'sort' => 'created',
-            'limit' => array(0, $this->limit));
+            'limit' => array(0, $this->config->get('dashboard_limit', 10)));
 
         $items = $this->order->getList($options);
 
@@ -183,7 +176,7 @@ class Dashboard extends Handler
         $options = array(
             'order' => 'desc',
             'sort' => 'created',
-            'limit' => array(0, $this->limit));
+            'limit' => array(0, $this->config->get('dashboard_limit', 10)));
 
         $items = $this->transaction->getList($options);
 
@@ -204,7 +197,7 @@ class Dashboard extends Handler
             'status' => 1,
             'order' => 'desc',
             'sort' => 'created',
-            'limit' => array(0, $this->limit));
+            'limit' => array(0, $this->config->get('dashboard_limit', 10)));
 
         $items = $this->pricerule->getList($options);
 
@@ -224,7 +217,7 @@ class Dashboard extends Handler
         $options = array(
             'sort' => 'created',
             'order' => 'desc',
-            'limit' => array(0, $this->limit));
+            'limit' => array(0, $this->config->get('dashboard_limit', 10)));
 
         return $this->cart->getList($options);
     }
@@ -238,7 +231,7 @@ class Dashboard extends Handler
         $options = array(
             'sort' => 'created',
             'order' => 'desc',
-            'limit' => array(0, $this->limit)
+            'limit' => array(0, $this->config->get('dashboard_limit', 10))
         );
 
         return $this->user->getList($options);
@@ -253,7 +246,7 @@ class Dashboard extends Handler
         $options = array(
             'sort' => 'created',
             'order' => 'desc',
-            'limit' => array(0, $this->limit));
+            'limit' => array(0, $this->config->get('dashboard_limit', 10)));
 
         return $this->review->getList($options);
     }
@@ -269,7 +262,7 @@ class Dashboard extends Handler
 
             $options = array(
                 'severity' => $severity,
-                'limit' => array(0, $this->limit)
+                'limit' => array(0, $this->config->get('dashboard_limit', 10))
             );
 
             $events = (array) $this->report->getList($options);
