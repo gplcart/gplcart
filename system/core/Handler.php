@@ -12,7 +12,7 @@ namespace gplcart\core;
 use InvalidArgumentException;
 
 /**
- * Provides methods to work with various system handlers
+ * Provides methods to retrieve and execute handlers
  */
 class Handler
 {
@@ -39,36 +39,56 @@ class Handler
     /**
      * Returns a handler
      * @param array $handlers
-     * @param string $handler_id
+     * @param string|null $handler_id
      * @param string $name
      * @return object|array
      * @throws InvalidArgumentException
      */
     public static function get($handlers, $handler_id, $name)
     {
-        if (isset($handler_id)) {
-            if (empty($handlers[$handler_id]['handlers'][$name])) {
-                throw new InvalidArgumentException("No such handler name '$name'");
+        $callable = static::getCallable($handlers, $handler_id, $name);
+
+        if (is_array($callable)) {
+
+            if (is_callable($callable)) {
+                $callable[0] = Container::get($callable[0]);
+                return $callable;
             }
-            $handler = $handlers[$handler_id]['handlers'][$name];
-        } else {
-            if (empty($handlers['handlers'][$name])) {
-                throw new InvalidArgumentException("No such handler name '$name'");
-            }
-            $handler = $handlers['handlers'][$name];
+
+            throw new InvalidArgumentException(implode('::', $callable) . ' is not callable');
         }
 
-        if (is_array($handler)) {
-            if (is_callable($handler)) {
-                $handler[0] = Container::get($handler[0]);
-                return $handler;
-            }
-            throw new InvalidArgumentException(implode('::', $handler) . ' is not callable');
-        } else if ($handler instanceof \Closure) {
-            return $handler;
+        if ($callable instanceof \Closure) {
+            return $callable;
         }
 
         throw new InvalidArgumentException('Unexpected handler format');
+    }
+
+    /**
+     * Returns a callable data from the handler array
+     * @param array $handlers
+     * @param string|null $handler_id
+     * @param string $name
+     * @return array|object
+     * @throws InvalidArgumentException
+     */
+    protected static function getCallable($handlers, $handler_id, $name)
+    {
+        if (isset($handler_id)) {
+
+            if (empty($handlers[$handler_id]['handlers'][$name])) {
+                throw new InvalidArgumentException("No such handler name '$name'");
+            }
+
+            return $handlers[$handler_id]['handlers'][$name];
+        }
+
+        if (empty($handlers['handlers'][$name])) {
+            throw new InvalidArgumentException("No such handler name '$name'");
+        }
+
+        return $handlers['handlers'][$name];
     }
 
 }
