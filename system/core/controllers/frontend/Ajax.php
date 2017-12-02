@@ -195,7 +195,7 @@ class Ajax extends FrontendController
      */
     public function getCartPreviewAjax()
     {
-        return array('preview' => $this->getWidgetCartPreview($this->getCart()));
+        return array('preview' => $this->getCartPreview());
     }
 
     /**
