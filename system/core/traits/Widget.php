@@ -29,21 +29,19 @@ trait Widget
     public function getWidgetAdminMenu($route_class, array $options = array())
     {
         $options += array('parent_url' => 'admin');
+        $controller = $this->getController();
 
         $items = array();
         foreach ($route_class->getList() as $path => $route) {
-
             if (strpos($path, "{$options['parent_url']}/") !== 0 || empty($route['menu']['admin'])) {
                 continue;
             }
-
-            if (isset($route['access']) && !$this->getController()->access($route['access'])) {
+            if (isset($route['access']) && !$controller->access($route['access'])) {
                 continue;
             }
-
             $items[$path] = array(
-                'url' => $this->getController()->url($path),
-                'text' => $this->getController()->text($route['menu']['admin']),
+                'url' => $controller->url($path),
+                'text' => $controller->text($route['menu']['admin']),
                 'depth' => substr_count(substr($path, strlen("{$options['parent_url']}/")), '/'),
             );
         }
@@ -94,10 +92,12 @@ trait Widget
      */
     public function getWidgetShare(array $options = array())
     {
-        $options += array(
-            'url' => $this->url('', array(), true));
+        $controller = $this->getController();
 
-        return $this->getController()->render('common/share', $options);
+        $options += array(
+            'url' => $controller->url('', array(), true));
+
+        return $controller->render('common/share', $options);
     }
 
     /**
@@ -124,10 +124,11 @@ trait Widget
     public function getWidgetOauthButtons($oauth_model, array $options = array())
     {
         $options += array(
-            'type' => 'login',
-            'status' => true
+            'status' => true,
+            'type' => 'login'
         );
 
+        $controller = $this->getController();
         $providers = $this->getProviders($options);
 
         $buttons = array();
@@ -137,11 +138,11 @@ trait Widget
                 $buttons[$provider_id]['url'] = $url;
                 $buttons[$provider_id]['provider'] = $provider;
                 $data = array('provider' => $provider, 'url' => $url);
-                $buttons[$provider_id]['rendered'] = $this->getController()->render($provider['template']['button'], $data);
+                $buttons[$provider_id]['rendered'] = $controller->render($provider['template']['button'], $data);
             }
         }
 
-        return $this->getController()->render('common/oauth', array('buttons' => $buttons));
+        return $controller->render('common/oauth', array('buttons' => $buttons));
     }
 
     /**
@@ -195,12 +196,14 @@ trait Widget
             return '';
         }
 
+        $controller = $this->getController();
+
         $options = array(
             'cart' => $cart,
-            'limit' => $this->getController()->config('cart_preview_limit', 5)
+            'limit' => $controller->config('cart_preview_limit', 5)
         );
 
-        return $this->getController()->render('cart/preview', $options, true);
+        return $controller->render('cart/preview', $options, true);
     }
 
 }
