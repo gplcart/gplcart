@@ -104,11 +104,6 @@ class Category extends BackendController
     {
         list($selected, $action, $value) = $this->getPostedAction();
 
-        if ($action === 'weight' && $this->access('category_edit')) {
-            $this->updateWeightCategory($selected);
-            return null;
-        }
-
         $updated = $deleted = 0;
         foreach ($selected as $category_id) {
 
@@ -130,19 +125,6 @@ class Category extends BackendController
             $message = $this->text('Deleted %num item(s)', array('%num' => $deleted));
             $this->setMessage($message, 'success');
         }
-    }
-
-    /**
-     * Updates weight for an array of categories
-     * @param array $categories
-     */
-    protected function updateWeightCategory(array $categories)
-    {
-        foreach ($categories as $category_id => $weight) {
-            $this->category->update($category_id, array('weight' => $weight));
-        }
-
-        $this->outputJson(array('success' => $this->text('Items have been reordered')));
     }
 
     /**

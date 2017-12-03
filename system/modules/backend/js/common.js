@@ -43,27 +43,6 @@
     };
 
     /**
-     * Returns HTML of loading indicator
-     * @returns {String}
-     */
-    var htmlLoading = function () {
-
-        var mod, html = '';
-
-        html += '<div class="modal loading show">';
-        html += '<div class="modal-dialog">';
-        html += '<div class="modal-content">';
-        html += '<div class="modal-body">';
-        html += '<div class="progress">';
-        html += '<div class="progress-bar progress-bar-striped active"></div>';
-        html += '</div></div></div></div></div>';
-        html += '<div class="modal-backdrop loading fade in"></div>';
-
-        mod = Gplcart.hook('html.loading', html);
-        return mod === undefined ? html : mod;
-    };
-
-    /**
      * Returns HTML of alert popup
      * @param {String} message
      * @param {String} id
@@ -229,24 +208,6 @@
             $('#' + id).modal('show');
 
             Gplcart.hook('modal.set.after', content, id, header, footer);
-        }
-    };
-
-    /**
-     * Displays a loading indicator
-     * @param {Boolean} mode
-     */
-    var setLoading = function (mode) {
-
-        if (Gplcart.hook('loading.set.before', mode) === undefined) {
-
-            if (mode === false) {
-                $('body').find('.loading').remove();
-            } else {
-                $('body').append(htmlLoading());
-            }
-
-            Gplcart.hook('loading.set.after', mode);
         }
     };
 
@@ -467,7 +428,7 @@
                     "ui-autocomplete": "product-picker-popup"
                 },
                 source: function (request, response) {
-                    
+
                     params = {
                         status: 1,
                         term: request.term,
@@ -476,8 +437,8 @@
                     };
 
                     store_id = input.data('store-id') || input.closest('form').find('[name$="[store_id]"]').val();
-                    
-                    if(store_id){
+
+                    if (store_id) {
                         params.store_id = store_id;
                     }
 
@@ -514,44 +475,42 @@
     Gplcart.onload.setAutocompleteCollectionItem = function () {
 
         var params = {},
-                input = $('form#edit-collection-item input[name$="[input]"]'),
+                input = $('form#edit-collection-item input[name$="[title]"]'),
                 value = $('form#edit-collection-item input[name$="[value]"]');
 
-        if (input.length === 0 || !Gplcart.settings.collection) {
-            return;
+        if (input.length && Gplcart.settings.collection) {
+            input.autocomplete({
+                minLength: 2,
+                source: function (request, response) {
+
+                    params = {
+                        term: request.term,
+                        token: Gplcart.settings.token,
+                        action: 'getCollectionItemAjax',
+                        collection_id: Gplcart.settings.collection.collection_id
+                    };
+
+                    $.post(Gplcart.settings.base + 'ajax', params, function (data) {
+                        response($.map(data, function (value, key) {
+                            return {
+                                value: key,
+                                label: Gplcart.text('@title (id: @id)', {"@title": value.title, "@id": key})
+                            };
+                        }));
+                    });
+                },
+                select: function (event, ui) {
+                    input.val(ui.item.label);
+                    value.val(ui.item.value);
+                    return false;
+                },
+                search: function () {
+                    value.val('');
+                }
+            }).autocomplete("instance")._renderItem = function (ul, item) {
+                return $("<li>").append("<a>" + item.label + "</a>").appendTo(ul);
+            };
         }
-
-        input.autocomplete({
-            minLength: 2,
-            source: function (request, response) {
-
-                params = {
-                    term: request.term,
-                    token: Gplcart.settings.token,
-                    action: 'getCollectionItemAjax',
-                    collection_id: Gplcart.settings.collection.collection_id
-                };
-
-                $.post(Gplcart.settings.base + 'ajax', params, function (data) {
-                    response($.map(data, function (value, key) {
-                        return {
-                            value: key,
-                            label: value.title ? value.title + ' (' + key + ')' : '--'
-                        };
-                    }));
-                });
-            },
-            select: function (event, ui) {
-                input.val(ui.item.label);
-                value.val(ui.item.value);
-                return false;
-            },
-            search: function () {
-                value.val('');
-            }
-        }).autocomplete("instance")._renderItem = function (ul, item) {
-            return $("<li>").append("<a>" + item.label + "</a>").appendTo(ul);
-        };
     };
 
     /**
@@ -635,51 +594,6 @@
         };
 
         $(image_container).sortable(settings);
-    };
-
-    /**
-     * Makes sortable table rows containing weigth value
-     * @returns {undefined}
-     */
-    Gplcart.onload.setSortableTableWeigth = function () {
-
-        var weight = {}, selector = $('table[data-sortable-weight="true"] tbody');
-
-        if (selector.length) {
-            selector.sortable({
-                cursor: 'n-resize',
-                handle: '.handle',
-                stop: function () {
-
-                    selector.find('tr').each(function (i) {
-                        weight[$(this).attr('data-id')] = i;
-                    });
-
-                    $.ajax({
-                        type: 'POST',
-                        url: Gplcart.settings.urn,
-                        data: {
-                            token: Gplcart.settings.token,
-                            action: {items: weight, name: 'weight'}
-                        },
-                        success: function (data) {
-                            if (typeof data === 'object' && data.success) {
-                                setAlert(data.success, 'weight-updating-success', 'success');
-                                $.each(weight, function (i, v) {
-                                    $('tr[data-id=' + i + ']').find('td .weight').text(v);
-                                });
-                            }
-                        },
-                        beforeSend: function () {
-                            setLoading(true);
-                        },
-                        complete: function () {
-                            setLoading(false);
-                        }
-                    });
-                }
-            });
-        }
     };
 
     /**

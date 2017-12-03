@@ -46,7 +46,7 @@
   </div>
   <?php } ?>
   <div class="table-responsive">
-    <table class="table categories" data-sortable-weight="true">
+    <table class="table categories">
       <thead>
         <tr>
           <th><input type="checkbox" onchange="Gplcart.selectAll(this);"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
@@ -71,10 +71,7 @@
             <?php } ?>
           </td>
           <td class="middle">
-            <?php if ($this->access('category_edit')) { ?>
-              <i class="fa fa-arrows handle"></i>
-            <?php } ?>
-            <span class="weight"><?php echo $this->e($category['weight']); ?></span>
+            <?php echo $this->e($category['weight']); ?>
           </td>
           <td class="middle">
             <ul class="list-inline">

@@ -46,7 +46,7 @@
   </div>
   <?php } ?>
   <div class="table-responsive">
-    <table class="table collection-items" data-sortable-weight="true">
+    <table class="table collection-items">
       <thead>
         <tr>
           <th><input type="checkbox" onchange="Gplcart.selectAll(this);"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
@@ -55,11 +55,12 @@
           <th><?php echo $this->text('Status'); ?></th>
           <th><?php echo $this->text('Entity status'); ?></th>
           <th><?php echo $this->text('Weight'); ?></th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
         <?php foreach ($items as $item) { ?>
-        <tr data-id="<?php echo $this->e($item['collection_item']['collection_item_id']); ?>">
+        <tr>
           <td class="middle"><input type="checkbox" class="select-all" name="action[items][]" value="<?php echo $this->e($item['collection_item']['collection_item_id']); ?>"<?php echo $access_actions ? '' : ' disabled'; ?>></td>
           <td class="middle"><?php echo $this->truncate($this->e($item['collection_item']['collection_item_id'])); ?></td>
           <td class="middle"><?php echo $this->truncate($this->e($item['title'])); ?></td>
@@ -80,10 +81,14 @@
             <?php } ?>
           </td>
           <td class="middle">
-            <?php if ($access_actions) { ?>
-            <i class="fa fa-arrows handle"></i>
+            <?php echo $this->e($item['collection_item']['weight']); ?>
+          </td>
+          <td class="middle">
+            <?php if ($this->access('collection_item_edit')) { ?>
+            <a href="<?php echo $this->url("admin/content/collection-item/{$collection['collection_id']}/edit/{$item['collection_item']['collection_item_id']}"); ?>">
+              <?php echo $this->lower($this->text('Edit')); ?>
+            </a>
             <?php } ?>
-            <span class="weight"><?php echo $item['collection_item']['weight']; ?></span>
           </td>
         </tr>
         <?php } ?>

@@ -91,6 +91,18 @@
       <?php } ?>
     </div>
     <?php } ?>
+    <div class="form-group required<?php echo $this->error('weight', ' has-error'); ?>">
+      <label class="col-md-2 control-label"><?php echo $this->text('Weight'); ?></label>
+      <div class="col-md-4">
+        <input maxlength="255" name="category[weight]" class="form-control" value="<?php echo isset($category['weight']) ? $this->e($category['weight']) : ''; ?>">
+        <div class="help-block">
+          <?php echo $this->error('weight'); ?>
+          <div class="text-muted">
+            <?php echo $this->text('Position of the category among other categories. Categories with lower weight go first'); ?>
+          </div>
+        </div>
+      </div>
+    </div>
   </fieldset>
   <fieldset>
     <legend><?php echo $this->text('Relations'); ?></legend>
