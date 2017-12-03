@@ -301,6 +301,12 @@ return array(
             'controller' => array('gplcart\\core\\controllers\\backend\\CollectionItem', 'editCollectionItem')
         )
     ),
+    'admin/content/collection-item/(\d+)/edit/(\d+)' => array(
+        'access' => 'collection_item_edit',
+        'handlers' => array(
+            'controller' => array('gplcart\\core\\controllers\\backend\\CollectionItem', 'editCollectionItem')
+        )
+    ),
     'admin/tool' => array(
         'menu' => array('admin' => /* @text */'Tools'),
         'arguments' => array('admin/tool'),

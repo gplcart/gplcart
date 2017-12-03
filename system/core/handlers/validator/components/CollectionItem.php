@@ -91,6 +91,7 @@ class CollectionItem extends ComponentValidator
         $this->options = $options;
         $this->submitted = &$submitted;
 
+        $this->validateCollectionItem();
         $this->validateStatus();
         $this->validateWeight();
         $this->validateUrlCollectionItem();
@@ -98,26 +99,37 @@ class CollectionItem extends ComponentValidator
         $this->validateValueCollectionItem();
         $this->validateEntityCollectionItem();
 
+        $this->unsetSubmitted('update');
+        $this->unsetSubmitted('collection');
+
         return $this->getResult();
     }
 
     /**
-     * Validates collection item URL
-     * @return boolean
+     * Validates a collection item to be updated
+     * @return boolean|null
      */
-    protected function validateUrlCollectionItem()
+    protected function validateCollectionItem()
     {
-        $url = $this->getSubmitted('data.url');
+        $id = $this->getUpdatingId();
 
-        if (isset($url) && mb_strlen($url) > 255) {
-            $this->setErrorLengthRange('data.url', $this->language->text('URL'), 0, 255);
+        if ($id === false) {
+            return null;
+        }
+
+        $data = $this->collection_item->get($id);
+
+        if (empty($data)) {
+            $this->setErrorUnavailable('update', $this->language->text('Collection item'));
             return false;
         }
+
+        $this->setSubmitted('update', $data);
         return true;
     }
 
     /**
-     * Validates that collection data is provided
+     * Validates the collection data
      * @return boolean
      */
     protected function validateCollectionCollectionItem()
@@ -125,6 +137,10 @@ class CollectionItem extends ComponentValidator
         $field = 'collection_id';
         $label = $this->language->text('Collection ID');
         $collection_id = $this->getSubmitted($field);
+
+        if ($this->isUpdating() && !isset($collection_id)) {
+            return null;
+        }
 
         if (empty($collection_id)) {
             $this->setErrorRequired($field, $label);
@@ -148,7 +164,7 @@ class CollectionItem extends ComponentValidator
     }
 
     /**
-     * Validates submitted value
+     * Validates submitted collection item value
      * @return boolean|null
      */
     protected function validateValueCollectionItem()
@@ -156,31 +172,36 @@ class CollectionItem extends ComponentValidator
         $field = 'value';
         $label = $this->language->text('Value');
 
-        $input = $this->getSubmitted('input');
         $value = $this->getSubmitted($field);
-        $collection = $this->getSubmitted('collection');
+        $title = $this->getSubmitted('title');
 
-        if (empty($collection)) {
+        if ($this->isUpdating() && !isset($value)) {
             return null;
         }
 
-        if (isset($input) && is_numeric($input)) {
-            $value = $input;
+        if (ctype_digit($title)) {
+            $value = $title;
         }
 
-        if (empty($value)) {
-            $this->setErrorRequired($field, $label);
+        if (empty($value) || !ctype_digit($value)) {
+            $this->setErrorInvalid($field, $label);
             return false;
         }
 
+        $update = $this->getUpdating();
+
+        if (isset($update['collection_item_id']) && $update['value'] == $value) {
+            return null;
+        }
+
         $conditions = array(
-            'value' => $value,
-            'collection_id' => $collection['collection_id']
+            'type' => $this->getSubmitted('collection.type'),
+            'collection_id' => $this->getSubmitted('collection.collection_id')
         );
 
-        $collection_item = $this->collection_item->getList($conditions);
+        $existing = $this->collection_item->getItems($conditions);
 
-        if (!empty($collection_item)) {
+        if (isset($existing[$value])) {
             $this->setErrorExists($field, $label);
             return false;
         }
@@ -190,18 +211,33 @@ class CollectionItem extends ComponentValidator
     }
 
     /**
+     * Validates collection item URL
+     * @return boolean
+     */
+    protected function validateUrlCollectionItem()
+    {
+        $url = $this->getSubmitted('data.url');
+
+        if (isset($url) && mb_strlen($url) > 255) {
+            $this->setErrorLengthRange('data.url', $this->language->text('URL'), 0, 255);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Validates collection item entities
      * @return boolean|null
      */
     protected function validateEntityCollectionItem()
     {
-        $collection = $this->getSubmitted('collection');
-
-        if (empty($collection)) {
+        if ($this->isError()) {
             return null;
         }
 
         $value = $this->getSubmitted('value');
+        $collection = $this->getSubmitted('collection');
 
         try {
             $handlers = $this->collection->getHandlers();
@@ -222,7 +258,7 @@ class CollectionItem extends ComponentValidator
     }
 
     /**
-     * Validates page collection item
+     * Validates page collection item. Hook callback
      * @param integer $page_id
      * @return boolean|string
      */
@@ -239,7 +275,7 @@ class CollectionItem extends ComponentValidator
     }
 
     /**
-     * Validates product collection item
+     * Validates product collection item. Hook callback
      * @param integer $product_id
      * @return boolean|string
      */
@@ -256,7 +292,7 @@ class CollectionItem extends ComponentValidator
     }
 
     /**
-     * Validates file collection item
+     * Validates file collection item. Hook callback
      * @param integer $file_id
      * @return boolean|string
      */
@@ -265,8 +301,7 @@ class CollectionItem extends ComponentValidator
         $file = $this->file->get($file_id);
 
         if (empty($file)) {
-            $vars = array('@name' => $this->language->text('File'));
-            return $this->language->text('@name is unavailable', $vars);
+            return $this->language->text('@name is unavailable', array('@name' => $this->language->text('File')));
         }
 
         return true;

@@ -34,7 +34,7 @@
       <?php echo $this->e($handler['title']); ?>
     </label>
     <div class="col-md-6">
-      <input name="collection_item[input]" class="form-control" value="<?php echo isset($collection_item['input']) ? $this->e($collection_item['input']) : ''; ?>">
+      <input name="collection_item[title]" class="form-control" value="<?php echo isset($collection_item['title']) ? $collection_item['title'] : ''; ?>">
       <div class="help-block">
         <?php echo $this->error('value'); ?>
         <div class="text-muted">
@@ -73,6 +73,11 @@
   <div class="row">
     <div class="col-md-10 col-md-offset-2">
       <div class="btn-toolbar">
+        <?php if (isset($collection_item['collection_item_id']) && $this->access('collection_item_delete')) { ?>
+        <button class="btn btn-danger delete" name="delete" value="1" onclick="return confirm('<?php echo $this->text('Are you sure? It cannot be undone!'); ?>');">
+          <?php echo $this->text('Delete'); ?>
+        </button>
+        <?php } ?>
         <a href="<?php echo $this->url("admin/content/collection-item/{$collection['collection_id']}"); ?>" class="btn btn-default cancel">
           <?php echo $this->text('Cancel'); ?>
         </a>

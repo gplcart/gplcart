@@ -71,10 +71,16 @@ class CollectionItem
         }
 
         $sql .= ' FROM collection_item ci'
-                . ' LEFT JOIN collection c ON(ci.collection_id=c.collection_id)'
-                . ' WHERE ci.collection_item_id > 0';
+                . ' LEFT JOIN collection c ON(ci.collection_id=c.collection_id)';
 
         $conditions = array();
+
+        if (isset($data['collection_item_id'])) {
+            $sql .= ' WHERE ci.collection_item_id = ?';
+            $conditions[] = (int) $data['collection_item_id'];
+        } else {
+            $sql .= ' WHERE ci.collection_item_id IS NOT NULL';
+        }
 
         if (isset($data['value'])) {
             $sql .= ' AND ci.value = ?';
@@ -157,7 +163,7 @@ class CollectionItem
         }
 
         $sql = 'SELECT * FROM collection_item WHERE collection_item_id=?';
-        $result = $this->db->fetch($sql, array($id));
+        $result = $this->db->fetch($sql, array($id), array('unserialize' => 'data'));
 
         $this->hook->attach('collection.item.get.after', $id, $result, $this);
         return $result;
@@ -242,6 +248,22 @@ class CollectionItem
 
         gplcart_array_sort($entities);
         return $entities;
+    }
+
+    /**
+     * Returns a single entity item
+     * @param array $conditions
+     * @return array
+     */
+    public function getItem(array $conditions = array())
+    {
+        $list = $this->getItems($conditions);
+
+        if (empty($list)) {
+            return $list;
+        }
+
+        return reset($list);
     }
 
     /**

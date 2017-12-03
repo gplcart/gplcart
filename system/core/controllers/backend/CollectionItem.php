@@ -38,6 +38,12 @@ class CollectionItem extends BackendController
     protected $data_collection = array();
 
     /**
+     * The current collection item data
+     * @var array
+     */
+    protected $data_collection_item = array();
+
+    /**
      * @param CollectionModel $collection
      * @param CollectionItemModel $collection_item
      */
@@ -55,7 +61,7 @@ class CollectionItem extends BackendController
      */
     public function listCollectionItem($collection_id)
     {
-        $this->setCollectionCollectionItem($collection_id);
+        $this->setCollectionCollection($collection_id);
         $this->actionListCollectionItem();
 
         $this->setTitleListCollectionItem();
@@ -71,14 +77,43 @@ class CollectionItem extends BackendController
      * Sets a collection data
      * @param integer $collection_id
      */
-    protected function setCollectionCollectionItem($collection_id)
+    protected function setCollectionCollection($collection_id)
     {
-        if (is_numeric($collection_id)) {
-            $this->data_collection = $this->collection->get($collection_id);
-            if (empty($this->data_collection)) {
+        $this->data_collection = $this->collection->get($collection_id);
+        if (empty($this->data_collection)) {
+            $this->outputHttpStatus(404);
+        }
+    }
+
+    /**
+     * Sets a collection item data
+     * @param integer $collection_item_id
+     */
+    protected function setCollectionCollectionItem($collection_item_id)
+    {
+        if (is_numeric($collection_item_id)) {
+            $collection_item = $this->collection_item->get($collection_item_id);
+            if (empty($collection_item)) {
                 $this->outputHttpStatus(404);
             }
+
+            $this->data_collection_item = $this->prepareCollectionItem($collection_item);
         }
+    }
+
+    /**
+     * Prepare an array of collection item data
+     * @param array $collection_item
+     * @return array
+     */
+    protected function prepareCollectionItem(array $collection_item)
+    {
+        $conditions = array(
+            'collection_item_id' => $collection_item['collection_item_id']);
+
+        $item = $this->collection_item->getItem($conditions);
+        $collection_item['title'] = isset($item['title']) ? $item['title'] : '';
+        return $collection_item;
     }
 
     /**
@@ -87,11 +122,6 @@ class CollectionItem extends BackendController
     protected function actionListCollectionItem()
     {
         list($selected, $action, $value) = $this->getPostedAction();
-
-        if ($action === 'weight' && $this->access('collection_item_edit')) {
-            $this->updateWeightCollectionItem($selected);
-            return null;
-        }
 
         $deleted = $updated = 0;
         foreach ($selected as $id) {
@@ -114,20 +144,6 @@ class CollectionItem extends BackendController
             $message = $this->text('Deleted %num item(s)', array('%num' => $deleted));
             $this->setMessage($message, 'success');
         }
-    }
-
-    /**
-     * Updates weight of collection items
-     * @param array $items
-     */
-    protected function updateWeightCollectionItem(array $items)
-    {
-        foreach ($items as $id => $weight) {
-            $this->collection_item->update($id, array('weight' => $weight));
-        }
-
-        $response = array('success' => $this->text('Items have been reordered'));
-        $this->outputJson($response);
     }
 
     /**
@@ -184,15 +200,18 @@ class CollectionItem extends BackendController
     /**
      * Displays the edit collection item form
      * @param integer $collection_id
+     * @param string|int|null $collection_item_id
      */
-    public function editCollectionItem($collection_id)
+    public function editCollectionItem($collection_id, $collection_item_id = null)
     {
-        $this->setCollectionCollectionItem($collection_id);
+        $this->setCollectionCollection($collection_id);
+        $this->setCollectionCollectionItem($collection_item_id);
 
         $this->setTitleEditCollectionItem();
         $this->setBreadcrumbEditCollectionItem();
 
         $this->setData('collection', $this->data_collection);
+        $this->setData('collection_item', $this->data_collection_item);
         $this->setData('handler', $this->getHandlerCollectionItem());
         $this->setData('weight', $this->collection_item->getNextWeight($collection_id));
 
@@ -207,8 +226,14 @@ class CollectionItem extends BackendController
      */
     protected function submitEditCollectionItem()
     {
-        if ($this->isPosted('save') && $this->validateEditCollectionItem()) {
-            $this->addCollectionItem();
+        if ($this->isPosted('delete')) {
+            $this->deleteCollectionItem();
+        } else if ($this->isPosted('save') && $this->validateEditCollectionItem()) {
+            if (isset($this->data_collection_item['collection_item_id'])) {
+                $this->updateCollectionItem();
+            } else {
+                $this->addCollectionItem();
+            }
         }
     }
 
@@ -219,13 +244,12 @@ class CollectionItem extends BackendController
     protected function getHandlerCollectionItem()
     {
         $handlers = $this->collection->getHandlers();
-        $type = $this->data_collection['type'];
 
-        if (empty($handlers[$type])) {
+        if (empty($handlers[$this->data_collection['type']])) {
             $this->outputHttpStatus(403);
         }
 
-        return $handlers[$type];
+        return $handlers[$this->data_collection['type']];
     }
 
     /**
@@ -236,6 +260,7 @@ class CollectionItem extends BackendController
     {
         $this->setSubmitted('collection_item');
         $this->setSubmittedBool('status');
+        $this->setSubmitted('update', $this->data_collection_item);
         $this->setSubmitted('collection_id', $this->data_collection['collection_id']);
 
         $this->validateComponent('collection_item');
@@ -250,12 +275,33 @@ class CollectionItem extends BackendController
     {
         $this->controlAccess('collection_item_add');
 
-        if ($this->collection_item->add($this->getSubmitted())) {
-            $url = "admin/content/collection-item/{$this->data_collection['collection_id']}";
-            $this->redirect($url, $this->text('Collection item has been added'), 'success');
-        }
+        $this->collection_item->add($this->getSubmitted());
+        $url = "admin/content/collection-item/{$this->data_collection['collection_id']}";
+        $this->redirect($url, $this->text('Collection item has been added'), 'success');
+    }
 
-        $this->redirect('', $this->text('Collection item has not been added'), 'warning');
+    /**
+     * Update a submitted collection item
+     */
+    protected function updateCollectionItem()
+    {
+        $this->controlAccess('collection_item_edit');
+
+        $this->collection_item->update($this->data_collection_item['collection_item_id'], $this->getSubmitted());
+        $url = "admin/content/collection-item/{$this->data_collection['collection_id']}";
+        $this->redirect($url, $this->text('Collection item has been updated'), 'success');
+    }
+
+    /**
+     * Delete a collection item
+     */
+    protected function deleteCollectionItem()
+    {
+        $this->controlAccess('collection_item_delete');
+
+        $this->collection_item->delete($this->data_collection_item['collection_item_id']);
+        $url = "admin/content/collection-item/{$this->data_collection['collection_id']}";
+        $this->redirect($url, $this->text('Collection item has been deleted'), 'success');
     }
 
     /**
@@ -272,7 +318,14 @@ class CollectionItem extends BackendController
     protected function setTitleEditCollectionItem()
     {
         $vars = array('%name' => $this->data_collection['title']);
-        $this->setTitle($this->text('Add item to collection %name', $vars));
+
+        if (empty($this->data_collection_item['collection_item_id'])) {
+            $text = $this->text('Add item to %name', $vars);
+        } else {
+            $text = $this->text('Edit item of %name', $vars);
+        }
+
+        $this->setTitle($text);
     }
 
     /**
