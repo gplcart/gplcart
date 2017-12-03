@@ -221,14 +221,14 @@ class Ajax extends FrontendController
             return array('error' => $this->text('No access'));
         }
 
-        $options = array(
+        $conditions = array(
             'status' => 1,
             'title' => $term,
             'store_id' => $collection['store_id'],
             'limit' => array(0, $this->config('autocomplete_limit', 10))
         );
 
-        return $this->collection_item->getListEntities($collection['type'], $options);
+        return $this->collection_item->getListEntities($collection['type'], $conditions);
     }
 
     /**

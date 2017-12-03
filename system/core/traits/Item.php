@@ -106,14 +106,18 @@ trait Item
     }
 
     /**
-     * Adds entity URL
+     * Adds full store URL to the item
      * @param array $item
      * @param \gplcart\core\models\Store $store_model
      * @param string $entity
      */
-    public function setItemUrlEntity(array &$item, $store_model, $entity)
+    public function setItemUrlEntity(array &$item, $store_model, $entity = null)
     {
-        if (isset($item['store_id']) && isset($item["{$entity}_id"])) {
+        if (!isset($entity)) {
+            $entity = isset($item['entity']) ? $item['entity'] : null;
+        }
+
+        if (isset($entity) && isset($item['store_id']) && isset($item["{$entity}_id"])) {
             $store = $store_model->get($item['store_id']);
             if (!empty($store)) {
                 $url = $store_model->url($store);
