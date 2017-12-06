@@ -10,7 +10,8 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Config,
-    gplcart\core\Hook;
+    gplcart\core\Hook,
+    gplcart\core\Module as ModuleCore;
 
 /**
  * Manages basic behaviors and data related to languages and their translations
@@ -29,6 +30,12 @@ class Language
      * @var \gplcart\core\Config $config
      */
     protected $config;
+
+    /**
+     * Module class instance
+     * @var \gplcart\core\Module $module
+     */
+    protected $module;
 
     /**
      * Array of processed translations
@@ -57,10 +64,12 @@ class Language
     /**
      * @param Hook $hook
      * @param Config $config
+     * @param ModuleCore $module
      */
-    public function __construct(Hook $hook, Config $config)
+    public function __construct(Hook $hook, Config $config, ModuleCore $module)
     {
         $this->hook = $hook;
+        $this->module = $module;
         $this->config = $config;
     }
 
@@ -280,7 +289,7 @@ class Language
      */
     public function getModuleDirectory($module_id)
     {
-        $directory = $this->config->getModuleDirectory($module_id);
+        $directory = $this->module->getDirectory($module_id);
         return "$directory/translations";
     }
 
@@ -740,7 +749,7 @@ class Language
      */
     protected function mergeModuleTranslations($langcode = null)
     {
-        $modules = $this->config->getEnabledModules();
+        $modules = $this->module->getEnabled();
 
         // Sort modules in descending order
         // More important modules go first so their translations will be added earlier

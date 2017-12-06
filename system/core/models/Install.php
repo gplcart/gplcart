@@ -11,7 +11,7 @@ namespace gplcart\core\models;
 
 use gplcart\core\Database,
     gplcart\core\Handler,
-    gplcart\core\Config,
+    gplcart\core\Module,
     gplcart\core\Hook;
 use gplcart\core\models\Language as LanguageModel;
 
@@ -34,26 +34,26 @@ class Install
     protected $hook;
 
     /**
-     * Config class instance
-     * @var \gplcart\core\Config $config
+     * Module class instance
+     * @var \gplcart\core\Module $module
      */
-    protected $config;
+    protected $module;
 
     /**
      * Language model instance
      * @var \gplcart\core\models\Language $language
      */
     protected $language;
-
+    
     /**
      * @param Hook $hook
-     * @param Config $config
+     * @param Module $module
      * @param LanguageModel $language
      */
-    public function __construct(Hook $hook, Config $config, LanguageModel $language)
+    public function __construct(Hook $hook, Module $module, LanguageModel $language)
     {
         $this->hook = $hook;
-        $this->config = $config;
+        $this->module = $module;
         $this->language = $language;
     }
 
@@ -79,7 +79,7 @@ class Install
                 continue;
             }
 
-            $info = $this->config->getModuleInfo($handler['module']);
+            $info = $this->module->getInfo($handler['module']);
 
             if (empty($info['type']) || $info['type'] !== 'installer') {
                 unset($handlers[$id]);
