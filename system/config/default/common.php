@@ -46,7 +46,6 @@ $config = array();
 # $config['image_cache_lifetime']                 = 365*24*60*60; // Max number of seconds to keep in browser cache processed images
 # $config['language']                             = ''; // Default store language
 # $config['mailer']                               = 'php'; // Mailer
-# $config['module_cache']                         = 0; // Whether to cache modules
 # $config['no_image']                             = 'image/misc/no-image.png'; // Path to placeholder image
 # $config['order_status']                         = 'pending'; // Default order status
 # $config['order_status_initial']                 = 'pending'; // Default status for new orders
