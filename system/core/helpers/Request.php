@@ -407,6 +407,10 @@ class Request
             throw new \InvalidArgumentException("Invalid schema '{$uri['scheme']}'");
         }
 
+        if (is_array($options['data'])) {
+            $options['data'] = http_build_query($options['data']);
+        }
+
         $content_length = strlen($options['data']);
         if ($content_length > 0 || $options['method'] === 'POST' || $options['method'] === 'PUT') {
             $options['headers']['Content-Length'] = $content_length;
