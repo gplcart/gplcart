@@ -13,7 +13,7 @@ use gplcart\core\Config,
     gplcart\core\Hook,
     gplcart\core\Database;
 use gplcart\core\helpers\Url as UrlHelper,
-    gplcart\core\helpers\Curl as CurlHelper;
+    gplcart\core\helpers\Request as RequestHelper;
 use gplcart\core\models\Language as LanguageModel,
     gplcart\core\models\Validator as ValidatorModel,
     gplcart\core\models\Translation as TranslationModel;
@@ -70,10 +70,10 @@ class File
     protected $url;
 
     /**
-     * CURL class instance
-     * @var \gplcart\core\helpers\Curl $curl
+     * Request class instance
+     * @var \gplcart\core\helpers\Request $request
      */
-    protected $curl;
+    protected $request;
 
     /**
      * Transfer file destination
@@ -98,7 +98,7 @@ class File
      * @var string
      */
     protected $error;
-
+    
     /**
      * @param Hook $hook
      * @param Database $db
@@ -107,18 +107,18 @@ class File
      * @param ValidatorModel $validator
      * @param TranslationModel $translation
      * @param UrlHelper $url
-     * @param CurlHelper $curl
+     * @param RequestHelper $request
      */
     public function __construct(Hook $hook, Database $db, Config $config, LanguageModel $language,
             ValidatorModel $validator, TranslationModel $translation, UrlHelper $url,
-            CurlHelper $curl)
+            RequestHelper $request)
     {
         $this->db = $db;
         $this->hook = $hook;
         $this->config = $config;
 
         $this->url = $url;
-        $this->curl = $curl;
+        $this->request = $request;
         $this->language = $language;
         $this->validator = $validator;
         $this->translation = $translation;
@@ -645,7 +645,7 @@ class File
     protected function writeTempFile($url)
     {
         try {
-            $content = $this->curl->get($url);
+            $response = $this->request->send($url);
         } catch (\Exception $ex) {
             $this->error = $ex->getMessage();
             return false;
@@ -653,7 +653,7 @@ class File
 
         $file = gplcart_file_tempname();
         $fh = fopen($file, "w");
-        fwrite($fh, $content);
+        fwrite($fh, $response['data']);
         fclose($fh);
         return $file;
     }
