@@ -493,6 +493,26 @@ class Database
     }
 
     /**
+     * Install a database table using the scheme
+     * @param string $table
+     * @param array $scheme
+     * @return boolean|string
+     */
+    public function importScheme($table, array $scheme)
+    {
+        if ($this->tableExists($table)) {
+            return 'Table already exists';
+        }
+
+        if (!$this->import($scheme)) {
+            $this->deleteTable($table);
+            return 'An error occurred while importing the database table';
+        }
+
+        return true;
+    }
+
+    /**
      * Returns a string with SQL query to create a table
      * @param string $table
      * @param array $data
@@ -501,7 +521,6 @@ class Database
     protected function getSqlCreateTable($table, array $data)
     {
         $fields = $this->getSqlFields($data['fields']);
-
         $engine = isset($data['engine']) ? $data['engine'] : 'InnoDB';
         $collate = isset($data['collate']) ? $data['collate'] : 'utf8_general_ci';
 
