@@ -9,22 +9,11 @@
 
 namespace gplcart\modules\backend;
 
-use gplcart\core\Module,
-    gplcart\core\Config;
-
 /**
  * Main backend theme class
  */
-class Backend extends Module
+class Backend
 {
-
-    /**
-     * @param Config $config
-     */
-    public function __construct(Config $config)
-    {
-        parent::__construct($config);
-    }
 
     /**
      * Implements hook "theme"
@@ -48,10 +37,10 @@ class Backend extends Module
         $controller->addAssetLibrary('bootstrap');
         $controller->addAssetLibrary('html5shiv', array('aggregate' => false, 'condition' => 'if lt IE 9'));
         $controller->addAssetLibrary('respond', array('aggregate' => false, 'condition' => 'if lt IE 9'));
-
-        $controller->setJs($this->getAsset('backend', 'common.js'));
         $controller->addAssetLibrary('font_awesome');
-        $controller->setCss($this->getAsset('backend', 'style.css'));
+
+        $controller->setJs(__DIR__ . '/js/common.js');
+        $controller->setCss(__DIR__ . '/css/common.css');
     }
 
     /**

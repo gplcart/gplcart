@@ -9,21 +9,26 @@
 
 namespace gplcart\modules\fa;
 
-use gplcart\core\Module,
-    gplcart\core\Config;
+use gplcart\core\Library;
 
 /**
  * Main class for Font Awesome module
  */
-class Fa extends Module
+class Fa
 {
 
     /**
-     * @param Config $config
+     * Library class instance
+     * @var \gplcart\core\Library $library
      */
-    public function __construct(Config $config)
+    protected $library;
+
+    /**
+     * @param Library $library
+     */
+    public function __construct(Library $library)
     {
-        parent::__construct($config);
+        $this->library = $library;
     }
 
     /**
@@ -54,7 +59,7 @@ class Fa extends Module
      */
     public function hookModuleEnableAfter()
     {
-        $this->getLibrary()->clearCache();
+        $this->library->clearCache();
     }
 
     /**
@@ -62,7 +67,7 @@ class Fa extends Module
      */
     public function hookModuleDisableAfter()
     {
-        $this->getLibrary()->clearCache();
+        $this->library->clearCache();
     }
 
     /**
@@ -70,7 +75,7 @@ class Fa extends Module
      */
     public function hookModuleInstallAfter()
     {
-        $this->getLibrary()->clearCache();
+        $this->library->clearCache();
     }
 
     /**
@@ -78,7 +83,7 @@ class Fa extends Module
      */
     public function hookModuleUninstallAfter()
     {
-        $this->getLibrary()->clearCache();
+        $this->library->clearCache();
     }
 
 }

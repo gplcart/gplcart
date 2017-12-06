@@ -9,12 +9,10 @@
 
 namespace gplcart\modules\frontend;
 
-use gplcart\core\Module;
-
 /**
  * Main class for Frontend theme
  */
-class Frontend extends Module
+class Frontend
 {
 
     /**
@@ -55,10 +53,10 @@ class Frontend extends Module
         $controller->addAssetLibrary('bootstrap');
 
         if ($controller->isInstall()) {
-            $controller->setCss($this->getAsset('frontend', 'install.css'));
+            $controller->setCss(__DIR__ . '/css/install.css');
         } else {
-            $controller->setCss($this->getAsset('frontend', 'style.css'));
-            $controller->setJs($this->getAsset('frontend', 'common.js'));
+            $controller->setCss(__DIR__ . '/css/common.css');
+            $controller->setJs(__DIR__ . '/js/common.js');
         }
     }
 

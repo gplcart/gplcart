@@ -1,0 +1,370 @@
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+.navbar-logo > img {
+    height: 100%;
+    padding: 0;
+    width: auto;
+}
+
+.navbar-unstyled {
+    background: transparent;
+    box-shadow: none;
+}
+
+.content-wrapper {
+    min-height: calc(100vh - 70px);
+}
+
+.panel {
+    box-shadow: none;
+    border-radius: 0 !important;
+}
+
+.panel.panel-borderless {
+    border: none;
+}
+
+.panel.panel-borderless > .panel-heading {
+    border: none;
+}
+
+.section {
+    margin-bottom: 15px;
+}
+
+.breadcrumb {
+    background: none;
+}
+
+.breadcrumb h1 {
+    margin: 0;
+    padding: 0;
+    font-size: 100%;
+    display: inline-block;
+    font-weight: bolder;
+}
+
+.panel-heading .pagination {
+    margin: 0;
+}
+
+.panel-heading .pagination-unstyled {
+    margin: 0;
+}
+
+.badge:empty + .fa {
+    display:none;
+}
+
+.navbar {
+    border: none !important;
+    position: static; /* Fix overlapping dropdowns */
+}
+
+@media (min-width: 768px) {
+    .navbar-center {
+        position: absolute;
+        left: 50%;
+        transform: translatex(-50%);
+    }
+}
+
+.row.display-flex {
+    display: flex;
+    display: -webkit-flex;
+    flex-wrap: wrap;
+}
+
+.product.item .thumbnail {
+    height: 100%;
+    position: relative;
+}
+
+.product.item .thumbnail, .product.item > .panel {
+    border-color: transparent;
+}
+
+.product.item .thumbnail:hover, .product.item > .panel:hover {
+    border-color: #ddd;
+}
+
+.item .bundle-items {
+    clear: both;
+}
+
+.bundle-item .image {
+    float: left;
+    margin-right: 5px;
+}
+
+.item .bundle-item img {
+    max-height: 30px;
+    border: 1px solid #ccc;
+    padding: 3px;
+    margin-bottom: 3px;
+    margin-right: 3px;
+}
+
+.grid.item .bundle-items {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+}
+
+.item .bundle-items .title {
+    display: none;
+}
+
+.item .bundle-title {
+    color: red;
+}
+
+.panel.bundled-items {
+    margin-top: 20px;
+}
+
+.panel .bundle-item img {
+    max-height: 50px;
+    border: 1px solid #ccc;
+    padding: 3px;
+}
+
+.panel .bundle-item {
+    padding: 5px 0;
+    overflow: hidden;
+    width: 100%;
+}
+
+.panel .bundle-item .title {
+    top: 50%;
+    position: relative;
+    transform: translateY(50%);
+}
+
+.row-no-padding > [class*="col-"] {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.form-group.required .control-label:before, span.required:before {
+    content:"* ";
+    color:red;
+}
+
+.table-borderless tr,
+.table-borderless td {
+    border: none !important;
+}
+
+.table-auto {
+    width: auto !important;
+}
+
+table.compare-products td, table.compare-products th {
+    white-space: nowrap;
+    width: 1%;
+}
+
+table.compare-products .thumbnail {
+    border: none;
+}
+
+.table.price-components {
+    width: 100%;
+    margin-bottom: 0;
+    background-color: #f5f5f5;
+}
+
+.table.price-components td {
+    max-width:100%;
+    white-space:nowrap;
+    vertical-align: middle;
+}
+
+.table.price-components .form-group {
+    padding: 0;
+    margin: 0;
+}
+
+td.middle {
+    vertical-align: middle !important;
+}
+
+/**  Rating widget **/
+
+.product-rating .star-rating {
+    float: left;
+    margin-right: 5px;
+}
+
+.product-rating {
+    line-height: 1em;
+}
+
+.star-rating{
+    font-size: 0;
+    display: inline-table;
+}
+
+.star-rating-wrap{
+    display: inline-block;
+    font-size: 1.5rem;
+}
+
+.star-rating-wrap:after{
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.star-rating-ico {
+    float: right;
+    padding-left: 2px;
+    color: #FFB300;
+}
+
+.star-rating.dinamic .star-rating-ico {
+    cursor: pointer;
+}
+
+.star-rating-ico:last-child{
+    padding-left: 0;
+}
+
+.star-rating-input{
+    display: none;
+}
+
+.star-rating.dinamic .star-rating-ico:not(.unvote):hover:before,
+.star-rating.dinamic .star-rating-ico:not(.unvote):hover ~ .star-rating-ico:before,
+.star-rating.dinamic .star-rating-input:not(.unvote):checked ~ .star-rating-ico:before
+{
+    content: "\f005";
+}
+
+/** Options **/
+
+.option-combination:not(.field-widget-radio) input {
+    display: none;
+}
+
+.option-combination.field-widget-button > .btn.image {
+    background-size: 100% 100%;
+}
+
+.option-combination > .btn.has-value {
+    width: 40px;
+    height: 34px;
+}
+
+.option-combination > input:checked  + .btn {
+    border: 2px solid #fff; 
+    outline: 1px solid #000;
+}
+
+label.title {
+    display: block;
+}
+
+a.disabled {
+    pointer-events: none;
+    text-decoration: none;
+    color: inherit;
+}
+
+.help-block:empty {
+    display: none
+}
+
+.indentation {
+    padding-left: 1em;
+}
+
+.item .thumbnail .thumbnail {
+    border: none;
+}
+
+.saved-addresses {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.saved-addresses > .address {
+    flex-grow: 1;
+    max-width: 50%;
+    margin: 0;
+    border: 1px solid #fff;
+    overflow: hidden;
+}
+
+.saved-addresses > .address span {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden; 
+    display: block;
+    text-align: left;
+}
+
+#cart-preview .items {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.product-thumbs {
+    overflow-y: auto;
+    max-height: 400px;
+}
+
+.order-component-title {
+    display: none;
+}
+
+/* Custom, iPhone Retina */ 
+@media only screen and (min-width : 320px) {
+
+    .navbar-form {
+        border: none;
+    }
+
+    .navbar.second .navbar-form {
+        background-color: #f8f8f8;
+    }
+}
+
+/* Extra small devices, phones */ 
+@media only screen and (min-width : 480px) {
+
+}
+
+/* Small devices, tablets */
+@media only screen and (min-width : 768px) {
+
+    .navbar.second .navbar-form {
+        background-color: transparent;
+    }
+
+    .navbar.second .search .input-group {
+        width: 350px;
+    }
+
+    .navbar.second .navbar-btn {
+        margin-left: 5px;
+    }
+}
+
+/* Medium devices, desktops */
+@media only screen and (min-width : 992px) {
+    .navbar.second .search .input-group {
+        width: 400px;
+    }
+}
+
+/* Large devices, wide screens */
+@media only screen and (min-width : 1200px) {
+    .navbar.second .search .input-group {
+        width: 600px;
+    }
+}
