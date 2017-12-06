@@ -26,7 +26,7 @@ class Module extends BackendController
      * Module model instance
      * @var \gplcart\core\models\Module $module
      */
-    protected $module;
+    protected $module_model;
 
     /**
      * Graph class instance
@@ -55,7 +55,7 @@ class Module extends BackendController
         parent::__construct();
 
         $this->graph = $graph;
-        $this->module = $module;
+        $this->module_model = $module;
     }
 
     /**
@@ -86,7 +86,7 @@ class Module extends BackendController
     {
         $this->controlToken('refresh');
 
-        if ($this->isQuery('refresh') && $this->config->clearModuleCache()) {
+        if ($this->isQuery('refresh') && $this->module->clearCache()) {
             $this->redirect('', $this->text('Cache has been deleted'), 'success');
         }
     }
@@ -160,16 +160,15 @@ class Module extends BackendController
     {
         $this->controlAccess("module_$action");
 
-        // Don't call methods like $this->module->{$action} to make them visible in IDE
         switch ($action) {
             case 'enable':
-                return $this->module->enable($this->data_module['id']);
+                return $this->module_model->enable($this->data_module['id']);
             case 'disable':
-                return $this->module->disable($this->data_module['id']);
+                return $this->module_model->disable($this->data_module['id']);
             case 'install':
-                return $this->module->install($this->data_module['id']);
+                return $this->module_model->install($this->data_module['id']);
             case 'uninstall':
-                return $this->module->uninstall($this->data_module['id']);
+                return $this->module_model->uninstall($this->data_module['id']);
         }
 
         $this->outputHttpStatus(403);

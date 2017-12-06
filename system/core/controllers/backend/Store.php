@@ -9,8 +9,7 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Module as ModuleModel,
-    gplcart\core\models\Country as CountryModel,
+use gplcart\core\models\Country as CountryModel,
     gplcart\core\models\Collection as CollectionModel,
     gplcart\core\models\CategoryGroup as CategoryGroupModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
@@ -20,12 +19,6 @@ use gplcart\core\controllers\backend\Controller as BackendController;
  */
 class Store extends BackendController
 {
-
-    /**
-     * Module model instance
-     * @var \gplcart\core\models\Module $module
-     */
-    protected $module;
 
     /**
      * Country model instance
@@ -58,18 +51,15 @@ class Store extends BackendController
     protected $data_store = array();
 
     /**
-     * 
-     * @param ModuleModel $module
      * @param CollectionModel $collection
      * @param CountryModel $country
      * @param CategoryGroupModel $category_group
      */
-    public function __construct(ModuleModel $module, CollectionModel $collection,
-            CountryModel $country, CategoryGroupModel $category_group)
+    public function __construct(CollectionModel $collection, CountryModel $country,
+            CategoryGroupModel $category_group)
     {
         parent::__construct();
 
-        $this->module = $module;
         $this->country = $country;
         $this->collection = $collection;
         $this->category_group = $category_group;

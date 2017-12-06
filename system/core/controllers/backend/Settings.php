@@ -113,10 +113,6 @@ class Settings extends BackendController
             $this->config->set($key, $value);
         }
 
-        if ($this->getSubmitted('module_cache') != $this->config('module_cache', 0)) {
-            $this->config->clearModuleCache();
-        }
-
         $this->redirect('', $this->text('Settings have been updated'), 'success');
     }
 

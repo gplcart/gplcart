@@ -9,7 +9,6 @@
 
 namespace gplcart\modules\frontend\controllers;
 
-use gplcart\core\models\Module as ModuleModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -17,21 +16,12 @@ use gplcart\core\controllers\backend\Controller as BackendController;
  */
 class Settings extends BackendController
 {
-
     /**
-     * Module model instance
-     * @var \gplcart\core\models\Module $module
+     * Constructor
      */
-    protected $module;
-
-    /**
-     * @param ModuleModel $module
-     */
-    public function __construct(ModuleModel $module)
+    public function __construct()
     {
         parent::__construct();
-
-        $this->module = $module;
     }
 
     /**
@@ -40,7 +30,7 @@ class Settings extends BackendController
     public function editSettings()
     {
         $this->setData('imagestyles', $this->image->getStyleList());
-        $this->setData('settings', $this->config->getFromModule('frontend'));
+        $this->setData('settings', $this->module->getSettings('frontend'));
         $this->setData('imagestyle_fields', $this->getImageStyleFieldsSettings());
 
         $this->submitSettings();
