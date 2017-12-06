@@ -28,17 +28,17 @@ class Hook
     protected $called = array();
 
     /**
-     * Config class instance
-     * @var \gplcart\core\Config $config
+     * Module class instance
+     * @var \gplcart\core\Module $module
      */
-    protected $config;
+    protected $module;
 
     /**
-     * @param Config $config
+     * @param Module $module
      */
-    public function __construct(Config $config)
+    public function __construct(Module $module)
     {
-        $this->config = $config;
+        $this->module = $module;
     }
 
     /**
@@ -49,7 +49,7 @@ class Hook
     public function init($modules = null)
     {
         if (!isset($modules)) {
-            $modules = $this->config->getEnabledModules();
+            $modules = $this->module->getEnabled();
         }
 
         foreach ((array) $modules as $module) {
@@ -127,7 +127,7 @@ class Hook
         $method = $this->getMethod($hook);
 
         if (isset($module_id)) {
-            $namespace = $this->config->getModuleClassNamespace($module_id);
+            $namespace = $this->module->getClass($module_id);
             return $this->call($namespace, $method, $a, $b, $c, $d, $e);
         }
 
