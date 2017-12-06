@@ -129,7 +129,7 @@ trait Widget
         );
 
         $controller = $this->getController();
-        $providers = $this->getProviders($options);
+        $providers = $oauth_model->getProviders($options);
 
         $buttons = array();
         foreach ($providers as $provider_id => $provider) {
