@@ -18,7 +18,7 @@ use gplcart\core\models\File as FileModel,
     gplcart\core\helpers\Request as RequestHelper,
     gplcart\core\models\Language as LanguageModel;
 // New
-use gplcart\core\models\Module as ModuleModel;
+use gplcart\core\Module;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
@@ -33,8 +33,8 @@ class Store extends ComponentValidator
     const UPLOAD_PATH = 'image/upload/store';
 
     /**
-     * Module model instance
-     * @var \gplcart\core\models\Module $module
+     * Module class instance
+     * @var \gplcart\core\Module $module
      */
     protected $module;
 
@@ -46,11 +46,11 @@ class Store extends ComponentValidator
      * @param StoreModel $store
      * @param AliasModel $alias
      * @param RequestHelper $request
-     * @param ModuleModel $module
+     * @param Module $module
      */
     public function __construct(Config $config, LanguageModel $language, FileModel $file,
             UserModel $user, StoreModel $store, AliasModel $alias, RequestHelper $request,
-            ModuleModel $module)
+            Module $module)
     {
         parent::__construct($config, $language, $file, $user, $store, $alias, $request);
 
