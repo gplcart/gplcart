@@ -14,7 +14,7 @@ use gplcart\core\Config;
 /**
  * Parent class for modules
  */
-abstract class Module
+class Module
 {
 
     /**
@@ -39,122 +39,466 @@ abstract class Module
     }
 
     /**
-     * Returns a class instance
-     * @param $string
-     * @return object
+     * Returns module setting(s)
+     * @param string $module_id
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
      */
-    protected function getInstance($string)
+    public function getSettings($module_id, $key = null, $default = null)
     {
-        if (strpos($string, 'gplcart\\') === 0) {
-            return Container::get($string);
+        $module = $this->get($module_id);
+
+        if (empty($module['settings'])) {
+            return $default;
         }
 
-        return $this->config->getModuleInstance($string);
+        if (!isset($key)) {
+            return (array) $module['settings'];
+        }
+
+        $value = gplcart_array_get($module['settings'], $key);
+        return isset($value) ? $value : $default;
     }
 
     /**
-     * Returns a class instance for the given module and model name
-     * @param string $model
-     * @param string|null $module_id
-     * @return object
+     * Adds/updates settings for a given module
+     * @param string $module_id
+     * @param array $settings
+     * @return boolean
      */
-    protected function getModel($model, $module_id = null)
+    public function setSettings($module_id, array $settings)
     {
-        if (!isset($module_id)) {
-            return $this->getInstance("gplcart\\core\\models\\$model");
+        $result = false;
+        if ($this->isInstalled($module_id)) {
+            $this->update($module_id, array('settings' => $settings));
+            $result = true;
+        } else if ($this->isActiveTheme($module_id)) {
+            $data = array('status' => true, 'settings' => $settings, 'module_id' => $module_id);
+            $this->add($data);
+            $result = true;
         }
 
-        $base_namespace = $this->config->getModuleBaseNamespace($module_id);
-        return $this->getInstance("$base_namespace\\models\\$model");
+        $this->clearCache();
+        return $result;
     }
 
     /**
-     * Returns a class instance for the given module and handler name
-     * @param string $helper
-     * @param string|null $module_id
-     * @return object
+     * Updates a module
+     * @param string $module_id
+     * @param array $data
      */
-    protected function getHelper($helper, $module_id = null)
+    public function update($module_id, array $data)
     {
-        if (!isset($module_id)) {
-            return $this->getInstance("gplcart\\core\\helpers\\$helper");
-        }
-
-        $base_namespace = $this->config->getModuleBaseNamespace($module_id);
-        return $this->getInstance("$base_namespace\\helpers\\$helper");
+        $data['modified'] = GC_TIME;
+        $this->db->update('module', $data, array('module_id' => $module_id));
     }
 
     /**
-     * Returns library instance
-     * @return \gplcart\core\Library
+     * Adds (installs) a module to the database
+     * @param array $data
      */
-    protected function getLibrary()
+    public function add(array $data)
     {
-        /* @var $instance \gplcart\core\Library */
-        $instance = $this->getInstance('gplcart\\core\\Library');
+        $weight = (int) $this->db->fetchColumn('SELECT COUNT(*) FROM module', array());
+
+        $data += array('weight' => $weight++);
+        $data['created'] = $data['modified'] = GC_TIME;
+        $this->db->insert('module', $data);
+    }
+
+    /**
+     * Delete a module from the database
+     * @param string $module_id
+     * @return bool
+     */
+    public function delete($module_id)
+    {
+        return (bool) $this->db->delete('module', array('module_id' => $module_id));
+    }
+
+    /**
+     * Whether a given module is an active theme
+     * @param string $module_id
+     * @return boolean
+     */
+    public function isActiveTheme($module_id)
+    {
+        return in_array($module_id, $this->getActiveThemes());
+    }
+
+    /**
+     * Returns an array of active theme modules
+     * @return array
+     */
+    public function getActiveThemes()
+    {
+        $themes = &gplcart_static('module.active.themes');
+
+        if (isset($themes)) {
+            return $themes;
+        }
+
+        $themes = array($this->config->get('theme_backend', 'backend'));
+        $stores = $this->db->fetchAll('SELECT * FROM store', array());
+
+        foreach ($stores as $store) {
+            $data = unserialize($store['data']);
+            foreach ($data as $key => $value) {
+                if (strpos($key, 'theme') === 0) {
+                    $themes[] = $value;
+                }
+            }
+        }
+
+        return $themes;
+    }
+
+    /**
+     * Returns an array of all available modules
+     * @return array
+     */
+    public function getList()
+    {
+        $modules = &gplcart_static('module.list');
+
+        if (isset($modules)) {
+            return $modules;
+        }
+
+        $cache = gplcart_config_get(GC_FILE_CONFIG_COMPILED_MODULE);
+
+        if (!empty($cache)) {
+            return $modules = (array) $cache;
+        }
+
+        $installed = $this->getInstalled();
+
+        $modules = array();
+        foreach ($this->scan() as $module_id => $info) {
+            $modules[$module_id] = $this->prepareInfo($module_id, $info, $installed);
+        }
+
+        gplcart_array_sort($modules);
+        gplcart_config_set(GC_FILE_CONFIG_COMPILED_MODULE, $modules);
+        return $modules;
+    }
+
+    /**
+     * Returns an array of scanned module IDs
+     * @param string $directory
+     * @return array
+     */
+    public function scan($directory = GC_DIR_MODULE)
+    {
+        $modules = array();
+        foreach (scandir($directory) as $module_id) {
+
+            if (!$this->isValidId($module_id)) {
+                continue;
+            }
+
+            $info = $this->getInfo($module_id);
+
+            if (empty($info['core'])) {
+                continue;
+            }
+
+            $modules[$module_id] = $info;
+        }
+
+        return $modules;
+    }
+
+    /**
+     * Prepare module info
+     * @param string $module_id
+     * @param array $info
+     * @param array $installed
+     * @return array
+     */
+    protected function prepareInfo($module_id, array $info, array $installed)
+    {
+        $info['directory'] = $this->getDirectory($module_id);
+
+        $info += array(
+            'type' => 'module',
+            'name' => $module_id
+        );
+
+        // Do not override status set in module.json for locked modules
+        if (isset($info['status']) && !empty($info['lock'])) {
+            unset($installed[$module_id]['status']);
+        }
+
+        // Do not override weight set in module.json for locked modules
+        if (isset($info['weight']) && !empty($info['lock'])) {
+            unset($installed[$module_id]['weight']);
+        }
+
+        if (isset($installed[$module_id])) {
+            $info['installed'] = true;
+            if (empty($installed[$module_id]['settings'])) {
+                unset($installed[$module_id]['settings']);
+            }
+            $info = array_replace($info, $installed[$module_id]);
+        }
+
+        if (!empty($info['status'])) {
+            $instance = $this->getInstance($module_id);
+            if (is_object($instance)) {
+                $info['hooks'] = $this->getHooks($instance);
+                $info['class'] = get_class($instance);
+            }
+        }
+
+        return $info;
+    }
+
+    /**
+     * Delete cached module data
+     * @return boolean
+     */
+    public function clearCache()
+    {
+        if (gplcart_config_delete(GC_FILE_CONFIG_COMPILED_MODULE)) {
+            gplcart_static_clear();
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns an array of module data
+     * @param string $module_id
+     * @return array
+     */
+    public function get($module_id)
+    {
+        $modules = $this->getList();
+        return empty($modules[$module_id]) ? array() : $modules[$module_id];
+    }
+
+    /**
+     * Returns an absolute path to the module directory
+     * @param string $module_id
+     * @return string
+     */
+    public function getDirectory($module_id)
+    {
+        return GC_DIR_MODULE . "/$module_id";
+    }
+
+    /**
+     * Returns an array of module data from module.json file
+     * @param string $module_id
+     * @todo - remove 'id' key everywhere
+     * @return array
+     */
+    public function getInfo($module_id)
+    {
+        static $information = array();
+
+        if (isset($information[$module_id])) {
+            return $information[$module_id];
+        }
+
+        $file = GC_DIR_MODULE . "/$module_id/module.json";
+
+        $decoded = null;
+        if (is_file($file)) {
+            $decoded = json_decode(file_get_contents($file), true);
+        }
+
+        if (is_array($decoded)) {
+            $decoded['id'] = $decoded['module_id'] = $module_id;
+            $information[$module_id] = $decoded;
+        } else {
+            $information[$module_id] = array();
+        }
+
+        return $information[$module_id];
+    }
+
+    /**
+     * Returns the module class instance
+     * @param string $module_id
+     * @return null|object
+     */
+    public function getInstance($module_id)
+    {
+        $namespace = $this->getClass($module_id);
+
+        try {
+            $instance = Container::get($namespace);
+        } catch (\Exception $exc) {
+            return null;
+        }
+
         return $instance;
     }
 
     /**
-     * Returns language model instance
-     * @return \gplcart\core\models\Language
-     */
-    protected function getLanguage()
-    {
-        /* @var $model \gplcart\core\models\Language */
-        $model = $this->getModel('Language');
-        return $model;
-    }
-
-    /**
-     * Returns an asset directory or file
+     * Returns a base namespace for the module ID
      * @param string $module_id
-     * @param string $file
-     * @param string|null $type
      * @return string
      */
-    protected function getAsset($module_id, $file, $type = null)
+    public function getNamespace($module_id)
     {
-        if (!isset($type)) {
-            $type = pathinfo($file, PATHINFO_EXTENSION);
-        }
-
-        $directory = $this->config->getModuleDirectory($module_id);
-        return rtrim("$directory/$type/$file", '/');
+        return "gplcart\\modules\\$module_id";
     }
 
     /**
-     * Install a database
-     * @param string $table
-     * @param array $scheme
-     * @return boolean|string
-     */
-    protected function installDbTable($table, array $scheme)
-    {
-        $language = $this->getLanguage();
-
-        if ($this->db->tableExists($table)) {
-            return $language->text('Table @name already exists', array('@name' => $table));
-        }
-
-        if (!$this->db->import($scheme)) {
-            $this->db->deleteTable($table);
-            return $language->text('An error occurred while importing database table @name', array('@name' => $table));
-        }
-
-        return true;
-    }
-
-    /**
-     * Returns a module template path without extension
+     * Returns a namespaced class for the module ID
      * @param string $module_id
-     * @param string $template
      * @return string
      */
-    protected function getTemplate($module_id, $template)
+    public function getClass($module_id)
     {
-        $directory = $this->config->getModuleDirectory($module_id);
-        return "$directory/templates/$template";
+        $class = $this->getClassName($module_id);
+        $namespace = $this->getNamespace($module_id);
+
+        return "$namespace\\$class";
+    }
+
+    /**
+     * Creates a module class name from the module ID
+     * @param string $module_id
+     * @return string
+     */
+    public function getClassName($module_id)
+    {
+        return ucfirst(str_replace('_', '', $module_id));
+    }
+
+    /**
+     * Returns an array of all installed modules
+     * @return array
+     */
+    public function getInstalled()
+    {
+        if (!$this->db->isInitialized()) {
+            return array();
+        }
+
+        $modules = &gplcart_static('module.installed.list');
+
+        if (isset($modules)) {
+            return $modules;
+        }
+
+        $options = array(
+            'unserialize' => 'settings',
+            'index' => 'module_id'
+        );
+
+        return $modules = $this->db->fetchAll('SELECT * FROM module', array(), $options);
+    }
+
+    /**
+     * Returns an array of enabled modules
+     * @return array
+     */
+    public function getEnabled()
+    {
+        return array_filter($this->getList(), function ($module) {
+            return !empty($module['status']);
+        });
+    }
+
+    /**
+     * Returns an array of class methods which are hooks
+     * @param object|string $class
+     * @return array
+     */
+    public function getHooks($class)
+    {
+        $hooks = array();
+        foreach (get_class_methods($class) as $method) {
+            if (strpos($method, 'hook') === 0) {
+                $hooks[] = $method;
+            }
+        }
+
+        return $hooks;
+    }
+
+    /**
+     * Whether the module exists and enabled
+     * @param string $module_id
+     * @return boolean
+     */
+    public function isEnabled($module_id)
+    {
+        $modules = $this->getEnabled();
+        return !empty($modules[$module_id]['status']);
+    }
+
+    /**
+     * Whether the module is installed, i.e exists in database
+     * @param string $module_id
+     * @return boolean
+     */
+    public function isInstalled($module_id)
+    {
+        $modules = $this->getInstalled();
+        return isset($modules[$module_id]);
+    }
+
+    /**
+     * Whether the module is locked
+     * @param string $module_id
+     * @return boolean
+     */
+    public function isLocked($module_id)
+    {
+        $info = $this->getInfo($module_id);
+        return !empty($info['lock']);
+    }
+
+    /**
+     * Whether the module is installer
+     * @param string $module_id
+     * @return boolean
+     */
+    public function isInstaller($module_id)
+    {
+        $info = $this->getInfo($module_id);
+        return isset($info['type']) && $info['type'] === 'installer';
+    }
+
+    /**
+     * Validates a module ID
+     * @param string $id
+     * @return boolean
+     */
+    public function isValidId($id)
+    {
+        if (preg_match('/^[a-z][a-z0-9_]+$/', $id) !== 1) {
+            return false;
+        }
+
+        return !in_array($id, array('core', 'gplcart'));
+    }
+
+    /**
+     * Returns an array of modules by the type
+     * @param string $type
+     * @param boolean $enabled
+     * @return array
+     */
+    public function getByType($type, $enabled = false)
+    {
+        $modules = $enabled ? $this->getEnabled() : $this->getList();
+
+        foreach ($modules as $id => $info) {
+            if ($type !== $info['type']) {
+                unset($modules[$id]);
+            }
+        }
+
+        return $modules;
     }
 
 }
