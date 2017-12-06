@@ -316,14 +316,19 @@ abstract class Controller
     protected $config;
 
     /**
+     * Module class instance
+     * @var \gplcart\core\Module $module
+     */
+    protected $module;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
         $this->setInstanceProperties();
 
-        $this->token = $this->config->getToken();
-
+        $this->setToken();
         $this->setRouteProperties();
         $this->setLanguageProperties();
 
@@ -374,6 +379,20 @@ abstract class Controller
     }
 
     /**
+     * Sets a token
+     * @param string|null $token
+     * @return string
+     */
+    public function setToken($token = null)
+    {
+        if (isset($token)) {
+            return $this->token = (string) $token;
+        }
+
+        return $this->token = gplcart_string_encode(crypt(session_id(), $this->config->getKey()));
+    }
+
+    /**
      * Returns an object instance
      * @param string $class
      * @return object
@@ -391,7 +410,7 @@ abstract class Controller
         $classes = array(
             'gplcart\\core\\models' => array('cart', 'user', 'store', 'image', 'filter', 'language', 'validator'),
             'gplcart\\core\\helpers' => array('url', 'asset', 'pager', 'session', 'request', 'response'),
-            'gplcart\\core' => array('hook', 'route', 'config', 'library')
+            'gplcart\\core' => array('hook', 'route', 'config', 'library', 'module')
         );
 
         foreach ($classes as $base_namespace => $class_names) {
@@ -653,6 +672,15 @@ abstract class Controller
     public function getBase()
     {
         return $this->base;
+    }
+
+    /**
+     * Returns the request IP
+     * @return string
+     */
+    public function getIp()
+    {
+        return $this->request->ip();
     }
 
     /**
@@ -1056,6 +1084,17 @@ abstract class Controller
     }
 
     /**
+     * Performs an HTTP request
+     * @param string $url
+     * @param array $options
+     * @return array
+     */
+    public function httpRequest($url, array $options)
+    {
+        return $this->request->send($url, $options);
+    }
+
+    /**
      * Whether a key is presented in the submitted values array
      * @param string|array $key
      * @return boolean
@@ -1098,18 +1137,30 @@ abstract class Controller
             $this->response->outputError404();
         }
 
-        $this->current_theme = $this->config->getModuleInfo($this->theme);
+        $this->current_theme = $this->module->getInfo($this->theme);
 
         if (empty($this->current_theme)) {
             $this->response->outputError404();
         }
 
-        $this->theme_settings = (array) $this->config->getFromModule($this->theme, null, array());
+        $this->theme_settings = (array) $this->getModuleSettings($this->theme, null, array());
 
         $this->templates = $this->getDefaultTemplates();
         if (!empty($this->current_theme['data']['templates'])) {
             $this->templates = array_merge($this->templates, $this->current_theme['data']['templates']);
         }
+    }
+
+    /**
+     * 
+     * @param string $module_id
+     * @param null|string $key
+     * @param mixed $default
+     * @return mixed
+     */
+    public function getModuleSettings($module_id, $key = null, $default = null)
+    {
+        return $this->module->getSettings($module_id, $key, $default);
     }
 
     /**
@@ -1416,7 +1467,7 @@ abstract class Controller
     protected function controlToken($key = null)
     {
         $control = isset($key) ? isset($this->query[$key]) : !empty($this->query);
-        if ($control && (empty($this->query['token']) || !$this->config->isValidToken($this->query['token']))) {
+        if ($control && (empty($this->query['token']) || !gplcart_string_equals($this->token, $this->query['token']))) {
             $this->response->outputError403();
         }
     }
