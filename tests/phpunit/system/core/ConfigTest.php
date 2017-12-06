@@ -90,22 +90,4 @@ class ConfigTest extends UnitTest
         $this->assertDbRecordNotExists('settings', 'id', $first['id']);
     }
 
-    /**
-     * @covers gplcart\core\Config::isValidModuleId
-     */
-    public function testIsValidModuleId()
-    {
-        $invalid = array('test module', '2test_module', 'test,module', '1234', 'gplcart', 'core');
-
-        foreach ($invalid as $string) {
-            $this->assertFalse($this->object->isValidModuleId($string));
-        }
-
-        $valid = array('testmodule', 'test_module', 'test_module2');
-
-        foreach ($valid as $string) {
-            $this->assertTrue($this->object->isValidModuleId($string));
-        }
-    }
-
 }
