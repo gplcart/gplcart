@@ -9,13 +9,7 @@
 
 namespace gplcart\core\handlers\validator;
 
-use gplcart\core\Config;
-use gplcart\core\models\File as FileModel,
-    gplcart\core\models\User as UserModel,
-    gplcart\core\models\Store as StoreModel,
-    gplcart\core\models\Alias as AliasModel,
-    gplcart\core\helpers\Request as RequestHelper,
-    gplcart\core\models\Language as LanguageModel;
+use gplcart\core\Container;
 use gplcart\core\handlers\validator\Base as BaseValidator;
 
 /**
@@ -23,6 +17,12 @@ use gplcart\core\handlers\validator\Base as BaseValidator;
  */
 class Component extends BaseValidator
 {
+
+    /**
+     * Config class instance
+     * @var \gplcart\core\Config $config
+     */
+    protected $config;
 
     /**
      * Alias model instance
@@ -55,24 +55,18 @@ class Component extends BaseValidator
     protected $request;
 
     /**
-     * @param Config $config
-     * @param LanguageModel $language
-     * @param FileModel $file
-     * @param UserModel $user
-     * @param StoreModel $store
-     * @param AliasModel $alias
-     * @param RequestHelper $request
+     * Constructor
      */
-    public function __construct(Config $config, LanguageModel $language, FileModel $file,
-            UserModel $user, StoreModel $store, AliasModel $alias, RequestHelper $request)
+    public function __construct()
     {
-        parent::__construct($config, $language);
+        parent::__construct();
 
-        $this->file = $file;
-        $this->user = $user;
-        $this->store = $store;
-        $this->alias = $alias;
-        $this->request = $request;
+        $this->config = Container::get('gplcart\\core\\Config');
+        $this->file = Container::get('gplcart\\core\\models\\File');
+        $this->user = Container::get('gplcart\\core\\models\\User');
+        $this->store = Container::get('gplcart\\core\\models\\Store');
+        $this->alias = Container::get('gplcart\\core\\models\\Alias');
+        $this->request = Container::get('gplcart\\core\\helpers\\Request');
     }
 
     /**

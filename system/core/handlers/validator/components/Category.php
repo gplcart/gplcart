@@ -9,15 +9,6 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-// Parent
-use gplcart\core\Config;
-use gplcart\core\models\File as FileModel,
-    gplcart\core\models\User as UserModel,
-    gplcart\core\models\Store as StoreModel,
-    gplcart\core\models\Alias as AliasModel,
-    gplcart\core\helpers\Request as RequestHelper,
-    gplcart\core\models\Language as LanguageModel;
-// New
 use gplcart\core\models\Category as CategoryModel,
     gplcart\core\models\CategoryGroup as CategoryGroupModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
@@ -41,21 +32,12 @@ class Category extends ComponentValidator
     protected $category_group;
 
     /**
-     * @param Config $config
-     * @param LanguageModel $language
-     * @param FileModel $file
-     * @param UserModel $user
-     * @param StoreModel $store
-     * @param AliasModel $alias
-     * @param RequestHelper $request
      * @param CategoryModel $category
      * @param CategoryGroupModel $category_group
      */
-    public function __construct(Config $config, LanguageModel $language, FileModel $file,
-            UserModel $user, StoreModel $store, AliasModel $alias, RequestHelper $request,
-            CategoryModel $category, CategoryGroupModel $category_group)
+    public function __construct(CategoryModel $category, CategoryGroupModel $category_group)
     {
-        parent::__construct($config, $language, $file, $user, $store, $alias, $request);
+        parent::__construct();
 
         $this->category = $category;
         $this->category_group = $category_group;

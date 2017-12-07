@@ -9,15 +9,6 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-// Parent
-use gplcart\core\Config;
-use gplcart\core\models\File as FileModel,
-    gplcart\core\models\User as UserModel,
-    gplcart\core\models\Store as StoreModel,
-    gplcart\core\models\Alias as AliasModel,
-    gplcart\core\models\Language as LanguageModel,
-    gplcart\core\helpers\Request as RequestHelper;
-// New
 use gplcart\core\models\Zone as ZoneModel,
     gplcart\core\models\State as StateModel,
     gplcart\core\models\Country as CountryModel;
@@ -48,22 +39,13 @@ class State extends ComponentValidator
     protected $zone;
 
     /**
-     * @param Config $config
-     * @param LanguageModel $language
-     * @param FileModel $file
-     * @param UserModel $user
-     * @param StoreModel $store
-     * @param AliasModel $alias
-     * @param RequestHelper $request
      * @param StateModel $state
      * @param CountryModel $country
      * @param ZoneModel $zone
      */
-    public function __construct(Config $config, LanguageModel $language, FileModel $file,
-            UserModel $user, StoreModel $store, AliasModel $alias, RequestHelper $request,
-            StateModel $state, CountryModel $country, ZoneModel $zone)
+    public function __construct(StateModel $state, CountryModel $country, ZoneModel $zone)
     {
-        parent::__construct($config, $language, $file, $user, $store, $alias, $request);
+        parent::__construct();
 
         $this->zone = $zone;
         $this->state = $state;

@@ -9,15 +9,6 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-// Parent
-use gplcart\core\Config;
-use gplcart\core\models\File as FileModel,
-    gplcart\core\models\User as UserModel,
-    gplcart\core\models\Store as StoreModel,
-    gplcart\core\models\Alias as AliasModel,
-    gplcart\core\helpers\Request as RequestHelper,
-    gplcart\core\models\Language as LanguageModel;
-// New
 use gplcart\core\models\Page as PageModel,
     gplcart\core\models\Product as ProductModel,
     gplcart\core\models\Collection as CollectionModel,
@@ -31,16 +22,16 @@ class CollectionItem extends ComponentValidator
 {
 
     /**
-     * Product model instance
-     * @var \gplcart\core\models\Product $product
-     */
-    protected $product;
-
-    /**
      * Page model instance
      * @var \gplcart\core\models\Page $page
      */
     protected $page;
+
+    /**
+     * Product model instance
+     * @var \gplcart\core\models\Product $product
+     */
+    protected $product;
 
     /**
      * Collection model instance
@@ -55,24 +46,15 @@ class CollectionItem extends ComponentValidator
     protected $collection_item;
 
     /**
-     * @param Config $config
-     * @param LanguageModel $language
-     * @param FileModel $file
-     * @param UserModel $user
-     * @param StoreModel $store
-     * @param AliasModel $alias
-     * @param RequestHelper $request
      * @param PageModel $page
      * @param ProductModel $product
      * @param CollectionModel $collection
      * @param CollectionItemModel $collection_item
      */
-    public function __construct(Config $config, LanguageModel $language, FileModel $file,
-            UserModel $user, StoreModel $store, AliasModel $alias, RequestHelper $request,
-            PageModel $page, ProductModel $product, CollectionModel $collection,
+    public function __construct(PageModel $page, ProductModel $product, CollectionModel $collection,
             CollectionItemModel $collection_item)
     {
-        parent::__construct($config, $language, $file, $user, $store, $alias, $request);
+        parent::__construct();
 
         $this->page = $page;
         $this->product = $product;

@@ -9,13 +9,6 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\Config;
-use gplcart\core\models\File as FileModel,
-    gplcart\core\models\User as UserModel,
-    gplcart\core\models\Store as StoreModel,
-    gplcart\core\models\Alias as AliasModel,
-    gplcart\core\helpers\Request as RequestHelper,
-    gplcart\core\models\Language as LanguageModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
@@ -30,18 +23,11 @@ class File extends ComponentValidator
     const PATH = 'image/upload/common';
 
     /**
-     * @param Config $config
-     * @param LanguageModel $language
-     * @param FileModel $file
-     * @param UserModel $user
-     * @param StoreModel $store
-     * @param AliasModel $alias
-     * @param RequestHelper $request
+     * Constructor
      */
-    public function __construct(Config $config, LanguageModel $language, FileModel $file,
-            UserModel $user, StoreModel $store, AliasModel $alias, RequestHelper $request)
+    public function __construct()
     {
-        parent::__construct($config, $language, $file, $user, $store, $alias, $request);
+        parent::__construct();
     }
 
     /**

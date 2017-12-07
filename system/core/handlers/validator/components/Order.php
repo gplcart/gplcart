@@ -9,15 +9,6 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-// Parent
-use gplcart\core\Config;
-use gplcart\core\models\File as FileModel,
-    gplcart\core\models\User as UserModel,
-    gplcart\core\models\Store as StoreModel,
-    gplcart\core\models\Alias as AliasModel,
-    gplcart\core\helpers\Request as RequestHelper,
-    gplcart\core\models\Language as LanguageModel;
-// New
 use gplcart\core\models\Order as OrderModel,
     gplcart\core\models\Payment as PaymentModel,
     gplcart\core\models\Address as AddressModel,
@@ -76,12 +67,10 @@ class Order extends ComponentValidator
      * @param CurrencyModel $currency
      * @param TransactionModel $transaction
      */
-    public function __construct(Config $config, LanguageModel $language, FileModel $file,
-            UserModel $user, StoreModel $store, AliasModel $alias, RequestHelper $request,
-            OrderModel $order, PaymentModel $payment, ShippingModel $shipping,
+    public function __construct(OrderModel $order, PaymentModel $payment, ShippingModel $shipping,
             AddressModel $address, CurrencyModel $currency, TransactionModel $transaction)
     {
-        parent::__construct($config, $language, $file, $user, $store, $alias, $request);
+        parent::__construct();
 
         $this->order = $order;
         $this->address = $address;

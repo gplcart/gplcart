@@ -9,15 +9,6 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-// Parent
-use gplcart\core\Config;
-use gplcart\core\models\File as FileModel,
-    gplcart\core\models\User as UserModel,
-    gplcart\core\models\Store as StoreModel,
-    gplcart\core\models\Alias as AliasModel,
-    gplcart\core\helpers\Request as RequestHelper,
-    gplcart\core\models\Language as LanguageModel;
-// New
 use gplcart\core\models\Rating as RatingModel,
     gplcart\core\models\Product as ProductModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
@@ -41,21 +32,12 @@ class Rating extends ComponentValidator
     protected $product;
 
     /**
-     * @param Config $config
-     * @param LanguageModel $language
-     * @param FileModel $file
-     * @param UserModel $user
-     * @param StoreModel $store
-     * @param AliasModel $alias
-     * @param RequestHelper $request
      * @param RatingModel $rating
      * @param ProductModel $product
      */
-    public function __construct(Config $config, LanguageModel $language, FileModel $file,
-            UserModel $user, StoreModel $store, AliasModel $alias, RequestHelper $request,
-            RatingModel $rating, ProductModel $product)
+    public function __construct(RatingModel $rating, ProductModel $product)
     {
-        parent::__construct($config, $language, $file, $user, $store, $alias, $request);
+        parent::__construct();
 
         $this->rating = $rating;
         $this->product = $product;
@@ -135,6 +117,7 @@ class Rating extends ComponentValidator
             $this->setErrorInvalid($field, $label);
             return false;
         }
+
         return true;
     }
 
