@@ -127,7 +127,7 @@ class Config
      */
     public function setDb($db)
     {
-        return $this->db->set($db);
+        return $this->db->init($db);
     }
 
     /**

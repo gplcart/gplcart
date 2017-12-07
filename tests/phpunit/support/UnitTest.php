@@ -345,7 +345,7 @@ class UnitTest extends PHPUnit_Extensions_Database_TestCase
     protected function getSystemDatabase($fixtures = null)
     {
         $db = new SystemDatabase;
-        return $db->set($this->createDbFromFixture($fixtures));
+        return $db->init($this->createDbFromFixture($fixtures));
     }
 
     /**

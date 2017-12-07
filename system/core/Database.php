@@ -44,7 +44,7 @@ class Database
      * @throws DatabaseException
      * @return $this
      */
-    public function set($config)
+    public function init($config)
     {
         $this->pdo = null;
 

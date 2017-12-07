@@ -191,7 +191,7 @@ class Install
     {
         try {
             $this->db = new Database;
-            $this->db->set($settings);
+            $this->db->init($settings);
         } catch (\Exception $e) {
             $this->db = null;
             return $this->language->text($e->getMessage());
