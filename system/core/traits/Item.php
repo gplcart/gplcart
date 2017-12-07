@@ -361,4 +361,123 @@ trait Item
         }
     }
 
+    /**
+     * Adds a cart component information for the order item
+     * @param array $item
+     * @param \gplcart\core\models\Price $price_model
+     */
+    public function setItemOrderCartComponent(&$item, $price_model)
+    {
+        if (empty($item['data']['components']['cart']['items'])) {
+            return null;
+        }
+
+        foreach ($item['data']['components']['cart']['items'] as $sku => $component) {
+
+            if (empty($item['cart'][$sku]['product_store_id'])) {
+                continue;
+            }
+
+            if ($item['cart'][$sku]['product_store_id'] != $item['store_id']) {
+                $item['cart'][$sku]['product_status'] = 0;
+            }
+
+            $item['cart'][$sku]['price_formatted'] = $price_model->format($component['price'], $item['currency']);
+        }
+
+        $html = $this->render('backend|sale/order/panes/components/cart', array('order' => $item));
+        $item['data']['components']['cart']['rendered'] = $html;
+    }
+
+    /**
+     * Adds a shipping component information for the order item
+     * @param array $item
+     * @param \gplcart\core\models\Price $pmodel
+     * @param \gplcart\core\models\Shipping $shmodel
+     * @param \gplcart\core\models\Order $omodel
+     */
+    public function setItemOrderShippingComponent(&$item, $pmodel, $shmodel, $omodel)
+    {
+        if (!isset($item['data']['components']['shipping']['price'])) {
+            return null;
+        }
+
+        $method = $shmodel->get($item['shipping']);
+        $value = $item['data']['components']['shipping']['price'];
+
+        if (abs($value) == 0) {
+            $value = 0;
+        }
+
+        $method['price_formatted'] = $pmodel->format($value, $item['currency']);
+
+        $data = array(
+            'method' => $method,
+            'title' => $omodel->getComponentType('shipping')
+        );
+
+        $html = $this->render('backend|sale/order/panes/components/method', $data);
+        $item['data']['components']['shipping']['rendered'] = $html;
+    }
+
+    /**
+     * Adds a payment component information for the order item
+     * @param array $item
+     * @param \gplcart\core\models\Price $pmodel
+     * @param \gplcart\core\models\Payment $pamodel
+     * @param \gplcart\core\models\Order $omodel
+     */
+    public function setItemOrderPaymentComponent(&$item, $pmodel, $pamodel, $omodel)
+    {
+        if (!isset($item['data']['components']['payment']['price'])) {
+            return null;
+        }
+
+        $method = $pamodel->get($item['payment']);
+        $value = $item['data']['components']['payment']['price'];
+
+        if (abs($value) == 0) {
+            $value = 0;
+        }
+
+        $method['price_formatted'] = $pmodel->format($value, $item['currency']);
+
+        $data = array(
+            'method' => $method,
+            'title' => $omodel->getComponentType('payment')
+        );
+
+        $html = $this->render('backend|sale/order/panes/components/method', $data);
+        $item['data']['components']['payment']['rendered'] = $html;
+    }
+
+    /**
+     * Adds a price rule component information for the order item
+     * @param array $item
+     * @param \gplcart\core\models\Price $pmodel
+     * @param \gplcart\core\models\PriceRule $prmodel
+     */
+    public function setItemOrderPriceRuleComponent(&$item, $pmodel, $prmodel)
+    {
+        foreach ($item['data']['components'] as $price_rule_id => $component) {
+
+            if (!is_numeric($price_rule_id)) {
+                continue;
+            }
+
+            $price_rule = $prmodel->get($price_rule_id);
+
+            if (abs($component['price']) == 0) {
+                $component['price'] = 0;
+            }
+
+            $data = array(
+                'rule' => $price_rule,
+                'price' => $pmodel->format($component['price'], $price_rule['currency']));
+
+            $html = $this->render('backend|sale/order/panes/components/rule', $data);
+            $item['data']['components'][$price_rule_id]['rendered'] = $html;
+        }
+    }
+
 }

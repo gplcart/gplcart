@@ -29,12 +29,9 @@ trait Job
      * Processes the current job
      * @param \gplcart\core\models\Job $job_model
      */
-    protected function setJob($job_model)
+    public function setJob($job_model)
     {
-        $cancel_job_id = $this->getQuery('cancel_job');
-
-        if (!empty($cancel_job_id)) {
-            $job_model->delete($cancel_job_id);
+        if ($this->isCanceledJob($job_model)) {
             return null;
         }
 
@@ -75,6 +72,23 @@ trait Job
         }
 
         return $rendered;
+    }
+
+    /**
+     * Whether the current job is canceled
+     * @param \gplcart\core\models\Job $job_model
+     * @return boolean
+     */
+    public function isCanceledJob($job_model)
+    {
+        $cancel_job_id = $this->getQuery('cancel_job');
+
+        if (empty($cancel_job_id)) {
+            return false;
+        }
+
+        $job_model->delete($cancel_job_id);
+        return true;
     }
 
 }
