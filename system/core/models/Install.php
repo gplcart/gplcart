@@ -11,8 +11,8 @@ namespace gplcart\core\models;
 
 use gplcart\core\Database,
     gplcart\core\Handler,
-    gplcart\core\Module,
-    gplcart\core\Hook;
+    gplcart\core\Hook,
+    gplcart\core\Module as ModuleCore;
 use gplcart\core\models\Language as LanguageModel;
 
 /**
@@ -44,13 +44,13 @@ class Install
      * @var \gplcart\core\models\Language $language
      */
     protected $language;
-    
+
     /**
      * @param Hook $hook
-     * @param Module $module
+     * @param ModuleCore $module
      * @param LanguageModel $language
      */
-    public function __construct(Hook $hook, Module $module, LanguageModel $language)
+    public function __construct(Hook $hook, ModuleCore $module, LanguageModel $language)
     {
         $this->hook = $hook;
         $this->module = $module;
