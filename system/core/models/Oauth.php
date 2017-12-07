@@ -12,7 +12,7 @@ namespace gplcart\core\models;
 use gplcart\core\Handler,
     gplcart\core\Hook;
 use gplcart\core\helpers\Url as UrlHelper,
-    gplcart\core\helpers\Curl as CurlHelper,
+    gplcart\core\helpers\Request as RequestHelper,
     gplcart\core\helpers\Session as SessionHelper;
 use gplcart\core\exceptions\OauthAuthorization as OauthAuthorizationException;
 
@@ -30,9 +30,9 @@ class Oauth
 
     /**
      * Curl helper instance
-     * @var \gplcart\core\helpers\Curl $curl
+     * @var \gplcart\core\helpers\Request $request
      */
-    protected $curl;
+    protected $request;
 
     /**
      * URL helper instance
@@ -48,15 +48,16 @@ class Oauth
 
     /**
      * @param Hook $hook
-     * @param CurlHelper $curl
+     * @param RequestHelper $request
      * @param SessionHelper $session
      * @param UrlHelper $url
      */
-    public function __construct(Hook $hook, CurlHelper $curl, SessionHelper $session, UrlHelper $url)
+    public function __construct(Hook $hook, RequestHelper $request, SessionHelper $session,
+            UrlHelper $url)
     {
         $this->url = $url;
-        $this->curl = $curl;
         $this->hook = $hook;
+        $this->request = $request;
         $this->session = $session;
     }
 
@@ -123,7 +124,6 @@ class Oauth
         $params += $this->getDefaultQuery($provider);
 
         if (isset($provider['handlers']['auth'])) {
-            // Call per-provider query handler
             $params = $this->callHandler('auth', $provider, $params);
         }
 
@@ -285,8 +285,8 @@ class Oauth
         }
 
         try {
-            $response = $this->curl->post($provider['url']['token'], array('fields' => $query));
-            $result = json_decode($response, true);
+            $response = $this->request->send($provider['url']['token'], array('data' => $query));
+            $result = json_decode($response['data'], true);
         } catch (\Exception $ex) {
             $result = array();
         }
