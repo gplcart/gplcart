@@ -374,7 +374,7 @@ class Request
      * @return string
      * @throws \InvalidArgumentException
      */
-    protected function prepareSendData(&$socket, array &$options, $uri)
+    protected function prepareSendData(&$socket, array &$options, array &$uri)
     {
         if (empty($uri['scheme'])) {
             throw new \InvalidArgumentException('Missing URL scheme');
@@ -418,6 +418,10 @@ class Request
 
         if (isset($uri['user'])) {
             $options['headers']['Authorization'] = 'Basic ' . base64_encode($uri['user'] . (isset($uri['pass']) ? ':' . $uri['pass'] : ':'));
+        }
+
+        if (isset($options['query']) && !isset($uri['query'])) {
+            $uri['query'] = http_build_query($options['query']);
         }
 
         return $options;
