@@ -15,15 +15,31 @@ namespace gplcart\core\traits;
 trait Cart
 {
 
-    /**
-     * @return \gplcart\core\Controller
-     */
-    protected abstract function getController();
+    abstract public function isAjax();
 
-    /**
-     * Returns rendered cart preview
-     */
-    public abstract function getCartPreview();
+    abstract public function getCartUid();
+
+    abstract public function getStoreId();
+
+    abstract public function getCartPreview();
+
+    abstract public function isPosted($key = null);
+
+    abstract public function filterSubmitted(array $allowed);
+
+    abstract public function getSubmitted($key = null, $default = null);
+
+    abstract public function outputJson($data, array $options = array());
+
+    abstract public function setSubmitted($key = null, $value = null, $filter = true);
+
+    abstract public function validateComponent($handler_id, array $options = array());
+
+    abstract public function format($format, array $arguments = array(), $glue = '<br>');
+
+    abstract public function error($key = null, $return_error = null, $return_no_error = '');
+
+    abstract public function redirect($url = '', $message = '', $severity = 'info', $exclude = false);
 
     /**
      * Handles product cart submissions
@@ -31,15 +47,14 @@ trait Cart
      */
     public function submitCart($cart_model)
     {
-        $controller = $this->getController();
-        $controller->setSubmitted('product');
-        $controller->filterSubmitted(array('product_id'));
+        $this->setSubmitted('product');
+        $this->filterSubmitted(array('product_id'));
 
-        if ($controller->isPosted('add_to_cart')) {
+        if ($this->isPosted('add_to_cart')) {
             $this->validateAddToCart();
             $this->addToCart($cart_model);
-        } else if ($controller->isPosted('remove_from_cart')) {
-            $controller->setSubmitted('cart');
+        } else if ($this->isPosted('remove_from_cart')) {
+            $this->setSubmitted('cart');
             $this->deleteFromCart($cart_model);
         }
     }
@@ -49,13 +64,11 @@ trait Cart
      */
     public function validateAddToCart()
     {
-        $controller = $this->getController();
+        $this->setSubmitted('user_id', $this->getCartUid());
+        $this->setSubmitted('store_id', $this->getStoreId());
+        $this->setSubmitted('quantity', $this->getSubmitted('quantity', 1));
 
-        $controller->setSubmitted('user_id', $controller->getCartUid());
-        $controller->setSubmitted('store_id', $controller->getStoreId());
-        $controller->setSubmitted('quantity', $controller->getSubmitted('quantity', 1));
-
-        $controller->validateComponent('cart');
+        $this->validateComponent('cart');
     }
 
     /**
@@ -64,27 +77,26 @@ trait Cart
      */
     public function addToCart($cart_model)
     {
-        $controller = $this->getController();
-        $errors = $controller->error();
+        $errors = $this->error();
 
         if (empty($errors)) {
-            $submitted = $controller->getSubmitted();
+            $submitted = $this->getSubmitted();
             $result = $cart_model->addProduct($submitted['product'], $submitted);
         } else {
 
             $result = array(
                 'redirect' => '',
                 'severity' => 'warning',
-                'message' => $controller->format($errors)
+                'message' => $this->format($errors)
             );
         }
 
-        if ($controller->isAjax()) {
+        if ($this->isAjax()) {
             $result['modal'] = $this->getCartPreview();
-            $controller->outputJson($result);
+            $this->outputJson($result);
         }
 
-        $controller->redirect($result['redirect'], $result['message'], $result['severity']);
+        $this->redirect($result['redirect'], $result['message'], $result['severity']);
     }
 
     /**
@@ -93,19 +105,18 @@ trait Cart
      */
     public function deleteFromCart($cart_model)
     {
-        $controller = $this->getController();
-        $result = $cart_model->submitDelete($controller->getSubmitted('cart_id'));
+        $result = $cart_model->submitDelete($this->getSubmitted('cart_id'));
 
         if (empty($result['quantity'])) {
             $result['message'] = '';
         }
 
-        if ($controller->isAjax()) {
+        if ($this->isAjax()) {
             $result['modal'] = $this->getCartPreview();
-            $controller->outputJson($result);
+            $this->outputJson($result);
         }
 
-        $controller->redirect($result['redirect'], $result['message'], $result['severity']);
+        $this->redirect($result['redirect'], $result['message'], $result['severity']);
     }
 
 }

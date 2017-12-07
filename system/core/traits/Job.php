@@ -15,10 +15,15 @@ namespace gplcart\core\traits;
 trait Job
 {
 
-    /**
-     * @return \gplcart\core\Controller
-     */
-    protected abstract function getController();
+    abstract public function isAjax();
+
+    abstract public function setJsSettings($key, $data, $weight = null);
+
+    abstract public function outputJson($data, array $options = array());
+
+    abstract public function getQuery($key = null, $default = null, $type = 'string');
+
+    abstract public function render($file, $data = array(), $merge = true, $default = '');
 
     /**
      * Processes the current job
@@ -26,15 +31,14 @@ trait Job
      */
     protected function setJob($job_model)
     {
-        $controller = $this->getController();
-        $cancel_job_id = $controller->getQuery('cancel_job');
+        $cancel_job_id = $this->getQuery('cancel_job');
 
         if (!empty($cancel_job_id)) {
             $job_model->delete($cancel_job_id);
             return null;
         }
 
-        $job_id = $controller->getQuery('job_id');
+        $job_id = $this->getQuery('job_id');
 
         if (empty($job_id)) {
             return null;
@@ -46,9 +50,9 @@ trait Job
             return null;
         }
 
-        $controller->setJsSettings('job', $job);
-        if ($controller->getQuery('process_job') === $job['id'] && $controller->isAjax()) {
-            $controller->outputJson($job_model->process($job));
+        $this->setJsSettings('job', $job);
+        if ($this->getQuery('process_job') === $job['id'] && $this->isAjax()) {
+            $this->outputJson($job_model->process($job));
         }
     }
 
@@ -60,16 +64,14 @@ trait Job
      */
     public function getWidgetJob($job_model, $job = null)
     {
-        $controller = $this->getController();
-
         if (!isset($job)) {
-            $job = $job_model->get($controller->getQuery('job_id', ''));
+            $job = $job_model->get($this->getQuery('job_id', ''));
         }
 
         $rendered = '';
         if (!empty($job['status'])) {
             $job += array('widget' => 'common/job');
-            $rendered = $controller->render($job['widget'], array('job' => $job));
+            $rendered = $this->render($job['widget'], array('job' => $job));
         }
 
         return $rendered;

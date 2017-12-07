@@ -62,15 +62,6 @@ class Controller extends BaseController
     }
 
     /**
-     * Used by traits
-     * @return $this
-     */
-    protected function getController()
-    {
-        return $this;
-    }
-
-    /**
      * Sets default class instances
      */
     protected function setInstancesBackend()

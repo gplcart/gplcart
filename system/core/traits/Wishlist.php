@@ -15,10 +15,29 @@ namespace gplcart\core\traits;
 trait Wishlist
 {
 
-    /**
-     * @return \gplcart\core\Controller
-     */
-    protected abstract function getController();
+    abstract public function isAjax();
+
+    abstract public function getCartUid();
+
+    abstract public function getStoreId();
+
+    abstract public function isPosted($key = null);
+
+    abstract public function filterSubmitted(array $allowed);
+
+    abstract public function getSubmitted($key = null, $default = null);
+
+    abstract public function outputJson($data, array $options = array());
+
+    abstract public function setSubmitted($key = null, $value = null, $filter = true);
+
+    abstract public function validateComponent($handler_id, array $options = array());
+
+    abstract public function format($format, array $arguments = array(), $glue = '<br>');
+
+    abstract public function error($key = null, $return_error = null, $return_no_error = '');
+
+    abstract public function redirect($url = '', $message = '', $severity = 'info', $exclude = false);
 
     /**
      * Adds/removes a product from the wishlist
@@ -26,13 +45,12 @@ trait Wishlist
      */
     protected function submitWishlist($wishlist_model)
     {
-        $controller = $this->getController();
-        $controller->setSubmitted('product');
-        $controller->filterSubmitted(array('product_id'));
+        $this->setSubmitted('product');
+        $this->filterSubmitted(array('product_id'));
 
-        if ($controller->isPosted('remove_from_wishlist')) {
+        if ($this->isPosted('remove_from_wishlist')) {
             $this->deleteFromWishlist($wishlist_model);
-        } else if ($controller->isPosted('add_to_wishlist')) {
+        } else if ($this->isPosted('add_to_wishlist')) {
             $this->validateAddToWishlist();
             $this->addToWishlist($wishlist_model);
         }
@@ -43,10 +61,9 @@ trait Wishlist
      */
     protected function validateAddToWishlist()
     {
-        $controller = $this->getController();
-        $controller->setSubmitted('user_id', $controller->getCartUid());
-        $controller->setSubmitted('store_id', $controller->getStoreId());
-        $controller->validateComponent('wishlist');
+        $this->setSubmitted('user_id', $this->getCartUid());
+        $this->setSubmitted('store_id', $this->getStoreId());
+        $this->validateComponent('wishlist');
     }
 
     /**
@@ -55,24 +72,23 @@ trait Wishlist
      */
     public function addToWishlist($wishlist_model)
     {
-        $controller = $this->getController();
-        $errors = $controller->error();
+        $errors = $this->error();
 
         if (empty($errors)) {
-            $result = $wishlist_model->addProduct($controller->getSubmitted());
+            $result = $wishlist_model->addProduct($this->getSubmitted());
         } else {
             $result = array(
                 'redirect' => '',
                 'severity' => 'warning',
-                'message' => $controller->format($errors)
+                'message' => $this->format($errors)
             );
         }
 
-        if ($controller->isAjax()) {
-            $controller->outputJson($result);
+        if ($this->isAjax()) {
+            $this->outputJson($result);
         }
 
-        $controller->redirect($result['redirect'], $result['message'], $result['severity']);
+        $this->redirect($result['redirect'], $result['message'], $result['severity']);
     }
 
     /**
@@ -81,21 +97,19 @@ trait Wishlist
      */
     public function deleteFromWishlist($wishlist_model)
     {
-        $controller = $this->getController();
-
         $product = array(
-            'user_id' => $controller->getCartUid(),
-            'store_id' => $controller->getStoreId(),
-            'product_id' => $controller->getSubmitted('product_id')
+            'user_id' => $this->getCartUid(),
+            'store_id' => $this->getStoreId(),
+            'product_id' => $this->getSubmitted('product_id')
         );
 
         $result = $wishlist_model->deleteProduct($product);
 
-        if ($controller->isAjax()) {
-            $controller->outputJson($result);
+        if ($this->isAjax()) {
+            $this->outputJson($result);
         }
 
-        $controller->redirect($result['redirect'], $result['message'], $result['severity']);
+        $this->redirect($result['redirect'], $result['message'], $result['severity']);
     }
 
 }

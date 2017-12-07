@@ -134,15 +134,6 @@ class Controller extends BaseController
     }
 
     /**
-     * Used by traits
-     * @return $this
-     */
-    protected function getController()
-    {
-        return $this;
-    }
-
-    /**
      * Sets default data for front-end templates
      */
     protected function setDefaultDataFrontend()
@@ -155,7 +146,7 @@ class Controller extends BaseController
         $this->data['_captcha'] = $this->getWidgetCaptcha();
         $this->data['_comparison'] = $this->getProductComparison();
         $this->data['_currency'] = $currencies[$this->current_currency];
-        $this->data['_menu'] = $this->getWidgetCategoryMenu($this->data_categories);
+        $this->data['_menu'] = $this->getWidgetMenu(array('items' => $this->data_categories));
     }
 
     /**

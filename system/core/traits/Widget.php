@@ -15,10 +15,15 @@ namespace gplcart\core\traits;
 trait Widget
 {
 
-    /**
-     * @return \gplcart\core\Controller
-     */
-    protected abstract function getController();
+    abstract public function access($permission);
+
+    abstract public function config($key = null, $default = null);
+
+    abstract public function text($string = null, array $arguments = array());
+
+    abstract public function render($file, $data = array(), $merge = true, $default = '');
+
+    abstract public function url($path = '', array $query = array(), $abs = false, $exclude = false);
 
     /**
      * Returns rendered admin menu
@@ -29,19 +34,18 @@ trait Widget
     public function getWidgetAdminMenu($route_class, array $options = array())
     {
         $options += array('parent_url' => 'admin');
-        $controller = $this->getController();
 
         $items = array();
         foreach ($route_class->getList() as $path => $route) {
             if (strpos($path, "{$options['parent_url']}/") !== 0 || empty($route['menu']['admin'])) {
                 continue;
             }
-            if (isset($route['access']) && !$controller->access($route['access'])) {
+            if (isset($route['access']) && !$this->access($route['access'])) {
                 continue;
             }
             $items[$path] = array(
-                'url' => $controller->url($path),
-                'text' => $controller->text($route['menu']['admin']),
+                'url' => $this->url($path),
+                'text' => $this->text($route['menu']['admin']),
                 'depth' => substr_count(substr($path, strlen("{$options['parent_url']}/")), '/'),
             );
         }
@@ -63,17 +67,7 @@ trait Widget
             'template' => 'common/menu'
         );
 
-        return $this->getController()->render($options['template'], $options);
-    }
-
-    /**
-     * Returns rendered category menu
-     * @param array $categories
-     * @return string
-     */
-    public function getWidgetCategoryMenu($categories)
-    {
-        return $this->getController()->getWidgetMenu(array('items' => $categories));
+        return $this->render($options['template'], $options);
     }
 
     /**
@@ -82,7 +76,7 @@ trait Widget
      */
     public function getWidgetCaptcha()
     {
-        return $this->getController()->render('common/honeypot');
+        return $this->render('common/honeypot');
     }
 
     /**
@@ -92,12 +86,10 @@ trait Widget
      */
     public function getWidgetShare(array $options = array())
     {
-        $controller = $this->getController();
-
         $options += array(
-            'url' => $controller->url('', array(), true));
+            'url' => $this->url('', array(), true));
 
-        return $controller->render('common/share', $options);
+        return $this->render('common/share', $options);
     }
 
     /**
@@ -112,7 +104,7 @@ trait Widget
             'languages' => $language_model->getList(false, true)
         );
 
-        return $this->getController()->render('common/image', $options);
+        return $this->render('common/image', $options);
     }
 
     /**
@@ -128,7 +120,6 @@ trait Widget
             'type' => 'login'
         );
 
-        $controller = $this->getController();
         $providers = $oauth_model->getProviders($options);
 
         $buttons = array();
@@ -138,11 +129,11 @@ trait Widget
                 $buttons[$provider_id]['url'] = $url;
                 $buttons[$provider_id]['provider'] = $provider;
                 $data = array('provider' => $provider, 'url' => $url);
-                $buttons[$provider_id]['rendered'] = $controller->render($provider['template']['button'], $data);
+                $buttons[$provider_id]['rendered'] = $this->render($provider['template']['button'], $data);
             }
         }
 
-        return $controller->render('common/oauth', array('buttons' => $buttons));
+        return $this->render('common/oauth', array('buttons' => $buttons));
     }
 
     /**
@@ -160,7 +151,7 @@ trait Widget
             'products' => array()
         );
 
-        return $this->getController()->render('content/product/picker', $options);
+        return $this->render('content/product/picker', $options);
     }
 
     /**
@@ -182,7 +173,7 @@ trait Widget
             'collection_id' => $item['collection_item']['collection_id']
         );
 
-        return $this->getController()->render($item['collection_handler']['template']['list'], $data, true);
+        return $this->render($item['collection_handler']['template']['list'], $data, true);
     }
 
     /**
@@ -196,14 +187,12 @@ trait Widget
             return '';
         }
 
-        $controller = $this->getController();
-
         $options = array(
             'cart' => $cart,
-            'limit' => $controller->config('cart_preview_limit', 5)
+            'limit' => $this->config('cart_preview_limit', 5)
         );
 
-        return $controller->render('cart/preview', $options, true);
+        return $this->render('cart/preview', $options, true);
     }
 
 }
