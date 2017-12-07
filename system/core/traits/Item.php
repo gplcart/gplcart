@@ -215,19 +215,20 @@ trait Item
      */
     public function setItemRenderedProduct(array &$item, $options = array())
     {
-        if (!empty($options['template_item'])) {
-
-            $options += array(
-                'buttons' => array(
-                    'cart_add', 'wishlist_add', 'compare_add'));
-
-            $data = array(
-                'item' => $item,
-                'buttons' => $options['buttons']
-            );
-
-            $this->setItemRendered($item, $data, $options);
+        if (empty($options['template_item'])) {
+            return null;
         }
+
+        $options += array(
+            'buttons' => array(
+                'cart_add', 'wishlist_add', 'compare_add'));
+
+        $data = array(
+            'item' => $item,
+            'buttons' => $options['buttons']
+        );
+
+        $this->setItemRendered($item, $data, $options);
     }
 
     /**
@@ -239,29 +240,30 @@ trait Item
      */
     public function setItemProductBundle(&$item, $product_model, $image_model, $options = array())
     {
-        if (!empty($item['bundle'])) {
-
-            $data = array(
-                'status' => 1,
-                'store_id' => $item['store_id'],
-                'product_id' => explode(',', $item['bundle'])
-            );
-
-            $products = (array) $product_model->getList($data);
-
-            $options += array(
-                'entity' => 'product',
-                'entity_id' => array_keys($products)
-            );
-
-            foreach ($products as &$product) {
-                $this->setItemUrl($product, $options);
-                $this->setItemThumb($product, $image_model, $options);
-                $this->setItemRenderedProductBundle($product, $options);
-            }
-
-            $item['bundled_products'] = $products;
+        if (empty($item['bundle'])) {
+            return null;
         }
+
+        $data = array(
+            'status' => 1,
+            'store_id' => $item['store_id'],
+            'product_id' => explode(',', $item['bundle'])
+        );
+
+        $products = (array) $product_model->getList($data);
+
+        $options += array(
+            'entity' => 'product',
+            'entity_id' => array_keys($products)
+        );
+
+        foreach ($products as &$product) {
+            $this->setItemUrl($product, $options);
+            $this->setItemThumb($product, $image_model, $options);
+            $this->setItemRenderedProductBundle($product, $options);
+        }
+
+        $item['bundled_products'] = $products;
     }
 
     /**
@@ -333,16 +335,20 @@ trait Item
      */
     public function setItemProductCombination(array &$item, $image_model, $price_model)
     {
-        if (!empty($item['combination'])) {
-            foreach ($item['combination'] as &$combination) {
-                $combination['path'] = $combination['thumb'] = '';
-                if (!empty($item['images'][$combination['file_id']])) {
-                    $combination['path'] = $item['images'][$combination['file_id']]['path'];
-                    $this->setItemThumb($combination, $image_model);
-                }
+        if (empty($item['combination'])) {
+            return null;
+        }
 
-                $combination['price'] = $price_model->decimal($combination['price'], $item['currency']);
+        foreach ($item['combination'] as &$combination) {
+
+            $combination['path'] = $combination['thumb'] = '';
+
+            if (!empty($item['images'][$combination['file_id']])) {
+                $combination['path'] = $item['images'][$combination['file_id']]['path'];
+                $this->setItemThumb($combination, $image_model);
             }
+
+            $combination['price'] = $price_model->decimal($combination['price'], $item['currency']);
         }
     }
 
@@ -353,17 +359,25 @@ trait Item
      */
     public function setItemOrderCartComponent(&$item, $price_model)
     {
-        if (!empty($item['data']['components']['cart']['items'])) {
-            foreach ($item['data']['components']['cart']['items'] as $sku => $component) {
-                if ($item['cart'][$sku]['product_store_id'] != $item['store_id']) {
-                    $item['cart'][$sku]['product_status'] = 0;
-                }
-                $item['cart'][$sku]['price_formatted'] = $price_model->format($component['price'], $item['currency']);
+        if (empty($item['data']['components']['cart']['items'])) {
+            return null;
+        }
+
+        foreach ($item['data']['components']['cart']['items'] as $sku => $component) {
+
+            if (empty($item['cart'][$sku]['product_store_id'])) {
+                continue;
             }
 
-            $html = $this->getController()->render('backend|sale/order/panes/components/cart', array('order' => $item));
-            $item['data']['components']['cart']['rendered'] = $html;
+            if ($item['cart'][$sku]['product_store_id'] != $item['store_id']) {
+                $item['cart'][$sku]['product_status'] = 0;
+            }
+
+            $item['cart'][$sku]['price_formatted'] = $price_model->format($component['price'], $item['currency']);
         }
+
+        $html = $this->getController()->render('backend|sale/order/panes/components/cart', array('order' => $item));
+        $item['data']['components']['cart']['rendered'] = $html;
     }
 
     /**
@@ -375,25 +389,26 @@ trait Item
      */
     public function setItemOrderShippingComponent(&$item, $pmodel, $shmodel, $omodel)
     {
-        if (isset($item['data']['components']['shipping']['price'])) {
-
-            $method = $shmodel->get($item['shipping']);
-            $value = $item['data']['components']['shipping']['price'];
-
-            if (abs($value) == 0) {
-                $value = 0;
-            }
-
-            $method['price_formatted'] = $pmodel->format($value, $item['currency']);
-
-            $data = array(
-                'method' => $method,
-                'title' => $omodel->getComponentType('shipping')
-            );
-
-            $html = $this->getController()->render('backend|sale/order/panes/components/method', $data);
-            $item['data']['components']['shipping']['rendered'] = $html;
+        if (!isset($item['data']['components']['shipping']['price'])) {
+            return null;
         }
+
+        $method = $shmodel->get($item['shipping']);
+        $value = $item['data']['components']['shipping']['price'];
+
+        if (abs($value) == 0) {
+            $value = 0;
+        }
+
+        $method['price_formatted'] = $pmodel->format($value, $item['currency']);
+
+        $data = array(
+            'method' => $method,
+            'title' => $omodel->getComponentType('shipping')
+        );
+
+        $html = $this->getController()->render('backend|sale/order/panes/components/method', $data);
+        $item['data']['components']['shipping']['rendered'] = $html;
     }
 
     /**
@@ -405,25 +420,26 @@ trait Item
      */
     public function setItemOrderPaymentComponent(&$item, $pmodel, $pamodel, $omodel)
     {
-        if (isset($item['data']['components']['payment']['price'])) {
-
-            $method = $pamodel->get($item['payment']);
-            $value = $item['data']['components']['payment']['price'];
-
-            if (abs($value) == 0) {
-                $value = 0;
-            }
-
-            $method['price_formatted'] = $pmodel->format($value, $item['currency']);
-
-            $data = array(
-                'method' => $method,
-                'title' => $omodel->getComponentType('payment')
-            );
-
-            $html = $this->getController()->render('backend|sale/order/panes/components/method', $data);
-            $item['data']['components']['payment']['rendered'] = $html;
+        if (!isset($item['data']['components']['payment']['price'])) {
+            return null;
         }
+
+        $method = $pamodel->get($item['payment']);
+        $value = $item['data']['components']['payment']['price'];
+
+        if (abs($value) == 0) {
+            $value = 0;
+        }
+
+        $method['price_formatted'] = $pmodel->format($value, $item['currency']);
+
+        $data = array(
+            'method' => $method,
+            'title' => $omodel->getComponentType('payment')
+        );
+
+        $html = $this->getController()->render('backend|sale/order/panes/components/method', $data);
+        $item['data']['components']['payment']['rendered'] = $html;
     }
 
     /**
