@@ -374,7 +374,7 @@ class Request
      * @return string
      * @throws \InvalidArgumentException
      */
-    protected function prepareSendData(&$socket, array &$options, array &$uri)
+    protected function prepareSendData(&$socket, array &$options, &$uri)
     {
         if (empty($uri['scheme'])) {
             throw new \InvalidArgumentException('Missing URL scheme');
