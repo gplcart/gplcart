@@ -58,7 +58,7 @@ class Controller extends BaseController
      * Compare model instance
      * @var \gplcart\core\models\ProductCompare $compare
      */
-    protected $productcompare;
+    protected $product_compare;
 
     /**
      * Wishlist model instance
@@ -76,7 +76,7 @@ class Controller extends BaseController
      * Collection item model instance
      * @var \gplcart\core\models\CollectionItem $collection_item
      */
-    protected $collectionitem;
+    protected $collection_item;
 
     /**
      * The current currency code
@@ -113,7 +113,7 @@ class Controller extends BaseController
 
             $this->submitCart($this->cart);
             $this->submitWishlist($this->wishlist);
-            $this->submitProductCompare($this->productcompare);
+            $this->submitProductCompare($this->product_compare);
         }
 
         $this->hook->attach('construct.controller.frontend', $this);
@@ -164,12 +164,14 @@ class Controller extends BaseController
      */
     protected function setFrontendInstancies()
     {
-        $classes = array('price', 'trigger', 'product', 'wishlist', 'category',
-            'currency', 'productcompare', 'collectionitem');
-
-        foreach ($classes as $class) {
-            $this->{$class} = $this->getInstance("gplcart\\core\\models\\$class");
-        }
+        $this->price = $this->getInstance('gplcart\\core\\models\\Price');
+        $this->trigger = $this->getInstance('gplcart\\core\\models\\Trigger');
+        $this->product = $this->getInstance('gplcart\\core\\models\\Product');
+        $this->wishlist = $this->getInstance('gplcart\\core\\models\\Wishlist');
+        $this->category = $this->getInstance('gplcart\\core\\models\\Category');
+        $this->currency = $this->getInstance('gplcart\\core\\models\\Currency');
+        $this->product_compare = $this->getInstance('gplcart\\core\\models\\ProductCompare');
+        $this->collection_item = $this->getInstance('gplcart\\core\\models\\CollectionItem');
     }
 
     /**
@@ -255,7 +257,7 @@ class Controller extends BaseController
      */
     public function getProductComparison()
     {
-        return $this->productcompare->getList();
+        return $this->product_compare->getList();
     }
 
     /**
@@ -339,7 +341,7 @@ class Controller extends BaseController
             'store_id' => $this->store_id
         );
 
-        $items = $this->collectionitem->getItems($conditions);
+        $items = $this->collection_item->getItems($conditions);
 
         if (empty($items)) {
             return array();
@@ -383,7 +385,7 @@ class Controller extends BaseController
             $this->setItemThumb($item, $this->image, $options);
 
             if ($options['entity'] === 'product') {
-                $this->setItemProductInComparison($item, $this->productcompare);
+                $this->setItemProductInComparison($item, $this->product_compare);
                 $this->setItemPriceCalculated($item, $this->product);
                 $this->setItemProductInWishlist($item, $this->wishlist);
                 $this->setItemPriceFormatted($item, $this->price, $this->current_currency);

@@ -72,13 +72,13 @@ class Compare extends FrontendController
         $options = array(
             'status' => 1,
             'store_id' => $this->store_id,
-            'product_id' => $this->productcompare->getList()
+            'product_id' => $this->product_compare->getList()
         );
 
         if (!empty($options['product_id'])) {
             $existing = array_keys($this->product->getList($options));
             if (array_diff($options['product_id'], $existing)) {
-                $this->productcompare->set($existing);
+                $this->product_compare->set($existing);
             }
         }
     }
