@@ -779,42 +779,42 @@ return array(
         'access' => 'report_events',
         'menu' => array('admin' => /* @text */'Events'),
         'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\backend\\Report', 'listEventReport')
+            'controller' => array('gplcart\\core\\controllers\\backend\\ReportEvent', 'listReportEvent')
         )
     ),
     'admin/report/status' => array(
         'access' => 'report_status',
         'menu' => array('admin' => /* @text */'Status'),
         'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\backend\\Report', 'listStatusReport')
+            'controller' => array('gplcart\\core\\controllers\\backend\\ReportStatus', 'listReportStatus')
         )
     ),
     'admin/report/library' => array(
         'access' => 'report_library',
         'menu' => array('admin' => /* @text */'Libraries'),
         'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\backend\\Library', 'listLibrary')
+            'controller' => array('gplcart\\core\\controllers\\backend\\ReportLibrary', 'listReportLibrary')
         )
     ),
     'admin/report/route' => array(
         'access' => 'report',
         'menu' => array('admin' => /* @text */'Routes'),
         'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\backend\\Report', 'listRoutesReport')
+            'controller' => array('gplcart\\core\\controllers\\backend\\ReportRoute', 'listReportRoute')
         )
     ),
     'admin/report/payment' => array(
         'access' => 'report',
         'menu' => array('admin' => /* @text */'Payment methods'),
         'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\backend\\Report', 'listPaymentMethodsReport')
+            'controller' => array('gplcart\\core\\controllers\\backend\\ReportPayment', 'listReportPayment')
         )
     ),
     'admin/report/shipping' => array(
         'access' => 'report',
         'menu' => array('admin' => /* @text */'Shipping methods'),
         'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\backend\\Report', 'listShippingMethodsReport')
+            'controller' => array('gplcart\\core\\controllers\\backend\\ReportShipping', 'listReportShipping')
         )
     )
 );
