@@ -113,37 +113,37 @@
     </div>
   </nav>
   <?php if (!empty($_breadcrumbs) || !empty($_page_title)) { ?>
-  <div class="container-fluid header">
-  <?php if (!empty($_breadcrumbs)) { ?>
-  <div class="breadcrumbs hidden-print">
-    <div class="row">
-      <div class="col-md-12">
-        <ol class="breadcrumb">
-          <?php if(!empty($_breadcrumbs)) { ?>
-          <?php foreach ($_breadcrumbs as $item) { ?>
-          <?php if(empty($item['url'])) { ?>
-          <li><?php echo $this->filter($item['text']); ?></li>
-          <?php } else { ?>
-          <li><a href="<?php echo $this->e($item['url']); ?>"><?php echo $this->filter($item['text']); ?></a></li>
-          <?php } ?>
-          <?php } ?>
-          <?php } ?>
-        </ol>
+  <nav class="navbar navbar-default navbar-static-top hidden-print">
+    <div class="container-fluid header">
+      <?php if (!empty($_breadcrumbs)) { ?>
+      <div class="breadcrumbs hidden-print">
+        <div class="row">
+          <div class="col-md-12">
+            <ol class="breadcrumb">
+              <?php if(!empty($_breadcrumbs)) { ?>
+              <?php foreach ($_breadcrumbs as $item) { ?>
+              <?php if(empty($item['url'])) { ?>
+              <li><?php echo $this->filter($item['text']); ?></li>
+              <?php } else { ?>
+              <li><a href="<?php echo $this->e($item['url']); ?>"><?php echo $this->filter($item['text']); ?></a></li>
+              <?php } ?>
+              <?php } ?>
+              <?php } ?>
+            </ol>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-  <?php } ?>
-  <?php if(!empty($_page_title)) { ?>
-  <div class="page-title">
-    <h1 class="h3">
-      <?php echo $this->filter($_page_title); ?>
-      <?php if(!empty($_help['path'])) { ?>
-        <a class="small" href="<?php echo $this->url($_help['path']); ?>"><i class="fa fa-question-circle"></i></a>
       <?php } ?>
-    </h1>
-  </div>
-  <?php } ?>
-  </div>
+      <?php if(!empty($_page_title)) { ?>
+      <h1 class="h3">
+        <?php echo $this->filter($_page_title); ?>
+        <?php if(!empty($_help['path'])) { ?>
+          <a class="small" href="<?php echo $this->url($_help['path']); ?>"><i class="fa fa-question-circle"></i></a>
+        <?php } ?>
+      </h1>
+      <?php } ?>
+    </div>
+  </nav>
   <?php } ?>
   <div class="container-fluid content">
     <?php if (!empty($_messages)) { ?>
