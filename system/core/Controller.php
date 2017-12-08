@@ -407,17 +407,26 @@ abstract class Controller
      */
     protected function setInstanceProperties()
     {
-        $classes = array(
-            'gplcart\\core\\models' => array('cart', 'user', 'store', 'image', 'filter', 'language', 'validator'),
-            'gplcart\\core\\helpers' => array('url', 'asset', 'pager', 'session', 'request', 'response'),
-            'gplcart\\core' => array('hook', 'route', 'config', 'library', 'module')
-        );
+        $this->hook = $this->getInstance('gplcart\\core\\Hook');
+        $this->route = $this->getInstance('gplcart\\core\\Route');
+        $this->module = $this->getInstance('gplcart\\core\\Module');
+        $this->config = $this->getInstance('gplcart\\core\\Config');
+        $this->library = $this->getInstance('gplcart\\core\\Library');
 
-        foreach ($classes as $base_namespace => $class_names) {
-            foreach ($class_names as $class_name) {
-                $this->{$class_name} = $this->getInstance("$base_namespace\\$class_name");
-            }
-        }
+        $this->cart = $this->getInstance('gplcart\\core\\models\\Cart');
+        $this->user = $this->getInstance('gplcart\\core\\models\\User');
+        $this->store = $this->getInstance('gplcart\\core\\models\\Store');
+        $this->image = $this->getInstance('gplcart\\core\\models\\Image');
+        $this->filter = $this->getInstance('gplcart\\core\\models\\Filter');
+        $this->language = $this->getInstance('gplcart\\core\\models\\Language');
+        $this->validator = $this->getInstance('gplcart\\core\\models\\Validator');
+
+        $this->url = $this->getInstance('gplcart\\core\\helpers\\Url');
+        $this->asset = $this->getInstance('gplcart\\core\\helpers\\Asset');
+        $this->pager = $this->getInstance('gplcart\\core\\helpers\\Pager');
+        $this->session = $this->getInstance('gplcart\\core\\helpers\\Session');
+        $this->request = $this->getInstance('gplcart\\core\\helpers\\Request');
+        $this->response = $this->getInstance('gplcart\\core\\helpers\\Response');
     }
 
     /**
@@ -2256,9 +2265,10 @@ abstract class Controller
             'limit' => $this->config('list_limit', 20)
         );
 
-        $rendered = $this->getRenderedPager($options);
-        $limit = $this->pager->getLimit();
-        return array('limit' => $limit, 'rendered' => $rendered);
+        return array(
+            'rendered' => $this->getWidgetPager($options),
+            'limit' => $this->pager->getLimit()
+        );
     }
 
     /**
@@ -2266,7 +2276,7 @@ abstract class Controller
      * @param array $options
      * @return string
      */
-    public function getRenderedPager(array $options)
+    public function getWidgetPager(array $options)
     {
         $options += array(
             'key' => 'p',
