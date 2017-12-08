@@ -14,7 +14,7 @@ use gplcart\core\controllers\backend\Controller as BackendController;
 /**
  * Handles incoming requests and outputs data related to libraries
  */
-class Library extends BackendController
+class ReportLibrary extends BackendController
 {
 
     /**
@@ -28,22 +28,22 @@ class Library extends BackendController
     /**
      * Displays the library overview page
      */
-    public function listLibrary()
+    public function listReportLibrary()
     {
-        $this->clearCacheLibrary();
+        $this->clearCacheReportLibrary();
 
-        $this->setTitleListLibrary();
-        $this->setBreadcrumbListLibrary();
+        $this->setTitleListReportLibrary();
+        $this->setBreadcrumbListReportLibrary();
 
-        $this->setData('libraries', $this->getListLibrary());
-        $this->outputListLibrary();
+        $this->setData('libraries', $this->getListReportLibrary());
+        $this->outputListReportLibrary();
     }
 
     /**
      * Returns an array of libraries
      * @return array
      */
-    protected function getListLibrary()
+    protected function getListReportLibrary()
     {
         $libraries = $this->library->getList();
 
@@ -57,7 +57,7 @@ class Library extends BackendController
     /**
      * Clear cached libraries
      */
-    protected function clearCacheLibrary()
+    protected function clearCacheReportLibrary()
     {
         $this->controlToken('refresh');
 
@@ -69,7 +69,7 @@ class Library extends BackendController
     /**
      * Sets titles on the library overview page
      */
-    protected function setTitleListLibrary()
+    protected function setTitleListReportLibrary()
     {
         $this->setTitle($this->text('Libraries'));
     }
@@ -77,7 +77,7 @@ class Library extends BackendController
     /**
      * Sets breadcrumbs on the library overview page
      */
-    protected function setBreadcrumbListLibrary()
+    protected function setBreadcrumbListReportLibrary()
     {
         $breadcrumb = array(
             'url' => $this->url('admin'),
@@ -90,7 +90,7 @@ class Library extends BackendController
     /**
      * Render and output the library overview page
      */
-    protected function outputListLibrary()
+    protected function outputListReportLibrary()
     {
         $this->output('report/libraries');
     }
