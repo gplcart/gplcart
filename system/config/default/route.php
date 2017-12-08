@@ -82,22 +82,22 @@ return array(
     ),
     'login' => array(
         'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\frontend\\User', 'editLoginUser')
+            'controller' => array('gplcart\\core\\controllers\\frontend\\UserLogin', 'editUserLogin')
         )
     ),
     'logout' => array(
         'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\frontend\\User', 'logoutUser')
+            'controller' => array('gplcart\\core\\controllers\\frontend\\UserLogOut', 'UserLogOut')
         )
     ),
     'register' => array(
         'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\frontend\\User', 'editRegisterUser')
+            'controller' => array('gplcart\\core\\controllers\\frontend\\UserRegister', 'editUserRegister')
         )
     ),
     'forgot' => array(
         'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\frontend\\User', 'editResetPasswordUser')
+            'controller' => array('gplcart\\core\\controllers\\frontend\\UserForgot', 'editUserForgot')
         )
     ),
     'catalog' => array(
@@ -140,7 +140,7 @@ return array(
     ),
     'account/(\d+)/order/(\d+)' => array(
         'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\frontend\\Account', 'orderAccount')
+            'controller' => array('gplcart\\core\\controllers\\frontend\\AccountOrder', 'accountOrder')
         )
     ),
     'account/(\d+)/edit' => array(
@@ -150,7 +150,7 @@ return array(
     ),
     'account/(\d+)/address' => array(
         'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\frontend\\Account', 'listAddressAccount')
+            'controller' => array('gplcart\\core\\controllers\\frontend\\AccountAddress', 'listAccountAddress')
         )
     ),
     'wishlist' => array(
