@@ -66,9 +66,9 @@ class Controller extends BaseController
      */
     protected function setInstancesBackend()
     {
-        foreach (array('job', 'help', 'bookmark') as $class) {
-            $this->{$class} = $this->getInstance("gplcart\\core\\models\\$class");
-        }
+        $this->job = $this->getInstance('gplcart\\core\\models\\Job');
+        $this->help = $this->getInstance('gplcart\\core\\models\\Help');
+        $this->bookmark = $this->getInstance('gplcart\\core\\models\\Bookmark');
     }
 
     /**

@@ -94,13 +94,12 @@ class Address extends BackendController
      */
     protected function setPagerlListAddress()
     {
-        $options = $this->query_filter;
-        $options['count'] = true;
-        $total = (int) $this->address->getList($options);
+        $conditions = $this->query_filter;
+        $conditions['count'] = true;
 
         $pager = array(
-            'total' => $total,
-            'query' => $this->query_filter
+            'query' => $this->query_filter,
+            'total' => (int) $this->address->getList($conditions)
         );
 
         return $this->data_limit = $this->setPager($pager);

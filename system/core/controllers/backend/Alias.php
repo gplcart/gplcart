@@ -93,13 +93,12 @@ class Alias extends BackendController
      */
     protected function setPagerListAlias()
     {
-        $options = $this->query_filter;
-        $options['count'] = true;
-        $total = (int) $this->alias->getList($options);
+        $conditions = $this->query_filter;
+        $conditions['count'] = true;
 
         $pager = array(
-            'total' => $total,
-            'query' => $this->query_filter
+            'query' => $this->query_filter,
+            'total' => (int) $this->alias->getList($conditions)
         );
 
         return $this->data_limit = $this->setPager($pager);
@@ -111,9 +110,9 @@ class Alias extends BackendController
      */
     protected function getListAlias()
     {
-        $options = $this->query_filter;
-        $options['limit'] = $this->data_limit;
-        return (array) $this->alias->getList($options);
+        $conditions = $this->query_filter;
+        $conditions['limit'] = $this->data_limit;
+        return (array) $this->alias->getList($conditions);
     }
 
     /**
