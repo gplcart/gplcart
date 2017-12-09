@@ -55,7 +55,6 @@ class Collection extends BackendController
 
         $this->setTitleListCollection();
         $this->setBreadcrumbListCollection();
-
         $this->setFilterListCollection();
         $this->setPagerListCollection();
 
@@ -110,12 +109,12 @@ class Collection extends BackendController
      */
     protected function setPagerListCollection()
     {
-        $query = $this->query_filter;
-        $query['count'] = true;
+        $options = $this->query_filter;
+        $options['count'] = true;
 
         $pager = array(
             'query' => $this->query_filter,
-            'total' => (int) $this->collection->getList($query)
+            'total' => (int) $this->collection->getList($options)
         );
 
         return $this->data_limit = $this->setPager($pager);
@@ -127,10 +126,10 @@ class Collection extends BackendController
      */
     protected function getListCollection()
     {
-        $query = $this->query_filter;
-        $query['limit'] = $this->data_limit;
+        $conditions = $this->query_filter;
+        $conditions['limit'] = $this->data_limit;
 
-        return (array) $this->collection->getList($query);
+        return (array) $this->collection->getList($conditions);
     }
 
     /**
@@ -169,7 +168,6 @@ class Collection extends BackendController
     public function editCollection($collection_id = null)
     {
         $this->setCollection($collection_id);
-
         $this->setTitleEditCollection();
         $this->setBreadcrumbEditCollection();
 
@@ -249,7 +247,7 @@ class Collection extends BackendController
             $this->redirect('admin/content/collection', $this->text('Collection has been deleted'), 'success');
         }
 
-        $this->redirect('', $this->text('Unable to delete'), 'danger');
+        $this->redirect('', $this->text('Collection has not been deleted'), 'warning');
     }
 
     /**

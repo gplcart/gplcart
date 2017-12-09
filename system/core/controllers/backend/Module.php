@@ -68,7 +68,6 @@ class Module extends BackendController
 
         $this->setTitleListModule();
         $this->setBreadcrumbListModule();
-
         $this->setFilterListModule();
         $this->setPagerListModule();
 

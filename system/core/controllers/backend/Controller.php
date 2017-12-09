@@ -76,8 +76,8 @@ class Controller extends BaseController
      */
     protected function setDataBackend()
     {
-        $this->data['_stores'] = (array) $this->store->getList();
         $this->data['_job'] = $this->getWidgetJob($this->job);
+        $this->data['_stores'] = (array) $this->store->getList();
         $this->data['_menu'] = $this->getWidgetAdminMenu($this->route);
         $this->data['_help'] = $this->help->getByPattern($this->current_route['simple_pattern'], $this->langcode);
 
@@ -113,6 +113,7 @@ class Controller extends BaseController
 
         if (!empty($action)) {
 
+            $error = null;
             if (empty($action['name'])) {
                 $error = $this->text('An error occurred');
             } else if (empty($action['items'])) {

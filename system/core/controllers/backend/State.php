@@ -21,10 +21,10 @@ class State extends BackendController
 {
 
     /**
-     * Country model instance
-     * @var \gplcart\core\models\Country $country
+     * Zone model instance
+     * @var \gplcart\core\models\Zone $zone
      */
-    protected $country;
+    protected $zone;
 
     /**
      * State model instance
@@ -33,10 +33,10 @@ class State extends BackendController
     protected $state;
 
     /**
-     * Zone model instance
-     * @var \gplcart\core\models\Zone $zone
+     * Country model instance
+     * @var \gplcart\core\models\Country $country
      */
-    protected $zone;
+    protected $country;
 
     /**
      * Pager limit
@@ -81,7 +81,6 @@ class State extends BackendController
 
         $this->setTitleListState();
         $this->setBreadcrumbListState();
-
         $this->setFilterListState();
         $this->setPagerListState();
 
@@ -162,13 +161,13 @@ class State extends BackendController
      */
     protected function setPagerListState()
     {
-        $options = $this->query_filter;
-        $options['count'] = true;
-        $options['country'] = $this->data_country['code'];
+        $conditions = $this->query_filter;
+        $conditions['count'] = true;
+        $conditions['country'] = $this->data_country['code'];
 
         $pager = array(
             'query' => $this->query_filter,
-            'total' => (int) $this->state->getList($options)
+            'total' => (int) $this->state->getList($conditions)
         );
 
         return $this->data_limit = $this->setPager($pager);
@@ -180,11 +179,11 @@ class State extends BackendController
      */
     protected function getListState()
     {
-        $options = $this->query_filter;
-        $options['limit'] = $this->data_limit;
-        $options['country'] = $this->data_country['code'];
+        $conditions = $this->query_filter;
+        $conditions['limit'] = $this->data_limit;
+        $conditions['country'] = $this->data_country['code'];
 
-        return (array) $this->state->getList($options);
+        return (array) $this->state->getList($conditions);
     }
 
     /**
@@ -192,8 +191,8 @@ class State extends BackendController
      */
     protected function setTitleListState()
     {
-        $vars = array('%name' => $this->data_country['name']);
-        $this->setTitle($this->text('States of %name', $vars));
+        $text = $this->text('States of %name', array('%name' => $this->data_country['name']));
+        $this->setTitle($text);
     }
 
     /**
@@ -233,7 +232,6 @@ class State extends BackendController
     {
         $this->setState($state_id);
         $this->setCountry($country_code);
-
         $this->setTitleEditState();
         $this->setBreadcrumbEditState();
 
@@ -305,12 +303,12 @@ class State extends BackendController
     {
         $this->controlAccess('state_delete');
 
-        $url = "admin/settings/states/{$this->data_country['code']}";
         if ($this->state->delete($this->data_state['state_id'])) {
+            $url = "admin/settings/states/{$this->data_country['code']}";
             $this->redirect($url, $this->text('Country state has been deleted'), 'success');
         }
 
-        $this->redirect($url, $this->text('Unable to delete'), 'danger');
+        $this->redirect('', $this->text('Country state has not been deleted'), 'warning');
     }
 
     /**
@@ -320,9 +318,12 @@ class State extends BackendController
     {
         $this->controlAccess('state_edit');
 
-        $this->state->update($this->data_state['state_id'], $this->getSubmitted());
-        $url = "admin/settings/states/{$this->data_country['code']}";
-        $this->redirect($url, $this->text('Country state has been updated'), 'success');
+        if ($this->state->update($this->data_state['state_id'], $this->getSubmitted())) {
+            $url = "admin/settings/states/{$this->data_country['code']}";
+            $this->redirect($url, $this->text('Country state has been updated'), 'success');
+        }
+
+        $this->redirect('', $this->text('Country state has not been updated'), 'warning');
     }
 
     /**
@@ -332,9 +333,12 @@ class State extends BackendController
     {
         $this->controlAccess('state_add');
 
-        $this->state->add($this->getSubmitted());
-        $url = "admin/settings/states/{$this->data_country['code']}";
-        $this->redirect($url, $this->text('Country state has been added'), 'success');
+        if ($this->state->add($this->getSubmitted())) {
+            $url = "admin/settings/states/{$this->data_country['code']}";
+            $this->redirect($url, $this->text('Country state has been added'), 'success');
+        }
+
+        $this->redirect('', $this->text('Country state has not been added'), 'warning');
     }
 
     /**

@@ -53,7 +53,6 @@ class CategoryGroup extends BackendController
     {
         $this->setTitleListCategoryGroup();
         $this->setBreadcrumbListCategoryGroup();
-
         $this->setFilterListCategoryGroup();
         $this->setPagerListCategoryGroup();
 
@@ -76,13 +75,12 @@ class CategoryGroup extends BackendController
      */
     protected function setPagerListCategoryGroup()
     {
-        $query = $this->query_filter;
-        $query['count'] = true;
-        $total = (int) $this->category_group->getList($query);
+        $options = $this->query_filter;
+        $options['count'] = true;
 
         $pager = array(
-            'total' => $total,
-            'query' => $this->query_filter
+            'query' => $this->query_filter,
+            'total' => (int) $this->category_group->getList($options)
         );
 
         return $this->data_limit = $this->setPager($pager);
@@ -94,10 +92,10 @@ class CategoryGroup extends BackendController
      */
     protected function getListCategoryGroup()
     {
-        $query = $this->query_filter;
-        $query['limit'] = $this->data_limit;
+        $conditions = $this->query_filter;
+        $conditions['limit'] = $this->data_limit;
 
-        return $this->category_group->getList($query);
+        return $this->category_group->getList($conditions);
     }
 
     /**
@@ -136,7 +134,6 @@ class CategoryGroup extends BackendController
     public function editCategoryGroup($category_group_id = null)
     {
         $this->setCategoryGroup($category_group_id);
-
         $this->setTitleEditCategoryGroup();
         $this->setBreadcrumbEditCategoryGroup();
 
@@ -214,7 +211,7 @@ class CategoryGroup extends BackendController
             $this->redirect('admin/content/category-group', $this->text('Category group has been deleted'), 'success');
         }
 
-        $this->redirect('', $this->text('Unable to delete'), 'danger');
+        $this->redirect('', $this->text('Category group has not been deleted'), 'warning');
     }
 
     /**
@@ -224,8 +221,11 @@ class CategoryGroup extends BackendController
     {
         $this->controlAccess('category_group_edit');
 
-        $this->category_group->update($this->data_category_group['category_group_id'], $this->getSubmitted());
-        $this->redirect('admin/content/category-group', $this->text('Category group has been updated'), 'success');
+        if ($this->category_group->update($this->data_category_group['category_group_id'], $this->getSubmitted())) {
+            $this->redirect('admin/content/category-group', $this->text('Category group has been updated'), 'success');
+        }
+
+        $this->redirect('', $this->text('Category group has not been updated'), 'warning');
     }
 
     /**
@@ -235,8 +235,11 @@ class CategoryGroup extends BackendController
     {
         $this->controlAccess('category_group_add');
 
-        $this->category_group->add($this->getSubmitted());
-        $this->redirect('admin/content/category-group', $this->text('Category group has been added'), 'success');
+        if ($this->category_group->add($this->getSubmitted())) {
+            $this->redirect('admin/content/category-group', $this->text('Category group has been added'), 'success');
+        }
+
+        $this->redirect('', $this->text('Category group has not been added'), 'warning');
     }
 
     /**

@@ -55,7 +55,6 @@ class Zone extends BackendController
 
         $this->setTitleListZone();
         $this->setBreadcrumbListZone();
-
         $this->setFilterListZone();
         $this->setPagerListZone();
 
@@ -124,10 +123,10 @@ class Zone extends BackendController
      */
     protected function getListZone()
     {
-        $options = $this->query_filter;
-        $options['limit'] = $this->data_limit;
+        $conditions = $this->query_filter;
+        $conditions['limit'] = $this->data_limit;
 
-        return $this->zone->getList($options);
+        return $this->zone->getList($conditions);
     }
 
     /**
@@ -166,7 +165,6 @@ class Zone extends BackendController
     public function editZone($zone_id = null)
     {
         $this->setZone($zone_id);
-
         $this->setTitleEditZone();
         $this->setBreadcrumbEditZone();
 
@@ -244,7 +242,7 @@ class Zone extends BackendController
             $this->redirect('admin/settings/zone', $this->text('Zone has been deleted'), 'success');
         }
 
-        $this->redirect('', $this->text('Unable to delete'), 'danger');
+        $this->redirect('', $this->text('Zone has not been deleted'), 'danger');
     }
 
     /**
@@ -254,8 +252,11 @@ class Zone extends BackendController
     {
         $this->controlAccess('zone_edit');
 
-        $this->zone->update($this->data_zone['zone_id'], $this->getSubmitted());
-        $this->redirect('admin/settings/zone', $this->text('Zone has been updated'), 'success');
+        if ($this->zone->update($this->data_zone['zone_id'], $this->getSubmitted())) {
+            $this->redirect('admin/settings/zone', $this->text('Zone has been updated'), 'success');
+        }
+
+        $this->redirect('', $this->text('Zone has not been updated'), 'warning');
     }
 
     /**
@@ -265,8 +266,11 @@ class Zone extends BackendController
     {
         $this->controlAccess('zone_add');
 
-        $this->zone->add($this->getSubmitted());
-        $this->redirect('admin/settings/zone', $this->text('Zone has been added'), 'success');
+        if ($this->zone->add($this->getSubmitted())) {
+            $this->redirect('admin/settings/zone', $this->text('Zone has been added'), 'success');
+        }
+
+        $this->redirect('', $this->text('Zone has not been added'), 'warning');
     }
 
     /**

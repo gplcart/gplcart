@@ -56,7 +56,6 @@ class File extends BackendController
 
         $this->setTitleListFile();
         $this->setBreadcrumbListFile();
-
         $this->setFilterListFile();
         $this->setPagerListFile();
 
@@ -120,12 +119,12 @@ class File extends BackendController
      */
     protected function setPagerListFile()
     {
-        $options = $this->query_filter;
-        $options['count'] = true;
+        $conditions = $this->query_filter;
+        $conditions['count'] = true;
 
         $pager = array(
             'query' => $this->query_filter,
-            'total' => (int) $this->file->getList($options)
+            'total' => (int) $this->file->getList($conditions)
         );
 
         return $this->data_limit = $this->setPager($pager);
@@ -137,10 +136,10 @@ class File extends BackendController
      */
     protected function getListFile()
     {
-        $options = $this->query_filter;
-        $options['limit'] = $this->data_limit;
-        $files = (array) $this->file->getList($options);
+        $conditions = $this->query_filter;
+        $conditions['limit'] = $this->data_limit;
 
+        $files = (array) $this->file->getList($conditions);
         return $this->prepareListFile($files);
     }
 
@@ -198,8 +197,8 @@ class File extends BackendController
     public function editFile($file_id = null)
     {
         $this->downloadFile();
-        $this->setFile($file_id);
 
+        $this->setFile($file_id);
         $this->setTitleEditFile();
         $this->setBreadcrumbEditFile();
 
@@ -277,7 +276,7 @@ class File extends BackendController
             $this->redirect('admin/content/file', $this->text('File has been deleted from database and disk'), 'success');
         }
 
-        $this->redirect('admin/content/file', $this->text('Unable to delete'), 'warning');
+        $this->redirect('', $this->text('File has not been deleted'), 'warning');
     }
 
     /**
@@ -299,8 +298,12 @@ class File extends BackendController
     protected function updateFile()
     {
         $this->controlAccess('file_edit');
-        $this->file->update($this->data_file['file_id'], $this->getSubmitted());
-        $this->redirect('admin/content/file', $this->text('File has been updated'), 'success');
+
+        if ($this->file->update($this->data_file['file_id'], $this->getSubmitted())) {
+            $this->redirect('admin/content/file', $this->text('File has been updated'), 'success');
+        }
+
+        $this->redirect('', $this->text('File has not been updated'), 'warning');
     }
 
     /**
@@ -314,7 +317,7 @@ class File extends BackendController
             $this->redirect('admin/content/file', $this->text('File has been added'), 'success');
         }
 
-        $this->redirect('admin/content/file', $this->text('File has not been added'), 'warning');
+        $this->redirect('', $this->text('File has not been added'), 'warning');
     }
 
     /**

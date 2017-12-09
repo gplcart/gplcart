@@ -46,8 +46,8 @@ class Dashboard extends BackendController
     public function indexDashboard()
     {
         $this->toggleIntroIndexDashboard();
-        $this->setDashboard(true);
 
+        $this->setDashboard(true);
         $this->setTitleIndexDashboard();
         $this->setDataContentIndexDashboard();
 
@@ -102,7 +102,6 @@ class Dashboard extends BackendController
     public function editDashboard()
     {
         $this->setDashboard(false);
-
         $this->setTitleEditDashboard();
         $this->setBreadcrumbEditDashboard();
 
@@ -184,8 +183,11 @@ class Dashboard extends BackendController
     {
         $this->controlAccess('dashboard_edit');
 
-        $this->dashboard->setByUser($this->uid, $this->getSubmitted());
-        $this->redirect('admin', $this->text('Your dashboard has been updated'), 'success');
+        if ($this->dashboard->setByUser($this->uid, $this->getSubmitted())) {
+            $this->redirect('admin', $this->text('Your dashboard has been updated'), 'success');
+        }
+
+        $this->redirect('', $this->text('Your dashboard has not been updated'), 'warning');
     }
 
     /**
@@ -195,8 +197,11 @@ class Dashboard extends BackendController
     {
         $this->controlAccess('dashboard_edit');
 
-        $this->dashboard->delete($this->data_dashboard['dashboard_id']);
-        $this->redirect('admin', $this->text('Your dashboard has been reset to default state'), 'success');
+        if ($this->dashboard->delete($this->data_dashboard['dashboard_id'])) {
+            $this->redirect('admin', $this->text('Your dashboard has been reset'), 'success');
+        }
+
+        $this->redirect('admin', $this->text('Your dashboard has not been reset'), 'warning');
     }
 
     /**

@@ -23,7 +23,7 @@ use gplcart\core\traits\ItemOrder as ItemOrderTrait;
  */
 class Order extends BackendController
 {
-    
+
     use ItemOrderTrait;
 
     /**
@@ -171,7 +171,7 @@ class Order extends BackendController
             $this->redirect('admin/sale/order', $this->text('Order has been deleted'), 'success');
         }
 
-        $this->redirect('', $this->text('Unable to delete'), 'warning');
+        $this->redirect('', $this->text('Order has not been deleted'), 'warning');
     }
 
     /**
@@ -181,16 +181,17 @@ class Order extends BackendController
     {
         $this->controlAccess('order_edit');
 
-        $order_id = $this->data_order['order_id'];
         $submitted = array('status' => $this->getSubmitted('status'));
-        $this->order->update($order_id, $submitted);
 
-        $submitted['notify'] = $this->setNotificationUpdateOrder($order_id);
-        $this->logUpdateStatusOrder($submitted);
+        if ($this->order->update($this->data_order['order_id'], $submitted)) {
+            $submitted['notify'] = $this->setNotificationUpdateOrder($this->data_order['order_id']);
+            $this->logUpdateStatusOrder($submitted);
+            $messages = $this->getMassagesUpdateOrder();
+            list($severity, $text) = $messages[$submitted['notify']];
+            $this->redirect('', $this->text($text), $severity);
+        }
 
-        $messages = $this->getMassagesUpdateOrder();
-        list($severity, $text) = $messages[$submitted['notify']];
-        $this->redirect('', $this->text($text), $severity);
+        $this->redirect('', $this->text('Order has not been updated'), 'warning');
     }
 
     /**
@@ -209,24 +210,19 @@ class Order extends BackendController
     /**
      * Log the status updated event
      * @param array $submitted
-     * @return boolean
      */
     protected function logUpdateStatusOrder(array $submitted)
     {
-        if ($this->data_order['status'] === $submitted['status']) {
-            return false;
+        if ($this->data_order['status'] != $submitted['status']) {
+
+            $log = array(
+                'user_id' => $this->uid,
+                'order_id' => $this->data_order['order_id'],
+                'text' => $this->text('Update order status to @status', array('@status' => $submitted['status']))
+            );
+
+            $this->order->addLog($log);
         }
-
-        $vars = array('@status' => $submitted['status']);
-        $text = $this->text('Update order status to @status', $vars);
-
-        $log = array(
-            'text' => $text,
-            'user_id' => $this->uid,
-            'order_id' => $this->data_order['order_id']
-        );
-
-        return (bool) $this->order->addLog($log);
     }
 
     /**
@@ -256,30 +252,38 @@ class Order extends BackendController
         $this->controlAccess('order_edit');
         $this->controlAccess('order_add');
 
-        $this->createTempCartOrder();
-
         $update = array('status' => $this->order->getStatusCanceled());
-        $this->order->update($this->data_order['order_id'], $update);
 
-        $this->logUpdateStatusOrder($update);
+        if ($this->createTempCartOrder() && $this->order->update($this->data_order['order_id'], $update)) {
+            $this->logUpdateStatusOrder($update);
+            $this->redirect("checkout/clone/{$this->data_order['order_id']}");
+        }
 
-        $this->redirect("checkout/clone/{$this->data_order['order_id']}");
+        $this->redirect('', $this->text('Order has not been cloned'), 'warning');
     }
 
     /**
      * Creates temporary cart for the current admin
+     * @return bool
      */
     protected function createTempCartOrder()
     {
-        $this->cart->clear($this->uid);
+        if (!$this->cart->clear($this->uid)) {
+            return false;
+        }
 
-        // Copy order's cart items
+        $added = $count = 0;
         foreach ($this->data_order['cart'] as $item) {
+            $count++;
             unset($item['cart_id']);
             $item['user_id'] = $this->uid;
             $item['order_id'] = 0;
-            $this->cart->add($item);
+            if ($this->cart->add($item)) {
+                $added++;
+            }
         }
+
+        return $count && $count == $added;
     }
 
     /**
@@ -288,12 +292,12 @@ class Order extends BackendController
      */
     protected function getTotalLogOrder()
     {
-        $options = array(
+        $conditions = array(
             'count' => true,
             'order_id' => $this->data_order['order_id']
         );
 
-        return (int) $this->order->getLogList($options);
+        return (int) $this->order->getLogList($conditions);
     }
 
     /**
@@ -303,12 +307,12 @@ class Order extends BackendController
      */
     protected function getListLogOrder(array $limit)
     {
-        $options = array(
+        $conditions = array(
             'limit' => $limit,
             'order_id' => $this->data_order['order_id']
         );
 
-        return (array) $this->order->getLogList($options);
+        return (array) $this->order->getLogList($conditions);
     }
 
     /**
@@ -324,8 +328,7 @@ class Order extends BackendController
      */
     protected function setTitleIndexOrder()
     {
-        $vars = array('@order_id' => $this->data_order['order_id']);
-        $this->setTitle($this->text('Order #@order_id', $vars));
+        $this->setTitle($this->text('Order #@order_id', array('@order_id' => $this->data_order['order_id'])));
     }
 
     /**
@@ -529,12 +532,12 @@ class Order extends BackendController
      */
     protected function setPagerListOrder()
     {
-        $query = $this->query_filter;
-        $query['count'] = true;
+        $conditions = $this->query_filter;
+        $conditions['count'] = true;
 
         $pager = array(
             'query' => $this->query_filter,
-            'total' => (int) $this->order->getList($query)
+            'total' => (int) $this->order->getList($conditions)
         );
 
         return $this->data_limit = $this->setPager($pager);
@@ -617,10 +620,10 @@ class Order extends BackendController
      */
     protected function getListOrder()
     {
-        $query = $this->query_filter;
-        $query['limit'] = $this->data_limit;
-        $orders = (array) $this->order->getList($query);
+        $conditions = $this->query_filter;
+        $conditions['limit'] = $this->data_limit;
 
+        $orders = (array) $this->order->getList($conditions);
         return $this->prepareListOrder($orders);
     }
 

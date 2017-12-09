@@ -40,7 +40,6 @@ class Cart extends BackendController
 
         $this->setTitleListCart();
         $this->setBreadcrumbListCart();
-
         $this->setFilterListCart();
         $this->setPagerlListCart();
 
@@ -103,10 +102,10 @@ class Cart extends BackendController
      */
     protected function getListCart()
     {
-        $options = $this->query_filter;
-        $options['limit'] = $this->data_limit;
+        $conditions = $this->query_filter;
+        $conditions['limit'] = $this->data_limit;
 
-        $list = (array) $this->cart->getList($options, 'cart_id');
+        $list = (array) $this->cart->getList($conditions, 'cart_id');
         return $this->prepareListCart($list);
     }
 

@@ -63,9 +63,11 @@ class ImageStyle extends BackendController
         $style_id = $this->getQuery('clear');
 
         if (!empty($style_id)) {
+
             if ($this->image->clearCache($style_id)) {
                 $this->redirect('', $this->text('Cache has been deleted'), 'success');
             }
+
             $this->redirect('', $this->text('Cache has not been deleted'), 'warning');
         }
     }
@@ -106,7 +108,6 @@ class ImageStyle extends BackendController
     public function editImageStyle($style_id = null)
     {
         $this->setImageStyle($style_id);
-
         $this->setTitleEditImageStyle();
         $this->setBreadcrumbEditImageStyle();
 
@@ -166,11 +167,12 @@ class ImageStyle extends BackendController
      */
     protected function deleteImageStyle()
     {
-        if ($this->canDeleteImageStyle()) {
-            $this->image->deleteStyle($this->data_imagestyle['imagestyle_id']);
+        if ($this->canDeleteImageStyle() && $this->image->deleteStyle($this->data_imagestyle['imagestyle_id'])) {
             $this->image->clearCache($this->data_imagestyle['imagestyle_id']);
             $this->redirect('admin/settings/imagestyle', $this->text('Image style has been deleted'), 'success');
         }
+
+        $this->redirect('', $this->text('Image style has not been deleted'), 'warning');
     }
 
     /**
@@ -180,7 +182,6 @@ class ImageStyle extends BackendController
     protected function validateEditImageStyle()
     {
         $this->setSubmitted('imagestyle');
-
         $this->setSubmittedBool('status');
         $this->setSubmittedArray('actions');
         $this->setSubmitted('update', $this->data_imagestyle);
@@ -197,9 +198,12 @@ class ImageStyle extends BackendController
     {
         $this->controlAccess('image_style_edit');
 
-        $this->image->updateStyle($this->data_imagestyle['imagestyle_id'], $this->getSubmitted());
-        $this->image->clearCache($this->data_imagestyle['imagestyle_id']);
-        $this->redirect('admin/settings/imagestyle', $this->text('Image style has been updated'), 'success');
+        if ($this->image->updateStyle($this->data_imagestyle['imagestyle_id'], $this->getSubmitted())) {
+            $this->image->clearCache($this->data_imagestyle['imagestyle_id']);
+            $this->redirect('admin/settings/imagestyle', $this->text('Image style has been updated'), 'success');
+        }
+
+        $this->redirect('', $this->text('Image style has not been updated'), 'warning');
     }
 
     /**
@@ -209,8 +213,11 @@ class ImageStyle extends BackendController
     {
         $this->controlAccess('image_style_add');
 
-        $this->image->addStyle($this->getSubmitted());
-        $this->redirect('admin/settings/imagestyle', $this->text('Image style has been added'), 'success');
+        if ($this->image->addStyle($this->getSubmitted())) {
+            $this->redirect('admin/settings/imagestyle', $this->text('Image style has been added'), 'success');
+        }
+
+        $this->redirect('', $this->text('Image style has not been added'), 'warning');
     }
 
     /**

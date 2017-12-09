@@ -116,13 +116,12 @@ class Country extends BackendController
      */
     protected function setPagerlListCountry()
     {
-        $query = $this->query_filter;
-        $query['count'] = true;
-        $total = (int) $this->country->getList($query);
+        $conditions = $this->query_filter;
+        $conditions['count'] = true;
 
         $pager = array(
-            'total' => $total,
-            'query' => $this->query_filter
+            'query' => $this->query_filter,
+            'total' => (int) $this->country->getList($conditions)
         );
 
         return $this->data_limit = $this->setPager($pager);
@@ -134,10 +133,10 @@ class Country extends BackendController
      */
     protected function getListCountry()
     {
-        $query = $this->query_filter;
-        $query['limit'] = $this->data_limit;
+        $conditions = $this->query_filter;
+        $conditions['limit'] = $this->data_limit;
 
-        return (array) $this->country->getList($query);
+        return (array) $this->country->getList($conditions);
     }
 
     /**
@@ -176,7 +175,6 @@ class Country extends BackendController
     public function editCountry($code = null)
     {
         $this->setCountry($code);
-
         $this->setTitleEditCountry();
         $this->setBreadcrumbEditCountry();
 
@@ -266,7 +264,7 @@ class Country extends BackendController
             $this->redirect('admin/settings/country', $this->text('Country has been deleted'), 'success');
         }
 
-        $this->redirect('', $this->text('Unable to delete'), 'danger');
+        $this->redirect('', $this->text('Country has not been deleted'), 'warning');
     }
 
     /**
@@ -276,8 +274,11 @@ class Country extends BackendController
     {
         $this->controlAccess('country_edit');
 
-        $this->country->update($this->data_country['code'], $this->getSubmitted());
-        $this->redirect('admin/settings/country', $this->text('Country has been updated'), 'success');
+        if ($this->country->update($this->data_country['code'], $this->getSubmitted())) {
+            $this->redirect('admin/settings/country', $this->text('Country has been updated'), 'success');
+        }
+
+        $this->redirect('', $this->text('Country has not been updated'), 'warning');
     }
 
     /**
@@ -287,8 +288,11 @@ class Country extends BackendController
     {
         $this->controlAccess('country_add');
 
-        $this->country->add($this->getSubmitted());
-        $this->redirect('admin/settings/country', $this->text('Country has been added'), 'success');
+        if ($this->country->add($this->getSubmitted())) {
+            $this->redirect('admin/settings/country', $this->text('Country has been added'), 'success');
+        }
+
+        $this->redirect('', $this->text('Country has not been added'), 'warning');
     }
 
     /**
@@ -340,7 +344,6 @@ class Country extends BackendController
     public function formatCountry($country_code)
     {
         $this->setCountry($country_code);
-
         $this->setTitleFormatCountry();
         $this->setBreadcrumbFormatCountry();
 
@@ -384,8 +387,11 @@ class Country extends BackendController
             }
         }
 
-        $this->country->update($this->data_country['code'], array('format' => $format));
-        $this->redirect('admin/settings/country', $this->text('Country has been updated'), 'success');
+        if ($this->country->update($this->data_country['code'], array('format' => $format))) {
+            $this->redirect('admin/settings/country', $this->text('Country has been updated'), 'success');
+        }
+
+        $this->redirect('', $this->text('Country has not been updated'), 'warning');
     }
 
     /**
@@ -393,8 +399,8 @@ class Country extends BackendController
      */
     protected function setTitleFormatCountry()
     {
-        $vars = array('%name' => $this->data_country['name']);
-        $this->setTitle($this->text('Address format of %name', $vars));
+        $text = $this->text('Address format of %name', array('%name' => $this->data_country['name']));
+        $this->setTitle($text);
     }
 
     /**

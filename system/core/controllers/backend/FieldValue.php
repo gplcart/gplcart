@@ -87,7 +87,6 @@ class FieldValue extends BackendController
 
         $this->setTitleListFieldValue();
         $this->setBreadcrumbListFieldValue();
-
         $this->setFilterListFieldValue();
         $this->setPagerListFieldValue();
 
@@ -102,7 +101,8 @@ class FieldValue extends BackendController
      */
     protected function setFilterListFieldValue()
     {
-        $this->setFilter(array('title', 'color', 'weight', 'image', 'field_value_id'));
+        $allowed = array('title', 'color', 'weight', 'image', 'field_value_id');
+        $this->setFilter($allowed);
     }
 
     /**
@@ -125,11 +125,6 @@ class FieldValue extends BackendController
     {
         list($selected, $action) = $this->getPostedAction();
 
-        if ($action === 'weight' && $this->access('field_value_edit')) {
-            $this->updateWeightFieldValue($selected);
-            return null;
-        }
-
         $deleted = 0;
         foreach ($selected as $field_value_id) {
             if ($action === 'delete' && $this->access('field_value_delete')) {
@@ -144,32 +139,18 @@ class FieldValue extends BackendController
     }
 
     /**
-     * Updates weight of selected field values
-     * @param array $items
-     */
-    protected function updateWeightFieldValue(array $items)
-    {
-        foreach ($items as $field_value_id => $weight) {
-            $this->field_value->update($field_value_id, array('weight' => $weight));
-        }
-
-        $response = array('success' => $this->text('Items have been reordered'));
-        $this->outputJson($response);
-    }
-
-    /**
      * Sets pager
      * @return array
      */
     protected function setPagerListFieldValue()
     {
-        $options = $this->query_filter;
-        $options['count'] = true;
-        $options['field_id'] = $this->data_field['field_id'];
+        $conditions = $this->query_filter;
+        $conditions['count'] = true;
+        $conditions['field_id'] = $this->data_field['field_id'];
 
         $pager = array(
             'query' => $this->query_filter,
-            'total' => (int) $this->field_value->getList($options)
+            'total' => (int) $this->field_value->getList($conditions)
         );
 
         return $this->data_limit = $this->setPager($pager);
@@ -181,11 +162,11 @@ class FieldValue extends BackendController
      */
     protected function getListFieldValue()
     {
-        $options = $this->query_filter;
-        $options['limit'] = $this->data_limit;
-        $options['field_id'] = $this->data_field['field_id'];
+        $conditions = $this->query_filter;
+        $conditions['limit'] = $this->data_limit;
+        $conditions['field_id'] = $this->data_field['field_id'];
 
-        $values = (array) $this->field_value->getList($options);
+        $values = (array) $this->field_value->getList($conditions);
         return $this->prepareFieldValues($values);
     }
 
@@ -208,8 +189,8 @@ class FieldValue extends BackendController
      */
     protected function setTitleListFieldValue()
     {
-        $vars = array('%name' => $this->truncate($this->data_field['title']));
-        $this->setTitle($this->text('Values of %name', $vars));
+        $text = $this->text('Values of %name', array('%name' => $this->data_field['title']));
+        $this->setTitle($text);
     }
 
     /**
@@ -249,7 +230,6 @@ class FieldValue extends BackendController
     {
         $this->setFieldFieldValue($field_id);
         $this->setFieldValue($field_value_id);
-
         $this->setTitleEditFieldValue();
         $this->setBreadcrumbEditFieldValue();
 
@@ -326,7 +306,7 @@ class FieldValue extends BackendController
             $this->redirect($url, $this->text('Field value has been deleted'), 'success');
         }
 
-        $this->redirect('', $this->text('Unable to delete'), 'warning');
+        $this->redirect('', $this->text('Field value has not been deleted'), 'warning');
     }
 
     /**
@@ -348,9 +328,12 @@ class FieldValue extends BackendController
     {
         $this->controlAccess('field_value_edit');
 
-        $this->field_value->update($this->data_field_value['field_value_id'], $this->getSubmitted());
-        $url = "admin/content/field/value/{$this->data_field['field_id']}";
-        $this->redirect($url, $this->text('Field value has been updated'), 'success');
+        if ($this->field_value->update($this->data_field_value['field_value_id'], $this->getSubmitted())) {
+            $url = "admin/content/field/value/{$this->data_field['field_id']}";
+            $this->redirect($url, $this->text('Field value has been updated'), 'success');
+        }
+
+        $this->redirect('', $this->text('Field value has not been updated'), 'warning');
     }
 
     /**
@@ -360,9 +343,12 @@ class FieldValue extends BackendController
     {
         $this->controlAccess('field_value_add');
 
-        $this->field_value->add($this->getSubmitted());
-        $url = "admin/content/field/value/{$this->data_field['field_id']}";
-        $this->redirect($url, $this->text('Field value has been added'), 'success');
+        if ($this->field_value->add($this->getSubmitted())) {
+            $url = "admin/content/field/value/{$this->data_field['field_id']}";
+            $this->redirect($url, $this->text('Field value has been added'), 'success');
+        }
+
+        $this->redirect('', $this->text('Field value has not been added'), 'warning');
     }
 
     /**
@@ -384,11 +370,9 @@ class FieldValue extends BackendController
     protected function setTitleEditFieldValue()
     {
         if (isset($this->data_field_value['field_value_id'])) {
-            $vars = array('%name' => $this->truncate($this->data_field_value['title']));
-            $title = $this->text('Edit %name', $vars);
+            $title = $this->text('Edit %name', array('%name' => $this->data_field_value['title']));
         } else {
-            $vars = array('%name' => $this->truncate($this->data_field['title']));
-            $title = $this->text('Add value for field %name', $vars);
+            $title = $this->text('Add value for field %name', array('%name' => $this->data_field['title']));
         }
 
         $this->setTitle($title);

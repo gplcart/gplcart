@@ -58,7 +58,6 @@ class Transaction extends BackendController
 
         $this->setTitleListTransaction();
         $this->setBreadcrumbListTransaction();
-
         $this->setFilterListTransaction();
         $this->setPagerListTransaction();
 
@@ -85,12 +84,12 @@ class Transaction extends BackendController
      */
     protected function setPagerListTransaction()
     {
-        $options = $this->query_filter;
-        $options['count'] = true;
+        $conditions = $this->query_filter;
+        $conditions['count'] = true;
 
         $pager = array(
             'query' => $this->query_filter,
-            'total' => (int) $this->transaction->getList($options)
+            'total' => (int) $this->transaction->getList($conditions)
         );
 
         return $this->data_limit = $this->setPager($pager);
@@ -123,10 +122,10 @@ class Transaction extends BackendController
      */
     protected function getListTransaction()
     {
-        $options = $this->query_filter;
-        $options['limit'] = $this->data_limit;
+        $conditions = $this->query_filter;
+        $conditions['limit'] = $this->data_limit;
 
-        return (array) $this->transaction->getList($options);
+        return (array) $this->transaction->getList($conditions);
     }
 
     /**

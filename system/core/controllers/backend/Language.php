@@ -38,7 +38,6 @@ class Language extends BackendController
     public function editLanguage($code = null)
     {
         $this->setLanguage($code);
-
         $this->setTitleEditLanguage();
         $this->setBreadcrumbEditLanguage();
 
@@ -102,7 +101,7 @@ class Language extends BackendController
             $this->redirect('admin/settings/language', $this->text('Language has been deleted'), 'success');
         }
 
-        $this->redirect('', $this->text('Unable to delete'), 'danger');
+        $this->redirect('', $this->text('Language has not been deleted'), 'warning');
     }
 
     /**
@@ -128,8 +127,11 @@ class Language extends BackendController
     {
         $this->controlAccess('language_edit');
 
-        $this->language->update($this->data_language['code'], $this->getSubmitted());
-        $this->redirect('admin/settings/language', $this->text('Language has been updated'), 'success', true);
+        if ($this->language->update($this->data_language['code'], $this->getSubmitted())) {
+            $this->redirect('admin/settings/language', $this->text('Language has been updated'), 'success', true);
+        }
+
+        $this->redirect('', $this->text('Language has not been updated'), 'warning', true);
     }
 
     /**
@@ -139,8 +141,11 @@ class Language extends BackendController
     {
         $this->controlAccess('language_add');
 
-        $this->language->add($this->getSubmitted());
-        $this->redirect('admin/settings/language', $this->text('Language has been added'), 'success');
+        if ($this->language->add($this->getSubmitted())) {
+            $this->redirect('admin/settings/language', $this->text('Language has been added'), 'success');
+        }
+
+        $this->redirect('', $this->text('Language has not been added'), 'warning');
     }
 
     /**

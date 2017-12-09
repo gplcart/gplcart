@@ -55,7 +55,6 @@ class Field extends BackendController
 
         $this->setTitleListField();
         $this->setBreadcrumbListField();
-
         $this->setFilterListField();
         $this->setPagerListField();
 
@@ -100,12 +99,12 @@ class Field extends BackendController
      */
     protected function setPagerListField()
     {
-        $query = $this->query_filter;
-        $query['count'] = true;
+        $conditions = $this->query_filter;
+        $conditions['count'] = true;
 
         $pager = array(
             'query' => $this->query_filter,
-            'total' => (int) $this->field->getList($query)
+            'total' => (int) $this->field->getList($conditions)
         );
 
         return $this->data_limit = $this->setPager($pager);
@@ -117,10 +116,10 @@ class Field extends BackendController
      */
     protected function getListField()
     {
-        $query = $this->query_filter;
-        $query['limit'] = $this->data_limit;
+        $conditions = $this->query_filter;
+        $conditions['limit'] = $this->data_limit;
 
-        return (array) $this->field->getList($query);
+        return (array) $this->field->getList($conditions);
     }
 
     /**
@@ -159,7 +158,6 @@ class Field extends BackendController
     public function editField($field_id = null)
     {
         $this->setField($field_id);
-
         $this->setTitleEditField();
         $this->setBreadcrumbEditField();
 
@@ -239,7 +237,7 @@ class Field extends BackendController
             $this->redirect('admin/content/field', $this->text('Field has been deleted'), 'success');
         }
 
-        $this->redirect('', $this->text('Unable to delete'), 'danger');
+        $this->redirect('', $this->text('Field has not been deleted'), 'warning');
     }
 
     /**
@@ -249,8 +247,11 @@ class Field extends BackendController
     {
         $this->controlAccess('field_edit');
 
-        $this->field->update($this->data_field['field_id'], $this->getSubmitted());
-        $this->redirect('admin/content/field', $this->text('Field has been updated'), 'success');
+        if ($this->field->update($this->data_field['field_id'], $this->getSubmitted())) {
+            $this->redirect('admin/content/field', $this->text('Field has been updated'), 'success');
+        }
+
+        $this->redirect('', $this->text('Field has not been updated'), 'warning');
     }
 
     /**
@@ -260,8 +261,11 @@ class Field extends BackendController
     {
         $this->controlAccess('field_add');
 
-        $this->field->add($this->getSubmitted());
-        $this->redirect('admin/content/field', $this->text('Field has been added'), 'success');
+        if ($this->field->add($this->getSubmitted())) {
+            $this->redirect('admin/content/field', $this->text('Field has been added'), 'success');
+        }
+
+        $this->redirect('', $this->text('Field has not been added'), 'warning');
     }
 
     /**

@@ -53,7 +53,6 @@ class UserRole extends BackendController
     public function editUserRole($role_id = null)
     {
         $this->setUserRole($role_id);
-
         $this->setTitleEditUserRole();
         $this->setBreadcrumbEditUserRole();
 
@@ -135,7 +134,7 @@ class UserRole extends BackendController
             $this->redirect('admin/user/role', $this->text('Role has been deleted'), 'success');
         }
 
-        $this->redirect('', $this->text('Unable to delete'), 'danger');
+        $this->redirect('', $this->text('Role has not been deleted'), 'warning');
     }
 
     /**
@@ -145,8 +144,11 @@ class UserRole extends BackendController
     {
         $this->controlAccess('user_role_edit');
 
-        $this->role->update($this->data_role['role_id'], $this->getSubmitted());
-        $this->redirect('', $this->text('Role has been updated'), 'success');
+        if ($this->role->update($this->data_role['role_id'], $this->getSubmitted())) {
+            $this->redirect('', $this->text('Role has been updated'), 'success');
+        }
+
+        $this->redirect('', $this->text('Role has not been updated'), 'warning');
     }
 
     /**
@@ -156,8 +158,11 @@ class UserRole extends BackendController
     {
         $this->controlAccess('user_role_add');
 
-        $this->role->add($this->getSubmitted());
-        $this->redirect('admin/user/role', $this->text('Role has been added'), 'success');
+        if ($this->role->add($this->getSubmitted())) {
+            $this->redirect('admin/user/role', $this->text('Role has been added'), 'success');
+        }
+
+        $this->redirect('', $this->text('Role has not been added'), 'warning');
     }
 
     /**
@@ -211,7 +216,6 @@ class UserRole extends BackendController
 
         $this->setTitleListUserRole();
         $this->setBreadcrumbListUserRole();
-
         $this->setFilterListUserRole();
         $this->setPagerListUserRole();
 
@@ -280,10 +284,10 @@ class UserRole extends BackendController
      */
     protected function getListUserRole()
     {
-        $options = $this->query_filter;
-        $options['limit'] = $this->data_limit;
+        $conditions = $this->query_filter;
+        $conditions['limit'] = $this->data_limit;
 
-        $roles = (array) $this->role->getList($options);
+        $roles = (array) $this->role->getList($conditions);
         return $this->prepareListUserRole($roles);
     }
 

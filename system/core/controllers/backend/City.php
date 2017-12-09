@@ -22,12 +22,6 @@ class City extends BackendController
 {
 
     /**
-     * Country model instance
-     * @var \gplcart\core\models\Country $country
-     */
-    protected $country;
-
-    /**
      * State model instance
      * @var \gplcart\core\models\State $state
      */
@@ -44,6 +38,12 @@ class City extends BackendController
      * @var \gplcart\core\models\Zone $zone
      */
     protected $zone;
+
+    /**
+     * Country model instance
+     * @var \gplcart\core\models\Country $country
+     */
+    protected $country;
 
     /**
      * Pager limit
@@ -100,7 +100,6 @@ class City extends BackendController
 
         $this->setTitleListCity();
         $this->setBreadcrumbListCity();
-
         $this->setFilterListCity();
         $this->setPagerListCity();
 
@@ -181,11 +180,9 @@ class City extends BackendController
      */
     protected function setPagerListCity()
     {
-        $options = array(
-            'count' => true,
-            'state_id' => $this->data_state['state_id']);
-
-        $options += $this->query_filter;
+        $options = $this->query_filter;
+        $options['count'] = true;
+        $options['state_id'] = $this->data_state['state_id'];
 
         $pager = array(
             'query' => $this->query_filter,
@@ -201,13 +198,11 @@ class City extends BackendController
      */
     protected function getListCity()
     {
-        $options = array(
-            'limit' => $this->data_limit,
-            'state_id' => $this->data_state['state_id']);
+        $conditions = $this->query_filter;
+        $conditions['limit'] = $this->data_limit;
+        $conditions['state_id'] = $this->data_state['state_id'];
 
-        $options += $this->query_filter;
-
-        return (array) $this->city->getList($options);
+        return (array) $this->city->getList($conditions);
     }
 
     /**
@@ -215,8 +210,8 @@ class City extends BackendController
      */
     protected function setTitleListCity()
     {
-        $vars = array('%name' => $this->data_state['name']);
-        $this->setTitle($this->text('Cities of state %name', $vars));
+        $text = $this->text('Cities of state %name', array('%name' => $this->data_state['name']));
+        $this->setTitle($text);
     }
 
     /**
@@ -263,7 +258,6 @@ class City extends BackendController
         $this->setCity($city_id);
         $this->setStateCity($state_id);
         $this->setCountryCity($country_code);
-
         $this->setTitleEditCity();
         $this->setBreadcrumbEditCity();
 
@@ -356,7 +350,7 @@ class City extends BackendController
             $this->redirect($url, $this->text('City has been deleted'), 'success');
         }
 
-        $this->redirect('', $this->text('Unable to delete'), 'warning');
+        $this->redirect('', $this->text('City has not been deleted'), 'warning');
     }
 
     /**
@@ -366,9 +360,12 @@ class City extends BackendController
     {
         $this->controlAccess('city_edit');
 
-        $this->city->update($this->data_city['city_id'], $this->getSubmitted());
-        $url = "admin/settings/cities/{$this->data_country['code']}/{$this->data_state['state_id']}";
-        $this->redirect($url, $this->text('City has been updated'), 'success');
+        if ($this->city->update($this->data_city['city_id'], $this->getSubmitted())) {
+            $url = "admin/settings/cities/{$this->data_country['code']}/{$this->data_state['state_id']}";
+            $this->redirect($url, $this->text('City has been updated'), 'success');
+        }
+
+        $this->redirect('', $this->text('City has not been updated'), 'warning');
     }
 
     /**
@@ -378,9 +375,12 @@ class City extends BackendController
     {
         $this->controlAccess('city_add');
 
-        $this->city->add($this->getSubmitted());
-        $url = "admin/settings/cities/{$this->data_country['code']}/{$this->data_state['state_id']}";
-        $this->redirect($url, $this->text('City has been added'), 'success');
+        if ($this->city->add($this->getSubmitted())) {
+            $url = "admin/settings/cities/{$this->data_country['code']}/{$this->data_state['state_id']}";
+            $this->redirect($url, $this->text('City has been added'), 'success');
+        }
+
+        $this->redirect('', $this->text('City has not been added'), 'warning');
     }
 
     /**

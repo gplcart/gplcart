@@ -19,6 +19,12 @@ use gplcart\core\controllers\backend\Controller as BackendController;
  */
 class Category extends BackendController
 {
+    
+    /**
+     * URL model instance
+     * @var \gplcart\core\models\Alias $alias
+     */
+    protected $alias;
 
     /**
      * Category model instance
@@ -31,12 +37,6 @@ class Category extends BackendController
      * @var \gplcart\core\models\CategoryGroup $category_group
      */
     protected $category_group;
-
-    /**
-     * URL model instance
-     * @var \gplcart\core\models\Alias $alias
-     */
-    protected $alias;
 
     /**
      * The current category data
@@ -72,7 +72,6 @@ class Category extends BackendController
     public function listCategory($category_group_id)
     {
         $this->setCategoryGroup($category_group_id);
-
         $this->actionListCategory();
 
         $this->setTitleListCategory();
@@ -200,7 +199,6 @@ class Category extends BackendController
     {
         $this->setCategory($category_id);
         $this->setCategoryGroup($category_group_id);
-
         $this->setTitleEditCategory();
         $this->setBreadcrumbEditCategory();
 
@@ -310,7 +308,6 @@ class Category extends BackendController
     protected function validateEditCategory()
     {
         $this->setSubmitted('category', null, false);
-
         $this->setSubmitted('form', true);
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $this->data_category);
@@ -337,7 +334,7 @@ class Category extends BackendController
             $this->redirect($url, $this->text('Category has been deleted'), 'success');
         }
 
-        $this->redirect('', $this->text('Unable to delete'), 'danger');
+        $this->redirect('', $this->text('Category has not been deleted'), 'warning');
     }
 
     /**
@@ -347,9 +344,12 @@ class Category extends BackendController
     {
         $this->controlAccess('category_edit');
 
-        $this->category->update($this->data_category['category_id'], $this->getSubmitted());
-        $url = "admin/content/category/{$this->data_category_group['category_group_id']}";
-        $this->redirect($url, $this->text('Category has been updated'), 'success');
+        if ($this->category->update($this->data_category['category_id'], $this->getSubmitted())) {
+            $url = "admin/content/category/{$this->data_category_group['category_group_id']}";
+            $this->redirect($url, $this->text('Category has been updated'), 'success');
+        }
+
+        $this->redirect('', $this->text('Category has not been updated'), 'warning');
     }
 
     /**
@@ -359,9 +359,12 @@ class Category extends BackendController
     {
         $this->controlAccess('category_add');
 
-        $this->category->add($this->getSubmitted());
-        $url = "admin/content/category/{$this->data_category_group['category_group_id']}";
-        $this->redirect($url, $this->text('Category has been added'), 'success');
+        if ($this->category->add($this->getSubmitted())) {
+            $url = "admin/content/category/{$this->data_category_group['category_group_id']}";
+            $this->redirect($url, $this->text('Category has been added'), 'success');
+        }
+
+        $this->redirect('', $this->text('Category has not been added'), 'warning');
     }
 
     /**

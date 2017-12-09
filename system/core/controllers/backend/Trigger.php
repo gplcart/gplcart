@@ -64,7 +64,6 @@ class Trigger extends BackendController
 
         $this->setTitleListTrigger();
         $this->setBreadcrumbListTrigger();
-
         $this->setFilterListTrigger();
         $this->setPagerListTrigger();
 
@@ -118,12 +117,12 @@ class Trigger extends BackendController
      */
     protected function setPagerListTrigger()
     {
-        $options = $this->query_filter;
-        $options['count'] = true;
+        $conditions = $this->query_filter;
+        $conditions['count'] = true;
 
         $pager = array(
             'query' => $this->query_filter,
-            'total' => (int) $this->trigger->getList($options)
+            'total' => (int) $this->trigger->getList($conditions)
         );
 
         return $this->data_limit = $this->setPager($pager);
@@ -135,10 +134,10 @@ class Trigger extends BackendController
      */
     protected function getListTrigger()
     {
-        $options = $this->query_filter;
-        $options['limit'] = $this->data_limit;
+        $conditions = $this->query_filter;
+        $conditions['limit'] = $this->data_limit;
 
-        return (array) $this->trigger->getList($options);
+        return (array) $this->trigger->getList($conditions);
     }
 
     /**
@@ -177,10 +176,8 @@ class Trigger extends BackendController
     public function editTrigger($trigger_id = null)
     {
         $this->setTrigger($trigger_id);
-
         $this->setTitleEditTrigger();
         $this->setBreadcrumbEditTrigger();
-
         $this->setData('trigger', $this->data_trigger);
         $this->setData('can_delete', $this->canDeleteTrigger());
         $this->setData('conditions', $this->condition->getHandlers());
@@ -258,7 +255,7 @@ class Trigger extends BackendController
             $this->redirect('admin/settings/trigger', $this->text('Trigger has been deleted'), 'success');
         }
 
-        $this->redirect('', $this->text('Unable to delete'), 'warning');
+        $this->redirect('', $this->text('Trigger has not been deleted'), 'warning');
     }
 
     /**
@@ -268,8 +265,11 @@ class Trigger extends BackendController
     {
         $this->controlAccess('trigger_edit');
 
-        $this->trigger->update($this->data_trigger['trigger_id'], $this->getSubmitted());
-        $this->redirect('admin/settings/trigger', $this->text('Trigger has been updated'), 'success');
+        if ($this->trigger->update($this->data_trigger['trigger_id'], $this->getSubmitted())) {
+            $this->redirect('admin/settings/trigger', $this->text('Trigger has been updated'), 'success');
+        }
+
+        $this->redirect('', $this->text('Trigger has not been updated'), 'warning');
     }
 
     /**

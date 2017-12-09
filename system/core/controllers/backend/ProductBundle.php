@@ -176,8 +176,11 @@ class ProductBundle extends BackendController
         $product_id = $this->getSubmitted('product_id');
         $products = $this->getSubmitted('products', array());
 
-        $this->product_bundle->set($product_id, $products);
-        $this->redirect('admin/content/product', $this->text('Product bundle has been updated'), 'success');
+        if ($this->product_bundle->set($product_id, $products)) {
+            $this->redirect('admin/content/product', $this->text('Product bundle has been updated'), 'success');
+        }
+
+        $this->redirect('', $this->text('Product bundle has not been updated'), 'warning');
     }
 
     /**
@@ -185,8 +188,8 @@ class ProductBundle extends BackendController
      */
     protected function setTitleEditProductBundle()
     {
-        $vars = array('%name' => $this->data_product['title']);
-        $this->setTitle($this->text('Edit bundle for %name', $vars));
+        $text = $this->text('Edit bundle for %name', array('%name' => $this->data_product['title']));
+        $this->setTitle($text);
     }
 
     /**

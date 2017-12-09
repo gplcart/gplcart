@@ -108,7 +108,6 @@ class Bookmark extends BackendController
     {
         $this->setTitleListBookmark();
         $this->setBreadcrumbListBookmark();
-
         $this->setFilterListBookmark();
         $this->setPagerlListBookmark();
 
@@ -148,11 +147,11 @@ class Bookmark extends BackendController
      */
     protected function getListBookmark()
     {
-        $options = $this->query_filter;
-        $options['user_id'] = $this->uid;
-        $options['limit'] = $this->data_limit;
+        $conditions = $this->query_filter;
+        $conditions['user_id'] = $this->uid;
+        $conditions['limit'] = $this->data_limit;
 
-        return (array) $this->bookmark->getList($options);
+        return (array) $this->bookmark->getList($conditions);
     }
 
     /**

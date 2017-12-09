@@ -127,12 +127,12 @@ class Page extends BackendController
      */
     protected function setPagerListPage()
     {
-        $options = $this->query_filter;
-        $options['count'] = true;
+        $conditions = $this->query_filter;
+        $conditions['count'] = true;
 
         $pager = array(
             'query' => $this->query_filter,
-            'total' => (int) $this->page->getList($options)
+            'total' => (int) $this->page->getList($conditions)
         );
 
         return $this->data_limit = $this->setPager($pager);
@@ -144,10 +144,10 @@ class Page extends BackendController
      */
     protected function getListPage()
     {
-        $options = $this->query_filter;
-        $options['limit'] = $this->data_limit;
+        $conditions = $this->query_filter;
+        $conditions['limit'] = $this->data_limit;
 
-        $list = (array) $this->page->getList($options);
+        $list = (array) $this->page->getList($conditions);
         return $this->prepareListPage($list);
     }
 
@@ -201,7 +201,6 @@ class Page extends BackendController
     public function editPage($page_id = null)
     {
         $this->setPage($page_id);
-
         $this->setTitleEditPage();
         $this->setBreadcrumbEditPage();
 
@@ -239,7 +238,6 @@ class Page extends BackendController
     protected function preparePage(array $page)
     {
         $user = $this->user->get($page['user_id']);
-
         $page['author'] = isset($user['email']) ? $user['email'] : $this->text('Unknown');
         $page['alias'] = $this->alias->get('page', $page['page_id']);
 
@@ -276,9 +274,9 @@ class Page extends BackendController
         }
 
         $options = array(
-            'file_id' => $file_ids,
-            'file_type' => 'image',
             'entity' => 'page',
+            'file_type' => 'image',
+            'file_id' => $file_ids,
             'entity_id' => $this->data_page['page_id']
         );
 
@@ -312,8 +310,11 @@ class Page extends BackendController
     {
         $this->controlAccess('page_delete');
 
-        $this->page->delete($this->data_page['page_id']);
-        $this->redirect('admin/content/page', $this->text('Page has been deleted'), 'success');
+        if ($this->page->delete($this->data_page['page_id'])) {
+            $this->redirect('admin/content/page', $this->text('Page has been deleted'), 'success');
+        }
+
+        $this->redirect('', $this->text('Page has not been deleted'), 'warning');
     }
 
     /**
@@ -323,8 +324,11 @@ class Page extends BackendController
     {
         $this->controlAccess('page_edit');
 
-        $this->page->update($this->data_page['page_id'], $this->getSubmitted());
-        $this->redirect('admin/content/page', $this->text('Page has been updated'), 'success');
+        if ($this->page->update($this->data_page['page_id'], $this->getSubmitted())) {
+            $this->redirect('admin/content/page', $this->text('Page has been updated'), 'success');
+        }
+
+        $this->redirect('', $this->text('Page has not been updated'), 'warning');
     }
 
     /**
@@ -334,8 +338,11 @@ class Page extends BackendController
     {
         $this->controlAccess('page_add');
 
-        $this->page->add($this->getSubmitted());
-        $this->redirect('admin/content/page', $this->text('Page has been added'), 'success');
+        if ($this->page->add($this->getSubmitted())) {
+            $this->redirect('admin/content/page', $this->text('Page has been added'), 'success');
+        }
+
+        $this->redirect('', $this->text('Page has not been added'), 'warning');
     }
 
     /**
@@ -357,10 +364,8 @@ class Page extends BackendController
      */
     protected function setDataCategoriesEditPage()
     {
-        $default = $this->store->getDefault();
-        $store_id = $this->getData('page.store_id', $default);
+        $store_id = $this->getData('page.store_id', $this->store->getDefault());
         $categories = $this->category->getOptionListByStore($store_id);
-
         $this->setData('categories', $categories);
     }
 

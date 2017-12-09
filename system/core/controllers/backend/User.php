@@ -54,7 +54,6 @@ class User extends BackendController
 
         $this->setTitleListUser();
         $this->setBreadcrumbListUser();
-
         $this->setFilterListUser();
         $this->setPagerListUser();
 
@@ -132,10 +131,10 @@ class User extends BackendController
      */
     protected function getListUser()
     {
-        $options = $this->query_filter;
-        $options['limit'] = $this->data_limit;
+        $conditions = $this->query_filter;
+        $conditions['limit'] = $this->data_limit;
 
-        $users = (array) $this->user->getList($options);
+        $users = (array) $this->user->getList($conditions);
         return $this->prepareListUser($users);
     }
 
@@ -194,7 +193,6 @@ class User extends BackendController
     public function editUser($user_id = null)
     {
         $this->setUser($user_id);
-
         $this->setTitleEditUser();
         $this->setBreadcrumbEditUser();
 
@@ -297,7 +295,7 @@ class User extends BackendController
             $this->redirect('admin/user/list', $this->text('User has been deleted'), 'success');
         }
 
-        $this->redirect('admin/user/list', $this->text('Unable to delete'), 'danger');
+        $this->redirect('', $this->text('User has not been deleted'), 'warning');
     }
 
     /**
@@ -307,8 +305,11 @@ class User extends BackendController
     {
         $this->controlAccess('user_edit');
 
-        $this->user->update($this->data_user['user_id'], $this->getSubmitted());
-        $this->redirect('admin/user/list', $this->text('User has been updated'), 'success');
+        if ($this->user->update($this->data_user['user_id'], $this->getSubmitted())) {
+            $this->redirect('admin/user/list', $this->text('User has been updated'), 'success');
+        }
+
+        $this->redirect('', $this->text('User has not been updated'), 'warning');
     }
 
     /**
@@ -318,8 +319,11 @@ class User extends BackendController
     {
         $this->controlAccess('user_add');
 
-        $this->user->add($this->getSubmitted());
-        $this->redirect('admin/user/list', $this->text('User has been added'), 'success');
+        if ($this->user->add($this->getSubmitted())) {
+            $this->redirect('admin/user/list', $this->text('User has been added'), 'success');
+        }
+
+        $this->redirect('', $this->text('User has not been added'), 'warning');
     }
 
     /**

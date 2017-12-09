@@ -49,7 +49,6 @@ class Address extends BackendController
 
         $this->setTitleListAddress();
         $this->setBreadcrumbListAddress();
-
         $this->setFilterListAddress();
         $this->setPagerlListAddress();
 
@@ -111,9 +110,9 @@ class Address extends BackendController
      */
     protected function getListAddress()
     {
-        $options = $this->query_filter;
-        $options['limit'] = $this->data_limit;
-        $addresses = (array) $this->address->getList($options);
+        $conditions = $this->query_filter;
+        $conditions['limit'] = $this->data_limit;
+        $addresses = (array) $this->address->getList($conditions);
 
         return $this->prepareListAddress($addresses);
     }

@@ -111,7 +111,6 @@ class Product extends BackendController
 
         $this->setTitleListProduct();
         $this->setBreadcrumbListProduct();
-
         $this->setFilterListProduct();
         $this->setPagerListProduct();
 
@@ -138,12 +137,12 @@ class Product extends BackendController
      */
     protected function setPagerListProduct()
     {
-        $options = $this->query_filter;
-        $options['count'] = true;
+        $conditions = $this->query_filter;
+        $conditions['count'] = true;
 
         $pager = array(
             'query' => $this->query_filter,
-            'total' => (int) $this->product->getList($options)
+            'total' => (int) $this->product->getList($conditions)
         );
 
         return $this->data_limit = $this->setPager($pager);
@@ -185,10 +184,10 @@ class Product extends BackendController
      */
     protected function getListProduct()
     {
-        $options = $this->query_filter;
-        $options['limit'] = $this->data_limit;
-        $products = (array) $this->product->getList($options);
+        $conditions = $this->query_filter;
+        $conditions['limit'] = $this->data_limit;
 
+        $products = (array) $this->product->getList($conditions);
         return $this->prepareListProduct($products);
     }
 
@@ -243,7 +242,6 @@ class Product extends BackendController
     public function editProduct($product_id = null)
     {
         $this->setProduct($product_id);
-
         $this->setTitleEditProduct();
         $this->setBreadcrumbEditProduct();
 
@@ -351,9 +349,9 @@ class Product extends BackendController
         }
 
         $options = array(
-            'file_id' => $file_ids,
-            'file_type' => 'image',
             'entity' => 'product',
+            'file_type' => 'image',
+            'file_id' => $file_ids,
             'entity_id' => $this->data_product['product_id']
         );
 
@@ -371,7 +369,7 @@ class Product extends BackendController
             $this->redirect('admin/content/product', $this->text('Product has been deleted'), 'success');
         }
 
-        $this->redirect('admin/content/product', $this->text('Unable to delete'), 'danger');
+        $this->redirect('', $this->text('Product has not been deleted'), 'warning');
     }
 
     /**
@@ -381,7 +379,6 @@ class Product extends BackendController
     protected function validateEditProduct()
     {
         $this->setSubmitted('product', null, false);
-
         $this->setSubmittedBool('status');
         $this->setSubmittedBool('subtract');
         $this->setSubmitted('form', true);
@@ -410,8 +407,11 @@ class Product extends BackendController
     {
         $this->controlAccess('product_edit');
 
-        $this->product->update($this->data_product['product_id'], $this->getSubmitted());
-        $this->redirect('admin/content/product', $this->text('Product has been updated'), 'success');
+        if ($this->product->update($this->data_product['product_id'], $this->getSubmitted())) {
+            $this->redirect('admin/content/product', $this->text('Product has been updated'), 'success');
+        }
+
+        $this->redirect('', $this->text('Product has not been updated'), 'warning');
     }
 
     /**
@@ -421,8 +421,11 @@ class Product extends BackendController
     {
         $this->controlAccess('product_add');
 
-        $this->product->add($this->getSubmitted());
-        $this->redirect('admin/content/product', $this->text('Product has been added'), 'success');
+        if ($this->product->add($this->getSubmitted())) {
+            $this->redirect('admin/content/product', $this->text('Product has been added'), 'success');
+        }
+
+        $this->redirect('', $this->text('Product has not been added'), 'warning');
     }
 
     /**
@@ -443,9 +446,7 @@ class Product extends BackendController
      */
     protected function setDataCategoriesEditProduct()
     {
-        $store_id = $this->getData('store_id');
-        $categories = $this->getListCategoryProduct($store_id);
-
+        $categories = $this->getListCategoryProduct($this->getData('store_id'));
         $this->setData('categories', $categories);
     }
 

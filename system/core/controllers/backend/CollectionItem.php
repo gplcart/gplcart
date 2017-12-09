@@ -80,6 +80,7 @@ class CollectionItem extends BackendController
     protected function setCollectionCollection($collection_id)
     {
         $this->data_collection = $this->collection->get($collection_id);
+
         if (empty($this->data_collection)) {
             $this->outputHttpStatus(404);
         }
@@ -165,8 +166,8 @@ class CollectionItem extends BackendController
      */
     protected function setTitleListCollectionItem()
     {
-        $vars = array('%name' => $this->data_collection['title']);
-        $this->setTitle($this->text('Items of collection %name', $vars));
+        $text = $this->text('Items of collection %name', array('%name' => $this->data_collection['title']));
+        $this->setTitle($text);
     }
 
     /**
@@ -206,7 +207,6 @@ class CollectionItem extends BackendController
     {
         $this->setCollectionCollection($collection_id);
         $this->setCollectionCollectionItem($collection_item_id);
-
         $this->setTitleEditCollectionItem();
         $this->setBreadcrumbEditCollectionItem();
 
@@ -264,7 +264,6 @@ class CollectionItem extends BackendController
         $this->setSubmitted('collection_id', $this->data_collection['collection_id']);
 
         $this->validateComponent('collection_item');
-
         return !$this->hasErrors();
     }
 
@@ -275,9 +274,12 @@ class CollectionItem extends BackendController
     {
         $this->controlAccess('collection_item_add');
 
-        $this->collection_item->add($this->getSubmitted());
-        $url = "admin/content/collection-item/{$this->data_collection['collection_id']}";
-        $this->redirect($url, $this->text('Collection item has been added'), 'success');
+        if ($this->collection_item->add($this->getSubmitted())) {
+            $url = "admin/content/collection-item/{$this->data_collection['collection_id']}";
+            $this->redirect($url, $this->text('Collection item has been added'), 'success');
+        }
+
+        $this->redirect('', $this->text('Collection item has not been added'), 'warning');
     }
 
     /**
@@ -287,9 +289,12 @@ class CollectionItem extends BackendController
     {
         $this->controlAccess('collection_item_edit');
 
-        $this->collection_item->update($this->data_collection_item['collection_item_id'], $this->getSubmitted());
-        $url = "admin/content/collection-item/{$this->data_collection['collection_id']}";
-        $this->redirect($url, $this->text('Collection item has been updated'), 'success');
+        if ($this->collection_item->update($this->data_collection_item['collection_item_id'], $this->getSubmitted())) {
+            $url = "admin/content/collection-item/{$this->data_collection['collection_id']}";
+            $this->redirect($url, $this->text('Collection item has been updated'), 'success');
+        }
+
+        $this->redirect('', $this->text('Collection item has not been updated'), 'warning');
     }
 
     /**
@@ -299,9 +304,12 @@ class CollectionItem extends BackendController
     {
         $this->controlAccess('collection_item_delete');
 
-        $this->collection_item->delete($this->data_collection_item['collection_item_id']);
-        $url = "admin/content/collection-item/{$this->data_collection['collection_id']}";
-        $this->redirect($url, $this->text('Collection item has been deleted'), 'success');
+        if ($this->collection_item->delete($this->data_collection_item['collection_item_id'])) {
+            $url = "admin/content/collection-item/{$this->data_collection['collection_id']}";
+            $this->redirect($url, $this->text('Collection item has been deleted'), 'success');
+        }
+
+        $this->redirect('', $this->text('Collection item has not been deleted'), 'warning');
     }
 
     /**

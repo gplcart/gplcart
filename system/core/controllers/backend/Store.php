@@ -74,7 +74,6 @@ class Store extends BackendController
 
         $this->setTitleListStore();
         $this->setBreadcrumbListStore();
-
         $this->setFilterListStore();
         $this->setPagerListStore();
 
@@ -98,12 +97,12 @@ class Store extends BackendController
      */
     protected function setPagerListStore()
     {
-        $options = $this->query_filter;
-        $options['count'] = true;
+        $conditions = $this->query_filter;
+        $conditions['count'] = true;
 
         $pager = array(
             'query' => $this->query_filter,
-            'total' => (int) $this->store->getList($options)
+            'total' => (int) $this->store->getList($conditions)
         );
 
         return $this->data_limit = $this->setPager($pager);
@@ -145,10 +144,10 @@ class Store extends BackendController
      */
     protected function getListStore()
     {
-        $options = $this->query_filter;
-        $options['limit'] = $this->data_limit;
+        $conditions = $this->query_filter;
+        $conditions['limit'] = $this->data_limit;
 
-        return $this->store->getList($options);
+        return $this->store->getList($conditions);
     }
 
     /**
@@ -187,7 +186,6 @@ class Store extends BackendController
     public function editStore($store_id = null)
     {
         $this->setStore($store_id);
-
         $this->seTitleEditStore();
         $this->setBreadcrumbEditStore();
 
@@ -217,8 +215,10 @@ class Store extends BackendController
             return array();
         }
 
-        $options = array('store_id' => $this->data_store['store_id']);
-        return (array) $this->category_group->getList($options);
+        $conditions = array(
+            'store_id' => $this->data_store['store_id']);
+
+        return (array) $this->category_group->getList($conditions);
     }
 
     /**
@@ -248,8 +248,7 @@ class Store extends BackendController
      */
     protected function isDefaultStore()
     {
-        return isset($this->data_store['store_id'])//
-                && $this->store->isDefault($this->data_store['store_id']);
+        return isset($this->data_store['store_id']) && $this->store->isDefault($this->data_store['store_id']);
     }
 
     /**
@@ -352,7 +351,7 @@ class Store extends BackendController
             $this->redirect('admin/settings/store', $this->text('Store has been deleted'), 'success');
         }
 
-        $this->redirect('', $this->text('Unable to delete'), 'danger');
+        $this->redirect('', $this->text('Store has not been deleted'), 'danger');
     }
 
     /**
@@ -362,8 +361,11 @@ class Store extends BackendController
     {
         $this->controlAccess('store_edit');
 
-        $this->store->update($this->data_store['store_id'], $this->getSubmitted());
-        $this->redirect('admin/settings/store', $this->text('Store has been updated'), 'success');
+        if ($this->store->update($this->data_store['store_id'], $this->getSubmitted())) {
+            $this->redirect('admin/settings/store', $this->text('Store has been updated'), 'success');
+        }
+
+        $this->redirect('', $this->text('Store has not been updated'), 'warning');
     }
 
     /**
@@ -373,8 +375,11 @@ class Store extends BackendController
     {
         $this->controlAccess('store_add');
 
-        $this->store->add($this->getSubmitted());
-        $this->redirect('admin/settings/store', $this->text('Store has been added'), 'success');
+        if ($this->store->add($this->getSubmitted())) {
+            $this->redirect('admin/settings/store', $this->text('Store has been added'), 'success');
+        }
+
+        $this->redirect('', $this->text('Store has not been added'), 'warning');
     }
 
     /**

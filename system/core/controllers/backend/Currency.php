@@ -118,7 +118,6 @@ class Currency extends BackendController
     public function editCurrency($code = null)
     {
         $this->setCurrency($code);
-
         $this->setTitleEditCurrency();
         $this->setBreadcrumbEditCurrency();
 
@@ -199,7 +198,7 @@ class Currency extends BackendController
             $this->redirect('admin/settings/currency', $this->text('Currency has been deleted'), 'success');
         }
 
-        $this->redirect('', $this->text('Unable to delete'), 'danger');
+        $this->redirect('', $this->text('Currency has not been deleted'), 'warning');
     }
 
     /**
@@ -209,8 +208,11 @@ class Currency extends BackendController
     {
         $this->controlAccess('currency_edit');
 
-        $this->currency->update($this->data_currency['code'], $this->getSubmitted());
-        $this->redirect('admin/settings/currency', $this->text('Currency has been updated'), 'success');
+        if ($this->currency->update($this->data_currency['code'], $this->getSubmitted())) {
+            $this->redirect('admin/settings/currency', $this->text('Currency has been updated'), 'success');
+        }
+
+        $this->redirect('', $this->text('Currency has not been updated'), 'warning');
     }
 
     /**
@@ -220,8 +222,11 @@ class Currency extends BackendController
     {
         $this->controlAccess('currency_add');
 
-        $this->currency->add($this->getSubmitted());
-        $this->redirect('admin/settings/currency', $this->text('Currency has been added'), 'success');
+        if ($this->currency->add($this->getSubmitted())) {
+            $this->redirect('admin/settings/currency', $this->text('Currency has been added'), 'success');
+        }
+
+        $this->redirect('', $this->text('Currency has not been added'), 'warning');
     }
 
     /**

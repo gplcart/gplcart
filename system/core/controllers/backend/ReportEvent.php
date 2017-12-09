@@ -50,7 +50,6 @@ class ReportEvent extends BackendController
 
         $this->setTitleListReportEvent();
         $this->setBreadcrumbListReportEvent();
-
         $this->setFilterListReportEvent();
         $this->setPagerListReportEvent();
 
@@ -90,12 +89,12 @@ class ReportEvent extends BackendController
      */
     protected function setPagerListReportEvent()
     {
-        $options = $this->query_filter;
-        $options['count'] = true;
+        $conditions = $this->query_filter;
+        $conditions['count'] = true;
 
         $pager = array(
             'query' => $this->query_filter,
-            'total' => (int) $this->report->getList($options)
+            'total' => (int) $this->report->getList($conditions)
         );
 
         return $this->data_limit = $this->setPager($pager);
@@ -121,10 +120,10 @@ class ReportEvent extends BackendController
      */
     protected function getListReportEvent()
     {
-        $options = $this->query_filter;
-        $options['limit'] = $this->data_limit;
-        $records = (array) $this->report->getList($options);
+        $conditions = $this->query_filter;
+        $conditions['limit'] = $this->data_limit;
 
+        $records = (array) $this->report->getList($conditions);
         return $this->prepareListReportEvent($records);
     }
 
