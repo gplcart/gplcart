@@ -67,14 +67,14 @@ class Blog extends FrontendController
      */
     protected function setTotalListBlog()
     {
-        $options = $this->query_filter;
+        $conditions = $this->query_filter;
 
-        $options['status'] = 1;
-        $options['count'] = true;
-        $options['store_id'] = $this->store_id;
-        $options['category_group_id'] = $this->store->config('blog_category_group_id');
+        $conditions['status'] = 1;
+        $conditions['count'] = true;
+        $conditions['store_id'] = $this->store_id;
+        $conditions['category_group_id'] = $this->store->config('blog_category_group_id');
 
-        return $this->data_total = (int) $this->page->getList($options);
+        return $this->data_total = (int) $this->page->getList($conditions);
     }
 
     /**
@@ -83,14 +83,14 @@ class Blog extends FrontendController
      */
     protected function getPagesBlog()
     {
-        $options = $this->query_filter;
+        $conditions = $this->query_filter;
 
-        $options['status'] = 1;
-        $options['limit'] = $this->data_limit;
-        $options['store_id'] = $this->store_id;
-        $options['category_group_id'] = $this->store->config('blog_category_group_id');
+        $conditions['status'] = 1;
+        $conditions['limit'] = $this->data_limit;
+        $conditions['store_id'] = $this->store_id;
+        $conditions['category_group_id'] = $this->store->config('blog_category_group_id');
 
-        $pages = (array) $this->page->getList($options);
+        $pages = (array) $this->page->getList($conditions);
 
         return $this->preparePagesBlog($pages);
     }

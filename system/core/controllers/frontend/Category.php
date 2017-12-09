@@ -114,13 +114,10 @@ class Category extends FrontendController
         $this->setCategory($category_id);
         $this->setTitleIndexCategory();
         $this->setBreadcrumbIndexCategory();
-
         $this->setHtmlFilterIndexCategory();
-
         $this->setTotalIndexCategory();
         $this->setFilterIndexCategory();
         $this->setPagerIndexCategory();
-
         $this->setListProductCategory();
         $this->setChildrenCategory();
 

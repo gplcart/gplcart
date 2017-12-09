@@ -103,8 +103,8 @@ class Image extends FrontendController
     {
         if (is_file($this->data_cached_file)) {
 
+            $expires = $this->image->getCacheLifetime();
             $timestamp = filemtime($this->data_cached_file);
-            $expires = (int) $this->config('image_cache_lifetime', 365 * 24 * 60 * 60);
 
             $this->response->addHeader('Cache-Control', "public, max-age=$expires")
                     ->addHeader('Last-Modified', gmdate('D, d M Y H:i:s T', $timestamp))
@@ -122,8 +122,7 @@ class Image extends FrontendController
      */
     protected function setUrlPathImage()
     {
-        $path = urldecode(strtok($this->request->urn(), '?'));
-        $parts = explode('files/image/cache/', $path);
+        $parts = explode('files/image/cache/', urldecode(strtok($this->request->urn(), '?')));
 
         if (empty($parts[1])) {
             $this->response->outputError404(false);

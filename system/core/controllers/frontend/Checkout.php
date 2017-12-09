@@ -1151,8 +1151,7 @@ class Checkout extends FrontendController
      */
     protected function setTitleCompleteCheckout()
     {
-        $vars = array('@num' => $this->data_order['order_id']);
-        $title = $this->text('Created order #@num', $vars);
+        $title = $this->text('Created order #@num', array('@num' => $this->data_order['order_id']));
         $this->setTitle($title);
     }
 

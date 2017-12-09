@@ -190,9 +190,7 @@ class Review extends FrontendController
     protected function validateEditReview()
     {
         $this->setSubmitted('review');
-
         $this->filterSubmitted(array('text', 'rating'));
-
         $this->setSubmitted('user_id', $this->uid);
         $this->setSubmitted('update', $this->data_review);
         $this->setSubmitted('product_id', $this->data_product['product_id']);

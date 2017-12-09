@@ -32,7 +32,6 @@ class Wishlist extends FrontendController
     {
         $this->setTitleIndexWishlist();
         $this->setBreadcrumbIndexWishlist();
-
         $this->setDataIndexWishlist();
 
         $this->outputIndexWishlist();
@@ -99,9 +98,10 @@ class Wishlist extends FrontendController
      */
     protected function setDataIndexWishlist()
     {
-        $products = $this->getProductsWishlist();
-        $html = $this->render("product/list", array('products' => $products));
-        $this->setData('products', $html);
+        $data = array(
+            'products' => $this->getProductsWishlist());
+
+        $this->setData('products', $this->render('product/list', $data));
     }
 
 }
