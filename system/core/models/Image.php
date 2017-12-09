@@ -446,4 +446,13 @@ class Image
         return $this->url->get($url, $query, false, true);
     }
 
+    /**
+     * Returns image cache expiration time (in seconds)
+     * @return int
+     */
+    public function getCacheLifetime()
+    {
+        return (int) $this->config->get('image_cache_lifetime', 365 * 24 * 60 * 60);
+    }
+
 }
