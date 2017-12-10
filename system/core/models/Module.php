@@ -303,7 +303,7 @@ class Module
      */
     protected function checkDependenciesModule($module_id)
     {
-        $modules = $this->module->getList();
+        $modules = $this->module->getList(false); // Get non-cached modules
         $validated = $this->validateDependencies($modules, true);
 
         if (empty($validated[$module_id]['errors'])) {
