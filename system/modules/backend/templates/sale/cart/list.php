@@ -135,7 +135,7 @@
           </td>
           <td class="middle">
             <?php if (empty($cart['order_id'])) { ?>
-            <?php echo $this->text('Abandoned / before checkout'); ?>
+            <?php echo $this->text('Unknown'); ?>
             <?php } else { ?>
             <a href="<?php echo $this->url("admin/sale/order/{$cart['order_id']}"); ?>"><?php echo $this->e($cart['order_id']); ?></a>
             <?php } ?>
