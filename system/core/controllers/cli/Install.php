@@ -138,7 +138,6 @@ class Install extends CliController
     {
         $settings = $this->getSubmitted();
         $this->install->connectDb($settings['database']);
-
         $result = $this->install->process($settings, $this->current_route);
 
         if ($result['severity'] === 'success') {
@@ -390,7 +389,6 @@ class Install extends CliController
     protected function validateInputDbTypeInstall()
     {
         $drivers = \PDO::getAvailableDrivers();
-
         $input = $this->menu(array_combine($drivers, $drivers), 'mysql', $this->text('Database type (enter a number)'));
 
         if (!$this->isValidInput($input, 'database.type', 'install')) {

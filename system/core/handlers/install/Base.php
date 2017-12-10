@@ -88,7 +88,8 @@ class Base
     }
 
     /**
-     * Creates config.php
+     * Create the configuration file using data from a default file
+     * and adds database details set during the installation process
      * @return boolean|string
      */
     protected function createConfig()
@@ -126,9 +127,6 @@ class Base
             $this->cli->line($this->language->text('Creating pages...'));
         }
 
-        /* @var $model \gplcart\core\models\Page */
-        $model = Container::get('gplcart\\core\\models\\Page');
-
         $pages = array();
 
         $pages[] = array(
@@ -149,7 +147,7 @@ class Base
                 'store_id' => $this->context['store_id']
             );
 
-            $model->add($page);
+            $this->getPageModel()->add($page);
         }
     }
 
@@ -163,23 +161,18 @@ class Base
         }
 
         if (!empty($this->data['store']['language']) && $this->data['store']['language'] !== 'en') {
-            /* @var $model \gplcart\core\models\Language */
-            $model = Container::get('gplcart\\core\\models\\Language');
-            $model->update($this->data['store']['language'], array('default' => true));
+            $this->getLanguageModel()->update($this->data['store']['language'], array('default' => true));
         }
     }
 
     /**
-     * Creates super admin user
+     * Creates user #1 (super-admin)
      */
     protected function createSuperadmin()
     {
         if (GC_CLI) {
             $this->cli->line($this->language->text('Creating superadmin...'));
         }
-
-        /* @var $model \gplcart\core\models\User */
-        $model = Container::get('gplcart\\core\\models\\User');
 
         $user = array(
             'status' => 1,
@@ -189,7 +182,7 @@ class Base
             'password' => $this->data['user']['password']
         );
 
-        $user_id = $model->add($user);
+        $user_id = $this->getUserModel()->add($user);
 
         $this->config->set('user_superadmin', $user_id);
         $this->setContext('user_id', $user_id);
@@ -204,10 +197,7 @@ class Base
             $this->cli->line($this->language->text('Creating store...'));
         }
 
-        /* @var $model \gplcart\core\models\Store */
-        $model = Container::get('gplcart\\core\\models\\Store');
-
-        $default = $model->defaultConfig();
+        $default = $this->getStoreModel()->defaultConfig();
 
         $default['title'] = $this->data['store']['title'];
         $default['email'] = array($this->data['user']['email']);
@@ -220,7 +210,7 @@ class Base
             'basepath' => $this->data['store']['basepath']
         );
 
-        $store_id = $model->add($store);
+        $store_id = $this->getStoreModel()->add($store);
 
         $this->config->set('store', $store_id);
         $this->setContext('store_id', $store_id);
@@ -236,11 +226,7 @@ class Base
             $this->cli->line($this->language->text('Creating content...'));
         }
 
-        Container::unregister();
-
-        $this->config = Container::get('gplcart\\core\\Config');
-        $this->config->init();
-        $this->db = $this->config->getDb();
+        $this->initConfig();
 
         try {
             $this->createDbConfig();
@@ -352,12 +338,10 @@ class Base
      */
     protected function createCountries()
     {
-        /* @var $model \gplcart\core\models\Country */
-        $model = Container::get('gplcart\\core\\models\\Country');
-        $template = $model->getDefaultAddressTemplate();
+        $template = $this->getCountryModel()->getDefaultAddressTemplate();
 
         $rows = $placeholders = array();
-        foreach ((array) $model->getIso() as $code => $country) {
+        foreach ((array) $this->getCountryModel()->getIso() as $code => $country) {
             $placeholders[] = '(?,?,?,?,?,?)';
             $native_name = isset($country['native_name']) ? $country['native_name'] : $country['name'];
             $rows = array_merge($rows, array(0, $country['name'], $code, $native_name, $template, serialize(array())));
@@ -443,6 +427,64 @@ class Base
         }
 
         return $this->language->text('Your store has been installed. Now you can log in as superadmin');
+    }
+
+    /**
+     * Init configuration
+     * It makes sure that we're using the database connection defined in the configuration file
+     */
+    protected function initConfig()
+    {
+        Container::unregister();
+
+        $this->config = Container::get('gplcart\\core\\Config');
+        $this->config->init();
+        $this->db = $this->config->getDb();
+    }
+
+    /**
+     * Returns Page model class instance
+     * @return \gplcart\core\models\Page
+     */
+    protected function getPageModel()
+    {
+        return Container::get('gplcart\\core\\models\\Page');
+    }
+
+    /**
+     * Returns Language model instance
+     * @return \gplcart\core\models\Language
+     */
+    protected function getLanguageModel()
+    {
+        return Container::get('gplcart\\core\\models\\Language');
+    }
+
+    /**
+     * Returns User model instance
+     * @return \gplcart\core\models\User
+     */
+    protected function getUserModel()
+    {
+        return Container::get('gplcart\\core\\models\\User');
+    }
+
+    /**
+     * Returns Store model instance
+     * @return \gplcart\core\models\Store
+     */
+    protected function getStoreModel()
+    {
+        return Container::get('gplcart\\core\\models\\Store');
+    }
+
+    /**
+     * Returns Country model instance
+     * @return \gplcart\core\models\Country
+     */
+    protected function getCountryModel()
+    {
+        return Container::get('gplcart\\core\\models\\Country');
     }
 
 }

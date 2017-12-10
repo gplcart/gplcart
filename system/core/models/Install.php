@@ -134,10 +134,9 @@ class Install
      */
     public function callHandler($handler_id, array $data)
     {
-        $handlers = $this->getHandlers();
-        $method = isset($data['step']) ? 'install_' . $data['step'] : 'install';
-
         try {
+            $handlers = $this->getHandlers();
+            $method = isset($data['step']) ? 'install_' . $data['step'] : 'install';
             $result = Handler::call($handlers, $handler_id, $method, array($data, $this->db));
         } catch (\Exception $ex) {
             $result = array();
