@@ -9,19 +9,14 @@
 
 namespace gplcart\core\handlers\install;
 
-use gplcart\core\Config,
-    gplcart\core\Container;
-use gplcart\core\helpers\Cli as CliHelper,
-    gplcart\core\helpers\Session as SessionHelper;
-use gplcart\core\models\Install as InstallModel,
-    gplcart\core\models\Language as LanguageModel;
+use gplcart\core\Container;
 
 /**
  * Base installer handlers class
  */
 class Base
 {
-    
+
     /**
      * Config class instance
      * @var \gplcart\core\Config $config
@@ -71,22 +66,25 @@ class Base
     protected $context = array();
 
     /**
-     * @param Config $config
-     * @param InstallModel $install
-     * @param LanguageModel $language
-     * @param SessionHelper $session
-     * @param CliHelper $cli
+     * Construct
      */
-    public function __construct(Config $config, InstallModel $install, LanguageModel $language,
-            SessionHelper $session, CliHelper $cli)
+    public function __construct()
     {
-        set_time_limit(0);
+        $this->config = Container::get('gplcart\\core\\Config');
+        $this->cli = Container::get('gplcart\\core\\helpers\\Cli');
+        $this->install = Container::get('gplcart\\core\\models\\Install');
+        $this->session = Container::get('gplcart\\core\\helpers\\Session');
+        $this->language = Container::get('gplcart\\core\\models\\Language');
+    }
 
-        $this->cli = $cli;
-        $this->config = $config;
-        $this->session = $session;
-        $this->install = $install;
-        $this->language = $language;
+    /**
+     * Set a property
+     * @param string $name
+     * @param mixed $value
+     */
+    public function setProperty($name, $value)
+    {
+        $this->{$name} = $value;
     }
 
     /**
@@ -95,6 +93,10 @@ class Base
      */
     protected function createConfig()
     {
+        if (GC_CLI) {
+            $this->cli->line($this->language->text('Creating configuration file...'));
+        }
+
         $config = file_get_contents(GC_FILE_CONFIG);
 
         if (empty($config)) {
@@ -120,6 +122,10 @@ class Base
      */
     protected function createPages()
     {
+        if (GC_CLI) {
+            $this->cli->line($this->language->text('Creating pages...'));
+        }
+
         /* @var $model \gplcart\core\models\Page */
         $model = Container::get('gplcart\\core\\models\\Page');
 
@@ -152,6 +158,10 @@ class Base
      */
     protected function createLanguages()
     {
+        if (GC_CLI) {
+            $this->cli->line($this->language->text('Configuring language...'));
+        }
+
         if (!empty($this->data['store']['language']) && $this->data['store']['language'] !== 'en') {
             /* @var $model \gplcart\core\models\Language */
             $model = Container::get('gplcart\\core\\models\\Language');
@@ -164,6 +174,10 @@ class Base
      */
     protected function createSuperadmin()
     {
+        if (GC_CLI) {
+            $this->cli->line($this->language->text('Creating superadmin...'));
+        }
+
         /* @var $model \gplcart\core\models\User */
         $model = Container::get('gplcart\\core\\models\\User');
 
@@ -186,6 +200,10 @@ class Base
      */
     protected function createStore()
     {
+        if (GC_CLI) {
+            $this->cli->line($this->language->text('Creating store...'));
+        }
+
         /* @var $model \gplcart\core\models\Store */
         $model = Container::get('gplcart\\core\\models\\Store');
 
@@ -214,6 +232,10 @@ class Base
      */
     protected function createContent()
     {
+        if (GC_CLI) {
+            $this->cli->line($this->language->text('Creating content...'));
+        }
+
         Container::unregister();
 
         $this->config = Container::get('gplcart\\core\\Config');
@@ -308,6 +330,10 @@ class Base
      */
     protected function createDb()
     {
+        if (GC_CLI) {
+            $this->cli->line($this->language->text('Creating database tables...'));
+        }
+
         try {
             $result = $this->db->import($this->db->getScheme());
         } catch (\Exception $ex) {
@@ -347,6 +373,8 @@ class Base
      */
     protected function start()
     {
+        set_time_limit(0);
+
         $this->session->delete('user');
         $this->session->delete('install');
         $this->session->set('install.data', $this->data);
