@@ -328,6 +328,10 @@ class Oauth
     {
         $data += array('lifetime' => 3600);
 
+        if (empty($data['certificate_file'])) {
+            throw new \InvalidArgumentException('Certificate file not set');
+        }
+
         if (strpos($data['certificate_file'], GC_DIR_FILE) !== 0) {
             $data['certificate_file'] = gplcart_file_absolute($data['certificate_file']);
         }
