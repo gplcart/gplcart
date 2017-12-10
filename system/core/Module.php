@@ -140,6 +140,11 @@ class Module
         }
 
         $themes = array($this->config->get('theme_backend', 'backend'));
+
+        if (!$this->db->isInitialized()) {
+            return $themes;
+        }
+
         $stores = $this->db->fetchAll('SELECT * FROM store', array());
 
         foreach ($stores as $store) {
@@ -156,9 +161,10 @@ class Module
 
     /**
      * Returns an array of all available modules
+     * @param bool $get_cached
      * @return array
      */
-    public function getList()
+    public function getList($get_cached = true)
     {
         $modules = &gplcart_static('module.list');
 
@@ -166,10 +172,11 @@ class Module
             return $modules;
         }
 
-        $cache = gplcart_config_get(GC_FILE_CONFIG_COMPILED_MODULE);
-
-        if (!empty($cache)) {
-            return $modules = (array) $cache;
+        if ($get_cached) {
+            $cache = gplcart_config_get(GC_FILE_CONFIG_COMPILED_MODULE);
+            if (!empty($cache)) {
+                return $modules = (array) $cache;
+            }
         }
 
         $installed = $this->getInstalled();
@@ -180,7 +187,11 @@ class Module
         }
 
         gplcart_array_sort($modules);
-        gplcart_config_set(GC_FILE_CONFIG_COMPILED_MODULE, $modules);
+
+        if ($get_cached) {
+            gplcart_config_set(GC_FILE_CONFIG_COMPILED_MODULE, $modules);
+        }
+
         return $modules;
     }
 
@@ -261,12 +272,8 @@ class Module
      */
     public function clearCache()
     {
-        if (gplcart_config_delete(GC_FILE_CONFIG_COMPILED_MODULE)) {
-            gplcart_static_clear();
-            return true;
-        }
-
-        return false;
+        gplcart_static_clear();
+        return gplcart_config_delete(GC_FILE_CONFIG_COMPILED_MODULE);
     }
 
     /**
