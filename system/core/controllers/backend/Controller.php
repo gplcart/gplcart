@@ -91,14 +91,11 @@ class Controller extends BaseController
      */
     protected function setCron()
     {
-        $last_run = (int) $this->config('cron_last_run', 0);
         $interval = (int) $this->config('cron_interval', 24 * 60 * 60);
 
-        if (!empty($interval) && (GC_TIME - $last_run) > $interval) {
-            $key = $this->config('cron_key', '');
-            $url = $this->url('cron', array('key' => $key));
-            $js = "\$(function(){\$.get('$url', function(data){});});";
-            $this->setJs($js, array('position' => 'bottom'));
+        if (!empty($interval) && (GC_TIME - $this->config('cron_last_run', 0)) > $interval) {
+            $url = $this->url('cron', array('key' => $this->config('cron_key', '')));
+            $this->setJs("\$(function(){\$.get('$url', function(data){});});", array('position' => 'bottom'));
         }
     }
 
@@ -113,7 +110,6 @@ class Controller extends BaseController
 
         if (!empty($action)) {
 
-            $error = null;
             if (empty($action['name'])) {
                 $error = $this->text('An error occurred');
             } else if (empty($action['items'])) {
