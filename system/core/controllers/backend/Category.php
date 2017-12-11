@@ -19,7 +19,7 @@ use gplcart\core\controllers\backend\Controller as BackendController;
  */
 class Category extends BackendController
 {
-    
+
     /**
      * URL model instance
      * @var \gplcart\core\models\Alias $alias
@@ -76,11 +76,39 @@ class Category extends BackendController
 
         $this->setTitleListCategory();
         $this->setBreadcrumbListCategory();
+        $this->setFilterListCategory();
+        $this->setPagerListCategory();
 
         $this->setData('categories', $this->getListCategory());
         $this->setData('category_group_id', $category_group_id);
 
         $this->outputListCategory();
+    }
+
+    /**
+     * Sets the current filter parameters
+     */
+    protected function setFilterListCategory()
+    {
+        $allowed = array('title', 'status', 'weight', 'category_id');
+        $this->setFilter($allowed);
+    }
+
+    /**
+     * Sets pager
+     * @return array
+     */
+    protected function setPagerListCategory()
+    {
+        $options = $this->query_filter;
+        $options['count'] = true;
+
+        $pager = array(
+            'query' => $this->query_filter,
+            'total' => (int) $this->category->getList($options)
+        );
+
+        return $this->data_limit = $this->setPager($pager);
     }
 
     /**
@@ -132,10 +160,10 @@ class Category extends BackendController
      */
     protected function getListCategory()
     {
-        $options = array(
-            'category_group_id' => $this->data_category_group['category_group_id']);
+        $conditions = $this->query_filter;
+        $conditions['category_group_id'] = $this->data_category_group['category_group_id'];
 
-        return $this->prepareListCategory($this->category->getTree($options));
+        return $this->prepareListCategory($this->category->getTree($conditions));
     }
 
     /**
