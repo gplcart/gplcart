@@ -213,7 +213,7 @@ class Curl
     /**
      * Set an option
      * @param array|string $option
-     * @param null|string $value
+     * @param mixed $value
      * @return $this
      */
     public function setOption($option, $value = null)
