@@ -150,7 +150,7 @@ class File
             $data['title'] = basename($data['path']);
         }
 
-        $data['created'] = GC_TIME;
+        $data['created'] = $data['modified'] = GC_TIME;
         $result = $data['file_id'] = $this->db->insert('file', $data);
 
         $this->setTranslations($data, $this->translation, 'file', false);
@@ -174,6 +174,7 @@ class File
             return (bool) $result;
         }
 
+        $data['modified'] = GC_TIME;
         $updated = $this->db->update('file', $data, array('file_id' => $file_id));
         $data['file_id'] = $file_id;
         $updated += (int) $this->setTranslations($data, $this->translation, 'file');
@@ -353,89 +354,80 @@ class File
             return $files;
         }
 
-        $sql = 'SELECT f.*,';
+        $sql = 'SELECT f.*, COALESCE(NULLIF(ft.title, ""), f.title) AS title';
 
         if (!empty($data['count'])) {
-            $sql = 'SELECT COUNT(f.file_id),';
+            $sql = 'SELECT COUNT(f.file_id)';
         }
 
-        $language = 'und';
-        $params = array($language);
-
-        $sql .= 'COALESCE(NULLIF(ft.title, ""), f.title) AS title'
-                . ' FROM file f'
+        $sql .= ' FROM file f'
                 . ' LEFT JOIN file_translation ft ON(ft.file_id = f.file_id AND ft.language=?)';
+
+        $language = $this->language->getLangcode();
+        $conditions = array($language);
 
         if (!empty($data['file_id'])) {
             settype($data['file_id'], 'array');
             $placeholders = rtrim(str_repeat('?,', count($data['file_id'])), ',');
             $sql .= " WHERE f.file_id IN($placeholders)";
-            $params = array_merge($params, $data['file_id']);
+            $conditions = array_merge($conditions, $data['file_id']);
         } else {
             $sql .= ' WHERE f.file_id IS NOT NULL';
         }
 
         if (isset($data['title'])) {
             $sql .= ' AND (f.title LIKE ? OR (ft.title LIKE ? AND ft.language=?))';
-            $params[] = "%{$data['title']}%";
-            $params[] = "%{$data['title']}%";
-            $params[] = $language;
+            $conditions[] = "%{$data['title']}%";
+            $conditions[] = "%{$data['title']}%";
+            $conditions[] = $language;
         }
 
         if (isset($data['created'])) {
             $sql .= ' AND f.created = ?';
-            $params[] = (int) $data['created'];
+            $conditions[] = (int) $data['created'];
         }
 
         if (isset($data['entity'])) {
             $sql .= ' AND f.entity = ?';
-            $params[] = $data['entity'];
+            $conditions[] = $data['entity'];
         }
 
         if (!empty($data['entity_id'])) {
             settype($data['entity_id'], 'array');
             $placeholders = rtrim(str_repeat('?,', count($data['entity_id'])), ',');
             $sql .= " AND f.entity_id IN($placeholders)";
-            $params = array_merge($params, $data['entity_id']);
+            $conditions = array_merge($conditions, $data['entity_id']);
         }
 
         if (isset($data['language'])) {
             $sql .= ' AND ft.language = ?';
-            $params[] = $data['language'];
+            $conditions[] = $data['language'];
         }
 
         if (isset($data['path'])) {
             $sql .= ' AND f.path LIKE ?';
-            $params[] = "%{$data['path']}%";
+            $conditions[] = "%{$data['path']}%";
         }
 
         if (isset($data['mime_type'])) {
             $sql .= ' AND f.mime_type LIKE ?';
-            $params[] = "%{$data['mime_type']}%";
+            $conditions[] = "%{$data['mime_type']}%";
         }
 
         if (isset($data['file_type'])) {
             $sql .= ' AND f.file_type = ?';
-            $params[] = $data['file_type'];
+            $conditions[] = $data['file_type'];
         }
 
-        // This is to prevent errors when sql_mode=only_full_group_by
-        $sql .= ' GROUP BY f.file_id, ft.title';
-
         $allowed_order = array('asc', 'desc');
+        $allowed_sort = array('title', 'path', 'file_id', 'created',
+            'weight', 'mime_type', 'entity', 'entity_id');
 
-        $allowed_sort = array(
-            'title' => 'title', 'path' => 'f.path',
-            'file_id' => 'f.file_id', 'created' => 'f.created',
-            'weight' => 'f.weight', 'mime_type' => 'f.mime_type',
-            'entity' => 'f.entity', 'entity_id' => 'f.entity_id'
-        );
-
-        if (isset($data['sort']) && isset($allowed_sort[$data['sort']])//
+        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)//
                 && isset($data['order']) && in_array($data['order'], $allowed_order)) {
-            $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
+            $sql .= " ORDER BY f.{$data['sort']} {$data['order']}";
         } else {
-            $sql .= " ORDER BY f.created DESC";
+            $sql .= " ORDER BY f.modified DESC";
         }
 
         if (!empty($data['limit'])) {
@@ -443,10 +435,10 @@ class File
         }
 
         if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $params);
+            return (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $files = $this->db->fetchAll($sql, $params, array('index' => 'file_id'));
+        $files = $this->db->fetchAll($sql, $conditions, array('index' => 'file_id'));
 
         $this->hook->attach('file.list', $files, $this);
         return $files;

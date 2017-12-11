@@ -199,6 +199,7 @@ return array(
             'file_id' => array('type' => 'integer', 'length' => 10, 'auto_increment' => true, 'primary' => true),
             'entity_id' => array('type' => 'integer', 'length' => 10, 'not_null' => true, 'default' => 0),
             'created' => array('type' => 'integer', 'length' => 10, 'not_null' => true),
+            'modified' => array('type' => 'integer', 'length' => 10, 'not_null' => true, 'default' => 0),
             'weight' => array('type' => 'integer', 'length' => 2, 'not_null' => true, 'default' => 0),
             'entity' => array('type' => 'varchar', 'length' => 50, 'not_null' => true, 'default' => 'file'),
             'file_type' => array('type' => 'varchar', 'length' => 50, 'not_null' => true),
