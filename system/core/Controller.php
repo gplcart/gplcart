@@ -1093,17 +1093,6 @@ abstract class Controller
     }
 
     /**
-     * Performs an HTTP request
-     * @param string $url
-     * @param array $options
-     * @return array
-     */
-    public function httpRequest($url, array $options)
-    {
-        return $this->request->send($url, $options);
-    }
-
-    /**
      * Whether a key is presented in the submitted values array
      * @param string|array $key
      * @return boolean
@@ -1161,7 +1150,7 @@ abstract class Controller
     }
 
     /**
-     * 
+     *
      * @param string $module_id
      * @param null|string $key
      * @param mixed $default
