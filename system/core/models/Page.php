@@ -225,7 +225,7 @@ class Page
         }
 
         $language = $this->language->getLangcode();
-        $where = array($language, 'page');
+        $conditions = array($language, 'page');
 
         $sql .= ' FROM page p'
                 . ' LEFT JOIN page_translation pt ON(pt.page_id = p.page_id AND pt.language=?)'
@@ -237,41 +237,41 @@ class Page
             settype($data['page_id'], 'array');
             $placeholders = rtrim(str_repeat('?,', count($data['page_id'])), ',');
             $sql .= " WHERE p.page_id IN($placeholders)";
-            $where = array_merge($where, $data['page_id']);
+            $conditions = array_merge($conditions, $data['page_id']);
         } else {
             $sql .= ' WHERE p.page_id IS NOT NULL';
         }
 
         if (isset($data['title'])) {
             $sql .= ' AND (p.title LIKE ? OR (pt.title LIKE ? AND pt.language=?))';
-            $where[] = "%{$data['title']}%";
-            $where[] = "%{$data['title']}%";
-            $where[] = $language;
+            $conditions[] = "%{$data['title']}%";
+            $conditions[] = "%{$data['title']}%";
+            $conditions[] = $language;
         }
 
         if (isset($data['language'])) {
             $sql .= ' AND pt.language = ?';
-            $where[] = $data['language'];
+            $conditions[] = $data['language'];
         }
 
         if (isset($data['store_id'])) {
             $sql .= ' AND p.store_id = ?';
-            $where[] = (int) $data['store_id'];
+            $conditions[] = (int) $data['store_id'];
         }
 
         if (isset($data['category_group_id'])) {
             $sql .= ' AND c.category_group_id = ?';
-            $where[] = (int) $data['category_group_id'];
+            $conditions[] = (int) $data['category_group_id'];
         }
 
         if (isset($data['status'])) {
             $sql .= ' AND p.status = ?';
-            $where[] = (int) $data['status'];
+            $conditions[] = (int) $data['status'];
         }
 
         if (isset($data['email'])) {
             $sql .= ' AND u.email LIKE ?';
-            $where[] = "%{$data['email']}%";
+            $conditions[] = "%{$data['email']}%";
         }
 
         $allowed_order = array('asc', 'desc');
@@ -291,11 +291,11 @@ class Page
         }
 
         if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $where);
+            return (int) $this->db->fetchColumn($sql, $conditions);
         }
 
         $options = array('index' => 'page_id');
-        $list = $this->db->fetchAll($sql, $where, $options);
+        $list = $this->db->fetchAll($sql, $conditions, $options);
 
         $this->hook->attach('page.list', $list, $this);
         return $list;
