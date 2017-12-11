@@ -56,7 +56,9 @@ class CategoryGroup extends BackendController
         $this->setFilterListCategoryGroup();
         $this->setPagerListCategoryGroup();
 
-        $this->setData('groups', $this->getListCategoryGroup());
+        $this->setData('category_groups', $this->getListCategoryGroup());
+        $this->setData('category_group_types', $this->category_group->getTypes());
+
         $this->outputListCategoryGroup();
     }
 
@@ -137,10 +139,10 @@ class CategoryGroup extends BackendController
         $this->setTitleEditCategoryGroup();
         $this->setBreadcrumbEditCategoryGroup();
 
-        $this->setData('types', $this->category_group->getTypes());
         $this->setData('category_group', $this->data_category_group);
         $this->setData('can_delete', $this->canDeleteCategoryGroup());
         $this->setData('languages', $this->language->getList(false, true));
+        $this->setData('category_group_types', $this->category_group->getTypes());
 
         $this->submitEditCategoryGroup();
         $this->outputEditCategoryGroup();
