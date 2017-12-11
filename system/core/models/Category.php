@@ -239,7 +239,16 @@ class Category
             $conditions[] = (int) $options['status'];
         }
 
-        $sql .= " ORDER BY c.weight ASC";
+        $allowed_order = array('asc', 'desc');
+        $allowed_sort = array('title', 'category_id', 'weight', 'status');
+
+        if ((isset($options['sort']) && in_array($options['sort'], $allowed_sort))//
+                && (isset($options['order']) && in_array($options['order'], $allowed_order))
+        ) {
+            $sql .= " ORDER BY c.{$options['sort']} {$options['order']}";
+        } else {
+            $sql .= " ORDER BY c.weight ASC";
+        }
 
         if (!empty($options['limit'])) {
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
