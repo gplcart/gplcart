@@ -88,7 +88,8 @@ class Store extends BackendController
      */
     protected function setFilterListStore()
     {
-        $this->setFilter(array('name', 'domain', 'basepath', 'status'));
+        $allowed = array('name', 'domain', 'basepath', 'status', 'domain_like', 'basepath_like', 'store_id');
+        $this->setFilter($allowed);
     }
 
     /**
