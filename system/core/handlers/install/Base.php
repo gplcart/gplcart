@@ -94,9 +94,7 @@ class Base
      */
     protected function createConfig()
     {
-        if (GC_CLI) {
-            $this->cli->line($this->language->text('Creating configuration file...'));
-        }
+        $this->setCliMessage('Creating configuration file...');
 
         $config = file_get_contents(GC_FILE_CONFIG);
 
@@ -123,9 +121,7 @@ class Base
      */
     protected function createPages()
     {
-        if (GC_CLI) {
-            $this->cli->line($this->language->text('Creating pages...'));
-        }
+        $this->setCliMessage('Creating pages...');
 
         $pages = array();
 
@@ -156,9 +152,7 @@ class Base
      */
     protected function createLanguages()
     {
-        if (GC_CLI) {
-            $this->cli->line($this->language->text('Configuring language...'));
-        }
+        $this->setCliMessage('Configuring language...');
 
         if (!empty($this->data['store']['language']) && $this->data['store']['language'] !== 'en') {
             $this->getLanguageModel()->update($this->data['store']['language'], array('default' => true));
@@ -170,9 +164,7 @@ class Base
      */
     protected function createSuperadmin()
     {
-        if (GC_CLI) {
-            $this->cli->line($this->language->text('Creating superadmin...'));
-        }
+        $this->setCliMessage('Creating superadmin...');
 
         $user = array(
             'status' => 1,
@@ -193,9 +185,7 @@ class Base
      */
     protected function createStore()
     {
-        if (GC_CLI) {
-            $this->cli->line($this->language->text('Creating store...'));
-        }
+        $this->setCliMessage('Creating store...');
 
         $default = $this->getStoreModel()->defaultConfig();
 
@@ -222,9 +212,7 @@ class Base
      */
     protected function createContent()
     {
-        if (GC_CLI) {
-            $this->cli->line($this->language->text('Creating content...'));
-        }
+        $this->setCliMessage('Creating content...');
 
         $this->initConfig();
 
@@ -247,6 +235,8 @@ class Base
      */
     protected function createDbConfig()
     {
+        $this->setCliMessage('Configuring database...');
+
         $this->config->set('intro', 1);
         $this->config->set('installed', GC_TIME);
         $this->config->set('cron_key', gplcart_string_random());
@@ -316,9 +306,7 @@ class Base
      */
     protected function createDb()
     {
-        if (GC_CLI) {
-            $this->cli->line($this->language->text('Creating database tables...'));
-        }
+        $this->setCliMessage('Creating database tables...');
 
         try {
             $result = $this->db->import($this->db->getScheme());
@@ -427,6 +415,17 @@ class Base
         }
 
         return $this->language->text('Your store has been installed. Now you can log in as superadmin');
+    }
+
+    /**
+     * Sets a message line in CLI mode
+     * @param string $message
+     */
+    protected function setCliMessage($message)
+    {
+        if (GC_CLI) {
+            $this->cli->line($this->language->text($message));
+        }
     }
 
     /**
