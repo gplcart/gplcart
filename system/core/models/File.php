@@ -12,12 +12,12 @@ namespace gplcart\core\models;
 use gplcart\core\Config,
     gplcart\core\Hook,
     gplcart\core\Database;
-use gplcart\core\helpers\Url as UrlHelper,
-    gplcart\core\helpers\Request as RequestHelper;
 use gplcart\core\models\Language as LanguageModel,
     gplcart\core\models\Validator as ValidatorModel,
     gplcart\core\models\Translation as TranslationModel;
 use gplcart\core\traits\Translation as TranslationTrait;
+use gplcart\core\helpers\Url as UrlHelper,
+    gplcart\core\helpers\SocketClient as SocketClientHelper;
 
 /**
  * Manages basic behaviors and data related to files
@@ -70,10 +70,10 @@ class File
     protected $url;
 
     /**
-     * Request class instance
-     * @var \gplcart\core\helpers\Request $request
+     * Socket client class instance
+     * @var \gplcart\core\helpers\SocketClient $socket
      */
-    protected $request;
+    protected $socket;
 
     /**
      * Transfer file destination
@@ -98,7 +98,7 @@ class File
      * @var string
      */
     protected $error;
-    
+
     /**
      * @param Hook $hook
      * @param Database $db
@@ -107,18 +107,18 @@ class File
      * @param ValidatorModel $validator
      * @param TranslationModel $translation
      * @param UrlHelper $url
-     * @param RequestHelper $request
+     * @param SocketClientHelper $socket
      */
     public function __construct(Hook $hook, Database $db, Config $config, LanguageModel $language,
             ValidatorModel $validator, TranslationModel $translation, UrlHelper $url,
-            RequestHelper $request)
+            SocketClientHelper $socket)
     {
         $this->db = $db;
         $this->hook = $hook;
         $this->config = $config;
 
         $this->url = $url;
-        $this->request = $request;
+        $this->socket = $socket;
         $this->language = $language;
         $this->validator = $validator;
         $this->translation = $translation;
@@ -645,7 +645,7 @@ class File
     protected function writeTempFile($url)
     {
         try {
-            $response = $this->request->send($url);
+            $response = $this->socket->request($url);
         } catch (\Exception $ex) {
             $this->error = $ex->getMessage();
             return false;

@@ -12,8 +12,8 @@ namespace gplcart\core\models;
 use gplcart\core\Handler,
     gplcart\core\Hook;
 use gplcart\core\helpers\Url as UrlHelper,
-    gplcart\core\helpers\Request as RequestHelper,
-    gplcart\core\helpers\Session as SessionHelper;
+    gplcart\core\helpers\Session as SessionHelper,
+    gplcart\core\helpers\SocketClient as SocketClientHelper;
 use gplcart\core\exceptions\OauthAuthorization as OauthAuthorizationException;
 
 /**
@@ -29,10 +29,10 @@ class Oauth
     protected $hook;
 
     /**
-     * Curl helper instance
-     * @var \gplcart\core\helpers\Request $request
+     * Socket client helper instance
+     * @var \gplcart\core\helpers\SocketClient $socket
      */
-    protected $request;
+    protected $socket;
 
     /**
      * URL helper instance
@@ -48,16 +48,16 @@ class Oauth
 
     /**
      * @param Hook $hook
-     * @param RequestHelper $request
+     * @param SocketClientHelper $socket
      * @param SessionHelper $session
      * @param UrlHelper $url
      */
-    public function __construct(Hook $hook, RequestHelper $request, SessionHelper $session,
+    public function __construct(Hook $hook, SocketClientHelper $socket, SessionHelper $session,
             UrlHelper $url)
     {
         $this->url = $url;
         $this->hook = $hook;
-        $this->request = $request;
+        $this->socket = $socket;
         $this->session = $session;
     }
 
@@ -285,9 +285,11 @@ class Oauth
         }
 
         try {
-            $response = $this->request->send($provider['url']['token'], array('data' => $query));
+            $post = array('data' => $query, 'method' => 'POST');
+            $response = $this->socket->request($provider['url']['token'], $post);
             $result = json_decode($response['data'], true);
         } catch (\Exception $ex) {
+            trigger_error('Failed to request an Oauth token: ' . $ex->getMessage());
             $result = array();
         }
 
