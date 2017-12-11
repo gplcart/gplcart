@@ -12,12 +12,13 @@
 <div class="row image-container">
 <?php foreach ($images as $index => $image) { ?>
 <?php $file_id = empty($image['file_id']) ? '' : $image['file_id']; ?>
+<?php $weight = empty($image['weight']) ? 0 : $image['weight']; ?>
 <div class="sortable-thumb">
   <div class="col-md-3">
     <div class="panel panel-default thumb">
       <input type="hidden" name="<?php echo $entity; ?>[images][<?php echo $index; ?>][file_id]" value="<?php echo $file_id; ?>">
       <input type="hidden" name="<?php echo $entity; ?>[images][<?php echo $index; ?>][path]" value="<?php echo $this->e($image['path']); ?>">
-      <input type="hidden" name="<?php echo $entity; ?>[images][<?php echo $index; ?>][weight]" value="<?php echo $image['weight']; ?>">
+      <input type="hidden" name="<?php echo $entity; ?>[images][<?php echo $index; ?>][weight]" value="<?php echo $weight; ?>">
       <div class="panel-heading clearfix">
         <span class="handle pull-left"><i class="fa fa-arrows-alt"></i></span>
         <span class="pull-right">
