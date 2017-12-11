@@ -164,18 +164,6 @@ class Store extends ComponentValidator
             return false;
         }
 
-        $conditions = array('domain' => $domain, 'basepath' => $value);
-        $stores = (array) $this->store->getList($conditions);
-
-        foreach ($stores as $store_id => $data) {
-            if (isset($updating['store_id']) && $updating['store_id'] == $store_id) {
-                continue;
-            }
-            if ($data['domain'] === $domain && $data['basepath'] === $value) {
-                $this->setErrorExists($field, $label);
-                return false;
-            }
-        }
         return true;
     }
 
@@ -206,6 +194,7 @@ class Store extends ComponentValidator
             $this->setErrorInvalid($field, $label);
             return false;
         }
+
         return true;
     }
 
@@ -232,6 +221,7 @@ class Store extends ComponentValidator
             $this->setErrorInvalid($field, $label);
             return false;
         }
+
         return true;
     }
 
@@ -243,9 +233,7 @@ class Store extends ComponentValidator
     {
         $options = $this->options;
         $this->options += array('parents' => 'data');
-
         $result = $this->validateTitle();
-
         $this->options = $options;
         return $result;
     }
@@ -258,9 +246,7 @@ class Store extends ComponentValidator
     {
         $options = $this->options;
         $this->options += array('parents' => 'data');
-
         $result = $this->validateMetaTitle();
-
         $this->options = $options;
         return $result;
     }
@@ -273,9 +259,7 @@ class Store extends ComponentValidator
     {
         $options = $this->options;
         $this->options += array('parents' => 'data');
-
         $result = $this->validateMetaDescription();
-
         $this->options = $options;
         return $result;
     }
@@ -288,9 +272,7 @@ class Store extends ComponentValidator
     {
         $options = $this->options;
         $this->options += array('parents' => 'data');
-
         $result = $this->validateTranslation();
-
         $this->options = $options;
         return $result;
     }
