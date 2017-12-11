@@ -59,6 +59,51 @@ class Store
     }
 
     /**
+     * Loads a store
+     * @param integer|string $store Either store ID or domain
+     * @return array
+     */
+    public function get($store)
+    {
+        if (!$this->db->isInitialized()) {
+            return array();
+        }
+
+        $result = &gplcart_static("store.get.$store");
+
+        if (isset($result)) {
+            return $result;
+        }
+
+        $this->hook->attach('store.get.before', $store, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
+        $conditions = array();
+        if (is_numeric($store)) {
+            $conditions['store_id'] = $store;
+        } else if (strpos($store, '/') === false) {
+            $conditions['domain'] = $store;
+        } else {
+            list($domain, $basepath) = explode('/', $store, 2);
+            $conditions['domain'] = $domain;
+            $conditions['basepath'] = $basepath;
+        }
+
+        $result = $this->getList($conditions);
+
+        if (!empty($result)) {
+            $result = reset($result);
+            $result['data'] += $this->defaultConfig();
+        }
+
+        $this->hook->attach('store.get.after', $store, $result, $this);
+        return $result;
+    }
+
+    /**
      * Returns an array of stores or counts them
      * @param array $data
      * @return array|integer
@@ -77,31 +122,49 @@ class Store
             $sql = 'SELECT COUNT(store_id)';
         }
 
-        $sql .= ' FROM store WHERE store_id > 0';
+        $sql .= ' FROM store';
 
-        $where = array();
+        $conditions = array();
+
+        if (isset($data['store_id'])) {
+            $sql .= ' WHERE store_id = ?';
+            $conditions[] = $data['store_id'];
+        } else {
+            $sql .= ' WHERE store_id IS NOT NULL';
+        }
+
         if (isset($data['name'])) {
             $sql .= ' AND name LIKE ?';
-            $where[] = "%{$data['name']}%";
+            $conditions[] = "%{$data['name']}%";
         }
 
         if (isset($data['domain'])) {
-            $sql .= ' AND domain LIKE ?';
-            $where[] = "%{$data['domain']}%";
+            $sql .= ' AND domain = ?';
+            $conditions[] = $data['domain'];
         }
 
         if (isset($data['basepath'])) {
+            $sql .= ' AND basepath = ?';
+            $conditions[] = $data['basepath'];
+        }
+
+        if (isset($data['domain_like'])) {
+            $sql .= ' AND domain LIKE ?';
+            $conditions[] = "%{$data['domain_like']}%";
+        }
+
+        if (isset($data['basepath_like'])) {
             $sql .= ' AND basepath LIKE ?';
-            $where[] = "%{$data['basepath']}%";
+            $conditions[] = "%{$data['basepath_like']}%";
         }
 
         if (isset($data['status'])) {
             $sql .= ' AND status = ?';
-            $where[] = (int) $data['status'];
+            $conditions[] = (int) $data['status'];
         }
 
         $allowed_order = array('asc', 'desc');
-        $allowed_sort = array('name', 'domain', 'basepath', 'status', 'created', 'modified');
+        $allowed_sort = array('name', 'domain', 'basepath', 'status', 'created', 'modified', 'store_id');
 
         if (isset($data['sort'])//
                 && in_array($data['sort'], $allowed_sort)//
@@ -116,11 +179,11 @@ class Store
         }
 
         if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $where);
+            return (int) $this->db->fetchColumn($sql, $conditions);
         }
 
         $options = array('unserialize' => 'data', 'index' => 'store_id');
-        $stores = $this->db->fetchAll($sql, $where, $options);
+        $stores = $this->db->fetchAll($sql, $conditions, $options);
 
         $this->hook->attach('store.list', $stores, $this);
         return $stores;
@@ -140,73 +203,6 @@ class Store
         }
 
         return $this->get($domain);
-    }
-
-    /**
-     * Loads a store
-     * @param integer|string $store_id Either store ID or domain
-     * @return array
-     */
-    public function get($store_id)
-    {
-        if (!$this->db->isInitialized()) {
-            return array();
-        }
-
-        $result = &gplcart_static("store.get.$store_id");
-
-        if (isset($result)) {
-            return $result;
-        }
-
-        $this->hook->attach('store.get.before', $store_id, $result, $this);
-
-        if (isset($result)) {
-            return $result;
-        }
-
-        if (is_numeric($store_id)) {
-            $result = $this->getById($store_id);
-        } else {
-            $result = $this->getByDomain($store_id);
-        }
-
-        if (!empty($result)) {
-            $result['data'] += $this->defaultConfig();
-        }
-
-        $this->hook->attach('store.get.after', $store_id, $result, $this);
-        return $result;
-    }
-
-    /**
-     * Selects a store by a numeric ID
-     * @param integer $store_id
-     * @return array
-     */
-    protected function getById($store_id)
-    {
-        $sql = 'SELECT * FROM store WHERE store_id=?';
-        return $this->db->fetch($sql, array($store_id), array('unserialize' => 'data'));
-    }
-
-    /**
-     * Selects a store by a domain
-     * @param string $domain
-     * @return array
-     */
-    protected function getByDomain($domain)
-    {
-        $sql = 'SELECT * FROM store WHERE domain=?';
-        $conditions = array($domain);
-
-        if (strpos($domain, '/') !== false) {
-            $sql .= ' AND basepath=?';
-            $conditions = explode('/', $domain, 2);
-        }
-
-        $options = array('unserialize' => 'data');
-        return $this->db->fetch($sql, $conditions, $options);
     }
 
     /**
