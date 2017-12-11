@@ -9,10 +9,11 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Handler,
-    gplcart\core\Database,
-    gplcart\core\Hook;
-use gplcart\core\models\Collection as CollectionModel;
+use gplcart\core\Hook,
+    gplcart\core\Handler,
+    gplcart\core\Database;
+use gplcart\core\models\Language as LanguageModel,
+    gplcart\core\models\Collection as CollectionModel;
 
 /**
  * Manages basic behaviors and data related to collection items
@@ -33,6 +34,12 @@ class CollectionItem
     protected $hook;
 
     /**
+     * Language model class instance
+     * @var \gplcart\core\models\Language $language
+     */
+    protected $language;
+
+    /**
      * Collection model instance
      * @var \gplcart\core\models\Collection $collection
      */
@@ -41,12 +48,15 @@ class CollectionItem
     /**
      * @param Hook $hook
      * @param Database $db
+     * @param LanguageModel $language
      * @param CollectionModel $collection
      */
-    public function __construct(Hook $hook, Database $db, CollectionModel $collection)
+    public function __construct(Hook $hook, Database $db, LanguageModel $language,
+            CollectionModel $collection)
     {
         $this->db = $db;
         $this->hook = $hook;
+        $this->language = $language;
         $this->collection = $collection;
     }
 
@@ -64,16 +74,18 @@ class CollectionItem
         }
 
         $sql = 'SELECT ci.*, c.status AS collection_status, c.store_id,'
-                . 'c.type, c.title AS collection_title';
+                . 'c.type, COALESCE(NULLIF(ct.title, ""), c.title) AS collection_title';
 
         if (!empty($data['count'])) {
-            $sql = 'SELECT COUNT(collection_item_id)';
+            $sql = 'SELECT COUNT(ci.collection_item_id)';
         }
 
         $sql .= ' FROM collection_item ci'
-                . ' LEFT JOIN collection c ON(ci.collection_id=c.collection_id)';
+                . ' LEFT JOIN collection c ON(ci.collection_id=c.collection_id)'
+                . ' LEFT JOIN collection_translation ct ON(ct.collection_id = c.collection_id AND ct.language=?)';
 
-        $conditions = array();
+        $language = $this->language->getLangcode();
+        $conditions = array($language);
 
         if (isset($data['collection_item_id'])) {
             $sql .= ' WHERE ci.collection_item_id = ?';
@@ -114,17 +126,15 @@ class CollectionItem
             $sql .= " ORDER BY ci.weight DESC";
         }
 
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
-        }
-
         if (!empty($data['count'])) {
             return (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $options = array('index' => 'collection_item_id', 'unserialize' => 'data');
-        $list = $this->db->fetchAll($sql, $conditions, $options);
+        if (!empty($data['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        }
 
+        $list = $this->db->fetchAll($sql, $conditions, array('index' => 'collection_item_id', 'unserialize' => 'data'));
         $this->hook->attach('collection.item.list', $list, $this);
         return $list;
     }
@@ -230,9 +240,13 @@ class CollectionItem
         }
 
         $handlers = $this->collection->getHandlers();
-        $conditions[$handlers[$handler_id]['entity'] . '_id'] = array_keys($items);
 
-        $entities = $this->getListEntities($handler_id, $conditions);
+        $entity_conditions = array(
+            'status' => isset($conditions['status']) ? $conditions['status'] : null,
+            $handlers[$handler_id]['entity'] . '_id' => array_keys($items)
+        );
+
+        $entities = $this->getListEntities($handler_id, $entity_conditions);
 
         if (empty($entities)) {
             return array();

@@ -11,7 +11,8 @@ namespace gplcart\core\models;
 
 use gplcart\core\Hook,
     gplcart\core\Database;
-use gplcart\core\models\Translation as TranslationModel;
+use gplcart\core\models\Language as LanguageModel,
+    gplcart\core\models\Translation as TranslationModel;
 use gplcart\core\traits\Translation as TranslationTrait;
 
 /**
@@ -35,6 +36,12 @@ class Collection
     protected $hook;
 
     /**
+     * Language model class instance
+     * @var \gplcart\core\models\Language $language
+     */
+    protected $language;
+
+    /**
      * Translation model class instance
      * @var \gplcart\core\models\Translation $translation
      */
@@ -43,12 +50,15 @@ class Collection
     /**
      * @param Hook $hook
      * @param Database $db
+     * @param LanguageModel $language
      * @param TranslationModel $translation
      */
-    public function __construct(Hook $hook, Database $db, TranslationModel $translation)
+    public function __construct(Hook $hook, Database $db, LanguageModel $language,
+            TranslationModel $translation)
     {
         $this->db = $db;
         $this->hook = $hook;
+        $this->language = $language;
         $this->translation = $translation;
     }
 
@@ -59,34 +69,39 @@ class Collection
      */
     public function getList(array $data = array())
     {
-        $sql = 'SELECT *';
+        $sql = 'SELECT c.*, COALESCE(NULLIF(ct.title, ""), c.title) AS title';
 
         if (!empty($data['count'])) {
-            $sql = 'SELECT COUNT(collection_id)';
+            $sql = 'SELECT COUNT(c.collection_id)';
         }
 
-        $sql .= ' FROM collection WHERE collection_id > 0';
+        $sql .= ' FROM collection c'
+                . ' LEFT JOIN collection_translation ct ON(ct.collection_id = c.collection_id AND ct.language=?)'
+                . ' WHERE c.collection_id IS NOT NULL';
 
-        $where = array();
+        $language = $this->language->getLangcode();
+        $conditions = array($language);
+
+        if (isset($data['title'])) {
+            $sql .= ' AND (c.title LIKE ? OR (ct.title LIKE ? AND ct.language=?))';
+            $conditions[] = "%{$data['title']}%";
+            $conditions[] = "%{$data['title']}%";
+            $conditions[] = $language;
+        }
 
         if (isset($data['status'])) {
-            $sql .= ' AND status = ?';
-            $where[] = (int) $data['status'];
+            $sql .= ' AND c.status = ?';
+            $conditions[] = (int) $data['status'];
         }
 
         if (isset($data['store_id'])) {
-            $sql .= ' AND store_id = ?';
-            $where[] = (int) $data['store_id'];
+            $sql .= ' AND c.store_id = ?';
+            $conditions[] = (int) $data['store_id'];
         }
 
         if (isset($data['type'])) {
-            $sql .= ' AND type = ?';
-            $where[] = $data['type'];
-        }
-
-        if (isset($data['title'])) {
-            $sql .= ' AND title LIKE ?';
-            $where[] = "%{$data['title']}%";
+            $sql .= ' AND c.type = ?';
+            $conditions[] = $data['type'];
         }
 
         $allowed_order = array('asc', 'desc');
@@ -95,22 +110,20 @@ class Collection
         if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort))//
                 && (isset($data['order']) && in_array($data['order'], $allowed_order))
         ) {
-            $sql .= " ORDER BY {$data['sort']} {$data['order']}";
+            $sql .= " ORDER BY c.{$data['sort']} {$data['order']}";
+        }
+
+        if (!empty($data['count'])) {
+            return (int) $this->db->fetchColumn($sql, $conditions);
         }
 
         if (!empty($data['limit'])) {
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $where);
-        }
-
-        $options = array('index' => 'collection_id');
-        $collections = $this->db->fetchAll($sql, $where, $options);
-
-        $this->hook->attach('collection.list', $collections, $this);
-        return $collections;
+        $list = $this->db->fetchAll($sql, $conditions, array('index' => 'collection_id'));
+        $this->hook->attach('collection.list', $list, $this);
+        return $list;
     }
 
     /**

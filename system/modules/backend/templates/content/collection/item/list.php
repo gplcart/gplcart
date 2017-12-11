@@ -95,6 +95,9 @@
       </tbody>
     </table>
   </div>
+  <?php if(!empty($_pager)) { ?>
+  <?php echo $_pager; ?>
+  <?php } ?>
 </form>
 <?php } else { ?>
 <?php echo $this->text('There are no items yet'); ?>&nbsp;

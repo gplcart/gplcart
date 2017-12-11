@@ -32,6 +32,12 @@ class CollectionItem extends BackendController
     protected $collection_item;
 
     /**
+     * Pager limit
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * The current collection data
      * @var array
      */
@@ -66,11 +72,39 @@ class CollectionItem extends BackendController
 
         $this->setTitleListCollectionItem();
         $this->setBreadcrumbListCollectionItem();
+        $this->setFilterListCollectionItem();
+        $this->setPagerListCollectionItem();
 
         $this->setData('collection', $this->data_collection);
         $this->setData('items', $this->getListCollectionItem());
 
         $this->outputListCollectionItem();
+    }
+
+    /**
+     * Set pager
+     * @return array
+     */
+    protected function setPagerListCollectionItem()
+    {
+        $options = $this->query_filter;
+        $options['count'] = true;
+        $options['collection_id'] = $this->data_collection['collection_id'];
+
+        $pager = array(
+            'query' => $this->query_filter,
+            'total' => (int) $this->collection_item->getList($options)
+        );
+
+        return $this->data_limit = $this->setPager($pager);
+    }
+
+    /**
+     * Sets filter
+     */
+    protected function setFilterListCollectionItem()
+    {
+        $this->setFilter();
     }
 
     /**
@@ -153,10 +187,9 @@ class CollectionItem extends BackendController
      */
     protected function getListCollectionItem()
     {
-        $conditions = array(
-            'type' => $this->data_collection['type'],
-            'collection_id' => $this->data_collection['collection_id']
-        );
+        $conditions = $this->query_filter;
+        $conditions['limit'] = $this->data_limit;
+        $conditions['collection_id'] = $this->data_collection['collection_id'];
 
         return $this->collection_item->getItems($conditions);
     }
@@ -275,8 +308,7 @@ class CollectionItem extends BackendController
         $this->controlAccess('collection_item_add');
 
         if ($this->collection_item->add($this->getSubmitted())) {
-            $url = "admin/content/collection-item/{$this->data_collection['collection_id']}";
-            $this->redirect($url, $this->text('Collection item has been added'), 'success');
+            $this->redirect('', $this->text('Collection item has been added'), 'success');
         }
 
         $this->redirect('', $this->text('Collection item has not been added'), 'warning');

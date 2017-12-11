@@ -74,6 +74,23 @@ class Collection extends BackendController
     }
 
     /**
+     * Set pager
+     * @return array
+     */
+    protected function setPagerListCollection()
+    {
+        $options = $this->query_filter;
+        $options['count'] = true;
+
+        $pager = array(
+            'query' => $this->query_filter,
+            'total' => (int) $this->collection->getList($options)
+        );
+
+        return $this->data_limit = $this->setPager($pager);
+    }
+
+    /**
      * Applies an action to the selected collections
      */
     protected function actionListCollection()
@@ -101,23 +118,6 @@ class Collection extends BackendController
             $message = $this->text('Deleted %num item(s)', array('%num' => $deleted));
             $this->setMessage($message, 'success');
         }
-    }
-
-    /**
-     * Set pager
-     * @return array
-     */
-    protected function setPagerListCollection()
-    {
-        $options = $this->query_filter;
-        $options['count'] = true;
-
-        $pager = array(
-            'query' => $this->query_filter,
-            'total' => (int) $this->collection->getList($options)
-        );
-
-        return $this->data_limit = $this->setPager($pager);
     }
 
     /**
