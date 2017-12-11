@@ -70,6 +70,18 @@ class SocketClient
     protected $context;
 
     /**
+     * Destructor
+     */
+    public function __destruct()
+    {
+        if (is_resource($this->stream)) {
+            fclose($this->stream);
+        }
+
+        $this->stream = null;
+    }
+
+    /**
      * Returns the request data
      * @return mixed
      */
