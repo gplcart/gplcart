@@ -36,11 +36,11 @@ class Convertor
     protected $units = array();
 
     /**
-     * Returns an array of conversion rules
+     * Sets default units
      */
-    protected function getDefaultUnits()
+    protected function setDefaultUnits()
     {
-        return array(
+        $this->units = array(
             'm' => array('base' => 'm', 'conversion' => 1), //meter - base unit for distance
             'km' => array('base' => 'm', 'conversion' => 1000), //kilometer
             'dm' => array('base' => 'm', 'conversion' => 0.1), //decimeter
@@ -130,7 +130,7 @@ class Convertor
      */
     public function __construct()
     {
-        $this->units = $this->getDefaultUnits();
+        $this->setDefaultUnits();
     }
 
     /**
