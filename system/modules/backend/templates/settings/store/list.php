@@ -49,7 +49,9 @@
       <thead>
         <tr>
           <th><input type="checkbox" onchange="Gplcart.selectAll(this);"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
-          <th><?php echo $this->text('ID'); ?></th>
+          <th class="middle">
+            <a href="<?php echo $sort_store_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a>
+          </th>
           <th class="middle">
             <a href="<?php echo $sort_name; ?>"><?php echo $this->text('Name'); ?> <i class="fa fa-sort"></i></a>
           </th>
@@ -71,10 +73,10 @@
             <input class="form-control" maxlength="255" name="name" value="<?php echo $filter_name; ?>" placeholder="<?php echo $this->text('Any'); ?>">
           </th>
           <th class="middle">
-            <input class="form-control" maxlength="255" name="domain" value="<?php echo $filter_domain; ?>" placeholder="<?php echo $this->text('Any'); ?>">
+            <input class="form-control" maxlength="255" name="domain_like" value="<?php echo $filter_domain_like; ?>" placeholder="<?php echo $this->text('Any'); ?>">
           </th>
           <th class="middle">
-            <input class="form-control" maxlength="255" name="basepath" value="<?php echo $filter_basepath; ?>" placeholder="<?php echo $this->text('Any'); ?>">
+            <input class="form-control" maxlength="255" name="basepath_like" value="<?php echo $filter_basepath_like; ?>" placeholder="<?php echo $this->text('Any'); ?>">
           </th>
           <th class="text-center middle">
             <select class="form-control" name="status">

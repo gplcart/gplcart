@@ -8,7 +8,7 @@
  * To see available variables <?php print_r(get_defined_vars()); ?>
  */
 ?>
-<?php if (!empty($groups) || $_filtering) { ?>
+<?php if (!empty($category_groups) || $_filtering) { ?>
 <form>
   <?php if ($this->access('category_group_add')) { ?>
   <div class="btn-toolbar actions">
@@ -43,8 +43,9 @@
           <th>
             <select class="form-control" name="type">
               <option value=""><?php echo $this->text('Any'); ?></option>
-              <option value="catalog"<?php echo $filter_type === 'catalog' ? ' selected' : ''; ?>><?php echo $this->text('Catalog'); ?></option>
-              <option value="brand"<?php echo $filter_type === 'brand' ? ' selected' : ''; ?>><?php echo $this->text('Brand'); ?></option>
+              <?php foreach($category_group_types as $category_group_type_id => $category_group_type_name) { ?>
+              <option value="<?php echo $category_group_type_id; ?>"<?php echo $filter_type === $category_group_type_id ? ' selected' : ''; ?>><?php echo $this->e($category_group_type_name); ?></option>
+              <?php } ?>
             </select>
           </th>
           <th>
@@ -58,7 +59,7 @@
         </tr>
       </thead>
       <tbody>
-        <?php if (empty($groups) && $_filtering) { ?>
+        <?php if (empty($category_groups) && $_filtering) { ?>
         <tr>
           <td colspan="5">
             <?php echo $this->text('No results'); ?>
@@ -66,27 +67,32 @@
           </td>
         </tr>
         <?php } else { ?>
-        <?php foreach ($groups as $id => $group) { ?>
+        <?php foreach ($category_groups as $category_group_id => $category_group) { ?>
         <tr>
-          <td class="middle"><?php echo $id; ?></td>
-          <td class="middle"><?php echo $this->e($group['title']); ?></td>
+          <td class="middle"><?php echo $category_group_id; ?></td>
+          <td class="middle"><?php echo $this->e($category_group['title']); ?></td>
           <td class="middle">
-            <?php echo isset($_stores[$group['store_id']]) ? $this->e($_stores[$group['store_id']]['name']) : $this->text('Unknown'); ?>
+            <?php echo isset($_stores[$category_group['store_id']]) ? $this->e($_stores[$category_group['store_id']]['name']) : $this->text('Unknown'); ?>
           </td>
-          <td class="middle"><?php echo $this->text($group['type']); ?>
+          <td class="middle">
+            <?php if(empty($category_group_types[$category_group['type']])) { ?>
+            <?php echo $this->e($category_group['type']); ?>
+            <?php } else { ?>
+            <?php echo $this->e($category_group_types[$category_group['type']]); ?>
+            <?php } ?>
           </td>
           <td class="middle">
             <ul class="list-inline">
               <?php if ($this->access('category_group_edit')) { ?>
               <li>
-                <a href="<?php echo $this->url("admin/content/category-group/edit/$id"); ?>">
+                <a href="<?php echo $this->url("admin/content/category-group/edit/$category_group_id"); ?>">
                   <?php echo $this->lower($this->text('Edit')); ?>
                 </a>
               </li>
               <?php } ?>
               <?php if ($this->access('category')) { ?>
               <li>
-                <a href="<?php echo $this->url("admin/content/category/$id"); ?>">
+                <a href="<?php echo $this->url("admin/content/category/$category_group_id"); ?>">
                   <?php echo $this->lower($this->text('Categories')); ?>
                 </a>
               </li>

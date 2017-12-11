@@ -48,9 +48,8 @@
     </label>
     <div class="col-md-4">
       <select name="category_group[type]" class="form-control">
-        <option value=""><?php echo $this->text('None'); ?></option>
-        <?php foreach ($types as $type => $name) { ?>
-        <option value="<?php echo $type; ?>"<?php echo (isset($category_group['type']) && $category_group['type'] == $type) ? ' selected' : ''; ?>><?php echo $this->e($name); ?></option>
+        <?php foreach ($category_group_types as $type_id => $type_name) { ?>
+        <option value="<?php echo $type_id; ?>"<?php echo (isset($category_group['type']) && $category_group['type'] == $type_id) ? ' selected' : ''; ?>><?php echo $this->e($type_name); ?></option>
         <?php } ?>
       </select>
       <div class="help-block">

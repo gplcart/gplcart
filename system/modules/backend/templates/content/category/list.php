@@ -8,7 +8,7 @@
  * To see available variables <?php print_r(get_defined_vars()); ?>
  */
 ?>
-<?php if (!empty($categories)) { ?>
+<?php if (!empty($categories) || $_filtering) { ?>
 <form method="post">
   <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <?php if ($this->access('category_edit') || $this->access('category_delete') || $this->access('category_add')) { ?>
@@ -50,14 +50,49 @@
       <thead>
         <tr>
           <th><input type="checkbox" onchange="Gplcart.selectAll(this);"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
-          <th><?php echo $this->text('ID'); ?></th>
-          <th><?php echo $this->text('Title'); ?></th>
-          <th><?php echo $this->text('Enabled'); ?></th>
-          <th><?php echo $this->text('Weight'); ?></th>
+          <th><a href="<?php echo $sort_category_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a></th>
+          <th><a href="<?php echo $sort_title; ?>"><?php echo $this->text('Title'); ?> <i class="fa fa-sort"></i></a></th>
+          <th><a href="<?php echo $sort_title; ?>"><?php echo $this->text('Status'); ?> <i class="fa fa-sort"></i></a></th>
+          <th><a href="<?php echo $sort_title; ?>"><?php echo $this->text('Weight'); ?> <i class="fa fa-sort"></i></a></th>
           <th></th>
+        </tr>
+        <tr class="filters active">
+          <th></th>
+          <th></th>
+          <th class="middle">
+            <input class="form-control" maxlength="255" name="title" value="<?php echo $filter_title; ?>" placeholder="<?php echo $this->text('Any'); ?>">
+          </th>
+          <th class="text-center middle">
+            <select class="form-control" name="status">
+              <option value=""><?php echo $this->text('Any'); ?></option>
+              <option value="1"<?php echo $filter_status === '1' ? ' selected' : ''; ?>>
+                <?php echo $this->text('Enabled'); ?>
+              </option>
+              <option value="0"<?php echo $filter_status === '0' ? ' selected' : ''; ?>>
+                <?php echo $this->text('Disabled'); ?>
+              </option>
+            </select>
+          </th>
+          <th></th>
+          <th>
+            <a href="<?php echo $this->url($_path); ?>" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
+              <i class="fa fa-refresh"></i>
+            </a>
+            <button class="btn btn-default filter" title="<?php echo $this->text('Filter'); ?>">
+              <i class="fa fa-search"></i>
+            </button>
+          </th>
         </tr>
       </thead>
       <tbody>
+        <?php if ($_filtering && empty($categories)) { ?>
+        <tr>
+          <td class="middle" colspan="6">
+            <?php echo $this->text('No results'); ?>
+            <a href="<?php echo $this->url($_path); ?>" class="clear-filter"><?php echo $this->text('Reset'); ?></a>
+          </td>
+        </tr>
+        <?php } ?>
         <?php foreach ($categories as $category) { ?>
         <tr data-id="<?php echo $category['category_id']; ?>">
           <td class="middle"><input type="checkbox" class="select-all" name="action[items][]" value="<?php echo $category['category_id']; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>></td>
@@ -101,6 +136,9 @@
       </tbody>
     </table>
   </div>
+  <?php if (!empty($_pager)) { ?>
+  <?php echo $_pager; ?>
+  <?php } ?>
 </form>
 <?php } else { ?>
 <?php echo $this->text('There are no items yet'); ?>&nbsp;
