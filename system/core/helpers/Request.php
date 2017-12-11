@@ -22,6 +22,103 @@ class Request
     protected $langcode = '';
 
     /**
+     * $_SERVER environment information
+     * @var array
+     */
+    protected $server;
+
+    /**
+     * HTTP GET variables
+     * @var array
+     */
+    protected $get;
+
+    /**
+     * HTTP POST variables
+     * @var array
+     */
+    protected $post;
+
+    /**
+     * HTTP Cookies
+     * @var array
+     */
+    protected $cookie;
+
+    /**
+     * HTTP File Upload variables
+     * @var array
+     */
+    protected $files;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->setServerVars();
+        $this->setGetVars();
+        $this->setPostVars();
+        $this->setCookieVars();
+        $this->setFilesVars();
+    }
+
+    /**
+     * Sets $_SERVER variables
+     * @param null|array $data
+     * @return $this
+     */
+    public function setServerVars($data = null)
+    {
+        $this->server = isset($data) ? $data : $_SERVER;
+        return $this;
+    }
+
+    /**
+     * Sets $_GET variables
+     * @param null|array $data
+     * @return $this
+     */
+    public function setGetVars($data = null)
+    {
+        $this->get = isset($data) ? $data : $_GET;
+        return $this;
+    }
+
+    /**
+     * Sets $_POST variables
+     * @param null|array $data
+     * @return $this
+     */
+    public function setPostVars($data = null)
+    {
+        $this->post = isset($data) ? $data : $_POST;
+        return $this;
+    }
+
+    /**
+     * Sets $_COOKIE variables
+     * @param null|array $data
+     * @return $this
+     */
+    public function setCookieVars($data = null)
+    {
+        $this->cookie = isset($data) ? $data : $_COOKIE;
+        return $this;
+    }
+
+    /**
+     * Sets $_FILES variables
+     * @param null|array $data
+     * @return $this
+     */
+    public function setFilesVars($data = null)
+    {
+        $this->files = isset($data) ? $data : $_FILES;
+        return $this;
+    }
+
+    /**
      * Returns the current host
      * @return string
      */
@@ -36,9 +133,17 @@ class Request
      * @param mixed $default
      * @return mixed
      */
-    public function server($name, $default = '')
+    public function server($name = null, $default = '')
     {
-        return isset($_SERVER[$name]) ? filter_var(trim($_SERVER[$name]), FILTER_SANITIZE_STRING) : $default;
+        if (!isset($name)) {
+            return $this->server;
+        }
+
+        if (!isset($this->server[$name])) {
+            return $default;
+        }
+
+        return filter_var(trim($this->server[$name]), FILTER_SANITIZE_STRING);
     }
 
     /**
@@ -193,11 +298,7 @@ class Request
      */
     public function post($name = null, $default = null, $filter = true, $type = null)
     {
-        $post = $_POST;
-
-        if (empty($post)) {
-            $post = array();
-        }
+        $post = $this->post;
 
         if ($filter !== 'raw') {
             gplcart_array_trim($post, (bool) $filter);
@@ -211,7 +312,6 @@ class Request
         }
 
         gplcart_settype($return, $type, $default);
-
         return $return;
     }
 
@@ -224,12 +324,7 @@ class Request
      */
     public function get($name = null, $default = null, $type = null)
     {
-        $get = $_GET;
-
-        if (empty($get)) {
-            $get = array();
-        }
-
+        $get = $this->get;
         gplcart_array_trim($get, true);
 
         if (isset($name)) {
@@ -240,7 +335,6 @@ class Request
         }
 
         gplcart_settype($return, $type, $default);
-
         return $return;
     }
 
@@ -252,7 +346,7 @@ class Request
      */
     public function file($name = null, $default = null)
     {
-        $files = $_FILES;
+        $files = $this->files;
 
         if (isset($name)) {
             return !empty($files[$name]['name']) ? $files[$name] : $default;
@@ -270,12 +364,7 @@ class Request
      */
     public function cookie($name = null, $default = null, $type = null)
     {
-        $cookie = $_COOKIE;
-
-        if (empty($cookie)) {
-            $cookie = array();
-        }
-
+        $cookie = $this->cookie;
         gplcart_array_trim($cookie, true);
 
         if (isset($name)) {
@@ -285,7 +374,6 @@ class Request
         }
 
         gplcart_settype($return, $type, $default);
-
         return $return;
     }
 
@@ -316,138 +404,11 @@ class Request
             return false;
         }
 
-        foreach (array_keys($_COOKIE) as $key) {
+        foreach (array_keys($this->cookie) as $key) {
             $this->deleteCookie($key);
         }
 
         return true;
-    }
-
-    /**
-     * Performs an HTTP request
-     * @param string $url
-     * @param array $options
-     * @return array
-     * @throws \InvalidArgumentException
-     */
-    public function send($url, array $options = array())
-    {
-        $uri = parse_url($url);
-
-        $errno = $errstr = $socket = '';
-        $this->prepareSendData($socket, $options, $uri);
-
-        $fp = stream_socket_client($socket, $errno, $errstr, $options['timeout']);
-
-        if (!empty($errstr)) {
-            throw new \InvalidArgumentException($errstr);
-        }
-
-        $path = isset($uri['path']) ? $uri['path'] : '/';
-        if (isset($uri['query'])) {
-            $path .= "?{$uri['query']}";
-        }
-
-        $request = "{$options['method']} $path HTTP/1.0\r\n";
-        foreach ($options['headers'] as $name => $value) {
-            $request .= "$name: " . trim($value) . "\r\n";
-        }
-        $request .= "\r\n{$options['data']}";
-
-        fwrite($fp, $request);
-
-        $response = '';
-        while (!feof($fp)) {
-            $response .= fgets($fp, 1024);
-        }
-
-        fclose($fp);
-
-        return $this->prepareSendResponse($response);
-    }
-
-    /**
-     * Prepare an array of options for sending an HTTP request
-     * @param string $socket
-     * @param array $options
-     * @param mixed $uri
-     * @return string
-     * @throws \InvalidArgumentException
-     */
-    protected function prepareSendData(&$socket, array &$options, &$uri)
-    {
-        if (empty($uri['scheme'])) {
-            throw new \InvalidArgumentException('Missing URL scheme');
-        }
-
-        $options += array(
-            'headers' => array(),
-            'method' => 'GET',
-            'data' => null,
-            'timeout' => 30
-        );
-
-        $options['headers'] += array('User-Agent' => 'GPLCart');
-
-        settype($options['timeout'], 'float');
-
-        if ($uri['scheme'] === 'http') {
-            $port = isset($uri['port']) ? $uri['port'] : 80;
-            $socket = "tcp://{$uri['host']}:$port";
-            if (!isset($options['headers']['Host'])) {
-                $options['headers']['Host'] = $uri['host'] . ($port != 80 ? ':' . $port : '');
-            }
-        } else if ($uri['scheme'] === 'https') {
-            $port = isset($uri['port']) ? $uri['port'] : 443;
-            $socket = "ssl://{$uri['host']}:$port";
-            if (!isset($options['headers']['Host'])) {
-                $options['headers']['Host'] = $uri['host'] . ($port != 443 ? ':' . $port : '');
-            }
-        } else {
-            throw new \InvalidArgumentException("Invalid schema '{$uri['scheme']}'");
-        }
-
-        if (is_array($options['data'])) {
-            $options['data'] = http_build_query($options['data']);
-        }
-
-        $content_length = strlen($options['data']);
-        if ($content_length > 0 || $options['method'] === 'POST' || $options['method'] === 'PUT') {
-            $options['headers']['Content-Length'] = $content_length;
-        }
-
-        if (isset($uri['user'])) {
-            $options['headers']['Authorization'] = 'Basic ' . base64_encode($uri['user'] . (isset($uri['pass']) ? ':' . $uri['pass'] : ':'));
-        }
-
-        if (isset($options['query']) && !isset($uri['query'])) {
-            $uri['query'] = http_build_query($options['query']);
-        }
-
-        return $options;
-    }
-
-    /**
-     * Converts a response string to an array containing the response body and status data
-     * @param string $response
-     * @return array
-     */
-    protected function prepareSendResponse($response)
-    {
-        list($header, $data) = preg_split("/\r\n\r\n|\n\n|\r\r/", $response, 2);
-
-        $headers = preg_split("/\r\n|\n|\r/", $header);
-        $status = explode(' ', trim(reset($headers)), 3);
-
-        $result = array('status' => '');
-        $result['http'] = $status[0];
-        $result['code'] = $status[1];
-
-        if (isset($status[2])) {
-            $result['status'] = $status[2];
-        }
-
-        return array('data' => $data, 'status' => $result);
     }
 
 }
