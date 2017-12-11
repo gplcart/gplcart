@@ -39,6 +39,12 @@ class Category extends BackendController
     protected $category_group;
 
     /**
+     * Pager limits
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * The current category data
      * @var array
      */

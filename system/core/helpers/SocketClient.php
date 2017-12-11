@@ -17,7 +17,7 @@ class SocketClient
 
     /**
      * An array of parsed URL parameters
-     * @var array
+     * @var mixed
      */
     protected $uri;
 
