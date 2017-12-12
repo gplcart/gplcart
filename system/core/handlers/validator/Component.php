@@ -49,6 +49,12 @@ class Component extends BaseValidator
     protected $file;
 
     /**
+     * File transfer class instance
+     * @var \gplcart\core\models\FileTransfer $file_transfer
+     */
+    protected $file_transfer;
+
+    /**
      * Request helper class instance
      * @var \gplcart\core\helpers\Request $request
      */
@@ -67,6 +73,7 @@ class Component extends BaseValidator
         $this->store = Container::get('gplcart\\core\\models\\Store');
         $this->alias = Container::get('gplcart\\core\\models\\Alias');
         $this->request = Container::get('gplcart\\core\\helpers\\Request');
+        $this->file_transfer = Container::get('gplcart\\core\\models\\FileTransfer');
     }
 
     /**
@@ -321,7 +328,7 @@ class Component extends BaseValidator
         }
 
         $directory = $this->config->get("{$entity}_image_dirname", $entity);
-        $results = $this->file->uploadMultiple($files, 'image', "image/upload/$directory");
+        $results = $this->file_transfer->uploadMultiple($files, 'image', "image/upload/$directory");
 
         foreach ($results['transferred'] as $key => $path) {
             $this->setSubmitted("images.$key.path", $path);

@@ -304,7 +304,7 @@ class Store extends ComponentValidator
                 continue;
             }
 
-            $result = $this->file->upload($file, null, self::UPLOAD_PATH);
+            $result = $this->file_transfer->upload($file, null, self::UPLOAD_PATH);
 
             if ($result !== true) {
                 $error = true;
@@ -312,7 +312,7 @@ class Store extends ComponentValidator
                 continue;
             }
 
-            $uploaded = $this->file->getTransferred(true);
+            $uploaded = $this->file_transfer->getTransferred(true);
             $this->setSubmitted("data.$field", $uploaded);
         }
 

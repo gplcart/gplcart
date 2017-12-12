@@ -9,15 +9,12 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Config,
-    gplcart\core\Hook,
+use gplcart\core\Hook,
     gplcart\core\Database;
+use gplcart\core\helpers\Url as UrlHelper;
 use gplcart\core\models\Language as LanguageModel,
-    gplcart\core\models\Validator as ValidatorModel,
     gplcart\core\models\Translation as TranslationModel;
 use gplcart\core\traits\Translation as TranslationTrait;
-use gplcart\core\helpers\Url as UrlHelper,
-    gplcart\core\helpers\SocketClient as SocketClientHelper;
 
 /**
  * Manages basic behaviors and data related to files
@@ -40,22 +37,10 @@ class File
     protected $hook;
 
     /**
-     * Config class instance
-     * @var \gplcart\core\Config $config
-     */
-    protected $config;
-
-    /**
      * Language model instance
      * @var \gplcart\core\models\Language $language
      */
     protected $language;
-
-    /**
-     * Validator model instance
-     * @var \gplcart\core\models\Validator $validator
-     */
-    protected $validator;
 
     /**
      * Translation model instance
@@ -70,57 +55,20 @@ class File
     protected $url;
 
     /**
-     * Socket client class instance
-     * @var \gplcart\core\helpers\SocketClient $socket
-     */
-    protected $socket;
-
-    /**
-     * Transfer file destination
-     * @var string
-     */
-    protected $destination;
-
-    /**
-     * The current handler
-     * @var mixed
-     */
-    protected $handler;
-
-    /**
-     * Path of a transferred file
-     * @var string
-     */
-    private $transferred;
-
-    /**
-     * The last error
-     * @var string
-     */
-    protected $error;
-
-    /**
      * @param Hook $hook
      * @param Database $db
-     * @param Config $config
      * @param LanguageModel $language
-     * @param ValidatorModel $validator
      * @param TranslationModel $translation
      * @param UrlHelper $url
-     * @param SocketClientHelper $socket
      */
-    public function __construct(Hook $hook, Database $db, Config $config, LanguageModel $language,
-            ValidatorModel $validator, TranslationModel $translation, UrlHelper $url,
-            SocketClientHelper $socket)
+    public function __construct(Hook $hook, Database $db, LanguageModel $language,
+            TranslationModel $translation, UrlHelper $url)
     {
         $this->db = $db;
         $this->hook = $hook;
-        $this->config = $config;
 
         $this->url = $url;
-        $this->socket = $socket;
         $this->language = $language;
-        $this->validator = $validator;
         $this->translation = $translation;
     }
 
@@ -323,25 +271,6 @@ class File
     }
 
     /**
-     * Sets the current transfer handler
-     * @param mixed $id
-     *  - string: load by validator ID
-     *  - false: disable validator at all,
-     *  - null: detect validator by file extension
-     * @return \gplcart\core\models\File
-     */
-    public function setHandler($id)
-    {
-        if (is_string($id)) {
-            $this->handler = $this->getHandler($id);
-        } else {
-            $this->handler = $id;
-        }
-
-        return $this;
-    }
-
-    /**
      * Returns an array of files or counts them
      * @param array $data
      * @return array|integer
@@ -439,7 +368,6 @@ class File
         }
 
         $files = $this->db->fetchAll($sql, $conditions, array('index' => 'file_id'));
-
         $this->hook->attach('file.list', $files, $this);
         return $files;
     }
@@ -451,27 +379,6 @@ class File
     public function getEntities()
     {
         return $this->db->fetchColumnAll('SELECT entity FROM file GROUP BY entity');
-    }
-
-    /**
-     * Creates a relative path from a server path
-     * @param string $absolute
-     * @return string
-     */
-    public function path($absolute)
-    {
-        return gplcart_file_relative($absolute);
-    }
-
-    /**
-     * Creates a file URL from a path
-     * @param string $path
-     * @param bool $absolute
-     * @return string
-     */
-    public function url($path, $absolute = false)
-    {
-        return $this->url->get('files/' . trim($path, "/"), array(), $absolute, true);
     }
 
     /**
@@ -521,328 +428,24 @@ class File
     }
 
     /**
-     * Uploads a file
-     * @param array $post
-     * @param null|string|false $handler
-     * @param string|null $path
-     * @return mixed
-     */
-    public function upload($post, $handler, $path = null)
-    {
-        $this->error = null;
-        $this->transferred = null;
-
-        $result = null;
-        $this->hook->attach('file.upload.before', $post, $handler, $path, $result, $this);
-
-        if (isset($result)) {
-            return $result;
-        }
-
-        if (!empty($post['error']) || empty($post['tmp_name']) || !is_uploaded_file($post['tmp_name'])) {
-            return $this->error = $this->language->text('Unable to upload the file');
-        }
-
-        $this->setHandler($handler);
-        $this->setDestination($path);
-
-        if ($this->validate($post['tmp_name'], $post['name']) !== true) {
-            unlink($post['tmp_name']);
-            return $this->error;
-        }
-
-        if (!$this->finalizeTransfer($post['tmp_name'], $post['name'], true)) {
-            return $this->error;
-        }
-
-        $result = true;
-        $this->hook->attach('file.upload.after', $post, $handler, $path, $result, $this);
-        return $result;
-    }
-
-    /**
-     * Multiple file upload
-     * @param array $files
-     * @param null|string|false $handler
-     * @param string|null $path
-     * @return array
-     */
-    public function uploadMultiple($files, $handler, $path = null)
-    {
-        $return = array('transferred' => array(), 'errors' => array());
-
-        if (!gplcart_file_multi_upload($files)) {
-            return $return;
-        }
-
-        foreach ($files as $key => $file) {
-            $result = $this->upload($file, $handler, $path);
-            if ($result === true) {
-                $return['transferred'][$key] = $this->getTransferred(true);
-            } else {
-                $return['errors'][$key] = (string) $result;
-            }
-        }
-
-        return $return;
-    }
-
-    /**
-     * Downloads a file from a remote URL
-     * @param string $url
-     * @param null|false|string $handler
-     * @param string|null $path
-     * @return mixed
-     */
-    public function download($url, $handler, $path = null)
-    {
-        $this->error = null;
-        $this->transferred = null;
-
-        $result = null;
-        $this->hook->attach('file.download.before', $url, $handler, $path, $result, $this);
-
-        if (isset($result)) {
-            return $result;
-        }
-
-        $temp = $this->writeTempFile($url);
-
-        if (empty($temp)) {
-            return $this->error;
-        }
-
-        $this->setHandler($handler);
-        $this->setDestination($path);
-
-        if (!$this->validateHandler($temp)) {
-            unlink($temp);
-            return $this->error;
-        }
-
-        if (!$this->finalizeTransfer($temp, $this->destination, false)) {
-            return $this->error;
-        }
-
-        $result = true;
-        $this->hook->attach('file.download.after', $url, $handler, $temp, $result, $this);
-        return $result;
-    }
-
-    /**
-     * Writes a temporary file from a remote file
-     * @param string $url
-     * @return string|false
-     */
-    protected function writeTempFile($url)
-    {
-        try {
-            $response = $this->socket->request($url);
-        } catch (\Exception $ex) {
-            $this->error = $ex->getMessage();
-            return false;
-        }
-
-        $file = gplcart_file_tempname();
-        $fh = fopen($file, "w");
-        fwrite($fh, $response['data']);
-        fclose($fh);
-        return $file;
-    }
-
-    /**
-     * Finalize file transfer
-     * @param string $temp
-     * @param string $to
-     * @param bool $upload
-     * @return boolean
-     */
-    protected function finalizeTransfer($temp, $to, $upload)
-    {
-        if (!isset($this->destination)) {
-            $this->transferred = $temp;
-            return true;
-        }
-
-        $directory = gplcart_file_absolute($this->path($this->destination));
-        $pathinfo = $upload ? pathinfo($to) : pathinfo($directory);
-
-        if ($upload) {
-            $filename = $this->prepareFileName($pathinfo['filename'], $pathinfo['extension']);
-        } else {
-            $filename = $pathinfo['basename'];
-            $directory = $pathinfo['dirname'];
-        }
-
-        if (!file_exists($directory) && !mkdir($directory, 0775, true)) {
-            unlink($temp);
-            $this->error = $this->language->text('Unable to create @name', array('@name' => $directory));
-            return false;
-        }
-
-        $destination = "$directory/$filename";
-
-        if ($upload) {
-            $destination = gplcart_file_unique($destination);
-        }
-
-        if (!$this->moveTemp($temp, $destination)) {
-            return $this->error;
-        }
-
-        chmod($destination, 0644);
-        $this->transferred = $destination;
-        return true;
-    }
-
-    /**
-     * Move a temporary file to its final destination
-     * @param string $from
-     * @param string $to
-     * @return boolean
-     */
-    protected function moveTemp($from, $to)
-    {
-        $copied = copy($from, $to);
-        unlink($from);
-
-        if ($copied) {
-            return true;
-        }
-
-        $vars = array('@source' => $from, '@destination' => $to);
-        $this->error = $this->language->text('Unable to move @source to @destination', $vars);
-        return false;
-    }
-
-    /**
-     * Sanitize and transliterate a filename
-     * @param string $filename
-     * @param string $extension
+     * Creates a relative path from a server path
+     * @param string $absolute
      * @return string
      */
-    protected function prepareFileName($filename, $extension)
+    public function path($absolute)
     {
-        if ($this->config->get('file_upload_translit', 1)) {
-            $filename = $this->language->translit($filename, null);
-        }
-
-        $suffix = gplcart_string_random(6);
-        $clean = gplcart_file_sanitize($filename);
-
-        return "$clean-$suffix.$extension";
+        return gplcart_file_relative($absolute);
     }
 
     /**
-     * Validate a file
+     * Creates a file URL from a path
      * @param string $path
-     * @param null|string $filename
-     * @return boolean|string
-     */
-    public function validate($path, $filename = null)
-    {
-        $pathinfo = isset($filename) ? pathinfo($filename) : pathinfo($path);
-
-        if (empty($pathinfo['filename'])) {
-            return $this->error = $this->language->text('Unknown filename');
-        }
-
-        if (empty($pathinfo['extension'])) {
-            return $this->error = $this->language->text('Unknown file extension');
-        }
-
-        if ($this->handler === false) {
-            return true;
-        }
-
-        if (!isset($this->handler) && !$this->setHandlerByExtension($pathinfo['extension'])) {
-            return $this->error;
-        }
-
-        if (!$this->validateHandler($path, $pathinfo['extension'])) {
-            return $this->error;
-        }
-
-        return true;
-    }
-
-    /**
-     * Find and set handler by a file extension
-     * @param string $extension
-     * @return boolean
-     */
-    protected function setHandlerByExtension($extension)
-    {
-        if (in_array($extension, $this->supportedExtensions())) {
-            $this->handler = $this->getHandler(".$extension");
-            return true;
-        }
-
-        $this->error = $this->language->text('Unsupported file extension');
-        return false;
-    }
-
-    /**
-     * Validates a file using a validator
-     * @param string $file
-     * @param string|null $extension
-     * @return boolean
-     */
-    protected function validateHandler($file, $extension = null)
-    {
-        if (empty($this->handler['validator'])) {
-            $this->error = $this->language->text('Unknown handler');
-            return false;
-        }
-
-        if (!empty($this->handler['extensions']) && isset($extension) && !in_array($extension, $this->handler['extensions'])) {
-            $this->error = $this->language->text('Unsupported file extension');
-            return false;
-        }
-
-        if (isset($this->handler['filesize']) && filesize($file) > $this->handler['filesize']) {
-            $this->error = $this->language->text('File size exceeds %num bytes', array('%num' => $this->handler['filesize']));
-            return false;
-        }
-
-        $result = $this->validator->run($this->handler['validator'], $file, $this->handler);
-
-        if ($result === true) {
-            return true;
-        }
-
-        $this->error = $result;
-        return false;
-    }
-
-    /**
-     * Sets path to the file final destination
-     * @param string $path
-     * @return \gplcart\core\models\File
-     */
-    public function setDestination($path)
-    {
-        $this->destination = $path;
-        return $this;
-    }
-
-    /**
-     * Returns a path to the transferred file
-     * @param bool $relative
+     * @param bool $absolute
      * @return string
      */
-    public function getTransferred($relative = false)
+    public function url($path, $absolute = false)
     {
-        return $relative ? $this->path($this->transferred) : $this->transferred;
-    }
-
-    /**
-     * Returns the last error
-     * @return string
-     */
-    public function getError()
-    {
-        return $this->error;
+        return $this->url->get('files/' . trim($path, "/"), array(), $absolute, true);
     }
 
 }

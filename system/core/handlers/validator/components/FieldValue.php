@@ -184,14 +184,14 @@ class FieldValue extends ComponentValidator
             return true;
         }
 
-        $result = $this->file->upload($file, 'image', self::UPLOAD_PATH);
+        $result = $this->file_transfer->upload($file, 'image', self::UPLOAD_PATH);
 
         if ($result !== true) {
             $this->setError('file', (string) $result);
             return false;
         }
 
-        $uploaded = $this->file->getTransferred(true);
+        $uploaded = $this->file_transfer->getTransferred(true);
         $this->setSubmitted('path', $uploaded);
         return true;
     }
