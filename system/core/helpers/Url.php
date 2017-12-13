@@ -228,7 +228,7 @@ class Url
      * @param bool $absolute
      * @return string
      */
-    public function file($path, $absolute)
+    public function file($path, $absolute = false)
     {
         return $this->get('files/' . trim($path, '/'), array(), $absolute, true);
     }
