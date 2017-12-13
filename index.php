@@ -12,7 +12,6 @@ ini_set('display_startup_errors', 1);
 
 require 'system/bootstrap.php';
 
-/* @var $facade \gplcart\core\Facade */
-$facade = \gplcart\core\Container::get('gplcart\\core\\Facade');
-$facade->routeHttp();
+\gplcart\core\Container::get('gplcart\\core\\Facade')->routeHttp();
+
 
