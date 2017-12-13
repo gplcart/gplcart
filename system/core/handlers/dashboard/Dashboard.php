@@ -14,6 +14,7 @@ use gplcart\core\Handler,
 use gplcart\core\models\Cart as CartModel,
     gplcart\core\models\User as UserModel,
     gplcart\core\models\Order as OrderModel,
+    gplcart\core\models\OrderHistory as OrderHistoryModel,
     gplcart\core\models\Price as PriceModel,
     gplcart\core\models\Report as ReportModel,
     gplcart\core\models\Review as ReviewModel,
@@ -70,6 +71,12 @@ class Dashboard extends Handler
     protected $order;
 
     /**
+     * Order history model class instance
+     * @var \gplcart\core\models\OrderHistory $order_history
+     */
+    protected $order_history;
+
+    /**
      * Report model instance
      * @var \gplcart\core\models\Report $report
      */
@@ -107,6 +114,7 @@ class Dashboard extends Handler
      * @param LanguageModel $language
      * @param PriceModel $price
      * @param OrderModel $order
+     * @param OrderHistoryModel $order_history
      * @param ReportModel $report
      * @param ReviewModel $review
      * @param TransactionModel $transaction
@@ -114,8 +122,8 @@ class Dashboard extends Handler
      */
     public function __construct(Config $config, CartModel $cart, UserModel $user,
             ProductModel $product, LanguageModel $language, PriceModel $price, OrderModel $order,
-            ReportModel $report, ReviewModel $review, TransactionModel $transaction,
-            PriceRuleModel $pricerule)
+            OrderHistoryModel $order_history, ReportModel $report, ReviewModel $review,
+            TransactionModel $transaction, PriceRuleModel $pricerule)
     {
         $this->cart = $cart;
         $this->user = $user;
@@ -128,6 +136,7 @@ class Dashboard extends Handler
         $this->language = $language;
         $this->pricerule = $pricerule;
         $this->transaction = $transaction;
+        $this->order_history = $order_history;
     }
 
     /**
@@ -160,8 +169,8 @@ class Dashboard extends Handler
         $items = $this->order->getList($options);
 
         array_walk($items, function (&$item) {
-            $this->setItemOrderNew($item, $this->order);
             $this->setItemTotalFormatted($item, $this->price);
+            $this->setItemOrderNew($item, $this->order_history);
         });
 
         return $items;

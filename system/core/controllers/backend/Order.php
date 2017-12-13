@@ -10,6 +10,7 @@
 namespace gplcart\core\controllers\backend;
 
 use gplcart\core\models\Order as OrderModel,
+    gplcart\core\models\OrderHistory as OrderHistoryModel,
     gplcart\core\models\Price as PriceModel,
     gplcart\core\models\Address as AddressModel,
     gplcart\core\models\Payment as PaymentModel,
@@ -46,6 +47,12 @@ class Order extends BackendController
      * @var \gplcart\core\models\Order $order
      */
     protected $order;
+
+    /**
+     * Order history model instance
+     * @var \gplcart\core\models\OrderHistory $order_history
+     */
+    protected $order_history;
 
     /**
      * Price rule model instance
@@ -91,14 +98,16 @@ class Order extends BackendController
 
     /**
      * @param OrderModel $order
+     * @param OrderHistoryModel $order_history
      * @param AddressModel $address
      * @param PriceModel $price
      * @param PriceRuleModel $pricerule
      * @param PaymentModel $payment
      * @param ShippingModel $shipping
      */
-    public function __construct(OrderModel $order, AddressModel $address, PriceModel $price,
-            PriceRuleModel $pricerule, PaymentModel $payment, ShippingModel $shipping)
+    public function __construct(OrderModel $order, OrderHistoryModel $order_history,
+            AddressModel $address, PriceModel $price, PriceRuleModel $pricerule,
+            PaymentModel $payment, ShippingModel $shipping)
     {
         parent::__construct();
 
@@ -108,6 +117,7 @@ class Order extends BackendController
         $this->payment = $payment;
         $this->shipping = $shipping;
         $this->pricerule = $pricerule;
+        $this->order_history = $order_history;
     }
 
     /**
@@ -221,7 +231,7 @@ class Order extends BackendController
                 'text' => $this->text('Update order status to @status', array('@status' => $submitted['status']))
             );
 
-            $this->order->addLog($log);
+            $this->order_history->addLog($log);
         }
     }
 
@@ -297,7 +307,7 @@ class Order extends BackendController
             'order_id' => $this->data_order['order_id']
         );
 
-        return (int) $this->order->getLogList($conditions);
+        return (int) $this->order_history->getLogs($conditions);
     }
 
     /**
@@ -312,7 +322,7 @@ class Order extends BackendController
             'order_id' => $this->data_order['order_id']
         );
 
-        return (array) $this->order->getLogList($conditions);
+        return (array) $this->order_history->getLogs($conditions);
     }
 
     /**
@@ -365,7 +375,7 @@ class Order extends BackendController
                 $this->outputHttpStatus(404);
             }
 
-            $this->order->setViewed($order);
+            $this->order_history->setViewed($order);
             $this->data_order = $this->prepareOrder($order);
         }
     }
@@ -635,7 +645,7 @@ class Order extends BackendController
     protected function prepareListOrder(array $orders)
     {
         foreach ($orders as &$order) {
-            $this->setItemOrderNew($order, $this->order);
+            $this->setItemOrderNew($order, $this->order_history);
             $this->setItemTotalFormatted($order, $this->price);
         }
 

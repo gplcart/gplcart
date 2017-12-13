@@ -11,6 +11,8 @@ namespace gplcart\core\controllers\frontend;
 
 use gplcart\core\models\State as StateModel,
     gplcart\core\models\Order as OrderModel,
+    gplcart\core\models\OrderHistory as OrderHistoryModel,
+    gplcart\core\models\OrderDimension as OrderDimensionModel,
     gplcart\core\models\Address as AddressModel,
     gplcart\core\models\Country as CountryModel,
     gplcart\core\models\Payment as PaymentModel,
@@ -28,6 +30,18 @@ class Checkout extends FrontendController
      * @var \gplcart\core\models\Order $order
      */
     protected $order;
+
+    /**
+     * Order history model instance
+     * @var \gplcart\core\models\OrderHistory $order_history
+     */
+    protected $order_history;
+
+    /**
+     * Order dimension model instance
+     * @var \gplcart\core\models\OrderDimension $order_dimension
+     */
+    protected $order_dimension;
 
     /**
      * Address model instance
@@ -142,17 +156,20 @@ class Checkout extends FrontendController
      * @var integer
      */
     protected $order_store_id;
-
+    
     /**
      * @param CountryModel $country
      * @param StateModel $state
      * @param AddressModel $address
      * @param OrderModel $order
+     * @param OrderHistoryModel $order_history
+     * @param OrderDimensionModel $order_dimension
      * @param ShippingModel $shipping
      * @param PaymentModel $payment
      */
     public function __construct(CountryModel $country, StateModel $state, AddressModel $address,
-            OrderModel $order, ShippingModel $shipping, PaymentModel $payment)
+            OrderModel $order, OrderHistoryModel $order_history, OrderDimensionModel $order_dimension,
+            ShippingModel $shipping, PaymentModel $payment)
     {
         parent::__construct();
 
@@ -162,6 +179,8 @@ class Checkout extends FrontendController
         $this->country = $country;
         $this->payment = $payment;
         $this->shipping = $shipping;
+        $this->order_history = $order_history;
+        $this->order_dimension = $order_dimension;
 
         $this->admin_user_id = $this->uid;
         $this->order_user_id = $this->cart_uid;
@@ -517,8 +536,8 @@ class Checkout extends FrontendController
      */
     protected function setFormDataDimensionsCheckout()
     {
-        $this->data_form['order']['volume'] = $this->order->getVolume($this->data_form['order'], $this->data_form['cart']);
-        $this->data_form['order']['weight'] = $this->order->getWeight($this->data_form['order'], $this->data_form['cart']);
+        $this->data_form['order']['volume'] = $this->order_dimension->getTotalVolume($this->data_form['order'], $this->data_form['cart']);
+        $this->data_form['order']['weight'] = $this->order_dimension->getTotalWeight($this->data_form['order'], $this->data_form['cart']);
     }
 
     /**
@@ -950,7 +969,7 @@ class Checkout extends FrontendController
                 'text' => $this->text('Cloned into order #@num', array('@num' => $result['order']['order_id']))
             );
 
-            $this->order->addLog($log);
+            $this->order_history->addLog($log);
 
             $vars = array(
                 '@num' => $this->data_order['order_id'],
@@ -1027,10 +1046,11 @@ class Checkout extends FrontendController
 
             if (empty($component['rule'])) {
                 $components[$type]['name'] = $component_types[$type];
-            } else {
-                $components[$type]['rule'] = $component['rule'];
-                $components[$type]['name'] = $component['rule']['name'];
+                continue;
             }
+
+            $components[$type]['rule'] = $component['rule'];
+            $components[$type]['name'] = $component['rule']['name'];
         }
 
         return $components;
@@ -1064,7 +1084,7 @@ class Checkout extends FrontendController
      */
     public function completeCheckout($order_id)
     {
-        $order = $this->setOrderCheckout($order_id);
+        $this->setOrderCheckout($order_id);
         $this->controlAccessCompleteCheckout();
 
         $this->setTitleCompleteCheckout();
@@ -1073,7 +1093,7 @@ class Checkout extends FrontendController
         $this->setData('complete_templates', $this->getTemplatesCheckout('complete', $this->data_order));
         $this->setData('complete_message', $this->getCompleteMessageCheckout());
 
-        $this->hook->attach('order.complete.page', $order, $this->order, $this);
+        $this->hook->attach('order.complete.page', $this->data_order, $this->order, $this);
 
         $this->outputCompleteCheckout();
     }

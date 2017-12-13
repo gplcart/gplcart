@@ -10,16 +10,13 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Config,
-    gplcart\core\Hook,
-    gplcart\core\Database;
+    gplcart\core\Hook;
 use gplcart\core\models\Mail as MailModel,
     gplcart\core\models\Cart as CartModel,
     gplcart\core\models\User as UserModel,
     gplcart\core\models\Price as PriceModel,
     gplcart\core\models\Language as LanguageModel,
-    gplcart\core\models\PriceRule as PriceRuleModel,
-    gplcart\core\models\History as HistoryModel;
-use gplcart\core\helpers\Convertor as ConvertorHelper;
+    gplcart\core\models\PriceRule as PriceRuleModel;
 
 /**
  * Manages basic behaviors and data related to store orders
@@ -52,12 +49,6 @@ class Order
     protected $user;
 
     /**
-     * History model instance
-     * @var \gplcart\core\models\History $history
-     */
-    protected $history;
-
-    /**
      * Price rule model instance
      * @var \gplcart\core\models\PriceRule $pricerule
      */
@@ -88,14 +79,7 @@ class Order
     protected $price;
 
     /**
-     * Convertor class instance
-     * @var \gplcart\core\helpers\Convertor $convertor
-     */
-    protected $convertor;
-
-    /**
      * @param Hook $hook
-     * @param Database $db
      * @param Config $config
      * @param UserModel $user
      * @param PriceModel $price
@@ -103,25 +87,21 @@ class Order
      * @param CartModel $cart
      * @param LanguageModel $language
      * @param MailModel $mail
-     * @param HistoryModel $history
-     * @param ConvertorHelper $convertor
      */
-    public function __construct(Hook $hook, Database $db, Config $config, UserModel $user,
-            PriceModel $price, PriceRuleModel $pricerule, CartModel $cart, LanguageModel $language,
-            MailModel $mail, HistoryModel $history, ConvertorHelper $convertor)
+    public function __construct(Hook $hook, Config $config, UserModel $user, PriceModel $price,
+            PriceRuleModel $pricerule, CartModel $cart, LanguageModel $language, MailModel $mail)
     {
-        $this->db = $db;
+
         $this->hook = $hook;
         $this->config = $config;
+        $this->db = $this->config->getDb();
 
         $this->mail = $mail;
         $this->user = $user;
         $this->cart = $cart;
         $this->price = $price;
-        $this->history = $history;
         $this->language = $language;
         $this->price_rule = $pricerule;
-        $this->convertor = $convertor;
     }
 
     /**
@@ -178,52 +158,52 @@ class Order
                 . ' LEFT JOIN history h ON(h.user_id=? AND h.entity=? AND h.entity_id=o.order_id)'
                 . ' WHERE o.order_id IS NOT NULL';
 
-        $where = array($this->user->getId(), 'order');
+        $conditions = array($this->user->getId(), 'order');
 
         if (isset($data['store_id'])) {
             $sql .= ' AND o.store_id = ?';
-            $where[] = (int) $data['store_id'];
+            $conditions[] = (int) $data['store_id'];
         }
 
         if (isset($data['total'])) {
             $sql .= ' AND o.total = ?';
-            $where[] = (int) $data['total'];
+            $conditions[] = (int) $data['total'];
         }
 
         if (isset($data['currency'])) {
             $sql .= ' AND o.currency = ?';
-            $where[] = $data['currency'];
+            $conditions[] = $data['currency'];
         }
 
         if (isset($data['user_id'])) {
             $sql .= ' AND o.user_id = ?';
-            $where[] = $data['user_id'];
+            $conditions[] = $data['user_id'];
         }
 
         if (isset($data['status'])) {
             $sql .= ' AND o.status = ?';
-            $where[] = $data['status'];
+            $conditions[] = $data['status'];
         }
 
         if (isset($data['creator'])) {
             $sql .= ' AND u.email LIKE ?';
-            $where[] = "%{$data['creator']}%";
+            $conditions[] = "%{$data['creator']}%";
         }
 
         if (isset($data['shipping_prefix'])) {
             $sql .= ' AND o.shipping LIKE ?';
-            $where[] = "{$data['shipping_prefix']}%";
+            $conditions[] = "{$data['shipping_prefix']}%";
         }
 
         if (isset($data['customer'])) {
             $sql .= ' AND (uc.email LIKE ? OR uc.name LIKE ?)';
-            $where[] = "%{$data['customer']}%";
-            $where[] = "%{$data['customer']}%";
+            $conditions[] = "%{$data['customer']}%";
+            $conditions[] = "%{$data['customer']}%";
         }
 
         if (isset($data['tracking_number'])) {
             $sql .= ' AND o.tracking_number LIKE ?';
-            $where[] = "%{$data['tracking_number']}%";
+            $conditions[] = "%{$data['tracking_number']}%";
         }
 
         $allowed_order = array('asc', 'desc');
@@ -252,11 +232,11 @@ class Order
         }
 
         if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $where);
+            return (int) $this->db->fetchColumn($sql, $conditions);
         }
 
         $options = array('unserialize' => 'data', 'index' => 'order_id');
-        $orders = $this->db->fetchAll($sql, $where, $options);
+        $orders = $this->db->fetchAll($sql, $conditions, $options);
 
         $this->hook->attach('order.list', $orders, $this);
         return $orders;
@@ -282,9 +262,7 @@ class Order
                 . ' WHERE o.order_id=?';
 
         $result = $this->db->fetch($sql, array($order_id), array('unserialize' => 'data'));
-
         $this->setCart($result);
-
         $this->hook->attach('order.get.after', $order_id, $result, $this);
         return $result;
     }
@@ -379,26 +357,6 @@ class Order
 
         $this->hook->attach('order.delete.after', $order_id, $result, $this);
         return (bool) $result;
-    }
-
-    /**
-     * Mark the order is viewed by the current user
-     * @param array $order
-     * @return boolean
-     */
-    public function setViewed(array $order)
-    {
-        return $this->history->set('order', $order['order_id'], $order['created']);
-    }
-
-    /**
-     * Whether the order has not been viewed by the current user
-     * @param array $order
-     * @return boolean
-     */
-    public function isNew(array $order)
-    {
-        return $this->history->isNew($order['created'], $order['viewed']);
     }
 
     /**
@@ -534,11 +492,13 @@ class Order
     protected function setPriceRules(array $order)
     {
         foreach (array_keys($order['data']['components']) as $component_id) {
-            if (is_numeric($component_id)) {
-                $rule = $this->price_rule->get($component_id);
-                if (!empty($rule['code'])) {
-                    $this->price_rule->setUsed($rule['price_rule_id']);
-                }
+            if (!is_numeric($component_id)) {
+                continue;
+            }
+
+            $rule = $this->price_rule->get($component_id);
+            if (!empty($rule['code'])) {
+                $this->price_rule->setUsed($rule['price_rule_id']);
             }
         }
     }
@@ -710,68 +670,6 @@ class Order
     }
 
     /**
-     * Adds an order log record to the database
-     * @param array $log
-     * @return integer
-     */
-    public function addLog(array $log)
-    {
-        $log += array(
-            'data' => array(),
-            'created' => GC_TIME
-        );
-
-        return $this->db->insert('order_log', $log);
-    }
-
-    /**
-     * Returns an array of log records
-     * @param array $data
-     * @return array|int
-     */
-    public function getLogList(array $data)
-    {
-        $sql = 'SELECT ol.*, u.name AS user_name, u.email AS user_email, u.status AS user_status';
-
-        if (!empty($data['count'])) {
-            $sql = 'SELECT COUNT(ol.order_log_id)';
-        }
-
-        $sql .= ' FROM order_log ol'
-                . ' LEFT JOIN user u ON(ol.user_id=u.user_id)'
-                . ' WHERE ol.order_id=?';
-
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, array($data['order_id']));
-        }
-
-        $sql .= ' ORDER BY ol.created DESC';
-
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
-        }
-
-        $params = array('index' => 'order_log_id', 'unserialize' => 'data');
-
-        return $this->db->fetchAll($sql, array($data['order_id']), $params);
-    }
-
-    /**
-     * Returns an order log record
-     * @param integer $order_log_id
-     * @return array
-     */
-    public function getLog($order_log_id)
-    {
-        $sql = 'SELECT ol.*, u.name AS user_name, u.email AS user_email, u.status AS user_status'
-                . ' FROM order_log ol'
-                . ' LEFT JOIN user u ON(ol.user_id=u.user_id)'
-                . ' WHERE ol.order_log_id=?';
-
-        return $this->db->fetch($sql, array($order_log_id), array('unserialize' => 'data'));
-    }
-
-    /**
      * Calculates order totals
      * @param array $data
      * @return array
@@ -896,76 +794,6 @@ class Order
                 $order['data']['components']['cart']['items'][$sku]['price'] = $item['total'];
             }
         }
-    }
-
-    /**
-     * Returns a total volume of all products in the order
-     * @param array $order
-     * @param array $cart
-     * @param integer $decimals
-     * @return float
-     */
-    public function getVolume(array $order, array $cart, $decimals = 2)
-    {
-        $total = 0;
-        foreach ($cart['items'] as $item) {
-
-            $product = $item['product'];
-            if (empty($product['width']) || empty($product['height']) || empty($product['length'])) {
-                return (float) 0;
-            }
-
-            $volume = $product['width'] * $product['height'] * $product['length'];
-            if (empty($product['size_unit']) || $product['size_unit'] == $order['size_unit']) {
-                $total += (float) ($volume * $item['quantity']);
-                continue;
-            }
-
-            $order_cubic = $order['size_unit'] . '2';
-            $product_cubic = $product['size_unit'] . '2';
-            $converted = $this->convertor->convert($volume, $product_cubic, $order_cubic, $decimals);
-
-            if (empty($converted)) {
-                return (float) 0;
-            }
-
-            $total += (float) ($converted * $item['quantity']);
-        }
-
-        return round($total, $decimals);
-    }
-
-    /**
-     * Returns a total weight of all products in the order
-     * @param array $order
-     * @param array $cart
-     * @param integer $decimals
-     * @return float
-     */
-    public function getWeight(array $order, array $cart, $decimals = 2)
-    {
-        $total = 0;
-        foreach ($cart['items'] as $item) {
-
-            if (empty($item['product']['weight'])) {
-                return (float) 0;
-            }
-
-            $product = $item['product'];
-            if (empty($product['weight_unit']) || $product['weight_unit'] == $order['weight_unit']) {
-                $total += (float) ($product['weight'] * $item['quantity']);
-                continue;
-            }
-
-            $converted = $this->convertor->convert($product['weight'], $product['weight_unit'], $order['weight_unit'], $decimals);
-            if (empty($converted)) {
-                return (float) 0;
-            }
-
-            $total += (float) ($converted * $item['quantity']);
-        }
-
-        return round($total, $decimals);
     }
 
 }

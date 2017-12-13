@@ -74,11 +74,11 @@ trait ItemOrder
     /**
      * Adds "is_new" key
      * @param array $item
-     * @param \gplcart\core\models\Order $order_model
+     * @param \gplcart\core\models\OrderHistory $order_history_model
      */
-    public function setItemOrderNew(&$item, $order_model)
+    public function setItemOrderNew(&$item, $order_history_model)
     {
-        $item['is_new'] = $order_model->isNew($item);
+        $item['is_new'] = $order_history_model->isNew($item);
     }
 
     /**
