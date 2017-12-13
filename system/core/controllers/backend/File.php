@@ -154,7 +154,7 @@ class File extends BackendController
             $path = strval(str_replace("\0", "", $file['path']));
             $file['url'] = '';
             if ($path && file_exists(GC_DIR_FILE . '/' . $path)) {
-                $file['url'] = $this->file->url($file['path']);
+                $file['url'] = $this->url->file($file['path']);
             }
         }
 

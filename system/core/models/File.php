@@ -10,8 +10,7 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Hook,
-    gplcart\core\Database;
-use gplcart\core\helpers\Url as UrlHelper;
+    gplcart\core\Config;
 use gplcart\core\models\Language as LanguageModel,
     gplcart\core\models\Translation as TranslationModel;
 use gplcart\core\traits\Translation as TranslationTrait;
@@ -49,25 +48,17 @@ class File
     protected $translation;
 
     /**
-     * URL class instance
-     * @var \gplcart\core\helpers\Url $url
-     */
-    protected $url;
-
-    /**
      * @param Hook $hook
-     * @param Database $db
+     * @param Config $config
      * @param LanguageModel $language
      * @param TranslationModel $translation
-     * @param UrlHelper $url
      */
-    public function __construct(Hook $hook, Database $db, LanguageModel $language,
-            TranslationModel $translation, UrlHelper $url)
+    public function __construct(Hook $hook, Config $config, LanguageModel $language,
+            TranslationModel $translation)
     {
-        $this->db = $db;
         $this->hook = $hook;
+        $this->db = $config->getDb();
 
-        $this->url = $url;
         $this->language = $language;
         $this->translation = $translation;
     }
@@ -435,17 +426,6 @@ class File
     public function path($absolute)
     {
         return gplcart_file_relative($absolute);
-    }
-
-    /**
-     * Creates a file URL from a path
-     * @param string $path
-     * @param bool $absolute
-     * @return string
-     */
-    public function url($path, $absolute = false)
-    {
-        return $this->url->get('files/' . trim($path, "/"), array(), $absolute, true);
     }
 
 }

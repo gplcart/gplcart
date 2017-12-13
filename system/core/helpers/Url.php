@@ -222,4 +222,15 @@ class Url
         return false;
     }
 
+    /**
+     * Creates a file URL from a path
+     * @param string $path
+     * @param bool $absolute
+     * @return string
+     */
+    public function file($path, $absolute)
+    {
+        return $this->get('files/' . trim($path, '/'), array(), $absolute, true);
+    }
+
 }
