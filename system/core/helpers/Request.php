@@ -22,12 +22,6 @@ class Request
     protected $langcode = '';
 
     /**
-     * $_SERVER environment information
-     * @var array
-     */
-    protected $server;
-
-    /**
      * HTTP GET variables
      * @var array
      */
@@ -56,22 +50,10 @@ class Request
      */
     public function __construct()
     {
-        $this->setServerVars();
         $this->setGetVars();
         $this->setPostVars();
         $this->setCookieVars();
         $this->setFilesVars();
-    }
-
-    /**
-     * Sets $_SERVER variables
-     * @param null|array $data
-     * @return $this
-     */
-    public function setServerVars($data = null)
-    {
-        $this->server = isset($data) ? $data : $_SERVER;
-        return $this;
     }
 
     /**
@@ -119,34 +101,6 @@ class Request
     }
 
     /**
-     * Returns the current host
-     * @return string
-     */
-    public function host()
-    {
-        return $this->server('HTTP_HOST');
-    }
-
-    /**
-     * Returns a data from $_SERVER variable
-     * @param string $name
-     * @param mixed $default
-     * @return mixed
-     */
-    public function server($name = null, $default = '')
-    {
-        if (!isset($name)) {
-            return $this->server;
-        }
-
-        if (!isset($this->server[$name])) {
-            return $default;
-        }
-
-        return filter_var(trim($this->server[$name]), FILTER_SANITIZE_STRING);
-    }
-
-    /**
      * Returns the current base path
      * @param boolean $exclude_langcode
      * @return string
@@ -187,105 +141,6 @@ class Request
     public function getLangcode()
     {
         return $this->langcode;
-    }
-
-    /**
-     * Returns the current URN, i.e path with query
-     * @return string
-     */
-    public function urn()
-    {
-        return $this->server('REQUEST_URI', '');
-    }
-
-    /**
-     * Returns the request method
-     * @return string
-     */
-    public function method()
-    {
-        return strtoupper($this->server('REQUEST_METHOD', 'GET'));
-    }
-
-    /**
-     * Returns an address of the page which referred the user agent to the current page
-     * @return string
-     */
-    public function referrer()
-    {
-        return $this->server('HTTP_REFERER');
-    }
-
-    /**
-     * Returns IP from which the user is viewing the current page
-     * @return string IP address
-     */
-    public function ip()
-    {
-        return $this->server('REMOTE_ADDR');
-    }
-
-    /**
-     * Whether the current request is AJAX
-     * @return bool
-     */
-    public function isAjax()
-    {
-        return strtolower($this->server('HTTP_X_REQUESTED_WITH')) === 'xmlhttprequest';
-    }
-
-    /**
-     * Returns the current HTTP scheme
-     * @return string HTTP scheme
-     */
-    public function scheme()
-    {
-        return $this->isSecure() ? 'https://' : 'http://';
-    }
-
-    /**
-     * Whether the current connection is secure
-     * @return bool
-     */
-    public function isSecure()
-    {
-        return $this->server('HTTPS', 'off') !== 'off';
-    }
-
-    /**
-     * Returns the current user agent
-     * @return string
-     */
-    public function agent()
-    {
-        return $this->server('HTTP_USER_AGENT');
-    }
-
-    /**
-     * Returns a content type of the request
-     * @return string
-     */
-    public function type()
-    {
-        return $this->server('CONTENT_TYPE');
-    }
-
-    /**
-     * Returns a content length of the request
-     * @return integer
-     */
-    public function length()
-    {
-        return $this->server('CONTENT_LENGTH', 0);
-    }
-
-    /**
-     * Returns a language of the request
-     * @return string
-     */
-    public function language()
-    {
-        return substr($this->server('HTTP_ACCEPT_LANGUAGE'), 0, 2);
     }
 
     /**

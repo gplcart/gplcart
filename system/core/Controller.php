@@ -274,6 +274,12 @@ abstract class Controller
     protected $request;
 
     /**
+     * Server class instance
+     * @var \gplcart\core\helpers\Server $server
+     */
+    protected $server;
+
+    /**
      * Response class instance
      * @var \gplcart\core\helpers\Response $response
      */
@@ -424,6 +430,7 @@ abstract class Controller
         $this->url = $this->getInstance('gplcart\\core\\helpers\\Url');
         $this->asset = $this->getInstance('gplcart\\core\\helpers\\Asset');
         $this->pager = $this->getInstance('gplcart\\core\\helpers\\Pager');
+        $this->server = $this->getInstance('gplcart\\core\\helpers\\Server');
         $this->session = $this->getInstance('gplcart\\core\\helpers\\Session');
         $this->request = $this->getInstance('gplcart\\core\\helpers\\Request');
         $this->response = $this->getInstance('gplcart\\core\\helpers\\Response');
@@ -438,11 +445,11 @@ abstract class Controller
         $this->path = $this->url->path();
         $this->is_backend = $this->url->isBackend();
         $this->is_install = $this->url->isInstall();
-        $this->urn = $this->request->urn();
         $this->base = $this->request->base();
-        $this->host = $this->request->host();
-        $this->scheme = $this->request->scheme();
-        $this->is_ajax = $this->request->isAjax();
+        $this->urn = $this->server->requestUri();
+        $this->host = $this->server->httpHost();
+        $this->scheme = $this->server->httpScheme();
+        $this->is_ajax = $this->server->isAjaxRequest();
         $this->uri = $this->scheme . $this->host . $this->urn;
         $this->query = (array) $this->request->get(null, array(), 'array');
     }
@@ -689,7 +696,7 @@ abstract class Controller
      */
     public function getIp()
     {
-        return $this->request->ip();
+        return $this->server->remoteAddr();
     }
 
     /**
@@ -1052,7 +1059,7 @@ abstract class Controller
             return isset($value);
         }
 
-        return $this->request->method() === 'POST';
+        return $this->server->requestMethod() === 'POST';
     }
 
     /**

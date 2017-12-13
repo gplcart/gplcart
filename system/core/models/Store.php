@@ -9,10 +9,10 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Config,
-    gplcart\core\Hook,
-    gplcart\core\Database;
-use gplcart\core\helpers\Request as RequestHelper;
+use gplcart\core\Hook,
+    gplcart\core\Config;
+use gplcart\core\helpers\Server as ServerHelper,
+    gplcart\core\helpers\Request as RequestHelper;
 
 /**
  * Manages basic behaviors and data related to stores
@@ -45,17 +45,25 @@ class Store
     protected $request;
 
     /**
+     * Server class instance
+     * @var \gplcart\core\helpers\Server $server
+     */
+    protected $server;
+
+    /**
      * @param Hook $hook
-     * @param Database $db
      * @param Config $config
+     * @param ServerHelper $server
      * @param RequestHelper $request
      */
-    public function __construct(Hook $hook, Database $db, Config $config, RequestHelper $request)
+    public function __construct(Hook $hook, Config $config, ServerHelper $server,
+            RequestHelper $request)
     {
-        $this->db = $db;
         $this->hook = $hook;
         $this->config = $config;
+        $this->server = $server;
         $this->request = $request;
+        $this->db = $this->config->getDb();
     }
 
     /**
@@ -195,7 +203,7 @@ class Store
      */
     public function getCurrent()
     {
-        $domain = $this->request->host();
+        $domain = $this->server->httpHost();
         $basepath = trim($this->request->base(true), '/');
 
         if ($basepath !== '') {
@@ -415,7 +423,7 @@ class Store
      */
     public function url($store)
     {
-        $scheme = $this->request->scheme();
+        $scheme = $this->server->httpScheme();
         return rtrim("$scheme{$store['domain']}/{$store['basepath']}", '/');
     }
 

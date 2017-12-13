@@ -174,7 +174,7 @@ class Install extends BaseController
     protected function validateEditInstall()
     {
         $this->setSubmitted('settings');
-        $this->setSubmitted('store.host', $this->request->host());
+        $this->setSubmitted('store.host', $this->server->httpHost());
         $this->setSubmitted('store.language', $this->install_language);
         $this->setSubmitted('store.basepath', trim($this->request->base(true), '/'));
 

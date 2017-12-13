@@ -9,7 +9,8 @@
 
 namespace gplcart\core;
 
-use gplcart\core\helpers\Cli as CliHelper;
+use gplcart\core\helpers\Cli as CliHelper,
+    gplcart\core\helpers\Server as ServerHelper;
 
 /**
  * Routes CLI commands
@@ -30,6 +31,12 @@ class CliRoute
     protected $cli;
 
     /**
+     * Server class instance
+     * @var \gplcart\core\helpers\Server $server
+     */
+    protected $server;
+
+    /**
      * The current CLI route data
      * @var array
      */
@@ -42,13 +49,15 @@ class CliRoute
     protected $arguments = array();
 
     /**
-     * @param CliHelper $cli
      * @param Hook $hook
+     * @param CliHelper $cli
+     * @param ServerHelper $server
      */
-    public function __construct(CliHelper $cli, Hook $hook)
+    public function __construct(Hook $hook, CliHelper $cli, ServerHelper $server)
     {
         $this->cli = $cli;
         $this->hook = $hook;
+        $this->server = $server;
 
         $this->setArguments();
 
@@ -82,8 +91,8 @@ class CliRoute
     {
         if (isset($arguments)) {
             $this->arguments = (array) $arguments;
-        } else if (isset($_SERVER['argv'])) {
-            $this->arguments = $this->cli->parseArguments($_SERVER['argv']);
+        } else {
+            $this->arguments = $this->cli->parseArguments($this->server->cliArgs());
         }
 
         return $this->arguments;

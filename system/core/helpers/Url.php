@@ -16,16 +16,24 @@ class Url
 {
 
     /**
+     * Server class instance
+     * @var \gplcart\core\helpers\Server $server
+     */
+    protected $server;
+
+    /**
      * Request class instance
      * @var \gplcart\core\helpers\Request $request
      */
     protected $request;
 
     /**
+     * @param Server $server
      * @param Request $request
      */
-    public function __construct(Request $request)
+    public function __construct(Server $server, Request $request)
     {
+        $this->server = $server;
         $this->request = $request;
     }
 
@@ -78,12 +86,12 @@ class Url
                 $url = $this->request->base($nolangcode) . trim($path, '/');
             }
         } else {
-            $url = $this->request->urn();
+            $url = $this->server->requestUri();
         }
 
         $url = strtok($url, '?');
         if ($absolute && !$pass_absolute) {
-            $url = $this->request->scheme() . $this->request->host() . $url;
+            $url = $this->server->httpScheme() . $this->server->httpHost() . $url;
         }
 
         return empty($options) ? $url : "$url?" . http_build_query($options);
@@ -132,7 +140,7 @@ class Url
      */
     public function path($append_langcode = false)
     {
-        $urn = $this->request->urn();
+        $urn = $this->server->requestUri();
         return substr(strtok($urn, '?'), strlen($this->request->base($append_langcode)));
     }
 

@@ -993,8 +993,8 @@ class Checkout extends FrontendController
         $submitted['cart'] = $this->data_cart;
 
         $submitted['data']['user'] = array(
-            'ip' => $this->request->ip(),
-            'agent' => $this->request->agent()
+            'ip' => $this->server->remoteAddr(),
+            'agent' => $this->server->userAgent()
         );
 
         if (empty($this->admin)) {

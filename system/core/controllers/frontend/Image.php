@@ -122,7 +122,7 @@ class Image extends FrontendController
      */
     protected function setUrlPathImage()
     {
-        $parts = explode('files/image/cache/', urldecode(strtok($this->request->urn(), '?')));
+        $parts = explode('files/image/cache/', urldecode(strtok($this->server->requestUri(), '?')));
 
         if (empty($parts[1])) {
             $this->response->outputError404(false);
