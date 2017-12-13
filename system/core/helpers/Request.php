@@ -16,31 +16,13 @@ class Request
 {
 
     /**
-     * HTTP GET variables
+     * An array containing the request data
      * @var array
      */
-    protected $get;
+    protected $request;
 
     /**
-     * HTTP POST variables
-     * @var array
-     */
-    protected $post;
-
-    /**
-     * HTTP Cookies
-     * @var array
-     */
-    protected $cookie;
-
-    /**
-     * HTTP File Upload variables
-     * @var array
-     */
-    protected $files;
-
-    /**
-     * Language code from URL
+     * A language code from the URL
      * @var string
      */
     protected $langcode = '';
@@ -50,53 +32,29 @@ class Request
      */
     public function __construct()
     {
-        $this->setGet();
-        $this->setPost();
-        $this->setCookies();
-        $this->setFiles();
+        $this->set();
     }
 
     /**
-     * Sets $_GET variables
-     * @param null|array $data
+     * Sets  a request parameter
+     * @param null|string $type
+     * @param null|string $key
+     * @param mixed $value
      * @return $this
      */
-    public function setGet($data = null)
+    public function set($type = null, $key = null, $value = null)
     {
-        $this->get = isset($data) ? $data : $_GET;
-        return $this;
-    }
+        if (isset($type)) {
+            $this->request[$type]["$key"] = $value;
+        } else {
+            $this->request = array(
+                'get' => $_GET,
+                'post' => $_POST,
+                'files' => $_FILES,
+                'cookie' => $_COOKIE
+            );
+        }
 
-    /**
-     * Sets $_POST variables
-     * @param null|array $data
-     * @return $this
-     */
-    public function setPost($data = null)
-    {
-        $this->post = isset($data) ? $data : $_POST;
-        return $this;
-    }
-
-    /**
-     * Sets $_COOKIE variables
-     * @param null|array $data
-     * @return $this
-     */
-    public function setCookies($data = null)
-    {
-        $this->cookie = isset($data) ? $data : $_COOKIE;
-        return $this;
-    }
-
-    /**
-     * Sets $_FILES variables
-     * @param null|array $data
-     * @return $this
-     */
-    public function setFiles($data = null)
-    {
-        $this->files = isset($data) ? $data : $_FILES;
         return $this;
     }
 
@@ -137,15 +95,6 @@ class Request
     }
 
     /**
-     * Returns a language suffix from the URL
-     * @return string
-     */
-    public function getLangcode()
-    {
-        return $this->langcode;
-    }
-
-    /**
      * Returns a data from POST request
      * @param string|array $name
      * @param mixed $default
@@ -155,7 +104,7 @@ class Request
      */
     public function post($name = null, $default = null, $filter = true, $type = null)
     {
-        $post = $this->post;
+        $post = $this->request['post'];
 
         if ($filter !== 'raw') {
             gplcart_array_trim($post, (bool) $filter);
@@ -181,7 +130,7 @@ class Request
      */
     public function get($name = null, $default = null, $type = null)
     {
-        $get = $this->get;
+        $get = $this->request['get'];
         gplcart_array_trim($get, true);
 
         if (isset($name)) {
@@ -203,7 +152,7 @@ class Request
      */
     public function file($name = null, $default = null)
     {
-        $files = $this->files;
+        $files = $this->request['files'];
 
         if (isset($name)) {
             return !empty($files[$name]['name']) ? $files[$name] : $default;
@@ -221,7 +170,7 @@ class Request
      */
     public function cookie($name = null, $default = null, $type = null)
     {
-        $cookie = $this->cookie;
+        $cookie = $this->request['cookie'];
         gplcart_array_trim($cookie, true);
 
         if (isset($name)) {
@@ -254,18 +203,36 @@ class Request
     public function deleteCookie($name = null)
     {
         if (isset($name)) {
-            if (isset($_COOKIE[$name])) {
-                unset($_COOKIE[$name]);
+            if (isset($this->request['cookie'][$name])) {
+                unset($this->request['cookie'][$name]);
                 return setcookie($name, '', GC_TIME - 3600, '/');
             }
             return false;
         }
 
-        foreach (array_keys($this->cookie) as $key) {
+        foreach (array_keys($this->request['cookie']) as $key) {
             $this->deleteCookie($key);
         }
 
         return true;
+    }
+
+    /**
+     * Returns a language suffix from the URL
+     * @return string
+     */
+    public function getLangcode()
+    {
+        return $this->langcode;
+    }
+
+    /**
+     * Returns an array of the current request data
+     * @return array
+     */
+    public function getRequest()
+    {
+        return $this->request;
     }
 
 }
