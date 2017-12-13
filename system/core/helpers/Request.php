@@ -16,12 +16,6 @@ class Request
 {
 
     /**
-     * Language code from URL
-     * @var string
-     */
-    protected $langcode = '';
-
-    /**
      * HTTP GET variables
      * @var array
      */
@@ -46,14 +40,20 @@ class Request
     protected $files;
 
     /**
+     * Language code from URL
+     * @var string
+     */
+    protected $langcode = '';
+
+    /**
      * Constructor
      */
     public function __construct()
     {
-        $this->setGetVars();
-        $this->setPostVars();
-        $this->setCookieVars();
-        $this->setFilesVars();
+        $this->setGet();
+        $this->setPost();
+        $this->setCookies();
+        $this->setFiles();
     }
 
     /**
@@ -61,7 +61,7 @@ class Request
      * @param null|array $data
      * @return $this
      */
-    public function setGetVars($data = null)
+    public function setGet($data = null)
     {
         $this->get = isset($data) ? $data : $_GET;
         return $this;
@@ -72,7 +72,7 @@ class Request
      * @param null|array $data
      * @return $this
      */
-    public function setPostVars($data = null)
+    public function setPost($data = null)
     {
         $this->post = isset($data) ? $data : $_POST;
         return $this;
@@ -83,7 +83,7 @@ class Request
      * @param null|array $data
      * @return $this
      */
-    public function setCookieVars($data = null)
+    public function setCookies($data = null)
     {
         $this->cookie = isset($data) ? $data : $_COOKIE;
         return $this;
@@ -94,9 +94,20 @@ class Request
      * @param null|array $data
      * @return $this
      */
-    public function setFilesVars($data = null)
+    public function setFiles($data = null)
     {
         $this->files = isset($data) ? $data : $_FILES;
+        return $this;
+    }
+
+    /**
+     * Sets a language code
+     * @param string $langcode
+     * @return $this
+     */
+    public function setLangcode($langcode)
+    {
+        $this->langcode = $langcode;
         return $this;
     }
 
@@ -123,15 +134,6 @@ class Request
         }
 
         return $base;
-    }
-
-    /**
-     * Sets a language code
-     * @param string $langcode
-     */
-    public function setLangcode($langcode)
-    {
-        $this->langcode = $langcode;
     }
 
     /**
