@@ -91,7 +91,6 @@ class Order
     public function __construct(Hook $hook, Config $config, UserModel $user, PriceModel $price,
             PriceRuleModel $pricerule, CartModel $cart, LanguageModel $language, MailModel $mail)
     {
-
         $this->hook = $hook;
         $this->config = $config;
         $this->db = $this->config->getDb();
@@ -105,32 +104,109 @@ class Order
     }
 
     /**
-     * Returns an array of order statuses
-     * @return array
+     * Adds an order
+     * @param array $order
+     * @return integer
      */
-    public function getStatuses()
+    public function add(array $order)
     {
-        $statuses = &gplcart_static('order.statuses');
+        $result = null;
+        $this->hook->attach('order.add.before', $order, $result, $this);
 
-        if (isset($statuses)) {
-            return $statuses;
+        if (isset($result)) {
+            return (int) $result;
         }
 
-        $statuses = $this->getDefaultStatuses();
-        $this->hook->attach('order.statuses', $statuses, $this);
+        // In case we're cloning the order
+        unset($order['order_id']);
 
-        return $statuses;
+        $order['created'] = $order['modified'] = GC_TIME;
+
+        $order += array(
+            'status' => $this->getDefaultStatus());
+
+        $result = $this->db->insert('orders', $order);
+        $this->hook->attach('order.add.after', $order, $result, $this);
+        return (int) $result;
     }
 
     /**
-     * Returns a status name
-     * @param string $id
-     * @return string
+     * Loads an order from the database
+     * @param integer $order_id
+     * @return array
      */
-    public function getStatusName($id)
+    public function get($order_id)
     {
-        $statuses = $this->getStatuses();
-        return isset($statuses[$id]) ? $statuses[$id] : '';
+        $result = null;
+        $this->hook->attach('order.get.before', $order_id, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
+        $sql = 'SELECT o.*, u.name AS user_name, u.email AS user_email'
+                . ' FROM orders o'
+                . ' LEFT JOIN user u ON(o.user_id=u.user_id)'
+                . ' WHERE o.order_id=?';
+
+        $result = $this->db->fetch($sql, array($order_id), array('unserialize' => 'data'));
+        $this->setCart($result);
+        $this->hook->attach('order.get.after', $order_id, $result, $this);
+        return $result;
+    }
+
+    /**
+     * Updates an order
+     * @param integer $order_id
+     * @param array $data
+     * @return boolean
+     */
+    public function update($order_id, array $data)
+    {
+        $result = null;
+        $this->hook->attach('order.update.before', $order_id, $data, $result, $this);
+
+        if (isset($result)) {
+            return (bool) $result;
+        }
+
+        $data['modified'] = GC_TIME;
+
+        $this->prepareComponents($data);
+
+        $result = (bool) $this->db->update('orders', $data, array('order_id' => $order_id));
+        $this->hook->attach('order.update.after', $order_id, $data, $result, $this);
+
+        return (bool) $result;
+    }
+
+    /**
+     * Deletes an order
+     * @param integer $order_id
+     * @return boolean
+     */
+    public function delete($order_id)
+    {
+        $result = null;
+        $this->hook->attach('order.delete.before', $order_id, $result, $this);
+
+        if (isset($result)) {
+            return (bool) $result;
+        }
+
+        $conditions = array('order_id' => $order_id);
+        $conditions2 = array('entity' => 'order', 'entity_id' => $order_id);
+
+        $result = (bool) $this->db->delete('orders', $conditions);
+
+        if ($result) {
+            $this->db->delete('cart', $conditions);
+            $this->db->delete('order_log', $conditions);
+            $this->db->delete('history', $conditions2);
+        }
+
+        $this->hook->attach('order.delete.after', $order_id, $result, $this);
+        return (bool) $result;
     }
 
     /**
@@ -243,28 +319,32 @@ class Order
     }
 
     /**
-     * Loads an order from the database
-     * @param integer $order_id
+     * Returns an array of order statuses
      * @return array
      */
-    public function get($order_id)
+    public function getStatuses()
     {
-        $result = null;
-        $this->hook->attach('order.get.before', $order_id, $result, $this);
+        $statuses = &gplcart_static('order.statuses');
 
-        if (isset($result)) {
-            return $result;
+        if (isset($statuses)) {
+            return $statuses;
         }
 
-        $sql = 'SELECT o.*, u.name AS user_name, u.email AS user_email'
-                . ' FROM orders o'
-                . ' LEFT JOIN user u ON(o.user_id=u.user_id)'
-                . ' WHERE o.order_id=?';
+        $statuses = $this->getDefaultStatuses();
+        $this->hook->attach('order.statuses', $statuses, $this);
 
-        $result = $this->db->fetch($sql, array($order_id), array('unserialize' => 'data'));
-        $this->setCart($result);
-        $this->hook->attach('order.get.after', $order_id, $result, $this);
-        return $result;
+        return $statuses;
+    }
+
+    /**
+     * Returns a status name
+     * @param string $id
+     * @return string
+     */
+    public function getStatusName($id)
+    {
+        $statuses = $this->getStatuses();
+        return isset($statuses[$id]) ? $statuses[$id] : '';
     }
 
     /**
@@ -303,60 +383,6 @@ class Order
     {
         $types = $this->getComponentTypes();
         return empty($types[$name]) ? '' : $types[$name];
-    }
-
-    /**
-     * Updates an order
-     * @param integer $order_id
-     * @param array $data
-     * @return boolean
-     */
-    public function update($order_id, array $data)
-    {
-        $result = null;
-        $this->hook->attach('order.update.before', $order_id, $data, $result, $this);
-
-        if (isset($result)) {
-            return (bool) $result;
-        }
-
-        $data['modified'] = GC_TIME;
-
-        $this->prepareComponents($data);
-
-        $result = (bool) $this->db->update('orders', $data, array('order_id' => $order_id));
-        $this->hook->attach('order.update.after', $order_id, $data, $result, $this);
-
-        return (bool) $result;
-    }
-
-    /**
-     * Deletes an order
-     * @param integer $order_id
-     * @return boolean
-     */
-    public function delete($order_id)
-    {
-        $result = null;
-        $this->hook->attach('order.delete.before', $order_id, $result, $this);
-
-        if (isset($result)) {
-            return (bool) $result;
-        }
-
-        $conditions = array('order_id' => $order_id);
-        $conditions2 = array('entity' => 'order', 'entity_id' => $order_id);
-
-        $result = (bool) $this->db->delete('orders', $conditions);
-
-        if ($result) {
-            $this->db->delete('cart', $conditions);
-            $this->db->delete('order_log', $conditions);
-            $this->db->delete('history', $conditions2);
-        }
-
-        $this->hook->attach('order.delete.after', $order_id, $result, $this);
-        return (bool) $result;
     }
 
     /**
@@ -511,7 +537,6 @@ class Order
     public function setNotificationCreatedByCustomer(array $order)
     {
         $this->mail->set('order_created_admin', array($order));
-
         if (is_numeric($order['user_id']) && !empty($order['user_email'])) {
             return $this->mail->set('order_created_customer', array($order));
         }
@@ -640,33 +665,6 @@ class Order
         );
 
         return $this->language->text($message, $variables);
-    }
-
-    /**
-     * Adds an order
-     * @param array $order
-     * @return integer
-     */
-    public function add(array $order)
-    {
-        $result = null;
-        $this->hook->attach('order.add.before', $order, $result, $this);
-
-        if (isset($result)) {
-            return (int) $result;
-        }
-
-        // In case we're cloning the order
-        unset($order['order_id']);
-
-        $order['created'] = $order['modified'] = GC_TIME;
-
-        $order += array(
-            'status' => $this->getDefaultStatus());
-
-        $result = $this->db->insert('orders', $order);
-        $this->hook->attach('order.add.after', $order, $result, $this);
-        return (int) $result;
     }
 
     /**
