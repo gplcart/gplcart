@@ -9,10 +9,9 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Config,
-    gplcart\core\Hook,
-    gplcart\core\Database;
-use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\Hook,
+    gplcart\core\Config;
+use gplcart\core\models\Translation as TranslationModel;
 
 /**
  * Manages basic behaviors and data related to product SKU
@@ -39,23 +38,22 @@ class Sku
     protected $config;
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
+     * Translation UI model instance
+     * @var \gplcart\core\models\Translation $translation
      */
-    protected $language;
+    protected $translation;
 
     /**
      * @param Hook $hook
-     * @param Database $db
      * @param Config $config
-     * @param LanguageModel $language
+     * @param Translation $translation
      */
-    public function __construct(Hook $hook, Database $db, Config $config, LanguageModel $language)
+    public function __construct(Hook $hook, Config $config, TranslationModel $translation)
     {
-        $this->db = $db;
         $this->hook = $hook;
         $this->config = $config;
-        $this->language = $language;
+        $this->db = $this->config->getDb();
+        $this->translation = $translation;
     }
 
     /**
@@ -298,7 +296,7 @@ class Sku
             'sku' => $product['sku'],
             'price' => $product['price'],
             'currency' => $product['currency'],
-            'message' => $access ? '' : $this->language->text('Out of stock')
+            'message' => $access ? '' : $this->translation->text('Out of stock')
         );
 
         if (empty($field_value_ids)) {
@@ -308,7 +306,7 @@ class Sku
 
         if (empty($product['status'])) {
             $result['severity'] = 'danger';
-            $result['message'] = $this->language->text('Unavailable');
+            $result['message'] = $this->translation->text('Unavailable');
 
             $this->hook->attach('sku.select.combination.after', $product, $field_value_ids, $result, $this);
             return (array) $result;
@@ -322,7 +320,7 @@ class Sku
             $result['cart_access'] = false;
 
             $result['severity'] = 'danger';
-            $result['message'] = $this->language->text('Unavailable');
+            $result['message'] = $this->translation->text('Unavailable');
             $result['related'] = $this->getRelatedFieldValues($product, $field_value_ids);
 
             $this->hook->attach('sku.select.combination.after', $product, $field_value_ids, $result, $this);
@@ -338,7 +336,7 @@ class Sku
         if (empty($result['combination']['stock']) && $product['subtract']) {
             $result['cart_access'] = false;
             $result['severity'] = 'warning';
-            $result['message'] = $this->language->text('Out of stock');
+            $result['message'] = $this->translation->text('Out of stock');
         }
 
         $this->hook->attach('sku.select.combination.after', $product, $field_value_ids, $result, $this);

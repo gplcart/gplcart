@@ -125,7 +125,7 @@ class Order extends ComponentValidator
         $data = $this->order->get($id);
 
         if (empty($data)) {
-            $this->setErrorUnavailable('update', $this->language->text('Order'));
+            $this->setErrorUnavailable('update', $this->translation->text('Order'));
             return false;
         }
 
@@ -140,7 +140,7 @@ class Order extends ComponentValidator
     protected function validatePaymentOrder()
     {
         $field = 'payment';
-        $label = $this->language->text('Payment');
+        $label = $this->translation->text('Payment');
         $module_id = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($module_id)) {
@@ -168,7 +168,7 @@ class Order extends ComponentValidator
     protected function validateShippingOrder()
     {
         $field = 'shipping';
-        $label = $this->language->text('Shipping');
+        $label = $this->translation->text('Shipping');
         $module_id = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($module_id)) {
@@ -196,7 +196,7 @@ class Order extends ComponentValidator
     protected function validateStatusOrder()
     {
         $field = 'status';
-        $label = $this->language->text('Status');
+        $label = $this->translation->text('Status');
         $status = $this->getSubmitted($field);
 
         if (!isset($status)) {
@@ -219,7 +219,7 @@ class Order extends ComponentValidator
     protected function validateShippingAddressOrder()
     {
         $field = 'shipping_address';
-        $label = $this->language->text('Shipping address');
+        $label = $this->translation->text('Shipping address');
         $address_id = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($address_id)) {
@@ -252,7 +252,7 @@ class Order extends ComponentValidator
     protected function validatePaymentAddressOrder()
     {
         $field = 'payment_address';
-        $label = $this->language->text('Payment address');
+        $label = $this->translation->text('Payment address');
         $address_id = $this->getSubmitted($field);
 
         if (empty($address_id) && !$this->isError('shipping_address')) {
@@ -287,7 +287,7 @@ class Order extends ComponentValidator
     protected function validateCreatorOrder()
     {
         $field = 'creator';
-        $label = $this->language->text('Creator');
+        $label = $this->translation->text('Creator');
         $creator = $this->getSubmitted($field);
 
         if (empty($creator)) {
@@ -315,7 +315,7 @@ class Order extends ComponentValidator
     protected function validateTotalOrder()
     {
         $field = 'total';
-        $label = $this->language->text('Total');
+        $label = $this->translation->text('Total');
         $total = $this->getSubmitted($field);
 
         if (!isset($total)) {
@@ -340,7 +340,7 @@ class Order extends ComponentValidator
      */
     protected function validateComponentPricesOrder()
     {
-        $label = $this->language->text('Price');
+        $label = $this->translation->text('Price');
         $components = $this->getSubmitted('data.components');
 
         if (empty($components)) {
@@ -378,7 +378,7 @@ class Order extends ComponentValidator
         $currency = $this->currency->get($code);
 
         if (empty($currency)) {
-            $this->setErrorUnavailable($field, $this->language->text('Currency'));
+            $this->setErrorUnavailable($field, $this->translation->text('Currency'));
             return false;
         }
         return true;
@@ -393,7 +393,7 @@ class Order extends ComponentValidator
         $field = 'comment';
         $comment = $this->getSubmitted($field);
         if (isset($comment) && mb_strlen($comment) > 65535) {
-            $this->setErrorLengthRange($field, $this->language->text('Comment'), 0, 65535);
+            $this->setErrorLengthRange($field, $this->translation->text('Comment'), 0, 65535);
             return false;
         }
         return true;
@@ -406,7 +406,7 @@ class Order extends ComponentValidator
     protected function validateTransactionOrder()
     {
         $field = 'transaction_id';
-        $label = $this->language->text('Transaction');
+        $label = $this->translation->text('Transaction');
         $transaction_id = $this->getSubmitted($field);
 
         if (!isset($transaction_id)) {
@@ -434,7 +434,7 @@ class Order extends ComponentValidator
     protected function validateLogOrder()
     {
         if (mb_strlen($this->getSubmitted('log')) > 255) {
-            $this->setErrorLengthRange('log', $this->language->text('Log'), 0, 255);
+            $this->setErrorLengthRange('log', $this->translation->text('Log'), 0, 255);
             return false;
         }
         return true;

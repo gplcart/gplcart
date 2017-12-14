@@ -67,7 +67,7 @@ class ProductClass extends ComponentValidator
         $data = $this->product_class->get($id);
 
         if (empty($data)) {
-            $this->setErrorUnavailable('update', $this->language->text('Product class'));
+            $this->setErrorUnavailable('update', $this->translation->text('Product class'));
             return false;
         }
 

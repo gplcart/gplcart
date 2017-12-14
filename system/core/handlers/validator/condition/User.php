@@ -9,18 +9,18 @@
 
 namespace gplcart\core\handlers\validator\condition;
 
-use gplcart\core\models\User as UserModel;
-use gplcart\core\models\UserRole as UserRoleModel;
-use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\models\User as UserModel,
+    gplcart\core\models\UserRole as UserRoleModel,
+    gplcart\core\models\Translation as TranslationModel;
 
 class User
 {
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
+     * Translation UI model instance
+     * @var \gplcart\core\models\Translation $translation
      */
-    protected $language;
+    protected $translation;
 
     /**
      * User role model instance
@@ -35,15 +35,15 @@ class User
     protected $user;
 
     /**
-     * @param UserRoleModel $role
-     * @param LanguageModel $language
      * @param UserModel $user
+     * @param UserRoleModel $role
+     * @param TranslationModel $translation
      */
-    public function __construct(UserRoleModel $role, LanguageModel $language, UserModel $user)
+    public function __construct(UserModel $user, UserRoleModel $role, TranslationModel $translation)
     {
         $this->user = $user;
         $this->role = $role;
-        $this->language = $language;
+        $this->translation = $translation;
     }
 
     /**
@@ -57,8 +57,8 @@ class User
         $ids = array_filter($values, 'ctype_digit');
 
         if ($count != count($ids)) {
-            $vars = array('@field' => $this->language->text('Condition'));
-            return $this->language->text('@field has invalid value', $vars);
+            $vars = array('@field' => $this->translation->text('Condition'));
+            return $this->translation->text('@field has invalid value', $vars);
         }
 
         $existing = array_filter($values, function ($user_id) {
@@ -70,8 +70,8 @@ class User
         });
 
         if ($count != count($existing)) {
-            $vars = array('@name' => $this->language->text('User'));
-            return $this->language->text('@name is unavailable', $vars);
+            $vars = array('@name' => $this->translation->text('User'));
+            return $this->translation->text('@name is unavailable', $vars);
         }
 
         return true;
@@ -88,8 +88,8 @@ class User
         $ids = array_filter($values, 'ctype_digit');
 
         if ($count != count($ids)) {
-            $vars = array('@field' => $this->language->text('Condition'));
-            return $this->language->text('@field has invalid value', $vars);
+            $vars = array('@field' => $this->translation->text('Condition'));
+            return $this->translation->text('@field has invalid value', $vars);
         }
 
         $exists = array_filter($values, function ($role_id) {
@@ -101,8 +101,8 @@ class User
         });
 
         if ($count != count($exists)) {
-            $vars = array('@name' => $this->language->text('Role'));
-            return $this->language->text('@name is unavailable', $vars);
+            $vars = array('@name' => $this->translation->text('Role'));
+            return $this->translation->text('@name is unavailable', $vars);
         }
 
         return true;

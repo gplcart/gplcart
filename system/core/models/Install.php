@@ -9,11 +9,10 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Database,
+use gplcart\core\Hook,
     gplcart\core\Handler,
-    gplcart\core\Hook,
     gplcart\core\Module as ModuleCore;
-use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\models\Translation as TranslationModel;
 
 /**
  * Manages basic behaviors and data related to system installation
@@ -40,21 +39,21 @@ class Install
     protected $module;
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
+     * Translation UI model instance
+     * @var \gplcart\core\models\Translation $translation
      */
-    protected $language;
+    protected $translation;
 
     /**
      * @param Hook $hook
      * @param ModuleCore $module
-     * @param LanguageModel $language
+     * @param Translation $translation
      */
-    public function __construct(Hook $hook, ModuleCore $module, LanguageModel $language)
+    public function __construct(Hook $hook, ModuleCore $module, TranslationModel $translation)
     {
         $this->hook = $hook;
         $this->module = $module;
-        $this->language = $language;
+        $this->translation = $translation;
     }
 
     /**
@@ -106,7 +105,7 @@ class Install
                 'weight' => 0,
                 'module' => '',
                 'id' => 'default',
-                'title' => $this->language->text('Default'),
+                'title' => $this->translation->text('Default'),
                 'description' => '',
                 'handlers' => array(
                     'install' => array('gplcart\\core\\handlers\\install\\DefaultProfile', 'install')
@@ -193,7 +192,7 @@ class Install
             $this->db->init($settings);
         } catch (\Exception $e) {
             $this->db = null;
-            return $this->language->text($e->getMessage());
+            return $this->translation->text($e->getMessage());
         }
 
         return $this->validateDb();
@@ -211,7 +210,7 @@ class Install
             return true;
         }
 
-        return $this->language->text('The database you specified already has tables');
+        return $this->translation->text('The database you specified already has tables');
     }
 
     /**

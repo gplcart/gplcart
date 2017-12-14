@@ -48,7 +48,7 @@ class Install extends BaseController
     {
         $this->controlAccessInstall();
 
-        $this->language->set($this->install_language, null);
+        $this->translation->set($this->install_language, null);
 
         $this->setTitleEditInstall();
 
@@ -77,7 +77,7 @@ class Install extends BaseController
     {
         $languages = array();
         foreach ($this->language->getList() as $code => $language) {
-            if ($code === 'en' || is_file($this->language->getFile($code))) {
+            if ($code === 'en' || is_file($this->translation->getFile($code))) {
                 $languages[$code] = $language;
             }
         }

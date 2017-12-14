@@ -10,9 +10,9 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Hook,
-    gplcart\core\Database;
-use gplcart\core\models\Language as LanguageModel,
-    gplcart\core\models\Translation as TranslationModel;
+    gplcart\core\Config;
+use gplcart\core\models\Translation as TranslationModel,
+    gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\traits\Translation as TranslationTrait;
 
 /**
@@ -36,30 +36,29 @@ class Field
     protected $hook;
 
     /**
-     * Language model class instance
-     * @var \gplcart\core\models\Language $language
-     */
-    protected $language;
-
-    /**
-     * Translation model class instance
+     * Translation UI model class instance
      * @var \gplcart\core\models\Translation $translation
      */
     protected $translation;
 
     /**
-     * @param Hook $hook
-     * @param Database $db
-     * @param LanguageModel $language
-     * @param TranslationModel $translation
+     * Translation entity model class instance
+     * @var \gplcart\core\models\TranslationEntity $translation_entity
      */
-    public function __construct(Hook $hook, Database $db, LanguageModel $language,
-            TranslationModel $translation)
+    protected $translation_entity;
+
+    /**
+     * @param Hook $hook
+     * @param Config $config
+     * @param TranslationModel $translation
+     * @param TranslationEntityModel $translation_entity
+     */
+    public function __construct(Hook $hook, Config $config, TranslationModel $translation, TranslationEntityModel $translation_entity)
     {
-        $this->db = $db;
         $this->hook = $hook;
-        $this->language = $language;
+        $this->db = $config->getDb();
         $this->translation = $translation;
+        $this->translation_entity = $translation_entity;
     }
 
     /**
@@ -75,9 +74,9 @@ class Field
         }
 
         $types = array(
-            'button' => $this->language->text('Button'),
-            'radio' => $this->language->text('Radio buttons'),
-            'select' => $this->language->text('Dropdown list')
+            'button' => $this->translation->text('Button'),
+            'radio' => $this->translation->text('Radio buttons'),
+            'select' => $this->translation->text('Dropdown list')
         );
 
         $this->hook->attach('field.widget.types', $types, $this);
@@ -97,8 +96,8 @@ class Field
         }
 
         $types = array(
-            'option' => $this->language->text('Option'),
-            'attribute' => $this->language->text('Attribute')
+            'option' => $this->translation->text('Option'),
+            'attribute' => $this->translation->text('Attribute')
         );
 
         $this->hook->attach('field.types', $types, $this);
@@ -121,7 +120,7 @@ class Field
 
         $result = $data['field_id'] = $this->db->insert('field', $data);
 
-        $this->setTranslations($data, $this->translation, 'field', false);
+        $this->setTranslations($data, $this->translation_entity, 'field', false);
 
         $this->hook->attach('field.add.after', $data, $result, $this);
         return (int) $result;
@@ -145,7 +144,7 @@ class Field
                 . ' ON (f.field_id = ft.field_id AND ft.language=?)'
                 . ' WHERE f.field_id > 0';
 
-        $language = $this->language->getLangcode();
+        $language = $this->translation->getLangcode();
         $where = array($language);
 
         if (!empty($data['field_id'])) {
@@ -214,7 +213,7 @@ class Field
         $sql = 'SELECT * FROM field WHERE field_id=?';
         $result = $this->db->fetch($sql, array($field_id));
 
-        $this->attachTranslations($result, $this->translation, 'field', $language);
+        $this->attachTranslations($result, $this->translation_entity, 'field', $language);
 
         $this->hook->attach('field.get.after', $field_id, $language, $result, $this);
         return $result;
@@ -239,7 +238,6 @@ class Field
             return false;
         }
 
-        // Delete related field value translations BEFORE the field
         $sql = 'DELETE fvt'
                 . ' FROM field_value_translation AS fvt'
                 . ' WHERE fvt.field_value_id IN (SELECT DISTINCT(fv.field_value_id)'
@@ -291,7 +289,7 @@ class Field
 
         $updated = $this->db->update('field', $data, array('field_id' => $field_id));
         $data['field_id'] = $field_id;
-        $updated += (int) $this->setTranslations($data, $this->translation, 'field');
+        $updated += (int) $this->setTranslations($data, $this->translation_entity, 'field');
 
         $result = $updated > 0;
         $this->hook->attach('field.update.after', $field_id, $data, $result, $this);

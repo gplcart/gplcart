@@ -83,7 +83,7 @@ class Store extends ComponentValidator
         $data = $this->store->get($id);
 
         if (empty($data)) {
-            $this->setErrorUnavailable('update', $this->language->text('Store'));
+            $this->setErrorUnavailable('update', $this->translation->text('Store'));
             return false;
         }
 
@@ -100,7 +100,7 @@ class Store extends ComponentValidator
     protected function validateDomainStore()
     {
         $field = 'domain';
-        $label = $this->language->text('Domain');
+        $label = $this->translation->text('Domain');
         $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($value)) {
@@ -138,7 +138,7 @@ class Store extends ComponentValidator
         }
 
         $field = 'basepath';
-        $label = $this->language->text('Base path');
+        $label = $this->translation->text('Base path');
         $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($value)) {
@@ -174,7 +174,7 @@ class Store extends ComponentValidator
     protected function validateEmailStore()
     {
         $field = 'data.email';
-        $label = $this->language->text('E-mail');
+        $label = $this->translation->text('E-mail');
         $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($value)) {
@@ -205,7 +205,7 @@ class Store extends ComponentValidator
     protected function validateMapStore()
     {
         $field = 'data.map';
-        $label = $this->language->text('Map');
+        $label = $this->translation->text('Map');
         $value = $this->getSubmitted($field);
 
         if (empty($value)) {
@@ -326,7 +326,7 @@ class Store extends ComponentValidator
     protected function validateThemeStore()
     {
         $field = 'data.theme';
-        $label = $this->language->text('Theme');
+        $label = $this->translation->text('Theme');
         $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($value)) {

@@ -68,7 +68,7 @@ class CategoryGroup extends ComponentValidator
         $data = $this->category_group->get($id);
 
         if (empty($data)) {
-            $this->setErrorUnavailable('update', $this->language->text('Category group'));
+            $this->setErrorUnavailable('update', $this->translation->text('Category group'));
             return false;
         }
 
@@ -87,7 +87,7 @@ class CategoryGroup extends ComponentValidator
         }
 
         $field = 'type';
-        $label = $this->language->text('Type');
+        $label = $this->translation->text('Type');
 
         $type = $this->getSubmitted($field);
         $store_id = $this->getSubmitted('store_id');
@@ -121,7 +121,7 @@ class CategoryGroup extends ComponentValidator
             return true;
         }
 
-        $error = $this->language->text('Category group of this type already exists for this store');
+        $error = $this->translation->text('Category group of this type already exists for this store');
         $this->setError('type', $error);
         return false;
     }

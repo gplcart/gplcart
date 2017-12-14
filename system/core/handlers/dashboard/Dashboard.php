@@ -19,7 +19,7 @@ use gplcart\core\models\Cart as CartModel,
     gplcart\core\models\Report as ReportModel,
     gplcart\core\models\Review as ReviewModel,
     gplcart\core\models\Product as ProductModel,
-    gplcart\core\models\Language as LanguageModel,
+    gplcart\core\models\Translation as TranslationModel,
     gplcart\core\models\PriceRule as PriceRuleModel,
     gplcart\core\models\Transaction as TransactionModel;
 use gplcart\core\traits\ItemPrice as ItemPriceTrait,
@@ -101,17 +101,17 @@ class Dashboard extends Handler
     protected $review;
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
+     * Translation UI model instance
+     * @var \gplcart\core\models\Translation $translation
      */
-    protected $language;
+    protected $translation;
 
     /**
      * @param Config $config
      * @param CartModel $cart
      * @param UserModel $user
      * @param ProductModel $product
-     * @param LanguageModel $language
+     * @param TranslationModel $translation
      * @param PriceModel $price
      * @param OrderModel $order
      * @param OrderHistoryModel $order_history
@@ -121,7 +121,7 @@ class Dashboard extends Handler
      * @param PriceRuleModel $pricerule
      */
     public function __construct(Config $config, CartModel $cart, UserModel $user,
-            ProductModel $product, LanguageModel $language, PriceModel $price, OrderModel $order,
+            ProductModel $product, TranslationModel $translation, PriceModel $price, OrderModel $order,
             OrderHistoryModel $order_history, ReportModel $report, ReviewModel $review,
             TransactionModel $transaction, PriceRuleModel $pricerule)
     {
@@ -133,9 +133,9 @@ class Dashboard extends Handler
         $this->config = $config;
         $this->review = $review;
         $this->product = $product;
-        $this->language = $language;
         $this->pricerule = $pricerule;
         $this->transaction = $transaction;
+        $this->translation = $translation;
         $this->order_history = $order_history;
     }
 
@@ -282,7 +282,7 @@ class Dashboard extends Handler
 
             foreach ($events as &$event) {
                 $variables = empty($event['data']['variables']) ? array() : (array) $event['data']['variables'];
-                $message = empty($event['translatable']) ? $event['text'] : $this->language->text($event['text'], $variables);
+                $message = empty($event['translatable']) ? $event['text'] : $this->translation->text($event['text'], $variables);
                 $event['message'] = strip_tags($message);
             }
 

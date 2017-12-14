@@ -68,7 +68,7 @@ class Rating extends ComponentValidator
     protected function validateProductRating()
     {
         $field = 'product_id';
-        $label = $this->language->text('Product');
+        $label = $this->translation->text('Product');
         $value = $this->getSubmitted($field);
 
         if (empty($value)) {
@@ -100,7 +100,7 @@ class Rating extends ComponentValidator
     protected function validateValueRating()
     {
         $field = 'rating';
-        $label = $this->language->text('Rating');
+        $label = $this->translation->text('Rating');
         $value = $this->getSubmitted($field);
 
         if (!isset($value)) {

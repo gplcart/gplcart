@@ -11,9 +11,9 @@ namespace gplcart\core\models;
 
 use gplcart\core\Hook,
     gplcart\core\Handler,
-    gplcart\core\Database;
-use gplcart\core\models\Language as LanguageModel,
-    gplcart\core\models\Collection as CollectionModel;
+    gplcart\core\Config;
+use gplcart\core\models\Collection as CollectionModel,
+    gplcart\core\models\Translation as TranslationModel;
 
 /**
  * Manages basic behaviors and data related to collection items
@@ -34,10 +34,10 @@ class CollectionItem
     protected $hook;
 
     /**
-     * Language model class instance
-     * @var \gplcart\core\models\Language $language
+     * Translation UI model instance
+     * @var \gplcart\core\models\Translation $translation
      */
-    protected $language;
+    protected $translation;
 
     /**
      * Collection model instance
@@ -47,17 +47,17 @@ class CollectionItem
 
     /**
      * @param Hook $hook
-     * @param Database $db
-     * @param LanguageModel $language
+     * @param Config $config
+     * @param TranslationModel $translation
      * @param CollectionModel $collection
      */
-    public function __construct(Hook $hook, Database $db, LanguageModel $language,
+    public function __construct(Hook $hook, Config $config, TranslationModel $translation,
             CollectionModel $collection)
     {
-        $this->db = $db;
         $this->hook = $hook;
-        $this->language = $language;
+        $this->db = $config->getDb();
         $this->collection = $collection;
+        $this->translation = $translation;
     }
 
     /**
@@ -84,7 +84,7 @@ class CollectionItem
                 . ' LEFT JOIN collection c ON(ci.collection_id=c.collection_id)'
                 . ' LEFT JOIN collection_translation ct ON(ct.collection_id = c.collection_id AND ct.language=?)';
 
-        $language = $this->language->getLangcode();
+        $language = $this->translation->getLangcode();
         $conditions = array($language);
 
         if (isset($data['collection_item_id'])) {

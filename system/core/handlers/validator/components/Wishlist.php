@@ -77,7 +77,7 @@ class Wishlist extends ComponentValidator
         $data = $this->wishlist->get($id);
 
         if (empty($data)) {
-            $this->setErrorUnavailable('update', $this->language->text('Wishlist'));
+            $this->setErrorUnavailable('update', $this->translation->text('Wishlist'));
             return false;
         }
 
@@ -92,7 +92,7 @@ class Wishlist extends ComponentValidator
     protected function validateProductWishlist()
     {
         $field = 'product_id';
-        $label = $this->language->text('Product');
+        $label = $this->translation->text('Product');
         $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($value)) {

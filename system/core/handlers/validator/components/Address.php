@@ -100,7 +100,7 @@ class Address extends ComponentValidator
         $data = $this->address->get($id);
 
         if (empty($data)) {
-            $this->setErrorUnavailable('update', $this->language->text('Address'));
+            $this->setErrorUnavailable('update', $this->translation->text('Address'));
             return false;
         }
 
@@ -115,7 +115,7 @@ class Address extends ComponentValidator
     protected function validateUserIdAddress()
     {
         $field = 'user_id';
-        $label = $this->language->text('User');
+        $label = $this->translation->text('User');
         $user_id = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($user_id)) {
@@ -147,7 +147,7 @@ class Address extends ComponentValidator
     protected function validateCountryAddress()
     {
         $field = 'country';
-        $label = $this->language->text('Country');
+        $label = $this->translation->text('Country');
         $code = $this->getSubmitted($field);
 
         if (!isset($code)) {
@@ -175,7 +175,7 @@ class Address extends ComponentValidator
     protected function validateStateAddress()
     {
         $field = 'state_id';
-        $label = $this->language->text('State');
+        $label = $this->translation->text('State');
 
         $format = $this->getSubmitted('format');
         $state_id = $this->getSubmitted($field);
@@ -214,7 +214,7 @@ class Address extends ComponentValidator
     protected function validateCityAddress()
     {
         $field = 'city_id';
-        $label = $this->language->text('City');
+        $label = $this->translation->text('City');
         $city_id = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($city_id)) {
@@ -293,7 +293,7 @@ class Address extends ComponentValidator
         $types = $this->address->getTypes();
 
         if (!in_array($type, $types)) {
-            $this->setErrorUnavailable($field, $this->language->text('Type'));
+            $this->setErrorUnavailable($field, $this->translation->text('Type'));
             return false;
         }
         return true;

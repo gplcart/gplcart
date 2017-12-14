@@ -9,6 +9,7 @@
 
 namespace gplcart\core\handlers\validator\components;
 
+use gplcart\core\models\Language as LanguageModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
@@ -16,13 +17,20 @@ use gplcart\core\handlers\validator\Component as ComponentValidator;
  */
 class Language extends ComponentValidator
 {
+    /**
+     * Language module class instance
+     * @var \gplcart\core\models\Language $language
+     */
+    protected $language;
 
     /**
-     * Constructor
+     * @param LanguageModel $language
      */
-    public function __construct()
+    public function __construct(LanguageModel $language)
     {
         parent::__construct();
+
+        $this->language = $language;
     }
 
     /**
@@ -64,7 +72,7 @@ class Language extends ComponentValidator
         $language = $this->language->get($id);
 
         if (empty($language)) {
-            $this->setErrorUnavailable('update', $this->language->text('Language'));
+            $this->setErrorUnavailable('update', $this->translation->text('Language'));
             return false;
         }
 
@@ -79,7 +87,7 @@ class Language extends ComponentValidator
     protected function validateCodeLanguage()
     {
         $field = 'code';
-        $label = $this->language->text('Code');
+        $label = $this->translation->text('Code');
         $code = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($code)) {
@@ -118,7 +126,7 @@ class Language extends ComponentValidator
     protected function validateNameLanguage()
     {
         $field = 'name';
-        $label = $this->language->text('Name');
+        $label = $this->translation->text('Name');
         $name = $this->getSubmitted($field);
 
         if (!isset($name)) {
@@ -140,7 +148,7 @@ class Language extends ComponentValidator
     protected function validateNativeNameLanguage()
     {
         $field = 'native_name';
-        $label = $this->language->text('Native name');
+        $label = $this->translation->text('Native name');
         $name = $this->getSubmitted($field);
 
         if (!isset($name)) {

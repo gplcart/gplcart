@@ -70,7 +70,7 @@ class Field extends ComponentValidator
         $data = $this->field->get($id);
 
         if (empty($data)) {
-            $this->setErrorUnavailable('update', $this->language->text('Field'));
+            $this->setErrorUnavailable('update', $this->translation->text('Field'));
             return false;
         }
 
@@ -89,7 +89,7 @@ class Field extends ComponentValidator
         }
 
         $field = 'type';
-        $label = $this->language->text('Type');
+        $label = $this->translation->text('Type');
         $type = $this->getSubmitted($field);
 
         if (empty($type)) {
@@ -113,7 +113,7 @@ class Field extends ComponentValidator
     protected function validateWidgetTypeField()
     {
         $field = 'widget';
-        $label = $this->language->text('Widget');
+        $label = $this->translation->text('Widget');
         $type = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($type)) {

@@ -15,8 +15,8 @@ use gplcart\core\models\Mail as MailModel,
     gplcart\core\models\Cart as CartModel,
     gplcart\core\models\User as UserModel,
     gplcart\core\models\Price as PriceModel,
-    gplcart\core\models\Language as LanguageModel,
-    gplcart\core\models\PriceRule as PriceRuleModel;
+    gplcart\core\models\PriceRule as PriceRuleModel,
+    gplcart\core\models\Translation as TranslationModel;
 
 /**
  * Manages basic behaviors and data related to store orders
@@ -67,10 +67,10 @@ class Order
     protected $mail;
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
+     * Translation UI model instance
+     * @var \gplcart\core\models\Translation $translation
      */
-    protected $language;
+    protected $translation;
 
     /**
      * Price model instance
@@ -81,15 +81,15 @@ class Order
     /**
      * @param Hook $hook
      * @param Config $config
-     * @param UserModel $user
-     * @param PriceModel $price
-     * @param PriceRuleModel $pricerule
-     * @param CartModel $cart
-     * @param LanguageModel $language
-     * @param MailModel $mail
+     * @param User $user
+     * @param Price $price
+     * @param PriceRule $pricerule
+     * @param Cart $cart
+     * @param Translation $translation
+     * @param Mail $mail
      */
     public function __construct(Hook $hook, Config $config, UserModel $user, PriceModel $price,
-            PriceRuleModel $pricerule, CartModel $cart, LanguageModel $language, MailModel $mail)
+                                PriceRuleModel $pricerule, CartModel $cart, TranslationModel $translation, MailModel $mail)
     {
         $this->hook = $hook;
         $this->config = $config;
@@ -99,8 +99,8 @@ class Order
         $this->user = $user;
         $this->cart = $cart;
         $this->price = $price;
-        $this->language = $language;
         $this->price_rule = $pricerule;
+        $this->translation = $translation;
     }
 
     /**
@@ -365,9 +365,9 @@ class Order
     public function getComponentTypes()
     {
         $types = array(
-            'cart' => $this->language->text('Cart'),
-            'payment' => $this->language->text('Payment'),
-            'shipping' => $this->language->text('Shipping')
+            'cart' => $this->translation->text('Cart'),
+            'payment' => $this->translation->text('Payment'),
+            'shipping' => $this->translation->text('Shipping')
         );
 
         $this->hook->attach('order.component.types', $types);
@@ -403,7 +403,7 @@ class Order
         $result = array(
             'redirect' => '',
             'severity' => 'warning',
-            'message' => $this->language->text('An error occurred')
+            'message' => $this->translation->text('An error occurred')
         );
 
         $this->prepareComponents($data);
@@ -421,7 +421,7 @@ class Order
             'order' => $order,
             'severity' => 'success',
             'redirect' => "admin/sale/order/{$data['order_id']}",
-            'message' => $this->language->text('Order has been created')
+            'message' => $this->translation->text('Order has been created')
         );
 
         if (empty($options['admin'])) {
@@ -646,7 +646,7 @@ class Order
             '@status' => $this->getStatusName($order['status'])
         );
 
-        return $this->language->text($message, $variables);
+        return $this->translation->text($message, $variables);
     }
 
     /**
@@ -664,7 +664,7 @@ class Order
             '@status' => $this->getStatusName($order['status'])
         );
 
-        return $this->language->text($message, $variables);
+        return $this->translation->text($message, $variables);
     }
 
     /**
@@ -769,13 +769,13 @@ class Order
     protected function getDefaultStatuses()
     {
         $statuses = array(
-            'pending' => $this->language->text('Pending'),
-            'canceled' => $this->language->text('Canceled'),
-            'delivered' => $this->language->text('Delivered'),
-            'completed' => $this->language->text('Completed'),
-            'processing' => $this->language->text('Processing'),
-            'dispatched' => $this->language->text('Dispatched'),
-            'pending_payment' => $this->language->text('Awaiting payment')
+            'pending' => $this->translation->text('Pending'),
+            'canceled' => $this->translation->text('Canceled'),
+            'delivered' => $this->translation->text('Delivered'),
+            'completed' => $this->translation->text('Completed'),
+            'processing' => $this->translation->text('Processing'),
+            'dispatched' => $this->translation->text('Dispatched'),
+            'pending_payment' => $this->translation->text('Awaiting payment')
         );
 
         return $statuses;

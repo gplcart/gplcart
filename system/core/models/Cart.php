@@ -9,15 +9,14 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Config,
-    gplcart\core\Hook,
-    gplcart\core\Database;
+use gplcart\core\Hook,
+    gplcart\core\Config;
 use gplcart\core\models\Sku as SkuModel,
     gplcart\core\models\User as UserModel,
     gplcart\core\models\Product as ProductModel,
     gplcart\core\models\Currency as CurrencyModel,
-    gplcart\core\models\Language as LanguageModel,
-    gplcart\core\models\Wishlist as WishlistModel;
+    gplcart\core\models\Wishlist as WishlistModel,
+    gplcart\core\models\Translation as TranslationModel;
 use gplcart\core\helpers\Request as RequestHelper;
 
 /**
@@ -75,10 +74,10 @@ class Cart
     protected $wishlist;
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
+     * Translation model instance
+     * @var \gplcart\core\models\Translation $translation
      */
-    protected $language;
+    protected $translation;
 
     /**
      * Request model instance
@@ -88,23 +87,22 @@ class Cart
 
     /**
      * @param Hook $hook
-     * @param Database $db
      * @param Config $config
-     * @param ProductModel $product
-     * @param SkuModel $sku
-     * @param CurrencyModel $currency
-     * @param UserModel $user
-     * @param WishlistModel $wishlist
-     * @param LanguageModel $language
+     * @param Product $product
+     * @param Sku $sku
+     * @param Currency $currency
+     * @param User $user
+     * @param Wishlist $wishlist
+     * @param Translation $translation
      * @param RequestHelper $request
      */
-    public function __construct(Hook $hook, Database $db, Config $config, ProductModel $product,
-            SkuModel $sku, CurrencyModel $currency, UserModel $user, WishlistModel $wishlist,
-            LanguageModel $language, RequestHelper $request)
+    public function __construct(Hook $hook, Config $config, ProductModel $product,
+                                SkuModel $sku, CurrencyModel $currency, UserModel $user, WishlistModel $wishlist,
+                                TranslationModel $translation, RequestHelper $request)
     {
-        $this->db = $db;
         $this->hook = $hook;
         $this->config = $config;
+        $this->db = $this->config->getDb();
 
         $this->sku = $sku;
         $this->user = $user;
@@ -112,7 +110,7 @@ class Cart
         $this->request = $request;
         $this->currency = $currency;
         $this->wishlist = $wishlist;
-        $this->language = $language;
+        $this->translation = $translation;
     }
 
     /**
@@ -217,7 +215,7 @@ class Cart
                 . ' LEFT JOIN user u ON(c.user_id = u.user_id)'
                 . ' WHERE cart_id IS NOT NULL';
 
-        $conditions = array($this->language->getLangcode());
+        $conditions = array($this->translation->getLangcode());
 
         if (isset($data['user_id'])) {
             $sql .= ' AND c.user_id=?';
@@ -315,7 +313,7 @@ class Cart
         $result = array(
             'redirect' => '',
             'severity' => 'warning',
-            'message' => $this->language->text('Unable to add product')
+            'message' => $this->translation->text('Unable to add product')
         );
 
         $data += array(
@@ -342,7 +340,7 @@ class Cart
                 'cart_id' => $cart_id,
                 'severity' => 'success',
                 'quantity' => $existing['total'],
-                'message' => $this->language->text('Product has been added to your cart. <a href="@url">Checkout</a>', $vars)
+                'message' => $this->translation->text('Product has been added to your cart. <a href="@url">Checkout</a>', $vars)
             );
         }
 
@@ -529,7 +527,7 @@ class Cart
             'redirect' => '',
             'severity' => 'success',
             'wishlist_id' => $data['wishlist_id'],
-            'message' => $this->language->text('Product has been moved to your <a href="@url">wishlist</a>', array(
+            'message' => $this->translation->text('Product has been moved to your <a href="@url">wishlist</a>', array(
                 '@url' => $this->request->base() . 'wishlist'))
         );
 
@@ -556,7 +554,7 @@ class Cart
         $result = array(
             'redirect' => '',
             'severity' => 'warning',
-            'message' => $this->language->text('Cannot delete cart item')
+            'message' => $this->translation->text('Cannot delete cart item')
         );
 
         if (empty($cart) || !$this->delete($cart_id)) {
@@ -573,7 +571,7 @@ class Cart
         $result = array(
             'redirect' => '',
             'severity' => 'success',
-            'message' => $this->language->text('Product has been deleted from cart'),
+            'message' => $this->translation->text('Product has been deleted from cart'),
             'quantity' => empty($cart['quantity']) ? 0 : $cart['quantity']
         );
 
@@ -656,7 +654,7 @@ class Cart
             'user' => $user,
             'redirect' => 'checkout',
             'severity' => 'success',
-            'message' => $this->language->text('Hello, %name. Now you are logged in', array(
+            'message' => $this->translation->text('Hello, %name. Now you are logged in', array(
                 '%name' => $user['name']
             ))
         );

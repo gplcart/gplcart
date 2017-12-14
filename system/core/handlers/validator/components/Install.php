@@ -80,7 +80,7 @@ class Install extends ComponentValidator
         }
 
         if ($this->config->isInitialized()) {
-            $error = $this->language->text('System already installed');
+            $error = $this->translation->text('System already installed');
             $this->setError('installed', $error);
             return false;
         }
@@ -93,12 +93,12 @@ class Install extends ComponentValidator
         }
 
         $messages = array();
-        $messages[] = $this->language->text('Please fix all critical errors in your environment');
+        $messages[] = $this->translation->text('Please fix all critical errors in your environment');
 
         foreach ($requirements as $items) {
             foreach ($items as $name => $info) {
                 if (in_array($name, $errors['danger'])) {
-                    $status = empty($info['status']) ? $this->language->text('No') : $this->language->text('Yes');
+                    $status = empty($info['status']) ? $this->translation->text('No') : $this->translation->text('Yes');
                     $messages[] = " {$info['message']} - $status";
                 }
             }
@@ -137,7 +137,7 @@ class Install extends ComponentValidator
             return null;
         }
 
-        $label = $this->language->text('Password');
+        $label = $this->translation->text('Password');
         $password = $this->getSubmitted($field);
 
         if (empty($password)) {
@@ -167,7 +167,7 @@ class Install extends ComponentValidator
             return null;
         }
 
-        $label = $this->language->text('Host');
+        $label = $this->translation->text('Host');
         $host = $this->getSubmitted($field);
 
         if (empty($host)) {
@@ -191,7 +191,7 @@ class Install extends ComponentValidator
 
         $title = $this->getSubmitted($field);
         if (empty($title) || mb_strlen($title) > 255) {
-            $this->setErrorLengthRange($field, $this->language->text('Title'));
+            $this->setErrorLengthRange($field, $this->translation->text('Title'));
             return false;
         }
 
@@ -216,7 +216,7 @@ class Install extends ComponentValidator
         }
 
         if (preg_match('/^[a-z0-9-\/]{0,50}$/', $basepath) !== 1) {
-            $this->setErrorInvalid($field, $this->language->text('Base path'));
+            $this->setErrorInvalid($field, $this->translation->text('Base path'));
             return false;
         }
 
@@ -244,7 +244,7 @@ class Install extends ComponentValidator
         $timezones = gplcart_timezones();
 
         if (empty($timezones[$timezone])) {
-            $this->setErrorInvalid($field, $this->language->text('Timezone'));
+            $this->setErrorInvalid($field, $this->translation->text('Timezone'));
             return false;
         }
 
@@ -272,7 +272,7 @@ class Install extends ComponentValidator
         $installer = $this->install->getHandler($installer_id);
 
         if (empty($installer)) {
-            $this->setErrorInvalid('installer', $this->language->text('Installer'));
+            $this->setErrorInvalid('installer', $this->translation->text('Installer'));
             return false;
         }
 
@@ -292,7 +292,7 @@ class Install extends ComponentValidator
 
         $dbname = $this->getSubmitted($field);
         if (empty($dbname)) {
-            $this->setErrorRequired($field, $this->language->text('Database name'));
+            $this->setErrorRequired($field, $this->translation->text('Database name'));
             return false;
         }
 
@@ -312,7 +312,7 @@ class Install extends ComponentValidator
 
         $dbuser = $this->getSubmitted($field);
         if (empty($dbuser)) {
-            $this->setErrorRequired($field, $this->language->text('Database user'));
+            $this->setErrorRequired($field, $this->translation->text('Database user'));
             return false;
         }
 
@@ -352,7 +352,7 @@ class Install extends ComponentValidator
 
         $dbhost = $this->getSubmitted($field);
         if (empty($dbhost)) {
-            $this->setErrorRequired($field, $this->language->text('Database host'));
+            $this->setErrorRequired($field, $this->translation->text('Database host'));
             return false;
         }
 
@@ -372,7 +372,7 @@ class Install extends ComponentValidator
 
         $dbtype = $this->getSubmitted($field);
         if (empty($dbtype)) {
-            $this->setErrorRequired($field, $this->language->text('Database type'));
+            $this->setErrorRequired($field, $this->translation->text('Database type'));
             return false;
         }
 
@@ -383,7 +383,7 @@ class Install extends ComponentValidator
         }
 
         $vars = array('@list' => implode(',', $drivers));
-        $error = $this->language->text('Unsupported database driver. Available drivers: @list', $vars);
+        $error = $this->translation->text('Unsupported database driver. Available drivers: @list', $vars);
         $this->setError($field, $error);
         return false;
     }
@@ -399,7 +399,7 @@ class Install extends ComponentValidator
             return null;
         }
 
-        $label = $this->language->text('Database port');
+        $label = $this->translation->text('Database port');
         $dbport = $this->getSubmitted($field);
 
         if (empty($dbport)) {
@@ -438,7 +438,7 @@ class Install extends ComponentValidator
         }
 
         if (empty($result)) {
-            $result = $this->language->text('Could not connect to database');
+            $result = $this->translation->text('Could not connect to database');
         }
 
         $this->setError($field, (string) $result);

@@ -78,7 +78,7 @@ class Currency extends ComponentValidator
         $data = $this->currency->get($id);
 
         if (empty($data)) {
-            $this->setErrorUnavailable('update', $this->language->text('Currency'));
+            $this->setErrorUnavailable('update', $this->translation->text('Currency'));
             return false;
         }
 
@@ -93,7 +93,7 @@ class Currency extends ComponentValidator
     protected function validateSymbolCurrency()
     {
         $field = 'symbol';
-        $label = $this->language->text('Symbol');
+        $label = $this->translation->text('Symbol');
         $symbol = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($symbol)) {
@@ -115,7 +115,7 @@ class Currency extends ComponentValidator
     protected function validateMajorUnitCurrency()
     {
         $field = 'major_unit';
-        $label = $this->language->text('Major unit');
+        $label = $this->translation->text('Major unit');
         $major_unit = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($major_unit)) {
@@ -137,7 +137,7 @@ class Currency extends ComponentValidator
     protected function validateMinorUnitCurrency()
     {
         $field = 'minor_unit';
-        $label = $this->language->text('Minor unit');
+        $label = $this->translation->text('Minor unit');
         $minor_unit = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($minor_unit)) {
@@ -158,7 +158,7 @@ class Currency extends ComponentValidator
     protected function validateConvertionRateCurrency()
     {
         $field = 'conversion_rate';
-        $label = $this->language->text('Conversion rate');
+        $label = $this->translation->text('Conversion rate');
         $conversion_rate = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($conversion_rate)) {
@@ -184,7 +184,7 @@ class Currency extends ComponentValidator
     protected function validateRoundingStepCurrency()
     {
         $field = 'rounding_step';
-        $label = $this->language->text('Rounding step');
+        $label = $this->translation->text('Rounding step');
         $rounding_step = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($rounding_step)) {
@@ -210,7 +210,7 @@ class Currency extends ComponentValidator
     protected function validateDecimalsCurrency()
     {
         $field = 'decimals';
-        $label = $this->language->text('Decimals');
+        $label = $this->translation->text('Decimals');
         $decimals = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($decimals)) {
@@ -236,7 +236,7 @@ class Currency extends ComponentValidator
     protected function validateNumericCodeCurrency()
     {
         $field = 'numeric_code';
-        $label = $this->language->text('Numeric code');
+        $label = $this->translation->text('Numeric code');
         $numeric_code = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($numeric_code)) {
@@ -277,7 +277,7 @@ class Currency extends ComponentValidator
     protected function validateCodeCurrency()
     {
         $field = 'code';
-        $label = $this->language->text('Code');
+        $label = $this->translation->text('Code');
         $code = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($code)) {

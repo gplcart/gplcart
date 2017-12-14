@@ -12,8 +12,8 @@ namespace gplcart\core\models;
 use DirectoryIterator;
 use gplcart\core\Hook,
     gplcart\core\Module as ModuleCore;
-use gplcart\core\models\Language as LanguageModel;
 use gplcart\core\traits\Dependency as DependencyTrait;
+use gplcart\core\models\Translation as TranslationModel;
 
 /**
  * Manages basic behaviors and data related to modules
@@ -36,21 +36,21 @@ class Module
     protected $module;
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
+     * Translation UI model instance
+     * @var \gplcart\core\models\Translation $translation
      */
-    protected $language;
+    protected $translation;
 
     /**
      * @param Hook $hook
      * @param ModuleCore $module
-     * @param LanguageModel $language
+     * @param Translation $translation
      */
-    public function __construct(Hook $hook, ModuleCore $module, LanguageModel $language)
+    public function __construct(Hook $hook, ModuleCore $module, TranslationModel $translation)
     {
         $this->hook = $hook;
         $this->module = $module;
-        $this->language = $language;
+        $this->translation = $translation;
     }
 
     /**
@@ -158,21 +158,21 @@ class Module
     public function canEnable($module_id)
     {
         if ($this->module->isEnabled($module_id)) {
-            return $this->language->text('Module already installed and enabled');
+            return $this->translation->text('Module already installed and enabled');
         }
 
         if ($this->module->isLocked($module_id)) {
-            return $this->language->text('Module is locked in code');
+            return $this->translation->text('Module is locked in code');
         }
 
         if ($this->module->isInstaller($module_id)) {
-            return $this->language->text('Modules that are installers cannot be enabled');
+            return $this->translation->text('Modules that are installers cannot be enabled');
         }
 
         $instance = $this->module->getInstance($module_id);
 
         if (!is_object($instance)) {
-            return $this->language->text('Failed to instantiate main module class');
+            return $this->translation->text('Failed to instantiate main module class');
         }
 
         return $this->checkRequirements($module_id);
@@ -186,21 +186,21 @@ class Module
     public function canInstall($module_id)
     {
         if ($this->module->isInstalled($module_id)) {
-            return $this->language->text('Module already installed');
+            return $this->translation->text('Module already installed');
         }
 
         if ($this->module->isLocked($module_id)) {
-            return $this->language->text('Module is locked in code');
+            return $this->translation->text('Module is locked in code');
         }
 
         if ($this->module->isInstaller($module_id)) {
-            return $this->language->text('Modules that are installers cannot be installed when system is set up');
+            return $this->translation->text('Modules that are installers cannot be installed when system is set up');
         }
 
         $instance = $this->module->getInstance($module_id);
 
         if (!is_object($instance)) {
-            return $this->language->text('Failed to instantiate main module class');
+            return $this->translation->text('Failed to instantiate main module class');
         }
 
         return $this->checkRequirements($module_id);
@@ -224,11 +224,11 @@ class Module
     public function canUninstall($module_id)
     {
         if ($this->module->isActiveTheme($module_id)) {
-            return $this->language->text('Modules that are active themes cannot be disabled/uninstalled');
+            return $this->translation->text('Modules that are active themes cannot be disabled/uninstalled');
         }
 
         if ($this->module->isLocked($module_id)) {
-            return $this->language->text('Module is locked in code');
+            return $this->translation->text('Module is locked in code');
         }
 
         $modules = $this->module->getList();
@@ -264,7 +264,7 @@ class Module
         }
 
         if ($this->module->isInstaller($module_id)) {
-            return $this->language->text('Modules that are installers cannot be installed/enabled when system is set up');
+            return $this->translation->text('Modules that are installers cannot be installed/enabled when system is set up');
         }
 
         return $this->checkDependenciesModule($module_id);
@@ -284,13 +284,13 @@ class Module
         $components = $this->getVersionComponents($module['php']);
 
         if (empty($components)) {
-            return $this->language->text('Requires incompatible version of @name', array('@name' => 'PHP'));
+            return $this->translation->text('Requires incompatible version of @name', array('@name' => 'PHP'));
         }
 
         list($operator, $number) = $components;
 
         if (!version_compare(PHP_VERSION, $number, $operator)) {
-            return $this->language->text('Requires incompatible version of @name', array('@name' => 'PHP'));
+            return $this->translation->text('Requires incompatible version of @name', array('@name' => 'PHP'));
         }
 
         return true;
@@ -313,7 +313,7 @@ class Module
         $translated = array();
         foreach ($validated[$module_id]['errors'] as $error) {
             list($text, $arguments) = $error;
-            $translated[] = $this->language->text($text, $arguments);
+            $translated[] = $this->translation->text($text, $arguments);
         }
 
         return $translated;
@@ -330,7 +330,7 @@ class Module
             return true;
         }
 
-        return $this->language->text('Invalid module ID');
+        return $this->translation->text('Invalid module ID');
     }
 
     /**
@@ -341,11 +341,11 @@ class Module
     public function checkCore(array $module)
     {
         if (empty($module['core'])) {
-            return $this->language->text('Missing core version');
+            return $this->translation->text('Missing core version');
         }
 
         if (version_compare(gplcart_version(), $module['core']) < 0) {
-            return $this->language->text('Module incompatible with the current system core version');
+            return $this->translation->text('Module incompatible with the current system core version');
         }
 
         return true;
@@ -374,7 +374,7 @@ class Module
         }
 
         if (!empty($required_by)) {
-            return $this->language->text('Required by') . ': ' . implode(', ', $required_by);
+            return $this->translation->text('Required by') . ': ' . implode(', ', $required_by);
         }
 
         return true;

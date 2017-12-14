@@ -9,10 +9,9 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Config,
-    gplcart\core\Hook,
-    gplcart\core\Database;
-use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\Hook,
+    gplcart\core\Config;
+use gplcart\core\models\Translation as TranslationModel;
 
 /**
  * Manages basic behaviors and data related to the review system
@@ -39,23 +38,23 @@ class Review
     protected $config;
 
     /**
-     * Language model class instance
-     * @var \gplcart\core\models\Language $language
+     * Translation UI model class instance
+     * @var \gplcart\core\models\Translation $translation
      */
-    protected $language;
+    protected $translation;
 
     /**
      * @param Hook $hook
-     * @param Database $db
      * @param Config $config
-     * @param LanguageModel $language
+     * @param TranslationModel $translation
      */
-    public function __construct(Hook $hook, Database $db, Config $config, LanguageModel $language)
+    public function __construct(Hook $hook, Config $config, TranslationModel $translation)
     {
-        $this->db = $db;
         $this->hook = $hook;
         $this->config = $config;
-        $this->language = $language;
+        $this->translation = $translation;
+        $this->db = $this->config->getDb();
+
     }
 
     /**
@@ -142,7 +141,6 @@ class Review
         $sql = "DELETE FROM review WHERE review_id IN($placeholders)";
 
         $result = (bool) $this->db->run($sql, $review_id)->rowCount();
-
         $this->hook->attach('review.delete.after', $review_id, $result, $this);
         return (bool) $result;
     }
@@ -166,7 +164,7 @@ class Review
                 . ' LEFT JOIN product_translation pt ON(r.product_id = pt.product_id AND pt.language=?)'
                 . ' WHERE r.review_id IS NOT NULL';
 
-        $language = $this->language->getLangcode();
+        $language = $this->translation->getLangcode();
         $conditions = array($language);
 
         if (isset($data['text'])) {

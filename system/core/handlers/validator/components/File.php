@@ -66,7 +66,7 @@ class File extends ComponentValidator
         $file = $this->file->get($id);
 
         if (empty($file)) {
-            $this->setErrorUnavailable('update', $this->language->text('File'));
+            $this->setErrorUnavailable('update', $this->translation->text('File'));
             return false;
         }
 
@@ -82,7 +82,7 @@ class File extends ComponentValidator
     {
         $title = $this->getSubmitted('title');
         if (isset($title) && mb_strlen($title) > 255) {
-            $this->setErrorLengthRange('title', $this->language->text('Title'), 0, 255);
+            $this->setErrorLengthRange('title', $this->translation->text('Title'), 0, 255);
             return false;
         }
         return true;
@@ -99,7 +99,7 @@ class File extends ComponentValidator
         }
 
         $field = 'file';
-        $label = $this->language->text('File');
+        $label = $this->translation->text('File');
         $path = $this->getSubmitted('path');
 
         if (isset($path)) {

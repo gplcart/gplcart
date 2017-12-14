@@ -9,13 +9,12 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Config,
-    gplcart\core\Hook,
-    gplcart\core\Database;
+use gplcart\core\Hook,
+    gplcart\core\Config;
 use gplcart\core\models\File as FileModel,
     gplcart\core\models\Alias as AliasModel,
-    gplcart\core\models\Language as LanguageModel,
-    gplcart\core\models\Translation as TranslationModel;
+    gplcart\core\models\Translation as TranslationModel,
+    gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\traits\Image as ImageTrait,
     gplcart\core\traits\Alias as AliasTrait;
 
@@ -47,16 +46,16 @@ class Page
     protected $config;
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
-     */
-    protected $language;
-
-    /**
-     * Translation model instance
+     * Translation UI model instance
      * @var \gplcart\core\models\Translation $translation
      */
     protected $translation;
+
+    /**
+     * Translation entity model instance
+     * @var \gplcart\core\models\TranslationEntity $translation_entity
+     */
+    protected $translation_entity;
 
     /**
      * Alias model instance
@@ -72,24 +71,29 @@ class Page
 
     /**
      * @param Hook $hook
-     * @param Database $db
      * @param Config $config
-     * @param LanguageModel $language
-     * @param AliasModel $alias
      * @param FileModel $file
+     * @param AliasModel $alias
      * @param TranslationModel $translation
+     * @param TranslationEntityModel $translation_entity
      */
-    public function __construct(Hook $hook, Database $db, Config $config, LanguageModel $language,
-            AliasModel $alias, FileModel $file, TranslationModel $translation)
+    public function __construct(
+        Hook $hook,
+        Config $config,
+        FileModel $file,
+        AliasModel $alias,
+        TranslationModel $translation,
+        TranslationEntityModel $translation_entity
+    )
     {
-        $this->db = $db;
         $this->hook = $hook;
         $this->config = $config;
+        $this->db = $this->config->getDb();
 
         $this->file = $file;
         $this->alias = $alias;
-        $this->language = $language;
         $this->translation = $translation;
+        $this->translation_entity = $translation_entity;
     }
 
     /**
@@ -114,8 +118,8 @@ class Page
 
         $result = $this->db->fetch($sql, array($page_id));
 
-        $this->attachImages($result, $this->file, $this->translation, 'page', $language);
-        $this->attachTranslations($result, $this->translation, 'page', $language);
+        $this->attachImages($result, $this->file, $this->translation_entity, 'page', $language);
+        $this->attachTranslations($result, $this->translation_entity, 'page', $language);
 
         $this->hook->attach('page.get.after', $page_id, $language, $result, $this);
         return $result;
@@ -138,7 +142,7 @@ class Page
         $data['created'] = $data['modified'] = GC_TIME;
         $result = $data['page_id'] = $this->db->insert('page', $data);
 
-        $this->setTranslations($data, $this->translation, 'page', false);
+        $this->setTranslations($data, $this->translation_entity, 'page', false);
         $this->setImages($data, $this->file, 'page');
         $this->setAlias($data, $this->alias, 'page', false);
 
@@ -166,7 +170,7 @@ class Page
         $data['page_id'] = $page_id;
 
         $updated += (int) $this->setImages($data, $this->file, 'page');
-        $updated += (int) $this->setTranslations($data, $this->translation, 'page');
+        $updated += (int) $this->setTranslations($data, $this->translation_entity, 'page');
         $updated += (int) $this->setAlias($data, $this->alias, 'page');
 
         $result = $updated > 0;
@@ -224,7 +228,7 @@ class Page
             $sql = 'SELECT COUNT(p.page_id)';
         }
 
-        $language = $this->language->getLangcode();
+        $language = $this->translation->getLangcode();
         $conditions = array($language, 'page');
 
         $sql .= ' FROM page p'

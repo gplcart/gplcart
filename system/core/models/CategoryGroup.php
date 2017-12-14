@@ -10,9 +10,9 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Hook,
-    gplcart\core\Database;
-use gplcart\core\models\Language as LanguageModel,
-    gplcart\core\models\Translation as TranslationModel;
+    gplcart\core\Config;
+use gplcart\core\models\Translation as TranslationModel,
+    gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\traits\Translation as TranslationTrait;
 
 /**
@@ -36,30 +36,29 @@ class CategoryGroup
     protected $hook;
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
-     */
-    protected $language;
-
-    /**
-     * Translation model instance
+     * Translation UI model instance
      * @var \gplcart\core\models\Translation $translation
      */
     protected $translation;
 
     /**
-     * @param Hook $hook
-     * @param Database $db
-     * @param LanguageModel $language
-     * @param TranslationModel $translation
+     * Translation entity model instance
+     * @var \gplcart\core\models\TranslationEntity $translation_entity
      */
-    public function __construct(Hook $hook, Database $db, LanguageModel $language,
-            TranslationModel $translation)
+    protected $translation_entity;
+
+    /**
+     * @param Hook $hook
+     * @param Config $config
+     * @param TranslationModel $translation
+     * @param TranslationEntityModel $translation_entity
+     */
+    public function __construct(Hook $hook, Config $config, TranslationModel $translation, TranslationEntityModel $translation_entity)
     {
-        $this->db = $db;
         $this->hook = $hook;
-        $this->language = $language;
+        $this->db = $config->getDb();
         $this->translation = $translation;
+        $this->translation_entity = $translation_entity;
     }
 
     /**
@@ -80,8 +79,7 @@ class CategoryGroup
         $sql = 'SELECT * FROM category_group WHERE category_group_id=?';
         $result = $this->db->fetch($sql, array($group_id));
 
-        $this->attachTranslations($result, $this->translation, 'category_group', $language);
-
+        $this->attachTranslations($result, $this->translation_entity, 'category_group', $language);
         $this->hook->attach('category.group.get.after', $result, $language, $this);
         return $result;
     }
@@ -104,7 +102,7 @@ class CategoryGroup
                 . ' ON(cg.category_group_id = cgt.category_group_id AND cgt.language = ?)'
                 . ' WHERE cg.category_group_id IS NOT NULL';
 
-        $language = $this->language->getLangcode();
+        $language = $this->translation->getLangcode();
         $where = array($language);
 
         if (isset($data['title'])) {
@@ -164,8 +162,7 @@ class CategoryGroup
         }
 
         $result = $data['category_group_id'] = $this->db->insert('category_group', $data);
-        $this->setTranslations($data, $this->translation, 'category_group', false);
-
+        $this->setTranslations($data, $this->translation_entity, 'category_group', false);
         $this->hook->attach('category.group.add.after', $data, $result, $this);
         return (int) $result;
     }
@@ -229,7 +226,7 @@ class CategoryGroup
 
         $updated = $this->db->update('category_group', $data, array('category_group_id' => $category_group_id));
         $data['category_group_id'] = $category_group_id;
-        $updated += (int) $this->setTranslations($data, $this->translation, 'category_group');
+        $updated += (int) $this->setTranslations($data, $this->translation_entity, 'category_group');
 
         $result = $updated > 0;
         $this->hook->attach('category.group.update.after', $category_group_id, $data, $result, $this);
@@ -254,9 +251,9 @@ class CategoryGroup
     protected function getDefaultTypes()
     {
         return array(
-            'brand' => $this->language->text('Brand'),
-            'common' => $this->language->text('Common'),
-            'catalog' => $this->language->text('Catalog')
+            'brand' => $this->translation->text('Brand'),
+            'common' => $this->translation->text('Common'),
+            'catalog' => $this->translation->text('Catalog')
         );
     }
 

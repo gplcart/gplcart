@@ -1,5 +1,5 @@
 # Prevent direct access to files
-<FilesMatch "^\.|\.(ini|fla|psd|log|sh|c|twig|exe|cache|json|yml)$|^gplcart$">
+<FilesMatch "^\.|\.(ini|fla|psd|log|sh|c|twig|exe|cache|json|yml)$">
     Order Allow,Deny
     Deny from all
 </FilesMatch> 
@@ -64,12 +64,11 @@ FileETag None
 
 <IfModule mod_headers.c>
 
-    # Serve gzip compressed CSS files if they exist and the client accepts gzip.
+    # Serve gzip compressed CSS and JS files if they exist and the client accepts gzip.
     RewriteCond %{HTTP:Accept-encoding} gzip
     RewriteCond %{REQUEST_FILENAME}\.gz -s
     RewriteRule ^(.*)\.css $1\.css\.gz [QSA]
 
-    # Serve gzip compressed JS files if they exist and the client accepts gzip.
     RewriteCond %{HTTP:Accept-encoding} gzip
     RewriteCond %{REQUEST_FILENAME}\.gz -s
     RewriteRule ^(.*)\.js $1\.js\.gz [QSA]

@@ -80,7 +80,7 @@ class Review extends ComponentValidator
         $data = $this->review->get($id);
 
         if (empty($data)) {
-            $this->setErrorUnavailable('update', $this->language->text('Review'));
+            $this->setErrorUnavailable('update', $this->translation->text('Review'));
             return false;
         }
 
@@ -95,7 +95,7 @@ class Review extends ComponentValidator
     protected function validateTextReview()
     {
         $field = 'text';
-        $label = $this->language->text('Text');
+        $label = $this->translation->text('Text');
         $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($value)) {
@@ -133,7 +133,7 @@ class Review extends ComponentValidator
         $timestamp = strtotime($value);
 
         if (empty($timestamp)) {
-            $this->setErrorInvalid($field, $this->language->text('Created'));
+            $this->setErrorInvalid($field, $this->translation->text('Created'));
             return false;
         }
 
@@ -148,7 +148,7 @@ class Review extends ComponentValidator
     protected function validateProductReview()
     {
         $field = 'product_id';
-        $label = $this->language->text('Product');
+        $label = $this->translation->text('Product');
         $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($value)) {
@@ -181,7 +181,7 @@ class Review extends ComponentValidator
     protected function validateEmailReview()
     {
         $field = 'email';
-        $label = $this->language->text('Email');
+        $label = $this->translation->text('Email');
         $value = $this->getSubmitted($field);
 
         if (!isset($value)) {

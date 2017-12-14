@@ -9,10 +9,7 @@
 
 namespace gplcart\core\handlers\mail;
 
-use gplcart\core\Config;
-use gplcart\core\models\User as UserModel,
-    gplcart\core\models\Store as StoreModel,
-    gplcart\core\models\Language as LanguageModel;
+use gplcart\core\Container;
 
 /**
  * Base mail data handler class
@@ -39,24 +36,30 @@ class Base
     protected $user;
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
+     * Translation UI model instance
+     * @var \gplcart\core\models\Translation $translation
      */
-    protected $language;
+    protected $translation;
 
     /**
-     * @param Config $config
-     * @param LanguageModel $language
-     * @param StoreModel $store
-     * @param UserModel $user
+     * Constructor
      */
-    public function __construct(Config $config, LanguageModel $language, StoreModel $store,
-            UserModel $user)
+    public function __construct()
     {
-        $this->user = $user;
-        $this->store = $store;
-        $this->config = $config;
-        $this->language = $language;
+        $this->config = Container::get('gplcart\\core\\Config');
+        $this->user = Container::get('gplcart\\core\\models\\User');
+        $this->store = Container::get('gplcart\\core\\models\\Store');
+        $this->translation = Container::get('gplcart\\core\\models\\Translation');
+    }
+
+    /**
+     * Sets a property
+     * @param string $name
+     * @param mixed $value
+     */
+    public function setProperty($name, $value)
+    {
+        $this->{$name} = $value;
     }
 
     /**
@@ -71,10 +74,10 @@ class Base
         $replacements = array();
         $replacements['@owner'] = empty($options['owner']) ? '' : $options['owner'];
         $replacements['@address'] = empty($options['address']) ? '' : $options['address'];
-        $replacements['@phone'] = empty($options['phone']) ? '' : $this->language->text('Tel: @phone', array('@phone' => implode(',', $options['phone'])));
-        $replacements['@fax'] = empty($options['fax']) ? '' : $this->language->text('Fax: @fax', array('@fax' => implode(',', $options['fax'])));
-        $replacements['@store_email'] = empty($options['email']) ? '' : $this->language->text('E-mail: @store_email', array('@store_email' => implode(',', $options['email'])));
-        $replacements['@map'] = empty($options['map']) ? '' : $this->language->text('Find us on Google Maps: @map', array('@map' => 'http://maps.google.com/?q=' . implode(',', $options['map'])));
+        $replacements['@phone'] = empty($options['phone']) ? '' : $this->translation->text('Tel: @phone', array('@phone' => implode(',', $options['phone'])));
+        $replacements['@fax'] = empty($options['fax']) ? '' : $this->translation->text('Fax: @fax', array('@fax' => implode(',', $options['fax'])));
+        $replacements['@store_email'] = empty($options['email']) ? '' : $this->translation->text('E-mail: @store_email', array('@store_email' => implode(',', $options['email'])));
+        $replacements['@map'] = empty($options['map']) ? '' : $this->translation->text('Find us on Google Maps: @map', array('@map' => 'http://maps.google.com/?q=' . implode(',', $options['map'])));
 
         return rtrim(gplcart_string_format($signature, $replacements), "\t\n\r\0\x0B-");
     }

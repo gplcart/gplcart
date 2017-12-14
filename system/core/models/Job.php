@@ -9,11 +9,11 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Handler,
-    gplcart\core\Hook;
+use gplcart\core\Hook,
+    gplcart\core\Handler;
 use gplcart\core\helpers\Url as UrlHelper,
     gplcart\core\helpers\Session as SessionHelper;
-use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\models\Translation as TranslationModel;
 
 /**
  * Manages basic behaviors and data related to batch jobs
@@ -33,10 +33,10 @@ class Job
     const LIMIT = 1000;
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
+     * Translation UI model instance
+     * @var \gplcart\core\models\Translation $translation
      */
-    protected $language;
+    protected $translation;
 
     /**
      * Session class instance
@@ -52,17 +52,18 @@ class Job
 
     /**
      * @param Hook $hook
-     * @param LanguageModel $language
+     * @param Translation $translation
      * @param SessionHelper $session
      * @param UrlHelper $url
      */
-    public function __construct(Hook $hook, LanguageModel $language, SessionHelper $session,
-            UrlHelper $url)
+    public function __construct(Hook $hook, TranslationModel $translation, SessionHelper $session,
+                                UrlHelper $url)
     {
         $this->url = $url;
         $this->hook = $hook;
         $this->session = $session;
-        $this->language = $language;
+        $this->translation = $translation;
+
     }
 
     /**
@@ -136,9 +137,9 @@ class Job
             ),
             'data' => array(),
             'message' => array(
-                'start' => $this->language->text('Starting...'),
-                'finish' => $this->language->text('Finished'),
-                'process' => $this->language->text('Processing...')
+                'start' => $this->translation->text('Starting...'),
+                'finish' => $this->translation->text('Finished'),
+                'process' => $this->translation->text('Processing...')
             ),
             'redirect' => array(
                 'finish' => $current_url,
@@ -326,11 +327,11 @@ class Job
 
             if (empty($job['redirect_message']['errors'])) {
                 $vars = array('%total' => $job['total'], '%errors' => $job['errors']);
-                $message = $this->language->text('Processed %total items, errors: %errors', $vars);
+                $message = $this->translation->text('Processed %total items, errors: %errors', $vars);
             } else {
                 $vars = array('%total' => $job['total'], '%errors' => $job['errors'],
                     '%inserted' => $job['inserted'], '%updated' => $job['updated']);
-                $message = $this->language->text($job['redirect_message']['errors'], $vars);
+                $message = $this->translation->text($job['redirect_message']['errors'], $vars);
             }
 
             $this->session->setMessage($message, 'danger');
@@ -354,15 +355,15 @@ class Job
 
             if (empty($job['redirect_message']['finish'])) {
                 $vars = array('%total' => $job['total']);
-                $message = $this->language->text('Successfully processed %total items', $vars);
+                $message = $this->translation->text('Successfully processed %total items', $vars);
             } else {
                 $vars = array('%total' => $job['total'], '%inserted' => $job['inserted'], '%updated' => $job['updated']);
-                $message = $this->language->text($job['redirect_message']['finish'], $vars);
+                $message = $this->translation->text($job['redirect_message']['finish'], $vars);
             }
 
             if (!empty($job['redirect_message']['no_results']) && empty($job['inserted']) && empty($job['updated'])) {
                 $vars = array('%total' => $job['total']);
-                $message = $this->language->text($job['redirect_message']['no_results'], $vars);
+                $message = $this->translation->text($job['redirect_message']['no_results'], $vars);
             }
 
             $this->session->setMessage($message, 'success');

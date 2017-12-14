@@ -87,7 +87,7 @@ class Category extends ComponentValidator
         $data = $this->category->get($id);
 
         if (empty($data)) {
-            $this->setErrorUnavailable('update', $this->language->text('Category'));
+            $this->setErrorUnavailable('update', $this->translation->text('Category'));
             return false;
         }
 
@@ -102,7 +102,7 @@ class Category extends ComponentValidator
     protected function validateGroupCategory()
     {
         $field = 'category_group_id';
-        $label = $this->language->text('Category group');
+        $label = $this->translation->text('Category group');
         $category_group_id = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($category_group_id)) {
@@ -136,7 +136,7 @@ class Category extends ComponentValidator
     protected function validateParentCategory()
     {
         $field = 'parent_id';
-        $label = $this->language->text('Parent category');
+        $label = $this->translation->text('Parent category');
         $parent_id = $this->getSubmitted($field);
 
         if (empty($parent_id)) {
@@ -171,8 +171,8 @@ class Category extends ComponentValidator
     protected function validateDescriptionCategory()
     {
         $fields = array(
-            'description_1' => $this->language->text('First description'),
-            'description_2' => $this->language->text('Second description')
+            'description_1' => $this->translation->text('First description'),
+            'description_2' => $this->translation->text('Second description')
         );
 
         $errors = 0;

@@ -13,7 +13,8 @@ use gplcart\core\Config,
     gplcart\core\Hook;
 use gplcart\core\models\File as FileModel,
     gplcart\core\models\Language as LanguageModel,
-    gplcart\core\models\Validator as ValidatorModel;
+    gplcart\core\models\Validator as ValidatorModel,
+    gplcart\core\models\Translation as TranslationModel;
 use gplcart\core\helpers\SocketClient as SocketClientHelper;
 
 /**
@@ -45,6 +46,12 @@ class FileTransfer
      * @var \gplcart\core\models\Language $language
      */
     protected $language;
+
+    /**
+     * Translation UI model instance
+     * @var \gplcart\core\models\Translation $translation
+     */
+    protected $translation;
 
     /**
      * Validator model instance
@@ -82,10 +89,11 @@ class FileTransfer
      * @param LanguageModel $language
      * @param ValidatorModel $validator
      * @param FileModel $file
+     * @param TranslationModel $translation
      * @param SocketClientHelper $socket
      */
     public function __construct(Hook $hook, Config $config, LanguageModel $language,
-            ValidatorModel $validator, FileModel $file, SocketClientHelper $socket)
+                                ValidatorModel $validator, FileModel $file, TranslationModel $translation, SocketClientHelper $socket)
     {
         $this->hook = $hook;
         $this->config = $config;
@@ -94,6 +102,7 @@ class FileTransfer
         $this->file = $file;
         $this->language = $language;
         $this->validator = $validator;
+        $this->translation = $translation;
     }
 
     /**
@@ -113,7 +122,7 @@ class FileTransfer
         }
 
         if (!empty($post['error']) || empty($post['tmp_name']) || !is_uploaded_file($post['tmp_name'])) {
-            return $this->language->text('Unable to upload the file');
+            return $this->translation->text('Unable to upload the file');
         }
 
         $this->setHandler($handler);
@@ -224,7 +233,7 @@ class FileTransfer
         $fh = fopen($temp, "w");
 
         if (!is_resource($fh)) {
-            throw new \RuntimeException($this->language->text('Failed to open temporary file'));
+            throw new \RuntimeException($this->translation->text('Failed to open temporary file'));
         }
 
         $response = $this->socket->request($url);
@@ -260,7 +269,7 @@ class FileTransfer
 
         if (!file_exists($directory) && !mkdir($directory, 0775, true)) {
             unlink($temp);
-            throw new \RuntimeException($this->language->text('Unable to create @name', array('@name' => $directory)));
+            throw new \RuntimeException($this->translation->text('Unable to create @name', array('@name' => $directory)));
         }
 
         $destination = "$directory/$filename";
@@ -274,7 +283,7 @@ class FileTransfer
 
         if (!$copied) {
             $vars = array('@source' => $temp, '@destination' => $destination);
-            throw new \RuntimeException($this->language->text('Unable to move @source to @destination', $vars));
+            throw new \RuntimeException($this->translation->text('Unable to move @source to @destination', $vars));
         }
 
         chmod($destination, 0644);
@@ -310,11 +319,11 @@ class FileTransfer
         $pathinfo = isset($filename) ? pathinfo($filename) : pathinfo($path);
 
         if (empty($pathinfo['filename'])) {
-            return $this->language->text('Unknown filename');
+            return $this->translation->text('Unknown filename');
         }
 
         if (empty($pathinfo['extension'])) {
-            return $this->language->text('Unknown file extension');
+            return $this->translation->text('Unknown file extension');
         }
 
         if ($this->handler === false) {
@@ -347,15 +356,15 @@ class FileTransfer
     protected function validateHandler($file, $extension = null)
     {
         if (empty($this->handler['validator'])) {
-            throw new \RuntimeException($this->language->text('Unknown handler'));
+            throw new \RuntimeException($this->translation->text('Unknown handler'));
         }
 
         if (!empty($this->handler['extensions']) && isset($extension) && !in_array($extension, $this->handler['extensions'])) {
-            throw new \RuntimeException($this->language->text('Unsupported file extension'));
+            throw new \RuntimeException($this->translation->text('Unsupported file extension'));
         }
 
         if (isset($this->handler['filesize']) && filesize($file) > $this->handler['filesize']) {
-            throw new \RuntimeException($this->language->text('File size exceeds %num bytes', array('%num' => $this->handler['filesize'])));
+            throw new \RuntimeException($this->translation->text('File size exceeds %num bytes', array('%num' => $this->handler['filesize'])));
         }
 
         $result = $this->validator->run($this->handler['validator'], $file, $this->handler);
@@ -395,7 +404,7 @@ class FileTransfer
     protected function setHandlerByExtension($extension)
     {
         if (!in_array($extension, $this->file->supportedExtensions())) {
-            throw new \RuntimeException($this->language->text('Unsupported file extension'));
+            throw new \RuntimeException($this->translation->text('Unsupported file extension'));
         }
 
         return $this->handler = $this->file->getHandler(".$extension");

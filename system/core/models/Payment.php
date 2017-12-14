@@ -10,7 +10,7 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Hook;
-use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\models\Translation as TranslationModel;
 
 /**
  * Manages basic behaviors and data related to payment methods
@@ -25,19 +25,19 @@ class Payment
     protected $hook;
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
+     * Translation UI model instance
+     * @var \gplcart\core\models\Translation $translation
      */
-    protected $language;
+    protected $translation;
 
     /**
      * @param Hook $hook
-     * @param LanguageModel $language
+     * @param Translation $translation
      */
-    public function __construct(Hook $hook, LanguageModel $language)
+    public function __construct(Hook $hook, TranslationModel $translation)
     {
         $this->hook = $hook;
-        $this->language = $language;
+        $this->translation = $translation;
     }
 
     /**
@@ -106,8 +106,8 @@ class Payment
     {
         return array(
             'cod' => array(
-                'title' => $this->language->text('Cash on delivery'),
-                'description' => $this->language->text('Payment for an order is made at the time of delivery'),
+                'title' => $this->translation->text('Cash on delivery'),
+                'description' => $this->translation->text('Payment for an order is made at the time of delivery'),
                 'template' => array('complete' => ''),
                 'image' => '',
                 'status' => true,

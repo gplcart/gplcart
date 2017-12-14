@@ -9,10 +9,9 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Config,
-    gplcart\core\Hook,
-    gplcart\core\Database;
-use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\Hook,
+    gplcart\core\Config;
+use gplcart\core\models\Translation as TranslationModel;
 
 /**
  * Manages basic behaviors and data related to system reports
@@ -39,23 +38,22 @@ class Report
     protected $config;
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
+     * Translation UI model instance
+     * @var \gplcart\core\models\Translation $translation
      */
-    protected $language;
+    protected $translation;
 
     /**
      * @param Hook $hook
-     * @param Database $db
      * @param Config $config
-     * @param LanguageModel $language
+     * @param Translation $translation
      */
-    public function __construct(Hook $hook, Database $db, Config $config, LanguageModel $language)
+    public function __construct(Hook $hook, Config $config, TranslationModel $translation)
     {
-        $this->db = $db;
         $this->hook = $hook;
         $this->config = $config;
-        $this->language = $language;
+        $this->db = $this->config->getDb();
+        $this->translation = $translation;
     }
 
     /**
@@ -110,11 +108,8 @@ class Report
             return (int) $this->db->fetchColumn($sql, $where);
         }
 
-        $options = array('index' => 'log_id', 'unserialize' => 'data');
-
-        $list = $this->db->fetchAll($sql, $where, $options);
+        $list = $this->db->fetchAll($sql, $where, array('index' => 'log_id', 'unserialize' => 'data'));
         $this->hook->attach('report.list', $list, $this);
-
         return $list;
     }
 
@@ -134,9 +129,9 @@ class Report
     public function getSeverities()
     {
         return array(
-            'info' => $this->language->text('Info'),
-            'danger' => $this->language->text('Danger'),
-            'warning' => $this->language->text('Warning')
+            'info' => $this->translation->text('Info'),
+            'danger' => $this->translation->text('Danger'),
+            'warning' => $this->translation->text('Warning')
         );
     }
 
@@ -198,7 +193,7 @@ class Report
         $statuses = array();
 
         $statuses['core_version'] = array(
-            'title' => $this->language->text('Core version'),
+            'title' => $this->translation->text('Core version'),
             'description' => '',
             'severity' => 'info',
             'status' => gplcart_version(),
@@ -206,7 +201,7 @@ class Report
         );
 
         $statuses['database_version'] = array(
-            'title' => $this->language->text('Database version'),
+            'title' => $this->translation->text('Database version'),
             'description' => '',
             'severity' => 'info',
             'status' => $this->db->getPdo()->getAttribute(\PDO::ATTR_SERVER_VERSION),
@@ -214,7 +209,7 @@ class Report
         );
 
         $statuses['php_version'] = array(
-            'title' => $this->language->text('PHP version'),
+            'title' => $this->translation->text('PHP version'),
             'description' => '',
             'severity' => 'info',
             'status' => PHP_VERSION,
@@ -222,7 +217,7 @@ class Report
         );
 
         $statuses['php_os'] = array(
-            'title' => $this->language->text('PHP operating system'),
+            'title' => $this->translation->text('PHP operating system'),
             'description' => '',
             'severity' => 'info',
             'status' => PHP_OS,
@@ -230,7 +225,7 @@ class Report
         );
 
         $statuses['php_memory_limit'] = array(
-            'title' => $this->language->text('PHP Memory Limit'),
+            'title' => $this->translation->text('PHP Memory Limit'),
             'description' => '',
             'severity' => 'info',
             'status' => ini_get('memory_limit'),
@@ -238,15 +233,15 @@ class Report
         );
 
         $statuses['php_apc_enabled'] = array(
-            'title' => $this->language->text('PHP APC cache enabled'),
+            'title' => $this->translation->text('PHP APC cache enabled'),
             'description' => '',
             'severity' => 'info',
-            'status' => ini_get('apc.enabled') ? $this->language->text('Yes') : $this->language->text('No'),
+            'status' => ini_get('apc.enabled') ? $this->translation->text('Yes') : $this->translation->text('No'),
             'weight' => 5,
         );
 
         $statuses['server_software'] = array(
-            'title' => $this->language->text('Server software'),
+            'title' => $this->translation->text('Server software'),
             'description' => '',
             'severity' => 'info',
             'status' => filter_input(INPUT_SERVER, 'SERVER_SOFTWARE', FILTER_SANITIZE_STRING),
@@ -257,7 +252,7 @@ class Report
         $date_format .= $this->config->get('date_suffix', ' H:i');
 
         $statuses['cron'] = array(
-            'title' => $this->language->text('Cron last run'),
+            'title' => $this->translation->text('Cron last run'),
             'description' => '',
             'severity' => 'info',
             'status' => date($date_format, $this->config->get('cron_last_run')),
@@ -267,19 +262,19 @@ class Report
         $filesystem = $this->checkFilesystem();
 
         $statuses['filesystem'] = array(
-            'title' => $this->language->text('Filesystem is protected'),
+            'title' => $this->translation->text('Filesystem is protected'),
             'description' => '',
             'severity' => 'danger',
-            'status' => $filesystem === true ? $this->language->text('Yes') : $this->language->text('No'),
+            'status' => $filesystem === true ? $this->translation->text('Yes') : $this->translation->text('No'),
             'details' => $filesystem === true ? array() : $filesystem,
             'weight' => 8,
         );
 
         $statuses['search_index'] = array(
-            'title' => $this->language->text('Search index'),
+            'title' => $this->translation->text('Search index'),
             'description' => '',
             'severity' => 'info',
-            'status' => $this->language->text('@num rows', array('@num' => $this->countSearchIndex())),
+            'status' => $this->translation->text('@num rows', array('@num' => $this->countSearchIndex())),
             'weight' => 9,
         );
 
@@ -320,7 +315,7 @@ class Report
         }
 
         $vars = array('%name' => $file, '%perm' => $permissions);
-        return $this->language->text('File %name is not secure. The file permissions must be %perm', $vars);
+        return $this->translation->text('File %name is not secure. The file permissions must be %perm', $vars);
     }
 
     /**

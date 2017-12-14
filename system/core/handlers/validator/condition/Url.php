@@ -10,7 +10,7 @@
 namespace gplcart\core\handlers\validator\condition;
 
 use gplcart\core\Route;
-use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\models\Translation as TranslationModel;
 
 /**
  * Contains methods to validate URL trigger conditions
@@ -25,19 +25,19 @@ class Url
     protected $route;
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
+     * Translation UI model instance
+     * @var \gplcart\core\models\Translation $translation
      */
-    protected $language;
+    protected $translation;
 
     /**
      * @param Route $route
-     * @param LanguageModel $language
+     * @param TranslationModel $translation
      */
-    public function __construct(Route $route, LanguageModel $language)
+    public function __construct(Route $route, TranslationModel $translation)
     {
         $this->route = $route;
-        $this->language = $language;
+        $this->translation = $translation;
     }
 
     /**
@@ -49,15 +49,15 @@ class Url
     public function route(array $values, $operator)
     {
         if (!in_array($operator, array('=', '!='))) {
-            return $this->language->text('Unsupported operator');
+            return $this->translation->text('Unsupported operator');
         }
 
         $existing = $this->route->getList();
 
         foreach ($values as $pattern) {
             if (empty($existing[$pattern])) {
-                $vars = array('@name' => $this->language->text('Condition'));
-                return $this->language->text('@name is unavailable', $vars);
+                $vars = array('@name' => $this->translation->text('Condition'));
+                return $this->translation->text('@name is unavailable', $vars);
             }
         }
 
@@ -73,13 +73,13 @@ class Url
     public function path(array $values, $operator)
     {
         if (!in_array($operator, array('=', '!='))) {
-            return $this->language->text('Unsupported operator');
+            return $this->translation->text('Unsupported operator');
         }
 
         foreach ($values as $pattern) {
             if (!gplcart_string_is_regexp($pattern)) {
-                $vars = array('@field' => $this->language->text('Condition'));
-                return $this->language->text('@field has invalid value', $vars);
+                $vars = array('@field' => $this->translation->text('Condition'));
+                return $this->translation->text('@field has invalid value', $vars);
             }
         }
 

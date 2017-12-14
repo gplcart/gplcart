@@ -24,10 +24,10 @@ class Base
     protected $config;
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
+     * Translation UI model instance
+     * @var \gplcart\core\models\Translation $translation
      */
-    protected $language;
+    protected $translation;
 
     /**
      * Install model instance
@@ -74,7 +74,7 @@ class Base
         $this->cli = Container::get('gplcart\\core\\helpers\\Cli');
         $this->install = Container::get('gplcart\\core\\models\\Install');
         $this->session = Container::get('gplcart\\core\\helpers\\Session');
-        $this->language = Container::get('gplcart\\core\\models\\Language');
+        $this->translation = Container::get('gplcart\\core\\models\\Translation');
     }
 
     /**
@@ -100,7 +100,7 @@ class Base
 
         if (empty($config)) {
             $vars = array('@path' => GC_FILE_CONFIG);
-            return $this->language->text('Failed to read the source config @path', $vars);
+            return $this->translation->text('Failed to read the source config @path', $vars);
         }
 
         $config .= '$config[\'database\'] = ' . var_export($this->data['database'], true) . ';';
@@ -113,7 +113,7 @@ class Base
             return true;
         }
 
-        return $this->language->text('Failed to create config.php');
+        return $this->translation->text('Failed to create config.php');
     }
 
     /**
@@ -315,7 +315,7 @@ class Base
         }
 
         if (empty($result)) {
-            return $this->language->text('Failed to import database tables');
+            return $this->translation->text('Failed to import database tables');
         }
 
         return $result;
@@ -411,10 +411,10 @@ class Base
     {
         if (GC_CLI) {
             $vars = array('@url' => rtrim("{$this->data['store']['host']}/{$this->data['store']['basepath']}", '/'));
-            return $this->language->text("Your store has been installed.\nURL: @url\nAdmin area: @url/admin\nGood luck!", $vars);
+            return $this->translation->text("Your store has been installed.\nURL: @url\nAdmin area: @url/admin\nGood luck!", $vars);
         }
 
-        return $this->language->text('Your store has been installed. Now you can log in as superadmin');
+        return $this->translation->text('Your store has been installed. Now you can log in as superadmin');
     }
 
     /**
@@ -424,7 +424,7 @@ class Base
     protected function setCliMessage($message)
     {
         if (GC_CLI) {
-            $this->cli->line($this->language->text($message));
+            $this->cli->line($this->translation->text($message));
         }
     }
 

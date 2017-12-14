@@ -9,19 +9,18 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Config,
-    gplcart\core\Hook,
-    gplcart\core\Database;
+use gplcart\core\Hook,
+    gplcart\core\Config;
 use gplcart\core\models\Sku as SkuModel,
     gplcart\core\models\File as FileModel,
     gplcart\core\models\Alias as AliasModel,
     gplcart\core\models\Price as PriceModel,
     gplcart\core\models\Search as SearchModel,
-    gplcart\core\models\Language as LanguageModel,
     gplcart\core\models\PriceRule as PriceRuleModel,
-    gplcart\core\models\Translation as TranslationModel,
     gplcart\core\models\ProductField as ProductFieldModel,
-    gplcart\core\models\ProductRelation as ProductRelationModel;
+    gplcart\core\models\Translation as TranslationModel,
+    gplcart\core\models\ProductRelation as ProductRelationModel,
+    gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\helpers\Request as RequestHelper;
 use gplcart\core\traits\Image as ImageTrait,
     gplcart\core\traits\Alias as AliasTrait;
@@ -72,12 +71,6 @@ class Product
     protected $price;
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
-     */
-    protected $language;
-
-    /**
      * Price rule model instance
      * @var \gplcart\core\models\PriceRule $pricerule
      */
@@ -108,10 +101,16 @@ class Product
     protected $file;
 
     /**
-     * Translation model instance
+     * Translation UI model instance
      * @var \gplcart\core\models\Translation $translation
      */
     protected $translation;
+
+    /**
+     * Translation entity model instance
+     * @var \gplcart\core\models\TranslationEntity $translation_entity
+     */
+    protected $translation_entity;
 
     /**
      * Request class instance
@@ -119,31 +118,26 @@ class Product
      */
     protected $request;
 
-    /**
-     * @param Hook $hook
-     * @param Database $db
-     * @param Config $config
-     * @param LanguageModel $language
-     * @param AliasModel $alias
-     * @param FileModel $file
-     * @param PriceModel $price
-     * @param PriceRuleModel $pricerule
-     * @param SkuModel $sku
-     * @param SearchModel $search
-     * @param ProductFieldModel $product_field
-     * @param ProductRelationModel $product_relation
-     * @param TranslationModel $translation
-     * @param RequestHelper $request
-     */
-    public function __construct(Hook $hook, Database $db, Config $config, LanguageModel $language,
-            AliasModel $alias, FileModel $file, PriceModel $price, PriceRuleModel $pricerule,
-            SkuModel $sku, SearchModel $search, ProductFieldModel $product_field,
-            ProductRelationModel $product_relation, TranslationModel $translation,
-            RequestHelper $request)
+
+    public function __construct(
+        Hook $hook,
+        Config $config,
+        SkuModel $sku,
+        FileModel $file,
+        AliasModel $alias,
+        PriceModel $price,
+        SearchModel $search,
+        PriceRuleModel $pricerule,
+        ProductFieldModel $product_field,
+        TranslationModel $translation,
+        TranslationEntityModel $translation_entity,
+        ProductRelationModel $product_relation,
+        RequestHelper $request
+    )
     {
-        $this->db = $db;
         $this->hook = $hook;
         $this->config = $config;
+        $this->db = $this->config->getDb();
 
         $this->sku = $sku;
         $this->file = $file;
@@ -151,11 +145,11 @@ class Product
         $this->price = $price;
         $this->search = $search;
         $this->request = $request;
-        $this->language = $language;
         $this->price_rule = $pricerule;
         $this->translation = $translation;
         $this->product_field = $product_field;
         $this->product_relation = $product_relation;
+        $this->translation_entity = $translation_entity;
     }
 
     /**
@@ -179,7 +173,7 @@ class Product
 
         $result = $data['product_id'] = $this->db->insert('product', $data);
 
-        $this->setTranslations($data, $this->translation, 'product', false);
+        $this->setTranslations($data, $this->translation_entity, 'product', false);
         $this->setImages($data, $this->file, 'product');
 
         $this->setSku($data, false);
@@ -218,7 +212,7 @@ class Product
         $updated = $this->db->update('product', $data, $conditions);
 
         $updated += (int) $this->setSku($data);
-        $updated += (int) $this->setTranslations($data, $this->translation, 'product');
+        $updated += (int) $this->setTranslations($data, $this->translation_entity, 'product');
         $updated += (int) $this->setImages($data, $this->file, 'product');
         $updated += (int) $this->setAlias($data, $this->alias, 'product');
         $updated += (int) $this->setSkuCombinations($data);
@@ -316,8 +310,8 @@ class Product
 
         $this->attachFields($result);
         $this->attachSku($result);
-        $this->attachImages($result, $this->file, $this->translation, 'product', $options['language']);
-        $this->attachTranslations($result, $this->translation, 'product', $options['language']);
+        $this->attachImages($result, $this->file, $this->translation_entity, 'product', $options['language']);
+        $this->attachTranslations($result, $this->translation_entity, 'product', $options['language']);
 
         $this->hook->attach('product.get.after', $product_id, $options, $result, $this);
 
@@ -346,7 +340,7 @@ class Product
         }
 
         $result = reset($list);
-        $this->attachImages($result, $this->file, $this->translation, 'product', $language);
+        $this->attachImages($result, $this->file, $this->translation_entity, 'product', $language);
         return $result;
     }
 
@@ -508,10 +502,10 @@ class Product
     public function getWeightUnits()
     {
         return array(
-            'g' => $this->language->text('Gram'),
-            'kg' => $this->language->text('Kilogram'),
-            'lb' => $this->language->text('Pound'),
-            'oz' => $this->language->text('Ounce'),
+            'g' => $this->translation->text('Gram'),
+            'kg' => $this->translation->text('Kilogram'),
+            'lb' => $this->translation->text('Pound'),
+            'oz' => $this->translation->text('Ounce'),
         );
     }
 
@@ -522,9 +516,9 @@ class Product
     public function getSizeUnits()
     {
         return array(
-            'in' => $this->language->text('Inch'),
-            'mm' => $this->language->text('Millimeter'),
-            'cm' => $this->language->text('Centimetre')
+            'in' => $this->translation->text('Inch'),
+            'mm' => $this->translation->text('Millimeter'),
+            'cm' => $this->translation->text('Centimetre')
         );
     }
 
@@ -567,7 +561,7 @@ class Product
         $sql .= ' LEFT JOIN product_bundle pb ON(p.product_id = pb.product_id)';
 
 
-        $language = $this->language->getLangcode();
+        $language = $this->translation->getLangcode();
         $conditions = array($language, 'product');
 
         if (!empty($data['product_id'])) {

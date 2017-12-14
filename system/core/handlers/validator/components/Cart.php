@@ -101,7 +101,7 @@ class Cart extends ComponentValidator
         $data = $this->cart->get($id);
 
         if (empty($data)) {
-            $this->setErrorUnavailable('update', $this->language->text('Cart'));
+            $this->setErrorUnavailable('update', $this->translation->text('Cart'));
             return false;
         }
 
@@ -116,7 +116,7 @@ class Cart extends ComponentValidator
     protected function validateProductCart()
     {
         $field = 'product_id';
-        $label = $this->language->text('Product');
+        $label = $this->translation->text('Product');
         $product_id = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($product_id)) {
@@ -155,7 +155,7 @@ class Cart extends ComponentValidator
         }
 
         $field = 'sku';
-        $label = $this->language->text('SKU');
+        $label = $this->translation->text('SKU');
 
         $sku = $this->getSubmitted($field);
         $store_id = $this->getSubmitted('store_id');
@@ -187,7 +187,7 @@ class Cart extends ComponentValidator
     protected function validateOrderCart()
     {
         $field = 'order_id';
-        $label = $this->language->text('Order');
+        $label = $this->translation->text('Order');
         $order_id = $this->getSubmitted($field);
 
         if (empty($order_id)) {
@@ -215,7 +215,7 @@ class Cart extends ComponentValidator
     protected function validateQuantityCart()
     {
         $field = 'quantity';
-        $label = $this->language->text('Quantity');
+        $label = $this->translation->text('Quantity');
         $quantity = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($quantity)) {
@@ -276,7 +276,7 @@ class Cart extends ComponentValidator
         }
 
         if ($product['subtract'] && $expected_quantity_sku > $stock) {
-            $error = $this->language->text('Too low stock level');
+            $error = $this->translation->text('Too low stock level');
             $this->setError('quantity', $error);
             return false;
         }
@@ -287,13 +287,13 @@ class Cart extends ComponentValidator
         if (!empty($limit_item) && !isset($existing_quantity['sku'][$sku])//
                 && (count($existing_quantity['sku']) >= $limit_item)) {
 
-            $error = $this->language->text('Please no more than @num items', array('@num' => $limit_item));
+            $error = $this->translation->text('Please no more than @num items', array('@num' => $limit_item));
             $this->setError('quantity', $error);
             return false;
         }
 
         if (!empty($limit_sku) && $expected_quantity_sku > $limit_sku) {
-            $error = $this->language->text('Please no more than @num items per SKU', array('@num' => $limit_sku));
+            $error = $this->translation->text('Please no more than @num items per SKU', array('@num' => $limit_sku));
             $this->setError('quantity', $error);
             return false;
         }
@@ -325,7 +325,7 @@ class Cart extends ComponentValidator
         $combination_id = $this->sku->getCombinationId($options, $product['product_id']);
 
         if (empty($product['combination'][$combination_id]['status'])) {
-            $error = $this->language->text('Invalid combination');
+            $error = $this->translation->text('Invalid combination');
             $this->setError('options', $error);
             return false;
         }

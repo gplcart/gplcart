@@ -9,7 +9,7 @@
 
 namespace gplcart\core\handlers\validator\condition;
 
-use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\models\Translation as TranslationModel;
 
 /**
  * Contains methods to validate scope conditions
@@ -18,17 +18,17 @@ class Scope
 {
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
+     * Translation UI model instance
+     * @var \gplcart\core\models\Translation $translation
      */
-    protected $language;
+    protected $translation;
 
     /**
-     * @param LanguageModel $language
+     * @param TranslationModel $translation
      */
-    public function __construct(LanguageModel $language)
+    public function __construct(TranslationModel $translation)
     {
-        $this->language = $language;
+        $this->translation = $translation;
     }
 
     /**
@@ -73,19 +73,19 @@ class Scope
     protected function validate(array $values, $operator)
     {
         if (!in_array($operator, array('=', '!='))) {
-            return $this->language->text('Unsupported operator');
+            return $this->translation->text('Unsupported operator');
         }
 
         if (count($values) != 1) {
-            $vars = array('@field' => $this->language->text('Condition'));
-            return $this->language->text('@field has invalid value', $vars);
+            $vars = array('@field' => $this->translation->text('Condition'));
+            return $this->translation->text('@field has invalid value', $vars);
         }
 
         $scope = filter_var(reset($values), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
 
         if (!isset($scope)) {
-            $vars = array('@field' => $this->language->text('Condition'));
-            return $this->language->text('@field has invalid value', $vars);
+            $vars = array('@field' => $this->translation->text('Condition'));
+            return $this->translation->text('@field has invalid value', $vars);
         }
 
         return true;

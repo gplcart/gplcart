@@ -90,7 +90,7 @@ class Country extends ComponentValidator
         $data = $this->country->get($id);
 
         if (empty($data)) {
-            $this->setErrorUnavailable('update', $this->language->text('Country'));
+            $this->setErrorUnavailable('update', $this->translation->text('Country'));
             return false;
         }
 
@@ -105,7 +105,7 @@ class Country extends ComponentValidator
     protected function validateZoneCountry()
     {
         $field = 'zone_id';
-        $label = $this->language->text('Zone');
+        $label = $this->translation->text('Zone');
         $zone_id = $this->getSubmitted($field);
 
         if (empty($zone_id)) {
@@ -134,7 +134,7 @@ class Country extends ComponentValidator
     protected function validateNativeNameCountry()
     {
         $field = 'native_name';
-        $label = $this->language->text('Native name');
+        $label = $this->translation->text('Native name');
         $native_name = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($native_name)) {
@@ -156,7 +156,7 @@ class Country extends ComponentValidator
     protected function validateTemplateCountry()
     {
         $field = 'template';
-        $label = $this->language->text('Address template');
+        $label = $this->translation->text('Address template');
         $template = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($template)) {
@@ -178,7 +178,7 @@ class Country extends ComponentValidator
     protected function validateCodeCountry()
     {
         $field = 'code';
-        $label = $this->language->text('Code');
+        $label = $this->translation->text('Code');
         $code = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($code)) {

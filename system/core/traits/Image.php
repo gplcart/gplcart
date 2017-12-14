@@ -21,11 +21,11 @@ trait Image
      * Adds images to an entity
      * @param array $data
      * @param \gplcart\core\models\File $file_model
-     * @param \gplcart\core\models\Translation $translation_model
+     * @param \gplcart\core\models\TranslationEntity $translation_entity_model
      * @param string $entity
      * @param null|string $lang
      */
-    public function attachImages(&$data, $file_model, $translation_model, $entity, $lang = null)
+    public function attachImages(&$data, $file_model, $translation_entity_model, $entity, $lang = null)
     {
         if (!empty($data[$entity . '_id'])) {
 
@@ -40,7 +40,7 @@ trait Image
             $images = (array) $file_model->getList($options);
 
             foreach ($images as &$image) {
-                $this->attachTranslations($image, $translation_model, 'file', $lang);
+                $this->attachTranslations($image, $translation_entity_model, 'file', $lang);
             }
 
             $data['images'] = $images;

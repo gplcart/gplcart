@@ -98,7 +98,7 @@ class City extends ComponentValidator
         $data = $this->city->get($id);
 
         if (empty($data)) {
-            $this->setErrorUnavailable('update', $this->language->text('City'));
+            $this->setErrorUnavailable('update', $this->translation->text('City'));
             return false;
         }
 
@@ -113,7 +113,7 @@ class City extends ComponentValidator
     protected function validateStateCity()
     {
         $field = 'state_id';
-        $label = $this->language->text('State');
+        $label = $this->translation->text('State');
         $state_id = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($state_id)) {
@@ -146,7 +146,7 @@ class City extends ComponentValidator
     protected function validateZoneCity()
     {
         $field = 'zone_id';
-        $label = $this->language->text('Zone');
+        $label = $this->translation->text('Zone');
         $zone_id = $this->getSubmitted($field);
 
         if (empty($zone_id)) {
@@ -175,7 +175,7 @@ class City extends ComponentValidator
     protected function validateCountryCity()
     {
         $field = 'country';
-        $label = $this->language->text('Country');
+        $label = $this->translation->text('Country');
         $code = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($code)) {

@@ -18,7 +18,7 @@ trait Translation
     /**
      * Adds array key containing translations to the entity
      * @param array $data
-     * @param \gplcart\core\models\Translation $model
+     * @param \gplcart\core\models\TranslationEntity $model
      * @param string $entity
      * @param string|null $language
      */
@@ -43,7 +43,7 @@ trait Translation
     /**
      * Deletes and/or adds translations
      * @param array $data
-     * @param \gplcart\core\models\Translation $model
+     * @param \gplcart\core\models\TranslationEntity $model
      * @param string $entity
      * @param bool $delete_existing
      * @return boolean

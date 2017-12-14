@@ -9,7 +9,7 @@
 
 namespace gplcart\core\handlers\validator\condition;
 
-use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\models\Translation as TranslationModel;
 
 /**
  * Contains methods to validate date conditions
@@ -18,17 +18,17 @@ class Date
 {
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
+     * Translation UI model instance
+     * @var \gplcart\core\models\Translation $translation
      */
-    protected $language;
+    protected $translation;
 
     /**
-     * @param LanguageModel $language
+     * @param TranslationModel $translation
      */
-    public function __construct(LanguageModel $language)
+    public function __construct(TranslationModel $translation)
     {
-        $this->language = $language;
+        $this->translation = $translation;
     }
 
     /**
@@ -39,15 +39,15 @@ class Date
     public function date(array $values)
     {
         if (count($values) != 1) {
-            $vars = array('@field' => $this->language->text('Condition'));
-            return $this->language->text('@field has invalid value', $vars);
+            $vars = array('@field' => $this->translation->text('Condition'));
+            return $this->translation->text('@field has invalid value', $vars);
         }
 
         $timestamp = strtotime(reset($values));
 
         if (empty($timestamp)) {
-            $vars = array('@field' => $this->language->text('Condition'));
-            return $this->language->text('@field has invalid value', $vars);
+            $vars = array('@field' => $this->translation->text('Condition'));
+            return $this->translation->text('@field has invalid value', $vars);
         }
 
         return true;

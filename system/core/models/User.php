@@ -9,13 +9,12 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Config,
-    gplcart\core\Hook,
-    gplcart\core\Database;
+use gplcart\core\Hook,
+    gplcart\core\Config;
 use gplcart\core\models\Mail as MailModel,
     gplcart\core\models\Address as AddressModel,
     gplcart\core\models\UserRole as UserRoleModel,
-    gplcart\core\models\Language as LanguageModel;
+    gplcart\core\models\Translation as TranslationModel;
 use gplcart\core\helpers\Session as SessionHelper;
 
 /**
@@ -61,10 +60,10 @@ class User
     protected $mail;
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
+     * Translation UI model instance
+     * @var \gplcart\core\models\Translation $translation
      */
-    protected $language;
+    protected $translation;
 
     /**
      * Session class instance
@@ -80,26 +79,25 @@ class User
 
     /**
      * @param Hook $hook
-     * @param Database $db
      * @param Config $config
-     * @param LanguageModel $language
+     * @param TranslationModel $translation
      * @param AddressModel $address
      * @param UserRoleModel $role
      * @param MailModel $mail
      * @param SessionHelper $session
      */
-    public function __construct(Hook $hook, Database $db, Config $config, LanguageModel $language,
+    public function __construct(Hook $hook, Config $config, TranslationModel $translation,
             AddressModel $address, UserRoleModel $role, MailModel $mail, SessionHelper $session)
     {
-        $this->db = $db;
         $this->hook = $hook;
         $this->config = $config;
+        $this->db = $this->config->getDb();
 
         $this->mail = $mail;
         $this->role = $role;
         $this->address = $address;
         $this->session = $session;
-        $this->language = $language;
+        $this->translation = $translation;
 
         $this->uid = $this->getId();
     }
@@ -394,7 +392,7 @@ class User
         $result = array(
             'redirect' => null,
             'severity' => 'warning',
-            'message' => $this->language->text('Failed to log in')
+            'message' => $this->translation->text('Failed to log in')
         );
 
         if (empty($data['email'])) {
@@ -464,7 +462,7 @@ class User
 
         if (empty($data['user_id'])) {
             $result['severity'] = 'warning';
-            $result['message'] = $this->language->text('An error occurred');
+            $result['message'] = $this->translation->text('An error occurred');
             return $result;
         }
 
@@ -474,7 +472,7 @@ class User
             'redirect' => '/',
             'severity' => 'success',
             'user_id' => $data['user_id'],
-            'message' => $this->language->text('Your account has been created'));
+            'message' => $this->translation->text('Your account has been created'));
 
         $this->session->regenerate(true);
 
@@ -614,7 +612,7 @@ class User
         return array(
             'redirect' => 'forgot',
             'severity' => 'success',
-            'message' => $this->language->text('Password reset link has been sent to your E-mail')
+            'message' => $this->translation->text('Password reset link has been sent to your E-mail')
         );
     }
 
@@ -635,7 +633,7 @@ class User
         return array(
             'redirect' => 'login',
             'severity' => 'success',
-            'message' => $this->language->text('Your password has been successfully changed')
+            'message' => $this->translation->text('Your password has been successfully changed')
         );
     }
 

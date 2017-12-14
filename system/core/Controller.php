@@ -94,16 +94,16 @@ abstract class Controller
     protected $path;
 
     /**
+     * The request URI from $_SERVER['REQUEST_URI'] variable
+     * @var string
+     */
+    protected $uri_path;
+
+    /**
      * Full current URI including query and schema
      * @var string
      */
     protected $uri;
-
-    /**
-     * Current URN
-     * @var string
-     */
-    protected $urn;
 
     /**
      * Current host
@@ -230,6 +230,12 @@ abstract class Controller
      * @var \gplcart\core\models\Language $language
      */
     protected $language;
+    
+    /**
+     * Translation model instance
+     * @var \gplcart\core\models\Translation $translation
+     */
+    protected $translation;
 
     /**
      * Validator model instance
@@ -426,6 +432,8 @@ abstract class Controller
         $this->filter = $this->getInstance('gplcart\\core\\models\\Filter');
         $this->language = $this->getInstance('gplcart\\core\\models\\Language');
         $this->validator = $this->getInstance('gplcart\\core\\models\\Validator');
+        
+        $this->translation = $this->getInstance('gplcart\\core\\models\\Translation');
 
         $this->url = $this->getInstance('gplcart\\core\\helpers\\Url');
         $this->asset = $this->getInstance('gplcart\\core\\helpers\\Asset');
@@ -446,11 +454,11 @@ abstract class Controller
         $this->is_backend = $this->url->isBackend();
         $this->is_install = $this->url->isInstall();
         $this->base = $this->request->base();
-        $this->urn = $this->server->requestUri();
+        $this->uri_path = $this->server->requestUri();
         $this->host = $this->server->httpHost();
         $this->scheme = $this->server->httpScheme();
         $this->is_ajax = $this->server->isAjaxRequest();
-        $this->uri = $this->scheme . $this->host . $this->urn;
+        $this->uri = $this->scheme . $this->host . $this->uri_path;
         $this->query = (array) $this->request->get(null, array(), 'array');
     }
 
@@ -462,8 +470,8 @@ abstract class Controller
         if (!$this->isInternalRoute()) {
             $langcode = $this->route->getLangcode();
             if ($langcode) {
-                $this->language->set($langcode, $this->current_route['simple_pattern']);
-                $this->langcode = $this->language->getLangcode();
+                $this->langcode = $langcode;
+                $this->translation->set($langcode, $this->current_route['simple_pattern']);
                 $this->current_language = $this->language->get($this->langcode);
             }
         }
@@ -601,7 +609,7 @@ abstract class Controller
      */
     public function text($string = null, array $arguments = array())
     {
-        return $this->language->text($string, $arguments);
+        return $this->translation->text($string, $arguments);
     }
 
     /**
@@ -615,7 +623,7 @@ abstract class Controller
         $code = '';
         foreach ((array) $strings as $string) {
             $key = gplcart_json_encode($string);
-            $text = $this->language->text($string);
+            $text = $this->translation->text($string);
             $translation = gplcart_json_encode(array($text));
             $code .= "Gplcart.translations[$key]=$translation;\n";
         }
@@ -1603,13 +1611,13 @@ abstract class Controller
      */
     protected function setJsTranslation(array $scripts)
     {
-        if (!empty($this->langcode) && !is_file($this->language->getContextJsFile())) {
+        if (!empty($this->langcode) && !is_file($this->translation->getContextJsFile())) {
             foreach ($scripts as $key => $script) {
                 if (strpos($key, 'system/modules/') === 0//
                         && strpos($key, '/vendor/') === false//
                         && !empty($script['file'])) {
                     $string = file_get_contents($script['file']);
-                    $this->language->createJsTranslation($string);
+                    $this->translation->createJsTranslation($string);
                 }
             }
         }
@@ -1844,7 +1852,7 @@ abstract class Controller
             $this->setJsSettings(ltrim($key, '_'), $value, 60);
         }
 
-        $json = gplcart_json_encode($this->language->loadJsTranslation());
+        $json = gplcart_json_encode($this->translation->loadJsTranslation());
         $this->setJs("Gplcart.translations=$json;");
     }
 
@@ -1877,7 +1885,6 @@ abstract class Controller
         $data = array();
 
         $data['_uid'] = $this->uid;
-        $data['_urn'] = $this->urn;
         $data['_uri'] = $this->uri;
         $data['_path'] = $this->path;
         $data['_base'] = $this->base;

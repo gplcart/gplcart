@@ -69,7 +69,7 @@ class UserRole extends ComponentValidator
         $data = $this->role->get($id);
 
         if (empty($data)) {
-            $this->setErrorUnavailable('update', $this->language->text('Role'));
+            $this->setErrorUnavailable('update', $this->translation->text('Role'));
             return false;
         }
 
@@ -113,7 +113,7 @@ class UserRole extends ComponentValidator
     {
         $value = $this->getSubmitted('redirect');
         if (isset($value) && mb_strlen($value) > 255) {
-            $this->setErrorLengthRange('redirect', $this->language->text('Redirect'), 0, 255);
+            $this->setErrorLengthRange('redirect', $this->translation->text('Redirect'), 0, 255);
             return false;
         }
         return true;

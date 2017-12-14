@@ -10,9 +10,9 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Hook,
-    gplcart\core\Database;
-use gplcart\core\models\Language as LanguageModel,
-    gplcart\core\models\Translation as TranslationModel;
+    gplcart\core\Config;
+use gplcart\core\models\Translation as TranslationModel,
+    gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\traits\Translation as TranslationTrait;
 
 /**
@@ -36,30 +36,30 @@ class Collection
     protected $hook;
 
     /**
-     * Language model class instance
-     * @var \gplcart\core\models\Language $language
-     */
-    protected $language;
-
-    /**
-     * Translation model class instance
+     * Translation UI model class instance
      * @var \gplcart\core\models\Translation $translation
      */
     protected $translation;
 
     /**
-     * @param Hook $hook
-     * @param Database $db
-     * @param LanguageModel $language
-     * @param TranslationModel $translation
+     * Translation entity model instance
+     * @var \gplcart\core\models\TranslationEntity $translation_entity
      */
-    public function __construct(Hook $hook, Database $db, LanguageModel $language,
-            TranslationModel $translation)
+    protected $translation_entity;
+
+    /**
+     * @param Hook $hook
+     * @param Config $config
+     * @param TranslationModel $translation
+     * @param TranslationEntityModel $translation_entity
+     */
+    public function __construct(Hook $hook, Config $config, TranslationModel $translation,
+                                TranslationEntityModel $translation_entity)
     {
-        $this->db = $db;
         $this->hook = $hook;
-        $this->language = $language;
+        $this->db = $config->getDb();
         $this->translation = $translation;
+        $this->translation_entity = $translation_entity;
     }
 
     /**
@@ -79,7 +79,7 @@ class Collection
                 . ' LEFT JOIN collection_translation ct ON(ct.collection_id = c.collection_id AND ct.language=?)'
                 . ' WHERE c.collection_id IS NOT NULL';
 
-        $language = $this->language->getLangcode();
+        $language = $this->translation->getLangcode();
         $conditions = array($language);
 
         if (isset($data['title'])) {
@@ -141,7 +141,7 @@ class Collection
         }
 
         $result = $data['collection_id'] = $this->db->insert('collection', $data);
-        $this->setTranslations($data, $this->translation, 'collection', false);
+        $this->setTranslations($data, $this->translation_entity, 'collection', false);
 
         $this->hook->attach('collection.add.after', $data, $result, $this);
         return (int) $result;
@@ -163,7 +163,7 @@ class Collection
         }
 
         $result = $this->db->fetch('SELECT * FROM collection WHERE collection_id=?', array($collection_id));
-        $this->attachTranslations($result, $this->translation, 'collection', $language);
+        $this->attachTranslations($result, $this->translation_entity, 'collection', $language);
 
         $this->hook->attach('collection.get.after', $collection_id, $language, $result, $this);
         return $result;
@@ -233,7 +233,7 @@ class Collection
 
         $updated = $this->db->update('collection', $data, array('collection_id' => $collection_id));
         $data['collection_id'] = $collection_id;
-        $updated += (int) $this->setTranslations($data, $this->translation, 'collection');
+        $updated += (int) $this->setTranslations($data, $this->translation_entity, 'collection');
 
         $result = $updated > 0;
         $this->hook->attach('collection.update.after', $collection_id, $data, $result, $this);

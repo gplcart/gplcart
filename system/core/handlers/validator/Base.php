@@ -19,10 +19,10 @@ class Base extends Handler
 {
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
+     * Translation UI model instance
+     * @var \gplcart\core\models\Translation $translation
      */
-    protected $language;
+    protected $translation;
 
     /**
      * An array of validation errors
@@ -47,7 +47,7 @@ class Base extends Handler
      */
     public function __construct()
     {
-        $this->language = Container::get('gplcart\\core\\models\\Language');
+        $this->translation = Container::get('gplcart\\core\\models\\Translation');
     }
 
     /**
@@ -225,7 +225,7 @@ class Base extends Handler
      */
     protected function setErrorRequired($field, $label)
     {
-        $error = $this->language->text('@field is required', array('@field' => $label));
+        $error = $this->translation->text('@field is required', array('@field' => $label));
         return $this->setError($field, $error);
     }
 
@@ -237,7 +237,7 @@ class Base extends Handler
      */
     protected function setErrorNumeric($field, $label)
     {
-        $error = $this->language->text('@field must be numeric', array('@field' => $label));
+        $error = $this->translation->text('@field must be numeric', array('@field' => $label));
         return $this->setError($field, $error);
     }
 
@@ -249,7 +249,7 @@ class Base extends Handler
      */
     protected function setErrorInteger($field, $label)
     {
-        $error = $this->language->text('@field must be integer', array('@field' => $label));
+        $error = $this->translation->text('@field must be integer', array('@field' => $label));
         return $this->setError($field, $error);
     }
 
@@ -261,7 +261,7 @@ class Base extends Handler
      */
     protected function setErrorUnavailable($field, $label)
     {
-        $error = $this->language->text('@name is unavailable', array('@name' => $label));
+        $error = $this->translation->text('@name is unavailable', array('@name' => $label));
         return $this->setError($field, $error);
     }
 
@@ -276,7 +276,7 @@ class Base extends Handler
     protected function setErrorLengthRange($field, $label, $min = 1, $max = 255)
     {
         $vars = array('@min' => $min, '@max' => $max, '@field' => $label);
-        $error = $this->language->text('@field must be @min - @max characters long', $vars);
+        $error = $this->translation->text('@field must be @min - @max characters long', $vars);
         return $this->setError($field, $error);
     }
 
@@ -288,7 +288,7 @@ class Base extends Handler
      */
     protected function setErrorInvalid($field, $label)
     {
-        $error = $this->language->text('@field has invalid value', array('@field' => $label));
+        $error = $this->translation->text('@field has invalid value', array('@field' => $label));
         return $this->setError($field, $error);
     }
 
@@ -300,7 +300,7 @@ class Base extends Handler
      */
     protected function setErrorExists($field, $label)
     {
-        $error = $this->language->text('@name already exists', array('@name' => $label));
+        $error = $this->translation->text('@name already exists', array('@name' => $label));
         return $this->setError($field, $error);
     }
 

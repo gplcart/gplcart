@@ -70,7 +70,7 @@ class Collection extends ComponentValidator
         $data = $this->collection->get($id);
 
         if (empty($data)) {
-            $this->setErrorUnavailable('update', $this->language->text('Collection'));
+            $this->setErrorUnavailable('update', $this->translation->text('Collection'));
             return false;
         }
 
@@ -89,7 +89,7 @@ class Collection extends ComponentValidator
         }
 
         $field = 'type';
-        $label = $this->language->text('Type');
+        $label = $this->translation->text('Type');
         $type = $this->getSubmitted($field);
 
         if (empty($type)) {

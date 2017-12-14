@@ -9,10 +9,10 @@
 
 namespace gplcart\core\handlers\validator\condition;
 
-use gplcart\core\models\Zone as ZoneModel;
-use gplcart\core\models\State as StateModel;
-use gplcart\core\models\Country as CountryModel;
-use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\models\Zone as ZoneModel,
+    gplcart\core\models\State as StateModel,
+    gplcart\core\models\Country as CountryModel,
+    gplcart\core\models\Translation as TranslationModel;
 
 /**
  * Contains methods to validate shipping address conditions
@@ -21,10 +21,10 @@ class Shipping
 {
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
+     * Translation UI model instance
+     * @var \gplcart\core\models\Translation $translation
      */
-    protected $language;
+    protected $translation;
 
     /**
      * Country model instance
@@ -48,15 +48,15 @@ class Shipping
      * @param CountryModel $country
      * @param StateModel $state
      * @param ZoneModel $zone
-     * @param LanguageModel $language
+     * @param TranslationModel $translation
      */
     public function __construct(CountryModel $country, StateModel $state, ZoneModel $zone,
-            LanguageModel $language)
+                                TranslationModel $translation)
     {
         $this->zone = $zone;
         $this->state = $state;
         $this->country = $country;
-        $this->language = $language;
+        $this->translation = $translation;
     }
 
     /**
@@ -72,8 +72,8 @@ class Shipping
         });
 
         if (count($values) != count($existing)) {
-            $vars = array('@name' => $this->language->text('Country'));
-            return $this->language->text('@name is unavailable', $vars);
+            $vars = array('@name' => $this->translation->text('Country'));
+            return $this->translation->text('@name is unavailable', $vars);
         }
 
         return true;
@@ -90,8 +90,8 @@ class Shipping
         $ids = array_filter($values, 'ctype_digit');
 
         if ($count != count($ids)) {
-            $vars = array('@field' => $this->language->text('Condition'));
-            return $this->language->text('@field has invalid value', $vars);
+            $vars = array('@field' => $this->translation->text('Condition'));
+            return $this->translation->text('@field has invalid value', $vars);
         }
 
         $existing = array_filter($values, function ($state_id) {
@@ -100,8 +100,8 @@ class Shipping
         });
 
         if ($count != count($existing)) {
-            $vars = array('@name' => $this->language->text('State'));
-            return $this->language->text('@name is unavailable', $vars);
+            $vars = array('@name' => $this->translation->text('State'));
+            return $this->translation->text('@name is unavailable', $vars);
         }
 
         return true;
@@ -116,14 +116,14 @@ class Shipping
     public function zoneId(array $values, $operator)
     {
         if (!in_array($operator, array('=', '!='))) {
-            return $this->language->text('Unsupported operator');
+            return $this->translation->text('Unsupported operator');
         }
 
         $zone = $this->zone->get(reset($values));
 
         if (empty($zone)) {
-            $vars = array('@name' => $this->language->text('Condition'));
-            return $this->language->text('@name is unavailable', $vars);
+            $vars = array('@name' => $this->translation->text('Condition'));
+            return $this->translation->text('@name is unavailable', $vars);
         }
 
         return true;

@@ -11,7 +11,7 @@ namespace gplcart\core\models;
 
 use gplcart\core\Hook,
     gplcart\core\Handler;
-use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\models\Translation as TranslationModel;
 
 /**
  * Manages basic behaviors and data related to trigger conditions
@@ -26,10 +26,10 @@ class Condition
     protected $hook;
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
+     * Translation UI model instance
+     * @var \gplcart\core\models\Translation $translation
      */
-    protected $language;
+    protected $translation;
 
     /**
      * An array of processed conditions and their results
@@ -39,12 +39,12 @@ class Condition
 
     /**
      * @param Hook $hook
-     * @param LanguageModel $language
+     * @param Translation $translation
      */
-    public function __construct(Hook $hook, LanguageModel $language)
+    public function __construct(Hook $hook, TranslationModel $translation)
     {
         $this->hook = $hook;
-        $this->language = $language;
+        $this->translation = $translation;
     }
 
     /**
@@ -112,12 +112,12 @@ class Condition
     public function getOperators()
     {
         return array(
-            "<" => $this->language->text('Less than'),
-            ">" => $this->language->text('Greater than'),
-            "=" => $this->language->text('Equal (is in list)'),
-            "<=" => $this->language->text('Less than or equal to'),
-            ">=" => $this->language->text('Greater than or equal to'),
-            "!=" => $this->language->text('Not equal (is not in list)')
+            "<" => $this->translation->text('Less than'),
+            ">" => $this->translation->text('Greater than'),
+            "=" => $this->translation->text('Equal (is in list)'),
+            "<=" => $this->translation->text('Less than or equal to'),
+            ">=" => $this->translation->text('Greater than or equal to'),
+            "!=" => $this->translation->text('Not equal (is not in list)')
         );
     }
 

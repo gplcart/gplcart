@@ -56,7 +56,7 @@ class Compare extends ComponentValidator
     protected function validateProductCompare()
     {
         $field = 'product_id';
-        $label = $this->language->text('Product');
+        $label = $this->translation->text('Product');
         $product_id = $this->getSubmitted($field);
 
         if (empty($product_id)) {

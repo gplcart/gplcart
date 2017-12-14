@@ -113,7 +113,7 @@ class User extends ComponentValidator
         }
 
         if (empty($user['status']) || empty($user['user_id'])) {
-            $this->setErrorUnavailable('user', $this->language->text('User'));
+            $this->setErrorUnavailable('user', $this->translation->text('User'));
             return false;
         }
 
@@ -136,7 +136,7 @@ class User extends ComponentValidator
         $data = $this->user->get($id);
 
         if (empty($data)) {
-            $this->setErrorUnavailable('update', $this->language->text('User'));
+            $this->setErrorUnavailable('update', $this->translation->text('User'));
             return false;
         }
 
@@ -168,7 +168,7 @@ class User extends ComponentValidator
             return true;
         }
 
-        $this->setErrorExists('email', $this->language->text('E-mail'));
+        $this->setErrorExists('email', $this->translation->text('E-mail'));
         return false;
     }
 
@@ -187,7 +187,7 @@ class User extends ComponentValidator
         $user = $this->user->getByEmail($value);
 
         if (empty($user['status'])) {
-            $this->setErrorUnavailable('email', $this->language->text('E-mail'));
+            $this->setErrorUnavailable('email', $this->translation->text('E-mail'));
             return false;
         }
 
@@ -208,7 +208,7 @@ class User extends ComponentValidator
         }
 
         if (empty($value)) {
-            $this->setErrorRequired('password', $this->language->text('Password'));
+            $this->setErrorRequired('password', $this->translation->text('Password'));
             return false;
         }
         return true;
@@ -234,7 +234,7 @@ class User extends ComponentValidator
         $limit = $this->user->getPasswordLength();
 
         if ($length < $limit['min'] || $length > $limit['max']) {
-            $this->setErrorLengthRange('password', $this->language->text('Password'), $limit['min'], $limit['max']);
+            $this->setErrorLengthRange('password', $this->translation->text('Password'), $limit['min'], $limit['max']);
             return false;
         }
         return true;
@@ -259,7 +259,7 @@ class User extends ComponentValidator
         $old_password = $this->getSubmitted('password_old');
 
         if (!isset($old_password) || $old_password === '') {
-            $this->setErrorRequired('password_old', $this->language->text('Old password'));
+            $this->setErrorRequired('password_old', $this->translation->text('Old password'));
             return false;
         }
 
@@ -267,7 +267,7 @@ class User extends ComponentValidator
         $hash = gplcart_string_hash($old_password, $updating['hash'], 0);
 
         if (!gplcart_string_equals($updating['hash'], $hash)) {
-            $error = $this->language->text('Old and new password not matching');
+            $error = $this->translation->text('Old and new password not matching');
             $this->setError('password_old', $error);
             return false;
         }
@@ -282,7 +282,7 @@ class User extends ComponentValidator
     protected function validateRoleUser()
     {
         $field = 'role_id';
-        $label = $this->language->text('Role');
+        $label = $this->translation->text('Role');
         $value = $this->getSubmitted($field);
 
         if (empty($value)) {

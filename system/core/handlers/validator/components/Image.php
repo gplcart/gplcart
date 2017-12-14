@@ -69,7 +69,7 @@ class Image extends ComponentValidator
         $imagestyle = $this->image->getStyle($id);
 
         if (empty($imagestyle)) {
-            $this->setErrorUnavailable('update', $this->language->text('Image style'));
+            $this->setErrorUnavailable('update', $this->translation->text('Image style'));
             return false;
         }
 
@@ -84,7 +84,7 @@ class Image extends ComponentValidator
     public function validateActionsImageStyle()
     {
         $field = 'actions';
-        $label = $this->language->text('Actions');
+        $label = $this->translation->text('Actions');
         $actions = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($actions)) {
@@ -114,7 +114,7 @@ class Image extends ComponentValidator
 
         if (!empty($errors)) {
             $vars = array('@num' => implode(',', $errors));
-            $error = $this->language->text('Error on line @num', $vars);
+            $error = $this->translation->text('Error on line @num', $vars);
             $this->setError($field, $error);
         }
 

@@ -9,10 +9,10 @@
 
 namespace gplcart\core\handlers\validator\condition;
 
-use gplcart\core\models\Sku as SkuModel;
-use gplcart\core\models\Product as ProductModel;
-use gplcart\core\models\Language as LanguageModel;
-use gplcart\core\models\Category as CategoryModel;
+use gplcart\core\models\Sku as SkuModel,
+    gplcart\core\models\Product as ProductModel,
+    gplcart\core\models\Category as CategoryModel,
+    gplcart\core\models\Translation as TranslationModel;
 
 /**
  * Contains methods to validate product conditions
@@ -27,10 +27,10 @@ class Product
     protected $sku;
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
+     * Translation UI model instance
+     * @var \gplcart\core\models\Translation $translation
      */
-    protected $language;
+    protected $translation;
 
     /**
      * Product model instance
@@ -47,16 +47,16 @@ class Product
     /**
      * @param ProductModel $product
      * @param CategoryModel $category
-     * @param LanguageModel $language
+     * @param TranslationModel $translation
      * @param SkuModel $sku
      */
     public function __construct(ProductModel $product, CategoryModel $category,
-            LanguageModel $language, SkuModel $sku)
+                                TranslationModel $translation, SkuModel $sku)
     {
         $this->sku = $sku;
         $this->product = $product;
         $this->category = $category;
-        $this->language = $language;
+        $this->translation = $translation;
     }
 
     /**
@@ -70,8 +70,8 @@ class Product
         $ids = array_filter($values, 'ctype_digit');
 
         if ($count != count($ids)) {
-            $vars = array('@field' => $this->language->text('Condition'));
-            return $this->language->text('@field has invalid value', $vars);
+            $vars = array('@field' => $this->translation->text('Condition'));
+            return $this->translation->text('@field has invalid value', $vars);
         }
 
         $existing = array_filter($values, function ($product_id) {
@@ -80,8 +80,8 @@ class Product
         });
 
         if ($count != count($existing)) {
-            $vars = array('@name' => $this->language->text('Product'));
-            return $this->language->text('@name is unavailable', $vars);
+            $vars = array('@name' => $this->translation->text('Product'));
+            return $this->translation->text('@name is unavailable', $vars);
         }
 
         return true;
@@ -98,8 +98,8 @@ class Product
         $ids = array_filter($values, 'ctype_digit');
 
         if ($count != count($ids)) {
-            $vars = array('@field' => $this->language->text('Condition'));
-            return $this->language->text('@field has invalid value', $vars);
+            $vars = array('@field' => $this->translation->text('Condition'));
+            return $this->translation->text('@field has invalid value', $vars);
         }
 
         $existing = array_filter($values, function ($category_id) {
@@ -108,8 +108,8 @@ class Product
         });
 
         if ($count != count($existing)) {
-            $vars = array('@name' => $this->language->text('Category'));
-            return $this->language->text('@name is unavailable', $vars);
+            $vars = array('@name' => $this->translation->text('Category'));
+            return $this->translation->text('@name is unavailable', $vars);
         }
 
         return true;
@@ -130,8 +130,8 @@ class Product
         });
 
         if ($count != count($existing)) {
-            $vars = array('@name' => $this->language->text('SKU'));
-            return $this->language->text('@name is unavailable', $vars);
+            $vars = array('@name' => $this->translation->text('SKU'));
+            return $this->translation->text('@name is unavailable', $vars);
         }
 
         return true;

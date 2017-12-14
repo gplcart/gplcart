@@ -9,12 +9,11 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Config,
-    gplcart\core\Hook,
-    gplcart\core\Database;
+use gplcart\core\Hook,
+    gplcart\core\Config;
 use gplcart\core\models\File as FileModel,
-    gplcart\core\models\Language as LanguageModel,
-    gplcart\core\models\Translation as TranslationModel;
+    gplcart\core\models\Translation as TranslationModel,
+    gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\traits\Translation as TranslationTrait;
 
 /**
@@ -50,35 +49,34 @@ class FieldValue
     protected $file;
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
-     */
-    protected $language;
-
-    /**
-     * Translation model instance
+     * Translation UI model instance
      * @var \gplcart\core\models\Translation $translation
      */
     protected $translation;
 
     /**
+     * Translation entity model instance
+     * @var \gplcart\core\models\TranslationEntity $translation_entity
+     */
+    protected $translation_entity;
+
+    /**
      * @param Hook $hook
-     * @param Database $db
      * @param Config $config
      * @param FileModel $file
-     * @param LanguageModel $language
      * @param TranslationModel $translation
+     * @param TranslationEntityModel $translation_entity
      */
-    public function __construct(Hook $hook, Database $db, Config $config, FileModel $file,
-            LanguageModel $language, TranslationModel $translation)
+    public function __construct(Hook $hook, Config $config, FileModel $file,
+                                TranslationModel $translation, TranslationEntityModel $translation_entity)
     {
-        $this->db = $db;
         $this->hook = $hook;
         $this->config = $config;
+        $this->db = $this->config->getDb();
 
         $this->file = $file;
-        $this->language = $language;
         $this->translation = $translation;
+        $this->translation_entity = $translation_entity;
     }
 
     /**
@@ -99,7 +97,7 @@ class FieldValue
                 . ' LEFT JOIN field_value_translation fvt ON(fv.field_value_id = fvt.field_value_id AND fvt.language=?)'
                 . ' WHERE fv.field_value_id IS NOT NULL';
 
-        $language = $this->language->getLangcode();
+        $language = $this->translation->getLangcode();
         $conditions = array('field_value', $language);
 
         if (isset($data['title'])) {
@@ -136,7 +134,6 @@ class FieldValue
         }
 
         $list = $this->db->fetchAll($sql, $conditions, array('index' => 'field_value_id'));
-
         $this->hook->attach('field.value.list', $data, $list, $this);
         return $list;
     }
@@ -162,7 +159,7 @@ class FieldValue
                 . ' WHERE fv.field_value_id=?';
 
         $result = $this->db->fetch($sql, array($field_value_id));
-        $this->attachTranslations($result, $this->translation, 'field_value', $language);
+        $this->attachTranslations($result, $this->translation_entity, 'field_value', $language);
 
         $this->hook->attach('field.value.get.after', $field_value_id, $language, $result, $this);
         return $result;
@@ -185,8 +182,7 @@ class FieldValue
         $result = $data['field_value_id'] = $this->db->insert('field_value', $data);
 
         $this->setFile($data, false);
-        $this->setTranslations($data, $this->translation, 'field_value', false);
-
+        $this->setTranslations($data, $this->translation_entity, 'field_value', false);
         $this->hook->attach('field.value.add.after', $data, $result, $this);
         return (int) $result;
     }
@@ -240,7 +236,7 @@ class FieldValue
         $data['field_value_id'] = $field_value_id;
 
         $updated += (int) $this->setFile($data);
-        $updated += (int) $this->setTranslations($data, $this->translation, 'field_value');
+        $updated += (int) $this->setTranslations($data, $this->translation_entity, 'field_value');
 
         $result = $updated > 0;
         $this->hook->attach('field.value.update.after', $field_value_id, $data, $result, $this);

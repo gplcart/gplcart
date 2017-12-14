@@ -9,12 +9,11 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Config,
-    gplcart\core\Hook,
-    gplcart\core\Database;
-use gplcart\core\models\User as UserModel,
-    gplcart\core\models\Language as LanguageModel;
+use gplcart\core\Hook,
+    gplcart\core\Config;
 use gplcart\core\helpers\Url as UrlHelper;
+use gplcart\core\models\User as UserModel,
+    gplcart\core\models\Translation as TranslationModel;
 
 /**
  * Manages basic behaviors and data related to user wishlists
@@ -47,10 +46,10 @@ class Wishlist
     protected $user;
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
+     * Translation UI model instance
+     * @var \gplcart\core\models\Translation $translation
      */
-    protected $language;
+    protected $translation;
 
     /**
      * URL class instance
@@ -60,22 +59,21 @@ class Wishlist
 
     /**
      * @param Hook $hook
-     * @param Database $db
      * @param Config $config
      * @param UserModel $user
-     * @param LanguageModel $language
+     * @param TranslationModel $translation
      * @param UrlHelper $url
      */
-    public function __construct(Hook $hook, Database $db, Config $config, UserModel $user,
-            LanguageModel $language, UrlHelper $url)
+    public function __construct(Hook $hook, Config $config, UserModel $user,
+                                TranslationModel $translation, UrlHelper $url)
     {
-        $this->db = $db;
         $this->hook = $hook;
         $this->config = $config;
+        $this->db = $this->config->getDb();
 
         $this->url = $url;
         $this->user = $user;
-        $this->language = $language;
+        $this->translation = $translation;
     }
 
     /**
@@ -139,19 +137,19 @@ class Wishlist
         $result = array(
             'redirect' => '',
             'severity' => 'warning',
-            'message' => $this->language->text('Unable to add product')
+            'message' => $this->translation->text('Unable to add product')
         );
 
         $href = $this->url->get('wishlist');
 
         if ($this->exists($data)) {
-            $result['message'] = $this->language->text('Product already in your <a href="@url">wishlist</a>', array('@url' => $href));
+            $result['message'] = $this->translation->text('Product already in your <a href="@url">wishlist</a>', array('@url' => $href));
             return $result;
         }
 
         if (!$this->canAdd($data['user_id'], $data['store_id'])) {
             $vars = array('%num' => $this->getLimit($data['user_id']));
-            $result['message'] = $this->language->text("You're exceeding limit of %num items", $vars);
+            $result['message'] = $this->translation->text("You're exceeding limit of %num items", $vars);
             return $result;
         }
 
@@ -171,7 +169,7 @@ class Wishlist
                 'severity' => 'success',
                 'quantity' => count($exists),
                 'wishlist_id' => $wishlist_id,
-                'message' => $this->language->text('Product has been added to your <a href="@url">wishlist</a>', array('@url' => $href)));
+                'message' => $this->translation->text('Product has been added to your <a href="@url">wishlist</a>', array('@url' => $href)));
         }
 
         $this->hook->attach('wishlist.add.product.after', $data, $result, $this);
@@ -195,7 +193,7 @@ class Wishlist
         $result = array(
             'redirect' => '',
             'severity' => 'warning',
-            'message' => $this->language->text('Unable to delete')
+            'message' => $this->translation->text('Unable to delete')
         );
 
         if ($this->delete($data)) {

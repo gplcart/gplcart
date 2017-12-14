@@ -9,11 +9,7 @@
 
 namespace gplcart\core\handlers\mail;
 
-use gplcart\core\Config;
-use gplcart\core\models\User as UserModel,
-    gplcart\core\models\Store as StoreModel,
-    gplcart\core\models\Language as LanguageModel,
-    gplcart\core\models\Price as PriceModel,
+use gplcart\core\models\Price as PriceModel,
     gplcart\core\models\Order as OrderModel;
 use gplcart\core\handlers\mail\Base as BaseHandler;
 
@@ -36,17 +32,12 @@ class Order extends BaseHandler
     protected $price;
 
     /**
-     * @param Config $config
-     * @param LanguageModel $language
-     * @param StoreModel $store
-     * @param UserModel $user
      * @param OrderModel $order
      * @param PriceModel $price
      */
-    public function __construct(Config $config, LanguageModel $language, StoreModel $store,
-            UserModel $user, OrderModel $order, PriceModel $price)
+    public function __construct(OrderModel $order, PriceModel $price)
     {
-        parent::__construct($config, $language, $store, $user);
+        parent::__construct();
 
         $this->price = $price;
         $this->order = $order;
@@ -60,7 +51,7 @@ class Order extends BaseHandler
     public function createdToAdmin($order)
     {
         $store = $this->store->get($order['store_id']);
-        $store_name = $this->store->getTranslation('title', $this->language->getLangcode(), $store);
+        $store_name = $this->store->getTranslation('title', $this->translation->getLangcode(), $store);
         $options = array('from' => reset($store['data']['email']));
 
         $default = (array) $this->store->getDefault(true);
@@ -74,8 +65,8 @@ class Order extends BaseHandler
             '@total' => $this->price->format($order['total'], $order['currency']),
         );
 
-        $subject = $this->language->text('New order #@order_id on @store', $vars);
-        $message = $this->language->text("Order status: @status\r\nTotal: @total\r\nView: @order", $vars);
+        $subject = $this->translation->text('New order #@order_id on @store', $vars);
+        $message = $this->translation->text("Order status: @status\r\nTotal: @total\r\nView: @order", $vars);
 
         return array($options['from'], $subject, $message, $options);
     }
@@ -90,7 +81,7 @@ class Order extends BaseHandler
         $store = $this->store->get($order['store_id']);
         $url = $this->store->url($store);
         $user = $this->user->get($order['user_id']);
-        $store_name = $this->store->getTranslation('title', $this->language->getLangcode(), $store);
+        $store_name = $this->store->getTranslation('title', $this->translation->getLangcode(), $store);
 
         $options = $this->store->config(null, $store);
         $options['from'] = reset($store['data']['email']);
@@ -102,8 +93,8 @@ class Order extends BaseHandler
             '@status' => $this->order->getStatusName($order['status']),
         );
 
-        $subject = $this->language->text('Order #@order_id on @store', $vars);
-        $message = $this->language->text("Thank you for ordering on @store\r\n\r\nOrder ID: @order_id\r\nOrder status: @status\r\nView orders: @order", $vars);
+        $subject = $this->translation->text('Order #@order_id on @store', $vars);
+        $message = $this->translation->text("Thank you for ordering on @store\r\n\r\nOrder ID: @order_id\r\nOrder status: @status\r\nView orders: @order", $vars);
         $message .= $this->getSignature($options);
 
         return array($user['email'], $subject, $message, $options);
@@ -119,7 +110,7 @@ class Order extends BaseHandler
         $store = $this->store->get($order['store_id']);
         $url = $this->store->url($store);
         $user = $this->user->get($order['user_id']);
-        $store_name = $this->store->getTranslation('title', $this->language->getLangcode(), $store);
+        $store_name = $this->store->getTranslation('title', $this->translation->getLangcode(), $store);
 
         $options = $this->store->config(null, $store);
         $options['from'] = reset($store['data']['email']);
@@ -131,8 +122,8 @@ class Order extends BaseHandler
             '@status' => $this->order->getStatusName($order['status']),
         );
 
-        $subject = $this->language->text('Order #@order_id on @store', $vars);
-        $message = $this->language->text("Your order #@order_id on @store has been updated\r\n\r\nOrder status: @status\r\nView orders: @order", $vars);
+        $subject = $this->translation->text('Order #@order_id on @store', $vars);
+        $message = $this->translation->text("Your order #@order_id on @store has been updated\r\n\r\nOrder status: @status\r\nView orders: @order", $vars);
         $message .= $this->getSignature($options);
 
         return array($user['email'], $subject, $message, $options);

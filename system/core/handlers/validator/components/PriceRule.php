@@ -101,7 +101,7 @@ class PriceRule extends ComponentValidator
         $data = $this->price_rule->get($id);
 
         if (empty($data)) {
-            $this->setErrorUnavailable('update', $this->language->text('Price rule'));
+            $this->setErrorUnavailable('update', $this->translation->text('Price rule'));
             return false;
         }
 
@@ -116,7 +116,7 @@ class PriceRule extends ComponentValidator
     protected function validateTriggerPriceRule()
     {
         $field = 'trigger_id';
-        $label = $this->language->text('Trigger');
+        $label = $this->translation->text('Trigger');
         $trigger_id = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($trigger_id)) {
@@ -150,7 +150,7 @@ class PriceRule extends ComponentValidator
     protected function validateUsedPriceRule()
     {
         $field = 'used';
-        $label = $this->language->text('Times used');
+        $label = $this->translation->text('Times used');
         $used = $this->getSubmitted($field);
 
         if (!isset($used)) {
@@ -177,7 +177,7 @@ class PriceRule extends ComponentValidator
     protected function validateCurrencyPriceRule()
     {
         $field = 'currency';
-        $label = $this->language->text('Currency');
+        $label = $this->translation->text('Currency');
         $code = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($code)) {
@@ -215,7 +215,7 @@ class PriceRule extends ComponentValidator
         $types = $this->price_rule->getTypes();
 
         if (empty($types[$type])) {
-            $this->setErrorInvalid($field, $this->language->text('Value type'));
+            $this->setErrorInvalid($field, $this->translation->text('Value type'));
             return false;
         }
 
@@ -229,7 +229,7 @@ class PriceRule extends ComponentValidator
     protected function validateCodePriceRule()
     {
         $field = 'code';
-        $label = $this->language->text('Code');
+        $label = $this->translation->text('Code');
         $code = $this->getSubmitted($field);
 
         if (empty($code)) {
@@ -274,7 +274,7 @@ class PriceRule extends ComponentValidator
 
         $field = 'value';
         $value = $this->getSubmitted($field);
-        $label = $this->language->text('Value');
+        $label = $this->translation->text('Value');
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
@@ -293,7 +293,7 @@ class PriceRule extends ComponentValidator
         } else if (isset($updating['value_type'])) {
             $value_type = $updating['value_type'];
         } else {
-            $this->setErrorUnavailable('value_type', $this->language->text('Value type'));
+            $this->setErrorUnavailable('value_type', $this->translation->text('Value type'));
             return false;
         }
 
@@ -314,7 +314,7 @@ class PriceRule extends ComponentValidator
     public function validateValuePercentPriceRule($value)
     {
         $field = 'value';
-        $label = $this->language->text('Value');
+        $label = $this->translation->text('Value');
 
         if (!is_numeric($value)) {
             $this->setErrorNumeric($field, $label);
@@ -337,7 +337,7 @@ class PriceRule extends ComponentValidator
     public function validateValueFixedPriceRule($value)
     {
         $field = 'value';
-        $label = $this->language->text('Value');
+        $label = $this->translation->text('Value');
 
         if (!is_numeric($value)) {
             $this->setErrorNumeric($field, $label);
@@ -360,7 +360,7 @@ class PriceRule extends ComponentValidator
     public function validateValueFinalPriceRule($value)
     {
         $field = 'value';
-        $label = $this->language->text('Value');
+        $label = $this->translation->text('Value');
 
         if (!is_numeric($value)) {
             $this->setErrorNumeric($field, $label);

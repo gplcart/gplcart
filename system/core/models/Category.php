@@ -10,15 +10,14 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Config,
-    gplcart\core\Hook,
-    gplcart\core\Database;
+    gplcart\core\Hook;
 use gplcart\core\traits\Image as ImageTrait,
     gplcart\core\traits\Alias as AliasTrait;
 use gplcart\core\models\File as FileModel,
     gplcart\core\models\Alias as AliasModel,
-    gplcart\core\models\Language as LanguageModel,
+    gplcart\core\models\CategoryGroup as CategoryGroupModel,
     gplcart\core\models\Translation as TranslationModel,
-    gplcart\core\models\CategoryGroup as CategoryGroupModel;
+    gplcart\core\models\TranslationEntity as TranslationEntityModel;
 
 /**
  * Manages basic behaviors and data related to product categories
@@ -54,16 +53,16 @@ class Category
     protected $category_group;
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
-     */
-    protected $language;
-
-    /**
-     * Translation model instance
+     * Translation UI model instance
      * @var \gplcart\core\models\Translation $translation
      */
     protected $translation;
+
+    /**
+     * Translation entity model instance
+     * @var \gplcart\core\models\TranslationEntity $translation_entity
+     */
+    protected $translation_entity;
 
     /**
      * Alias model instance
@@ -79,27 +78,26 @@ class Category
 
     /**
      * @param Hook $hook
-     * @param Database $db
      * @param Config $config
      * @param AliasModel $alias
      * @param FileModel $file
-     * @param LanguageModel $language
-     * @param CategoryGroupModel $category_group
+     * @param TranslationEntityModel $translation_entity
      * @param TranslationModel $translation
+     * @param CategoryGroupModel $category_group
      */
-    public function __construct(Hook $hook, Database $db, Config $config, AliasModel $alias,
-            FileModel $file, LanguageModel $language, CategoryGroupModel $category_group,
-            TranslationModel $translation)
+    public function __construct(Hook $hook, Config $config, AliasModel $alias,
+                                FileModel $file, TranslationEntityModel $translation_entity, TranslationModel $translation,
+                                CategoryGroupModel $category_group)
     {
-        $this->db = $db;
         $this->hook = $hook;
         $this->config = $config;
+        $this->db = $this->config->getDb();
 
         $this->file = $file;
         $this->alias = $alias;
-        $this->language = $language;
         $this->translation = $translation;
         $this->category_group = $category_group;
+        $this->translation_entity = $translation_entity;
     }
 
     /**
@@ -133,8 +131,8 @@ class Category
 
         $result = $this->db->fetch($sql, $conditions);
 
-        $this->attachTranslations($result, $this->translation, 'category', $language);
-        $this->attachImages($result, $this->file, $this->translation, 'category', $language);
+        $this->attachTranslations($result, $this->translation_entity, 'category', $language);
+        $this->attachImages($result, $this->file, $this->translation_entity, 'category', $language);
 
         $this->hook->attach('category.get.after', $result, $language, $store_id, $this);
         return $result;
@@ -207,7 +205,7 @@ class Category
                 . ' WHERE c.category_id IS NOT NULL';
 
         if (!isset($options['language'])) {
-            $options['language'] = $this->language->getLangcode();
+            $options['language'] = $this->translation->getLangcode();
         }
 
         $conditions = array('category', $options['language']);
@@ -365,7 +363,7 @@ class Category
 
         $result = $data['category_id'] = $this->db->insert('category', $data);
 
-        $this->setTranslations($data, $this->translation, 'category', false);
+        $this->setTranslations($data, $this->translation_entity, 'category', false);
         $this->setImages($data, $this->file, 'category');
         $this->setAlias($data, $this->alias, 'category', false);
 
@@ -393,7 +391,7 @@ class Category
 
         $data['category_id'] = $category_id;
 
-        $updated += (int) $this->setTranslations($data, $this->translation, 'category');
+        $updated += (int) $this->setTranslations($data, $this->translation_entity, 'category');
         $updated += (int) $this->setImages($data, $this->file, 'category');
         $updated += (int) $this->setAlias($data, $this->alias, 'category');
 

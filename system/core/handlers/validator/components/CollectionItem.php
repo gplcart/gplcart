@@ -102,7 +102,7 @@ class CollectionItem extends ComponentValidator
         $data = $this->collection_item->get($id);
 
         if (empty($data)) {
-            $this->setErrorUnavailable('update', $this->language->text('Collection item'));
+            $this->setErrorUnavailable('update', $this->translation->text('Collection item'));
             return false;
         }
 
@@ -117,7 +117,7 @@ class CollectionItem extends ComponentValidator
     protected function validateCollectionCollectionItem()
     {
         $field = 'collection_id';
-        $label = $this->language->text('Collection ID');
+        $label = $this->translation->text('Collection ID');
         $collection_id = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($collection_id)) {
@@ -152,7 +152,7 @@ class CollectionItem extends ComponentValidator
     protected function validateValueCollectionItem()
     {
         $field = 'value';
-        $label = $this->language->text('Value');
+        $label = $this->translation->text('Value');
 
         $value = $this->getSubmitted($field);
         $title = $this->getSubmitted('title');
@@ -201,7 +201,7 @@ class CollectionItem extends ComponentValidator
         $url = $this->getSubmitted('data.url');
 
         if (isset($url) && mb_strlen($url) > 255) {
-            $this->setErrorLengthRange('data.url', $this->language->text('URL'), 0, 255);
+            $this->setErrorLengthRange('data.url', $this->translation->text('URL'), 0, 255);
             return false;
         }
 
@@ -249,8 +249,8 @@ class CollectionItem extends ComponentValidator
         $page = $this->page->get($page_id);
 
         if (empty($page['status'])) {
-            $vars = array('@name' => $this->language->text('Page'));
-            return $this->language->text('@name is unavailable', $vars);
+            $vars = array('@name' => $this->translation->text('Page'));
+            return $this->translation->text('@name is unavailable', $vars);
         }
 
         return true;
@@ -266,8 +266,8 @@ class CollectionItem extends ComponentValidator
         $product = $this->product->get($product_id);
 
         if (empty($product['status'])) {
-            $vars = array('@name' => $this->language->text('Product'));
-            return $this->language->text('@name is unavailable', $vars);
+            $vars = array('@name' => $this->translation->text('Product'));
+            return $this->translation->text('@name is unavailable', $vars);
         }
 
         return true;
@@ -283,7 +283,7 @@ class CollectionItem extends ComponentValidator
         $file = $this->file->get($file_id);
 
         if (empty($file)) {
-            return $this->language->text('@name is unavailable', array('@name' => $this->language->text('File')));
+            return $this->translation->text('@name is unavailable', array('@name' => $this->translation->text('File')));
         }
 
         return true;

@@ -88,7 +88,7 @@ class State extends ComponentValidator
         $data = $this->state->get($id);
 
         if (empty($data)) {
-            $this->setErrorUnavailable('update', $this->language->text('State'));
+            $this->setErrorUnavailable('update', $this->translation->text('State'));
             return false;
         }
 
@@ -103,7 +103,7 @@ class State extends ComponentValidator
     protected function validateCountryState()
     {
         $field = 'country';
-        $label = $this->language->text('Country');
+        $label = $this->translation->text('Country');
         $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($value)) {
@@ -133,7 +133,7 @@ class State extends ComponentValidator
         $field = 'code';
         $updating = $this->getUpdating();
         $value = $this->getSubmitted($field);
-        $label = $this->language->text('Code');
+        $label = $this->translation->text('Code');
 
         if (isset($updating['code']) && $updating['code'] === $value) {
             return true;
@@ -161,7 +161,7 @@ class State extends ComponentValidator
     protected function validateZoneState()
     {
         $field = 'zone_id';
-        $label = $this->language->text('Code');
+        $label = $this->translation->text('Code');
         $value = $this->getSubmitted($field);
 
         if (empty($value)) {

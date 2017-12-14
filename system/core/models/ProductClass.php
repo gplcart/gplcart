@@ -10,9 +10,9 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Hook,
-    gplcart\core\Database;
+    gplcart\core\Config;
 use gplcart\core\models\Field as FieldModel,
-    gplcart\core\models\Language as LanguageModel,
+    gplcart\core\models\Translation as TranslationModel,
     gplcart\core\models\FieldValue as FieldValueModel;
 
 /**
@@ -34,10 +34,10 @@ class ProductClass
     protected $hook;
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
+     * Translation UI model instance
+     * @var \gplcart\core\models\Translation $translation
      */
-    protected $language;
+    protected $translation;
 
     /**
      * Field model instance
@@ -52,20 +52,21 @@ class ProductClass
     protected $field_value;
 
     /**
+     * ProductClass constructor.
      * @param Hook $hook
-     * @param Database $db
-     * @param LanguageModel $language
+     * @param Config $config
      * @param FieldModel $field
      * @param FieldValueModel $field_value
+     * @param TranslationModel $translation
      */
-    public function __construct(Hook $hook, Database $db, LanguageModel $language,
-            FieldModel $field, FieldValueModel $field_value)
+    public function __construct(Hook $hook, Config $config,
+            FieldModel $field, FieldValueModel $field_value, TranslationModel $translation)
     {
-        $this->db = $db;
         $this->hook = $hook;
+        $this->db = $config->getDb();
 
         $this->field = $field;
-        $this->language = $language;
+        $this->translation = $translation;
         $this->field_value = $field_value;
     }
 
@@ -313,7 +314,7 @@ class ProductClass
                 . ' LEFT JOIN field_translation ft ON(pcf.field_id = ft.field_id AND ft.language=?)'
                 . ' WHERE pcf.product_class_field_id IS NOT NULL';
 
-        $conditions = array($this->language->getLangcode());
+        $conditions = array($this->translation->getLangcode());
 
         if (isset($data['product_class_id'])) {
             $sql .= ' AND pcf.product_class_id=?';

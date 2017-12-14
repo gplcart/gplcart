@@ -9,10 +9,10 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Config,
-    gplcart\core\Hook;
+use gplcart\core\Hook,
+    gplcart\core\Config;
 use gplcart\core\helpers\Request as RequestHelper;
-use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\models\Translation as TranslationModel;
 
 /**
  * Manages basic behaviors and data related to product comparison
@@ -39,24 +39,24 @@ class ProductCompare
     protected $request;
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
+     * Translation UI model instance
+     * @var \gplcart\core\models\Translation $translation
      */
-    protected $language;
+    protected $translation;
 
     /**
      * @param Hook $hook
      * @param Config $config
-     * @param LanguageModel $language
+     * @param Translation $translation
      * @param RequestHelper $request
      */
-    public function __construct(Hook $hook, Config $config, LanguageModel $language,
+    public function __construct(Hook $hook, Config $config, TranslationModel $translation,
             RequestHelper $request)
     {
         $this->hook = $hook;
         $this->config = $config;
         $this->request = $request;
-        $this->language = $language;
+        $this->translation = $translation;
     }
 
     /**
@@ -105,7 +105,7 @@ class ProductCompare
         $result = array(
             'redirect' => '',
             'severity' => 'warning',
-            'message' => $this->language->text('Unable to add product')
+            'message' => $this->translation->text('Unable to add product')
         );
 
         if ($this->add($product['product_id'])) {
@@ -122,7 +122,7 @@ class ProductCompare
                 'redirect' => '',
                 'severity' => 'success',
                 'quantity' => $quantity,
-                'message' => $this->language->text('Product has been added to <a href="@url">comparison</a>', array('@url' => $href))
+                'message' => $this->translation->text('Product has been added to <a href="@url">comparison</a>', array('@url' => $href))
             );
         }
 
@@ -156,7 +156,7 @@ class ProductCompare
                 'redirect' => '',
                 'severity' => 'success',
                 'quantity' => $existing,
-                'message' => $this->language->text('Product has been removed from comparison')
+                'message' => $this->translation->text('Product has been removed from comparison')
             );
         }
 

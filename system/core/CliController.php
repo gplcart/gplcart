@@ -40,6 +40,12 @@ class CliController
     protected $language;
 
     /**
+     * Translation UI model instance
+     * @var \gplcart\core\models\Translation $translation
+     */
+    protected $translation;
+
+    /**
      * Logger class instance
      * @var \gplcart\core\Logger $logger
      */
@@ -154,6 +160,7 @@ class CliController
         $this->cli = Container::get('gplcart\\core\\helpers\Cli');
         $this->user = Container::get('gplcart\\core\\models\\User');
         $this->language = Container::get('gplcart\\core\\models\\Language');
+        $this->translation = Container::get('gplcart\\core\\models\\Translation');
         $this->validator = Container::get('gplcart\\core\\models\\Validator');
     }
 
@@ -175,7 +182,7 @@ class CliController
      */
     public function text($text, array $arguments = array())
     {
-        return $this->language->text($text, $arguments);
+        return $this->translation->text($text, $arguments);
     }
 
     /**

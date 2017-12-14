@@ -9,9 +9,9 @@
 
 namespace gplcart\core\handlers\validator\condition;
 
-use gplcart\core\models\Payment as PaymentModel;
-use gplcart\core\models\Shipping as ShippingModel;
-use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\models\Payment as PaymentModel,
+    gplcart\core\models\Shipping as ShippingModel,
+    gplcart\core\models\Translation as TranslationModel;
 
 /**
  * Contains methods to validate various order conditions
@@ -20,10 +20,10 @@ class Order
 {
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
+     * Translation UI model instance
+     * @var \gplcart\core\models\Translation $translation
      */
-    protected $language;
+    protected $translation;
 
     /**
      * Payment model instance
@@ -40,14 +40,13 @@ class Order
     /**
      * @param PaymentModel $payment
      * @param ShippingModel $shipping
-     * @param LanguageModel $language
+     * @param TranslationModel $translation
      */
-    public function __construct(PaymentModel $payment, ShippingModel $shipping,
-            LanguageModel $language)
+    public function __construct(PaymentModel $payment, ShippingModel $shipping, TranslationModel $translation)
     {
         $this->payment = $payment;
         $this->shipping = $shipping;
-        $this->language = $language;
+        $this->translation = $translation;
     }
 
     /**
@@ -62,8 +61,8 @@ class Order
         });
 
         if (count($values) != count($existing)) {
-            $vars = array('@name' => $this->language->text('Shipping'));
-            return $this->language->text('@name is unavailable', $vars);
+            $vars = array('@name' => $this->translation->text('Shipping'));
+            return $this->translation->text('@name is unavailable', $vars);
         }
 
         return true;
@@ -81,8 +80,8 @@ class Order
         });
 
         if (count($values) != count($existing)) {
-            $vars = array('@name' => $this->language->text('Payment'));
-            return $this->language->text('@name is unavailable', $vars);
+            $vars = array('@name' => $this->translation->text('Payment'));
+            return $this->translation->text('@name is unavailable', $vars);
         }
 
         return true;

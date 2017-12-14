@@ -213,7 +213,7 @@ class Install extends CliController
 
         $languages = array();
         foreach ($this->language->getList() as $code => $language) {
-            if ($code === 'en' || is_file($this->language->getFile($code))) {
+            if ($code === 'en' || is_file($this->translation->getFile($code))) {
                 $languages[$code] = $language['name'];
             }
         }
@@ -229,7 +229,7 @@ class Install extends CliController
             $this->validateInputLanguageInstall();
         } else {
             $this->langcode = (string) $selected;
-            $this->language->set($this->langcode, null);
+            $this->translation->set($this->langcode, null);
         }
     }
 

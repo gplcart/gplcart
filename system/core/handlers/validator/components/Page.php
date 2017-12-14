@@ -86,7 +86,7 @@ class Page extends ComponentValidator
         $page = $this->page->get($id);
 
         if (empty($page)) {
-            $this->setErrorUnavailable('update', $this->language->text('Page'));
+            $this->setErrorUnavailable('update', $this->translation->text('Page'));
             return false;
         }
 
@@ -101,7 +101,7 @@ class Page extends ComponentValidator
     protected function validateDescriptionPage()
     {
         $field = 'description';
-        $label = $this->language->text('Description');
+        $label = $this->translation->text('Description');
         $description = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($description)) {
@@ -122,7 +122,7 @@ class Page extends ComponentValidator
     protected function validateCategoryPage()
     {
         $field = 'category_id';
-        $label = $this->language->text('Category');
+        $label = $this->translation->text('Category');
         $category_id = $this->getSubmitted($field);
 
         if (empty($category_id)) {

@@ -11,7 +11,7 @@ namespace gplcart\core\models;
 
 use gplcart\core\Hook,
     gplcart\core\Handler;
-use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\models\Translation as TranslationModel;
 
 /**
  * Manages basic behaviors and data related to data validation
@@ -26,19 +26,19 @@ class Validator
     protected $hook;
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
+     * Translation UI model instance
+     * @var \gplcart\core\models\Translation $translation
      */
-    protected $language;
+    protected $translation;
 
     /**
      * @param Hook $hook
-     * @param LanguageModel $language
+     * @param TranslationModel $translation
      */
-    public function __construct(Hook $hook, LanguageModel $language)
+    public function __construct(Hook $hook, TranslationModel $translation)
     {
         $this->hook = $hook;
-        $this->language = $language;
+        $this->translation = $translation;
     }
 
     /**
@@ -64,7 +64,7 @@ class Validator
             return true;
         }
 
-        return empty($result) ? $this->language->text('Failed validation') : $result;
+        return empty($result) ? $this->translation->text('Failed validation') : $result;
     }
 
     /**

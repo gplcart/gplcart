@@ -10,9 +10,9 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Hook,
-    gplcart\core\Database,
+    gplcart\core\Config,
     gplcart\core\Handler;
-use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\models\Translation as TranslationModel;
 
 /**
  * Manages basic behaviors and data related admin dashboard
@@ -33,21 +33,21 @@ class Dashboard
     protected $hook;
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
+     * Translation UI model instance
+     * @var \gplcart\core\models\Translation $translation
      */
-    protected $language;
+    protected $translation;
 
     /**
      * @param Hook $hook
-     * @param Database $db
-     * @param LanguageModel $language
+     * @param Config $config
+     * @param Translation $translation
      */
-    public function __construct(Hook $hook, Database $db, LanguageModel $language)
+    public function __construct(Hook $hook, Config $config, TranslationModel $translation)
     {
-        $this->db = $db;
         $this->hook = $hook;
-        $this->language = $language;
+        $this->db = $config->getDb();
+        $this->translation = $translation;
     }
 
     /**
@@ -82,7 +82,6 @@ class Dashboard
         }
 
         $result = $this->db->insert('dashboard', $data);
-
         $this->hook->attach('dashboard.add.after', $data, $result, $this);
         return (int) $result;
     }
@@ -138,7 +137,7 @@ class Dashboard
                 continue;
             }
 
-            $handler['title'] = $this->language->text($handler['title']);
+            $handler['title'] = $this->translation->text($handler['title']);
         }
 
         gplcart_array_sort($result['data']);

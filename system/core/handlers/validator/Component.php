@@ -83,7 +83,7 @@ class Component extends BaseValidator
     protected function validateTitle()
     {
         $field = 'title';
-        $label = $this->language->text('Title');
+        $label = $this->translation->text('Title');
         $title = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($title)) {
@@ -105,7 +105,7 @@ class Component extends BaseValidator
     protected function validateName()
     {
         $field = 'name';
-        $label = $this->language->text('Name');
+        $label = $this->translation->text('Name');
         $name = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($name)) {
@@ -127,7 +127,7 @@ class Component extends BaseValidator
     protected function validateMetaTitle()
     {
         $field = 'meta_title';
-        $label = $this->language->text('Meta title');
+        $label = $this->translation->text('Meta title');
         $meta_title = $this->getSubmitted($field);
 
         if (isset($meta_title) && mb_strlen($meta_title) > 60) {
@@ -145,7 +145,7 @@ class Component extends BaseValidator
     protected function validateMetaDescription()
     {
         $field = 'meta_description';
-        $label = $this->language->text('Meta description');
+        $label = $this->translation->text('Meta description');
         $meta_description = $this->getSubmitted($field);
 
         if (isset($meta_description) && mb_strlen($meta_description) > 160) {
@@ -163,7 +163,7 @@ class Component extends BaseValidator
     protected function validateDescription()
     {
         $field = 'description';
-        $label = $this->language->text('Description');
+        $label = $this->translation->text('Description');
         $description = $this->getSubmitted($field);
 
         if (isset($description) && mb_strlen($description) > 65535) {
@@ -181,7 +181,7 @@ class Component extends BaseValidator
     protected function validateWeight()
     {
         $field = 'weight';
-        $label = $this->language->text('Weight');
+        $label = $this->translation->text('Weight');
         $weight = $this->getSubmitted($field);
 
         if (isset($weight) && !is_numeric($weight)) {
@@ -335,7 +335,7 @@ class Component extends BaseValidator
         }
 
         if (!empty($results['errors'])) {
-            $message = $this->language->text('@num errors occurred while uploading files', array('@num' => count($results['errors'])));
+            $message = $this->translation->text('@num errors occurred while uploading files', array('@num' => count($results['errors'])));
             $this->setError('images', $message);
             return false;
         }
@@ -350,7 +350,7 @@ class Component extends BaseValidator
     protected function validateAlias()
     {
         $field = 'alias';
-        $label = $this->language->text('Alias');
+        $label = $this->translation->text('Alias');
         $alias = $this->getSubmitted($field);
 
         if (empty($alias)) {
@@ -390,7 +390,7 @@ class Component extends BaseValidator
     protected function validateStoreId()
     {
         $field = 'store_id';
-        $label = $this->language->text('Store');
+        $label = $this->translation->text('Store');
         $store_id = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($store_id)) {
@@ -424,7 +424,7 @@ class Component extends BaseValidator
     protected function validateUserId()
     {
         $field = 'user_id';
-        $label = $this->language->text('User');
+        $label = $this->translation->text('User');
         $user_id = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($user_id)) {
@@ -458,7 +458,7 @@ class Component extends BaseValidator
     protected function validateUserCartId()
     {
         $field = 'user_id';
-        $label = $this->language->text('User');
+        $label = $this->translation->text('User');
         $user_id = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($user_id)) {
@@ -496,7 +496,7 @@ class Component extends BaseValidator
     protected function validateEmail()
     {
         $field = 'email';
-        $label = $this->language->text('E-mail');
+        $label = $this->translation->text('E-mail');
         $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($value)) {

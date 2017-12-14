@@ -85,7 +85,7 @@ class FieldValue extends ComponentValidator
         $data = $this->field_value->get($id);
 
         if (empty($data)) {
-            $this->setErrorUnavailable('update', $this->language->text('Field value'));
+            $this->setErrorUnavailable('update', $this->translation->text('Field value'));
             return false;
         }
 
@@ -100,7 +100,7 @@ class FieldValue extends ComponentValidator
     protected function validateFieldFieldValue()
     {
         $field = 'field_id';
-        $label = $this->language->text('Field');
+        $label = $this->translation->text('Field');
         $field_id = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($field_id)) {
@@ -141,7 +141,7 @@ class FieldValue extends ComponentValidator
         }
 
         if (preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $color) !== 1) {
-            $this->setErrorInvalid('color', $this->language->text('Color'));
+            $this->setErrorInvalid('color', $this->translation->text('Color'));
             return false;
         }
 
@@ -176,7 +176,7 @@ class FieldValue extends ComponentValidator
             if (is_readable(gplcart_file_absolute($path))) {
                 return true;
             }
-            $this->setErrorUnavailable('file', $this->language->text('File'));
+            $this->setErrorUnavailable('file', $this->translation->text('File'));
             return false;
         }
 

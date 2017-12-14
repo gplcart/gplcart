@@ -227,7 +227,7 @@ class Language extends BackendController
             $codes[$code] = $code;
             $statuses[$code] = !empty($language['status']);
             $in_database[$code] = !empty($language['in_database']);
-            $language['file_exists'] = is_file($this->language->getFile($code));
+            $language['file_exists'] = is_file($this->translation->getFile($code));
         }
 
         array_multisort($in_database, SORT_DESC, $statuses, SORT_DESC, $codes, SORT_ASC, $languages);
@@ -242,7 +242,7 @@ class Language extends BackendController
         $this->controlToken('refresh');
 
         $code = $this->getQuery('refresh');
-        if (!empty($code) && $this->access('language_edit') && $this->language->refresh($code)) {
+        if (!empty($code) && $this->access('language_edit') && $this->translation->refresh($code)) {
             $this->redirect('', $this->text('Language has been refreshed'), 'success');
         }
     }

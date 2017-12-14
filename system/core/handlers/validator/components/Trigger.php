@@ -79,7 +79,7 @@ class Trigger extends ComponentValidator
         $data = $this->trigger->get($trigger_id);
 
         if (empty($data)) {
-            $this->setErrorUnavailable('update', $this->language->text('Trigger'));
+            $this->setErrorUnavailable('update', $this->translation->text('Trigger'));
             return false;
         }
 
@@ -101,7 +101,7 @@ class Trigger extends ComponentValidator
         }
 
         if (empty($value)) {
-            $this->setErrorRequired($field, $this->language->text('Conditions'));
+            $this->setErrorRequired($field, $this->translation->text('Conditions'));
             return false;
         }
 
@@ -116,23 +116,23 @@ class Trigger extends ComponentValidator
             list($condition_id, $operator, $parameters) = $this->getParameters($condition);
 
             if (empty($parameters)) {
-                $errors[] = $this->language->text('Error on line @num: !error', array(
+                $errors[] = $this->translation->text('Error on line @num: !error', array(
                     '@num' => $line,
-                    '!error' => $this->language->text('No parameters')));
+                    '!error' => $this->translation->text('No parameters')));
                 continue;
             }
 
             if (!in_array(htmlspecialchars($operator), $prepared_operators)) {
-                $errors[] = $this->language->text('Error on line @num: !error', array(
+                $errors[] = $this->translation->text('Error on line @num: !error', array(
                     '@num' => $line,
-                    '!error' => $this->language->text('Invalid operator')));
+                    '!error' => $this->translation->text('Invalid operator')));
                 continue;
             }
 
             $result = $this->callValidator($condition_id, array($parameters, $operator, $condition_id, $submitted));
 
             if ($result !== true) {
-                $errors[] = $this->language->text('Error on line @num: !error', array('@num' => $line, '!error' => $result));
+                $errors[] = $this->translation->text('Error on line @num: !error', array('@num' => $line, '!error' => $result));
                 continue;
             }
 

@@ -9,10 +9,6 @@
 
 namespace gplcart\core\handlers\mail;
 
-use gplcart\core\Config;
-use gplcart\core\models\User as UserModel,
-    gplcart\core\models\Store as StoreModel,
-    gplcart\core\models\Language as LanguageModel;
 use gplcart\core\handlers\mail\Base as BaseHandler;
 
 /**
@@ -22,15 +18,11 @@ class Account extends BaseHandler
 {
 
     /**
-     * @param Config $config
-     * @param LanguageModel $language
-     * @param StoreModel $store
-     * @param UserModel $user
+     * Constructor
      */
-    public function __construct(Config $config, LanguageModel $language, StoreModel $store,
-            UserModel $user)
+    public function __construct()
     {
-        parent::__construct($config, $language, $store, $user);
+        parent::__construct();
     }
 
     /**
@@ -47,11 +39,11 @@ class Account extends BaseHandler
             '@store' => $store['name'],
             '@email' => $user['email'],
             '@user_id' => $user['user_id'],
-            '@status' => empty($user['status']) ? $this->language->text('Inactive') : $this->language->text('Active')
+            '@status' => empty($user['status']) ? $this->translation->text('Inactive') : $this->translation->text('Active')
         );
 
-        $subject = $this->language->text('New account on @store', $vars);
-        $message = $this->language->text("A new account has been created on @store\r\n\r\nE-mail: @email\r\nName: @name\r\nUser ID: @user_id\r\nStatus: @status", $vars);
+        $subject = $this->translation->text('New account on @store', $vars);
+        $message = $this->translation->text("A new account has been created on @store\r\n\r\nE-mail: @email\r\nName: @name\r\nUser ID: @user_id\r\nStatus: @status", $vars);
 
         $options = array('from' => $this->store->config('email.0', $store));
         return array($options['from'], $subject, $message, $options);
@@ -66,7 +58,7 @@ class Account extends BaseHandler
     {
         $store = $this->store->get($user['store_id']);
         $options = $this->store->config(null, $store);
-        $store_name = $this->store->getTranslation('title', $this->language->getLangcode(), $store);
+        $store_name = $this->store->getTranslation('title', $this->translation->getLangcode(), $store);
         $base = $this->store->url($store);
 
         $vars = array(
@@ -74,11 +66,11 @@ class Account extends BaseHandler
             '@name' => $user['name'],
             '@order' => "$base/account/{$user['user_id']}",
             '@edit' => "$base/account/{$user['user_id']}/edit",
-            '@status' => empty($user['status']) ? $this->language->text('Inactive') : $this->language->text('Active')
+            '@status' => empty($user['status']) ? $this->translation->text('Inactive') : $this->translation->text('Active')
         );
 
-        $subject = $this->language->text('Account details for @name on @store', $vars);
-        $message = $this->language->text("Thank you for registering on @store\r\n\r\nAccount status: @status\r\n\r\nEdit account: @edit\r\nView orders: @order", $vars);
+        $subject = $this->translation->text('Account details for @name on @store', $vars);
+        $message = $this->translation->text("Thank you for registering on @store\r\n\r\nAccount status: @status\r\n\r\nEdit account: @edit\r\nView orders: @order", $vars);
         $message .= $this->getSignature($options);
 
         $options['from'] = $this->store->config('email.0', $store);
@@ -94,7 +86,7 @@ class Account extends BaseHandler
     {
         $store = $this->store->get($user['store_id']);
         $options = $this->store->config(null, $store);
-        $store_name = $this->store->getTranslation('title', $this->language->getLangcode(), $store);
+        $store_name = $this->store->getTranslation('title', $this->translation->getLangcode(), $store);
         $base = $this->store->url($store);
 
         $date_format = $this->config->get('date_prefix', 'd.m.Y');
@@ -107,8 +99,8 @@ class Account extends BaseHandler
             '@link' => "$base/forgot?" . http_build_query(array('key' => $user['data']['reset_password']['token'], 'user_id' => $user['user_id'])),
         );
 
-        $subject = $this->language->text('Password recovery for @name on @store', $vars);
-        $message = $this->language->text("You or someone else requested a new password on @store\r\n\r\nTo get the password please click on the following link:\r\n@link\r\n\r\nThis link expires on @expires and nothing will happen if it's not used", $vars);
+        $subject = $this->translation->text('Password recovery for @name on @store', $vars);
+        $message = $this->translation->text("You or someone else requested a new password on @store\r\n\r\nTo get the password please click on the following link:\r\n@link\r\n\r\nThis link expires on @expires and nothing will happen if it's not used", $vars);
         $message .= $this->getSignature($options);
 
         $options['from'] = $this->store->config('email.0', $store);
@@ -124,12 +116,12 @@ class Account extends BaseHandler
     {
         $store = $this->store->get($user['store_id']);
         $options = $this->store->config(null, $store);
-        $store_name = $this->store->getTranslation('title', $this->language->getLangcode(), $store);
+        $store_name = $this->store->getTranslation('title', $this->translation->getLangcode(), $store);
 
         $vars = array('@store' => $store_name, '@name' => $user['name']);
-        $subject = $this->language->text('Password has been changed for @name on @store', $vars);
+        $subject = $this->translation->text('Password has been changed for @name on @store', $vars);
 
-        $message = $this->language->text('Your password on @store has been changed', $vars);
+        $message = $this->translation->text('Your password on @store has been changed', $vars);
         $message .= $this->getSignature($options);
 
         $options['from'] = $this->store->config('email.0', $store);
