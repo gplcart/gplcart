@@ -11,6 +11,7 @@ namespace gplcart\core\models;
 
 use gplcart\core\Hook,
     gplcart\core\Handler,
+    gplcart\core\Database,
     gplcart\core\Module as ModuleCore;
 use gplcart\core\models\Translation as TranslationModel;
 
@@ -190,9 +191,9 @@ class Install
         try {
             $this->db = new Database;
             $this->db->init($settings);
-        } catch (\Exception $e) {
+        } catch (\Exception $ex) {
             $this->db = null;
-            return $this->translation->text($e->getMessage());
+            return $this->translation->text($ex->getMessage());
         }
 
         return $this->validateDb();
