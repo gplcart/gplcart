@@ -11,6 +11,7 @@ namespace gplcart\core\controllers\frontend;
 
 use gplcart\core\models\State as StateModel,
     gplcart\core\models\Order as OrderModel,
+    gplcart\core\models\UserAccess as UserAccessModel,
     gplcart\core\models\OrderHistory as OrderHistoryModel,
     gplcart\core\models\OrderDimension as OrderDimensionModel,
     gplcart\core\models\Address as AddressModel,
@@ -30,6 +31,12 @@ class Checkout extends FrontendController
      * @var \gplcart\core\models\Order $order
      */
     protected $order;
+
+    /**
+     * User access model instance
+     * @var \gplcart\core\models\UserAccess $user_access
+     */
+    protected $user_access;
 
     /**
      * Order history model instance
@@ -163,12 +170,13 @@ class Checkout extends FrontendController
      * @param AddressModel $address
      * @param OrderModel $order
      * @param OrderHistoryModel $order_history
+     * @param UserAccessModel $user_access
      * @param OrderDimensionModel $order_dimension
      * @param ShippingModel $shipping
      * @param PaymentModel $payment
      */
     public function __construct(CountryModel $country, StateModel $state, AddressModel $address,
-            OrderModel $order, OrderHistoryModel $order_history,
+            OrderModel $order, OrderHistoryModel $order_history, UserAccessModel $user_access,
             OrderDimensionModel $order_dimension, ShippingModel $shipping, PaymentModel $payment)
     {
         parent::__construct();
@@ -179,6 +187,7 @@ class Checkout extends FrontendController
         $this->country = $country;
         $this->payment = $payment;
         $this->shipping = $shipping;
+        $this->user_access = $user_access;
         $this->order_history = $order_history;
         $this->order_dimension = $order_dimension;
 
@@ -670,7 +679,7 @@ class Checkout extends FrontendController
      */
     protected function loginCheckout()
     {
-        $result = $this->user->login($this->getSubmitted('user'));
+        $result = $this->user_access->login($this->getSubmitted('user'));
 
         if (isset($result['user'])) {
             $result = $this->cart->login($result['user'], $this->data_cart);
@@ -1008,6 +1017,16 @@ class Checkout extends FrontendController
             return $submitted;
         }
 
+        $this->prepareSubmittedOrderComponentsCheckout($submitted);
+        return $submitted;
+    }
+
+    /**
+     * Prepare submitted order components
+     * @param array $submitted
+     */
+    protected function prepareSubmittedOrderComponentsCheckout(array &$submitted)
+    {
         foreach ($submitted['data']['components'] as $id => &$component) {
 
             if (!isset($component['price'])) {
@@ -1022,8 +1041,6 @@ class Checkout extends FrontendController
             $component['currency'] = $submitted['currency'];
             $component['price'] = $this->price->amount($component['price'], $submitted['currency']);
         }
-
-        return $submitted;
     }
 
     /**

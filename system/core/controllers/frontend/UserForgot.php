@@ -9,6 +9,7 @@
 
 namespace gplcart\core\controllers\frontend;
 
+use gplcart\core\models\UserAccess as UserAccessModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
@@ -18,17 +19,25 @@ class UserForgot extends FrontendController
 {
 
     /**
+     * User access model instance
+     * @var \gplcart\core\models\UserAccess $user_access
+     */
+    protected $user_access;
+
+    /**
      * The current user
      * @var array
      */
     protected $data_user = array();
 
     /**
-     * Constructor
+     * @param UserAccessModel $user_access
      */
-    public function __construct()
+    public function __construct(UserAccessModel $user_access)
     {
         parent::__construct();
+
+        $this->user_access = $user_access;
     }
 
     /**
@@ -120,7 +129,7 @@ class UserForgot extends FrontendController
      */
     protected function resetPasswordUser()
     {
-        $result = $this->user->resetPassword($this->getSubmitted());
+        $result = $this->user_access->resetPassword($this->getSubmitted());
         $this->redirect($result['redirect'], $result['message'], $result['severity']);
     }
 

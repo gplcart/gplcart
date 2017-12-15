@@ -9,7 +9,8 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\Oauth as OauthModel;
+use gplcart\core\models\Oauth as OauthModel,
+    gplcart\core\models\UserAccess as UserAccessModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
@@ -25,13 +26,21 @@ class UserLogin extends FrontendController
     protected $oauth;
 
     /**
-     * @param OauthModel $oauth
+     * User access model instance
+     * @var \gplcart\core\models\UserAccess $user_access
      */
-    public function __construct(OauthModel $oauth)
+    protected $user_access;
+
+    /**
+     * @param OauthModel $oauth
+     * @param UserAccessModel $user_access
+     */
+    public function __construct(OauthModel $oauth, UserAccessModel $user_access)
     {
         parent::__construct();
 
         $this->oauth = $oauth;
+        $this->user_access = $user_access;
     }
 
     /**
@@ -78,7 +87,7 @@ class UserLogin extends FrontendController
      */
     protected function loginUser()
     {
-        $result = $this->user->login($this->getSubmitted());
+        $result = $this->user_access->login($this->getSubmitted());
 
         if (empty($result['user'])) {
             $this->setMessage($result['message'], $result['severity']);

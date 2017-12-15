@@ -9,6 +9,7 @@
 
 namespace gplcart\core\controllers\frontend;
 
+use gplcart\core\models\UserAccess as UserAccessModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
@@ -18,11 +19,19 @@ class UserLogOut extends FrontendController
 {
 
     /**
-     * Constructor
+     * User access model instance
+     * @var \gplcart\core\models\UserAccess $user_access
      */
-    public function __construct()
+    protected $user_access;
+
+    /**
+     * @param UserAccessModel $user_access
+     */
+    public function __construct(UserAccessModel $user_access)
     {
         parent::__construct();
+
+        $this->user_access = $user_access;
     }
 
     /**
@@ -30,7 +39,7 @@ class UserLogOut extends FrontendController
      */
     public function userLogOut()
     {
-        $result = $this->user->logout();
+        $result = $this->user_access->logout();
         $this->redirect($result['redirect'], $result['message'], $result['severity']);
     }
 
