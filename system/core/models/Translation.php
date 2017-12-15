@@ -10,7 +10,7 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Hook,
-    gplcart\core\Module;
+    gplcart\core\Module as ModuleCore;
 
 /**
  * Manages basic behaviors and data related to UI translations
@@ -58,7 +58,7 @@ class Translation
      * @param Hook $hook
      * @param Module $module
      */
-    public function __construct(Hook $hook, Module $module)
+    public function __construct(Hook $hook, ModuleCore $module)
     {
         $this->hook = $hook;
         $this->module = $module;
