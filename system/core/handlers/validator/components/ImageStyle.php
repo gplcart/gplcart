@@ -15,7 +15,7 @@ use gplcart\core\handlers\validator\Component as ComponentValidator;
 /**
  * Provides methods to validate image style data
  */
-class Image extends ComponentValidator
+class ImageStyle extends ComponentValidator
 {
 
     /**
@@ -40,7 +40,7 @@ class Image extends ComponentValidator
      * @param array $options
      * @return boolean|array
      */
-    public function style(array &$submitted, array $options = array())
+    public function imageStyle(array &$submitted, array $options = array())
     {
         $this->options = $options;
         $this->submitted = &$submitted;

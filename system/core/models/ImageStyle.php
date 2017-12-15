@@ -65,8 +65,8 @@ class ImageStyle
      */
     public function getActionHandler($action_id)
     {
-        $actions = $this->getActionHandlers();
-        return empty($actions[$action_id]) ? array() : $actions[$action_id];
+        $handlers = $this->getActionHandlers();
+        return empty($handlers[$action_id]) ? array() : $handlers[$action_id];
     }
 
     /**

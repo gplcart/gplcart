@@ -12,7 +12,7 @@ return array(
         'description' => /* @text */'Trim and resize to exact width and height. Parameters: two integers, width and height, separated by comma',
         'handlers' => array(
             'process' => array('gplcart\\core\\handlers\\image\\Action', 'thumbnail'),
-            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Image', 'validateActionThumbnailImageStyle')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\ImageStyle', 'validateActionThumbnailImageStyle')
         )
     ),
     'crop' => array(
@@ -20,7 +20,7 @@ return array(
         'description' => /* @text */'Crop a portion of image from x1, y1 to x2, y2. Parameters: Four integers, separated by comma',
         'handlers' => array(
             'process' => array('gplcart\\core\\handlers\\image\\Action', 'crop'),
-            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Image', 'validateActionCropImageStyle')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\ImageStyle', 'validateActionCropImageStyle')
         )
     ),
     'resize' => array(
@@ -28,7 +28,7 @@ return array(
         'description' => /* @text */'Resize to fixed width and height. Parameters: Two integers, width and height, separated by comma',
         'handlers' => array(
             'process' => array('gplcart\\core\\handlers\\image\\Action', 'resize'),
-            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Image', 'validateActionResizeImageStyle')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\ImageStyle', 'validateActionResizeImageStyle')
         )
     ),
     'fit_width' => array(
@@ -36,7 +36,7 @@ return array(
         'description' => /* @text */'Shrink to the specified width while maintaining proportion. Parameters: Integer',
         'handlers' => array(
             'process' => array('gplcart\\core\\handlers\\image\\Action', 'fitWidth'),
-            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Image', 'validateActionResizeImageStyle')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\ImageStyle', 'validateActionResizeImageStyle')
         )
     ),
     'fit_height' => array(
@@ -44,7 +44,7 @@ return array(
         'description' => /* @text */'Shrink to the specified height while maintaining proportion. Parameters: Integer',
         'handlers' => array(
             'process' => array('gplcart\\core\\handlers\\image\\Action', 'fitHeight'),
-            'validate' => array('gplcart\\core\\handlers\\validator\\components\\Image', 'validateActionResizeImageStyle')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\ImageStyle', 'validateActionResizeImageStyle')
         )
     ),
 );
