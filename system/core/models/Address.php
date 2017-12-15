@@ -9,9 +9,8 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Config,
-    gplcart\core\Hook,
-    gplcart\core\Database;
+use gplcart\core\Hook,
+    gplcart\core\Config;
 use gplcart\core\models\Country as CountryModel;
 
 /**
@@ -46,16 +45,15 @@ class Address
 
     /**
      * @param Hook $hook
-     * @param Database $db
      * @param Config $config
      * @param CountryModel $country
      */
-    public function __construct(Hook $hook, Database $db, Config $config, CountryModel $country)
+    public function __construct(Hook $hook, Config $config, CountryModel $country)
     {
-        $this->db = $db;
         $this->hook = $hook;
         $this->config = $config;
         $this->country = $country;
+        $this->db = $this->config->getDb();
     }
 
     /**

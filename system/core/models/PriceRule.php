@@ -10,8 +10,8 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Hook,
-    gplcart\core\Handler,
-    gplcart\core\Database;
+    gplcart\core\Config,
+    gplcart\core\Handler;
 use gplcart\core\models\Trigger as TriggerModel,
     gplcart\core\models\Currency as CurrencyModel;
 
@@ -47,17 +47,17 @@ class PriceRule
 
     /**
      * @param Hook $hook
-     * @param Database $db
+     * @param Config $config
      * @param CurrencyModel $currency
      * @param TriggerModel $trigger
      */
-    public function __construct(Hook $hook, Database $db, CurrencyModel $currency,
+    public function __construct(Hook $hook, Config $config, CurrencyModel $currency,
             TriggerModel $trigger)
     {
-        $this->db = $db;
         $this->hook = $hook;
         $this->trigger = $trigger;
         $this->currency = $currency;
+        $this->db = $config->getDb();
     }
 
     /**
@@ -161,7 +161,6 @@ class PriceRule
         }
 
         $list = $this->db->fetchAll($sql, $conditions, array('index' => 'price_rule_id'));
-
         $this->hook->attach('price.rule.list', $data, $list, $this);
         return $list;
     }

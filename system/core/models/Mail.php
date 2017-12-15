@@ -9,8 +9,8 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Handler,
-    gplcart\core\Hook;
+use gplcart\core\Hook,
+    gplcart\core\Handler;
 
 /**
  * Manages basic behaviors and data related to sending e-mails
@@ -46,7 +46,6 @@ class Mail
 
         $handlers = (array) gplcart_config_get(GC_FILE_CONFIG_MAIL);
         $this->hook->attach('mail.handlers', $handlers, $this);
-
         return $handlers;
     }
 

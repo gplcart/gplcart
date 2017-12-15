@@ -10,7 +10,7 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Hook,
-    gplcart\core\Database;
+    gplcart\core\Config;
 
 /**
  * Manages basic behaviors and data related to product bundles
@@ -32,12 +32,12 @@ class ProductBundle
 
     /**
      * @param Hook $hook
-     * @param Database $db
+     * @param Config $config
      */
-    public function __construct(Hook $hook, Database $db)
+    public function __construct(Hook $hook, Config $config)
     {
-        $this->db = $db;
         $this->hook = $hook;
+        $this->db = $config->getDb();
     }
 
     /**

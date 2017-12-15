@@ -141,7 +141,6 @@ class Dashboard
         }
 
         gplcart_array_sort($result['data']);
-
         $this->hook->attach('dashboard.get.user', $result, $this);
         return $result;
     }

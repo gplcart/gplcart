@@ -417,7 +417,7 @@ class Store
     }
 
     /**
-     * Returns a string containing absolute store URI
+     * Returns a string containing an absolute store URI
      * @param array $store
      * @return string
      */

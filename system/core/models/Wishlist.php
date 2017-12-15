@@ -65,7 +65,7 @@ class Wishlist
      * @param UrlHelper $url
      */
     public function __construct(Hook $hook, Config $config, UserModel $user,
-                                TranslationModel $translation, UrlHelper $url)
+            TranslationModel $translation, UrlHelper $url)
     {
         $this->hook = $hook;
         $this->config = $config;

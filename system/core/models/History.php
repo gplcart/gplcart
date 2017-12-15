@@ -9,8 +9,7 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Config,
-    gplcart\core\Database;
+use gplcart\core\Config;
 use gplcart\core\models\User as UserModel;
 
 /**
@@ -39,15 +38,14 @@ class History
     protected $user;
 
     /**
-     * @param Database $db
      * @param Config $config
      * @param UserModel $user
      */
-    public function __construct(Database $db, Config $config, UserModel $user)
+    public function __construct(Config $config, UserModel $user)
     {
-        $this->db = $db;
         $this->user = $user;
         $this->config = $config;
+        $this->db = $this->config->getDb();
     }
 
     /**

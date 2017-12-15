@@ -54,7 +54,6 @@ class Review
         $this->config = $config;
         $this->translation = $translation;
         $this->db = $this->config->getDb();
-
     }
 
     /**

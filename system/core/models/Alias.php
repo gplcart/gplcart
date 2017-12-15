@@ -11,8 +11,7 @@ namespace gplcart\core\models;
 
 use gplcart\core\Hook,
     gplcart\core\Route,
-    gplcart\core\Config,
-    gplcart\core\Database;
+    gplcart\core\Config;
 use gplcart\core\models\Language as LanguageModel;
 
 /**
@@ -50,22 +49,20 @@ class Alias
      * @var \gplcart\core\Route $route
      */
     protected $route;
-
+    
     /**
      * @param Hook $hook
-     * @param Database $db
      * @param Config $config
      * @param Route $route
      * @param LanguageModel $language
      */
-    public function __construct(Hook $hook, Database $db, Config $config, Route $route,
-            LanguageModel $language)
+    public function __construct(Hook $hook, Config $config, Route $route, LanguageModel $language)
     {
-        $this->db = $db;
         $this->hook = $hook;
         $this->route = $route;
         $this->config = $config;
         $this->language = $language;
+        $this->db = $this->config->getDb();
     }
 
     /**
@@ -228,7 +225,11 @@ class Alias
      */
     public function generate($pattern, array $options = array())
     {
-        $options += array('translit' => true, 'language' => null, 'placeholders' => array());
+        $options += array(
+            'translit' => true,
+            'language' => null,
+            'placeholders' => array()
+        );
 
         $result = null;
         $this->hook->attach('alias.generate.before', $pattern, $options, $result);

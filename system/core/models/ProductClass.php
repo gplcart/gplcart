@@ -12,8 +12,8 @@ namespace gplcart\core\models;
 use gplcart\core\Hook,
     gplcart\core\Config;
 use gplcart\core\models\Field as FieldModel,
-    gplcart\core\models\Translation as TranslationModel,
-    gplcart\core\models\FieldValue as FieldValueModel;
+    gplcart\core\models\FieldValue as FieldValueModel,
+    gplcart\core\models\Translation as TranslationModel;
 
 /**
  * Manages basic behaviors and data related to product classes
@@ -52,22 +52,21 @@ class ProductClass
     protected $field_value;
 
     /**
-     * ProductClass constructor.
      * @param Hook $hook
      * @param Config $config
      * @param FieldModel $field
      * @param FieldValueModel $field_value
      * @param TranslationModel $translation
      */
-    public function __construct(Hook $hook, Config $config,
-            FieldModel $field, FieldValueModel $field_value, TranslationModel $translation)
+    public function __construct(Hook $hook, Config $config, FieldModel $field,
+            FieldValueModel $field_value, TranslationModel $translation)
     {
         $this->hook = $hook;
         $this->db = $config->getDb();
 
         $this->field = $field;
-        $this->translation = $translation;
         $this->field_value = $field_value;
+        $this->translation = $translation;
     }
 
     /**

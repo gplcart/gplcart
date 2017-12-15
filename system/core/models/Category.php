@@ -9,15 +9,15 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Config,
-    gplcart\core\Hook;
-use gplcart\core\traits\Image as ImageTrait,
-    gplcart\core\traits\Alias as AliasTrait;
+use gplcart\core\Hook,
+    gplcart\core\Config;
 use gplcart\core\models\File as FileModel,
     gplcart\core\models\Alias as AliasModel,
     gplcart\core\models\CategoryGroup as CategoryGroupModel,
     gplcart\core\models\Translation as TranslationModel,
     gplcart\core\models\TranslationEntity as TranslationEntityModel;
+use gplcart\core\traits\Image as ImageTrait,
+    gplcart\core\traits\Alias as AliasTrait;
 
 /**
  * Manages basic behaviors and data related to product categories
@@ -85,9 +85,9 @@ class Category
      * @param TranslationModel $translation
      * @param CategoryGroupModel $category_group
      */
-    public function __construct(Hook $hook, Config $config, AliasModel $alias,
-                                FileModel $file, TranslationEntityModel $translation_entity, TranslationModel $translation,
-                                CategoryGroupModel $category_group)
+    public function __construct(Hook $hook, Config $config, AliasModel $alias, FileModel $file,
+            TranslationEntityModel $translation_entity, TranslationModel $translation,
+            CategoryGroupModel $category_group)
     {
         $this->hook = $hook;
         $this->config = $config;

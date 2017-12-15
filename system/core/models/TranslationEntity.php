@@ -10,7 +10,7 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Hook,
-    gplcart\core\Database;
+    gplcart\core\Config;
 
 /**
  * Manages basic behaviors and data related to entity translations
@@ -32,12 +32,12 @@ class TranslationEntity
 
     /**
      * @param Hook $hook
-     * @param Database $db
+     * @param Config $config
      */
-    public function __construct(Hook $hook, Database $db)
+    public function __construct(Hook $hook, Config $config)
     {
-        $this->db = $db;
         $this->hook = $hook;
+        $this->db = $config->getDb();
     }
 
     /**
@@ -115,9 +115,7 @@ class TranslationEntity
             return (int) $result;
         }
 
-        $table = $this->getTable($entity);
-
-        $result = $this->db->insert($table, $data);
+        $result = $this->db->insert($this->getTable($entity), $data);
         $this->hook->attach('translation.entity.add.after', $entity, $data, $result, $this);
         return (int) $result;
     }
@@ -144,9 +142,7 @@ class TranslationEntity
             $conditions['language'] = $language;
         }
 
-        $table = $this->getTable($entity);
-        $result = (bool) $this->db->delete($table, $conditions);
-
+        $result = (bool) $this->db->delete($this->getTable($entity), $conditions);
         $this->hook->attach('translation.entity.delete.after', $entity, $entity_id, $language, $result, $this);
         return (bool) $result;
     }

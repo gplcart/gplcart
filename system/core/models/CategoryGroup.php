@@ -53,7 +53,8 @@ class CategoryGroup
      * @param TranslationModel $translation
      * @param TranslationEntityModel $translation_entity
      */
-    public function __construct(Hook $hook, Config $config, TranslationModel $translation, TranslationEntityModel $translation_entity)
+    public function __construct(Hook $hook, Config $config, TranslationModel $translation,
+            TranslationEntityModel $translation_entity)
     {
         $this->hook = $hook;
         $this->db = $config->getDb();

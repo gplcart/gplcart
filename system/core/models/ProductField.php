@@ -10,7 +10,7 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Hook,
-    gplcart\core\Database;
+    gplcart\core\Config;
 
 /**
  * Manages basic behaviors and data related to product fields
@@ -32,12 +32,12 @@ class ProductField
 
     /**
      * @param Hook $hook
-     * @param Database $db
+     * @param Config $config
      */
-    public function __construct(Hook $hook, Database $db)
+    public function __construct(Hook $hook, Config $config)
     {
-        $this->db = $db;
         $this->hook = $hook;
+        $this->db = $config->getDb();
     }
 
     /**
@@ -76,7 +76,6 @@ class ProductField
 
         $conditions = array('type' => $type, 'product_id' => $product_id);
         $result = (bool) $this->db->delete('product_field', $conditions);
-
         $this->hook->attach('product.field.delete.after', $type, $product_id, $result, $this);
         return (bool) $result;
     }

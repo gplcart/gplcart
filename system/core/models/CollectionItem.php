@@ -10,8 +10,8 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Hook,
-    gplcart\core\Handler,
-    gplcart\core\Config;
+    gplcart\core\Config,
+    gplcart\core\Handler;
 use gplcart\core\models\Collection as CollectionModel,
     gplcart\core\models\Translation as TranslationModel;
 

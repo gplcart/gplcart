@@ -9,8 +9,8 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Handler,
-    gplcart\core\Hook;
+use gplcart\core\Hook,
+    gplcart\core\Handler;
 use gplcart\core\helpers\Url as UrlHelper,
     gplcart\core\helpers\Session as SessionHelper,
     gplcart\core\helpers\SocketClient as SocketClientHelper;

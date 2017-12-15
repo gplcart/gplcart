@@ -10,7 +10,7 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Hook,
-    gplcart\core\Database;
+    gplcart\core\Config;
 
 /**
  * Manages basic behaviors and data related geo zones
@@ -32,12 +32,12 @@ class Zone
 
     /**
      * @param Hook $hook
-     * @param Database $db
+     * @param Config $config
      */
-    public function __construct(Hook $hook, Database $db)
+    public function __construct(Hook $hook, Config $config)
     {
-        $this->db = $db;
         $this->hook = $hook;
+        $this->db = $config->getDb();
     }
 
     /**
@@ -55,7 +55,6 @@ class Zone
         }
 
         $result = $this->db->fetch('SELECT * FROM zone WHERE zone_id=?', array($zone_id));
-
         $this->hook->attach('zone.get.after', $zone_id, $result, $this);
         return $result;
     }
@@ -76,7 +75,6 @@ class Zone
 
         $result = $this->db->insert('zone', $data);
         $this->hook->attach('zone.add.after', $data, $result, $this);
-
         return (int) $result;
     }
 
@@ -185,7 +183,6 @@ class Zone
 
         $list = $this->db->fetchAll($sql, $conditions, array('index' => 'zone_id'));
         $this->hook->attach('zone.list', $list, $this);
-
         return $list;
     }
 

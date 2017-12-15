@@ -9,9 +9,8 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Config,
-    gplcart\core\Hook,
-    gplcart\core\Database;
+use gplcart\core\Hook,
+    gplcart\core\Config;
 
 /**
  * Manages basic behaviors and data for product relations
@@ -39,14 +38,13 @@ class ProductRelation
 
     /**
      * @param Hook $hook
-     * @param Database $db
      * @param Config $config
      */
-    public function __construct(Hook $hook, Database $db, Config $config)
+    public function __construct(Hook $hook, Config $config)
     {
-        $this->db = $db;
         $this->hook = $hook;
         $this->config = $config;
+        $this->db = $this->config->getDb();
     }
 
     /**

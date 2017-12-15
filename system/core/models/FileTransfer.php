@@ -9,8 +9,8 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Config,
-    gplcart\core\Hook;
+use gplcart\core\Hook,
+    gplcart\core\Config;
 use gplcart\core\models\File as FileModel,
     gplcart\core\models\Language as LanguageModel,
     gplcart\core\models\Validator as ValidatorModel,
@@ -93,7 +93,8 @@ class FileTransfer
      * @param SocketClientHelper $socket
      */
     public function __construct(Hook $hook, Config $config, LanguageModel $language,
-                                ValidatorModel $validator, FileModel $file, TranslationModel $translation, SocketClientHelper $socket)
+            ValidatorModel $validator, FileModel $file, TranslationModel $translation,
+            SocketClientHelper $socket)
     {
         $this->hook = $hook;
         $this->config = $config;

@@ -53,7 +53,8 @@ class Field
      * @param TranslationModel $translation
      * @param TranslationEntityModel $translation_entity
      */
-    public function __construct(Hook $hook, Config $config, TranslationModel $translation, TranslationEntityModel $translation_entity)
+    public function __construct(Hook $hook, Config $config, TranslationModel $translation,
+            TranslationEntityModel $translation_entity)
     {
         $this->hook = $hook;
         $this->db = $config->getDb();
@@ -210,8 +211,7 @@ class Field
             return $result;
         }
 
-        $sql = 'SELECT * FROM field WHERE field_id=?';
-        $result = $this->db->fetch($sql, array($field_id));
+        $result = $this->db->fetch('SELECT * FROM field WHERE field_id=?', array($field_id));
 
         $this->attachTranslations($result, $this->translation_entity, 'field', $language);
 

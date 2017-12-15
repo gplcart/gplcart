@@ -10,8 +10,7 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Hook,
-    gplcart\core\Config,
-    gplcart\core\Database;
+    gplcart\core\Config;
 
 /**
  * Manages basic behaviors and data related to product views
@@ -39,14 +38,13 @@ class ProductView
 
     /**
      * @param Hook $hook
-     * @param Database $db
      * @param Config $config
      */
-    public function __construct(Hook $hook, Database $db, Config $config)
+    public function __construct(Hook $hook, Config $config)
     {
-        $this->db = $db;
         $this->hook = $hook;
         $this->config = $config;
+        $this->db = $this->config->getDb();
     }
 
     /**

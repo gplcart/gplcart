@@ -79,7 +79,7 @@ class Sku
             $sql .= ' AND ps.sku LIKE ?';
             $conditions[] = "%{$data['sku']}%";
         }
-        
+
         if (isset($data['title_sku'])) {
             $sql .= ' AND (p.title LIKE ? OR ps.sku LIKE ?)';
             $conditions[] = "%{$data['title_sku']}%";

@@ -10,7 +10,7 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Hook,
-    gplcart\core\Database;
+    gplcart\core\Config;
 
 /**
  * Manages basic behaviors and data related to payment transactions
@@ -32,12 +32,12 @@ class Transaction
 
     /**
      * @param Hook $hook
-     * @param Database $db
+     * @param Config $config
      */
-    public function __construct(Hook $hook, Database $db)
+    public function __construct(Hook $hook, Config $config)
     {
-        $this->db = $db;
         $this->hook = $hook;
+        $this->db = $config->getDb();
     }
 
     /**
@@ -55,26 +55,26 @@ class Transaction
 
         $sql .= ' FROM transactions WHERE transaction_id IS NOT NULL';
 
-        $where = array();
+        $conditions = array();
 
         if (isset($data['order_id'])) {
             $sql .= ' AND order_id = ?';
-            $where[] = (int) $data['order_id'];
+            $conditions[] = (int) $data['order_id'];
         }
 
         if (isset($data['created'])) {
             $sql .= ' AND created = ?';
-            $where[] = (int) $data['created'];
+            $conditions[] = (int) $data['created'];
         }
 
         if (isset($data['payment_method'])) {
             $sql .= ' AND payment_method LIKE ?';
-            $where[] = "%{$data['payment_method']}%";
+            $conditions[] = "%{$data['payment_method']}%";
         }
 
         if (isset($data['gateway_transaction_id'])) {
             $sql .= ' AND gateway_transaction_id LIKE ?';
-            $where[] = "%{$data['gateway_transaction_id']}%";
+            $conditions[] = "%{$data['gateway_transaction_id']}%";
         }
 
         $allowed_order = array('asc', 'desc');
@@ -92,12 +92,10 @@ class Transaction
         }
 
         if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $where);
+            return (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $options = array('index' => 'transaction_id', 'unserialize' => 'data');
-        $results = $this->db->fetchAll($sql, $where, $options);
-
+        $results = $this->db->fetchAll($sql, $conditions, array('index' => 'transaction_id', 'unserialize' => 'data'));
         $this->hook->attach('transaction.list', $results, $this);
         return $results;
     }
@@ -159,7 +157,6 @@ class Transaction
         }
 
         $result = (bool) $this->db->delete('transactions', array('transaction_id' => $transaction_id));
-
         $this->hook->attach('transaction.delete.after', $transaction_id, $result, $this);
         return (bool) $result;
     }

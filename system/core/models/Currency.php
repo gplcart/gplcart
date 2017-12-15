@@ -9,9 +9,8 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Config,
-    gplcart\core\Hook,
-    gplcart\core\Database;
+use gplcart\core\Hook,
+    gplcart\core\Config;
 use gplcart\core\helpers\Request as RequestHelper;
 
 /**
@@ -46,16 +45,15 @@ class Currency
 
     /**
      * @param Hook $hook
-     * @param Database $db
      * @param Config $config
      * @param RequestHelper $request
      */
-    public function __construct(Hook $hook, Database $db, Config $config, RequestHelper $request)
+    public function __construct(Hook $hook, Config $config, RequestHelper $request)
     {
-        $this->db = $db;
         $this->hook = $hook;
         $this->config = $config;
         $this->request = $request;
+        $this->db = $config->getDb();
     }
 
     /**

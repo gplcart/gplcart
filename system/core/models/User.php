@@ -351,7 +351,6 @@ class User
         }
 
         if (empty($user_id)) {
-            // This is also prevents fatal errors when db is unavailable
             return $result = array();
         }
 
@@ -360,16 +359,14 @@ class User
                 . ' LEFT JOIN role r ON (u.role_id = r.role_id)'
                 . ' WHERE u.user_id=?';
 
-        $where = array($user_id);
+        $conditions = array($user_id);
 
         if (isset($store_id)) {
             $sql .= ' AND u.store_id=?';
-            $where[] = $store_id;
+            $conditions[] = $store_id;
         }
 
-        $options = array('unserialize' => array('data', 'role_permissions'));
-        $result = $this->db->fetch($sql, $where, $options);
-
+        $result = $this->db->fetch($sql, $conditions, array('unserialize' => array('data', 'role_permissions')));
         $this->hook->attach('user.get.after', $user_id, $store_id, $result, $this);
         return $result;
     }
@@ -650,7 +647,7 @@ class User
             $sql = 'SELECT COUNT(user_id)';
         }
 
-        $sql .= ' FROM user WHERE user_id > 0';
+        $sql .= ' FROM user WHERE user_id IS NOT NULL';
 
         $where = array();
 

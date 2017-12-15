@@ -68,7 +68,7 @@ class FieldValue
      * @param TranslationEntityModel $translation_entity
      */
     public function __construct(Hook $hook, Config $config, FileModel $file,
-                                TranslationModel $translation, TranslationEntityModel $translation_entity)
+            TranslationModel $translation, TranslationEntityModel $translation_entity)
     {
         $this->hook = $hook;
         $this->config = $config;

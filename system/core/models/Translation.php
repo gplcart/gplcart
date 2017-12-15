@@ -10,7 +10,7 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Hook,
-    gplcart\core\Module as ModuleCore;
+    gplcart\core\Module;
 
 /**
  * Manages basic behaviors and data related to UI translations
@@ -31,12 +31,6 @@ class Translation
     protected $module;
 
     /**
-     * Array of processed translations
-     * @var array
-     */
-    protected $written = array();
-
-    /**
      * The current language code
      * @var string
      */
@@ -55,10 +49,16 @@ class Translation
     protected $prepared = false;
 
     /**
-     * @param Hook $hook
-     * @param ModuleCore $module
+     * Array of processed translations
+     * @var array
      */
-    public function __construct(Hook $hook, ModuleCore $module)
+    protected $written = array();
+
+    /**
+     * @param Hook $hook
+     * @param Module $module
+     */
+    public function __construct(Hook $hook, Module $module)
     {
         $this->hook = $hook;
         $this->module = $module;
@@ -81,6 +81,7 @@ class Translation
 
         $this->setContext($context);
         $this->setLangcode($langcode);
+
         $result = $this->prepareFiles($langcode);
 
         $this->hook->attach('translation.set.after', $langcode, $context, $result, $this);

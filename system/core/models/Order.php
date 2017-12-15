@@ -9,8 +9,8 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Config,
-    gplcart\core\Hook;
+use gplcart\core\Hook,
+    gplcart\core\Config;
 use gplcart\core\models\Mail as MailModel,
     gplcart\core\models\Cart as CartModel,
     gplcart\core\models\User as UserModel,
@@ -89,7 +89,8 @@ class Order
      * @param Mail $mail
      */
     public function __construct(Hook $hook, Config $config, UserModel $user, PriceModel $price,
-                                PriceRuleModel $pricerule, CartModel $cart, TranslationModel $translation, MailModel $mail)
+            PriceRuleModel $pricerule, CartModel $cart, TranslationModel $translation,
+            MailModel $mail)
     {
         $this->hook = $hook;
         $this->config = $config;
@@ -332,7 +333,6 @@ class Order
 
         $statuses = $this->getDefaultStatuses();
         $this->hook->attach('order.statuses', $statuses, $this);
-
         return $statuses;
     }
 

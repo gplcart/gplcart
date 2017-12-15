@@ -10,9 +10,9 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Hook,
-    gplcart\core\Database;
-use gplcart\core\models\Condition as ConditionModel,
-    gplcart\core\models\Language as LanguageModel;
+    gplcart\core\Config;
+use gplcart\core\models\Language as LanguageModel,
+    gplcart\core\models\Condition as ConditionModel;
 
 /**
  * Manages basic behaviors and data related to triggers
@@ -46,17 +46,17 @@ class Trigger
 
     /**
      * @param Hook $hook
-     * @param Database $db
+     * @param Config $config
      * @param ConditionModel $condition
      * @param LanguageModel $language
      */
-    public function __construct(Hook $hook, Database $db, ConditionModel $condition,
+    public function __construct(Hook $hook, Config $config, ConditionModel $condition,
             LanguageModel $language)
     {
-        $this->db = $db;
         $this->hook = $hook;
         $this->language = $language;
         $this->condition = $condition;
+        $this->db = $config->getDb();
     }
 
     /**
@@ -165,8 +165,7 @@ class Trigger
             return $result;
         }
 
-        $sql = 'SELECT * FROM triggers WHERE trigger_id=?';
-        $result = $this->db->fetch($sql, array($trigger_id), array('unserialize' => 'data'));
+        $result = $this->db->fetch('SELECT * FROM triggers WHERE trigger_id=?', array($trigger_id), array('unserialize' => 'data'));
         $this->hook->attach('trigger.get.after', $trigger_id, $result, $this);
         return $result;
     }

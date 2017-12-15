@@ -10,7 +10,7 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Hook,
-    gplcart\core\Database;
+    gplcart\core\Config;
 use gplcart\core\models\Language as LanguageModel;
 
 /**
@@ -39,14 +39,14 @@ class UserRole
 
     /**
      * @param Hook $hook
-     * @param Database $db
+     * @param Config $config
      * @param LanguageModel $language
      */
-    public function __construct(Hook $hook, Database $db, LanguageModel $language)
+    public function __construct(Hook $hook, Config $config, LanguageModel $language)
     {
-        $this->db = $db;
         $this->hook = $hook;
         $this->language = $language;
+        $this->db = $config->getDb();
     }
 
     /**
@@ -83,16 +83,16 @@ class UserRole
 
         $sql .= ' FROM role WHERE role_id > 0';
 
-        $where = array();
+        $conditions = array();
 
         if (isset($data['name'])) {
             $sql .= ' AND name LIKE ?';
-            $where[] = "%{$data['name']}%";
+            $conditions[] = "%{$data['name']}%";
         }
 
         if (isset($data['status'])) {
             $sql .= ' AND status = ?';
-            $where[] = (int) $data['status'];
+            $conditions[] = (int) $data['status'];
         }
 
         $allowed_order = array('asc', 'desc');
@@ -110,7 +110,7 @@ class UserRole
         }
 
         if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $where);
+            return (int) $this->db->fetchColumn($sql, $conditions);
         }
 
         $options = array(
@@ -118,8 +118,7 @@ class UserRole
             'unserialize' => 'permissions'
         );
 
-        $roles = $this->db->fetchAll($sql, $where, $options);
-
+        $roles = $this->db->fetchAll($sql, $conditions, $options);
         $this->hook->attach('user.role.list', $roles, $this);
         return $roles;
     }
@@ -155,9 +154,7 @@ class UserRole
      */
     public function canDelete($role_id)
     {
-        $sql = 'SELECT user_id FROM user WHERE role_id=?';
-        $result = $this->db->fetchColumn($sql, array($role_id));
-
+        $result = $this->db->fetchColumn('SELECT user_id FROM user WHERE role_id=?', array($role_id));
         return empty($result);
     }
 
@@ -219,9 +216,7 @@ class UserRole
             return $result;
         }
 
-        $options = array('unserialize' => 'permissions');
-        $result = $this->db->fetch('SELECT * FROM role WHERE role_id=?', array($role_id), $options);
-
+        $result = $this->db->fetch('SELECT * FROM role WHERE role_id=?', array($role_id), array('unserialize' => 'permissions'));
         $this->hook->attach('user.role.get.after', $role_id, $result, $this);
         return $result;
     }

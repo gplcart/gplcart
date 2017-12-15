@@ -118,22 +118,26 @@ class Product
      */
     protected $request;
 
-
-    public function __construct(
-        Hook $hook,
-        Config $config,
-        SkuModel $sku,
-        FileModel $file,
-        AliasModel $alias,
-        PriceModel $price,
-        SearchModel $search,
-        PriceRuleModel $pricerule,
-        ProductFieldModel $product_field,
-        TranslationModel $translation,
-        TranslationEntityModel $translation_entity,
-        ProductRelationModel $product_relation,
-        RequestHelper $request
-    )
+    /**
+     * @param Hook $hook
+     * @param Config $config
+     * @param SkuModel $sku
+     * @param FileModel $file
+     * @param AliasModel $alias
+     * @param PriceModel $price
+     * @param SearchModel $search
+     * @param PriceRuleModel $pricerule
+     * @param ProductFieldModel $product_field
+     * @param TranslationModel $translation
+     * @param TranslationEntityModel $translation_entity
+     * @param ProductRelationModel $product_relation
+     * @param RequestHelper $request
+     */
+    public function __construct(Hook $hook, Config $config, SkuModel $sku, FileModel $file,
+            AliasModel $alias, PriceModel $price, SearchModel $search, PriceRuleModel $pricerule,
+            ProductFieldModel $product_field, TranslationModel $translation,
+            TranslationEntityModel $translation_entity, ProductRelationModel $product_relation,
+            RequestHelper $request)
     {
         $this->hook = $hook;
         $this->config = $config;

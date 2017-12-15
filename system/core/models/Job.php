@@ -57,13 +57,12 @@ class Job
      * @param UrlHelper $url
      */
     public function __construct(Hook $hook, TranslationModel $translation, SessionHelper $session,
-                                UrlHelper $url)
+            UrlHelper $url)
     {
         $this->url = $url;
         $this->hook = $hook;
         $this->session = $session;
         $this->translation = $translation;
-
     }
 
     /**

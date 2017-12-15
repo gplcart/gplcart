@@ -45,8 +45,8 @@ class OrderHistory
     public function __construct(Hook $hook, Config $config, HistoryModel $history)
     {
         $this->hook = $hook;
-        $this->db = $config->getDb();
         $this->history = $history;
+        $this->db = $config->getDb();
     }
 
     /**

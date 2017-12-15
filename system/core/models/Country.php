@@ -10,7 +10,7 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Hook,
-    gplcart\core\Database;
+    gplcart\core\Config;
 
 /**
  * Manages basic behaviors and data related to countries
@@ -32,12 +32,12 @@ class Country
 
     /**
      * @param Hook $hook
-     * @param Database $db
+     * @param Config $config
      */
-    public function __construct(Hook $hook, Database $db)
+    public function __construct(Hook $hook, Config $config)
     {
-        $this->db = $db;
         $this->hook = $hook;
+        $this->db = $config->getDb();
     }
 
     /**
@@ -85,8 +85,7 @@ class Country
             return $result;
         }
 
-        $sql = 'SELECT * FROM country WHERE code=?';
-        $result = $this->db->fetch($sql, array($code), array('unserialize' => 'format'));
+        $result = $this->db->fetch('SELECT * FROM country WHERE code=?', array($code), array('unserialize' => 'format'));
 
         if (!empty($result)) {
             $default_format = $this->getDefaultFormat();
@@ -139,7 +138,6 @@ class Country
         $result = true;
         $this->db->insert('country', $data);
         $this->hook->attach('country.add.after', $data, $result, $this);
-
         return (bool) $result;
     }
 
@@ -203,9 +201,7 @@ class Country
      */
     public function canDelete($code)
     {
-        $sql = 'SELECT address_id FROM address WHERE country=?';
-        $result = $this->db->fetchColumn($sql, array($code));
-
+        $result = $this->db->fetchColumn('SELECT address_id FROM address WHERE country=?', array($code));
         return empty($result);
     }
 
@@ -230,26 +226,26 @@ class Country
 
         $sql .= ' FROM country WHERE LENGTH(code) > 0';
 
-        $where = array();
+        $conditions = array();
 
         if (isset($data['name'])) {
             $sql .= ' AND name LIKE ?';
-            $where[] = "%{$data['name']}%";
+            $conditions[] = "%{$data['name']}%";
         }
 
         if (isset($data['native_name'])) {
             $sql .= ' AND native_name LIKE ?';
-            $where[] = "%{$data['native_name']}%";
+            $conditions[] = "%{$data['native_name']}%";
         }
 
         if (isset($data['code'])) {
             $sql .= ' AND code LIKE ?';
-            $where[] = "%{$data['code']}%";
+            $conditions[] = "%{$data['code']}%";
         }
 
         if (isset($data['status'])) {
             $sql .= ' AND status = ?';
-            $where[] = (int) $data['status'];
+            $conditions[] = (int) $data['status'];
         }
 
         $allowed_order = array('asc', 'desc');
@@ -267,16 +263,13 @@ class Country
         }
 
         if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $where);
+            return (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $results = $this->db->fetchAll($sql, $where);
+        $list = $this->db->fetchAll($sql, $conditions, array('unserialize' => 'format', 'index' => 'code'));
 
-        $list = array();
-        foreach ($results as $country) {
-            $country['format'] = unserialize($country['format']);
-            $list[$country['code']] = $country;
-            $list[$country['code']]['format'] += $this->getDefaultFormat();
+        foreach ($list as &$country) {
+            $country['format'] += $this->getDefaultFormat();
         }
 
         $this->hook->attach('country.list', $list, $this);

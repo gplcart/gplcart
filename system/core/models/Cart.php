@@ -96,9 +96,9 @@ class Cart
      * @param Translation $translation
      * @param RequestHelper $request
      */
-    public function __construct(Hook $hook, Config $config, ProductModel $product,
-                                SkuModel $sku, CurrencyModel $currency, UserModel $user, WishlistModel $wishlist,
-                                TranslationModel $translation, RequestHelper $request)
+    public function __construct(Hook $hook, Config $config, ProductModel $product, SkuModel $sku,
+            CurrencyModel $currency, UserModel $user, WishlistModel $wishlist,
+            TranslationModel $translation, RequestHelper $request)
     {
         $this->hook = $hook;
         $this->config = $config;

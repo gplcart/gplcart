@@ -10,7 +10,7 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Hook,
-    gplcart\core\Database;
+    gplcart\core\Config;
 
 /**
  * Manages basic behaviors and data related to country states
@@ -32,12 +32,12 @@ class State
 
     /**
      * @param Hook $hook
-     * @param Database $db
+     * @param Config $config
      */
-    public function __construct(Hook $hook, Database $db)
+    public function __construct(Hook $hook, Config $config)
     {
-        $this->db = $db;
         $this->hook = $hook;
+        $this->db = $config->getDb();
     }
 
     /**
@@ -55,7 +55,6 @@ class State
         }
 
         $result = $this->db->insert('state', $data);
-
         $this->hook->attach('state.add.after', $data, $result, $this);
         return (int) $result;
     }
@@ -182,7 +181,6 @@ class State
     {
         $sql = 'SELECT address_id FROM address WHERE state_id=?';
         $result = $this->db->fetchColumn($sql, array($state_id));
-
         return empty($result);
     }
 
