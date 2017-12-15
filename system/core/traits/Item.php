@@ -45,17 +45,17 @@ trait Item
             'imagestyle' => $this->config('image_style', 3));
 
         if (!empty($options['path'])) {
-            $item['thumb'] = $image_model->url($options['imagestyle'], $options['path']);
+            $item['thumb'] = $image_model->url($options['path'], $options['imagestyle']);
         } else if (!empty($item['path'])) {
-            $item['thumb'] = $image_model->url($options['imagestyle'], $item['path']);
+            $item['thumb'] = $image_model->url($item['path'], $options['imagestyle']);
         } else if (empty($item['images'])) {
             $item['thumb'] = $image_model->getThumb($item, $options);
         } else {
             $first = reset($item['images']);
-            $item['thumb'] = $image_model->url($options['imagestyle'], $first['path']);
+            $item['thumb'] = $image_model->url($first['path'], $options['imagestyle']);
             foreach ($item['images'] as &$image) {
-                $image['url'] = $image_model->urlFromPath($image['path']);
-                $image['thumb'] = $image_model->url($options['imagestyle'], $image['path']);
+                $image['url'] = $image_model->url($image['path']);
+                $image['thumb'] = $image_model->url($image['path'], $options['imagestyle']);
                 $this->setItemThumbIsPlaceholder($image, $image_model);
             }
         }

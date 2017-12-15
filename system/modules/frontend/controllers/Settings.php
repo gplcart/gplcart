@@ -9,6 +9,7 @@
 
 namespace gplcart\modules\frontend\controllers;
 
+use gplcart\core\models\ImageStyle as ImageStyleModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -16,12 +17,21 @@ use gplcart\core\controllers\backend\Controller as BackendController;
  */
 class Settings extends BackendController
 {
+
     /**
-     * Constructor
+     * Image style model instance
+     * @var \gplcart\core\models\ImageStyle $image_style
      */
-    public function __construct()
+    protected $image_style;
+
+    /**
+     * @param ImageStyleModel $image_style
+     */
+    public function __construct(ImageStyleModel $image_style)
     {
         parent::__construct();
+
+        $this->image_style = $image_style;
     }
 
     /**
@@ -29,14 +39,14 @@ class Settings extends BackendController
      */
     public function editSettings()
     {
-        $this->setData('imagestyles', $this->image->getStyleList());
+        $this->setTitleEditSettings();
+        $this->setBreadcrumbEditSettings();
+
+        $this->setData('imagestyles', $this->image_style->getList());
         $this->setData('settings', $this->module->getSettings('frontend'));
         $this->setData('imagestyle_fields', $this->getImageStyleFieldsSettings());
 
         $this->submitSettings();
-
-        $this->setTitleEditSettings();
-        $this->setBreadcrumbEditSettings();
         $this->outputEditSettings();
     }
 

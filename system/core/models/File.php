@@ -54,7 +54,7 @@ class File
      * @param TranslationEntityModel $translation_entity
      */
     public function __construct(Hook $hook, Config $config, TranslationModel $translation,
-                                TranslationEntityModel $translation_entity)
+            TranslationEntityModel $translation_entity)
     {
         $this->hook = $hook;
         $this->db = $config->getDb();
@@ -378,12 +378,26 @@ class File
      */
     public function deleteFromDisk(array $file)
     {
+        $result = null;
+        $this->hook->attach('file.delete.disk.before', $file, $result, $this);
+
+        if (isset($result)) {
+            return (bool) $result;
+        }
+
         if (empty($file['path'])) {
             return false;
         }
 
         $path = gplcart_file_absolute($file['path']);
-        return file_exists($path) ? unlink($path) : false;
+
+        if (!is_file($path)) {
+            return false;
+        }
+
+        $result = unlink($path);
+        $this->hook->attach('file.delete.disk.after', $file, $result, $this);
+        return $result;
     }
 
     /**
@@ -415,6 +429,22 @@ class File
         }
 
         return array('database' => 1, 'disk' => 1);
+    }
+
+    /**
+     * Deletes multiple files
+     * @param array $options
+     * @return bool
+     */
+    public function deleteMultiple(array $options)
+    {
+        $deleted = $count = 0;
+        foreach ((array) $this->getList($options) as $file) {
+            $count ++;
+            $deleted += (int) $this->delete($file['file_id']);
+        }
+
+        return $count && $deleted == $count;
     }
 
     /**

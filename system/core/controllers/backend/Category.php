@@ -320,19 +320,7 @@ class Category extends BackendController
     protected function deleteImagesCategory()
     {
         $file_ids = $this->getPosted('delete_images', array(), true, 'array');
-
-        if (empty($file_ids)) {
-            return false;
-        }
-
-        $options = array(
-            'file_id' => $file_ids,
-            'file_type' => 'image',
-            'entity' => 'category',
-            'entity_id' => $this->data_category['category_id']
-        );
-
-        return $this->image->deleteMultiple($options);
+        return $this->image->deleteByFileId($file_ids);
     }
 
     /**

@@ -268,19 +268,7 @@ class Page extends BackendController
     protected function deleteImagesPage()
     {
         $file_ids = $this->getPosted('delete_images', array(), true, 'array');
-
-        if (empty($file_ids)) {
-            return false;
-        }
-
-        $options = array(
-            'entity' => 'page',
-            'file_type' => 'image',
-            'file_id' => $file_ids,
-            'entity_id' => $this->data_page['page_id']
-        );
-
-        return $this->image->deleteMultiple($options);
+        return $this->image->deleteByFileId($file_ids);
     }
 
     /**

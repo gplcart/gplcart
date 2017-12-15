@@ -583,11 +583,7 @@ abstract class Controller
      */
     public function image($path, $imagestyle_id = null, $absolute = false)
     {
-        if (!isset($imagestyle_id)) {
-            return $this->image->urlFromPath($path);
-        }
-
-        return $this->image->url($imagestyle_id, $path, $absolute);
+        return $this->image->url($path, $imagestyle_id, $absolute);
     }
 
     /**

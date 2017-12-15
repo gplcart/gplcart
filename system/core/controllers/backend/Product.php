@@ -343,19 +343,7 @@ class Product extends BackendController
     protected function deleteImagesProduct()
     {
         $file_ids = $this->getPosted('delete_images', array(), true, 'array');
-
-        if (empty($file_ids)) {
-            return false;
-        }
-
-        $options = array(
-            'entity' => 'product',
-            'file_type' => 'image',
-            'file_id' => $file_ids,
-            'entity_id' => $this->data_product['product_id']
-        );
-
-        return $this->image->deleteMultiple($options);
+        return $this->image->deleteByFileId($file_ids);
     }
 
     /**

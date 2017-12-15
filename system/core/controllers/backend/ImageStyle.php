@@ -9,7 +9,7 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\File as FileModel;
+use gplcart\core\models\ImageStyle as ImageStyleModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -19,10 +19,10 @@ class ImageStyle extends BackendController
 {
 
     /**
-     * File model instance
-     * @var \gplcart\core\models\File $file
+     * Image style model class instance
+     * @var \gplcart\core\models\ImageStyle $image_style
      */
-    protected $file;
+    protected $image_style;
 
     /**
      * An array of image style data
@@ -31,13 +31,13 @@ class ImageStyle extends BackendController
     protected $data_imagestyle = array('actions' => array());
 
     /**
-     * @param FileModel $file
+     * @param ImageStyleModel $image_style
      */
-    public function __construct(FileModel $file)
+    public function __construct(ImageStyleModel $image_style)
     {
         parent::__construct();
 
-        $this->file = $file;
+        $this->image_style = $image_style;
     }
 
     /**
@@ -50,8 +50,17 @@ class ImageStyle extends BackendController
         $this->setTitleListImageStyle();
         $this->setBreadcrumbListImageStyle();
 
-        $this->setData('styles', $this->image->getStyleList());
+        $this->setData('styles', $this->getListImageStyle());
         $this->outputListImageStyle();
+    }
+
+    /**
+     * Returns an array of image styles
+     * @return array
+     */
+    protected function getListImageStyle()
+    {
+        return $this->image_style->getList();
     }
 
     /**
@@ -63,11 +72,9 @@ class ImageStyle extends BackendController
         $style_id = $this->getQuery('clear');
 
         if (!empty($style_id)) {
-
-            if ($this->image->clearCache($style_id)) {
+            if ($this->image_style->clearCache($style_id)) {
                 $this->redirect('', $this->text('Cache has been deleted'), 'success');
             }
-
             $this->redirect('', $this->text('Cache has not been deleted'), 'warning');
         }
     }
@@ -112,13 +119,22 @@ class ImageStyle extends BackendController
         $this->setBreadcrumbEditImageStyle();
 
         $this->setData('imagestyle', $this->data_imagestyle);
+        $this->setData('actions', $this->getActionsImageStyle());
         $this->setData('can_delete', $this->canDeleteImageStyle());
-        $this->setData('actions', $this->image->getActionHandlers());
 
         $this->submitEditImageStyle();
         $this->setDataEditImageStyle();
 
         $this->outputEditImageStyle();
+    }
+
+    /**
+     * Returns an array of image style actions
+     * @return array
+     */
+    protected function getActionsImageStyle()
+    {
+        return $this->image_style->getActionHandlers();
     }
 
     /**
@@ -129,7 +145,7 @@ class ImageStyle extends BackendController
     {
         return isset($this->data_imagestyle['imagestyle_id'])//
                 && $this->access('image_style_delete')//
-                && $this->image->canDeleteImageStyle($this->data_imagestyle['imagestyle_id']);
+                && $this->image_style->canDelete($this->data_imagestyle['imagestyle_id']);
     }
 
     /**
@@ -139,7 +155,7 @@ class ImageStyle extends BackendController
     protected function setImageStyle($style_id)
     {
         if (is_numeric($style_id)) {
-            $this->data_imagestyle = $this->image->getStyle($style_id);
+            $this->data_imagestyle = $this->image_style->get($style_id);
             if (empty($this->data_imagestyle)) {
                 $this->outputHttpStatus(404);
             }
@@ -167,8 +183,8 @@ class ImageStyle extends BackendController
      */
     protected function deleteImageStyle()
     {
-        if ($this->canDeleteImageStyle() && $this->image->deleteStyle($this->data_imagestyle['imagestyle_id'])) {
-            $this->image->clearCache($this->data_imagestyle['imagestyle_id']);
+        if ($this->canDeleteImageStyle() && $this->image_style->delete($this->data_imagestyle['imagestyle_id'])) {
+            $this->image_style->clearCache($this->data_imagestyle['imagestyle_id']);
             $this->redirect('admin/settings/imagestyle', $this->text('Image style has been deleted'), 'success');
         }
 
@@ -198,8 +214,8 @@ class ImageStyle extends BackendController
     {
         $this->controlAccess('image_style_edit');
 
-        if ($this->image->updateStyle($this->data_imagestyle['imagestyle_id'], $this->getSubmitted())) {
-            $this->image->clearCache($this->data_imagestyle['imagestyle_id']);
+        if ($this->image_style->update($this->data_imagestyle['imagestyle_id'], $this->getSubmitted())) {
+            $this->image_style->clearCache($this->data_imagestyle['imagestyle_id']);
             $this->redirect('admin/settings/imagestyle', $this->text('Image style has been updated'), 'success');
         }
 
@@ -213,7 +229,7 @@ class ImageStyle extends BackendController
     {
         $this->controlAccess('image_style_add');
 
-        if ($this->image->addStyle($this->getSubmitted())) {
+        if ($this->image_style->add($this->getSubmitted())) {
             $this->redirect('admin/settings/imagestyle', $this->text('Image style has been added'), 'success');
         }
 

@@ -9,7 +9,7 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\models\Image as ImageModel;
+use gplcart\core\models\ImageStyle as ImageStyleModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
@@ -19,19 +19,19 @@ class Image extends ComponentValidator
 {
 
     /**
-     * Image model instance
-     * @var \gplcart\core\models\Image $image
+     * Image style model instance
+     * @var \gplcart\core\models\ImageStyle $image_style
      */
-    protected $image;
+    protected $image_style;
 
     /**
-     * @param ImageModel $image
+     * @param ImageStyleModel $image_style
      */
-    public function __construct(ImageModel $image)
+    public function __construct(ImageStyleModel $image_style)
     {
         parent::__construct();
 
-        $this->image = $image;
+        $this->image_style = $image_style;
     }
 
     /**
@@ -66,7 +66,7 @@ class Image extends ComponentValidator
             return null;
         }
 
-        $imagestyle = $this->image->getStyle($id);
+        $imagestyle = $this->image_style->get($id);
 
         if (empty($imagestyle)) {
             $this->setErrorUnavailable('update', $this->translation->text('Image style'));
@@ -100,7 +100,6 @@ class Image extends ComponentValidator
         foreach ($actions as $line => $action) {
 
             $parts = gplcart_string_explode_whitespace($action, 2);
-
             $action_id = array_shift($parts);
             $value = array_filter(explode(',', implode('', $parts)));
 
@@ -113,8 +112,7 @@ class Image extends ComponentValidator
         }
 
         if (!empty($errors)) {
-            $vars = array('@num' => implode(',', $errors));
-            $error = $this->translation->text('Error on line @num', $vars);
+            $error = $this->translation->text('Error on line @num', array('@num' => implode(',', $errors)));
             $this->setError($field, $error);
         }
 
@@ -134,7 +132,7 @@ class Image extends ComponentValidator
      */
     protected function validateActionImageStyle($action_id, array &$value)
     {
-        $handler = $this->image->getActionHandler($action_id);
+        $handler = $this->image_style->getActionHandler($action_id);
 
         if (empty($handler)) {
             return false;

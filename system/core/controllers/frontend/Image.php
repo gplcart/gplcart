@@ -9,6 +9,7 @@
 
 namespace gplcart\core\controllers\frontend;
 
+use gplcart\core\models\ImageStyle as ImageStyleModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
@@ -16,6 +17,12 @@ use gplcart\core\controllers\frontend\Controller as FrontendController;
  */
 class Image extends FrontendController
 {
+
+    /**
+     * Image style model instance
+     * @var \gplcart\core\models\ImageStyle $image_style
+     */
+    protected $image_style;
 
     /**
      * A path to the cached image from the current URL
@@ -48,11 +55,13 @@ class Image extends FrontendController
     protected $data_imagestyle_directory;
 
     /**
-     * Constructor
+     * @param ImageStyleModel $image_style
      */
-    public function __construct()
+    public function __construct(ImageStyleModel $image_style)
     {
         parent::__construct();
+
+        $this->image_style = $image_style;
     }
 
     /**
@@ -87,12 +96,12 @@ class Image extends FrontendController
      */
     protected function applyActionsImage()
     {
-        $actions = $this->image->getStyleActions($this->data_imagestyle_id);
+        $actions = $this->image_style->getActions($this->data_imagestyle_id);
 
         if (empty($actions)) {
             $this->response->outputError404(false);
         } else {
-            $this->image->applyActions($actions, $this->data_source_file, $this->data_cached_file);
+            $this->image_style->applyAll($actions, $this->data_source_file, $this->data_cached_file);
         }
     }
 
@@ -103,7 +112,7 @@ class Image extends FrontendController
     {
         if (is_file($this->data_cached_file)) {
 
-            $expires = $this->image->getCacheLifetime();
+            $expires = $this->image_style->getCacheLifetime();
             $timestamp = filemtime($this->data_cached_file);
 
             $this->response->addHeader('Cache-Control', "public, max-age=$expires")

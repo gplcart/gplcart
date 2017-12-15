@@ -233,4 +233,32 @@ class Url
         return $this->get('files/' . trim($path, '/'), array(), $absolute, true);
     }
 
+    /**
+     * Returns a string containing an image path
+     * @param string $path Either relative to the root/file directory or an absolute server path
+     * @return string
+     */
+    public function image($path)
+    {
+        if (gplcart_path_is_absolute($path)) {
+            $file = $path;
+            $url = gplcart_path_relative($path);
+        } else {
+
+            $path = gplcart_path_normalize($path);
+            $prefix = gplcart_path_relative(GC_DIR_FILE);
+
+            if (strpos($path, "$prefix/") === 0) {
+                $url = $path;
+                $file = gplcart_file_absolute($path);
+            } else {
+                $url = "$prefix/$path";
+                $file = gplcart_path_absolute($path);
+            }
+        }
+
+        $query = is_file($file) ? array('v' => filemtime($file)) : array();
+        return $this->get($url, $query, false, true);
+    }
+
 }
