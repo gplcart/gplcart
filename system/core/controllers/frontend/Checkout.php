@@ -156,7 +156,7 @@ class Checkout extends FrontendController
      * @var integer
      */
     protected $order_store_id;
-    
+
     /**
      * @param CountryModel $country
      * @param StateModel $state
@@ -168,8 +168,8 @@ class Checkout extends FrontendController
      * @param PaymentModel $payment
      */
     public function __construct(CountryModel $country, StateModel $state, AddressModel $address,
-            OrderModel $order, OrderHistoryModel $order_history, OrderDimensionModel $order_dimension,
-            ShippingModel $shipping, PaymentModel $payment)
+            OrderModel $order, OrderHistoryModel $order_history,
+            OrderDimensionModel $order_dimension, ShippingModel $shipping, PaymentModel $payment)
     {
         parent::__construct();
 
@@ -1079,26 +1079,6 @@ class Checkout extends FrontendController
     }
 
     /**
-     * Displays the complete order page
-     * @param integer $order_id
-     */
-    public function completeCheckout($order_id)
-    {
-        $this->setOrderCheckout($order_id);
-        $this->controlAccessCompleteCheckout();
-
-        $this->setTitleCompleteCheckout();
-        $this->setBreadcrumbCompleteCheckout();
-
-        $this->setData('complete_templates', $this->getTemplatesCheckout('complete', $this->data_order));
-        $this->setData('complete_message', $this->getCompleteMessageCheckout());
-
-        $this->hook->attach('order.complete.page', $this->data_order, $this->order, $this);
-
-        $this->outputCompleteCheckout();
-    }
-
-    /**
      * Returns an array of rendered templates provided by payment/shipping methods
      * @param string $name
      * @param array $order
@@ -1141,59 +1121,6 @@ class Checkout extends FrontendController
         }
 
         return $templates;
-    }
-
-    /**
-     * Controls access to the complete order page
-     */
-    protected function controlAccessCompleteCheckout()
-    {
-        if ($this->data_order['user_id'] !== $this->cart_uid) {
-            $this->outputHttpStatus(403);
-        }
-
-        if (!$this->order->isPending($this->data_order)) {
-            $this->outputHttpStatus(403);
-        }
-    }
-
-    /**
-     * Returns a complete order message
-     * @return string
-     */
-    protected function getCompleteMessageCheckout()
-    {
-        return $this->order->getCompleteMessage($this->data_order);
-    }
-
-    /**
-     * Sets titles on the complete order page
-     */
-    protected function setTitleCompleteCheckout()
-    {
-        $title = $this->text('Created order #@num', array('@num' => $this->data_order['order_id']));
-        $this->setTitle($title);
-    }
-
-    /**
-     * Sets bread crumb on the complete order page
-     */
-    protected function setBreadcrumbCompleteCheckout()
-    {
-        $breadcrumb = array(
-            'url' => $this->url('/'),
-            'text' => $this->text('Home')
-        );
-
-        $this->setBreadcrumb($breadcrumb);
-    }
-
-    /**
-     * Outputs the complete order page
-     */
-    protected function outputCompleteCheckout()
-    {
-        $this->output('checkout/complete');
     }
 
 }

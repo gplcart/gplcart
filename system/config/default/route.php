@@ -118,7 +118,7 @@ return array(
     ),
     'checkout/complete/(\d+)' => array(
         'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\frontend\\Checkout', 'completeCheckout')
+            'controller' => array('gplcart\\core\\controllers\\frontend\\CheckoutComplete', 'checkoutComplete')
         )
     ),
     'checkout/clone/(\d+)' => array(
