@@ -265,9 +265,8 @@ class Route
         if (!isset($alias)) {
             $arguments = array();
             if (gplcart_path_match($path, $pattern, $arguments)) {
-                $entity_id = reset($arguments);
-                $entity = strtok($pattern, '/');
-                $alias_path = $this->db->fetchColumn('SELECT alias FROM alias WHERE entity=? AND entity_id=?', array($entity, $entity_id));
+                $conditions = array(strtok($pattern, '/'), reset($arguments));
+                $alias_path = $this->db->fetchColumn('SELECT alias FROM alias WHERE entity=? AND entity_id=?', $conditions);
             }
 
             if (!empty($alias_path)) {
@@ -288,7 +287,11 @@ class Route
         $list = $this->getList();
         $route = $list[$pattern];
 
-        $route += array('arguments' => array(), 'pattern' => $pattern);
+        $route += array(
+            'arguments' => array(),
+            'pattern' => $pattern
+        );
+        
         $route['simple_pattern'] = preg_replace('@\(.*?\)@', '*', $pattern);
         $route['arguments'] = array_merge($arguments, $route['arguments']);
 
