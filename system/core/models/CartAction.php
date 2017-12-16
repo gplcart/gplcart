@@ -190,7 +190,7 @@ class CartAction
             }
         }
 
-        $this->deleteCookie();
+        $this->cart->deleteCookie();
         $result = $this->getResultLogin($user);
 
         $this->hook->attach('cart.login.after', $user, $cart, $result, $this);
