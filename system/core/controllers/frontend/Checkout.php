@@ -11,6 +11,7 @@ namespace gplcart\core\controllers\frontend;
 
 use gplcart\core\models\State as StateModel,
     gplcart\core\models\Order as OrderModel,
+    gplcart\core\models\CartAction as CartActionModel,
     gplcart\core\models\UserAccess as UserAccessModel,
     gplcart\core\models\OrderHistory as OrderHistoryModel,
     gplcart\core\models\OrderDimension as OrderDimensionModel,
@@ -79,6 +80,12 @@ class Checkout extends FrontendController
      * @var \gplcart\core\models\Payment $payment
      */
     protected $payment;
+
+    /**
+     * Cart action model instance
+     * @var \gplcart\core\models\CartAction $cart_action
+     */
+    protected $cart_action;
 
     /**
      * Current state of shipping address form
@@ -174,10 +181,12 @@ class Checkout extends FrontendController
      * @param OrderDimensionModel $order_dimension
      * @param ShippingModel $shipping
      * @param PaymentModel $payment
+     * @param CartActionModel $cart_action
      */
     public function __construct(CountryModel $country, StateModel $state, AddressModel $address,
             OrderModel $order, OrderHistoryModel $order_history, UserAccessModel $user_access,
-            OrderDimensionModel $order_dimension, ShippingModel $shipping, PaymentModel $payment)
+            OrderDimensionModel $order_dimension, ShippingModel $shipping, PaymentModel $payment,
+            CartActionModel $cart_action)
     {
         parent::__construct();
 
@@ -188,6 +197,7 @@ class Checkout extends FrontendController
         $this->payment = $payment;
         $this->shipping = $shipping;
         $this->user_access = $user_access;
+        $this->cart_action = $cart_action;
         $this->order_history = $order_history;
         $this->order_dimension = $order_dimension;
 
@@ -682,7 +692,7 @@ class Checkout extends FrontendController
         $result = $this->user_access->login($this->getSubmitted('user'));
 
         if (isset($result['user'])) {
-            $result = $this->cart->login($result['user'], $this->data_cart);
+            $result = $this->cart_action->login($result['user'], $this->data_cart);
         }
 
         if (empty($result['user'])) {
@@ -805,7 +815,7 @@ class Checkout extends FrontendController
         $cart_id = $this->getSubmitted('cart.action.wishlist');
 
         if (!empty($cart_id)) {
-            $result = $this->cart->moveToWishlist($cart_id);
+            $result = $this->cart_action->toWishlist($cart_id);
             if (isset($result['wishlist_id'])) {
                 $this->setSubmitted('cart.action.update', true);
                 $this->setMessage($result['message'], 'success');

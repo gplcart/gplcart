@@ -11,11 +11,9 @@ namespace gplcart\core\models;
 
 use gplcart\core\Hook,
     gplcart\core\Config;
-use gplcart\core\models\Sku as SkuModel,
-    gplcart\core\models\User as UserModel,
+use gplcart\core\models\User as UserModel,
     gplcart\core\models\Product as ProductModel,
     gplcart\core\models\Currency as CurrencyModel,
-    gplcart\core\models\Wishlist as WishlistModel,
     gplcart\core\models\Translation as TranslationModel;
 use gplcart\core\helpers\Request as RequestHelper;
 
@@ -50,12 +48,6 @@ class Cart
     protected $product;
 
     /**
-     * SKU model instance
-     * @var \gplcart\core\models\Sku $sku
-     */
-    protected $sku;
-
-    /**
      * Currency model instance
      * @var \gplcart\core\models\Currency $currency
      */
@@ -66,12 +58,6 @@ class Cart
      * @var \gplcart\core\models\User $user
      */
     protected $user;
-
-    /**
-     * Wishlist model instance
-     * @var \gplcart\core\models\Wishlist $wishlist
-     */
-    protected $wishlist;
 
     /**
      * Translation model instance
@@ -88,28 +74,24 @@ class Cart
     /**
      * @param Hook $hook
      * @param Config $config
-     * @param Product $product
-     * @param Sku $sku
-     * @param Currency $currency
-     * @param User $user
-     * @param Wishlist $wishlist
-     * @param Translation $translation
+     * @param ProductModel $product
+     * @param CurrencyModel $currency
+     * @param UserModel $user
+     * @param TranslationModel $translation
      * @param RequestHelper $request
      */
-    public function __construct(Hook $hook, Config $config, ProductModel $product, SkuModel $sku,
-            CurrencyModel $currency, UserModel $user, WishlistModel $wishlist,
-            TranslationModel $translation, RequestHelper $request)
+    public function __construct(Hook $hook, Config $config, ProductModel $product,
+            CurrencyModel $currency, UserModel $user, TranslationModel $translation,
+            RequestHelper $request)
     {
         $this->hook = $hook;
         $this->config = $config;
         $this->db = $this->config->getDb();
 
-        $this->sku = $sku;
         $this->user = $user;
         $this->product = $product;
         $this->request = $request;
         $this->currency = $currency;
-        $this->wishlist = $wishlist;
         $this->translation = $translation;
     }
 
@@ -281,105 +263,6 @@ class Cart
     }
 
     /**
-     * Returns cart limits
-     * @param null|string $item
-     * @return array|integer
-     */
-    public function getLimits($item = null)
-    {
-        $limits = array(
-            'sku' => (int) $this->config->get('cart_sku_limit', 10),
-            'item' => (int) $this->config->get('cart_item_limit', 20)
-        );
-
-        return isset($item) ? $limits[$item] : $limits;
-    }
-
-    /**
-     * Adds the product to the cart
-     * @param array $product
-     * @param array $data
-     * @return array
-     */
-    public function addProduct(array $product, array $data)
-    {
-        $result = array();
-        $this->hook->attach('cart.add.product.before', $product, $data, $result, $this);
-
-        if (!empty($result)) {
-            return (array) $result;
-        }
-
-        $result = array(
-            'redirect' => '',
-            'severity' => 'warning',
-            'message' => $this->translation->text('Unable to add product')
-        );
-
-        $data += array(
-            'quantity' => 1,
-            'user_id' => $this->getUid(),
-            'store_id' => $product['store_id'],
-            'product_id' => $product['product_id']
-        );
-
-        $cart_id = $this->set($data);
-
-        if (!empty($cart_id)) {
-
-            $options = array(
-                'user_id' => $data['user_id'],
-                'store_id' => $data['store_id']
-            );
-
-            $existing = $this->getQuantity($options);
-            $vars = array('@url' => $this->request->base() . 'checkout');
-
-            $result = array(
-                'redirect' => '',
-                'cart_id' => $cart_id,
-                'severity' => 'success',
-                'quantity' => $existing['total'],
-                'message' => $this->translation->text('Product has been added to your cart. <a href="@url">Checkout</a>', $vars)
-            );
-        }
-
-        $this->hook->attach('cart.add.product.after', $product, $data, $result, $this);
-        return (array) $result;
-    }
-
-    /**
-     * Adds/updates a cart item
-     * @param array $data
-     * @param bool $increment
-     * @return integer
-     */
-    public function set(array $data, $increment = true)
-    {
-        $options = array(
-            'order_id' => 0,
-            'sku' => $data['sku'],
-            'user_id' => $data['user_id'],
-            'store_id' => $data['store_id']
-        );
-
-        $list = $this->getList($options);
-
-        if (empty($list)) {
-            return $this->add($data);
-        }
-
-        $cart = reset($list);
-
-        if ($increment) {
-            $data['quantity'] += $cart['quantity'];
-        }
-
-        $this->update($cart['cart_id'], array('quantity' => $data['quantity']));
-        return $cart['cart_id'];
-    }
-
-    /**
      * Returns the cart user ID
      * @return string
      */
@@ -452,29 +335,6 @@ class Cart
     }
 
     /**
-     * Returns an array containing a total number of products
-     * and a number of products per SKU for the given user and store
-     * @param array $options
-     * @return array|integer
-     */
-    public function getQuantity(array $options)
-    {
-        $options += array('order_id' => 0);
-
-        $result = array(
-            'total' => 0,
-            'sku' => array()
-        );
-
-        foreach ((array) $this->getList($options) as $item) {
-            $result['total'] += (int) $item['quantity'];
-            $result['sku'][$item['sku']] = (int) $item['quantity'];
-        }
-
-        return $result;
-    }
-
-    /**
      * Loads a cart from the database
      * @param integer $cart_id
      * @return array
@@ -491,109 +351,6 @@ class Cart
         $result = $this->db->fetch('SELECT * FROM cart WHERE cart_id=?', array($cart_id), array('unserialize' => 'data'));
         $this->hook->attach('cart.get.after', $cart_id, $result, $this);
         return $result;
-    }
-
-    /**
-     * Moves a cart item to the wishlist
-     * @param int $cart_id
-     * @return array
-     */
-    public function moveToWishlist($cart_id)
-    {
-        $result = null;
-        $this->hook->attach('cart.move.wishlist.before', $cart_id, $result, $this);
-
-        if (isset($result)) {
-            return (array) $result;
-        }
-
-        $cart = $this->get($cart_id);
-
-        $result = array(
-            'message' => '',
-            'severity' => '',
-            'redirect' => null
-        );
-
-        if (empty($cart) || !$this->delete($cart_id)) {
-            return $result;
-        }
-
-        $data['wishlist_id'] = $this->setWishlist($cart);
-
-        gplcart_static_clear();
-
-        $result = array(
-            'redirect' => '',
-            'severity' => 'success',
-            'wishlist_id' => $data['wishlist_id'],
-            'message' => $this->translation->text('Product has been moved to your <a href="@url">wishlist</a>', array(
-                '@url' => $this->request->base() . 'wishlist'))
-        );
-
-        $this->hook->attach('cart.move.wishlist.after', $data, $result, $this);
-        return (array) $result;
-    }
-
-    /**
-     * Deletes a cart item and returns an array of data with message and redirect path
-     * @param int $cart_id
-     * @return array
-     */
-    public function submitDelete($cart_id)
-    {
-        $result = array();
-        $this->hook->attach('cart.delete.item.before', $cart_id, $result, $this);
-
-        if (!empty($result)) {
-            return (array) $result;
-        }
-
-        $cart = $this->get($cart_id);
-
-        $result = array(
-            'redirect' => '',
-            'severity' => 'warning',
-            'message' => $this->translation->text('Cannot delete cart item')
-        );
-
-        if (empty($cart) || !$this->delete($cart_id)) {
-            return $result;
-        }
-
-        $options = array(
-            'user_id' => $cart['user_id'],
-            'store_id' => $cart['store_id'],
-        );
-
-        $cart = $this->getContent($options);
-
-        $result = array(
-            'redirect' => '',
-            'severity' => 'success',
-            'message' => $this->translation->text('Product has been deleted from cart'),
-            'quantity' => empty($cart['quantity']) ? 0 : $cart['quantity']
-        );
-
-        $this->hook->attach('cart.delete.item.after', $cart_id, $result, $this);
-        return $result;
-    }
-
-    /**
-     * Adds a product from the cart item
-     * @param array $cart
-     * @return int
-     */
-    protected function setWishlist(array $cart)
-    {
-        $data = array(
-            'user_id' => $cart['user_id'],
-            'store_id' => $cart['store_id'],
-            'product_id' => $cart['product_id']
-        );
-
-        $this->db->delete('wishlist', $data);
-        return $this->wishlist->addProduct($data);
     }
 
     /**
@@ -624,54 +381,14 @@ class Cart
     }
 
     /**
-     * Performs all needed tasks when customer logged in during checkout
-     * @param array $user
-     * @param array $cart
-     * @return array
-     */
-    public function login(array $user, array $cart)
-    {
-        $result = array();
-        $this->hook->attach('cart.login.before', $user, $cart, $result, $this);
-
-        if (!empty($result)) {
-            return (array) $result;
-        }
-
-        if (!$this->config->get('cart_login_merge', 0)) {
-            $this->clear($user['user_id']);
-        }
-
-        if (!empty($cart['items'])) {
-            foreach ($cart['items'] as $item) {
-                $this->update($item['cart_id'], array('user_id' => $user['user_id']));
-            }
-        }
-
-        $this->deleteCookie();
-
-        $result = array(
-            'user' => $user,
-            'redirect' => 'checkout',
-            'severity' => 'success',
-            'message' => $this->translation->text('Hello, %name. Now you are logged in', array(
-                '%name' => $user['name']
-            ))
-        );
-
-        $this->hook->attach('cart.login.after', $user, $cart, $result, $this);
-        return (array) $result;
-    }
-
-    /**
      * Delete all non-referenced cart items for the user ID
      * @param string $user_id
      * @return boolean
      */
-    public function clear($user_id)
+    public function deleteByUser($user_id)
     {
         $result = null;
-        $this->hook->attach('cart.clear.before', $user_id, $result, $this);
+        $this->hook->attach('cart.delete.user.before', $user_id, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
@@ -681,7 +398,7 @@ class Cart
         $sql = 'DELETE FROM cart WHERE user_id=? AND order_id = 0';
         $result = (bool) $this->db->run($sql, array($user_id))->rowCount();
 
-        $this->hook->attach('cart.clear.after', $user_id, $result, $this);
+        $this->hook->attach('cart.delete.user.after', $user_id, $result, $this);
         return (bool) $result;
     }
 
@@ -692,10 +409,50 @@ class Cart
      */
     public function canDelete($cart_id)
     {
-        $sql = 'SELECT order_id FROM cart WHERE cart_id=?';
-        $result = $this->db->fetchColumn($sql, array($cart_id));
-
+        $result = $this->db->fetchColumn('SELECT order_id FROM cart WHERE cart_id=?', array($cart_id));
         return empty($result);
+    }
+
+    /**
+     * Returns cart quantity
+     * @param array $options
+     * @param string $type
+     * @return array|integer
+     */
+    public function getQuantity(array $options, $type = null)
+    {
+        $options += array('order_id' => 0);
+
+        $result = array(
+            'total' => 0,
+            'sku' => array()
+        );
+
+        foreach ((array) $this->getList($options) as $item) {
+            $result['total'] += (int) $item['quantity'];
+            $result['sku'][$item['sku']] = (int) $item['quantity'];
+        }
+
+        if (isset($type)) {
+            return $result[$type];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Returns cart limits
+     * @param null|string $item
+     * @return array|integer
+     */
+    public function getLimits($item = null)
+    {
+        $limits = array(
+            'sku' => (int) $this->config->get('cart_sku_limit', 10),
+            'item' => (int) $this->config->get('cart_item_limit', 20)
+        );
+
+        return isset($item) ? $limits[$item] : $limits;
     }
 
     /**

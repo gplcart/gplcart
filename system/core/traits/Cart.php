@@ -43,19 +43,19 @@ trait Cart
 
     /**
      * Handles product cart submissions
-     * @param \gplcart\core\models\Cart $cart_model
+     * @param \gplcart\core\models\CartAction $cart_action_model
      */
-    public function submitCart($cart_model)
+    public function submitCart($cart_action_model)
     {
         $this->setSubmitted('product');
         $this->filterSubmitted(array('product_id'));
 
         if ($this->isPosted('add_to_cart')) {
             $this->validateAddToCart();
-            $this->addToCart($cart_model);
+            $this->addToCart($cart_action_model);
         } else if ($this->isPosted('remove_from_cart')) {
             $this->setSubmitted('cart');
-            $this->deleteFromCart($cart_model);
+            $this->deleteFromCart($cart_action_model);
         }
     }
 
@@ -73,15 +73,15 @@ trait Cart
 
     /**
      * Adds a product to the cart
-     * @param \gplcart\core\models\Cart $cart_model
+     * @param \gplcart\core\models\CartAction $cart_action_model
      */
-    public function addToCart($cart_model)
+    public function addToCart($cart_action_model)
     {
         $errors = $this->error();
 
         if (empty($errors)) {
             $submitted = $this->getSubmitted();
-            $result = $cart_model->addProduct($submitted['product'], $submitted);
+            $result = $cart_action_model->add($submitted['product'], $submitted);
         } else {
 
             $result = array(
@@ -101,11 +101,11 @@ trait Cart
 
     /**
      * Deletes a submitted cart item
-     * @param \gplcart\core\models\Cart $cart_model
+     * @param \gplcart\core\models\CartAction $cart_action_model
      */
-    public function deleteFromCart($cart_model)
+    public function deleteFromCart($cart_action_model)
     {
-        $result = $cart_model->submitDelete($this->getSubmitted('cart_id'));
+        $result = $cart_action_model->delete($this->getSubmitted('cart_id'));
 
         if (empty($result['quantity'])) {
             $result['message'] = '';

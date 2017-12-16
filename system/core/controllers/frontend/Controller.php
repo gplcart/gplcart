@@ -111,7 +111,7 @@ class Controller extends BaseController
             $this->setDefaultDataFrontend();
             $this->setDefaultJsStoreFrontend();
 
-            $this->submitCart($this->cart);
+            $this->submitCart($this->cart_action);
             $this->submitWishlist($this->wishlist);
             $this->submitProductCompare($this->product_compare);
         }
@@ -170,6 +170,7 @@ class Controller extends BaseController
         $this->wishlist = $this->getInstance('gplcart\\core\\models\\Wishlist');
         $this->category = $this->getInstance('gplcart\\core\\models\\Category');
         $this->currency = $this->getInstance('gplcart\\core\\models\\Currency');
+        $this->cart_action = $this->getInstance('gplcart\\core\\models\\CartAction');
         $this->product_compare = $this->getInstance('gplcart\\core\\models\\ProductCompare');
         $this->collection_item = $this->getInstance('gplcart\\core\\models\\CollectionItem');
     }

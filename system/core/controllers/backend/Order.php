@@ -278,7 +278,7 @@ class Order extends BackendController
      */
     protected function createTempCartOrder()
     {
-        if (!$this->cart->clear($this->uid)) {
+        if (!$this->cart->deleteByUser($this->uid)) {
             return false;
         }
 
