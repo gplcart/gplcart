@@ -156,15 +156,17 @@ class WishlistAction
 
     /**
      * Returns an array of resulting data when a product already exists in the wishlist
+     * @param array $data
      * @return array
      */
-    protected function getResultExists()
+    protected function getResultExists(array $data)
     {
         $vars = array('@url' => $this->url->get('wishlist'));
 
         return array(
             'redirect' => '',
             'severity' => 'warning',
+            'wishlist_id' => $data['wishlist_id'],
             'message' => $this->translation->text('Product already in your <a href="@url">wishlist</a>', $vars)
         );
     }

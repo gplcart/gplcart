@@ -41,18 +41,18 @@ trait Wishlist
 
     /**
      * Adds/removes a product from the wishlist
-     * @param \gplcart\core\models\Wishlist $wishlist_model
+     * @param \gplcart\core\models\WishlistAction $wishlist_action_model
      */
-    protected function submitWishlist($wishlist_model)
+    protected function submitWishlist($wishlist_action_model)
     {
         $this->setSubmitted('product');
         $this->filterSubmitted(array('product_id'));
 
         if ($this->isPosted('remove_from_wishlist')) {
-            $this->deleteFromWishlist($wishlist_model);
+            $this->deleteFromWishlist($wishlist_action_model);
         } else if ($this->isPosted('add_to_wishlist')) {
             $this->validateAddToWishlist();
-            $this->addToWishlist($wishlist_model);
+            $this->addToWishlist($wishlist_action_model);
         }
     }
 
