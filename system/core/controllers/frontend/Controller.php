@@ -79,6 +79,12 @@ class Controller extends BaseController
     protected $collection_item;
 
     /**
+     * Cart action model instance
+     * @var \gplcart\core\models\CartAction $cart_action
+     */
+    protected $cart_action;
+
+    /**
      * The current currency code
      * @var string
      */
