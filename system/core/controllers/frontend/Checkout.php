@@ -777,12 +777,13 @@ class Checkout extends FrontendController
      * Updates cart quantity
      * @param string $sku
      * @param array $item
-     * @return bool
      */
     protected function updateCartQuantityCheckout($sku, array $item)
     {
-        $cart_id = $this->data_cart['items'][$sku]['cart_id'];
-        return $this->cart->update($cart_id, array('quantity' => $item['quantity']));
+        if (isset($this->data_cart['items'][$sku]['cart_id'])) {
+            $cart_id = $this->data_cart['items'][$sku]['cart_id'];
+            $this->cart->update($cart_id, array('quantity' => $item['quantity']));
+        }
     }
 
     /**
