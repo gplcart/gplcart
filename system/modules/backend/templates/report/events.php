@@ -77,7 +77,7 @@
       <tbody>
         <?php if ($_filtering && empty($records)) { ?>
         <tr>
-          <td class="middle" colspan="5">
+          <td class="middle" colspan="6">
             <?php echo $this->text('No results'); ?>
             <a href="<?php echo $this->url($_path); ?>" class="clear-filter"><?php echo $this->text('Reset'); ?></a>
           </td>
@@ -103,7 +103,7 @@
           <td></td>
         </tr>
         <tr class="collapse active" id="message-<?php echo $record['log_id']; ?>">
-          <td colspan="5">
+          <td colspan="6">
             <ul class="list-unstyled">
               <li><b><?php echo $this->text('Message'); ?></b> : <?php echo $this->filter($record['text']); ?></li>
               <?php if (!empty($record['data']['file'])) { ?>
@@ -114,6 +114,16 @@
               <?php } ?>
               <?php if (!empty($record['data']['code'])) { ?>
               <li><b><?php echo $this->text('Code'); ?></b> : <?php echo $this->e($record['data']['code']); ?></li>
+              <?php } ?>
+              <?php if (!empty($record['data']['backtrace'])) { ?>
+              <li>
+                <b><?php echo $this->text('Backtrace'); ?></b>
+                <ol>
+                <?php foreach($record['data']['backtrace'] as $line) { ?>
+                  <li><?php echo $this->e($line); ?></li>
+                <?php } ?>
+                </ol>
+              </li>
               <?php } ?>
             </ul>
           </td>
