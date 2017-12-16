@@ -15,14 +15,29 @@ namespace gplcart\core\traits;
 trait Job
 {
 
+    /**
+     * @see \gplcart\core\Controller::isAjax()
+     */
     abstract public function isAjax();
 
+    /**
+     * @see \gplcart\core\Controller::setJsSettings()
+     */
     abstract public function setJsSettings($key, $data, $weight = null);
 
+    /**
+     * @see \gplcart\core\Controller::outputJson()
+     */
     abstract public function outputJson($data, array $options = array());
 
+    /**
+     * @see \gplcart\core\Controller::getQuery()
+     */
     abstract public function getQuery($key = null, $default = null, $type = 'string');
 
+    /**
+     * @see \gplcart\core\Controller::render()
+     */
     abstract public function render($file, $data = array(), $merge = true, $default = '');
 
     /**

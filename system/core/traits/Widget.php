@@ -15,14 +15,29 @@ namespace gplcart\core\traits;
 trait Widget
 {
 
+    /**
+     * @see \gplcart\core\Controller::access()
+     */
     abstract public function access($permission);
 
+    /**
+     * @see \gplcart\core\Controller::config()
+     */
     abstract public function config($key = null, $default = null);
 
+    /**
+     * @see \gplcart\core\Controller::text()
+     */
     abstract public function text($string = null, array $arguments = array());
 
+    /**
+     * @see \gplcart\core\Controller::render()
+     */
     abstract public function render($file, $data = array(), $merge = true, $default = '');
 
+    /**
+     * @see \gplcart\core\Controller::url()
+     */
     abstract public function url($path = '', array $query = array(), $abs = false, $exclude = false);
 
     /**

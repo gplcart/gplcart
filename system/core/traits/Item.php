@@ -15,22 +15,49 @@ namespace gplcart\core\traits;
 trait Item
 {
 
+    /**
+     * @see \gplcart\core\Controller::getBase()
+     */
     abstract public function getBase();
 
+    /**
+     * @see \gplcart\core\Controller::getStoreId()
+     */
     abstract public function getStoreId();
 
+    /**
+     * @see \gplcart\core\Controller::getCartUid()
+     */
     abstract public function getCartUid();
 
+    /**
+     * @see \gplcart\core\Controller::path()
+     */
     abstract public function path($pattern = null);
 
+    /**
+     * @see \gplcart\core\Controller::config()
+     */
     abstract public function config($key = null, $default = null);
 
+    /**
+     * @see \gplcart\core\Controller::configTheme()
+     */
     abstract public function configTheme($key = null, $default = null);
 
+    /**
+     * @see \gplcart\core\Controller::getQuery()
+     */
     abstract public function getQuery($key = null, $default = null, $type = 'string');
 
+    /**
+     * @see \gplcart\core\Controller::render()
+     */
     abstract public function render($file, $data = array(), $merge = true, $default = '');
 
+    /**
+     * @see \gplcart\core\Controller::url()
+     */
     abstract public function url($path = '', array $query = array(), $abs = false, $exclude = false);
 
     /**

@@ -15,31 +15,70 @@ namespace gplcart\core\traits;
 trait Cart
 {
 
+    /**
+     * @see \gplcart\core\Controller::isAjax()
+     */
     abstract public function isAjax();
 
+    /**
+     * @see \gplcart\core\Controller::getCartUid()
+     */
     abstract public function getCartUid();
 
+    /**
+     * @see \gplcart\core\Controller::getStoreId()
+     */
     abstract public function getStoreId();
 
-    abstract public function getCartPreview();
-
+    /**
+     * @see \gplcart\core\Controller::isPosted()
+     */
     abstract public function isPosted($key = null);
 
+    /**
+     * @see \gplcart\core\Controller::filterSubmitted()
+     */
     abstract public function filterSubmitted(array $allowed);
 
+    /**
+     * @see \gplcart\core\Controller::getSubmitted()
+     */
     abstract public function getSubmitted($key = null, $default = null);
 
+    /**
+     * @see \gplcart\core\Controller::outputJson()
+     */
     abstract public function outputJson($data, array $options = array());
 
+    /**
+     * @see \gplcart\core\Controller::setSubmitted()
+     */
     abstract public function setSubmitted($key = null, $value = null, $filter = true);
 
+    /**
+     * @see \gplcart\core\Controller::validateComponent()
+     */
     abstract public function validateComponent($handler_id, array $options = array());
 
+    /**
+     * @see \gplcart\core\Controller::format()
+     */
     abstract public function format($format, array $arguments = array(), $glue = '<br>');
 
+    /**
+     * @see \gplcart\core\Controller::error()
+     */
     abstract public function error($key = null, $return_error = null, $return_no_error = '');
 
+    /**
+     * @see \gplcart\core\Controller::redirect()
+     */
     abstract public function redirect($url = '', $message = '', $severity = 'info', $exclude = false);
+
+    /**
+     * Get cart preview
+     */
+    abstract public function getCartPreview();
 
     /**
      * Handles product cart submissions
