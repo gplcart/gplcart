@@ -11,9 +11,7 @@ namespace gplcart\core\models;
 
 use gplcart\core\Hook,
     gplcart\core\Config;
-use gplcart\core\helpers\Url as UrlHelper;
-use gplcart\core\models\User as UserModel,
-    gplcart\core\models\Translation as TranslationModel;
+use gplcart\core\models\User as UserModel;
 
 /**
  * Manages basic behaviors and data related to user wishlists
@@ -46,34 +44,16 @@ class Wishlist
     protected $user;
 
     /**
-     * Translation UI model instance
-     * @var \gplcart\core\models\Translation $translation
-     */
-    protected $translation;
-
-    /**
-     * URL class instance
-     * @var \gplcart\core\helpers\Url $url
-     */
-    protected $url;
-
-    /**
      * @param Hook $hook
      * @param Config $config
      * @param UserModel $user
-     * @param TranslationModel $translation
-     * @param UrlHelper $url
      */
-    public function __construct(Hook $hook, Config $config, UserModel $user,
-            TranslationModel $translation, UrlHelper $url)
+    public function __construct(Hook $hook, Config $config, UserModel $user)
     {
         $this->hook = $hook;
         $this->config = $config;
         $this->db = $this->config->getDb();
-
-        $this->url = $url;
         $this->user = $user;
-        $this->translation = $translation;
     }
 
     /**
@@ -121,115 +101,21 @@ class Wishlist
     }
 
     /**
-     * Adds a product to a wishlist and returns an array of result data
-     * @param array $data
-     * @return array
-     */
-    public function addProduct(array $data)
-    {
-        $result = array();
-        $this->hook->attach('wishlist.add.product.before', $data, $result, $this);
-
-        if (!empty($result)) {
-            return (array) $result;
-        }
-
-        $result = array(
-            'redirect' => '',
-            'severity' => 'warning',
-            'message' => $this->translation->text('Unable to add product')
-        );
-
-        $href = $this->url->get('wishlist');
-
-        if ($this->exists($data)) {
-            $result['message'] = $this->translation->text('Product already in your <a href="@url">wishlist</a>', array('@url' => $href));
-            return $result;
-        }
-
-        if (!$this->canAdd($data['user_id'], $data['store_id'])) {
-            $vars = array('%num' => $this->getLimit($data['user_id']));
-            $result['message'] = $this->translation->text("You're exceeding limit of %num items", $vars);
-            return $result;
-        }
-
-        $wishlist_id = $this->add($data);
-
-        if (!empty($wishlist_id)) {
-
-            $options = array(
-                'user_id' => $data['user_id'],
-                'store_id' => $data['store_id']
-            );
-
-            $exists = $this->getList($options);
-
-            $result = array(
-                'redirect' => '',
-                'severity' => 'success',
-                'quantity' => count($exists),
-                'wishlist_id' => $wishlist_id,
-                'message' => $this->translation->text('Product has been added to your <a href="@url">wishlist</a>', array('@url' => $href)));
-        }
-
-        $this->hook->attach('wishlist.add.product.after', $data, $result, $this);
-        return (array) $result;
-    }
-
-    /**
-     * Removes a product from wishlist and returns an array of result data
-     * @param array $data
-     * @return array
-     */
-    public function deleteProduct(array $data)
-    {
-        $result = array();
-        $this->hook->attach('wishlist.delete.product.before', $data, $result, $this);
-
-        if (!empty($result)) {
-            return (array) $result;
-        }
-
-        $result = array(
-            'redirect' => '',
-            'severity' => 'warning',
-            'message' => $this->translation->text('Unable to delete')
-        );
-
-        if ($this->delete($data)) {
-
-            unset($data['product_id']);
-
-            $existing = $this->getList($data);
-
-            $result = array(
-                'message' => '',
-                'severity' => 'success',
-                'quantity' => count($existing),
-                'redirect' => empty($existing) ? 'wishlist' : ''
-            );
-        }
-
-        $this->hook->attach('wishlist.delete.product.after', $data, $result, $this);
-        return (array) $result;
-    }
-
-    /**
-     * Whether a user can add a product to wishlist
+     * Whether the user exceeds max allowed number of products in the wishlist
      * @param integer|string $user_id
      * @param integer $store_id
      * @return boolean
      */
-    public function canAdd($user_id, $store_id)
+    public function exceedsLimit($user_id, $store_id)
     {
         if ($this->user->isSuperadmin($user_id)) {
-            return true; // No limits for superadmin
+            return false; // No limits for superadmin
         }
 
         $limit = $this->getLimit($user_id);
 
         if (empty($limit)) {
-            return true;
+            return false;
         }
 
         $conditions = array(
@@ -238,7 +124,7 @@ class Wishlist
         );
 
         $existing = $this->getList($conditions);
-        return count($existing) < $limit;
+        return count($existing) > $limit;
     }
 
     /**

@@ -65,6 +65,12 @@ class Controller extends BaseController
      * @var \gplcart\core\models\Wishlist $wishlist
      */
     protected $wishlist;
+    
+    /**
+     * Wishlist action model instance
+     * @var \gplcart\core\models\WishlistAction $wishlist_action
+     */
+    protected $wishlist_action;
 
     /**
      * Category model instance
@@ -118,7 +124,7 @@ class Controller extends BaseController
             $this->setDefaultJsStoreFrontend();
 
             $this->submitCart($this->cart_action);
-            $this->submitWishlist($this->wishlist);
+            $this->submitWishlist($this->wishlist_action);
             $this->submitProductCompare($this->product_compare);
         }
 
@@ -179,6 +185,7 @@ class Controller extends BaseController
         $this->cart_action = $this->getInstance('gplcart\\core\\models\\CartAction');
         $this->product_compare = $this->getInstance('gplcart\\core\\models\\ProductCompare');
         $this->collection_item = $this->getInstance('gplcart\\core\\models\\CollectionItem');
+        $this->wishlist_action = $this->getInstance('gplcart\\core\\models\\WishlistAction');
     }
 
     /**

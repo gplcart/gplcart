@@ -11,10 +11,10 @@ namespace gplcart\core\models;
 
 use gplcart\core\Hook,
     gplcart\core\Config;
+use gplcart\core\helpers\Url as UrlHelper;
 use gplcart\core\models\Cart as CartModel,
-    gplcart\core\models\Wishlist as WishlistModel,
-    gplcart\core\models\Translation as TranslationModel;
-use gplcart\core\helpers\Request as RequestHelper;
+    gplcart\core\models\Translation as TranslationModel,
+    gplcart\core\models\WishlistAction as WishlistActionModel;
 
 /**
  * Manages basic behaviors and data related to shopping cart actions
@@ -35,10 +35,10 @@ class CartAction
     protected $config;
 
     /**
-     * Wishlist model instance
-     * @var \gplcart\core\models\Wishlist $wishlist
+     * Wishlist action model instance
+     * @var \gplcart\core\models\WishlistAction $wishlist_action
      */
-    protected $wishlist;
+    protected $wishlist_action;
 
     /**
      * Translation model instance
@@ -53,29 +53,29 @@ class CartAction
     protected $cart;
 
     /**
-     * Request model instance
-     * @var \gplcart\core\helpers\Request $request
+     * URL model instance
+     * @var \gplcart\core\helpers\Url $url
      */
-    protected $request;
+    protected $url;
 
     /**
      * @param Hook $hook
      * @param Config $config
      * @param CartModel $cart
-     * @param WishlistModel $wishlist
+     * @param WishlistActionModel $wishlist_action
      * @param TranslationModel $translation
-     * @param RequestHelper $request
+     * @param UrlHelper $url
      */
     public function __construct(Hook $hook, Config $config, CartModel $cart,
-            WishlistModel $wishlist, TranslationModel $translation, RequestHelper $request)
+            WishlistActionModel $wishlist_action, TranslationModel $translation, UrlHelper $url)
     {
         $this->hook = $hook;
         $this->config = $config;
 
+        $this->url = $url;
         $this->cart = $cart;
-        $this->request = $request;
-        $this->wishlist = $wishlist;
         $this->translation = $translation;
+        $this->wishlist_action = $wishlist_action;
     }
 
     /**
@@ -106,7 +106,7 @@ class CartAction
             return $this->getResultError();
         }
 
-        $result = $this->getResultAdd($data);
+        $result = $this->getResultAdded($data);
         $this->hook->attach('cart.add.product.after', $product, $data, $result, $this);
         return (array) $result;
     }
@@ -131,11 +131,10 @@ class CartAction
             return $this->getResultError();
         }
 
-        $data['wishlist_id'] = $this->addToWishlist($cart);
+        $result = $this->addToWishlist($cart);
 
         gplcart_static_clear();
 
-        $result = $this->getResultToWishlist($data);
         $this->hook->attach('cart.move.wishlist.after', $data, $result, $this);
         return (array) $result;
     }
@@ -231,7 +230,7 @@ class CartAction
     /**
      * Adds a product to the wishlist
      * @param array $cart
-     * @return int
+     * @return array
      */
     protected function addToWishlist(array $cart)
     {
@@ -241,8 +240,7 @@ class CartAction
             'product_id' => (int) $cart['product_id']
         );
 
-        $this->wishlist->delete($data);
-        return $this->wishlist->addProduct($data);
+        return $this->wishlist_action->add($data);
     }
 
     /**
@@ -296,36 +294,18 @@ class CartAction
     }
 
     /**
-     * Returns an array of resulting data after a product has been moved to a wishlist
-     * @param array $data
-     * @return array
-     */
-    protected function getResultToWishlist(array $data)
-    {
-        $vars = array('@url' => $this->request->base() . 'wishlist');
-        $message = $this->translation->text('Product has been moved to your <a href="@url">wishlist</a>', $vars);
-
-        return array(
-            'redirect' => '',
-            'message' => $message,
-            'severity' => 'success',
-            'wishlist_id' => $data['wishlist_id']
-        );
-    }
-
-    /**
      * Returns an array of resulting data after a product has been added to a cart
      * @param array $data
      * @return array
      */
-    protected function getResultAdd(array $data)
+    protected function getResultAdded(array $data)
     {
         $options = array(
             'user_id' => $data['user_id'],
             'store_id' => $data['store_id']
         );
 
-        $vars = array('@url' => $this->request->base() . 'checkout');
+        $vars = array('@url' => $this->url->get('checkout'));
         $message = $this->translation->text('Product has been added to your cart. <a href="@url">Checkout</a>', $vars);
 
         return array(

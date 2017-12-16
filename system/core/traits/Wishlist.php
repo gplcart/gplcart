@@ -68,14 +68,14 @@ trait Wishlist
 
     /**
      * Add a product to the wishlist
-     * @param \gplcart\core\models\Wishlist $wishlist_model
+     * @param \gplcart\core\models\WishlistAction $wishlist_action_model
      */
-    public function addToWishlist($wishlist_model)
+    public function addToWishlist($wishlist_action_model)
     {
         $errors = $this->error();
 
         if (empty($errors)) {
-            $result = $wishlist_model->addProduct($this->getSubmitted());
+            $result = $wishlist_action_model->add($this->getSubmitted());
         } else {
             $result = array(
                 'redirect' => '',
@@ -93,9 +93,9 @@ trait Wishlist
 
     /**
      * Deletes a submitted product from the wishlist
-     * @param \gplcart\core\models\Wishlist $wishlist_model
+     * @param \gplcart\core\models\WishlistAction $wishlist_action_model
      */
-    public function deleteFromWishlist($wishlist_model)
+    public function deleteFromWishlist($wishlist_action_model)
     {
         $product = array(
             'user_id' => $this->getCartUid(),
@@ -103,7 +103,7 @@ trait Wishlist
             'product_id' => $this->getSubmitted('product_id')
         );
 
-        $result = $wishlist_model->deleteProduct($product);
+        $result = $wishlist_action_model->delete($product);
 
         if ($this->isAjax()) {
             $this->outputJson($result);
