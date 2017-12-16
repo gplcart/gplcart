@@ -278,7 +278,9 @@ class Product
      */
     public function generateSku(array $data)
     {
-        $data += array('placeholders' => $this->sku->getPatternPlaceholders());
+        $data += array(
+            'placeholders' => $this->sku->getPatternPlaceholders());
+
         return $this->sku->generate($this->sku->getPattern(), $data);
     }
 
