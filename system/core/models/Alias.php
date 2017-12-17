@@ -100,7 +100,7 @@ class Alias
 
         $list = $this->getList($conditions);
 
-        if (count($list) != 1) {
+        if (!is_array($list) || count($list) != 1) {
             return array();
         }
 
