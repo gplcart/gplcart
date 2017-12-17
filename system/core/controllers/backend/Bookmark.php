@@ -83,7 +83,7 @@ class Bookmark extends BackendController
         $this->setBookmark();
         $this->controlAccess('bookmark_delete');
 
-        $this->bookmark->delete($this->data_path);
+        $this->bookmark->delete(array('path' => $this->data_path));
         $this->redirect($this->data_target);
     }
 

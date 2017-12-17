@@ -113,39 +113,45 @@ class Bookmark
 
     /**
      * Loads a bookmark from the database
-     * @param string $path
+     * @param array $conditions
      * @return array
      */
-    public function get($path)
+    public function get(array $conditions)
     {
         $result = null;
-        $this->hook->attach('bookmark.get.before', $path, $result, $this);
+        $this->hook->attach('bookmark.get.before', $conditions, $result, $this);
 
         if (isset($result)) {
-            return $result;
+            return (array) $result;
         }
 
-        $result = $this->db->fetch('SELECT * FROM bookmark WHERE path=?', array($path));
-        $this->hook->attach('bookmark.get.after', $path, $result, $this);
-        return $result;
+        $list = $this->getList($conditions);
+
+        $result = array();
+        if (is_array($list) && count($list) == 1) {
+            $result = reset($list);
+        }
+
+        $this->hook->attach('bookmark.get.after', $conditions, $result, $this);
+        return (array) $result;
     }
 
     /**
      * Deletes a bookmark
-     * @param string $path
+     * @param array $conditions
      * @return boolean
      */
-    public function delete($path)
+    public function delete(array $conditions)
     {
         $result = null;
-        $this->hook->attach('bookmark.delete.before', $path, $result, $this);
+        $this->hook->attach('bookmark.delete.before', $conditions, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
         }
 
-        $result = (bool) $this->db->delete('bookmark', array('path' => $path));
-        $this->hook->attach('bookmark.delete.after', $path, $result, $this);
+        $result = (bool) $this->db->delete('bookmark', $conditions);
+        $this->hook->attach('bookmark.delete.after', $conditions, $result, $this);
         return (bool) $result;
     }
 
@@ -159,13 +165,8 @@ class Bookmark
     {
         $data += array('path' => $path);
 
-        $bookmark = $this->get($path);
-
-        if (empty($bookmark)) {
-            return $this->add($data);
-        }
-
-        return false;
+        $bookmark = $this->get($data);
+        return empty($bookmark) ? (bool) $this->add($data) : false;
     }
 
 }
