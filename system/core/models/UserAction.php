@@ -17,9 +17,9 @@ use gplcart\core\models\Mail as MailModel,
 use gplcart\core\helpers\Session as SessionHelper;
 
 /**
- * Manages basic behaviors and data related to user authentication functionality
+ * Manages basic behaviors and data related to user actions
  */
-class UserAccess
+class UserAction
 {
 
     /**
@@ -96,7 +96,7 @@ class UserAccess
         $result = array(
             'redirect' => null,
             'severity' => 'warning',
-            'message' => $this->translation->text('Failed to log in')
+            'message' => $this->translation->text('Login failed. Make sure your e-mail and password are correct')
         );
 
         if (empty($data['email'])) {
@@ -109,31 +109,18 @@ class UserAccess
             return $result;
         }
 
-        if ($check_password) {
-            $expected = gplcart_string_hash($data['password'], $user['hash'], 0);
-            if (!gplcart_string_equals($user['hash'], $expected)) {
-                return $result;
-            }
+        if ($check_password && !$this->user->passwordMatches($data['password'], $user)) {
+            return $result;
         }
 
         $this->session->regenerate(true);
         $this->session->set('user', $user);
 
-        $redirect = "account/{$user['user_id']}";
-
-        if (!empty($user['role_redirect'])) {
-            $redirect = $user['role_redirect'];
-        }
-
-        if ($this->user->isSuperadmin($user['user_id'])) {
-            $redirect = 'admin';
-        }
-
         $result = array(
             'user' => $user,
             'message' => '',
             'severity' => 'success',
-            'redirect' => $redirect,
+            'redirect' => $this->getLoginRedirect($user),
         );
 
         $this->hook->attach('user.login.after', $data, $check_password, $result, $this);
@@ -154,35 +141,29 @@ class UserAccess
             return (array) $result;
         }
 
-        $result = array(
-            'message' => '',
-            'severity' => '',
-            'redirect' => null
-        );
-
-        // Extra security. Remove all but allowed keys
-        $allowed = array('name', 'email', 'password', 'store_id');
-        $data = array_intersect_key($data, array_flip($allowed));
+        $this->filterData($data);
 
         $data['login'] = $this->config->get('user_registration_login', true);
         $data['status'] = $this->config->get('user_registration_status', true);
         $data['user_id'] = $this->user->add($data);
 
         if (empty($data['user_id'])) {
-            $result['severity'] = 'warning';
-            $result['message'] = $this->translation->text('An error occurred');
-            return $result;
+            return array(
+                'redirect' => null,
+                'severity' => 'warning',
+                'message' => $this->translation->text('An error occurred')
+            );
         }
 
         $this->emailRegistration($data);
+
+        $this->session->regenerate(true);
 
         $result = array(
             'redirect' => '/',
             'severity' => 'success',
             'user_id' => $data['user_id'],
             'message' => $this->translation->text('Your account has been created'));
-
-        $this->session->regenerate(true);
 
         if (!empty($data['login']) && !empty($data['status'])) {
             $result = $this->login($data);
@@ -193,53 +174,29 @@ class UserAccess
     }
 
     /**
-     * Sends e-mails on registration event
-     * @param array $data
-     */
-    protected function emailRegistration(array $data)
-    {
-        if ($this->config->get('user_registration_email_customer', true)) {
-            $this->mail->set('user_registered_customer', array($data));
-        }
-
-        if ($this->config->get('user_registration_email_admin', true)) {
-            $this->mail->set('user_registered_admin', array($data));
-        }
-    }
-
-    /**
      * Logs out the current user
      * @return array
      */
     public function logout()
     {
-        $user_id = $this->user->getId();
-
         $result = array();
-        $this->hook->attach('user.logout.before', $user_id, $result, $this);
+        $user = $this->user->get($this->user->getId());
+        $this->hook->attach('user.logout.before', $user, $result, $this);
 
         if (!empty($result)) {
             return (array) $result;
         }
 
-        if (empty($user_id)) {
-            return array(
-                'message' => '',
-                'severity' => '',
-                'redirect' => '/'
-            );
-        }
-
         $this->session->delete();
 
         $result = array(
+            'user' => $user,
             'message' => '',
             'redirect' => 'login',
-            'severity' => 'success',
-            'user' => $this->user->get($user_id)
+            'severity' => 'success'
         );
 
-        $this->hook->attach('user.logout.after', $user_id, $result, $this);
+        $this->hook->attach('user.logout.after', $user, $result, $this);
         return (array) $result;
     }
 
@@ -278,7 +235,22 @@ class UserAccess
     }
 
     /**
-     * Start password reset operation
+     * Sends e-mails on registration event
+     * @param array $data
+     */
+    public function emailRegistration(array $data)
+    {
+        if ($this->config->get('user_registration_email_customer', true)) {
+            $this->mail->set('user_registered_customer', array($data));
+        }
+
+        if ($this->config->get('user_registration_email_admin', true)) {
+            $this->mail->set('user_registered_admin', array($data));
+        }
+    }
+
+    /**
+     * Start the password reset operation
      * @param array $user
      * @return array
      */
@@ -300,7 +272,7 @@ class UserAccess
     }
 
     /**
-     * Finish password reset operation
+     * Finish the password reset operation
      * @param array $user
      * @param string $password
      * @return array
@@ -318,6 +290,36 @@ class UserAccess
             'severity' => 'success',
             'message' => $this->translation->text('Your password has been successfully changed')
         );
+    }
+
+    /**
+     * Remove all but allowed keys from an array of user data
+     * @param array $data
+     */
+    protected function filterData(array &$data)
+    {
+        $allowed = array('name', 'email', 'password', 'store_id');
+        $data = array_intersect_key($data, array_flip($allowed));
+    }
+
+    /**
+     * Returns a redirect path for the user
+     * @param array $user
+     * @return string
+     */
+    protected function getLoginRedirect(array $user)
+    {
+        $redirect = "account/{$user['user_id']}";
+
+        if (!empty($user['role_redirect'])) {
+            $redirect = $user['role_redirect'];
+        }
+
+        if ($this->user->isSuperadmin($user['user_id'])) {
+            $redirect = 'admin';
+        }
+
+        return $redirect;
     }
 
 }

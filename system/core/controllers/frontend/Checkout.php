@@ -12,7 +12,7 @@ namespace gplcart\core\controllers\frontend;
 use gplcart\core\models\State as StateModel,
     gplcart\core\models\Order as OrderModel,
     gplcart\core\models\CartAction as CartActionModel,
-    gplcart\core\models\UserAccess as UserAccessModel,
+    gplcart\core\models\UserAction as UserActionModel,
     gplcart\core\models\OrderHistory as OrderHistoryModel,
     gplcart\core\models\OrderDimension as OrderDimensionModel,
     gplcart\core\models\Address as AddressModel,
@@ -35,9 +35,9 @@ class Checkout extends FrontendController
 
     /**
      * User access model instance
-     * @var \gplcart\core\models\UserAccess $user_access
+     * @var \gplcart\core\models\UserAction $user_action
      */
-    protected $user_access;
+    protected $user_action;
 
     /**
      * Order history model instance
@@ -177,14 +177,14 @@ class Checkout extends FrontendController
      * @param AddressModel $address
      * @param OrderModel $order
      * @param OrderHistoryModel $order_history
-     * @param UserAccessModel $user_access
+     * @param UserActionModel $user_action
      * @param OrderDimensionModel $order_dimension
      * @param ShippingModel $shipping
      * @param PaymentModel $payment
      * @param CartActionModel $cart_action
      */
     public function __construct(CountryModel $country, StateModel $state, AddressModel $address,
-            OrderModel $order, OrderHistoryModel $order_history, UserAccessModel $user_access,
+            OrderModel $order, OrderHistoryModel $order_history, UserActionModel $user_action,
             OrderDimensionModel $order_dimension, ShippingModel $shipping, PaymentModel $payment,
             CartActionModel $cart_action)
     {
@@ -196,7 +196,7 @@ class Checkout extends FrontendController
         $this->country = $country;
         $this->payment = $payment;
         $this->shipping = $shipping;
-        $this->user_access = $user_access;
+        $this->user_action = $user_action;
         $this->cart_action = $cart_action;
         $this->order_history = $order_history;
         $this->order_dimension = $order_dimension;
@@ -689,7 +689,7 @@ class Checkout extends FrontendController
      */
     protected function loginCheckout()
     {
-        $result = $this->user_access->login($this->getSubmitted('user'));
+        $result = $this->user_action->login($this->getSubmitted('user'));
 
         if (isset($result['user'])) {
             $result = $this->cart_action->login($result['user'], $this->data_cart);
