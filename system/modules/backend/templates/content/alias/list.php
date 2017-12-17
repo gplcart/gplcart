@@ -59,7 +59,7 @@
           <th></th>
           <th></th>
           <th>
-            <input class="form-control" name="alias" value="<?php echo $filter_alias; ?>" placeholder="<?php echo $this->text('Any'); ?>">
+            <input class="form-control" name="alias_like" value="<?php echo $filter_alias_like; ?>" placeholder="<?php echo $this->text('Any'); ?>">
           </th>
           <th>
             <select name="entity" class="form-control">
