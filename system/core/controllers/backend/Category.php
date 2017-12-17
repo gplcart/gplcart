@@ -292,7 +292,7 @@ class Category extends BackendController
      */
     protected function prepareCategory(array $category)
     {
-        $category['alias'] = $this->alias->get('category', $category['category_id']);
+        $category['alias'] = $this->alias->getByEntity('category', $category['category_id']);
         return $category;
     }
 

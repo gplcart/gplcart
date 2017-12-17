@@ -239,7 +239,7 @@ class Page extends BackendController
     {
         $user = $this->user->get($page['user_id']);
         $page['author'] = isset($user['email']) ? $user['email'] : $this->text('Unknown');
-        $page['alias'] = $this->alias->get('page', $page['page_id']);
+        $page['alias'] = $this->alias->getByEntity('page', $page['page_id']);
 
         return $page;
     }

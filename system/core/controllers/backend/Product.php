@@ -312,7 +312,7 @@ class Product extends BackendController
         );
 
         $product['related'] = $this->product->getRelated($options);
-        $product['alias'] = $this->alias->get('product', $product['product_id']);
+        $product['alias'] = $this->alias->getByEntity('product', $product['product_id']);
         $product['price'] = $this->price->decimal($product['price'], $product['currency']);
 
         $this->setItemProductCombination($product, $this->image, $this->price);

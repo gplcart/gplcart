@@ -49,7 +49,7 @@ class Alias
      * @var \gplcart\core\Route $route
      */
     protected $route;
-    
+
     /**
      * @param Hook $hook
      * @param Config $config
@@ -85,55 +85,58 @@ class Alias
     }
 
     /**
-     * Returns an alias
-     * @param string $entity
-     * @param null|integer $entity_id
-     * @return string|array
+     * Returns an entity alias
+     * @param array $conditions
+     * @return string
      */
-    public function get($entity, $entity_id = null)
+    public function get($conditions)
     {
         $result = null;
-        $this->hook->attach('alias.get.before', $entity, $entity_id, $result);
+        $this->hook->attach('alias.get.before', $conditions, $result, $this);
 
         if (isset($result)) {
             return $result;
         }
 
-        if (is_numeric($entity)) {
-            $sql = 'SELECT * FROM alias WHERE alias_id=?';
-            $result = $this->db->fetch($sql, array($entity));
-        } else {
-            $sql = 'SELECT alias FROM alias WHERE entity=? AND entity_id=?';
-            $result = $this->db->fetchColumn($sql, array($entity, $entity_id));
+        $list = $this->getList($conditions);
+
+        if (count($list) != 1) {
+            return array();
         }
 
-        $this->hook->attach('alias.get.after', $entity, $entity_id, $result);
+        $result = reset($list);
+        $this->hook->attach('alias.get.after', $conditions, $result, $this);
         return $result;
     }
 
     /**
-     * Deletes an alias
+     * Returns an alias for the entity
      * @param string $entity
-     * @param null|integer $entity_id
+     * @param int $entity_id
+     * @return null|string
+     */
+    public function getByEntity($entity, $entity_id)
+    {
+        $alias = $this->get(array('entity' => $entity, 'entity_id' => $entity_id));
+        return isset($alias['alias']) ? $alias['alias'] : null;
+    }
+
+    /**
+     * Deletes an alias
+     * @param array $conditions
      * @return bool
      */
-    public function delete($entity, $entity_id = null)
+    public function delete(array $conditions)
     {
         $result = null;
-        $this->hook->attach('alias.delete.before', $entity, $entity_id, $result);
+        $this->hook->attach('alias.delete.before', $conditions, $result);
 
         if (isset($result)) {
             return (bool) $result;
         }
 
-        if (is_numeric($entity)) {
-            $result = $this->db->delete('alias', array('alias_id' => $entity));
-        } else {
-            $conditions = array('entity' => $entity, 'entity_id' => $entity_id);
-            $result = $this->db->delete('alias', $conditions);
-        }
-
-        $this->hook->attach('alias.delete.after', $entity, $entity_id, $result);
+        $result = $this->db->delete('alias', $conditions);
+        $this->hook->attach('alias.delete.after', $conditions, $result);
         return (bool) $result;
     }
 
@@ -157,13 +160,15 @@ class Alias
             $sql = 'SELECT COUNT(alias_id)';
         }
 
-        $sql .= ' FROM alias WHERE alias_id > 0';
+        $sql .= ' FROM alias';
 
         $conditions = array();
 
         if (isset($data['alias_id'])) {
-            $sql .= ' AND alias_id = ?';
-            $conditions[] = $data['alias_id'];
+            $sql .= ' WHERE alias_id = ?';
+            $conditions[] = (int) $data['alias_id'];
+        } else {
+            $sql .= ' WHERE alias_id IS NOT NULL';
         }
 
         if (isset($data['entity'])) {
@@ -171,16 +176,21 @@ class Alias
             $conditions[] = $data['entity'];
         }
 
-        if (isset($data['alias'])) {
-            $sql .= ' AND alias LIKE ?';
-            $conditions[] = "%{$data['alias']}%";
-        }
-
         if (!empty($data['entity_id'])) {
             settype($data['entity_id'], 'array');
             $placeholders = rtrim(str_repeat('?,', count($data['entity_id'])), ',');
             $sql .= " AND entity_id IN($placeholders)";
             $conditions = array_merge($conditions, $data['entity_id']);
+        }
+
+        if (isset($data['alias'])) {
+            $sql .= ' AND alias = ?';
+            $conditions[] = $data['alias'];
+        }
+
+        if (isset($data['alias_like'])) {
+            $sql .= ' AND alias LIKE ?';
+            $conditions[] = "%{$data['alias_like']}%";
         }
 
         $allowed_order = array('asc', 'desc');
@@ -324,17 +334,7 @@ class Alias
             }
         }
 
-        return (bool) $this->getByPath($path);
-    }
-
-    /**
-     * Loads an alias
-     * @param string $alias
-     * @return array
-     */
-    public function getByPath($alias)
-    {
-        return $this->db->fetch('SELECT * FROM alias WHERE alias=?', array($alias));
+        return (bool) $this->get(array('alias' => $path));
     }
 
 }

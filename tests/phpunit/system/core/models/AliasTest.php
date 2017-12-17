@@ -71,44 +71,6 @@ class AliasTest extends UnitTest
     }
 
     /**
-     * @covers gplcart\core\models\Alias::get
-     */
-    public function testGet()
-    {
-        $first = reset($this->fixture_data);
-        $result = $this->object->get($first['alias_id']);
-        $this->assertEquals($first['alias_id'], $result['alias_id']);
-
-        $result = $this->object->get($first['alias_id'], 'product');
-        $this->assertEquals('product', $result['entity']);
-
-        // Get by fake arguments
-        $result = $this->object->get(999999);
-        $this->assertEmpty($result);
-        $this->assertInternalType('array', $result);
-
-        $result = $this->object->get(999999, 'fake_entity');
-        $this->assertEmpty($result);
-        $this->assertInternalType('array', $result);
-    }
-
-    /**
-     * @covers gplcart\core\models\Alias::delete
-     */
-    public function testDelete()
-    {
-        list($first, $second) = $this->fixture_data;
-
-        $this->assertDbRecordExists('alias', 'alias_id', $first['alias_id']);
-        $this->assertTrue($this->object->delete($first['alias_id']));
-        $this->assertDbRecordNotExists('alias', 'alias_id', $first['alias_id']);
-
-        $this->assertDbRecordExists('alias', 'alias_id', $second['alias_id']);
-        $this->assertTrue($this->object->delete($second['entity'], $second['entity_id']));
-        $this->assertDbRecordNotExists('alias', 'alias_id', $second['alias_id']);
-    }
-
-    /**
      * @covers gplcart\core\models\Alias::getList
      */
     public function testGetList()
@@ -140,19 +102,6 @@ class AliasTest extends UnitTest
     {
         $this->assertTrue($this->object->exists('product.html'));
         $this->assertFalse($this->object->exists('some-fake-alias'));
-    }
-
-    /**
-     * @covers gplcart\core\models\Alias::getByPath
-     */
-    public function testGetByPath()
-    {
-        $result = $this->object->getByPath('product.html');
-        $this->assertEquals('product.html', $result['alias']);
-
-        $result = $this->object->getByPath('some-fake-alias');
-        $this->assertInternalType('array', $result);
-        $this->assertEmpty($result);
     }
 
 }

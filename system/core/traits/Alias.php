@@ -30,7 +30,7 @@ trait Alias
         }
 
         if ($delete_existing) {
-            $alias_model->delete($entity, $data[$entity . '_id']);
+            $alias_model->delete(array('entity' => $entity, 'entity_id' => $data[$entity . '_id']));
         }
 
         if (empty($data['alias'])) {
