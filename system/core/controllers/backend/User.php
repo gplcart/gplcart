@@ -68,7 +68,7 @@ class User extends BackendController
      */
     protected function setFilterListUser()
     {
-        $allowed = array('name', 'email', 'role_id', 'store_id',
+        $allowed = array('name', 'email', 'email_like', 'role_id', 'store_id',
             'status', 'created', 'user_id');
 
         $this->setFilter($allowed);

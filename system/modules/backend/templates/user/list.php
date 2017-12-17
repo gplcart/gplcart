@@ -79,7 +79,7 @@
             <input class="form-control" name="name" maxlength="255" value="<?php echo $filter_name; ?>" placeholder="<?php echo $this->text('Any'); ?>">
           </th>
           <th>
-            <input class="form-control" name="email" maxlength="255" value="<?php echo $filter_email; ?>" placeholder="<?php echo $this->text('Any'); ?>">
+            <input class="form-control" name="email_like" maxlength="255" value="<?php echo $filter_email_like; ?>" placeholder="<?php echo $this->text('Any'); ?>">
           </th>
           <th>
             <select class="form-control" name="role_id">
