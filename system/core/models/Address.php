@@ -57,6 +57,70 @@ class Address
     }
 
     /**
+     * Adds a new address
+     * @param array $data
+     * @return integer
+     */
+    public function add(array $data)
+    {
+        $result = null;
+        $this->hook->attach('address.add.before', $data, $result, $this);
+
+        if (isset($result)) {
+            return (int) $result;
+        }
+
+        $data['created'] = GC_TIME;
+        $result = $this->db->insert('address', $data);
+        $this->hook->attach('address.add.after', $data, $result, $this);
+        return (int) $result;
+    }
+
+    /**
+     * Updates an address
+     * @param integer $address_id
+     * @param array $data
+     * @return boolean
+     */
+    public function update($address_id, array $data)
+    {
+        $result = null;
+        $this->hook->attach('address.update.before', $address_id, $data, $result, $this);
+
+        if (isset($result)) {
+            return (bool) $result;
+        }
+
+        $result = (bool) $this->db->update('address', $data, array('address_id' => $address_id));
+        $this->hook->attach('address.update.after', $address_id, $data, $result, $this);
+        return (bool) $result;
+    }
+
+    /**
+     * Deletes an address
+     * @param integer $address_id
+     * @param bool $check
+     * @return boolean
+     */
+    public function delete($address_id, $check = true)
+    {
+        $result = null;
+        $this->hook->attach('address.delete.before', $address_id, $check, $result, $this);
+
+        if (isset($result)) {
+            return (bool) $result;
+        }
+
+        if ($check && !$this->canDelete($address_id)) {
+            return false;
+        }
+
+        $result = (bool) $this->db->delete('address', array('address_id' => $address_id));
+        $this->hook->attach('address.delete.after', $address_id, $check, $result, $this);
+        return (bool) $result;
+    }
+
+    /**
      * Loads an address from the database
      * @param integer $address_id
      * @return array
@@ -76,20 +140,13 @@ class Address
             return $result;
         }
 
-        $sql = 'SELECT a.*, c.name AS country_name,'
-                . ' c.native_name AS country_native_name, c.template AS country_address_template,'
-                . ' c.format AS country_format, c.zone_id AS country_zone_id,'
-                . ' s.name AS state_name, s.zone_id AS state_zone_id,'
-                . ' ci.name AS city_name, ci.zone_id AS city_zone_id'
-                . ' FROM address a'
-                . ' LEFT JOIN country c ON(a.country=c.code)'
-                . ' LEFT JOIN state s ON(a.state_id=s.state_id)'
-                . ' LEFT JOIN city ci ON(a.city_id=ci.city_id)'
-                . ' WHERE a.address_id = ?';
+        $list = $this->getList(array('address_id' => $address_id, 'prepare' => false));
 
-        $options = array('unserialize' => array('data', 'country_format'));
-        $result = $this->db->fetch($sql, array($address_id), $options);
+        if (count($list) != 1) {
+            return array();
+        }
 
+        $result = reset($list);
         if (isset($result['country_format'])) {
             $result['country_format'] += $this->country->getDefaultFormat();
         }
@@ -99,62 +156,20 @@ class Address
     }
 
     /**
-     * Adds a new address
-     * @param array $data
-     * @return integer
-     */
-    public function add(array $data)
-    {
-        $result = null;
-        $this->hook->attach('address.add.before', $data, $result, $this);
-
-        if (isset($result)) {
-            return (int) $result;
-        }
-
-        $data['created'] = GC_TIME;
-        $result = $this->db->insert('address', $data);
-
-        $this->hook->attach('address.add.after', $data, $result, $this);
-        return (int) $result;
-    }
-
-    /**
-     * Returns an array of addresses with translated address fields
-     * @param integer $user_id
-     * @param boolean $status
-     * @return array
-     */
-    public function getTranslatedList($user_id, $status = true)
-    {
-        $conditions = array(
-            'status' => $status,
-            'user_id' => $user_id
-        );
-
-        $list = (array) $this->getList($conditions);
-
-        $addresses = array();
-        foreach ($list as $address_id => $address) {
-            $addresses[$address_id] = $this->getTranslated($address, true);
-        }
-
-        return $addresses;
-    }
-
-    /**
      * Returns an array of addresses or counts them
      * @param array $data
      * @return array|integer
      */
     public function getList(array $data = array())
     {
+        $data += array('prepare' => true);
+
         $sql = 'SELECT a.*, TRIM(a.first_name || " " || a.middle_name || " " || a.last_name) AS full_name,'
                 . ' u.email AS user_email, u.name AS user_name,'
-                . ' ci.city_id, COALESCE(ci.name, a.city_id) AS city_name, ci.status AS city_status,'
-                . ' c.name AS country_name, c.template AS country_address_template,'
+                . ' ci.city_id, COALESCE(ci.name, a.city_id) AS city_name, ci.status AS city_status, ci.zone_id AS city_zone_id,'
+                . ' c.name AS country_name, c.template AS country_address_template, c.zone_id AS country_zone_id,'
                 . ' c.native_name AS country_native_name, c.format AS country_format, c.status AS country_status,'
-                . ' s.name AS state_name, s.status AS state_status';
+                . ' s.name AS state_name, s.status AS state_status, s.zone_id AS state_zone_id';
 
         if (!empty($data['count'])) {
             $sql = 'SELECT COUNT(a.address_id)';
@@ -164,10 +179,16 @@ class Address
                 . ' LEFT JOIN country c ON(a.country=c.code)'
                 . ' LEFT JOIN state s ON(a.state_id=s.state_id)'
                 . ' LEFT JOIN city ci ON(a.city_id=ci.city_id)'
-                . ' LEFT JOIN user u ON(a.user_id=u.user_id)'
-                . ' WHERE a.address_id > 0';
+                . ' LEFT JOIN user u ON(a.user_id=u.user_id)';
 
         $conditions = array();
+
+        if (isset($data['address_id'])) {
+            $sql .= ' WHERE a.address_id = ?';
+            $conditions[] = (int) $data['address_id'];
+        } else {
+            $sql .= ' WHERE a.address_id IS NOT NULL';
+        }
 
         if (isset($data['user_id'])) {
             $sql .= ' AND a.user_id = ?';
@@ -236,9 +257,12 @@ class Address
             'unserialize' => array('data', 'country_format')
         );
 
-        $results = $this->db->fetchAll($sql, $conditions, $options);
+        $list = $this->db->fetchAll($sql, $conditions, $options);
 
-        $list = $this->prepareList($results, $data);
+        if (!empty($data['prepare'])) {
+            $list = $this->prepareList($list, $data);
+        }
+
         $this->hook->attach('address.list', $data, $list, $this);
         return $list;
     }
@@ -286,6 +310,29 @@ class Address
     }
 
     /**
+     * Returns an array of addresses with translated address fields
+     * @param integer $user_id
+     * @param boolean $status
+     * @return array
+     */
+    public function getTranslatedList($user_id, $status = true)
+    {
+        $conditions = array(
+            'status' => $status,
+            'user_id' => $user_id
+        );
+
+        $list = (array) $this->getList($conditions);
+
+        $addresses = array();
+        foreach ($list as $address_id => $address) {
+            $addresses[$address_id] = $this->getTranslated($address, true);
+        }
+
+        return $addresses;
+    }
+
+    /**
      * Returns an array of translated address fields
      * @param array $address
      * @param boolean $both
@@ -295,7 +342,6 @@ class Address
     {
         $default = $this->country->getDefaultFormat();
         $format = gplcart_array_merge($default, $address['country_format']);
-
         gplcart_array_sort($format);
 
         $results = array();
@@ -356,18 +402,18 @@ class Address
      */
     public function controlLimit($user_id)
     {
-        foreach ($this->getExcess($user_id) as $address) {
+        foreach ($this->getExcessed($user_id) as $address) {
             $this->delete($address['address_id']);
         }
     }
 
     /**
-     * Returns an array of exceeding addresses for the user ID
+     * Returns an array of excessed addresses for the user ID
      * @param string|integer $user_id
      * @param null|array $existing
      * @return array
      */
-    public function getExcess($user_id, $existing = null)
+    public function getExcessed($user_id, $existing = null)
     {
         $limit = $this->getLimit($user_id);
 
@@ -380,7 +426,6 @@ class Address
         }
 
         $count = count($existing);
-
         if (empty($count) || $count <= $limit) {
             return array();
         }
@@ -403,31 +448,6 @@ class Address
     }
 
     /**
-     * Deletes an address
-     * @param integer $address_id
-     * @param bool $check
-     * @return boolean
-     */
-    public function delete($address_id, $check = true)
-    {
-        $result = null;
-        $this->hook->attach('address.delete.before', $address_id, $check, $result, $this);
-
-        if (isset($result)) {
-            return (bool) $result;
-        }
-
-        if ($check && !$this->canDelete($address_id)) {
-            return false;
-        }
-
-        $result = (bool) $this->db->delete('address', array('address_id' => $address_id));
-
-        $this->hook->attach('address.delete.after', $address_id, $check, $result, $this);
-        return (bool) $result;
-    }
-
-    /**
      * Whether the address can be deleted
      * @param integer $address_id
      * @return boolean
@@ -438,28 +458,6 @@ class Address
                 . ' AND NOT EXISTS (SELECT order_id FROM orders WHERE payment_address=:id)';
 
         return (bool) $this->db->fetchColumn($sql, array('id' => $address_id));
-    }
-
-    /**
-     * Updates an address
-     * @param integer $address_id
-     * @param array $data
-     * @return boolean
-     */
-    public function update($address_id, array $data)
-    {
-        $result = null;
-        $this->hook->attach('address.update.before', $address_id, $data, $result, $this);
-
-        if (isset($result)) {
-            return (bool) $result;
-        }
-
-        $conditions = array('address_id' => $address_id);
-        $result = (bool) $this->db->update('address', $data, $conditions);
-
-        $this->hook->attach('address.update.after', $address_id, $data, $result, $this);
-        return (bool) $result;
     }
 
     /**
