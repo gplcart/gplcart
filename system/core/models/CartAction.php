@@ -180,7 +180,7 @@ class CartAction
         }
 
         if (!$this->config->get('cart_login_merge', 0)) {
-            $this->cart->deleteByUser($user['user_id']);
+            $this->cart->delete(array('user_id' => $user['user_id']));
         }
 
         if (!empty($cart['items'])) {

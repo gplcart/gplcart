@@ -96,6 +96,102 @@ class Cart
     }
 
     /**
+     * Adds a cart record to the database
+     * @param array $data
+     * @return integer
+     */
+    public function add(array $data)
+    {
+        $result = null;
+        $this->hook->attach('cart.add.before', $data, $result, $this);
+
+        if (isset($result)) {
+            return (int) $result;
+        }
+
+        $data['created'] = $data['modified'] = GC_TIME;
+        $result = $this->db->insert('cart', $data);
+
+        gplcart_static_clear();
+
+        $this->hook->attach('cart.add.after', $data, $result, $this);
+        return (int) $result;
+    }
+
+    /**
+     * Updates a cart
+     * @param integer $cart_id
+     * @param array $data
+     * @return boolean
+     */
+    public function update($cart_id, array $data)
+    {
+        $result = null;
+        $this->hook->attach('cart.update.before', $cart_id, $data, $result, $this);
+
+        if (isset($result)) {
+            return (bool) $result;
+        }
+
+        $data['modified'] = GC_TIME;
+        $result = (bool) $this->db->update('cart', $data, array('cart_id' => $cart_id));
+
+        gplcart_static_clear();
+
+        $this->hook->attach('cart.update.after', $cart_id, $data, $result, $this);
+        return (bool) $result;
+    }
+
+    /**
+     * Loads a cart from the database
+     * @param integer $cart_id
+     * @return array
+     */
+    public function get($cart_id)
+    {
+        $result = null;
+        $this->hook->attach('cart.get.before', $cart_id, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
+        $result = $this->db->fetch('SELECT * FROM cart WHERE cart_id=?', array($cart_id), array('unserialize' => 'data'));
+        $this->hook->attach('cart.get.after', $cart_id, $result, $this);
+        return $result;
+    }
+
+    /**
+     * Deletes a cart record from the database
+     * @param integer|array $condition Either cart_id or an array of conditions
+     * @param bool $check Whether to check if the item can be safely deleted
+     * @return boolean
+     */
+    public function delete($condition, $check = true)
+    {
+        $result = null;
+        $this->hook->attach('cart.delete.before', $condition, $check, $result, $this);
+
+        if (isset($result)) {
+            return (bool) $result;
+        }
+
+        if (!is_array($condition)) {
+
+            if ($check && !$this->canDelete($condition)) {
+                return false;
+            }
+
+            $condition = array('cart_id' => $condition);
+        }
+
+        $result = (bool) $this->db->delete('cart', $condition);
+        gplcart_static_clear();
+        $this->hook->attach('cart.delete.after', $condition, $check, $result, $this);
+        return (bool) $result;
+    }
+
+    /**
      * Returns a cart content
      * @param array $data
      * @return array
@@ -285,121 +381,6 @@ class Cart
         $lifespan = $this->getCookieLifespan();
         $this->request->setCookie($cookie_name, $user_id, $lifespan);
         return $user_id;
-    }
-
-    /**
-     * Adds a cart record to the database
-     * @param array $data
-     * @return integer
-     */
-    public function add(array $data)
-    {
-        $result = null;
-        $this->hook->attach('cart.add.before', $data, $result, $this);
-
-        if (isset($result)) {
-            return (int) $result;
-        }
-
-        $data['created'] = $data['modified'] = GC_TIME;
-        $result = $this->db->insert('cart', $data);
-
-        gplcart_static_clear();
-
-        $this->hook->attach('cart.add.after', $data, $result, $this);
-        return (int) $result;
-    }
-
-    /**
-     * Updates a cart
-     * @param integer $cart_id
-     * @param array $data
-     * @return boolean
-     */
-    public function update($cart_id, array $data)
-    {
-        $result = null;
-        $this->hook->attach('cart.update.before', $cart_id, $data, $result, $this);
-
-        if (isset($result)) {
-            return (bool) $result;
-        }
-
-        $data['modified'] = GC_TIME;
-        $result = (bool) $this->db->update('cart', $data, array('cart_id' => $cart_id));
-
-        gplcart_static_clear();
-
-        $this->hook->attach('cart.update.after', $cart_id, $data, $result, $this);
-        return (bool) $result;
-    }
-
-    /**
-     * Loads a cart from the database
-     * @param integer $cart_id
-     * @return array
-     */
-    public function get($cart_id)
-    {
-        $result = null;
-        $this->hook->attach('cart.get.before', $cart_id, $result, $this);
-
-        if (isset($result)) {
-            return $result;
-        }
-
-        $result = $this->db->fetch('SELECT * FROM cart WHERE cart_id=?', array($cart_id), array('unserialize' => 'data'));
-        $this->hook->attach('cart.get.after', $cart_id, $result, $this);
-        return $result;
-    }
-
-    /**
-     * Deletes a cart record from the database
-     * @param integer $cart_id
-     * @param bool $check
-     * @return boolean
-     */
-    public function delete($cart_id, $check = true)
-    {
-        $result = null;
-        $this->hook->attach('cart.delete.before', $cart_id, $check, $result, $this);
-
-        if (isset($result)) {
-            return (bool) $result;
-        }
-
-        if ($check && !$this->canDelete($cart_id)) {
-            return false;
-        }
-
-        $result = (bool) $this->db->delete('cart', array('cart_id' => $cart_id));
-
-        gplcart_static_clear();
-
-        $this->hook->attach('cart.delete.after', $cart_id, $check, $result, $this);
-        return (bool) $result;
-    }
-
-    /**
-     * Delete all non-referenced cart items for the user ID
-     * @param string $user_id
-     * @return boolean
-     */
-    public function deleteByUser($user_id)
-    {
-        $result = null;
-        $this->hook->attach('cart.delete.user.before', $user_id, $result, $this);
-
-        if (isset($result)) {
-            return (bool) $result;
-        }
-
-
-        $sql = 'DELETE FROM cart WHERE user_id=? AND order_id = 0';
-        $result = (bool) $this->db->run($sql, array($user_id))->rowCount();
-
-        $this->hook->attach('cart.delete.user.after', $user_id, $result, $this);
-        return (bool) $result;
     }
 
     /**
