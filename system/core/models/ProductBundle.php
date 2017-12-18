@@ -42,89 +42,31 @@ class ProductBundle
 
     /**
      * Load a bundle
-     * @param int $product_bundle_id
+     * @param int|array $condition Either a numeric product bundle ID or an array of conditions for getList()
      * @return array
      */
-    public function get($product_bundle_id)
+    public function get($condition)
     {
         $result = null;
-        $this->hook->attach('product.bundle.get.before', $product_bundle_id, $result, $this);
+        $this->hook->attach('product.bundle.get.before', $condition, $result, $this);
 
         if (isset($result)) {
             return (array) $result;
         }
 
-        $sql = 'SELECT * FROM product_bundle WHERE product_bundle_id = ?';
+        if (!is_array($condition)) {
+            $condition = array('product_bundle_id' => (int) $condition);
+        }
 
-        $result = $this->db->fetch($sql, array($product_bundle_id));
-        $this->hook->attach('product.bundle.get.after', $product_bundle_id, $result, $this);
+        $list = $this->getList($condition);
+
+        $result = array();
+        if (is_array($list) && count($list) == 1) {
+            $result = reset($list);
+        }
+
+        $this->hook->attach('product.bundle.get.after', $condition, $result, $this);
         return (array) $result;
-    }
-
-    /**
-     * Adds a product bundle item
-     * @param array $data
-     * @return integer
-     */
-    public function add(array $data)
-    {
-        $result = null;
-        $this->hook->attach('product.bundle.add.before', $data, $result, $this);
-
-        if (isset($result)) {
-            return (int) $result;
-        }
-
-        $result = $this->db->insert('product_bundle', $data);
-        $this->hook->attach('product.bundle.add.after', $data, $result, $this);
-        return (int) $result;
-    }
-
-    /**
-     * Delete a product bundle item
-     * @param integer $product_bundle_id
-     * @return boolean
-     */
-    public function delete($product_bundle_id)
-    {
-        $result = null;
-        $this->hook->attach('product.bundle.delete.before', $product_bundle_id, $result, $this);
-
-        if (isset($result)) {
-            return (bool) $result;
-        }
-
-        $result = (bool) $this->db->delete('product_bundle', array('product_bundle_id' => $product_bundle_id));
-        $this->hook->attach('product.bundle.delete.after', $product_bundle_id, $result, $this);
-        return (bool) $result;
-    }
-
-    /**
-     * Delete old and add new bundled items for the product
-     * @param int $product_id
-     * @param array $products
-     * @return bool
-     */
-    public function set($product_id, array $products)
-    {
-        $this->deleteByProduct($product_id);
-
-        $added = $count = 0;
-        foreach ($products as $product) {
-
-            $count++;
-
-            $data = array(
-                'product_id' => $product_id,
-                'item_product_id' => $product['product_id']
-            );
-
-            if ($this->add($data)) {
-                $added++;
-            }
-        }
-
-        return $count && $added == $count;
     }
 
     /**
@@ -146,8 +88,14 @@ class ProductBundle
         $sql = 'SELECT pb.*, p.store_id'
                 . ' FROM product_bundle pb'
                 . ' LEFT JOIN product p ON(pb.product_id = p.product_id)'
-                . ' LEFT JOIN product p2 ON(pb.item_product_id = p2.product_id)'
-                . ' WHERE pb.product_bundle_id IS NOT NULL';
+                . ' LEFT JOIN product p2 ON(pb.item_product_id = p2.product_id)';
+
+        if (isset($data['product_bundle_id'])) {
+            $sql .= ' WHERE pb.product_bundle_id = ?';
+            $conditions[] = (int) $data['product_bundle_id'];
+        } else {
+            $sql .= ' WHERE pb.product_bundle_id IS NOT NULL';
+        }
 
         if (isset($data['store_id'])) {
             $sql .= ' AND p.store_id = ? AND p2.store_id = ?';
@@ -172,47 +120,88 @@ class ProductBundle
     }
 
     /**
-     * Load all bundled items for the product
-     * @param int $product_id
-     * @param array $options
-     * @return array
+     * Adds a product bundle item
+     * @param array $data
+     * @return integer
      */
-    public function getByProduct($product_id, array $options = array())
+    public function add(array $data)
     {
-        $options['product_id'] = $product_id;
-        return $this->getList($options);
+        $result = null;
+        $this->hook->attach('product.bundle.add.before', $data, $result, $this);
+
+        if (isset($result)) {
+            return (int) $result;
+        }
+
+        $result = $this->db->insert('product_bundle', $data);
+        $this->hook->attach('product.bundle.add.after', $data, $result, $this);
+        return (int) $result;
+    }
+
+    /**
+     * Delete a product bundle item
+     * @param int|array $condition Either a numeric product bundle ID or an array of conditions
+     * @return boolean
+     */
+    public function delete($condition)
+    {
+        $result = null;
+        $this->hook->attach('product.bundle.delete.before', $condition, $result, $this);
+
+        if (isset($result)) {
+            return (bool) $result;
+        }
+
+        if (!is_array($condition)) {
+            $condition = array('product_bundle_id' => (int) $condition);
+        }
+
+        $result = (bool) $this->db->delete('product_bundle', $condition);
+        $this->hook->attach('product.bundle.delete.after', $condition, $result, $this);
+        return (bool) $result;
+    }
+
+    /**
+     * Delete old and add new bundled items for the product
+     * @param int $product_id
+     * @param array $products
+     * @return bool
+     */
+    public function set($product_id, array $products)
+    {
+        $this->delete(array('product_id' => $product_id));
+
+        $added = $count = 0;
+        foreach ($products as $product) {
+
+            $count++;
+
+            $data = array(
+                'product_id' => $product_id,
+                'item_product_id' => $product['product_id']
+            );
+
+            if ($this->add($data)) {
+                $added++;
+            }
+        }
+
+        return $count && $added == $count;
     }
 
     /**
      * Returns an array of bundled product IDs for the product
      * @param int $product_id
-     * @param array $options
      * @return array
      */
-    public function getBundledProducts($product_id, array $options = array())
+    public function getItems($product_id)
     {
         $product_ids = array();
-        foreach ($this->getByProduct($product_id, $options) as $item) {
+        foreach ($this->getList(array('product_id' => $product_id)) as $item) {
             $product_ids[] = $item['item_product_id'];
         }
 
         return $product_ids;
-    }
-
-    /**
-     * Delete all bundled items for the product
-     * @param int $product_id
-     * @return bool
-     */
-    public function deleteByProduct($product_id)
-    {
-        $deleted = $count = 0;
-        foreach ($this->getByProduct($product_id) as $item) {
-            $count ++;
-            $deleted += (int) $this->delete($item['product_bundle_id']);
-        }
-
-        return $count && $deleted == $count;
     }
 
 }

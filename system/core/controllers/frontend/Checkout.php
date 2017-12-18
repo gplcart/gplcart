@@ -989,7 +989,7 @@ class Checkout extends FrontendController
                 'text' => $this->text('Cloned into order #@num', array('@num' => $result['order']['order_id']))
             );
 
-            $this->order_history->addLog($log);
+            $this->order_history->add($log);
 
             $vars = array(
                 '@num' => $this->data_order['order_id'],

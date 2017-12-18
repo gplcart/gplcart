@@ -86,27 +86,31 @@ class Alias
 
     /**
      * Returns an entity alias
-     * @param array $conditions
-     * @return string
+     * @param array|int $condition
+     * @return array
      */
-    public function get($conditions)
+    public function get($condition)
     {
         $result = null;
-        $this->hook->attach('alias.get.before', $conditions, $result, $this);
+        $this->hook->attach('alias.get.before', $condition, $result, $this);
 
         if (isset($result)) {
-            return $result;
+            return (array) $result;
         }
 
-        $list = $this->getList($conditions);
-
-        if (!is_array($list) || count($list) != 1) {
-            return array();
+        if (!is_array($condition)) {
+            $condition = array('alias_id' => (int) $condition);
         }
 
-        $result = reset($list);
-        $this->hook->attach('alias.get.after', $conditions, $result, $this);
-        return $result;
+        $list = $this->getList($condition);
+
+        $result = array();
+        if (is_array($list) && count($list) == 1) {
+            $result = reset($list);
+        }
+
+        $this->hook->attach('alias.get.after', $condition, $result, $this);
+        return (array) $result;
     }
 
     /**
@@ -123,20 +127,24 @@ class Alias
 
     /**
      * Deletes an alias
-     * @param array $conditions
+     * @param array|int $condition
      * @return bool
      */
-    public function delete(array $conditions)
+    public function delete($condition)
     {
         $result = null;
-        $this->hook->attach('alias.delete.before', $conditions, $result);
+        $this->hook->attach('alias.delete.before', $condition, $result);
 
         if (isset($result)) {
             return (bool) $result;
         }
 
-        $result = $this->db->delete('alias', $conditions);
-        $this->hook->attach('alias.delete.after', $conditions, $result);
+        if (!is_array($condition)) {
+            $condition = array('alias_id' => (int) $condition);
+        }
+
+        $result = $this->db->delete('alias', $condition);
+        $this->hook->attach('alias.delete.after', $condition, $result);
         return (bool) $result;
     }
 
@@ -271,9 +279,7 @@ class Alias
      */
     public function generateEntity($entity_name, array $data)
     {
-        $data += array(
-            'placeholders' => $this->getEntityPatternPlaceholders($entity_name));
-
+        $data += array('placeholders' => $this->getEntityPatternPlaceholders($entity_name));
         return $this->generate($this->getEntityPattern($entity_name), $data);
     }
 

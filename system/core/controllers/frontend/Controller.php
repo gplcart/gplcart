@@ -56,9 +56,15 @@ class Controller extends BaseController
 
     /**
      * Compare model instance
-     * @var \gplcart\core\models\ProductCompare $compare
+     * @var \gplcart\core\models\ProductCompare $product_compare
      */
     protected $product_compare;
+
+    /**
+     * Compare model instance
+     * @var \gplcart\core\models\ProductCompareAction $product_compare_action
+     */
+    protected $product_compare_action;
 
     /**
      * Wishlist model instance
@@ -125,7 +131,7 @@ class Controller extends BaseController
 
             $this->submitCart($this->cart_action);
             $this->submitWishlist($this->wishlist_action);
-            $this->submitProductCompare($this->product_compare);
+            $this->submitProductCompare($this->product_compare_action);
         }
 
         $this->hook->attach('construct.controller.frontend', $this);
@@ -186,6 +192,7 @@ class Controller extends BaseController
         $this->product_compare = $this->getInstance('gplcart\\core\\models\\ProductCompare');
         $this->collection_item = $this->getInstance('gplcart\\core\\models\\CollectionItem');
         $this->wishlist_action = $this->getInstance('gplcart\\core\\models\\WishlistAction');
+        $this->product_compare_action = $this->getInstance('gplcart\\core\\models\\ProductCompareAction');
     }
 
     /**

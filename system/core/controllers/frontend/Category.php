@@ -323,7 +323,13 @@ class Category extends FrontendController
      */
     protected function setCategory($category_id)
     {
-        $this->data_category = $this->category->get($category_id, $this->langcode, $this->store_id);
+        $options = array(
+            'category_id' => $category_id,
+            'language' => $this->langcode,
+            'store_id' => $this->store_id
+        );
+
+        $this->data_category = $this->category->get($options);
 
         if (empty($this->data_category['status'])) {
             $this->outputHttpStatus(404);

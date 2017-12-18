@@ -9,6 +9,7 @@
 
 namespace gplcart\core\models;
 
+use gplcart\core\models\Order as OrderModel;
 use gplcart\core\helpers\Convertor as ConvertorHelper;
 
 /**
@@ -18,28 +19,40 @@ class OrderDimension
 {
 
     /**
+     * Order model instance
+     * @var \gplcart\core\models\Order $order
+     */
+    protected $order;
+
+    /**
      * Convertor class instance
      * @var \gplcart\core\helpers\Convertor $convertor
      */
     protected $convertor;
 
     /**
+     * @param OrderModel $order
      * @param ConvertorHelper $convertor
      */
-    public function __construct(ConvertorHelper $convertor)
+    public function __construct(OrderModel $order, ConvertorHelper $convertor)
     {
+        $this->order = $order;
         $this->convertor = $convertor;
     }
 
     /**
      * Returns a total volume of all products in the order
-     * @param array $order
+     * @param array|int $order
      * @param array $cart
      * @param integer $decimals
      * @return float
      */
-    public function getTotalVolume(array $order, array $cart, $decimals = 2)
+    public function getTotalVolume($order, array $cart, $decimals = 2)
     {
+        if (!is_array($order)) {
+            $order = $this->order->get($order);
+        }
+
         $total = 0;
         foreach ($cart['items'] as $item) {
 
@@ -70,13 +83,17 @@ class OrderDimension
 
     /**
      * Returns a total weight of all products in the order
-     * @param array $order
+     * @param array|int $order
      * @param array $cart
      * @param integer $decimals
      * @return float
      */
-    public function getTotalWeight(array $order, array $cart, $decimals = 2)
+    public function getTotalWeight($order, array $cart, $decimals = 2)
     {
+        if (!is_array($order)) {
+            $order = $this->order->get($order);
+        }
+
         $total = 0;
         foreach ($cart['items'] as $item) {
 

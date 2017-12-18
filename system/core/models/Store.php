@@ -203,14 +203,18 @@ class Store
      */
     public function getCurrent()
     {
-        $domain = $this->server->httpHost();
+        return $this->get($this->getCurrentHost());
+    }
+
+    /**
+     * Returns the current host
+     * @return string
+     */
+    public function getCurrentHost()
+    {
+        $url = $this->server->httpHost();
         $basepath = trim($this->request->base(true), '/');
-
-        if ($basepath !== '') {
-            $domain .= "/$basepath";
-        }
-
-        return $this->get($domain);
+        return trim("$url/$basepath", '/');
     }
 
     /**
@@ -333,18 +337,28 @@ class Store
             return false;
         }
 
-        $conditions = array('store_id' => $store_id);
-        $result = (bool) $this->db->delete('store', $conditions);
+        $result = (bool) $this->db->delete('store', array('store_id' => $store_id));
 
         if ($result) {
-            $this->db->delete('triggers', $conditions);
-            $this->db->delete('wishlist', $conditions);
-            $this->db->delete('collection', $conditions);
-            $this->db->delete('product_sku', $conditions);
+            $this->deleteLinked($store_id);
         }
 
         $this->hook->attach('store.delete.after', $store_id, $check, $result, $this);
         return (bool) $result;
+    }
+
+    /**
+     * Delete all database rows related to the store
+     * @param int $store_id
+     */
+    protected function deleteLinked($store_id)
+    {
+        $conditions = array('store_id' => $store_id);
+
+        $this->db->delete('triggers', $conditions);
+        $this->db->delete('wishlist', $conditions);
+        $this->db->delete('collection', $conditions);
+        $this->db->delete('product_sku', $conditions);
     }
 
     /**

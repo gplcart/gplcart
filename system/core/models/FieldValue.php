@@ -80,12 +80,43 @@ class FieldValue
     }
 
     /**
+     * Returns a field value
+     * @param int|array $condition
+     * @return array
+     */
+    public function get($condition)
+    {
+        $result = null;
+        $this->hook->attach('field.value.get.before', $condition, $result, $this);
+
+        if (isset($result)) {
+            return (array) $result;
+        }
+
+        if (!is_array($condition)) {
+            $condition = array('field_value_id' => (int) $condition);
+        }
+
+        $list = $this->getList($condition);
+
+        $result = array();
+        if (is_array($list) && count($list) == 1) {
+            $result = reset($list);
+        }
+
+        $this->hook->attach('field.value.get.after', $condition, $result, $this);
+        return (array) $result;
+    }
+
+    /**
      * Returns an array of values for a given field
      * @param array $data
      * @return array|integer
      */
     public function getList(array $data = array())
     {
+        $data += array('language' => $this->translation->getLangcode());
+
         $sql = 'SELECT fv.*, COALESCE(NULLIF(fvt.title, ""), fv.title) AS title, f.path';
 
         if (!empty($data['count'])) {
@@ -94,17 +125,22 @@ class FieldValue
 
         $sql .= ' FROM field_value fv'
                 . ' LEFT JOIN file f ON(fv.field_value_id = f.entity_id AND f.entity = ?)'
-                . ' LEFT JOIN field_value_translation fvt ON(fv.field_value_id = fvt.field_value_id AND fvt.language=?)'
-                . ' WHERE fv.field_value_id IS NOT NULL';
+                . ' LEFT JOIN field_value_translation fvt ON(fv.field_value_id = fvt.field_value_id AND fvt.language=?)';
 
-        $language = $this->translation->getLangcode();
-        $conditions = array('field_value', $language);
+        $conditions = array('field_value', $data['language']);
+
+        if (isset($data['field_value_id'])) {
+            $sql .= ' WHERE fv.field_value_id = ?';
+            $conditions[] = (int) $data['field_value_id'];
+        } else {
+            $sql .= ' WHERE fv.field_value_id IS NOT NULL';
+        }
 
         if (isset($data['title'])) {
             $sql .= ' AND (fv.title LIKE ? OR (fvt.title LIKE ? AND fvt.language=?))';
             $conditions[] = "%{$data['title']}%";
             $conditions[] = "%{$data['title']}%";
-            $conditions[] = $language;
+            $conditions[] = $data['language'];
         }
 
         if (!empty($data['field_id'])) {
@@ -136,33 +172,6 @@ class FieldValue
         $list = $this->db->fetchAll($sql, $conditions, array('index' => 'field_value_id'));
         $this->hook->attach('field.value.list', $data, $list, $this);
         return $list;
-    }
-
-    /**
-     * Returns a field value
-     * @param integer $field_value_id
-     * @param null|string $language
-     * @return array
-     */
-    public function get($field_value_id, $language = null)
-    {
-        $result = null;
-        $this->hook->attach('field.value.get.before', $field_value_id, $language, $result, $this);
-
-        if (isset($result)) {
-            return $result;
-        }
-
-        $sql = 'SELECT fv.*, f.path, f.file_id, f.path'
-                . ' FROM field_value fv'
-                . ' LEFT JOIN file f ON(fv.file_id = f.file_id)'
-                . ' WHERE fv.field_value_id=?';
-
-        $result = $this->db->fetch($sql, array($field_value_id));
-        $this->attachTranslations($result, $this->translation_entity, 'field_value', $language);
-
-        $this->hook->attach('field.value.get.after', $field_value_id, $language, $result, $this);
-        return $result;
     }
 
     /**
@@ -230,8 +239,7 @@ class FieldValue
             return (bool) $result;
         }
 
-        $conditions = array('field_value_id' => $field_value_id);
-        $updated = $this->db->update('field_value', $data, $conditions);
+        $updated = $this->db->update('field_value', $data, array('field_value_id' => $field_value_id));
 
         $data['field_value_id'] = $field_value_id;
 
@@ -262,19 +270,25 @@ class FieldValue
             return false;
         }
 
-        $conditions = array('field_value_id' => $field_value_id);
-        $conditions2 = array('entity' => 'field_value', 'entity_id' => $field_value_id);
-
-        $result = (bool) $this->db->delete('field_value', $conditions);
+        $result = (bool) $this->db->delete('field_value', array('field_value_id' => $field_value_id));
 
         if ($result) {
-            $this->db->delete('file', $conditions2);
-            $this->db->delete('product_field', $conditions);
-            $this->db->delete('field_value_translation', $conditions);
+            $this->deleteLinked($field_value_id);
         }
 
         $this->hook->attach('field.value.delete.after', $field_value_id, $check, $result, $this);
         return (bool) $result;
+    }
+
+    /**
+     * Deletes all database records related to the field value ID
+     * @param int $field_value_id
+     */
+    protected function deleteLinked($field_value_id)
+    {
+        $this->db->delete('product_field', array('field_value_id' => $field_value_id));
+        $this->db->delete('field_value_translation', array('field_value_id' => $field_value_id));
+        $this->db->delete('file', array('entity' => 'field_value', 'entity_id' => $field_value_id));
     }
 
     /**

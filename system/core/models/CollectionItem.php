@@ -67,6 +67,8 @@ class CollectionItem
      */
     public function getList(array $data = array())
     {
+        $data += array('language' => $this->translation->getLangcode());
+
         $list = &gplcart_static(gplcart_array_hash(array('collection.item.list' => $data)));
 
         if (isset($list)) {
@@ -84,8 +86,8 @@ class CollectionItem
                 . ' LEFT JOIN collection c ON(ci.collection_id=c.collection_id)'
                 . ' LEFT JOIN collection_translation ct ON(ct.collection_id = c.collection_id AND ct.language=?)';
 
-        $language = $this->translation->getLangcode();
-        $conditions = array($language);
+
+        $conditions = array($data['language']);
 
         if (isset($data['collection_item_id'])) {
             $sql .= ' WHERE ci.collection_item_id = ?';

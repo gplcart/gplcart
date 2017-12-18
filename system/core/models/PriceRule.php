@@ -61,6 +61,70 @@ class PriceRule
     }
 
     /**
+     * Loads a price rule from the database
+     * @param integer $price_rule_id
+     * @return array
+     */
+    public function get($price_rule_id)
+    {
+        $result = null;
+        $this->hook->attach('price.rule.get.before', $price_rule_id, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
+        $sql = 'SELECT * FROM price_rule WHERE price_rule_id=?';
+        $result = $this->db->fetch($sql, array($price_rule_id));
+
+        $this->hook->attach('price.rule.get.after', $result, $this);
+        return $result;
+    }
+
+    /**
+     * Adds a price rule
+     * @param array $data
+     * @return integer
+     */
+    public function add(array $data)
+    {
+        $result = null;
+        $this->hook->attach('price.rule.add.before', $data, $result, $this);
+
+        if (isset($result)) {
+            return (int) $result;
+        }
+
+        $data['created'] = $data['modified'] = GC_TIME;
+        $result = $data['price_rule_id'] = $this->db->insert('price_rule', $data);
+
+        $this->hook->attach('price.rule.add.after', $data, $result, $this);
+        return (int) $result;
+    }
+
+    /**
+     * Updates a price rule
+     * @param integer $price_rule_id
+     * @param array $data
+     * @return boolean
+     */
+    public function update($price_rule_id, array $data)
+    {
+        $result = null;
+        $this->hook->attach('price.rule.update.before', $price_rule_id, $data, $result, $this);
+
+        if (isset($result)) {
+            return (bool) $result;
+        }
+
+        $data['modified'] = GC_TIME;
+        $result = (bool) $this->db->update('price_rule', $data, array('price_rule_id' => $price_rule_id));
+
+        $this->hook->attach('price.rule.update.after', $price_rule_id, $data, $result, $this);
+        return (bool) $result;
+    }
+
+    /**
      * Returns an array of price rules or total number of rules
      * @param array $data
      * @return array|integer
@@ -163,70 +227,6 @@ class PriceRule
         $list = $this->db->fetchAll($sql, $conditions, array('index' => 'price_rule_id'));
         $this->hook->attach('price.rule.list', $data, $list, $this);
         return $list;
-    }
-
-    /**
-     * Loads a price rule from the database
-     * @param integer $price_rule_id
-     * @return array
-     */
-    public function get($price_rule_id)
-    {
-        $result = null;
-        $this->hook->attach('price.rule.get.before', $price_rule_id, $result, $this);
-
-        if (isset($result)) {
-            return $result;
-        }
-
-        $sql = 'SELECT * FROM price_rule WHERE price_rule_id=?';
-        $result = $this->db->fetch($sql, array($price_rule_id));
-
-        $this->hook->attach('price.rule.get.after', $result, $this);
-        return $result;
-    }
-
-    /**
-     * Adds a price rule
-     * @param array $data
-     * @return integer
-     */
-    public function add(array $data)
-    {
-        $result = null;
-        $this->hook->attach('price.rule.add.before', $data, $result, $this);
-
-        if (isset($result)) {
-            return (int) $result;
-        }
-
-        $data['created'] = $data['modified'] = GC_TIME;
-        $result = $data['price_rule_id'] = $this->db->insert('price_rule', $data);
-
-        $this->hook->attach('price.rule.add.after', $data, $result, $this);
-        return (int) $result;
-    }
-
-    /**
-     * Updates a price rule
-     * @param integer $price_rule_id
-     * @param array $data
-     * @return boolean
-     */
-    public function update($price_rule_id, array $data)
-    {
-        $result = null;
-        $this->hook->attach('price.rule.update.before', $price_rule_id, $data, $result, $this);
-
-        if (isset($result)) {
-            return (bool) $result;
-        }
-
-        $data['modified'] = GC_TIME;
-        $result = (bool) $this->db->update('price_rule', $data, array('price_rule_id' => $price_rule_id));
-
-        $this->hook->attach('price.rule.update.after', $price_rule_id, $data, $result, $this);
-        return (bool) $result;
     }
 
     /**

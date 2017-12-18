@@ -75,6 +75,7 @@ class ProductRelation
      * Adds product relations
      * @param int $related_product_id
      * @param int $product_id
+     * @return bool
      */
     public function add($related_product_id, $product_id)
     {

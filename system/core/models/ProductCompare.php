@@ -12,7 +12,6 @@ namespace gplcart\core\models;
 use gplcart\core\Hook,
     gplcart\core\Config;
 use gplcart\core\helpers\Request as RequestHelper;
-use gplcart\core\models\Translation as TranslationModel;
 
 /**
  * Manages basic behaviors and data related to product comparison
@@ -39,24 +38,15 @@ class ProductCompare
     protected $request;
 
     /**
-     * Translation UI model instance
-     * @var \gplcart\core\models\Translation $translation
-     */
-    protected $translation;
-
-    /**
      * @param Hook $hook
      * @param Config $config
-     * @param Translation $translation
      * @param RequestHelper $request
      */
-    public function __construct(Hook $hook, Config $config, TranslationModel $translation,
-            RequestHelper $request)
+    public function __construct(Hook $hook, Config $config, RequestHelper $request)
     {
         $this->hook = $hook;
         $this->config = $config;
         $this->request = $request;
-        $this->translation = $translation;
     }
 
     /**
@@ -85,83 +75,6 @@ class ProductCompare
         $result = $this->set($product_ids);
         $this->hook->attach('product.compare.add.after', $product_id, $result, $this);
         return (bool) $result;
-    }
-
-    /**
-     * Adds a product to comparison and returns an array of results
-     * @param array $product
-     * @param array $data
-     * @return array
-     */
-    public function addProduct(array $product, array $data)
-    {
-        $result = array();
-        $this->hook->attach('product.compare.add.product.before', $product, $data, $result, $this);
-
-        if (!empty($result)) {
-            return (array) $result;
-        }
-
-        $result = array(
-            'redirect' => '',
-            'severity' => 'warning',
-            'message' => $this->translation->text('Unable to add product')
-        );
-
-        if ($this->add($product['product_id'])) {
-
-            $quantity = count($this->getList());
-
-            if ($quantity < $this->getLimit()) {
-                $quantity ++;
-            }
-
-            $href = $this->request->base() . 'compare';
-
-            $result = array(
-                'redirect' => '',
-                'severity' => 'success',
-                'quantity' => $quantity,
-                'message' => $this->translation->text('Product has been added to <a href="@url">comparison</a>', array('@url' => $href))
-            );
-        }
-
-        $this->hook->attach('product.compare.add.product.after', $product, $data, $result, $this);
-        return (array) $result;
-    }
-
-    /**
-     * Removes a product from comparison and returns an array of result data
-     * @param integer $product_id
-     * @return array
-     */
-    public function deleteProduct($product_id)
-    {
-        $result = null;
-        $this->hook->attach('product.compare.delete.product.before', $product_id, $result, $this);
-
-        if (!empty($result)) {
-            return (array) $result;
-        }
-
-        $result = array(
-            'redirect' => '',
-            'severity' => '',
-            'message' => ''
-        );
-
-        if ($this->delete($product_id)) {
-            $existing = count($this->getList());
-            $result = array(
-                'redirect' => '',
-                'severity' => 'success',
-                'quantity' => $existing,
-                'message' => $this->translation->text('Product has been removed from comparison')
-            );
-        }
-
-        $this->hook->attach('product.compare.delete.product.after', $product_id, $result, $this);
-        return (array) $result;
     }
 
     /**
@@ -228,8 +141,7 @@ class ProductCompare
      */
     public function exists($product_id)
     {
-        $compared = $this->getList();
-        return in_array($product_id, $compared);
+        return in_array($product_id, $this->getList());
     }
 
     /**
@@ -267,12 +179,10 @@ class ProductCompare
         }
 
         $product_ids = array_flip($compared);
-
         unset($product_ids[$product_id]);
 
         $result = $this->set(array_keys($product_ids));
         $this->hook->attach('product.compare.delete.after', $product_id, $result, $this);
-
         return (bool) $result;
     }
 

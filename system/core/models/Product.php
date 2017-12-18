@@ -278,49 +278,45 @@ class Product
      */
     public function generateSku(array $data)
     {
-        $data += array(
-            'placeholders' => $this->sku->getPatternPlaceholders());
-
+        $data += array('placeholders' => $this->sku->getPatternPlaceholders());
         return $this->sku->generate($this->sku->getPattern(), $data);
     }
 
     /**
      * Loads a product from the database
-     * @param integer $product_id
-     * @param array $options
+     * @param array|int
      * @return array
      */
-    public function get($product_id, array $options = array())
+    public function get($condition)
     {
-        $result = &gplcart_static(gplcart_array_hash(array("product.get.$product_id" => $options)));
+        if (!is_array($condition)) {
+            $condition = array('product_id' => $condition);
+        }
+
+        $result = &gplcart_static(gplcart_array_hash(array('product.get' => $condition)));
 
         if (isset($result)) {
             return $result;
         }
 
-        $this->hook->attach('product.get.before', $product_id, $options, $result, $this);
+        $this->hook->attach('product.get.before', $condition, $result, $this);
 
         if (isset($result)) {
             return $result;
         }
 
-        $options += array('language' => null);
+        $list = $this->getList($condition);
 
-        $list = $this->getList(array('product_id' => (int) $product_id));
-
-        if (count($list) != 1) {
-            return $result = array();
+        $result = array();
+        if (is_array($list) && count($list) == 1) {
+            $result = reset($list);
         }
-
-        $result = reset($list);
 
         $this->attachFields($result);
         $this->attachSku($result);
-        $this->attachImages($result, $this->file, $this->translation_entity, 'product', $options['language']);
-        $this->attachTranslations($result, $this->translation_entity, 'product', $options['language']);
+        $this->attachImages($result, $this->file, $this->translation_entity, 'product');
 
-        $this->hook->attach('product.get.after', $product_id, $options, $result, $this);
-
+        $this->hook->attach('product.get.after', $condition, $result, $this);
         return $result;
     }
 
@@ -328,26 +324,16 @@ class Product
      * Returns a product by SKU
      * @param string $sku
      * @param integer $store_id
-     * @param string|null $language
      * @return array
      */
-    public function getBySku($sku, $store_id, $language = null)
+    public function getBySku($sku, $store_id)
     {
         $options = array(
             'sku' => (string) $sku,
-            'language' => $language,
             'store_id' => (int) $store_id
         );
 
-        $list = $this->getList($options);
-
-        if (count($list) != 1) {
-            return array();
-        }
-
-        $result = reset($list);
-        $this->attachImages($result, $this->file, $this->translation_entity, 'product', $language);
-        return $result;
+        return $this->get($options);
     }
 
     /**
@@ -426,43 +412,51 @@ class Product
             return false;
         }
 
-        $conditions = array('product_id' => $product_id);
-        $conditions2 = array('entity' => 'product', 'entity_id' => $product_id);
-        $conditions3 = array('item_product_id' => $product_id);
-
-        $result = (bool) $this->db->delete('product', $conditions);
+        $result = (bool) $this->db->delete('product', array('product_id' => $product_id));
 
         if ($result) {
-
-            $this->db->delete('cart', $conditions);
-            $this->db->delete('review', $conditions);
-            $this->db->delete('rating', $conditions);
-            $this->db->delete('wishlist', $conditions);
-            $this->db->delete('rating_user', $conditions);
-
-            $this->db->delete('product_sku', $conditions);
-            $this->db->delete('product_field', $conditions);
-            $this->db->delete('product_translation', $conditions);
-            $this->db->delete('product_view', $conditions);
-
-            $this->db->delete('product_related', $conditions);
-            $this->db->delete('product_related', $conditions3);
-            $this->db->delete('product_bundle', $conditions);
-
-            $this->db->delete('file', $conditions2);
-            $this->db->delete('alias', $conditions2);
-            $this->db->delete('search_index', $conditions2);
-
-            $sql = 'DELETE ci'
-                    . ' FROM collection_item ci'
-                    . ' INNER JOIN collection c ON(ci.collection_id = c.collection_id)'
-                    . ' WHERE c.type = ? AND ci.value = ?';
-
-            $this->db->run($sql, array('product', $product_id));
+            $this->deleteLinked($product_id);
         }
 
         $this->hook->attach('product.delete.after', $product_id, $check, $result, $this);
         return (bool) $result;
+    }
+
+    /**
+     * Delete all database records associated with the product ID
+     * @param int $product_id
+     */
+    protected function deleteLinked($product_id)
+    {
+        $conditions = array('product_id' => $product_id);
+        $conditions2 = array('entity' => 'product', 'entity_id' => $product_id);
+        $conditions3 = array('item_product_id' => $product_id);
+
+        $this->db->delete('cart', $conditions);
+        $this->db->delete('review', $conditions);
+        $this->db->delete('rating', $conditions);
+        $this->db->delete('wishlist', $conditions);
+        $this->db->delete('rating_user', $conditions);
+
+        $this->db->delete('product_sku', $conditions);
+        $this->db->delete('product_field', $conditions);
+        $this->db->delete('product_translation', $conditions);
+        $this->db->delete('product_view', $conditions);
+
+        $this->db->delete('product_related', $conditions);
+        $this->db->delete('product_related', $conditions3);
+        $this->db->delete('product_bundle', $conditions);
+
+        $this->db->delete('file', $conditions2);
+        $this->db->delete('alias', $conditions2);
+        $this->db->delete('search_index', $conditions2);
+
+        $sql = 'DELETE ci'
+                . ' FROM collection_item ci'
+                . ' INNER JOIN collection c ON(ci.collection_id = c.collection_id)'
+                . ' WHERE c.type = ? AND ci.value = ?';
+
+        $this->db->run($sql, array('product', $product_id));
     }
 
     /**
@@ -502,33 +496,6 @@ class Product
     }
 
     /**
-     * Returns an array of weight measurement units
-     * @return array
-     */
-    public function getWeightUnits()
-    {
-        return array(
-            'g' => $this->translation->text('Gram'),
-            'kg' => $this->translation->text('Kilogram'),
-            'lb' => $this->translation->text('Pound'),
-            'oz' => $this->translation->text('Ounce'),
-        );
-    }
-
-    /**
-     * Returns an array of size measurement units
-     * @return array
-     */
-    public function getSizeUnits()
-    {
-        return array(
-            'in' => $this->translation->text('Inch'),
-            'mm' => $this->translation->text('Millimeter'),
-            'cm' => $this->translation->text('Centimetre')
-        );
-    }
-
-    /**
      * Returns an array of related product IDs
      * @param array $options
      * @return array
@@ -545,8 +512,17 @@ class Product
      */
     public function getList(array $data = array())
     {
-        $sql = 'SELECT p.*, a.alias, COALESCE(NULLIF(pt.title, ""), p.title) AS title,'
-                . 'pt.language, ps.sku, ps.price, ps.stock, ps.file_id, u.role_id,'
+        $data += array('language' => $this->translation->getLangcode());
+
+        $sql = 'SELECT p.*,'
+                . 'a.alias,'
+                . 'COALESCE(NULLIF(pt.title, ""), p.title) AS title,'
+                . 'COALESCE(NULLIF(pt.description, ""), p.description) AS description,'
+                . 'COALESCE(NULLIF(pt.meta_title, ""), p.meta_title) AS meta_title,'
+                . 'COALESCE(NULLIF(pt.meta_description, ""), p.meta_description) AS meta_description,'
+                . 'pt.language,'
+                . 'ps.sku, ps.price, ps.stock, ps.file_id,'
+                . 'u.role_id,'
                 . 'GROUP_CONCAT(pb.item_product_id) AS bundle';
 
         if (!empty($data['count'])) {
@@ -566,9 +542,7 @@ class Product
         $sql .= ')';
         $sql .= ' LEFT JOIN product_bundle pb ON(p.product_id = pb.product_id)';
 
-
-        $language = $this->translation->getLangcode();
-        $conditions = array($language, 'product');
+        $conditions = array($data['language'], 'product');
 
         if (!empty($data['product_id'])) {
             settype($data['product_id'], 'array');
@@ -583,11 +557,6 @@ class Product
             $sql .= ' AND (p.title LIKE ? OR (pt.title LIKE ? AND pt.language=?))';
             $conditions[] = "%{$data['title']}%";
             $conditions[] = "%{$data['title']}%";
-            $conditions[] = $language;
-        }
-
-        if (isset($data['language'])) {
-            $sql .= ' AND pt.language = ?';
             $conditions[] = $data['language'];
         }
 
@@ -777,7 +746,7 @@ class Product
         }
 
         if ($update) {
-            $this->product_field->delete('option', $data['product_id']);
+            $this->product_field->delete(array('type' => 'option', 'product_id' => $data['product_id']));
         }
 
         return $this->addOptions($data);
@@ -796,7 +765,7 @@ class Product
         }
 
         if ($update) {
-            $this->product_field->delete('attribute', $data['product_id']);
+            $this->product_field->delete(array('type' => 'attribute', 'product_id' => $data['product_id']));
         }
 
         return $this->addAttributes($data);
@@ -861,6 +830,33 @@ class Product
         }
 
         return true;
+    }
+
+    /**
+     * Returns an array of weight measurement units
+     * @return array
+     */
+    public function getWeightUnits()
+    {
+        return array(
+            'g' => $this->translation->text('Gram'),
+            'kg' => $this->translation->text('Kilogram'),
+            'lb' => $this->translation->text('Pound'),
+            'oz' => $this->translation->text('Ounce'),
+        );
+    }
+
+    /**
+     * Returns an array of size measurement units
+     * @return array
+     */
+    public function getSizeUnits()
+    {
+        return array(
+            'in' => $this->translation->text('Inch'),
+            'mm' => $this->translation->text('Millimeter'),
+            'cm' => $this->translation->text('Centimetre')
+        );
     }
 
     /**

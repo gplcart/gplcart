@@ -101,44 +101,6 @@ class Category
     }
 
     /**
-     * Loads a category from the database
-     * @param integer $category_id
-     * @param string|null $language
-     * @param string|null $store_id
-     * @return array
-     */
-    public function get($category_id, $language = null, $store_id = null)
-    {
-        $result = null;
-        $this->hook->attach('category.get.before', $category_id, $language, $store_id, $result, $this);
-
-        if (isset($result)) {
-            return $result;
-        }
-
-        $conditions = array($category_id);
-
-        $sql = 'SELECT c.*, cg.store_id, u.role_id'
-                . ' FROM category c'
-                . ' LEFT JOIN category_group cg ON(c.category_group_id=cg.category_group_id)'
-                . ' LEFT JOIN user u ON(c.user_id=u.user_id)'
-                . ' WHERE c.category_id=?';
-
-        if (isset($store_id)) {
-            $sql .= ' AND cg.store_id=?';
-            $conditions[] = $store_id;
-        }
-
-        $result = $this->db->fetch($sql, $conditions);
-
-        $this->attachTranslations($result, $this->translation_entity, 'category', $language);
-        $this->attachImages($result, $this->file, $this->translation_entity, 'category', $language);
-
-        $this->hook->attach('category.get.after', $result, $language, $store_id, $this);
-        return $result;
-    }
-
-    /**
      * Returns a list of categories per store to use directly in <select>
      * @param integer $store_id
      * @param string|null $usage
@@ -168,7 +130,12 @@ class Category
      */
     public function getOptionList(array $options)
     {
-        $options += array('status' => 1, 'parent_id' => 0, 'hierarchy' => true);
+        $options += array(
+            'status' => 1,
+            'parent_id' => 0,
+            'hierarchy' => true
+        );
+
         $categories = $this->getTree($options);
 
         if (empty($categories)) {
@@ -185,6 +152,36 @@ class Category
     }
 
     /**
+     * Loads a category from the database
+     * @param int|array $condition
+     * @return array
+     */
+    public function get($condition)
+    {
+        $result = null;
+        $this->hook->attach('category.get.before', $condition, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
+        if (!is_array($condition)) {
+            $condition = array('category_id' => (int) $condition);
+        }
+
+        $list = $this->getList($condition);
+
+        $result = array();
+        if (is_array($list) && count($list) == 1) {
+            $result = reset($list);
+        }
+
+        $this->attachImages($result, $this->file, $this->translation_entity, 'category');
+        $this->hook->attach('category.get.after', $condition, $result, $this);
+        return $result;
+    }
+
+    /**
      * Returns an array of categories
      * @param array $options
      * @return array|integer
@@ -192,7 +189,12 @@ class Category
     public function getList(array $options = array())
     {
         $sql = 'SELECT c.*, a.alias, cg.type, cg.store_id,'
-                . ' COALESCE(NULLIF(ct.title, ""), c.title) AS title';
+                . 'ct.language,'
+                . 'COALESCE(NULLIF(ct.title, ""), c.title) AS title,'
+                . 'COALESCE(NULLIF(ct.meta_title, ""), c.meta_title) AS meta_title,'
+                . 'COALESCE(NULLIF(ct.meta_description, ""), c.meta_description) AS meta_description,'
+                . 'COALESCE(NULLIF(ct.description_1, ""), c.description_1) AS description_1,'
+                . 'COALESCE(NULLIF(ct.description_2, ""), c.description_2) AS description_2';
 
         if (!empty($options['count'])) {
             $sql = 'SELECT COUNT(c.category_id)';
@@ -201,14 +203,19 @@ class Category
         $sql .= ' FROM category c'
                 . ' LEFT JOIN alias a ON(a.entity=? AND a.entity_id=c.category_id)'
                 . ' LEFT JOIN category_group cg ON(cg.category_group_id = c.category_group_id)'
-                . ' LEFT JOIN category_translation ct ON(c.category_id = ct.category_id AND ct.language = ?)'
-                . ' WHERE c.category_id IS NOT NULL';
+                . ' LEFT JOIN category_translation ct ON(c.category_id = ct.category_id AND ct.language = ?)';
 
-        if (!isset($options['language'])) {
-            $options['language'] = $this->translation->getLangcode();
-        }
+        $options += array(
+            'language' => $this->translation->getLangcode());
 
         $conditions = array('category', $options['language']);
+
+        if (isset($options['category_id'])) {
+            $sql .= ' WHERE c.category_id=?';
+            $conditions[] = (int) $options['category_id'];
+        } else {
+            $sql .= ' WHERE c.category_id IS NOT NULL';
+        }
 
         if (isset($options['title'])) {
             $sql .= ' AND (c.title LIKE ? OR (ct.title LIKE ? AND ct.language=?))';
@@ -288,8 +295,8 @@ class Category
     protected function prepareTree(array $categories, array $options)
     {
         $tree = array();
-        $children_tree = array();
         $parents_tree = array();
+        $children_tree = array();
         $categories_tree = array();
 
         $parent = isset($options['parent_id']) ? (int) $options['parent_id'] : 0;
@@ -368,7 +375,6 @@ class Category
         $this->setAlias($data, $this->alias, 'category', false);
 
         $this->hook->attach('category.add.after', $data, $result, $this);
-
         return (int) $result;
     }
 
@@ -420,6 +426,19 @@ class Category
             return false;
         }
 
+        $this->deleteLinked($category_id);
+
+        $result = true;
+        $this->hook->attach('category.delete.after', $category_id, $check, $result, $this);
+        return (bool) $result;
+    }
+
+    /**
+     * Delete all database records related to the category ID
+     * @param string $category_id
+     */
+    protected function deleteLinked($category_id)
+    {
         $conditions = array('category_id' => $category_id);
         $conditions2 = array('entity' => 'category', 'entity_id' => $category_id);
 
@@ -428,10 +447,6 @@ class Category
 
         $this->db->delete('file', $conditions2);
         $this->db->delete('alias', $conditions2);
-
-        $result = true;
-        $this->hook->attach('category.delete.after', $category_id, $check, $result, $this);
-        return (bool) $result;
     }
 
     /**

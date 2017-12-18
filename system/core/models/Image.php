@@ -65,7 +65,12 @@ class Image
             return empty($options['placeholder']) ? '' : $this->getPlaceholder($options['imagestyle']);
         }
 
-        foreach ((array) $this->getByEntity($options['entity'], $options['entity_id']) as $file) {
+        $conditions = array(
+            'entity' => $options['entity'],
+            'entity_id' => $options['entity_id']
+        );
+
+        foreach ($this->getList($conditions) as $file) {
             if (isset($data[$options['entity'] . '_id']) && $file['entity_id'] == $data[$options['entity'] . '_id']) {
                 return $this->url($file['path'], $options['imagestyle']);
             }
@@ -75,55 +80,36 @@ class Image
     }
 
     /**
-     * Deletes entity images
-     * @param string $entity
-     * @param int $entity_id
-     * @return bool
-     */
-    public function deleteByEntity($entity, $entity_id)
-    {
-        $options = array(
-            'file_type' => 'image',
-            'entity' => (string) $entity,
-            'entity_id' => (int) $entity_id
-        );
-
-        return $this->file->deleteMultiple($options);
-    }
-
-    /**
      * Delete images by file ID(s)
      * @param int|array $file_id
      * @return bool
      */
-    public function deleteByFileId($file_id)
+    public function delete($file_id)
     {
         if (empty($file_id)) {
             return false;
         }
 
-        $options = array(
-            'file_id' => $file_id,
-            'file_type' => 'image'
-        );
+        $deleted = $count = 0;
+        foreach ($this->file->getList(array('file_id' => $file_id)) as $file) {
+            $count++;
+            $deleted += (int) $this->file->delete($file['file_id']);
+        }
 
-        return $this->file->deleteMultiple($options);
+        return $count && $count == $deleted;
     }
 
     /**
-     * Returns an array of image files for the given entity type and ID
-     * @param string $entity
-     * @param int|array $entity_id
+     * Returns an array of image files
+     * @param array $conditions
      * @return array
      */
-    public function getByEntity($entity, $entity_id)
+    public function getList(array $conditions)
     {
-        $conditions = array(
+        $conditions += array(
             'order' => 'asc',
             'sort' => 'weight',
-            'entity' => $entity,
-            'file_type' => 'image',
-            'entity_id' => (array) $entity_id
+            'file_type' => 'image'
         );
 
         return (array) $this->file->getList($conditions);
@@ -175,7 +161,8 @@ class Image
         }
 
         if (isset($imagestyle_id)) {
-            $path = GC_DIR_IMAGE_CACHE . "/$imagestyle_id/" . preg_replace('/^image\//', '', gplcart_path_normalize($path));
+            $suffix = preg_replace('/^image\//', '', gplcart_path_normalize($path));
+            $path = GC_DIR_IMAGE_CACHE . "/$imagestyle_id/$suffix";
         }
 
         return $this->url->image($path);

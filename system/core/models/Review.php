@@ -91,9 +91,7 @@ class Review
             return $result;
         }
 
-        $sql = 'SELECT * FROM review WHERE review_id=?';
-        $result = $this->db->fetch($sql, array($review_id));
-
+        $result = $this->db->fetch('SELECT * FROM review WHERE review_id=?', array($review_id));
         $this->hook->attach('review.get.after', $review_id, $result, $this);
         return $result;
     }
@@ -115,7 +113,6 @@ class Review
 
         $data['modified'] = GC_TIME;
         $result = $this->db->update('review', $data, array('review_id' => $review_id));
-
         $this->hook->attach('review.update.after', $review_id, $data, $result, $this);
         return (bool) $result;
     }

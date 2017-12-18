@@ -61,22 +61,24 @@ class ProductField
 
     /**
      * Deletes a product field(s)
-     * @param string $type
-     * @param integer $product_id
+     * @param int|array $condition
      * @return boolean
      */
-    public function delete($type, $product_id)
+    public function delete($condition)
     {
         $result = null;
-        $this->hook->attach('product.field.delete.before', $type, $product_id, $result, $this);
+        $this->hook->attach('product.field.delete.before', $condition, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
         }
+        
+        if(!is_array($condition)){
+            $condition = array('product_field_id' => (int) $condition);
+        }
 
-        $conditions = array('type' => $type, 'product_id' => $product_id);
-        $result = (bool) $this->db->delete('product_field', $conditions);
-        $this->hook->attach('product.field.delete.after', $type, $product_id, $result, $this);
+        $result = (bool) $this->db->delete('product_field', $condition);
+        $this->hook->attach('product.field.delete.after', $condition, $result, $this);
         return (bool) $result;
     }
 

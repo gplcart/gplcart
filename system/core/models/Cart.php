@@ -177,12 +177,11 @@ class Cart
         }
 
         if (!is_array($condition)) {
-
-            if ($check && !$this->canDelete($condition)) {
-                return false;
-            }
-
             $condition = array('cart_id' => $condition);
+        }
+
+        if ($check && isset($condition['cart_id']) && !$this->canDelete($condition['cart_id'])) {
+            return false;
         }
 
         $result = (bool) $this->db->delete('cart', $condition);
@@ -223,12 +222,10 @@ class Cart
             'currency' => $this->currency->getCode()
         );
 
-        $total = 0;
-        $quantity = 0;
+        $total = $quantity = 0;
+
         foreach ((array) $items as $sku => $item) {
-
             $prepared = $this->prepareItem($item, $result);
-
             if (!empty($prepared)) {
                 $result['items'][$sku] = $prepared;
                 $total += (int) $prepared['total'];

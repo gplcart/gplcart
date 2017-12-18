@@ -438,7 +438,7 @@ class Product extends FrontendController
      */
     protected function setProduct($product_id)
     {
-        $product = $this->product->get($product_id, array('language' => $this->langcode));
+        $product = $this->product->get($product_id);
 
         if (empty($product)) {
             $this->outputHttpStatus(404);

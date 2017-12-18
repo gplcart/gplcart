@@ -189,11 +189,10 @@ class User
             return false;
         }
 
-        $conditions = array('user_id' => $user_id);
-        $result = (bool) $this->db->delete('user', $conditions);
+        $result = (bool) $this->db->delete('user', array('user_id' => $user_id));
 
         if ($result) {
-            $this->deleteRelated($user_id);
+            $this->deleteLinked($user_id);
         }
 
         $this->hook->attach('user.delete.after', $user_id, $check, $result, $this);
@@ -204,7 +203,7 @@ class User
      * Deletes all database records related to the user ID
      * @param int $user_id
      */
-    protected function deleteRelated($user_id)
+    protected function deleteLinked($user_id)
     {
         $conditions = array('user_id' => $user_id);
 
@@ -230,7 +229,6 @@ class User
 
         $sql = 'SELECT * FROM orders WHERE user_id=?';
         $result = $this->db->fetchColumn($sql, array($user_id));
-
         return empty($result);
     }
 
@@ -347,11 +345,11 @@ class User
 
         $list = $this->getList(array('user_id' => $user_id));
 
-        if (count($list) != 1) {
-            return array();
+        $result = array();
+        if (is_array($list) && count($list) == 1) {
+            $result = reset($list);
         }
 
-        $result = reset($list);
         $this->hook->attach('user.get.after', $user_id, $result, $this);
         return $result;
     }
@@ -364,7 +362,7 @@ class User
     public function getByEmail($email)
     {
         $list = $this->getList(array('email' => $email));
-        return count($list) == 1 ? reset($list) : array();
+        return is_array($list) && count($list) == 1 ? reset($list) : array();
     }
 
     /**

@@ -41,6 +41,35 @@ class Bookmark
     }
 
     /**
+     * Loads a bookmark from the database
+     * @param array|int $condition
+     * @return array
+     */
+    public function get(array $condition)
+    {
+        $result = null;
+        $this->hook->attach('bookmark.get.before', $condition, $result, $this);
+
+        if (isset($result)) {
+            return (array) $result;
+        }
+
+        if (!is_array($condition)) {
+            $condition = array('bookmark_id' => (int) $condition);
+        }
+
+        $list = $this->getList($condition);
+
+        $result = array();
+        if (is_array($list) && count($list) == 1) {
+            $result = reset($list);
+        }
+
+        $this->hook->attach('bookmark.get.after', $condition, $result, $this);
+        return (array) $result;
+    }
+
+    /**
      * Returns an array of bookmarks or counts them
      * @param array $data
      * @return array|integer
@@ -112,46 +141,25 @@ class Bookmark
     }
 
     /**
-     * Loads a bookmark from the database
-     * @param array $conditions
-     * @return array
-     */
-    public function get(array $conditions)
-    {
-        $result = null;
-        $this->hook->attach('bookmark.get.before', $conditions, $result, $this);
-
-        if (isset($result)) {
-            return (array) $result;
-        }
-
-        $list = $this->getList($conditions);
-
-        $result = array();
-        if (is_array($list) && count($list) == 1) {
-            $result = reset($list);
-        }
-
-        $this->hook->attach('bookmark.get.after', $conditions, $result, $this);
-        return (array) $result;
-    }
-
-    /**
      * Deletes a bookmark
-     * @param array $conditions
+     * @param array|int $condition
      * @return boolean
      */
-    public function delete(array $conditions)
+    public function delete($condition)
     {
         $result = null;
-        $this->hook->attach('bookmark.delete.before', $conditions, $result, $this);
+        $this->hook->attach('bookmark.delete.before', $condition, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
         }
 
-        $result = (bool) $this->db->delete('bookmark', $conditions);
-        $this->hook->attach('bookmark.delete.after', $conditions, $result, $this);
+        if (!is_array($condition)) {
+            $condition = array('bookmark_id' => (int) $condition);
+        }
+
+        $result = (bool) $this->db->delete('bookmark', $condition);
+        $this->hook->attach('bookmark.delete.after', $condition, $result, $this);
         return (bool) $result;
     }
 

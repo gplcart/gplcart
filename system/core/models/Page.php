@@ -93,31 +93,123 @@ class Page
 
     /**
      * Loads a page from the database
-     * @param integer $page_id
-     * @param string|null $language
+     * @param array|int $condition
      * @return array
      */
-    public function get($page_id, $language = null)
+    public function get($condition)
     {
         $result = null;
-        $this->hook->attach('page.get.before', $page_id, $language, $result, $this);
+        $this->hook->attach('page.get.before', $condition, $result, $this);
 
         if (isset($result)) {
             return $result;
         }
 
-        $sql = 'SELECT p.*, u.role_id'
-                . ' FROM page p'
-                . ' LEFT JOIN user u ON(p.user_id=u.user_id)'
-                . ' WHERE p.page_id=?';
+        if (!is_array($condition)) {
+            $condition = array('page_id' => $condition);
+        }
 
-        $result = $this->db->fetch($sql, array($page_id));
+        $list = $this->getList($condition);
 
-        $this->attachImages($result, $this->file, $this->translation_entity, 'page', $language);
-        $this->attachTranslations($result, $this->translation_entity, 'page', $language);
+        $result = array();
+        if (is_array($list) && count($list) == 1) {
+            $result = reset($list);
+        }
 
-        $this->hook->attach('page.get.after', $page_id, $language, $result, $this);
+        $this->attachImages($result, $this->file, $this->translation_entity, 'page');
+        $this->hook->attach('page.get.after', $condition, $result, $this);
         return $result;
+    }
+
+    /**
+     * Returns an array of pages or counts them
+     * @param array $data
+     * @return array|integer
+     */
+    public function getList(array $data = array())
+    {
+        $data += array('language' => $this->translation->getLangcode());
+
+        $sql = 'SELECT p.*, c.category_group_id,'
+                . 'a.alias,'
+                . 'u.email, u.role_id,'
+                . 'pt.language,'
+                . 'COALESCE(NULLIF(pt.title, ""), p.title) AS title,'
+                . 'COALESCE(NULLIF(pt.description, ""), p.description) AS description,'
+                . 'COALESCE(NULLIF(pt.meta_title, ""), p.meta_title) AS meta_title,'
+                . 'COALESCE(NULLIF(pt.meta_description, ""), p.meta_description) AS meta_description';
+
+        if (!empty($data['count'])) {
+            $sql = 'SELECT COUNT(p.page_id)';
+        }
+
+        $conditions = array($data['language'], 'page');
+
+        $sql .= ' FROM page p'
+                . ' LEFT JOIN page_translation pt ON(pt.page_id = p.page_id AND pt.language=?)'
+                . ' LEFT JOIN category c ON(p.category_id = c.category_id)'
+                . ' LEFT JOIN alias a ON(a.entity=? AND a.entity_id=p.page_id)'
+                . ' LEFT JOIN user u ON(p.user_id = u.user_id)';
+
+        if (!empty($data['page_id'])) {
+            settype($data['page_id'], 'array');
+            $placeholders = rtrim(str_repeat('?,', count($data['page_id'])), ',');
+            $sql .= " WHERE p.page_id IN($placeholders)";
+            $conditions = array_merge($conditions, $data['page_id']);
+        } else {
+            $sql .= ' WHERE p.page_id IS NOT NULL';
+        }
+
+        if (isset($data['title'])) {
+            $sql .= ' AND (p.title LIKE ? OR (pt.title LIKE ? AND pt.language=?))';
+            $conditions[] = "%{$data['title']}%";
+            $conditions[] = "%{$data['title']}%";
+            $conditions[] = $data['language'];
+        }
+
+        if (isset($data['store_id'])) {
+            $sql .= ' AND p.store_id = ?';
+            $conditions[] = (int) $data['store_id'];
+        }
+
+        if (isset($data['category_group_id'])) {
+            $sql .= ' AND c.category_group_id = ?';
+            $conditions[] = (int) $data['category_group_id'];
+        }
+
+        if (isset($data['status'])) {
+            $sql .= ' AND p.status = ?';
+            $conditions[] = (int) $data['status'];
+        }
+
+        if (isset($data['email'])) {
+            $sql .= ' AND u.email LIKE ?';
+            $conditions[] = "%{$data['email']}%";
+        }
+
+        $allowed_order = array('asc', 'desc');
+        $allowed_sort = array('title' => 'p.title', 'store_id' => 'p.store_id',
+            'page_id' => 'p.page_id', 'status' => 'p.status',
+            'created' => 'p.created', 'email' => 'u.email');
+
+        if (isset($data['sort']) && isset($allowed_sort[$data['sort']])//
+                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
+            $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
+        } else {
+            $sql .= " ORDER BY p.modified DESC";
+        }
+
+        if (!empty($data['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        }
+
+        if (!empty($data['count'])) {
+            return (int) $this->db->fetchColumn($sql, $conditions);
+        }
+
+        $list = $this->db->fetchAll($sql, $conditions, array('index' => 'page_id'));
+        $this->hook->attach('page.list', $list, $this);
+        return $list;
     }
 
     /**
@@ -187,23 +279,10 @@ class Page
             return (bool) $result;
         }
 
-        $conditions = array('page_id' => $page_id);
-        $conditions2 = array('entity' => 'page', 'entity_id' => $page_id);
-
-        $result = (bool) $this->db->delete('page', $conditions);
+        $result = (bool) $this->db->delete('page', array('page_id' => $page_id));
 
         if ($result) {
-
-            $this->db->delete('page_translation', $conditions);
-            $this->db->delete('file', $conditions2);
-            $this->db->delete('alias', $conditions2);
-
-            $sql = 'DELETE ci'
-                    . ' FROM collection_item ci'
-                    . ' INNER JOIN collection c ON(ci.collection_id = c.collection_id)'
-                    . ' WHERE c.type = ? AND ci.value = ?';
-
-            $this->db->run($sql, array('page', $page_id));
+            $this->deleteLinked($page_id);
         }
 
         $this->hook->attach('page.delete.after', $page_id, $result, $this);
@@ -211,93 +290,21 @@ class Page
     }
 
     /**
-     * Returns an array of pages or counts them
-     * @param array $data
-     * @return array|integer
+     * Deletes all database records related to the page ID
+     * @param int $page_id
      */
-    public function getList(array $data = array())
+    protected function deleteLinked($page_id)
     {
-        $sql = 'SELECT p.*, c.category_group_id, a.alias, COALESCE(NULLIF(pt.title, ""), p.title) AS title, u.email';
+        $this->db->delete('page_translation', array('page_id' => $page_id));
+        $this->db->delete('file', array('entity' => 'page', 'entity_id' => $page_id));
+        $this->db->delete('alias', array('entity' => 'page', 'entity_id' => $page_id));
 
-        if (!empty($data['count'])) {
-            $sql = 'SELECT COUNT(p.page_id)';
-        }
+        $sql = 'DELETE ci'
+                . ' FROM collection_item ci'
+                . ' INNER JOIN collection c ON(ci.collection_id = c.collection_id)'
+                . ' WHERE c.type = ? AND ci.value = ?';
 
-        $language = $this->translation->getLangcode();
-        $conditions = array($language, 'page');
-
-        $sql .= ' FROM page p'
-                . ' LEFT JOIN page_translation pt ON(pt.page_id = p.page_id AND pt.language=?)'
-                . ' LEFT JOIN category c ON(p.category_id = c.category_id)'
-                . ' LEFT JOIN alias a ON(a.entity=? AND a.entity_id=p.page_id)'
-                . ' LEFT JOIN user u ON(p.user_id = u.user_id)';
-
-        if (!empty($data['page_id'])) {
-            settype($data['page_id'], 'array');
-            $placeholders = rtrim(str_repeat('?,', count($data['page_id'])), ',');
-            $sql .= " WHERE p.page_id IN($placeholders)";
-            $conditions = array_merge($conditions, $data['page_id']);
-        } else {
-            $sql .= ' WHERE p.page_id IS NOT NULL';
-        }
-
-        if (isset($data['title'])) {
-            $sql .= ' AND (p.title LIKE ? OR (pt.title LIKE ? AND pt.language=?))';
-            $conditions[] = "%{$data['title']}%";
-            $conditions[] = "%{$data['title']}%";
-            $conditions[] = $language;
-        }
-
-        if (isset($data['language'])) {
-            $sql .= ' AND pt.language = ?';
-            $conditions[] = $data['language'];
-        }
-
-        if (isset($data['store_id'])) {
-            $sql .= ' AND p.store_id = ?';
-            $conditions[] = (int) $data['store_id'];
-        }
-
-        if (isset($data['category_group_id'])) {
-            $sql .= ' AND c.category_group_id = ?';
-            $conditions[] = (int) $data['category_group_id'];
-        }
-
-        if (isset($data['status'])) {
-            $sql .= ' AND p.status = ?';
-            $conditions[] = (int) $data['status'];
-        }
-
-        if (isset($data['email'])) {
-            $sql .= ' AND u.email LIKE ?';
-            $conditions[] = "%{$data['email']}%";
-        }
-
-        $allowed_order = array('asc', 'desc');
-        $allowed_sort = array('title' => 'p.title', 'store_id' => 'p.store_id',
-            'page_id' => 'p.page_id', 'status' => 'p.status',
-            'created' => 'p.created', 'email' => 'u.email');
-
-        if (isset($data['sort']) && isset($allowed_sort[$data['sort']])//
-                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
-            $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
-        } else {
-            $sql .= " ORDER BY p.modified DESC";
-        }
-
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
-        }
-
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $conditions);
-        }
-
-        $options = array('index' => 'page_id');
-        $list = $this->db->fetchAll($sql, $conditions, $options);
-
-        $this->hook->attach('page.list', $list, $this);
-        return $list;
+        $this->db->run($sql, array('page', $page_id));
     }
 
     /**

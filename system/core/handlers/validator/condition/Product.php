@@ -125,7 +125,7 @@ class Product
         $count = count($values);
 
         $existing = array_filter($values, function ($sku) {
-            $sku = $this->sku->get($sku);
+            $sku = $this->sku->get(array('sku' => $sku));
             return !empty($sku);
         });
 

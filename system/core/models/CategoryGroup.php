@@ -64,24 +64,30 @@ class CategoryGroup
 
     /**
      * Load a category group from the database
-     * @param integer $group_id
-     * @param null|string $language
+     * @param int|array $condition
      * @return array
      */
-    public function get($group_id, $language = null)
+    public function get($condition)
     {
         $result = null;
-        $this->hook->attach('category.group.get.before', $group_id, $language, $result, $this);
+        $this->hook->attach('category.group.get.before', $condition, $result, $this);
 
         if (isset($result)) {
             return $result;
         }
 
-        $sql = 'SELECT * FROM category_group WHERE category_group_id=?';
-        $result = $this->db->fetch($sql, array($group_id));
+        if (!is_array($condition)) {
+            $condition = array('category_group_id' => (int) $condition);
+        }
 
-        $this->attachTranslations($result, $this->translation_entity, 'category_group', $language);
-        $this->hook->attach('category.group.get.after', $result, $language, $this);
+        $list = $this->getList($condition);
+
+        $result = array();
+        if (is_array($list) && count($list) == 1) {
+            $result = reset($list);
+        }
+
+        $this->hook->attach('category.group.get.after', $condition, $result, $this);
         return $result;
     }
 
@@ -100,27 +106,34 @@ class CategoryGroup
 
         $sql .= ' FROM category_group cg'
                 . ' LEFT JOIN category_group_translation cgt'
-                . ' ON(cg.category_group_id = cgt.category_group_id AND cgt.language = ?)'
-                . ' WHERE cg.category_group_id IS NOT NULL';
+                . ' ON(cg.category_group_id = cgt.category_group_id AND cgt.language = ?)';
 
-        $language = $this->translation->getLangcode();
-        $where = array($language);
+        $data += array('language' => $this->translation->getLangcode());
+
+        $conditions = array($data['language']);
+
+        if (isset($data['category_group_id'])) {
+            $sql .= ' WHERE cg.category_group_id = ?';
+            $conditions[] = (int) $data['category_group_id'];
+        } else {
+            $sql .= ' WHERE cg.category_group_id IS NOT NULL';
+        }
 
         if (isset($data['title'])) {
             $sql .= ' AND (cg.title LIKE ? OR (cgt.title LIKE ? AND cgt.language=?))';
-            $where[] = "%{$data['title']}%";
-            $where[] = "%{$data['title']}%";
-            $where[] = $language;
+            $conditions[] = "%{$data['title']}%";
+            $conditions[] = "%{$data['title']}%";
+            $conditions[] = $data['language'];
         }
 
         if (isset($data['type'])) {
             $sql .= ' AND cg.type = ?';
-            $where[] = $data['type'];
+            $conditions[] = $data['type'];
         }
 
         if (isset($data['store_id'])) {
             $sql .= ' AND cg.store_id = ?';
-            $where[] = (int) $data['store_id'];
+            $conditions[] = (int) $data['store_id'];
         }
 
         $allowed_order = array('asc', 'desc');
@@ -139,11 +152,10 @@ class CategoryGroup
         }
 
         if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $where);
+            return (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $list = $this->db->fetchAll($sql, $where, array('index' => 'category_group_id'));
-
+        $list = $this->db->fetchAll($sql, $conditions, array('index' => 'category_group_id'));
         $this->hook->attach('category.group.list', $list, $this);
         return $list;
     }

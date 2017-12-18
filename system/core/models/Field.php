@@ -128,12 +128,43 @@ class Field
     }
 
     /**
+     * Loads a field from the database
+     * @param int|array $condition
+     * @return array
+     */
+    public function get($condition)
+    {
+        $result = null;
+        $this->hook->attach('field.get.before', $condition, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
+        if (!is_array($condition)) {
+            $condition = array('field_id' => (int) $condition);
+        }
+
+        $list = $this->getList($condition);
+
+        $result = array();
+        if (is_array($list) && count($list) == 1) {
+            $result = reset($list);
+        }
+
+        $this->hook->attach('field.get.after', $condition, $result, $this);
+        return $result;
+    }
+
+    /**
      * Returns an array of fields
      * @param array $data
      * @return array|integer
      */
     public function getList(array $data = array())
     {
+        $data += array('language' => $this->translation->getLangcode());
+
         $sql = 'SELECT f.*, COALESCE(NULLIF(ft.title, ""), f.title) AS title';
 
         if (!empty($data['count'])) {
@@ -141,35 +172,34 @@ class Field
         }
 
         $sql .= ' FROM field f'
-                . ' LEFT JOIN field_translation ft'
-                . ' ON (f.field_id = ft.field_id AND ft.language=?)'
-                . ' WHERE f.field_id > 0';
+                . ' LEFT JOIN field_translation ft ON (f.field_id = ft.field_id AND ft.language=?)';
 
-        $language = $this->translation->getLangcode();
-        $where = array($language);
+        $conditions = array($data['language']);
 
-        if (!empty($data['field_id'])) {
+        if (isset($data['field_id'])) {
             settype($data['field_id'], 'array');
             $placeholders = rtrim(str_repeat('?,', count($data['field_id'])), ',');
-            $sql .= " AND f.field_id IN($placeholders)";
-            $where = array_merge($where, $data['field_id']);
+            $sql .= " WHERE f.field_id IN($placeholders)";
+            $conditions = array_merge($conditions, $data['field_id']);
+        } else {
+            $sql .= ' WHERE f.field_id IS NOT NULL';
         }
 
         if (isset($data['title'])) {
             $sql .= ' AND (f.title LIKE ? OR (ft.title LIKE ? AND ft.language=?))';
-            $where[] = "%{$data['title']}%";
-            $where[] = "%{$data['title']}%";
-            $where[] = $language;
+            $conditions[] = "%{$data['title']}%";
+            $conditions[] = "%{$data['title']}%";
+            $conditions[] = $data['language'];
         }
 
         if (isset($data['type'])) {
             $sql .= ' AND f.type=?';
-            $where[] = $data['type'];
+            $conditions[] = $data['type'];
         }
 
         if (isset($data['widget'])) {
             $sql .= ' AND f.widget=?';
-            $where[] = $data['widget'];
+            $conditions[] = $data['widget'];
         }
 
         $allowed_order = array('asc', 'desc');
@@ -187,36 +217,12 @@ class Field
         }
 
         if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $where);
+            return (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $list = $this->db->fetchAll($sql, $where, array('index' => 'field_id'));
+        $list = $this->db->fetchAll($sql, $conditions, array('index' => 'field_id'));
         $this->hook->attach('field.list', $list, $this);
-
         return $list;
-    }
-
-    /**
-     * Loads a field from the database
-     * @param integer $field_id
-     * @param string|null $language
-     * @return array
-     */
-    public function get($field_id, $language = null)
-    {
-        $result = null;
-        $this->hook->attach('field.get.before', $field_id, $language, $result, $this);
-
-        if (isset($result)) {
-            return $result;
-        }
-
-        $result = $this->db->fetch('SELECT * FROM field WHERE field_id=?', array($field_id));
-
-        $this->attachTranslations($result, $this->translation_entity, 'field', $language);
-
-        $this->hook->attach('field.get.after', $field_id, $language, $result, $this);
-        return $result;
     }
 
     /**
@@ -238,6 +244,24 @@ class Field
             return false;
         }
 
+        $this->deleteLinkedFieldValues($field_id);
+        $result = (bool) $this->db->delete('field', array('field_id' => $field_id));
+
+        if ($result) {
+            $this->deleteLinked($field_id);
+        }
+
+        $this->hook->attach('field.delete.after', $field_id, $check, $result, $this);
+        return (bool) $result;
+    }
+
+    /**
+     * Delete all field values and their translations related to the field
+     * @param int $field_id
+     * @return bool
+     */
+    protected function deleteLinkedFieldValues($field_id)
+    {
         $sql = 'DELETE fvt'
                 . ' FROM field_value_translation AS fvt'
                 . ' WHERE fvt.field_value_id IN (SELECT DISTINCT(fv.field_value_id)'
@@ -246,19 +270,20 @@ class Field
                 . ' ON (fv.field_value_id = fv2.field_value_id)'
                 . ' WHERE fv.field_id = ?);';
 
-        $this->db->run($sql, array($field_id));
+        return (bool) $this->db->run($sql, array($field_id))->rowCount();
+    }
 
-        $conditions = array('field_id' => (int) $field_id);
-        $result = (bool) $this->db->delete('field', $conditions);
+    /**
+     * Delete all database tables related to the field
+     * @param int $field_id
+     */
+    protected function deleteLinked($field_id)
+    {
+        $conditions = array('field_id' => $field_id);
 
-        if ($result) {
-            $this->db->delete('field_value', $conditions);
-            $this->db->delete('field_translation', $conditions);
-            $this->db->delete('product_class_field', $conditions);
-        }
-
-        $this->hook->attach('field.delete.after', $field_id, $check, $result, $this);
-        return (bool) $result;
+        $this->db->delete('field_value', $conditions);
+        $this->db->delete('field_translation', $conditions);
+        $this->db->delete('product_class_field', $conditions);
     }
 
     /**

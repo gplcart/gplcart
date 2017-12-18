@@ -63,12 +63,43 @@ class Collection
     }
 
     /**
+     * Loads a collection from the database
+     * @param array|int $condition
+     * @return array
+     */
+    public function get($condition)
+    {
+        $result = null;
+        $this->hook->attach('collection.get.before', $condition, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
+        if (!is_array($condition)) {
+            $condition = array('collection_id' => (int) $condition);
+        }
+
+        $list = $this->getList($condition);
+
+        $result = array();
+        if (is_array($list) && count($list) == 1) {
+            $result = reset($list);
+        }
+
+        $this->hook->attach('collection.get.after', $condition, $result, $this);
+        return $result;
+    }
+
+    /**
      * Returns an array of collections or counts them
      * @param array $data
      * @return array|integer
      */
     public function getList(array $data = array())
     {
+        $data += array('language' => $this->translation->getLangcode());
+
         $sql = 'SELECT c.*, COALESCE(NULLIF(ct.title, ""), c.title) AS title';
 
         if (!empty($data['count'])) {
@@ -76,17 +107,22 @@ class Collection
         }
 
         $sql .= ' FROM collection c'
-                . ' LEFT JOIN collection_translation ct ON(ct.collection_id = c.collection_id AND ct.language=?)'
-                . ' WHERE c.collection_id IS NOT NULL';
+                . ' LEFT JOIN collection_translation ct ON(ct.collection_id = c.collection_id AND ct.language=?)';
 
-        $language = $this->translation->getLangcode();
-        $conditions = array($language);
+        $conditions = array($data['language']);
+
+        if (isset($data['collection_id'])) {
+            $sql .= ' WHERE c.collection_id = ?';
+            $conditions[] = (int) $data['collection_id'];
+        } else {
+            $sql .= ' WHERE c.collection_id IS NOT NULL';
+        }
 
         if (isset($data['title'])) {
             $sql .= ' AND (c.title LIKE ? OR (ct.title LIKE ? AND ct.language=?))';
             $conditions[] = "%{$data['title']}%";
             $conditions[] = "%{$data['title']}%";
-            $conditions[] = $language;
+            $conditions[] = $data['language'];
         }
 
         if (isset($data['status'])) {
@@ -148,28 +184,6 @@ class Collection
     }
 
     /**
-     * Loads a collection from the database
-     * @param integer $collection_id
-     * @param null|string $language
-     * @return array
-     */
-    public function get($collection_id, $language = null)
-    {
-        $result = null;
-        $this->hook->attach('collection.get.before', $collection_id, $language, $result, $this);
-
-        if (isset($result)) {
-            return $result;
-        }
-
-        $result = $this->db->fetch('SELECT * FROM collection WHERE collection_id=?', array($collection_id));
-        $this->attachTranslations($result, $this->translation_entity, 'collection', $language);
-
-        $this->hook->attach('collection.get.after', $collection_id, $language, $result, $this);
-        return $result;
-    }
-
-    /**
      * Deletes a collection
      * @param integer $collection_id
      * @param bool $check
@@ -188,11 +202,8 @@ class Collection
             return false;
         }
 
-        $conditions = array('collection_id' => $collection_id);
-        $result = $this->db->delete('collection', $conditions);
-
-        if (!empty($result)) {
-            $this->db->delete('collection_translation', $conditions);
+        if ($this->db->delete('collection', array('collection_id' => $collection_id))) {
+            $this->db->delete('collection_translation', array('collection_id' => $collection_id));
         }
 
         $this->hook->attach('collection.delete.after', $collection_id, $check, $result, $this);

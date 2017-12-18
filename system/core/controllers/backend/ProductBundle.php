@@ -104,7 +104,7 @@ class ProductBundle extends BackendController
      */
     protected function prepareProductBundle(array $product)
     {
-        $product['bundle'] = $this->product_bundle->getBundledProducts($product['product_id']);
+        $product['bundle'] = $this->product_bundle->getItems($product['product_id']);
         return $product;
     }
 

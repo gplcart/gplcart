@@ -70,6 +70,26 @@ class ProductClass
     }
 
     /**
+     * Loads a product class
+     * @param integer $product_class_id
+     * @return array
+     */
+    public function get($product_class_id)
+    {
+        $result = null;
+        $this->hook->attach('product.class.get.before', $product_class_id, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
+        $sql = 'SELECT * FROM product_class WHERE product_class_id=?';
+        $result = $this->db->fetch($sql, array($product_class_id));
+        $this->hook->attach('product.class.get.after', $result, $this);
+        return $result;
+    }
+
+    /**
      * Returns an array of product classes or counts them
      * @param array $data
      * @return array|integer
@@ -121,27 +141,6 @@ class ProductClass
     }
 
     /**
-     * Loads a product class
-     * @param integer $product_class_id
-     * @return array
-     */
-    public function get($product_class_id)
-    {
-        $result = null;
-        $this->hook->attach('product.class.get.before', $product_class_id, $result, $this);
-
-        if (isset($result)) {
-            return $result;
-        }
-
-        $sql = 'SELECT * FROM product_class WHERE product_class_id=?';
-        $result = $this->db->fetch($sql, array($product_class_id));
-
-        $this->hook->attach('product.class.get.after', $result, $this);
-        return $result;
-    }
-
-    /**
      * Adds a product class
      * @param array $data
      * @return integer
@@ -156,7 +155,6 @@ class ProductClass
         }
 
         $result = $this->db->insert('product_class', $data);
-
         $this->hook->attach('product.class.add.after', $data, $result, $this);
         return (int) $result;
     }
@@ -200,7 +198,6 @@ class ProductClass
     {
         $sql = 'SELECT product_id FROM product WHERE product_class_id=?';
         $result = $this->db->fetchColumn($sql, array($product_class_id));
-
         return empty($result);
     }
 
@@ -221,7 +218,6 @@ class ProductClass
 
         $conditions = array('product_class_id' => $product_class_id);
         $result = (bool) $this->db->update('product_class', $data, $conditions);
-
         $this->hook->attach('product.class.update.after', $product_class_id, $data, $result, $this);
         return (bool) $result;
     }
@@ -242,7 +238,6 @@ class ProductClass
 
         $result = $this->db->insert('product_class_field', $data);
         $this->hook->attach('product.class.add.field.after', $data, $result, $this);
-
         return (int) $result;
     }
 
@@ -262,7 +257,6 @@ class ProductClass
 
         $conditions = array('product_class_id' => $product_class_id);
         $result = (bool) $this->db->delete('product_class_field', $conditions);
-
         $this->hook->attach('product.class.delete.field.after', $product_class_id, $result, $this);
         return (bool) $result;
     }
@@ -307,13 +301,15 @@ class ProductClass
      */
     public function getFields(array $data = array())
     {
+        $data += array('language' => $this->translation->getLangcode());
+
         $sql = 'SELECT pcf.*, COALESCE(NULLIF(ft.title, ""), f.title) AS title, f.type AS type'
                 . ' FROM product_class_field pcf'
                 . ' LEFT JOIN field f ON(pcf.field_id = f.field_id)'
                 . ' LEFT JOIN field_translation ft ON(pcf.field_id = ft.field_id AND ft.language=?)'
                 . ' WHERE pcf.product_class_field_id IS NOT NULL';
 
-        $conditions = array($this->translation->getLangcode());
+        $conditions = array($data['language']);
 
         if (isset($data['product_class_id'])) {
             $sql .= ' AND pcf.product_class_id=?';

@@ -72,18 +72,18 @@ trait ProductCompare
 
     /**
      * Handles adding/removing a submitted product from comparison
-     * @param \gplcart\core\models\ProductCompare $compare_model
+     * @param \gplcart\core\models\ProductCompareAction $compare_action_model
      */
-    public function submitProductCompare($compare_model)
+    public function submitProductCompare($compare_action_model)
     {
         $this->setSubmitted('product');
         $this->filterSubmitted(array('product_id'));
 
         if ($this->isPosted('remove_from_compare')) {
-            $this->deleteFromProductCompare($compare_model);
+            $this->deleteFromProductCompare($compare_action_model);
         } else if ($this->isPosted('add_to_compare')) {
             $this->validateAddProductCompare();
-            $this->addToProductCompare($compare_model);
+            $this->addToProductCompare($compare_action_model);
         }
     }
 
@@ -97,15 +97,15 @@ trait ProductCompare
 
     /**
      * Adds a submitted product to comparison
-     * @param \gplcart\core\models\ProductCompare $compare_model
+     * @param \gplcart\core\models\ProductCompareAction $compare_action_model
      */
-    public function addToProductCompare($compare_model)
+    public function addToProductCompare($compare_action_model)
     {
         $errors = $this->error();
 
         if (empty($errors)) {
             $submitted = $this->getSubmitted();
-            $result = $compare_model->addProduct($submitted['product'], $submitted);
+            $result = $compare_action_model->add($submitted['product'], $submitted);
         } else {
             $result = array(
                 'redirect' => '',
@@ -123,12 +123,12 @@ trait ProductCompare
 
     /**
      * Deletes a submitted product from comparison
-     * @param \gplcart\core\models\ProductCompare $compare_model
+     * @param \gplcart\core\models\ProductCompareAction $compare_action_model
      */
-    public function deleteFromProductCompare($compare_model)
+    public function deleteFromProductCompare($compare_action_model)
     {
         $product_id = $this->getSubmitted('product_id');
-        $result = $compare_model->deleteProduct($product_id);
+        $result = $compare_action_model->delete($product_id);
 
         if ($this->isAjax()) {
             $this->outputJson($result);

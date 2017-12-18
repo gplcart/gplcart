@@ -118,13 +118,9 @@ class Order
             return (int) $result;
         }
 
-        // In case we're cloning the order
-        unset($order['order_id']);
-
+        unset($order['order_id']); // In case we're cloning the order
         $order['created'] = $order['modified'] = GC_TIME;
-
-        $order += array(
-            'status' => $this->getDefaultStatus());
+        $order += array('status' => $this->getDefaultStatus());
 
         $result = $this->db->insert('orders', $order);
         $this->hook->attach('order.add.after', $order, $result, $this);
@@ -145,15 +141,131 @@ class Order
             return $result;
         }
 
-        $sql = 'SELECT o.*, u.name AS user_name, u.email AS user_email'
-                . ' FROM orders o'
-                . ' LEFT JOIN user u ON(o.user_id=u.user_id)'
-                . ' WHERE o.order_id=?';
+        $list = $this->getList(array('order_id' => $order_id));
 
-        $result = $this->db->fetch($sql, array($order_id), array('unserialize' => 'data'));
+        $result = array();
+        if (is_array($list) && count($list) == 1) {
+            $result = reset($list);
+        }
+
         $this->setCart($result);
         $this->hook->attach('order.get.after', $order_id, $result, $this);
         return $result;
+    }
+
+    /**
+     * Returns an array of orders or counts them
+     * @param array $options
+     * @return array|integer
+     */
+    public function getList(array $options = array())
+    {
+        $options += array('current_user' => $this->user->getId());
+
+        $sql = 'SELECT o.*, u.email AS creator,'
+                . 'uc.name AS customer_name, uc.email AS customer_email,'
+                . 'CONCAT(uc.name, "", uc.email) AS customer,'
+                . 'h.created AS viewed, a.country, a.city_id, a.address_1,'
+                . 'a.address_2, a.phone, a.postcode, a.first_name,'
+                . 'a.middle_name, a.last_name';
+
+        if (!empty($options['count'])) {
+            $sql = 'SELECT COUNT(DISTINCT o.order_id)';
+        }
+
+        $sql .= ' FROM orders o'
+                . ' LEFT JOIN user u ON(o.creator=u.user_id)'
+                . ' LEFT JOIN user uc ON(o.user_id=uc.user_id)'
+                . ' LEFT JOIN address a ON(o.shipping_address=a.address_id)'
+                . ' LEFT JOIN history h ON(h.user_id=? AND h.entity=? AND h.entity_id=o.order_id)';
+
+        $conditions = array($options['current_user'], 'order');
+
+        if (isset($options['order_id'])) {
+            $sql .= ' WHERE o.order_id = ?';
+            $conditions[] = (int) $options['order_id'];
+        } else {
+            $sql .= ' WHERE o.order_id IS NOT NULL';
+        }
+
+        if (isset($options['store_id'])) {
+            $sql .= ' AND o.store_id = ?';
+            $conditions[] = (int) $options['store_id'];
+        }
+
+        if (isset($options['total'])) {
+            $sql .= ' AND o.total = ?';
+            $conditions[] = (int) $options['total'];
+        }
+
+        if (isset($options['currency'])) {
+            $sql .= ' AND o.currency = ?';
+            $conditions[] = $options['currency'];
+        }
+
+        if (isset($options['user_id'])) {
+            $sql .= ' AND o.user_id = ?';
+            $conditions[] = $options['user_id'];
+        }
+
+        if (isset($options['status'])) {
+            $sql .= ' AND o.status = ?';
+            $conditions[] = $options['status'];
+        }
+
+        if (isset($options['creator'])) {
+            $sql .= ' AND u.email LIKE ?';
+            $conditions[] = "%{$options['creator']}%";
+        }
+
+        if (isset($options['shipping_prefix'])) {
+            $sql .= ' AND o.shipping LIKE ?';
+            $conditions[] = "{$options['shipping_prefix']}%";
+        }
+
+        if (isset($options['customer'])) {
+            $sql .= ' AND (uc.email LIKE ? OR uc.name LIKE ?)';
+            $conditions[] = "%{$options['customer']}%";
+            $conditions[] = "%{$options['customer']}%";
+        }
+
+        if (isset($options['tracking_number'])) {
+            $sql .= ' AND o.tracking_number LIKE ?';
+            $conditions[] = "%{$options['tracking_number']}%";
+        }
+
+        $allowed_order = array('asc', 'desc');
+
+        $allowed_sort = array(
+            'order_id' => 'o.order_id',
+            'store_id' => 'o.store_id',
+            'status' => 'o.status',
+            'created' => 'o.created',
+            'total' => 'o.total',
+            'currency' => 'o.currency',
+            'customer' => 'customer',
+            'creator' => 'u.email',
+            'tracking_number' => 'o.tracking_number'
+        );
+
+        if (isset($options['sort']) && isset($allowed_sort[$options['sort']])//
+                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+            $sql .= " ORDER BY {$allowed_sort[$options['sort']]} {$options['order']}";
+        } else {
+            $sql .= " ORDER BY o.modified DESC";
+        }
+
+        if (!empty($options['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
+        }
+
+        if (!empty($options['count'])) {
+            return (int) $this->db->fetchColumn($sql, $conditions);
+        }
+
+        $orders = $this->db->fetchAll($sql, $conditions, array('unserialize' => 'data', 'index' => 'order_id'));
+        $this->hook->attach('order.list', $orders, $this);
+        return $orders;
     }
 
     /**
@@ -177,7 +289,6 @@ class Order
 
         $result = (bool) $this->db->update('orders', $data, array('order_id' => $order_id));
         $this->hook->attach('order.update.after', $order_id, $data, $result, $this);
-
         return (bool) $result;
     }
 
@@ -195,15 +306,10 @@ class Order
             return (bool) $result;
         }
 
-        $conditions = array('order_id' => $order_id);
-        $conditions2 = array('entity' => 'order', 'entity_id' => $order_id);
-
-        $result = (bool) $this->db->delete('orders', $conditions);
+        $result = (bool) $this->db->delete('orders', array('order_id' => $order_id));
 
         if ($result) {
-            $this->db->delete('cart', $conditions);
-            $this->db->delete('order_log', $conditions);
-            $this->db->delete('history', $conditions2);
+            $this->deleteLinked($order_id);
         }
 
         $this->hook->attach('order.delete.after', $order_id, $result, $this);
@@ -211,112 +317,14 @@ class Order
     }
 
     /**
-     * Returns an array of orders or counts them
-     * @param array $data
-     * @return array|integer
+     * Deletes all database records related to the order ID
+     * @param int $order_id
      */
-    public function getList($data = array())
+    protected function deleteLinked($order_id)
     {
-        $sql = 'SELECT o.*, u.email AS creator,'
-                . 'uc.name AS customer_name, uc.email AS customer_email,'
-                . 'CONCAT(uc.name, "", uc.email) AS customer,'
-                . 'h.created AS viewed, a.country, a.city_id, a.address_1,'
-                . 'a.address_2, a.phone, a.postcode, a.first_name,'
-                . 'a.middle_name, a.last_name';
-
-        if (!empty($data['count'])) {
-            $sql = 'SELECT COUNT(DISTINCT o.order_id)';
-        }
-
-        $sql .= ' FROM orders o'
-                . ' LEFT JOIN user u ON(o.creator=u.user_id)'
-                . ' LEFT JOIN user uc ON(o.user_id=uc.user_id)'
-                . ' LEFT JOIN address a ON(o.shipping_address=a.address_id)'
-                . ' LEFT JOIN history h ON(h.user_id=? AND h.entity=? AND h.entity_id=o.order_id)'
-                . ' WHERE o.order_id IS NOT NULL';
-
-        $conditions = array($this->user->getId(), 'order');
-
-        if (isset($data['store_id'])) {
-            $sql .= ' AND o.store_id = ?';
-            $conditions[] = (int) $data['store_id'];
-        }
-
-        if (isset($data['total'])) {
-            $sql .= ' AND o.total = ?';
-            $conditions[] = (int) $data['total'];
-        }
-
-        if (isset($data['currency'])) {
-            $sql .= ' AND o.currency = ?';
-            $conditions[] = $data['currency'];
-        }
-
-        if (isset($data['user_id'])) {
-            $sql .= ' AND o.user_id = ?';
-            $conditions[] = $data['user_id'];
-        }
-
-        if (isset($data['status'])) {
-            $sql .= ' AND o.status = ?';
-            $conditions[] = $data['status'];
-        }
-
-        if (isset($data['creator'])) {
-            $sql .= ' AND u.email LIKE ?';
-            $conditions[] = "%{$data['creator']}%";
-        }
-
-        if (isset($data['shipping_prefix'])) {
-            $sql .= ' AND o.shipping LIKE ?';
-            $conditions[] = "{$data['shipping_prefix']}%";
-        }
-
-        if (isset($data['customer'])) {
-            $sql .= ' AND (uc.email LIKE ? OR uc.name LIKE ?)';
-            $conditions[] = "%{$data['customer']}%";
-            $conditions[] = "%{$data['customer']}%";
-        }
-
-        if (isset($data['tracking_number'])) {
-            $sql .= ' AND o.tracking_number LIKE ?';
-            $conditions[] = "%{$data['tracking_number']}%";
-        }
-
-        $allowed_order = array('asc', 'desc');
-
-        $allowed_sort = array(
-            'order_id' => 'o.order_id',
-            'store_id' => 'o.store_id',
-            'status' => 'o.status',
-            'created' => 'o.created',
-            'total' => 'o.total',
-            'currency' => 'o.currency',
-            'customer' => 'customer',
-            'creator' => 'u.email',
-            'tracking_number' => 'o.tracking_number'
-        );
-
-        if (isset($data['sort']) && isset($allowed_sort[$data['sort']])//
-                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
-            $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
-        } else {
-            $sql .= " ORDER BY o.modified DESC";
-        }
-
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
-        }
-
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $conditions);
-        }
-
-        $options = array('unserialize' => 'data', 'index' => 'order_id');
-        $orders = $this->db->fetchAll($sql, $conditions, $options);
-
-        $this->hook->attach('order.list', $orders, $this);
-        return $orders;
+        $this->db->delete('cart', array('order_id' => $order_id));
+        $this->db->delete('order_log', array('order_id' => $order_id));
+        $this->db->delete('history', array('entity' => 'order', 'entity_id' => $order_id));
     }
 
     /**

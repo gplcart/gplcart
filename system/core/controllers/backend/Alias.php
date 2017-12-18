@@ -77,7 +77,7 @@ class Alias extends BackendController
         $deleted = 0;
         foreach ($selected as $id) {
             if ($action === 'delete' && $this->access('alias_delete')) {
-                $deleted += (int) $this->alias->delete(array('alias_id' => $id));
+                $deleted += (int) $this->alias->delete($id);
             }
         }
 

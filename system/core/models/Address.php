@@ -137,22 +137,22 @@ class Address
         $this->hook->attach('address.get.before', $address_id, $result, $this);
 
         if (isset($result)) {
-            return $result;
+            return (array) $result;
         }
 
         $list = $this->getList(array('address_id' => $address_id, 'prepare' => false));
 
-        if (count($list) != 1) {
-            return array();
+        $result = array();
+        if (is_array($list) && count($list) == 1) {
+            $result = reset($list);
         }
 
-        $result = reset($list);
         if (isset($result['country_format'])) {
             $result['country_format'] += $this->country->getDefaultFormat();
         }
 
         $this->hook->attach('address.get.after', $address_id, $result, $this);
-        return $result;
+        return (array) $result;
     }
 
     /**

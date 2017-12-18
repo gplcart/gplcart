@@ -447,7 +447,8 @@ class Product extends ComponentValidator
             $store_id = $updating['store_id'];
         }
 
-        $existing = $this->sku->get($value, $store_id);
+        $existing = $this->sku->get(array('sku' => $value, 'store_id' => $store_id));
+
         if (isset($product_id) && isset($existing['product_id']) && $existing['product_id'] == $product_id) {
             return true;
         }
@@ -634,7 +635,7 @@ class Product extends ComponentValidator
             return false;
         }
 
-        $existing = $this->sku->get($combination['sku'], $store_id);
+        $existing = $this->sku->get(array('sku' => $combination['sku'], 'store_id' => $store_id));
 
         if (isset($product_id) && isset($existing['product_id']) && $existing['product_id'] == $product_id) {
             $this->processed_skus[$combination['sku']] = true;

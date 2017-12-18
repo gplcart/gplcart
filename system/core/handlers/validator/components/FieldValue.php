@@ -76,13 +76,13 @@ class FieldValue extends ComponentValidator
      */
     protected function validateFieldValue()
     {
-        $id = $this->getUpdatingId();
+        $field_value_id = $this->getUpdatingId();
 
-        if ($id === false) {
+        if ($field_value_id === false) {
             return null;
         }
 
-        $data = $this->field_value->get($id);
+        $data = $this->field_value->get($field_value_id);
 
         if (empty($data)) {
             $this->setErrorUnavailable('update', $this->translation->text('Field value'));

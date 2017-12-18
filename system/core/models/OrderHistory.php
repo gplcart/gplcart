@@ -74,7 +74,7 @@ class OrderHistory
      * @param array $log
      * @return int
      */
-    public function addLog(array $log)
+    public function add(array $log)
     {
         $result = null;
         $this->hook->attach('order.log.add.before', $log, $result, $this);
@@ -89,7 +89,6 @@ class OrderHistory
         );
 
         $result = $this->db->insert('order_log', $log);
-
         $this->hook->attach('order.log.add.after', $log, $result, $this);
         return (int) $result;
     }
@@ -99,7 +98,7 @@ class OrderHistory
      * @param array $data
      * @return array|int
      */
-    public function getLogs(array $data)
+    public function getList(array $data)
     {
         $sql = 'SELECT ol.*, u.name AS user_name, u.email AS user_email, u.status AS user_status';
 

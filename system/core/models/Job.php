@@ -100,7 +100,6 @@ class Job
 
         $default = $this->getDefault();
         $result = gplcart_array_merge($default, $job);
-
         $existing = $this->getSession($result['id']);
 
         if (!empty($existing)) {

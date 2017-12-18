@@ -41,6 +41,30 @@ class City
     }
 
     /**
+     * Loads a city from the database
+     * @param integer $city_id
+     * @return array
+     */
+    public function get($city_id)
+    {
+        $result = &gplcart_static("city.get.$city_id");
+
+        if (isset($result)) {
+            return $result;
+        }
+
+        $this->hook->attach('city.get.before', $city_id, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
+        $result = $this->db->fetch('SELECT * FROM city WHERE city_id=?', array($city_id));
+        $this->hook->attach('city.get.after', $city_id, $result, $this);
+        return $result;
+    }
+
+    /**
      * Returns an array of cities
      * @param array $data
      * @return array|integer
@@ -138,30 +162,6 @@ class City
         $result = $this->db->insert('city', $data);
         $this->hook->attach('city.add.after', $data, $result, $this);
         return (int) $result;
-    }
-
-    /**
-     * Loads a city from the database
-     * @param integer $city_id
-     * @return array
-     */
-    public function get($city_id)
-    {
-        $result = &gplcart_static("city.get.$city_id");
-
-        if (isset($result)) {
-            return $result;
-        }
-
-        $this->hook->attach('city.get.before', $city_id, $result, $this);
-
-        if (isset($result)) {
-            return $result;
-        }
-
-        $result = $this->db->fetch('SELECT * FROM city WHERE city_id=?', array($city_id));
-        $this->hook->attach('city.get.after', $city_id, $result, $this);
-        return $result;
     }
 
     /**

@@ -231,7 +231,7 @@ class Order extends BackendController
                 'text' => $this->text('Update order status to @status', array('@status' => $submitted['status']))
             );
 
-            $this->order_history->addLog($log);
+            $this->order_history->add($log);
         }
     }
 
@@ -307,7 +307,7 @@ class Order extends BackendController
             'order_id' => $this->data_order['order_id']
         );
 
-        return (int) $this->order_history->getLogs($conditions);
+        return (int) $this->order_history->getList($conditions);
     }
 
     /**
@@ -322,7 +322,7 @@ class Order extends BackendController
             'order_id' => $this->data_order['order_id']
         );
 
-        return (array) $this->order_history->getLogs($conditions);
+        return (array) $this->order_history->getList($conditions);
     }
 
     /**

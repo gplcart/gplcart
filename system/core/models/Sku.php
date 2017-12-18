@@ -57,6 +57,35 @@ class Sku
     }
 
     /**
+     * Loads a SKU
+     * @param int|array $condition
+     * @return array
+     */
+    public function get($condition)
+    {
+        $result = null;
+        $this->hook->attach('sku.get.before', $condition, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
+        if (!is_array($condition)) {
+            $condition = array('product_sku_id' => (int) $condition);
+        }
+
+        $list = $this->getList($condition);
+
+        $result = array();
+        if (is_array($list) && count($list) == 1) {
+            $result = reset($list);
+        }
+
+        $this->hook->attach('sku.get.after', $condition, $result, $this);
+        return $result;
+    }
+
+    /**
      * Returns an array of SKUs or counts them
      * @param array $data
      * @return array|integer
@@ -70,14 +99,25 @@ class Sku
         }
 
         $sql .= ' FROM product_sku ps'
-                . ' LEFT JOIN product p ON(ps.product_id = p.product_id)'
-                . ' WHERE ps.product_sku_id IS NOT NULL';
+                . ' LEFT JOIN product p ON(ps.product_id = p.product_id)';
 
         $conditions = array();
 
+        if (isset($data['product_sku_id'])) {
+            $sql .= ' WHERE ps.product_sku_id = ?';
+            $conditions[] = (int) $data['product_sku_id'];
+        } else {
+            $sql .= ' WHERE ps.product_sku_id IS NOT NULL';
+        }
+
         if (isset($data['sku'])) {
-            $sql .= ' AND ps.sku LIKE ?';
-            $conditions[] = "%{$data['sku']}%";
+            $sql .= ' AND ps.sku=?';
+            $conditions[] = $data['sku'];
+        }
+
+        if (isset($data['store_id'])) {
+            $sql .= ' AND p.store_id=?';
+            $conditions[] = (int) $data['store_id'];
         }
 
         if (isset($data['title_sku'])) {
@@ -101,11 +141,6 @@ class Sku
             $conditions[] = (int) $data['status'];
         }
 
-        if (isset($data['store_id'])) {
-            $sql .= ' AND p.store_id=?';
-            $conditions[] = (int) $data['store_id'];
-        }
-
         $sql .= " ORDER BY ps.sku ASC";
 
         if (!empty($data['limit'])) {
@@ -116,14 +151,24 @@ class Sku
             return (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $results = $this->db->fetchAll($sql, $conditions, array('index' => 'product_sku_id'));
-
-        foreach ($results as &$result) {
-            $result['fields'] = $this->getFieldValues($result['combination_id']);
-        }
-
+        $list = $this->db->fetchAll($sql, $conditions, array('index' => 'product_sku_id'));
+        $results = $this->prepareList($list);
         $this->hook->attach('sku.list', $results, $this);
         return $results;
+    }
+
+    /**
+     * Prepare an array of product SKU items
+     * @param array $list
+     * @return array
+     */
+    protected function prepareList(array $list)
+    {
+        foreach ($list as &$item) {
+            $item['fields'] = $this->getFieldValues($item['combination_id']);
+        }
+
+        return $list;
     }
 
     /**
@@ -149,6 +194,7 @@ class Sku
      * Deletes a product SKU
      * @param integer $product_id
      * @param array $options
+     * @todo Refactor
      * @return boolean
      */
     public function delete($product_id, array $options = array())
@@ -228,7 +274,7 @@ class Sku
      */
     public function getUnique($sku, $store_id)
     {
-        $existing = $this->get($sku, $store_id);
+        $existing = $this->get(array('sku' => $sku, 'store_id' => $store_id));
 
         if (empty($existing)) {
             return $sku;
@@ -239,7 +285,7 @@ class Sku
         do {
             $modified = $sku . '-' . $counter;
             $counter++;
-        } while ($this->get($modified, $store_id));
+        } while ($this->get(array('sku' => $modified, 'store_id' => $store_id)));
 
         return $modified;
     }
@@ -253,7 +299,6 @@ class Sku
     {
         $field_value_ids = explode('_', substr($combination_id, strpos($combination_id, '-') + 1));
         sort($field_value_ids);
-
         return $field_value_ids;
     }
 
@@ -267,12 +312,11 @@ class Sku
     {
         sort($field_value_ids);
         $combination_id = implode('_', $field_value_ids);
-
         return empty($product_id) ? $combination_id : "$product_id-$combination_id";
     }
 
     /**
-     * Returns an array of data when selecting sku combinations
+     * Returns an array of data when selecting SKU combinations
      * @param array $product
      * @param array $field_value_ids
      * @return array
@@ -360,34 +404,6 @@ class Sku
         }
 
         return $related;
-    }
-
-    /**
-     * Loads a SKU
-     * @param string $sku
-     * @param integer|null $store_id
-     * @return array
-     */
-    public function get($sku, $store_id = null)
-    {
-        $result = null;
-        $this->hook->attach('sku.get.before', $sku, $store_id, $result, $this);
-
-        if (isset($result)) {
-            return $result;
-        }
-
-        $conditions = array($sku);
-        $sql = 'SELECT * FROM product_sku WHERE sku=?';
-
-        if (isset($store_id)) {
-            $sql .= ' AND store_id=?';
-            $conditions[] = $store_id;
-        }
-
-        $result = $this->db->fetch($sql, $conditions);
-        $this->hook->attach('sku.get.after', $sku, $store_id, $result, $this);
-        return $result;
     }
 
 }

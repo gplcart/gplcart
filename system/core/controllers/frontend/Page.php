@@ -66,7 +66,7 @@ class Page extends FrontendController
      */
     protected function setPage($page_id)
     {
-        $page = $this->page->get($page_id, $this->langcode);
+        $page = $this->page->get($page_id);
 
         if (empty($page)) {
             $this->outputHttpStatus(404);
