@@ -36,11 +36,20 @@ class Convertor
     protected $units = array();
 
     /**
-     * Sets default units
+     * Constructor
      */
-    protected function setDefaultUnits()
+    public function __construct()
     {
-        $this->units = array(
+        $this->setUnits($this->getDefaultUnits());
+    }
+
+    /**
+     * Returns an array of default conversion units
+     * @return array
+     */
+    protected function getDefaultUnits()
+    {
+        return array(
             'm' => array('base' => 'm', 'conversion' => 1), //meter - base unit for distance
             'km' => array('base' => 'm', 'conversion' => 1000), //kilometer
             'dm' => array('base' => 'm', 'conversion' => 0.1), //decimeter
@@ -126,14 +135,6 @@ class Convertor
     }
 
     /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->setDefaultUnits();
-    }
-
-    /**
      * Set from conversion value / unit
      * @param number $value
      * @param string $unit
@@ -152,7 +153,7 @@ class Convertor
         }
 
         $this->base_unit = $this->units[$key]['base'];
-        $this->value = $this->convertToBase($value, $this->units[$key]);
+        $this->value = $this->toBase($value, $this->units[$key]);
     }
 
     /**
@@ -257,7 +258,7 @@ class Convertor
      * @return array
      * @throws UnexpectedValueException
      */
-    public function addUnit($unit, $base, $conversion)
+    public function setUnit($unit, $base, $conversion)
     {
         if (isset($this->units[$unit])) {
             throw new UnexpectedValueException('Unit already exists');
@@ -276,7 +277,7 @@ class Convertor
      * @param string $unit
      * @return array
      */
-    public function removeUnit($unit)
+    public function unsetUnit($unit)
     {
         if ($this->units[$unit]['base'] != $unit) {
             unset($this->units[$unit]);
@@ -315,12 +316,21 @@ class Convertor
     }
 
     /**
+     * Sets conversion units
+     * @param array $units
+     */
+    public function setUnits(array $units)
+    {
+        $this->units = $units;
+    }
+
+    /**
      * Convert from value to its base unit
      * @param number $value
      * @param array $unit
      * @return number
      */
-    protected function convertToBase($value, array $unit)
+    protected function toBase($value, array $unit)
     {
         if (is_callable($unit['conversion'])) {
             return $unit['conversion']($value, false);
