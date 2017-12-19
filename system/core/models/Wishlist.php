@@ -70,9 +70,7 @@ class Wishlist
             return $result;
         }
 
-        $sql = 'SELECT * FROM wishlist WHERE wishlist_id=?';
-        $result = $this->db->fetch($sql, array($wishlist_id));
-
+        $result = $this->db->fetch('SELECT * FROM wishlist WHERE wishlist_id=?', array($wishlist_id));
         $this->hook->attach('wishlist.get.after', $wishlist_id, $result, $this);
         return $result;
     }
@@ -129,23 +127,27 @@ class Wishlist
 
     /**
      * Deletes a wishlist item
-     * @param array $data
+     * @param array|int $condition
      * @return boolean
      */
-    public function delete(array $data)
+    public function delete($condition)
     {
         $result = null;
-        $this->hook->attach('wishlist.delete.before', $data, $result, $this);
+        $this->hook->attach('wishlist.delete.before', $condition, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
         }
 
-        $result = (bool) $this->db->delete('wishlist', $data);
+        if (!is_array($condition)) {
+            $condition = array('wishlist_id' => (int) $condition);
+        }
+
+        $result = (bool) $this->db->delete('wishlist', $condition);
 
         gplcart_static_clear();
 
-        $this->hook->attach('wishlist.delete.after', $data, $result, $this);
+        $this->hook->attach('wishlist.delete.after', $condition, $result, $this);
         return (bool) $result;
     }
 
@@ -171,35 +173,35 @@ class Wishlist
         $sql .= ' FROM wishlist w'
                 . ' LEFT JOIN user u ON(w.user_id = u.user_id)'
                 . ' LEFT JOIN product p ON(w.product_id = p.product_id)'
-                . ' WHERE w.wishlist_id > 0';
+                . ' WHERE w.wishlist_id IS NOT NULL';
 
-        $where = array();
+        $conditions = array();
 
         if (!empty($data['product_id'])) {
             settype($data['product_id'], 'array');
             $placeholders = rtrim(str_repeat('?,', count($data['product_id'])), ',');
             $sql .= " AND w.product_id IN($placeholders)";
-            $where = array_merge($where, $data['product_id']);
+            $conditions = array_merge($conditions, $data['product_id']);
         }
 
         if (isset($data['user_id'])) {
             $sql .= ' AND w.user_id = ?';
-            $where[] = $data['user_id'];
+            $conditions[] = $data['user_id'];
         }
 
         if (isset($data['store_id'])) {
             $sql .= ' AND w.store_id = ?';
-            $where[] = (int) $data['store_id'];
+            $conditions[] = (int) $data['store_id'];
         }
 
         if (isset($data['created'])) {
             $sql .= ' AND w.created = ?';
-            $where[] = $data['created'];
+            $conditions[] = $data['created'];
         }
 
         if (isset($data['product_status'])) {
             $sql .= ' AND p.status = ?';
-            $where[] = (int) $data['product_status'];
+            $conditions[] = (int) $data['product_status'];
         }
 
         $allowed_order = array('asc', 'desc');
@@ -217,16 +219,16 @@ class Wishlist
         }
 
         if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $where);
+            return (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $items = $this->db->fetchAll($sql, $where, array('index' => 'wishlist_id'));
+        $items = $this->db->fetchAll($sql, $conditions, array('index' => 'wishlist_id'));
         $this->hook->attach('wishlist.list', $items, $this);
         return $items;
     }
 
     /**
-     * Whether a product ID is in a wishlist
+     * Whether a product ID alredy exists in the wishlist
      * @param array $data
      * @return boolean
      */
@@ -250,27 +252,24 @@ class Wishlist
     }
 
     /**
-     * Returns a max number of items for the user ID
+     * Returns a max number of items for the user
      * @param integer|string $user_id
      * @return integer
      */
     public function getLimit($user_id)
     {
-        if (!is_numeric($user_id)) {
-            return $this->getDefaultLimit();
-        }
-
-        $user = $this->user->get($user_id);
-
-        if (isset($user['role_id'])) {
-            return $this->getLimitByRole($user['role_id']);
+        if (is_numeric($user_id)) {
+            $user = $this->user->get($user_id);
+            if (isset($user['role_id'])) {
+                return $this->getLimitByRole($user['role_id']);
+            }
         }
 
         return $this->getDefaultLimit();
     }
 
     /**
-     * Returns a max number of wishlist items for the role ID
+     * Returns a max number of wishlist items for the role
      * @param string|integer $role_id
      * @return integer
      */

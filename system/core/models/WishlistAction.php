@@ -74,11 +74,11 @@ class WishlistAction
         }
 
         if ($this->wishlist->exists($data)) {
-            return $this->getResultExists($data);
+            return $this->getResultErrorExists($data);
         }
 
         if ($this->wishlist->exceedsLimit($data['user_id'], $data['store_id'])) {
-            return $this->getResultExceeds($data);
+            return $this->getResultErrorExceeds($data);
         }
 
         $data['wishlist_id'] = $this->wishlist->add($data);
@@ -143,7 +143,7 @@ class WishlistAction
      * @param array $data
      * @return array
      */
-    protected function getResultExceeds(array $data)
+    protected function getResultErrorExceeds(array $data)
     {
         $vars = array('%num' => $this->wishlist->getLimit($data['user_id']));
 
@@ -159,7 +159,7 @@ class WishlistAction
      * @param array $data
      * @return array
      */
-    protected function getResultExists(array $data)
+    protected function getResultErrorExists(array $data)
     {
         $vars = array('@url' => $this->url->get('wishlist'));
 

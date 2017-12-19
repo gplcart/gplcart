@@ -93,36 +93,24 @@ class UserAction
             return (array) $result;
         }
 
-        $result = array(
-            'redirect' => null,
-            'severity' => 'warning',
-            'message' => $this->translation->text('Login failed. Make sure your e-mail and password are correct')
-        );
-
-        if (empty($data['email'])) {
-            return $result;
+        if (empty($data['email']) || empty($data['password'])) {
+            return $this->getResultErrorLogin();
         }
 
         $user = $this->user->getByEmail($data['email']);
 
         if (empty($user['status'])) {
-            return $result;
+            return $this->getResultErrorLogin();
         }
 
         if ($check_password && !$this->user->passwordMatches($data['password'], $user)) {
-            return $result;
+            return $this->getResultErrorLogin();
         }
 
         $this->session->regenerate(true);
         $this->session->set('user', $user);
 
-        $result = array(
-            'user' => $user,
-            'message' => '',
-            'severity' => 'success',
-            'redirect' => $this->getLoginRedirect($user),
-        );
-
+        $result = $this->getResultLogin($user);
         $this->hook->attach('user.login.after', $data, $check_password, $result, $this);
         return (array) $result;
     }
@@ -141,33 +129,18 @@ class UserAction
             return (array) $result;
         }
 
-        $this->filterData($data);
-
-        $data['login'] = $this->config->get('user_registration_login', true);
         $data['status'] = $this->config->get('user_registration_status', true);
         $data['user_id'] = $this->user->add($data);
 
         if (empty($data['user_id'])) {
-            return array(
-                'redirect' => null,
-                'severity' => 'warning',
-                'message' => $this->translation->text('An error occurred')
-            );
+            return $this->getResultError();
         }
 
         $this->emailRegistration($data);
-
         $this->session->regenerate(true);
 
-        $result = array(
-            'redirect' => '/',
-            'severity' => 'success',
-            'user_id' => $data['user_id'],
-            'message' => $this->translation->text('Your account has been created'));
-
-        if (!empty($data['login']) && !empty($data['status'])) {
-            $result = $this->login($data);
-        }
+        $login = $this->config->get('user_registration_login', true);
+        $result = ($login && $data['status']) ? $this->login($data) : $this->getResultRegistered($data);
 
         $this->hook->attach('user.register.after', $data, $result, $this);
         return (array) $result;
@@ -180,6 +153,7 @@ class UserAction
     public function logout()
     {
         $result = array();
+
         $user = $this->user->get($this->user->getId());
         $this->hook->attach('user.logout.before', $user, $result, $this);
 
@@ -188,13 +162,7 @@ class UserAction
         }
 
         $this->session->delete();
-
-        $result = array(
-            'user' => $user,
-            'message' => '',
-            'redirect' => 'login',
-            'severity' => 'success'
-        );
+        $result = $this->getResultLogOut($user);
 
         $this->hook->attach('user.logout.after', $user, $result, $this);
         return (array) $result;
@@ -215,23 +183,52 @@ class UserAction
         }
 
         if (empty($data['user']['user_id'])) {
-            return array(
-                'message' => '',
-                'severity' => '',
-                'redirect' => null
-            );
+            return $this->getResultError();
         }
 
         if (isset($data['password'])) {
-            $result = $this->resetPasswordFinish($data['user'], $data['password']);
+            $result = $this->resetPasswordFinish($data);
         } else {
-            $result = $this->resetPasswordStart($data['user']);
+            $result = $this->resetPasswordStart($data);
         }
 
         $this->session->regenerate(true);
-
         $this->hook->attach('user.reset.password.after', $data, $result, $this);
         return (array) $result;
+    }
+
+    /**
+     * Start the password reset operation
+     * @param array $data
+     * @return array
+     */
+    protected function resetPasswordStart(array $data)
+    {
+        $data['user']['data']['reset_password'] = array(
+            'token' => gplcart_string_random(),
+            'expires' => GC_TIME + $this->user->getResetPasswordLifespan(),
+        );
+
+        $this->user->update($data['user']['user_id'], array('data' => $data['user']['data']));
+        $this->mail->set('user_reset_password', array($data['user']));
+
+        return $this->getResultResetPasswordStart();
+    }
+
+    /**
+     * Finish the password reset operation
+     * @param array $data
+     * @return array
+     */
+    protected function resetPasswordFinish(array $data)
+    {
+        $data['user']['password'] = $data['password'];
+        unset($data['user']['data']['reset_password']);
+
+        $this->user->update($data['user']['user_id'], $data['user']);
+        $this->mail->set('user_changed_password', array($data['user']));
+
+        return $this->getResultResetPasswordFinish();
     }
 
     /**
@@ -247,59 +244,6 @@ class UserAction
         if ($this->config->get('user_registration_email_admin', true)) {
             $this->mail->set('user_registered_admin', array($data));
         }
-    }
-
-    /**
-     * Start the password reset operation
-     * @param array $user
-     * @return array
-     */
-    protected function resetPasswordStart(array $user)
-    {
-        $user['data']['reset_password'] = array(
-            'token' => gplcart_string_random(),
-            'expires' => GC_TIME + $this->user->getResetPasswordLifespan(),
-        );
-
-        $this->user->update($user['user_id'], array('data' => $user['data']));
-        $this->mail->set('user_reset_password', array($user));
-
-        return array(
-            'redirect' => 'forgot',
-            'severity' => 'success',
-            'message' => $this->translation->text('Password reset link has been sent to your E-mail')
-        );
-    }
-
-    /**
-     * Finish the password reset operation
-     * @param array $user
-     * @param string $password
-     * @return array
-     */
-    protected function resetPasswordFinish(array $user, $password)
-    {
-        $user['password'] = $password;
-        unset($user['data']['reset_password']);
-
-        $this->user->update($user['user_id'], $user);
-        $this->mail->set('user_changed_password', array($user));
-
-        return array(
-            'redirect' => 'login',
-            'severity' => 'success',
-            'message' => $this->translation->text('Your password has been successfully changed')
-        );
-    }
-
-    /**
-     * Remove all but allowed keys from an array of user data
-     * @param array $data
-     */
-    protected function filterData(array &$data)
-    {
-        $allowed = array('name', 'email', 'password', 'store_id');
-        $data = array_intersect_key($data, array_flip($allowed));
     }
 
     /**
@@ -320,6 +264,102 @@ class UserAction
         }
 
         return $redirect;
+    }
+
+    /**
+     * Returns an array of resulting data when a user failed to log in
+     * @return array
+     */
+    protected function getResultErrorLogin()
+    {
+        return array(
+            'redirect' => null,
+            'severity' => 'warning',
+            'message' => $this->translation->text('Login failed. Make sure your e-mail and password are correct')
+        );
+    }
+
+    /**
+     * Returns an array of resulting data when a user has been logged in
+     * @param array $user
+     * @return array
+     */
+    protected function getResultLogin(array $user)
+    {
+        return array(
+            'user' => $user,
+            'message' => '',
+            'severity' => 'success',
+            'redirect' => $this->getLoginRedirect($user),
+        );
+    }
+
+    /**
+     * Returns an array of resulting data when password has been reset
+     * @return array
+     */
+    protected function getResultResetPasswordFinish()
+    {
+        return array(
+            'redirect' => 'login',
+            'severity' => 'success',
+            'message' => $this->translation->text('Your password has been successfully changed')
+        );
+    }
+
+    /**
+     * Returns an array of resulting data when password reset link has been sent to a user
+     * @return array
+     */
+    protected function getResultResetPasswordStart()
+    {
+        return array(
+            'redirect' => 'forgot',
+            'severity' => 'success',
+            'message' => $this->translation->text('Password reset link has been sent to your E-mail')
+        );
+    }
+
+    /**
+     * Returns an array of resulting data when a user has been registered
+     * @param array $data
+     * @return array
+     */
+    protected function getResultRegistered(array $data)
+    {
+        return array(
+            'redirect' => '/',
+            'severity' => 'success',
+            'user_id' => $data['user_id'],
+            'message' => $this->translation->text('Your account has been created'));
+    }
+
+    /**
+     * Returns an array of resulting data when a error happened
+     * @return array
+     */
+    protected function getResultError()
+    {
+        return array(
+            'redirect' => null,
+            'severity' => 'warning',
+            'message' => $this->translation->text('An error occurred')
+        );
+    }
+
+    /**
+     * Returns an array of resulting data when a user has been logged out
+     * @param array $user
+     * @return array
+     */
+    protected function getResultLogOut(array $user)
+    {
+        return array(
+            'user' => $user,
+            'message' => '',
+            'redirect' => 'login',
+            'severity' => 'success'
+        );
     }
 
 }

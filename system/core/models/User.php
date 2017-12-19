@@ -124,7 +124,6 @@ class User
         }
 
         foreach ($data['addresses'] as $address) {
-
             if (empty($address['address_id'])) {
                 $address['user_id'] = $data['user_id'];
                 $this->address->add($address);
@@ -492,7 +491,7 @@ class User
     /**
      * Whether the password matches the user's password stored in the database
      * @param string $password
-     * @param array|int|string $user
+     * @param array|int $user
      * @return boolean
      */
     public function passwordMatches($password, $user)

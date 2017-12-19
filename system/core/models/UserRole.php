@@ -11,7 +11,6 @@ namespace gplcart\core\models;
 
 use gplcart\core\Hook,
     gplcart\core\Config;
-use gplcart\core\models\Language as LanguageModel;
 
 /**
  * Manages basic behaviors and data related to user roles
@@ -32,40 +31,39 @@ class UserRole
     protected $hook;
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
-     */
-    protected $language;
-
-    /**
      * @param Hook $hook
      * @param Config $config
-     * @param LanguageModel $language
      */
-    public function __construct(Hook $hook, Config $config, LanguageModel $language)
+    public function __construct(Hook $hook, Config $config)
     {
         $this->hook = $hook;
-        $this->language = $language;
         $this->db = $config->getDb();
     }
 
     /**
-     * Returns an array of permissions
+     * Loads a role from the database
+     * @param integer $role_id
      * @return array
      */
-    public function getPermissions()
+    public function get($role_id)
     {
-        $permissions = &gplcart_static('user.role.permissions');
+        $result = &gplcart_static("user.role.get.$role_id");
 
-        if (isset($permissions)) {
-            return $permissions;
+        if (isset($result)) {
+            return $result;
         }
 
-        $permissions = (array) gplcart_config_get(GC_FILE_CONFIG_PERMISSION);
-        asort($permissions);
+        $this->hook->attach('user.role.get.before', $role_id, $result, $this);
 
-        $this->hook->attach('user.role.permissions', $permissions, $this);
-        return $permissions;
+        if (isset($result)) {
+            return $result;
+        }
+
+        $result = $this->db->fetch('SELECT * FROM role WHERE role_id=?', array($role_id), array(
+            'unserialize' => 'permissions'));
+
+        $this->hook->attach('user.role.get.after', $role_id, $result, $this);
+        return $result;
     }
 
     /**
@@ -81,7 +79,7 @@ class UserRole
             $sql = 'SELECT COUNT(role_id)';
         }
 
-        $sql .= ' FROM role WHERE role_id > 0';
+        $sql .= ' FROM role WHERE role_id IS NOT NULL';
 
         $conditions = array();
 
@@ -198,27 +196,22 @@ class UserRole
     }
 
     /**
-     * Loads a role from the database
-     * @param integer $role_id
+     * Returns an array of permissions
      * @return array
      */
-    public function get($role_id)
+    public function getPermissions()
     {
-        $result = &gplcart_static("user.role.get.$role_id");
+        $permissions = &gplcart_static('user.role.permissions');
 
-        if (isset($result)) {
-            return $result;
+        if (isset($permissions)) {
+            return $permissions;
         }
 
-        $this->hook->attach('user.role.get.before', $role_id, $result, $this);
+        $permissions = (array) gplcart_config_get(GC_FILE_CONFIG_PERMISSION);
+        asort($permissions);
 
-        if (isset($result)) {
-            return $result;
-        }
-
-        $result = $this->db->fetch('SELECT * FROM role WHERE role_id=?', array($role_id), array('unserialize' => 'permissions'));
-        $this->hook->attach('user.role.get.after', $role_id, $result, $this);
-        return $result;
+        $this->hook->attach('user.role.permissions', $permissions, $this);
+        return $permissions;
     }
 
 }

@@ -11,8 +11,7 @@ namespace gplcart\core\models;
 
 use gplcart\core\Hook,
     gplcart\core\Config;
-use gplcart\core\models\Mail as MailModel,
-    gplcart\core\models\Cart as CartModel,
+use gplcart\core\models\Cart as CartModel,
     gplcart\core\models\User as UserModel,
     gplcart\core\models\Price as PriceModel,
     gplcart\core\models\PriceRule as PriceRuleModel,
@@ -61,12 +60,6 @@ class Order
     protected $cart;
 
     /**
-     * Mail model instance
-     * @var \gplcart\core\models\Mail $mail
-     */
-    protected $mail;
-
-    /**
      * Translation UI model instance
      * @var \gplcart\core\models\Translation $translation
      */
@@ -81,22 +74,19 @@ class Order
     /**
      * @param Hook $hook
      * @param Config $config
-     * @param User $user
-     * @param Price $price
-     * @param PriceRule $pricerule
-     * @param Cart $cart
-     * @param Translation $translation
-     * @param Mail $mail
+     * @param UserModel $user
+     * @param PriceModel $price
+     * @param PriceRuleModel $pricerule
+     * @param CartModel $cart
+     * @param TranslationModel $translation
      */
     public function __construct(Hook $hook, Config $config, UserModel $user, PriceModel $price,
-            PriceRuleModel $pricerule, CartModel $cart, TranslationModel $translation,
-            MailModel $mail)
+            PriceRuleModel $pricerule, CartModel $cart, TranslationModel $translation)
     {
         $this->hook = $hook;
         $this->config = $config;
         $this->db = $this->config->getDb();
 
-        $this->mail = $mail;
         $this->user = $user;
         $this->cart = $cart;
         $this->price = $price;
@@ -162,7 +152,7 @@ class Order
     {
         $options += array('current_user' => $this->user->getId());
 
-        $sql = 'SELECT o.*, u.email AS creator,'
+        $sql = 'SELECT o.*, u.email AS creator_email, u.name AS creator_name,'
                 . 'uc.name AS customer_name, uc.email AS customer_email,'
                 . 'CONCAT(uc.name, "", uc.email) AS customer,'
                 . 'h.created AS viewed, a.country, a.city_id, a.address_1,'
@@ -356,17 +346,6 @@ class Order
     }
 
     /**
-     * Sets cart items to the order
-     * @param array $order
-     */
-    protected function setCart(array &$order)
-    {
-        if (isset($order['order_id'])) {
-            $order['cart'] = $this->cart->getList(array('order_id' => $order['order_id']));
-        }
-    }
-
-    /**
      * Returns an array of order component types
      * @return array
      */
@@ -391,179 +370,6 @@ class Order
     {
         $types = $this->getComponentTypes();
         return empty($types[$name]) ? '' : $types[$name];
-    }
-
-    /**
-     * Submits an order
-     * @param array $data
-     * @param array $options
-     * @return array
-     */
-    public function submit(array $data, array $options = array())
-    {
-        $result = array();
-        $this->hook->attach('order.submit.before', $data, $options, $result, $this);
-
-        if (!empty($result)) {
-            return (array) $result;
-        }
-
-        $result = array(
-            'redirect' => '',
-            'severity' => 'warning',
-            'message' => $this->translation->text('An error occurred')
-        );
-
-        $this->prepareComponents($data);
-
-        $data['order_id'] = $this->add($data);
-
-        if (empty($data['order_id'])) {
-            return $result;
-        }
-
-        $order = $this->get($data['order_id']);
-        $this->setBundledProducts($order, $data);
-
-        $result = array(
-            'order' => $order,
-            'severity' => 'success',
-            'redirect' => "admin/sale/order/{$data['order_id']}",
-            'message' => $this->translation->text('Order has been created')
-        );
-
-        if (empty($options['admin'])) {
-
-            $this->setPriceRules($order);
-            $this->updateCart($order, $data['cart']);
-            $this->setNotificationCreatedByCustomer($order);
-
-            $result['message'] = '';
-            $result['redirect'] = "checkout/complete/{$data['order_id']}";
-        } else {
-            $this->cloneCart($order, $data['cart']);
-        }
-
-        $this->hook->attach('order.submit.after', $data, $options, $result, $this);
-        return (array) $result;
-    }
-
-    /**
-     * Adds bundled products
-     * @param array $order
-     * @param array $data
-     */
-    protected function setBundledProducts(array $order, array $data)
-    {
-        $update = false;
-        foreach ($data['cart']['items'] as $item) {
-
-            if (empty($item['product']['bundled_products'])) {
-                continue;
-            }
-
-            foreach ($item['product']['bundled_products'] as $product) {
-
-                $cart = array(
-                    'sku' => $product['sku'],
-                    'user_id' => $data['user_id'],
-                    'quantity' => $item['quantity'],
-                    'store_id' => $data['store_id'],
-                    'order_id' => $order['order_id'],
-                    'product_id' => $product['product_id'],
-                );
-
-                $update = true;
-                $order['data']['components']['cart']['items'][$product['sku']]['price'] = 0;
-                $this->cart->add($cart);
-            }
-        }
-
-        if ($update) {
-            $this->update($order['order_id'], array('data' => $order['data']));
-        }
-    }
-
-    /**
-     * Clone an order
-     * @param array $order
-     * @param array $cart
-     */
-    protected function cloneCart(array $order, array $cart)
-    {
-        foreach ($cart['items'] as $item) {
-            $cart_id = $item['cart_id'];
-            unset($item['cart_id']);
-            $item['user_id'] = $order['user_id'];
-            $item['order_id'] = $order['order_id'];
-            $this->cart->add($item);
-            $this->cart->delete($cart_id);
-        }
-    }
-
-    /**
-     * Update cart items after order was created
-     * @param array $order
-     * @param array $cart
-     */
-    protected function updateCart(array $order, array $cart)
-    {
-        foreach ($cart['items'] as $item) {
-
-            $values = array(
-                'order_id' => $order['order_id'],
-                'user_id' => $order['user_id']
-            );
-
-            $this->cart->update($item['cart_id'], $values);
-        }
-    }
-
-    /**
-     * Sets price rules after the order was created
-     * @param array $order
-     */
-    protected function setPriceRules(array $order)
-    {
-        foreach (array_keys($order['data']['components']) as $component_id) {
-            if (!is_numeric($component_id)) {
-                continue;
-            }
-
-            $rule = $this->price_rule->get($component_id);
-            if (!empty($rule['code'])) {
-                $this->price_rule->setUsed($rule['price_rule_id']);
-            }
-        }
-    }
-
-    /**
-     * Notify when an order has been created
-     * @param array $order
-     * @return boolean
-     */
-    public function setNotificationCreatedByCustomer(array $order)
-    {
-        $this->mail->set('order_created_admin', array($order));
-        if (is_numeric($order['user_id']) && !empty($order['user_email'])) {
-            return $this->mail->set('order_created_customer', array($order));
-        }
-
-        return false;
-    }
-
-    /**
-     * Notify when an order has been updated
-     * @param array $order
-     * @return boolean
-     */
-    public function setNotificationUpdated(array $order)
-    {
-        if (is_numeric($order['user_id']) && !empty($order['user_email'])) {
-            return $this->mail->set('order_updated_customer', array($order));
-        }
-
-        return false;
     }
 
     /**
@@ -623,59 +429,6 @@ class Order
     }
 
     /**
-     * Returns a default message to be shown on the order complete page
-     * @param array $order
-     * @return string
-     */
-    public function getCompleteMessage(array $order)
-    {
-        if (is_numeric($order['user_id'])) {
-            $message = $this->getCompleteMessageLoggedIn($order);
-        } else {
-            $message = $this->getCompleteMessageAnonymous($order);
-        }
-
-        $this->hook->attach('order.complete.message', $message, $order, $this);
-        return $message;
-    }
-
-    /**
-     * Returns a message for a logged in user when checkout is completed
-     * @param array $order
-     * @return string
-     */
-    protected function getCompleteMessageLoggedIn(array $order)
-    {
-        $default = /* @text */'Thank you for your order! Order ID: @num, status: @status';
-        $message = $this->config->get('order_complete_message', $default);
-
-        $variables = array(
-            '@num' => $order['order_id'],
-            '@status' => $this->getStatusName($order['status'])
-        );
-
-        return $this->translation->text($message, $variables);
-    }
-
-    /**
-     * Returns a message for an anonymous user when checkout is completed
-     * @param array $order
-     * @return string
-     */
-    protected function getCompleteMessageAnonymous(array $order)
-    {
-        $default = /* @text */'Thank you for your order! Order ID: @num, status: @status';
-        $message = $this->config->get('order_complete_message_anonymous', $default);
-
-        $variables = array(
-            '@num' => $order['order_id'],
-            '@status' => $this->getStatusName($order['status'])
-        );
-
-        return $this->translation->text($message, $variables);
-    }
-
-    /**
      * Calculates order totals
      * @param array $data
      * @return array
@@ -706,6 +459,17 @@ class Order
 
         $this->hook->attach('order.calculate.after', $data, $result, $this);
         return (array) $result;
+    }
+
+    /**
+     * Whether a given code matches the price rule
+     * @param integer $price_rule_id
+     * @param string $code
+     * @return boolean
+     */
+    public function priceRuleCodeMatches($price_rule_id, $code)
+    {
+        return $this->price_rule->codeMatches($price_rule_id, $code);
     }
 
     /**
@@ -760,14 +524,14 @@ class Order
     }
 
     /**
-     * Whether a given code matches the price rule
-     * @param integer $price_rule_id
-     * @param string $code
-     * @return boolean
+     * Sets cart items to the order
+     * @param array $order
      */
-    public function priceRuleCodeMatches($price_rule_id, $code)
+    protected function setCart(array &$order)
     {
-        return $this->price_rule->codeMatches($price_rule_id, $code);
+        if (isset($order['order_id'])) {
+            $order['cart'] = $this->cart->getList(array('order_id' => $order['order_id']));
+        }
     }
 
     /**

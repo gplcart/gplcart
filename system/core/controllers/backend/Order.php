@@ -10,6 +10,7 @@
 namespace gplcart\core\controllers\backend;
 
 use gplcart\core\models\Order as OrderModel,
+    gplcart\core\models\OrderAction as OrderActionModel,
     gplcart\core\models\OrderHistory as OrderHistoryModel,
     gplcart\core\models\Price as PriceModel,
     gplcart\core\models\Address as AddressModel,
@@ -47,6 +48,12 @@ class Order extends BackendController
      * @var \gplcart\core\models\Order $order
      */
     protected $order;
+    
+    /**
+     * Order action model instance
+     * @var \gplcart\core\models\OrderAction $order_action
+     */
+    protected $order_action;
 
     /**
      * Order history model instance
@@ -95,9 +102,10 @@ class Order extends BackendController
      * @var array
      */
     protected $data_order = array();
-
+    
     /**
      * @param OrderModel $order
+     * @param OrderActionModel $order_action
      * @param OrderHistoryModel $order_history
      * @param AddressModel $address
      * @param PriceModel $price
@@ -105,9 +113,9 @@ class Order extends BackendController
      * @param PaymentModel $payment
      * @param ShippingModel $shipping
      */
-    public function __construct(OrderModel $order, OrderHistoryModel $order_history,
-            AddressModel $address, PriceModel $price, PriceRuleModel $pricerule,
-            PaymentModel $payment, ShippingModel $shipping)
+    public function __construct(OrderModel $order, OrderActionModel $order_action,
+            OrderHistoryModel $order_history, AddressModel $address, PriceModel $price,
+            PriceRuleModel $pricerule, PaymentModel $payment, ShippingModel $shipping)
     {
         parent::__construct();
 
@@ -117,6 +125,7 @@ class Order extends BackendController
         $this->payment = $payment;
         $this->shipping = $shipping;
         $this->pricerule = $pricerule;
+        $this->order_action = $order_action;
         $this->order_history = $order_history;
     }
 
@@ -247,7 +256,7 @@ class Order extends BackendController
         }
 
         $order = $this->order->get($order_id);
-        if ($this->order->setNotificationUpdated($order) === true) {
+        if ($this->order_action->notifyUpdated($order) === true) {
             return static::NOTIFICATION_SENT;
         }
 

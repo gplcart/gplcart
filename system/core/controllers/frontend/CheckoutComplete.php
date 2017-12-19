@@ -169,7 +169,22 @@ class CheckoutComplete extends FrontendController
      */
     protected function getMessageCheckoutComplete()
     {
-        return $this->order->getCompleteMessage($this->data_order);
+        if (is_numeric($this->data_order['user_id'])) {
+            $default = $this->text('Thank you for your order! Order ID: @num, status: @status');
+            $message = $this->config('order_complete_message', $default);
+        } else {
+            $default = $this->text('Thank you for your order! Order ID: @num, status: @status');
+            $message = $this->config('order_complete_message_anonymous', $default);
+        }
+
+        $vars = array(
+            '@num' => $this->data_order['order_id'],
+            '@status' => $this->order->getStatusName($this->data_order['status'])
+        );
+
+        $message = $this->text($message, $vars);
+        $this->hook->attach('order.complete.message', $message, $this->data_order, $this);
+        return $message;
     }
 
     /**
