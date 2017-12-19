@@ -16,31 +16,6 @@ trait Translation
 {
 
     /**
-     * Adds array key containing translations to the entity
-     * @param array $data
-     * @param \gplcart\core\models\TranslationEntity $model
-     * @param string $entity
-     * @param string|null $language
-     */
-    public function attachTranslations(array &$data, $model, $entity, $language)
-    {
-        if (isset($data["{$entity}_id"])) {
-
-            $data['language'] = 'und';
-            $entity_id = $data["{$entity}_id"];
-            $translations = $model->getList($entity, $entity_id, $language);
-
-            foreach ($translations as $translation) {
-                $data['translation'][$translation['language']] = $translation;
-            }
-
-            if (isset($language) && isset($data['translation'][$language])) {
-                $data = $data['translation'][$language] + $data;
-            }
-        }
-    }
-
-    /**
      * Deletes and/or adds translations
      * @param array $data
      * @param \gplcart\core\models\TranslationEntity $model
@@ -50,7 +25,9 @@ trait Translation
      */
     public function setTranslations(array $data, $model, $entity, $delete_existing = true)
     {
-        if (empty($data['translation']) || empty($data["{$entity}_id"])) {
+        if (empty($data['translation'])//
+                || empty($data["{$entity}_id"])//
+                || !$model->isSupportedEntity($entity)) {
             return null;
         }
 

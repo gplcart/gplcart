@@ -9,7 +9,8 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Field as FieldModel;
+use gplcart\core\models\Field as FieldModel,
+    gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -23,6 +24,12 @@ class Field extends BackendController
      * @var \gplcart\core\models\Field $field
      */
     protected $field;
+
+    /**
+     * Entity translation model instance
+     * @var \gplcart\core\models\TranslationEntity $translation_entity
+     */
+    protected $translation_entity;
 
     /**
      * Pager limit
@@ -39,11 +46,12 @@ class Field extends BackendController
     /**
      * @param FieldModel $field
      */
-    public function __construct(FieldModel $field)
+    public function __construct(FieldModel $field, TranslationEntityModel $translation_entity)
     {
         parent::__construct();
 
         $this->field = $field;
+        $this->translation_entity = $translation_entity;
     }
 
     /**
@@ -219,11 +227,24 @@ class Field extends BackendController
     protected function setField($field_id)
     {
         if (is_numeric($field_id)) {
-            $this->data_field = $this->field->get($field_id);
-            if (empty($this->data_field)) {
+            $field = $this->field->get($field_id);
+            if (empty($field)) {
                 $this->outputHttpStatus(404);
             }
+
+            $this->data_field = $this->prepareField($field);
         }
+    }
+
+    /**
+     * Prepare an array of field data
+     * @param array $field
+     * @return array
+     */
+    protected function prepareField(array $field)
+    {
+        $this->setItemTranslation($field, 'field', $this->translation_entity);
+        return $field;
     }
 
     /**

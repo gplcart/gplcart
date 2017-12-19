@@ -319,7 +319,6 @@ class Category extends FrontendController
     /**
      * Sets a category data
      * @param integer $category_id
-     * @return array
      */
     protected function setCategory($category_id)
     {
@@ -329,13 +328,24 @@ class Category extends FrontendController
             'store_id' => $this->store_id
         );
 
-        $this->data_category = $this->category->get($options);
+        $category = $this->category->get($options);
 
-        if (empty($this->data_category['status'])) {
+        if (empty($category['status'])) {
             $this->outputHttpStatus(404);
         }
 
-        return $this->data_category;
+        $this->data_category = $this->prepareCategory($category);
+    }
+
+    /**
+     * Prepare an array of category data
+     * @param array $category
+     * @return array
+     */
+    protected function prepareCategory(array $category)
+    {
+        $this->setItemImages($category, 'category', $this->image);
+        return $category;
     }
 
 }

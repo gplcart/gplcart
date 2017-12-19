@@ -11,7 +11,8 @@ namespace gplcart\core\controllers\backend;
 
 use gplcart\core\models\File as FileModel,
     gplcart\core\models\Field as FieldModel,
-    gplcart\core\models\FieldValue as FieldValueModel;
+    gplcart\core\models\FieldValue as FieldValueModel,
+    gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -21,28 +22,28 @@ class FieldValue extends BackendController
 {
 
     /**
-     * Field model instance
-     * @var \gplcart\core\models\Field $field
-     */
-    protected $field;
-
-    /**
-     * FieldValue module instance
-     * @var \gplcart\core\models\FieldValue $value
-     */
-    protected $value;
-
-    /**
      * File model instance
      * @var \gplcart\core\models\File $file
      */
     protected $file;
 
     /**
+     * Field model instance
+     * @var \gplcart\core\models\Field $field
+     */
+    protected $field;
+
+    /**
      * Field value model instance
      * @var \gplcart\core\models\FieldValue $field_value
      */
     protected $field_value;
+
+    /**
+     * Entity translation model instance
+     * @var \gplcart\core\models\TranslationEntity $translation_entity
+     */
+    protected $translation_entity;
 
     /**
      * Pager limit
@@ -66,14 +67,17 @@ class FieldValue extends BackendController
      * @param FieldModel $field
      * @param FieldValueModel $field_value
      * @param FileModel $file
+     * @param TranslationEntityModel $translation_entity
      */
-    public function __construct(FieldModel $field, FieldValueModel $field_value, FileModel $file)
+    public function __construct(FieldModel $field, FieldValueModel $field_value, FileModel $file,
+            TranslationEntityModel $translation_entity)
     {
         parent::__construct();
 
         $this->file = $file;
         $this->field = $field;
         $this->field_value = $field_value;
+        $this->translation_entity = $translation_entity;
     }
 
     /**
@@ -287,11 +291,24 @@ class FieldValue extends BackendController
     protected function setFieldValue($field_value_id)
     {
         if (is_numeric($field_value_id)) {
-            $this->data_field_value = $this->field_value->get($field_value_id);
-            if (empty($this->data_field_value)) {
+            $field_value = $this->field_value->get($field_value_id);
+            if (empty($field_value)) {
                 $this->outputHttpStatus(404);
             }
+
+            $this->data_field_value = $this->prepareFieldValue($field_value);
         }
+    }
+
+    /**
+     * Prepare an array of field value data
+     * @param array $field_value
+     * @return array
+     */
+    protected function prepareFieldValue(array $field_value)
+    {
+        $this->setItemTranslation($field_value, 'field_value', $this->translation_entity);
+        return $field_value;
     }
 
     /**

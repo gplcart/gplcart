@@ -507,4 +507,38 @@ trait Item
         }
     }
 
+    /**
+     * Adds a key containing translations for the entity
+     * @param array $item
+     * @param string $entity
+     * @param \gplcart\core\models\TranslationEntity $model
+     */
+    public function setItemTranslation(array &$item, $entity, $model)
+    {
+        if (isset($item["{$entity}_id"]) && $model->isSupportedEntity($entity)) {
+            foreach ($model->getList($entity, $item["{$entity}_id"]) as $translation) {
+                $item['translation'][$translation['language']] = $translation;
+            }
+        }
+    }
+
+    /**
+     * Adds images to an entity
+     * @param array $item
+     * @param string $entity
+     * @param \gplcart\core\models\Image $image_model
+     */
+    public function setItemImages(&$item, $entity, $image_model)
+    {
+        if (!empty($item[$entity . '_id'])) {
+
+            $options = array(
+                'entity' => $entity,
+                'entity_id' => $item[$entity . '_id']
+            );
+
+            $item['images'] = (array) $image_model->getList($options);
+        }
+    }
+
 }

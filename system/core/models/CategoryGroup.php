@@ -199,10 +199,8 @@ class CategoryGroup
             return false;
         }
 
-        $conditions = array('category_group_id' => $category_group_id);
-
-        $this->db->delete('category_group', $conditions);
-        $this->db->delete('category_group_translation', $conditions);
+        $this->db->delete('category_group', array('category_group_id' => $category_group_id));
+        $this->db->delete('category_group_translation', array('category_group_id' => $category_group_id));
 
         $result = true;
         $this->hook->attach('category.group.delete.after', $category_group_id, $check, $result, $this);

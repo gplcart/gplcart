@@ -16,7 +16,8 @@ use gplcart\core\models\File as FileModel,
     gplcart\core\models\Translation as TranslationModel,
     gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\traits\Image as ImageTrait,
-    gplcart\core\traits\Alias as AliasTrait;
+    gplcart\core\traits\Alias as AliasTrait,
+    gplcart\core\traits\Translation as TranslationTrait;
 
 /**
  * Manages basic behaviors and data related to pages
@@ -25,7 +26,8 @@ class Page
 {
 
     use ImageTrait,
-        AliasTrait;
+        AliasTrait,
+        TranslationTrait;
 
     /**
      * Database class instance
@@ -116,7 +118,6 @@ class Page
             $result = reset($list);
         }
 
-        $this->attachImages($result, $this->file, $this->translation_entity, 'page');
         $this->hook->attach('page.get.after', $condition, $result, $this);
         return $result;
     }

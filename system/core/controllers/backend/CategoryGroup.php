@@ -9,7 +9,8 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\CategoryGroup as CategoryGroupModel;
+use gplcart\core\models\CategoryGroup as CategoryGroupModel,
+    gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -17,6 +18,12 @@ use gplcart\core\controllers\backend\Controller as BackendController;
  */
 class CategoryGroup extends BackendController
 {
+
+    /**
+     * Entity translation model instance
+     * @var \gplcart\core\models\TranslationEntity $translation_entity
+     */
+    protected $translation_entity;
 
     /**
      * Category group model instance
@@ -38,12 +45,15 @@ class CategoryGroup extends BackendController
 
     /**
      * @param CategoryGroupModel $category_group
+     * @param TranslationEntityModel $translation_entity
      */
-    public function __construct(CategoryGroupModel $category_group)
+    public function __construct(CategoryGroupModel $category_group,
+            TranslationEntityModel $translation_entity)
     {
         parent::__construct();
 
         $this->category_group = $category_group;
+        $this->translation_entity = $translation_entity;
     }
 
     /**
@@ -166,11 +176,24 @@ class CategoryGroup extends BackendController
     protected function setCategoryGroup($category_group_id)
     {
         if (is_numeric($category_group_id)) {
-            $this->data_category_group = $this->category_group->get($category_group_id);
-            if (empty($this->data_category_group)) {
+            $category_group = $this->category_group->get($category_group_id);
+            if (empty($category_group)) {
                 $this->outputHttpStatus(404);
             }
+
+            $this->data_category_group = $this->prepareCategoryGroup($category_group);
         }
+    }
+
+    /**
+     * Prepare an array of category group data
+     * @param array $category_group
+     * @return array
+     */
+    protected function prepareCategoryGroup(array $category_group)
+    {
+        $this->setItemTranslation($category_group, 'category_group', $this->translation_entity);
+        return $category_group;
     }
 
     /**

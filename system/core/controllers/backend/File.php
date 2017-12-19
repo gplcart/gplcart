@@ -9,7 +9,8 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\File as FileModel;
+use gplcart\core\models\File as FileModel,
+    gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -25,6 +26,12 @@ class File extends BackendController
     protected $file;
 
     /**
+     * Entity translation model instance
+     * @var \gplcart\core\models\TranslationEntity $translation_entity
+     */
+    protected $translation_entity;
+
+    /**
      * Pager limit
      * @var array
      */
@@ -38,12 +45,14 @@ class File extends BackendController
 
     /**
      * @param FileModel $file
+     * @param TranslationEntityModel $translation_entity
      */
-    public function __construct(FileModel $file)
+    public function __construct(FileModel $file, TranslationEntityModel $translation_entity)
     {
         parent::__construct();
 
         $this->file = $file;
+        $this->translation_entity = $translation_entity;
     }
 
     /**
@@ -241,11 +250,24 @@ class File extends BackendController
     protected function setFile($file_id)
     {
         if (is_numeric($file_id)) {
-            $this->data_file = $this->file->get($file_id);
-            if (empty($this->data_file)) {
+            $file = $this->file->get($file_id);
+            if (empty($file)) {
                 $this->outputHttpStatus(404);
             }
+
+            $this->data_file = $this->prepareFile($file);
         }
+    }
+
+    /**
+     * Prepare an array of file data
+     * @param array $file
+     * @return array
+     */
+    protected function prepareFile(array $file)
+    {
+        $this->setItemTranslation($file, 'file', $this->translation_entity);
+        return $file;
     }
 
     /**

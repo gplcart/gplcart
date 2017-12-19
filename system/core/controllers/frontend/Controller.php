@@ -71,7 +71,7 @@ class Controller extends BaseController
      * @var \gplcart\core\models\Wishlist $wishlist
      */
     protected $wishlist;
-    
+
     /**
      * Wishlist action model instance
      * @var \gplcart\core\models\WishlistAction $wishlist_action
@@ -262,6 +262,7 @@ class Controller extends BaseController
 
         foreach ($cart['items'] as &$item) {
             $item['currency'] = $cart['currency'];
+            $this->setItemImages($item['product'], 'product', $this->image);
             $this->setItemThumbCart($item, $this->image);
             $this->setItemPriceFormatted($item, $this->price, $this->current_currency);
             $this->setItemTotalFormatted($item, $this->price);

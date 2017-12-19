@@ -23,7 +23,8 @@ use gplcart\core\models\Sku as SkuModel,
     gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\helpers\Request as RequestHelper;
 use gplcart\core\traits\Image as ImageTrait,
-    gplcart\core\traits\Alias as AliasTrait;
+    gplcart\core\traits\Alias as AliasTrait,
+    gplcart\core\traits\Translation as TranslationTrait;
 
 /**
  * Manages basic behaviors and data related to products
@@ -32,7 +33,8 @@ class Product
 {
 
     use ImageTrait,
-        AliasTrait;
+        AliasTrait,
+        TranslationTrait;
 
     /**
      * Database class instance
@@ -314,7 +316,6 @@ class Product
 
         $this->attachFields($result);
         $this->attachSku($result);
-        $this->attachImages($result, $this->file, $this->translation_entity, 'product');
 
         $this->hook->attach('product.get.after', $condition, $result, $this);
         return $result;

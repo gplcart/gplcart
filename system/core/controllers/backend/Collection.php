@@ -9,7 +9,8 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Collection as CollectionModel;
+use gplcart\core\models\Collection as CollectionModel,
+    gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -25,6 +26,12 @@ class Collection extends BackendController
     protected $collection;
 
     /**
+     * Entity translation model instance
+     * @var \gplcart\core\models\TranslationEntity $translation_entity
+     */
+    protected $translation_entity;
+
+    /**
      * Pager limit
      * @var array
      */
@@ -38,12 +45,15 @@ class Collection extends BackendController
 
     /**
      * @param CollectionModel $collection
+     * @param TranslationEntityModel $translation_entity
      */
-    public function __construct(CollectionModel $collection)
+    public function __construct(CollectionModel $collection,
+            TranslationEntityModel $translation_entity)
     {
         parent::__construct();
 
         $this->collection = $collection;
+        $this->translation_entity = $translation_entity;
     }
 
     /**
@@ -229,11 +239,24 @@ class Collection extends BackendController
     protected function setCollection($collection_id)
     {
         if (is_numeric($collection_id)) {
-            $this->data_collection = $this->collection->get($collection_id);
-            if (empty($this->data_collection)) {
+            $collection = $this->collection->get($collection_id);
+            if (empty($collection)) {
                 $this->outputHttpStatus(404);
             }
+
+            $this->data_collection = $this->prepareCollection($collection);
         }
+    }
+
+    /**
+     * Prepare an array of collection data
+     * @param array $collection
+     * @return array
+     */
+    protected function prepareCollection(array $collection)
+    {
+        $this->setItemTranslation($collection, 'collection', $this->translation_entity);
+        return $collection;
     }
 
     /**

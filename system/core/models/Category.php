@@ -17,7 +17,8 @@ use gplcart\core\models\File as FileModel,
     gplcart\core\models\Translation as TranslationModel,
     gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\traits\Image as ImageTrait,
-    gplcart\core\traits\Alias as AliasTrait;
+    gplcart\core\traits\Alias as AliasTrait,
+    gplcart\core\traits\Translation as TranslationTrait;
 
 /**
  * Manages basic behaviors and data related to product categories
@@ -26,7 +27,8 @@ class Category
 {
 
     use ImageTrait,
-        AliasTrait;
+        AliasTrait,
+        TranslationTrait;
 
     /**
      * Database class instance
@@ -176,7 +178,6 @@ class Category
             $result = reset($list);
         }
 
-        $this->attachImages($result, $this->file, $this->translation_entity, 'category');
         $this->hook->attach('category.get.after', $condition, $result, $this);
         return $result;
     }
@@ -402,7 +403,6 @@ class Category
         $updated += (int) $this->setAlias($data, $this->alias, 'category');
 
         $result = $updated > 0;
-
         $this->hook->attach('category.update.after', $category_id, $data, $result, $this);
         return (bool) $result;
     }

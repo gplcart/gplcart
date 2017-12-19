@@ -80,7 +80,18 @@ class Page extends FrontendController
             $this->outputHttpStatus(404);
         }
 
-        $this->data_page = $page;
+        $this->data_page = $this->preparePage($page);
+    }
+
+    /**
+     * Prepare an array of page data
+     * @param array $page
+     * @return array
+     */
+    protected function preparePage(array $page)
+    {
+        $this->setItemImages($page, 'page', $this->image);
+        return $page;
     }
 
     /**

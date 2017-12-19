@@ -465,6 +465,7 @@ class Product extends FrontendController
         $selected = $this->getSelectedCombinationProduct($product);
         $this->unshiftSelectedImageProduct($selected, $product);
 
+        $this->setItemImages($product, 'product', $this->image);
         $this->setItemThumbProduct($product, $this->image);
         $this->setItemProductInComparison($product, $this->product_compare);
         $this->setItemProductBundle($product, $this->product, $this->image);

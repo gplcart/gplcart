@@ -11,7 +11,8 @@ namespace gplcart\core\controllers\backend;
 
 use gplcart\core\models\Alias as AliasModel,
     gplcart\core\models\Category as CategoryModel,
-    gplcart\core\models\CategoryGroup as CategoryGroupModel;
+    gplcart\core\models\CategoryGroup as CategoryGroupModel,
+    gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -39,6 +40,12 @@ class Category extends BackendController
     protected $category_group;
 
     /**
+     * Entity translation model instance
+     * @var \gplcart\core\models\TranslationEntity $translation_entity
+     */
+    protected $translation_entity;
+
+    /**
      * Pager limits
      * @var array
      */
@@ -60,15 +67,17 @@ class Category extends BackendController
      * @param CategoryModel $category
      * @param AliasModel $alias
      * @param CategoryGroupModel $category_group
+     * @param TranslationEntityModel $translation_entity
      */
     public function __construct(CategoryModel $category, AliasModel $alias,
-            CategoryGroupModel $category_group)
+            CategoryGroupModel $category_group, TranslationEntityModel $translation_entity)
     {
         parent::__construct();
 
         $this->alias = $alias;
         $this->category = $category;
         $this->category_group = $category_group;
+        $this->translation_entity = $translation_entity;
     }
 
     /**
@@ -278,10 +287,12 @@ class Category extends BackendController
     protected function setCategory($category_id)
     {
         if (is_numeric($category_id)) {
-            $this->data_category = $this->category->get($category_id);
-            if (empty($this->data_category)) {
+            $category = $this->category->get($category_id);
+            if (empty($category)) {
                 $this->outputHttpStatus(404);
             }
+
+            $this->data_category = $this->prepareCategory($category);
         }
     }
 
@@ -293,6 +304,7 @@ class Category extends BackendController
     protected function prepareCategory(array $category)
     {
         $category['alias'] = $this->alias->getByEntity('category', $category['category_id']);
+        $this->setItemTranslation($category, 'category', $this->translation_entity);
         return $category;
     }
 

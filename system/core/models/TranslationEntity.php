@@ -69,10 +69,21 @@ class TranslationEntity
         $tables = $this->getTables();
 
         if (empty($tables[$entity])) {
-            throw new \InvalidArgumentException("No translation table exists for entity '$entity'");
+            throw new \InvalidArgumentException("Entity $entity is not supported for translations");
         }
 
         return $tables[$entity];
+    }
+
+    /**
+     * Whether the entity is supported for translations
+     * @param string $entity
+     * @return bool
+     */
+    public function isSupportedEntity($entity)
+    {
+        $tables = $this->getTables();
+        return isset($tables[$entity]);
     }
 
     /**

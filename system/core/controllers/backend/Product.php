@@ -15,7 +15,8 @@ use gplcart\core\models\Alias as AliasModel,
     gplcart\core\models\Category as CategoryModel,
     gplcart\core\models\Currency as CurrencyModel,
     gplcart\core\models\ProductClass as ProductClassModel,
-    gplcart\core\models\CategoryGroup as CategoryGroupModel;
+    gplcart\core\models\CategoryGroup as CategoryGroupModel,
+    gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -29,6 +30,12 @@ class Product extends BackendController
      * @var \gplcart\core\models\Product $product
      */
     protected $product;
+
+    /**
+     * Entity translation model instance
+     * @var \gplcart\core\models\TranslationEntity $translation_entity
+     */
+    protected $translation_entity;
 
     /**
      * Product class model instance
@@ -86,10 +93,11 @@ class Product extends BackendController
      * @param PriceModel $price
      * @param CurrencyModel $currency
      * @param AliasModel $alias
+     * @param TranslationEntityModel $translation_entity
      */
     public function __construct(ProductModel $product, ProductClassModel $product_class,
             CategoryModel $category, CategoryGroupModel $category_group, PriceModel $price,
-            CurrencyModel $currency, AliasModel $alias)
+            CurrencyModel $currency, AliasModel $alias, TranslationEntityModel $translation_entity)
     {
         parent::__construct();
 
@@ -100,6 +108,7 @@ class Product extends BackendController
         $this->currency = $currency;
         $this->product_class = $product_class;
         $this->category_group = $category_group;
+        $this->translation_entity = $translation_entity;
     }
 
     /**
@@ -316,6 +325,7 @@ class Product extends BackendController
         $product['price'] = $this->price->decimal($product['price'], $product['currency']);
 
         $this->setItemProductCombination($product, $this->image, $this->price);
+        $this->setItemTranslation($product, 'product', $this->translation_entity);
         return $product;
     }
 

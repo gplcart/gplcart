@@ -11,7 +11,8 @@ namespace gplcart\core\controllers\backend;
 
 use gplcart\core\models\Page as PageModel,
     gplcart\core\models\Alias as AliasModel,
-    gplcart\core\models\Category as CategoryModel;
+    gplcart\core\models\Category as CategoryModel,
+    gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -39,6 +40,12 @@ class Page extends BackendController
     protected $alias;
 
     /**
+     * Entity translation model instance
+     * @var \gplcart\core\models\TranslationEntity $translation_entity
+     */
+    protected $translation_entity;
+
+    /**
      * Pager limit
      * @var array
      */
@@ -54,14 +61,17 @@ class Page extends BackendController
      * @param PageModel $page
      * @param CategoryModel $category
      * @param AliasModel $alias
+     * @param TranslationEntityModel $translation_entity
      */
-    public function __construct(PageModel $page, CategoryModel $category, AliasModel $alias)
+    public function __construct(PageModel $page, CategoryModel $category, AliasModel $alias,
+            TranslationEntityModel $translation_entity)
     {
         parent::__construct();
 
         $this->page = $page;
         $this->alias = $alias;
         $this->category = $category;
+        $this->translation_entity = $translation_entity;
     }
 
     /**
@@ -238,8 +248,11 @@ class Page extends BackendController
     protected function preparePage(array $page)
     {
         $user = $this->user->get($page['user_id']);
+
         $page['author'] = isset($user['email']) ? $user['email'] : $this->text('Unknown');
         $page['alias'] = $this->alias->getByEntity('page', $page['page_id']);
+
+        $this->setItemTranslation($page, 'page', $this->translation_entity);
 
         return $page;
     }
