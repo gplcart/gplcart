@@ -57,43 +57,37 @@ class Csv
      * Final offset in bytes
      * @var integer
      */
-    protected $last_position;
+    protected $last_position = 0;
 
     /**
      * Starting offset in bytes
      * @var integer
      */
-    protected $offset;
+    protected $offset = 0;
 
     /**
      * Array of header names
      * @var array
      */
-    protected $header;
+    protected $header = array();
 
     /**
      * Skip or not first line
      * @var boolean
      */
-    protected $skip_header;
+    protected $skip_header = false;
 
     /**
      * CSV delimiter
      * @var string
      */
-    protected $delimiter;
+    protected $delimiter = ",";
 
     /**
      * Constructor
      */
     public function __construct()
     {
-        $this->last_position = 0;
-        $this->offset = 0;
-        $this->header = array();
-        $this->skip_header = false;
-        $this->delimiter = ",";
-
         ini_set('auto_detect_line_endings', true);
     }
 
@@ -102,9 +96,7 @@ class Csv
      */
     public function __destruct()
     {
-        if (isset($this->handle)) {
-            fclose($this->handle);
-        }
+        $this->close();
     }
 
     /**
@@ -113,7 +105,7 @@ class Csv
      * @param integer $filesize
      * @return $this
      */
-    public function setFile($file, $filesize = null)
+    public function open($file, $filesize = null)
     {
         $this->handle = fopen($file, 'r');
 
@@ -124,6 +116,16 @@ class Csv
         $this->file = $file;
         $this->total = isset($filesize) ? (int) $filesize : filesize($file);
         return $this;
+    }
+
+    /**
+     * Close file handle
+     */
+    public function close()
+    {
+        if (is_resource($this->handle)) {
+            fclose($this->handle);
+        }
     }
 
     /**
