@@ -21,7 +21,6 @@ use gplcart\core\models\Sku as SkuModel,
     gplcart\core\models\Translation as TranslationModel,
     gplcart\core\models\ProductRelation as ProductRelationModel,
     gplcart\core\models\TranslationEntity as TranslationEntityModel;
-use gplcart\core\helpers\Request as RequestHelper;
 use gplcart\core\traits\Image as ImageTrait,
     gplcart\core\traits\Alias as AliasTrait,
     gplcart\core\traits\Translation as TranslationTrait;
@@ -115,12 +114,6 @@ class Product
     protected $translation_entity;
 
     /**
-     * Request class instance
-     * @var \gplcart\core\helpers\Request $request
-     */
-    protected $request;
-
-    /**
      * @param Hook $hook
      * @param Config $config
      * @param SkuModel $sku
@@ -133,13 +126,11 @@ class Product
      * @param TranslationModel $translation
      * @param TranslationEntityModel $translation_entity
      * @param ProductRelationModel $product_relation
-     * @param RequestHelper $request
      */
     public function __construct(Hook $hook, Config $config, SkuModel $sku, FileModel $file,
             AliasModel $alias, PriceModel $price, SearchModel $search, PriceRuleModel $pricerule,
             ProductFieldModel $product_field, TranslationModel $translation,
-            TranslationEntityModel $translation_entity, ProductRelationModel $product_relation,
-            RequestHelper $request)
+            TranslationEntityModel $translation_entity, ProductRelationModel $product_relation)
     {
         $this->hook = $hook;
         $this->config = $config;
@@ -150,7 +141,6 @@ class Product
         $this->alias = $alias;
         $this->price = $price;
         $this->search = $search;
-        $this->request = $request;
         $this->price_rule = $pricerule;
         $this->translation = $translation;
         $this->product_field = $product_field;
@@ -214,8 +204,7 @@ class Product
 
         $this->setPrice($data);
 
-        $conditions = array('product_id' => $product_id);
-        $updated = $this->db->update('product', $data, $conditions);
+        $updated = $this->db->update('product', $data, array('product_id' => $product_id));
 
         $updated += (int) $this->setSku($data);
         $updated += (int) $this->setTranslations($data, $this->translation_entity, 'product');

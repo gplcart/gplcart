@@ -11,15 +11,15 @@ namespace gplcart\core\controllers\frontend;
 
 use gplcart\core\models\State as StateModel,
     gplcart\core\models\Order as OrderModel,
-    gplcart\core\models\OrderAction as OrderActionModel,
-    gplcart\core\models\CartAction as CartActionModel,
-    gplcart\core\models\UserAction as UserActionModel,
-    gplcart\core\models\OrderHistory as OrderHistoryModel,
-    gplcart\core\models\OrderDimension as OrderDimensionModel,
     gplcart\core\models\Address as AddressModel,
     gplcart\core\models\Country as CountryModel,
     gplcart\core\models\Payment as PaymentModel,
-    gplcart\core\models\Shipping as ShippingModel;
+    gplcart\core\models\Shipping as ShippingModel,
+    gplcart\core\models\CartAction as CartActionModel,
+    gplcart\core\models\UserAction as UserActionModel,
+    gplcart\core\models\OrderAction as OrderActionModel,
+    gplcart\core\models\OrderHistory as OrderHistoryModel,
+    gplcart\core\models\OrderDimension as OrderDimensionModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 use gplcart\core\traits\Checkout as CheckoutTrait;
 
