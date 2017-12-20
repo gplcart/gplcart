@@ -99,7 +99,7 @@ class Wishlist
     }
 
     /**
-     * Whether the user exceeds max allowed number of products in the wishlist
+     * Whether the user exceeds the max allowed number of products in the wishlist
      * @param integer|string $user_id
      * @param integer $store_id
      * @return boolean
