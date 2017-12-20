@@ -564,8 +564,9 @@ class Checkout extends FrontendController
      */
     protected function setFormDataDimensionsCheckout()
     {
-        $this->data_form['order']['volume'] = $this->order_dimension->getTotalVolume($this->data_form['order'], $this->data_form['cart']);
-        $this->data_form['order']['weight'] = $this->order_dimension->getTotalWeight($this->data_form['order'], $this->data_form['cart']);
+        $this->data_form['order']['volume'] = $this->order_dimension->getVolume($this->data_form['order'], $this->data_form['cart']);
+        $this->data_form['order']['weight'] = $this->order_dimension->getWeight($this->data_form['order'], $this->data_form['cart']);
+        $this->data_form['order']['data']['packages'] = $this->order_dimension->getPackages($this->data_form['order'], $this->data_form['cart']);
     }
 
     /**
