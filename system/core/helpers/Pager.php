@@ -215,42 +215,43 @@ class Pager
             for ($i = 1; $i <= $this->pages; $i++) {
                 $pages[] = $this->createPage($i, $i == $this->current);
             }
-        } else {
 
-            $num_adjacents = (int) floor(($this->limit_pages - 3) / 2);
-
-            if ($this->current + $num_adjacents > $this->pages) {
-                $sliding_start = $this->pages - $this->limit_pages + 2;
-            } else {
-                $sliding_start = $this->current - $num_adjacents;
-            }
-
-            if ($sliding_start < 2) {
-                $sliding_start = 2;
-            }
-
-            $sliding_end = $sliding_start + $this->limit_pages - 3;
-
-            if ($sliding_end >= $this->pages) {
-                $sliding_end = $this->pages - 1;
-            }
-
-            $pages[] = $this->createPage(1, $this->current == 1);
-
-            if ($sliding_start > 2) {
-                $pages[] = $this->createPageEllipsis();
-            }
-
-            for ($i = $sliding_start; $i <= $sliding_end; $i++) {
-                $pages[] = $this->createPage($i, $i == $this->current);
-            }
-
-            if ($sliding_end < $this->pages - 1) {
-                $pages[] = $this->createPageEllipsis();
-            }
-
-            $pages[] = $this->createPage($this->pages, $this->current == $this->pages);
+            return $pages;
         }
+
+        $num_adjacents = (int) floor(($this->limit_pages - 3) / 2);
+
+        if ($this->current + $num_adjacents > $this->pages) {
+            $sliding_start = $this->pages - $this->limit_pages + 2;
+        } else {
+            $sliding_start = $this->current - $num_adjacents;
+        }
+
+        if ($sliding_start < 2) {
+            $sliding_start = 2;
+        }
+
+        $sliding_end = $sliding_start + $this->limit_pages - 3;
+
+        if ($sliding_end >= $this->pages) {
+            $sliding_end = $this->pages - 1;
+        }
+
+        $pages[] = $this->createPage(1, $this->current == 1);
+
+        if ($sliding_start > 2) {
+            $pages[] = $this->createPageEllipsis();
+        }
+
+        for ($i = $sliding_start; $i <= $sliding_end; $i++) {
+            $pages[] = $this->createPage($i, $i == $this->current);
+        }
+
+        if ($sliding_end < $this->pages - 1) {
+            $pages[] = $this->createPageEllipsis();
+        }
+
+        $pages[] = $this->createPage($this->pages, $this->current == $this->pages);
 
         return $pages;
     }
