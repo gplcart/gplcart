@@ -13,12 +13,15 @@ use gplcart\core\models\Order as OrderModel,
     gplcart\core\models\Payment as PaymentModel,
     gplcart\core\models\Shipping as ShippingModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
+use gplcart\core\traits\Checkout as CheckoutTrait;
 
 /**
  * Handles incoming requests and outputs data related to checkout complete page
  */
 class CheckoutComplete extends FrontendController
 {
+
+    use CheckoutTrait;
 
     /**
      * Order model instance
@@ -71,11 +74,24 @@ class CheckoutComplete extends FrontendController
         $this->setBreadcrumbCheckoutComplete();
 
         $this->setData('complete_message', $this->getMessageCheckoutComplete());
-        $this->setData('complete_templates', $this->getTemplatesCheckoutComplete());
 
+        $this->setDataTemplatesCheckoutComplete();
         $this->hook->attach('order.complete.page', $this->data_order, $this->order, $this);
-
         $this->outputCheckoutComplete();
+    }
+
+    /**
+     * Sets payment/shipping method templates on the checkout complete page
+     */
+    protected function setDataTemplatesCheckoutComplete()
+    {
+
+        $templates = array(
+            'payment' => $this->getPaymentMethodTemplate('complete', $this->data_order, $this->payment),
+            'shipping' => $this->getShippingMethodTemplate('complete', $this->data_order, $this->shipping)
+        );
+
+        $this->setData('complete_templates', $templates);
     }
 
     /**
@@ -121,73 +137,6 @@ class CheckoutComplete extends FrontendController
     }
 
     /**
-     * Returns an array of rendered templates provided by payment/shipping methods
-     * @return array
-     */
-    protected function getTemplatesCheckoutComplete()
-    {
-        $templates = array();
-        foreach (array('payment', 'shipping') as $type) {
-
-            if (empty($this->data_order[$type])) {
-                continue;
-            }
-
-            if ($type === 'shipping') {
-                $method = $this->shipping->get($this->data_order[$type]);
-            } else if ($type === 'payment') {
-                $method = $this->payment->get($this->data_order[$type]);
-            }
-
-            if (empty($method['status']) || empty($method['template']['complete'])) {
-                continue;
-            }
-
-            $settings = array();
-            $template = $method['template']['complete'];
-
-            if (!empty($method['module'])) {
-                $template = "{$method['module']}|$template";
-                $settings = $this->module->getSettings($method['module']);
-            }
-
-            $data = array(
-                'method' => $method,
-                'settings' => $settings,
-                'order' => $this->data_order
-            );
-
-            $templates[$type] = $this->render($template, $data);
-        }
-
-        return $templates;
-    }
-
-    /**
-     * Returns the checkout complete message
-     * @return string
-     */
-    protected function getMessageCheckoutComplete()
-    {
-        if (is_numeric($this->data_order['user_id'])) {
-            $default = $this->text('Thank you for your order! Order ID: @num, status: @status');
-            $message = $this->config('order_complete_message', $default);
-        } else {
-            $default = $this->text('Thank you for your order! Order ID: @num, status: @status');
-            $message = $this->config('order_complete_message_anonymous', $default);
-        }
-
-        $vars = array(
-            '@num' => $this->data_order['order_id'],
-            '@status' => $this->order->getStatusName($this->data_order['status'])
-        );
-
-        $message = $this->text($message, $vars);
-        $this->hook->attach('order.complete.message', $message, $this->data_order, $this);
-        return $message;
-    }
-
-    /**
      * Sets titles on the checkout complete page
      */
     protected function setTitleCheckoutComplete()
@@ -215,6 +164,30 @@ class CheckoutComplete extends FrontendController
     protected function outputCheckoutComplete()
     {
         $this->output('checkout/complete');
+    }
+
+    /**
+     * Returns the checkout complete message
+     * @return string
+     */
+    protected function getMessageCheckoutComplete()
+    {
+        if (is_numeric($this->data_order['user_id'])) {
+            $default = $this->text('Thank you for your order! Order ID: @num, status: @status');
+            $message = $this->config('order_complete_message', $default);
+        } else {
+            $default = $this->text('Thank you for your order! Order ID: @num, status: @status');
+            $message = $this->config('order_complete_message_anonymous', $default);
+        }
+
+        $vars = array(
+            '@num' => $this->data_order['order_id'],
+            '@status' => $this->order->getStatusName($this->data_order['status'])
+        );
+
+        $message = $this->text($message, $vars);
+        $this->hook->attach('order.complete.message', $message, $this->data_order, $this);
+        return $message;
     }
 
 }

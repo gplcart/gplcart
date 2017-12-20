@@ -21,12 +21,15 @@ use gplcart\core\models\State as StateModel,
     gplcart\core\models\Payment as PaymentModel,
     gplcart\core\models\Shipping as ShippingModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
+use gplcart\core\traits\Checkout as CheckoutTrait;
 
 /**
  * Handles incoming requests and outputs data related to checkout process
  */
 class Checkout extends FrontendController
 {
+
+    use CheckoutTrait;
 
     /**
      * Order model instance
@@ -244,7 +247,6 @@ class Checkout extends FrontendController
     protected function setAdminModeCheckout($mode)
     {
         $this->admin = null;
-
         if ($this->access('order_add')) {
             if ($mode === 'add') {
                 $this->admin = 'add';
@@ -281,7 +283,6 @@ class Checkout extends FrontendController
     public function editCheckout()
     {
         $this->setCartContentCheckout();
-
         $this->setTitleEditCheckout();
         $this->setBreadcrumbEditCheckout();
 
@@ -289,7 +290,6 @@ class Checkout extends FrontendController
         $this->setFormDataBeforeCheckout();
 
         $this->submitEditCheckout();
-
         $this->setFormDataAfterCheckout();
         $this->setDataFormCheckout();
 
@@ -341,11 +341,9 @@ class Checkout extends FrontendController
     protected function setTitleEditCheckout()
     {
         if ($this->admin === 'clone') {
-            $vars = array('@num' => $this->data_order['order_id']);
-            $text = $this->text('Cloning order #@num', $vars);
+            $text = $this->text('Cloning order #@num', array('@num' => $this->data_order['order_id']));
         } else if ($this->admin === 'add') {
-            $vars = array('%name' => $this->data_user['name']);
-            $text = $this->text('Add order for user %name', $vars);
+            $text = $this->text('Add order for user %name', array('%name' => $this->data_user['name']));
         } else {
             $text = $this->text('Checkout');
         }
@@ -479,27 +477,27 @@ class Checkout extends FrontendController
 
         $this->data_form['default_payment_method'] = false;
         $this->data_form['default_shipping_method'] = false;
-
         $this->data_form['same_payment_address'] = $this->same_payment_address;
         $this->data_form['get_payment_methods'] = $this->isPosted('get_payment_methods');
         $this->data_form['get_shipping_methods'] = $this->isPosted('get_shipping_methods');
-
         $this->data_form['show_login_form'] = $this->show_login_form;
         $this->data_form['show_payment_address_form'] = $this->show_payment_address_form;
         $this->data_form['show_shipping_address_form'] = $this->show_shipping_address_form;
         $this->data_form['show_payment_methods'] = !$this->data_form['has_dynamic_payment_methods'];
         $this->data_form['show_shipping_methods'] = !$this->data_form['has_dynamic_shipping_methods'];
 
-        $this->data_form['context_templates'] = $this->getTemplatesCheckout('context', $this->getSubmitted());
+        $submitted = array('order' => $this->getSubmitted());
+
+        $this->data_form['context_templates'] = array(
+            'payment' => $this->getPaymentMethodTemplate('context', $submitted['order'], $this->payment),
+            'shipping' => $this->getShippingMethodTemplate('context', $submitted['order'], $this->shipping),
+        );
 
         $this->setFormDataDimensionsCheckout();
-
-        $submitted = array('order' => $this->getSubmitted());
         $this->data_form = gplcart_array_merge($this->data_form, $submitted);
 
         $this->setFormDataRequestServicesCheckout('payment');
         $this->setFormDataRequestServicesCheckout('shipping');
-
         $this->setFormDataCalculatedCheckout();
         $this->setFormDataPanesCheckout();
     }
@@ -530,10 +528,10 @@ class Checkout extends FrontendController
         $this->data_form['countries'] = $countries;
         $this->data_form['addresses'] = $this->address->getTranslatedList($this->order_user_id);
 
-        $excess = $this->address->getExcessed($this->order_user_id, $this->data_form['addresses']);
+        $excessed = $this->address->getExcessed($this->order_user_id, $this->data_form['addresses']);
 
-        $this->data_form['can_add_address'] = empty($excess);
-        $this->data_form['can_save_address'] = empty($excess) && !empty($this->uid);
+        $this->data_form['can_add_address'] = empty($excessed);
+        $this->data_form['can_save_address'] = empty($excessed) && !empty($this->uid);
 
         foreach ($address as $type => $fields) {
             $this->data_form['format'][$type] = $this->country->getFormat($fields['country']);
@@ -553,7 +551,8 @@ class Checkout extends FrontendController
         $this->data_form["request_{$type}_methods"] = false;
 
         if (!empty($this->data_form["get_{$type}_methods"])//
-                || (!empty($this->data_form['order'][$type]) && !empty($this->data_form["has_dynamic_{$type}_methods"]))) {
+                || (!empty($this->data_form['order'][$type])//
+                && !empty($this->data_form["has_dynamic_{$type}_methods"]))) {
             $this->data_form["show_{$type}_methods"] = true;
             $this->data_form["request_{$type}_methods"] = true;
         }
@@ -1114,51 +1113,6 @@ class Checkout extends FrontendController
     protected function outputEditCheckout()
     {
         $this->output('checkout/checkout');
-    }
-
-    /**
-     * Returns an array of rendered templates provided by payment/shipping methods
-     * @param string $name
-     * @param array $order
-     * @return array
-     */
-    protected function getTemplatesCheckout($name, array $order)
-    {
-        $templates = array();
-        foreach (array('payment', 'shipping') as $type) {
-
-            if (empty($order[$type])) {
-                continue;
-            }
-
-            if ($type === 'shipping') {
-                $method = $this->shipping->get($order[$type]);
-            } else if ($type === 'payment') {
-                $method = $this->payment->get($order[$type]);
-            }
-
-            if (empty($method['status']) || empty($method['template'][$name])) {
-                continue;
-            }
-
-            $settings = array();
-            $template = $method['template'][$name];
-
-            if (!empty($method['module'])) {
-                $template = "{$method['module']}|$template";
-                $settings = $this->module->getSettings($method['module']);
-            }
-
-            $options = array(
-                'order' => $order,
-                'method' => $method,
-                'settings' => $settings
-            );
-
-            $templates[$type] = $this->render($template, $options);
-        }
-
-        return $templates;
     }
 
 }
