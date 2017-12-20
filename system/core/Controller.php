@@ -230,7 +230,7 @@ abstract class Controller
      * @var \gplcart\core\models\Language $language
      */
     protected $language;
-    
+
     /**
      * Translation model instance
      * @var \gplcart\core\models\Translation $translation
@@ -432,7 +432,7 @@ abstract class Controller
         $this->filter = $this->getInstance('gplcart\\core\\models\\Filter');
         $this->language = $this->getInstance('gplcart\\core\\models\\Language');
         $this->validator = $this->getInstance('gplcart\\core\\models\\Validator');
-        
+
         $this->translation = $this->getInstance('gplcart\\core\\models\\Translation');
 
         $this->url = $this->getInstance('gplcart\\core\\helpers\\Url');
@@ -1161,7 +1161,7 @@ abstract class Controller
     }
 
     /**
-     *
+     * Returns all or a single module setting
      * @param string $module_id
      * @param null|string $key
      * @param mixed $default
