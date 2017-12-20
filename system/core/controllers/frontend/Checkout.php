@@ -528,7 +528,7 @@ class Checkout extends FrontendController
         $this->data_form['countries'] = $countries;
         $this->data_form['addresses'] = $this->address->getTranslatedList($this->order_user_id);
 
-        $excessed = $this->address->getExcessed($this->order_user_id, $this->data_form['addresses']);
+        $excessed = $this->address->getExceeded($this->order_user_id, $this->data_form['addresses']);
 
         $this->data_form['can_add_address'] = empty($excessed);
         $this->data_form['can_save_address'] = empty($excessed) && !empty($this->uid);
