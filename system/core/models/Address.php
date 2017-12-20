@@ -322,10 +322,8 @@ class Address
             'user_id' => $user_id
         );
 
-        $list = (array) $this->getList($conditions);
-
         $addresses = array();
-        foreach ($list as $address_id => $address) {
+        foreach ((array) $this->getList($conditions) as $address_id => $address) {
             $addresses[$address_id] = $this->getTranslated($address, true);
         }
 
@@ -402,18 +400,18 @@ class Address
      */
     public function controlLimit($user_id)
     {
-        foreach ($this->getExcessed($user_id) as $address) {
+        foreach ($this->getExceeded($user_id) as $address) {
             $this->delete($address['address_id']);
         }
     }
 
     /**
-     * Returns an array of excessed addresses for the user ID
+     * Returns an array of exceeded addresses for the user ID
      * @param string|integer $user_id
      * @param null|array $existing
      * @return array
      */
-    public function getExcessed($user_id, $existing = null)
+    public function getExceeded($user_id, $existing = null)
     {
         $limit = $this->getLimit($user_id);
 
