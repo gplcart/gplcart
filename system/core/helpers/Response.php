@@ -56,6 +56,23 @@ class Response
     }
 
     /**
+     * Adds headers from options
+     * @param array $options
+     * @return $this
+     */
+    protected function addOptionalHeaders($options)
+    {
+        if (!empty($options['headers'])) {
+            foreach ((array) $options['headers'] as $header) {
+                list($name, $value) = array_pad((array) $header, 2, null);
+                $this->addHeader($name, $value);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * Returns an array of standard HTTP statuses
      * @param null|int $status
      * @return array|string
@@ -110,23 +127,6 @@ class Response
         }
 
         return isset($statuses[$status]) ? $statuses[$status] : '';
-    }
-
-    /**
-     * Adds headers from options
-     * @param array $options
-     * @return $this
-     */
-    protected function addOptionalHeaders($options)
-    {
-        if (!empty($options['headers'])) {
-            foreach ((array) $options['headers'] as $header) {
-                list($name, $value) = array_pad((array) $header, 2, null);
-                $this->addHeader($name, $value);
-            }
-        }
-
-        return $this;
     }
 
     /**
