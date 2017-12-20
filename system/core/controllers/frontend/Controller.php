@@ -344,9 +344,7 @@ class Controller extends BaseController
             return array();
         }
 
-        $options += array(
-            'entity' => 'product');
-
+        $options += array('entity' => 'product');
         return $this->prepareEntityItems((array) $this->product->getList($conditions), $options);
     }
 
@@ -404,6 +402,7 @@ class Controller extends BaseController
 
         foreach ($items as &$item) {
 
+            $this->setItemUrl($item, $options);
             $this->setItemThumb($item, $this->image, $options);
 
             if ($options['entity'] === 'product') {
@@ -415,7 +414,6 @@ class Controller extends BaseController
                 $this->setItemRenderedProduct($item, $options);
             } else {
                 $this->setItemIndentation($item);
-                $this->setItemUrl($item, $options);
                 $this->setItemUrlActive($item);
                 $this->setItemRendered($item, array('item' => $item), $options);
             }
