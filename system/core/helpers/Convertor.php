@@ -226,7 +226,7 @@ class Convertor
     {
         if ($this->units[$unit]['base'] != $unit) {
             unset($this->units[$unit]);
-            return $this->units;
+            return $this;
         }
 
         foreach ($this->units as $key => $data) {

@@ -282,7 +282,8 @@ class Category
             return $tree;
         }
 
-        $tree = $this->prepareTree($this->getList($options), $options);
+        $list = (array) $this->getList($options);
+        $tree = $this->prepareTree($list, $options);
         $this->hook->attach('category.tree', $tree, $this);
         return $tree;
     }

@@ -90,8 +90,10 @@ class Image
             return false;
         }
 
+        $files = (array) $this->file->getList(array('file_id' => $file_id));
+
         $deleted = $count = 0;
-        foreach ($this->file->getList(array('file_id' => $file_id)) as $file) {
+        foreach ($files as $file) {
             $count++;
             $deleted += (int) $this->file->delete($file['file_id']);
         }

@@ -1575,7 +1575,7 @@ abstract class Controller
         }
 
         $full = strpos($url, $this->base) === 0;
-        $this->url->redirect($url, $query, $full, $exclude_lang);
+        $this->url->redirect($url, (array) $query, $full, $exclude_lang);
     }
 
     /**

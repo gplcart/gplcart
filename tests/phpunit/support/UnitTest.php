@@ -76,7 +76,7 @@ class UnitTest extends PHPUnit_Extensions_Database_TestCase
 
     /**
      * Returns a class instance with auto-mocked class dependencies
-     * @param syring $class
+     * @param string $class
      * @param array $mock_config
      * @return object
      * @throws \ReflectionException

@@ -111,7 +111,6 @@ class AccountAddress extends FrontendController
         $address_id = $this->getQuery($key);
 
         if (!empty($address_id)) {
-            $this->controlAccessEditAccount();
             if ($this->address->delete($address_id)) {
                 $this->redirect('', $this->text('Address has been deleted'), 'success');
             }

@@ -47,7 +47,7 @@ class Curl
 
     /**
      * An array of response information
-     * @var array
+     * @var mixed
      */
     protected $info = array();
 
