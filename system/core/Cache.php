@@ -98,8 +98,12 @@ class Cache
      */
     public function get($cid, $options = array())
     {
+        $options += array(
+            'lifespan' => 0,
+            'default' => null
+        );
+
         $result = null;
-        $options += array('default' => null, 'lifespan' => 0);
         $this->hook->attach('cache.get.before', $cid, $options, $result, $this);
 
         if (isset($result)) {
