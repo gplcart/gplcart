@@ -98,7 +98,7 @@ class Facade
     public function routeHttp()
     {
         if ($this->config->isInitialized() || $this->url->isInstall()) {
-            $this->route->output();
+            $this->route->process();
         } else {
             $this->url->redirect('install');
         }
