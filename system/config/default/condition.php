@@ -68,7 +68,7 @@ return array(
         'description' => /* @text */'Parameters: One value in time format. See http://php.net/manual/en/datetime.formats.php',
         'handlers' => array(
             'process' => array('gplcart\\core\\handlers\\condition\\Date', 'date'),
-            'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Date', 'date'),
+            'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Date', 'current'),
         ),
     ),
     'pricerule_used' => array(

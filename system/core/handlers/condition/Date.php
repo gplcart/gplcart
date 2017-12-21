@@ -17,17 +17,12 @@ use gplcart\core\handlers\condition\Base as BaseHandler;
 class Date extends BaseHandler
 {
 
-    public function __construct()
-    {
-        // Empty
-    }
-
     /**
      * Whether the date condition is met
      * @param array $condition
      * @return boolean
      */
-    public function date(array $condition)
+    public function current(array $condition)
     {
         $value = strtotime(reset($condition['value']));
         return empty($value) ? false : $this->compare(GC_TIME, $value, $condition['operator']);
