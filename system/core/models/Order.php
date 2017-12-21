@@ -566,4 +566,25 @@ class Order
         }
     }
 
+    /**
+     * Returns the checkout complete message
+     * @return string
+     */
+    public function getCompleteMessage(array $order)
+    {
+        $vars = array(
+            '@num' => $order['order_id'],
+            '@status' => $this->getStatusName($order['status'])
+        );
+
+        if (is_numeric($order['user_id'])) {
+            $message = $this->translation->text('Thank you for your order! Order ID: @num, status: @status', $vars);
+        } else {
+            $message = $this->translation->text('Thank you for your order! Order ID: @num, status: @status', $vars);
+        }
+
+        $this->hook->attach('order.complete.message', $message, $order, $this);
+        return $message;
+    }
+
 }
