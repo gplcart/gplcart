@@ -73,7 +73,7 @@ class CheckoutComplete extends FrontendController
         $this->setTitleCheckoutComplete();
         $this->setBreadcrumbCheckoutComplete();
 
-        $this->setData('complete_message', $this->getMessageCheckoutComplete());
+        $this->setData('message', $this->getMessageCheckoutComplete());
 
         $this->setDataTemplatesCheckoutComplete();
         $this->hook->attach('order.complete.page', $this->data_order, $this->order, $this);
@@ -90,7 +90,7 @@ class CheckoutComplete extends FrontendController
             'shipping' => $this->getShippingMethodTemplate('complete', $this->data_order, $this->shipping)
         );
 
-        $this->setData('complete_templates', $templates);
+        $this->setData('rendered', $templates);
     }
 
     /**
@@ -171,22 +171,7 @@ class CheckoutComplete extends FrontendController
      */
     protected function getMessageCheckoutComplete()
     {
-        if (is_numeric($this->data_order['user_id'])) {
-            $default = $this->text('Thank you for your order! Order ID: @num, status: @status');
-            $message = $this->config('order_complete_message', $default);
-        } else {
-            $default = $this->text('Thank you for your order! Order ID: @num, status: @status');
-            $message = $this->config('order_complete_message_anonymous', $default);
-        }
-
-        $vars = array(
-            '@num' => $this->data_order['order_id'],
-            '@status' => $this->order->getStatusName($this->data_order['status'])
-        );
-
-        $message = $this->text($message, $vars);
-        $this->hook->attach('order.complete.message', $message, $this->data_order, $this);
-        return $message;
+        return $this->order->getCompleteMessage($this->data_order);
     }
 
 }
