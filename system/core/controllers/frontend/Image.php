@@ -111,12 +111,7 @@ class Image extends FrontendController
     protected function tryOutputImage()
     {
         if (is_file($this->data_cached_file)) {
-
-            $expires = $this->image_style->getCacheLifetime();
-            $timestamp = filemtime($this->data_cached_file);
-
-            $this->response->addHeader('Cache-Control', "public, max-age=$expires")
-                    ->addHeader('Last-Modified', gmdate('D, d M Y H:i:s T', $timestamp))
+            $this->response->addHeader('Last-Modified', gmdate('D, d M Y H:i:s T', filemtime($this->data_cached_file)))
                     ->addHeader('Content-Length', filesize($this->data_cached_file))
                     ->addHeader('Content-type', mime_content_type($this->data_cached_file))
                     ->sendHeaders();
