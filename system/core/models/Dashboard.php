@@ -176,7 +176,7 @@ class Dashboard
             return (bool) $result;
         }
 
-        $result = (bool) $this->db->delete('dashboard', array('dashboard_id'));
+        $result = (bool) $this->db->delete('dashboard', array('dashboard_id' => $dashboard_id));
         $this->hook->attach('dashboard.delete.after', $dashboard_id, $result, $this);
         return (bool) $result;
     }

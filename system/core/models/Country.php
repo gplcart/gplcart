@@ -182,16 +182,24 @@ class Country
             return false;
         }
 
-        $conditions = array('code' => $code);
-        $result = (bool) $this->db->delete('country', $conditions);
+        $result = (bool) $this->db->delete('country', array('code' => $code));
 
         if ($result) {
-            $this->db->delete('city', $conditions);
-            $this->db->delete('state', $conditions);
+            $this->deleteLinked($code);
         }
 
         $this->hook->attach('country.delete.after', $code, $check, $result, $this);
         return (bool) $result;
+    }
+
+    /**
+     * Deletes all database records related to the country
+     * @param string $code
+     */
+    protected function deleteLinked($code)
+    {
+        $this->db->delete('city', array('country' => $code));
+        $this->db->delete('state', array('country' => $code));
     }
 
     /**

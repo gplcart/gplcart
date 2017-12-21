@@ -195,9 +195,9 @@ class Address
             $conditions[] = $data['user_id'];
         }
 
-        if (isset($data['user_email'])) {
-            $sql .= ' AND u.email = ?';
-            $conditions[] = $data['user_email'];
+        if (isset($data['user_email_like'])) {
+            $sql .= ' AND u.email LIKE ?';
+            $conditions[] = "%{$data['user_email_like']}%";
         }
 
         if (isset($data['full_name'])) {
@@ -216,7 +216,8 @@ class Address
         }
 
         if (isset($data['city_name'])) {
-            $sql .= ' AND ci.name LIKE ?';
+            $sql .= ' AND (ci.name LIKE ? OR a.city_id LIKE ?)';
+            $conditions[] = "%{$data['city_name']}%";
             $conditions[] = "%{$data['city_name']}%";
         }
 
@@ -232,6 +233,7 @@ class Address
             'country' => 'a.country',
             'city_id' => 'a.city_id',
             'user_id' => 'a.user_id',
+            'user_email' => 'u.email',
             'address_1' => 'a.address_1',
             'address_id' => 'a.address_id',
             'full_name' => 'TRIM(a.first_name || " " || a.middle_name || " " || a.last_name)'

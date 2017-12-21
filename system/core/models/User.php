@@ -483,28 +483,25 @@ class User
     public function getPasswordLength()
     {
         return array(
-            'min' => $this->config->get('user_password_min_length', 8),
-            'max' => $this->config->get('user_password_max_length', 255)
+            $this->config->get('user_password_min_length', 8),
+            $this->config->get('user_password_max_length', 255)
         );
     }
 
     /**
      * Whether the password matches the user's password stored in the database
      * @param string $password
-     * @param array|int $user
+     * @param array $user
      * @return boolean
      */
-    public function passwordMatches($password, $user)
+    public function passwordMatches($password, array $user)
     {
-        if (!is_array($user)) {
-            $user = $this->get($user);
-        }
-
         if (empty($user['hash'])) {
             return false;
         }
 
-        return gplcart_string_equals($user['hash'], gplcart_string_hash($password, $user['hash'], 0));
+        $expected = gplcart_string_hash($password, $user['hash'], 0);
+        return gplcart_string_equals($user['hash'], $expected);
     }
 
     /**
