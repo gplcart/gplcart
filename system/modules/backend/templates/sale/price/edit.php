@@ -78,7 +78,7 @@
       <div class="help-block">
         <?php echo $this->error('value'); ?>
         <div class="text-muted">
-          <?php echo $this->text('Numeric value to be added to the original price when the rule is applied. To substract use negative numbers'); ?>
+          <?php echo $this->text('Numeric value to be added to the original price when the rule is applied. <b>To substract use negative numbers</b>'); ?>
         </div>
       </div>
     </div>

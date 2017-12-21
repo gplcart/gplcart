@@ -8,13 +8,13 @@
  * To see available variables <?php print_r(get_defined_vars()); ?>
  */
 ?>
-<?php if (!empty($complete_message)) { ?>
-<div class="alert alert-success">
-  <?php echo $complete_message; ?>
+<?php if (!empty($message)) { ?>
+<div class="complete-message">
+<?php echo $this->filter($message); ?>
 </div>
 <?php } ?>
-<?php if (!empty($complete_templates)) { ?>
-<?php foreach ($complete_templates as $complete_template) { ?>
-<?php echo $complete_template; ?>
+<?php if (!empty($rendered)) { ?>
+<?php foreach ($rendered as $string) { ?>
+<?php echo $string; ?>
 <?php } ?>
 <?php } ?>

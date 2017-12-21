@@ -50,7 +50,7 @@
         <td><?php echo $this->text('Created'); ?></td>
         <td><?php echo $this->date($order['created']); ?></td>
       </tr>
-      <?php if (!empty($order['modified'])) { ?>
+      <?php if (!empty($order['modified']) && $order['modified'] != $order['created']) { ?>
       <tr>
         <td><?php echo $this->text('Last modified'); ?></td>
         <td><?php echo $this->date($order['modified']); ?></td>
