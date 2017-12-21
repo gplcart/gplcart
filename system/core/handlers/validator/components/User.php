@@ -231,10 +231,10 @@ class User extends ComponentValidator
         }
 
         $length = mb_strlen($value);
-        $limit = $this->user->getPasswordLength();
+        list($min, $max) = $this->user->getPasswordLength();
 
-        if ($length < $limit['min'] || $length > $limit['max']) {
-            $this->setErrorLengthRange('password', $this->translation->text('Password'), $limit['min'], $limit['max']);
+        if ($length < $min || $length > $max) {
+            $this->setErrorLengthRange('password', $this->translation->text('Password'), $min, $max);
             return false;
         }
         return true;

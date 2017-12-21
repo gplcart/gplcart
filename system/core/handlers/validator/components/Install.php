@@ -145,11 +145,11 @@ class Install extends ComponentValidator
             return false;
         }
 
-        $limit = $this->user->getPasswordLength();
         $length = mb_strlen($password);
+        list($min, $max) = $this->user->getPasswordLength();
 
-        if ($length < $limit['min'] || $length > $limit['max']) {
-            $this->setErrorLengthRange($field, $label, $limit['min'], $limit['max']);
+        if ($length < $min || $length > $max) {
+            $this->setErrorLengthRange($field, $label, $min, $max);
             return false;
         }
 
