@@ -51,7 +51,7 @@ class Cache
     }
 
     /**
-     * Returns a path to the current cache file
+     * The current cache file
      * @return string
      */
     public function getFile()
