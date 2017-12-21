@@ -278,6 +278,26 @@
     };
 
     /**
+     * Emulate "get" form submit
+     * @param {Object} el
+     * @returns {undefined}
+     */
+    var redirectFilter = function (el) {
+
+        var params = el.closest('thead').find(':input[name]').filter(function () {
+            return this.value !== "";
+        }).serialize();
+
+        var redirect = window.location.href.split('?')[0];
+
+        if (params) {
+            redirect += '?' + params;
+        }
+
+        window.location = redirect;
+    };
+
+    /**
      * Adds one more combination row to the table
      * @returns {undefined}
      */
@@ -704,21 +724,15 @@
      */
     Gplcart.onload.setFilter = function () {
 
-        var redirect, params;
-
         $('thead :submit').click(function () {
-            params = $(this).closest('thead').find(':input[name]').filter(function () {
-                return this.value !== "";
-            }).serialize();
-
-            redirect = window.location.href.split('?')[0];
-
-            if (params) {
-                redirect += '?' + params;
-            }
-
-            window.location = redirect;
+            redirectFilter($(this));
             return false;
+        });
+
+        $('thead :input').keyup(function (e) {
+            if (e.which === 13) {
+                redirectFilter($(this));
+            }
         });
     };
 
