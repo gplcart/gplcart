@@ -19,14 +19,14 @@
   <table class="table currencies">
     <thead>
       <tr>
-        <th><?php echo $this->text('Name'); ?></th>
-        <th><?php echo $this->text('Code'); ?></th>
-        <th><?php echo $this->text('Symbol'); ?></th>
-        <th><?php echo $this->text('Conversion rate'); ?></th>
+        <th><a href="<?php echo $sort_name; ?>"><?php echo $this->text('Name'); ?> <i class="fa fa-sort"></i></a></th>
+        <th><a href="<?php echo $sort_code; ?>"><?php echo $this->text('Code'); ?> <i class="fa fa-sort"></i></a></th>
+        <th><a href="<?php echo $sort_symbol; ?>"><?php echo $this->text('Symbol'); ?> <i class="fa fa-sort"></i></a></th>
+        <th><a href="<?php echo $sort_conversion_rate; ?>"><?php echo $this->text('Conversion rate'); ?> <i class="fa fa-sort"></i></a></th>
+        <th><a href="<?php echo $sort_status; ?>"><?php echo $this->text('Enabled'); ?> <i class="fa fa-sort"></i></a></th>
+        <th><a href="<?php echo $sort_modified; ?>"><?php echo $this->text('Updated'); ?> <i class="fa fa-sort"></i></a></th>
         <th><?php echo $this->text('Default'); ?></th>
-        <th><?php echo $this->text('Enabled'); ?></th>
         <th><?php echo $this->text('In database'); ?></th>
-        <th><?php echo $this->text('Updated'); ?></th>
         <th></th>
       </tr>
     </thead>
@@ -44,6 +44,7 @@
           <i class="fa fa-square-o"></i>
           <?php } ?>
         </td>
+        <td class="middle"><?php echo empty($currency['modified']) ? '--' : $this->date($currency['modified']); ?></td>
         <td class="middle">
           <?php if (!empty($currency['status']) || $default_currency == $code) { ?>
           <i class="fa fa-check-square-o"></i>
@@ -58,7 +59,6 @@
           <i class="fa fa-check-square-o"></i>
           <?php } ?>
         </td>
-        <td class="middle"><?php echo empty($currency['modified']) ? '--' : $this->date($currency['modified']); ?></td>
         <td class="middle">
          <?php if ($this->access('currency_edit')) { ?>
           <a href="<?php echo $this->url("admin/settings/currency/edit/$code"); ?>" title="" class="edit">
@@ -71,3 +71,6 @@
     </tbody>
   </table>
 </div>
+<?php if(!empty($_pager)) { ?>
+<?php echo $_pager; ?>
+<?php } ?>

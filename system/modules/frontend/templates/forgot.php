@@ -24,7 +24,7 @@
       <div class="form-group<?php echo $this->error('password', ' has-error'); ?>">
         <label class="control-label col-md-2"><?php echo $this->text('New password'); ?></label>
         <div class="col-md-4">
-          <input class="form-control" type="password" name="user[password]" autocomplete="new-password" autofocus>
+          <input class="form-control" type="password" name="user[password]" autocomplete="new-password" placeholder="<?php echo $this->text('@min - @max characters', array('@min' => $password_limit[0], '@max' => $password_limit[1])); ?>" autofocus>
           <div class="help-block"><?php echo $this->error('password'); ?></div>
         </div>
       </div>

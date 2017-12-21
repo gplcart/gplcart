@@ -11,11 +11,9 @@
 <div class="panel panel-checkout payment-address panel-default">
   <div class="panel-heading clearfix">
     <input type="hidden" name="same_payment_address" value="0">
-    <label>
-      <input type="checkbox" name="same_payment_address" value="1"<?php echo $same_payment_address ? ' checked' : ''; ?>> <?php echo $this->text('My shipping and payment addresses are the same'); ?>
-    </label>
+    <input type="checkbox" name="same_payment_address" value="1"<?php echo $same_payment_address ? ' checked' : ''; ?>> <?php echo $this->text('My shipping and payment addresses are the same'); ?>
     <noscript>
-    <button title="<?php echo $this->text('Update'); ?>" class="btn btn-default btn-xs pull-right" name="update" value="1"><i class="fa fa-refresh"></i></button>
+      <button title="<?php echo $this->text('Update'); ?>" class="btn btn-default btn-xs pull-right" name="update" value="1"><i class="fa fa-refresh"></i></button>
     </noscript>
   </div>
   <?php if (!$same_payment_address) { ?>

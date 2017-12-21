@@ -29,7 +29,7 @@
       <div class="form-group<?php echo $this->error('password', ' has-error'); ?>">
         <label class="control-label col-md-2"><?php echo $this->text('Password'); ?></label>
         <div class="col-md-4">
-          <input class="form-control" type="password" name="user[password]" placeholder="<?php echo $this->text('@min - @max characters', array('@min' => $password_limit['min'], '@max' => $password_limit['max'])); ?>">
+          <input class="form-control" type="password" name="user[password]" placeholder="<?php echo $this->text('@min - @max characters', array('@min' => $password_limit[0], '@max' => $password_limit[1])); ?>">
           <div class="help-block">
             <?php echo $this->error('password'); ?>
           </div>

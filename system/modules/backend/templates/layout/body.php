@@ -56,19 +56,19 @@
               <?php } ?>
               <li class="divider"></li>
               <li>
-                <a href="<?php echo $this->url('admin/bookmark'); ?>"><i class="fa fa-list-ul"></i> <?php echo $this->text('See all'); ?></a>
+                <a href="<?php echo $this->url('admin/bookmark'); ?>"><?php echo $this->text('See all'); ?></a>
               </li>
               <?php } ?>
               <?php if(empty($_is_bookmarked)) { ?>
               <?php if($this->access('bookmark_add')) { ?>
               <li>
-                <a href="<?php echo $this->url('admin/bookmark/add', array('title' => $_head_title, 'path' => $_path)); ?>"><i class="fa fa-plus"></i> <?php echo $this->text('Add'); ?></a>
+                <a href="<?php echo $this->url('admin/bookmark/add', array('title' => $_head_title, 'path' => $_path)); ?>"><?php echo $this->text('Add'); ?></a>
               </li>
               <?php } ?>
               <?php } else { ?>
               <?php if($this->access('bookmark_delete')) { ?>
               <li>
-                <a href="<?php echo $this->url('admin/bookmark/delete', array('path' => $_path)); ?>"><i class="fa fa-trash"></i> <?php echo $this->text('Delete'); ?></a>
+                <a href="<?php echo $this->url('admin/bookmark/delete', array('path' => $_path)); ?>"><?php echo $this->text('Delete'); ?></a>
               </li>
               <?php } ?>
               <?php } ?>

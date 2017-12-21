@@ -34,7 +34,7 @@
         <tr>
           <th><input type="checkbox" onchange="Gplcart.selectAll(this);"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
           <th><a href="<?php echo $sort_address_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a></th>
-          <th><a href="<?php echo $sort_user_id; ?>"><?php echo $this->text('User'); ?> <i class="fa fa-sort"></i></a></th>
+          <th><a href="<?php echo $sort_user_email; ?>"><?php echo $this->text('User'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_full_name; ?>"><?php echo $this->text('Full name'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_address_1; ?>"><?php echo $this->text('Address'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_city_id; ?>"><?php echo $this->text('City'); ?> <i class="fa fa-sort"></i></a></th>
@@ -45,7 +45,7 @@
           <th></th>
           <th></th>
           <th>
-            <input class="form-control" name="user_email" maxlength="255" value="<?php echo $filter_user_email; ?>" placeholder="<?php echo $this->text('Any'); ?>">
+            <input class="form-control" name="user_email_like" maxlength="255" value="<?php echo $filter_user_email_like; ?>" placeholder="<?php echo $this->text('Any'); ?>">
           </th>
           <th>
             <input class="form-control" name="full_name" maxlength="255" value="<?php echo $filter_full_name; ?>" placeholder="<?php echo $this->text('Any'); ?>">

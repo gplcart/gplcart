@@ -9,6 +9,11 @@
  */
 ?>
 <?php if(empty($intro)) { ?>
+<?php if($this->access('dashboard_edit')) { ?>
+<p>
+  <a href="<?php echo $this->url('admin/settings/dashboard'); ?>"><?php echo $this->text('Customize dashboard'); ?></a>
+</p>
+<?php } ?>
 <div class="row">
   <?php foreach ($dashboard as $panels) { ?>
   <div class="col-md-<?php echo 12 / $columns; ?>">

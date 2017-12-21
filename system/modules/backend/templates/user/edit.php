@@ -10,36 +10,6 @@
 ?>
 <form method="post" class="form-horizontal">
   <input type="hidden" name="token" value="<?php echo $_token; ?>">
-  <div class="form-group required<?php echo $this->error('name', ' has-error'); ?>">
-    <label class="col-md-2 control-label"><?php echo $this->text('Name'); ?></label>
-    <div class="col-md-4">
-      <input name="user[name]" maxlength="255" class="form-control" value="<?php echo isset($user['name']) ? $this->e($user['name']) : ''; ?>">
-      <div class="help-block">
-        <?php echo $this->error('name'); ?>
-        <div class="text-muted"><?php echo $this->text('User name, e.g John Smith'); ?></div>
-      </div>
-    </div>
-  </div>
-  <div class="form-group required<?php echo $this->error('email', ' has-error'); ?>">
-    <label class="col-md-2 control-label"><?php echo $this->text('E-mail'); ?></label>
-    <div class="col-md-4">
-      <input name="user[email]" class="form-control" value="<?php echo isset($user['email']) ? $this->e($user['email']) : ''; ?>">
-      <div class="help-block">
-        <?php echo $this->error('email'); ?>
-        <div class="text-muted"><?php echo $this->text('Unique E-mail for this user'); ?></div>
-      </div>
-    </div>
-  </div>
-  <div class="form-group required<?php echo $this->error('password', ' has-error'); ?>">
-    <label class="col-md-2 control-label"><?php echo $this->text('Password'); ?></label>
-    <div class="col-md-4">
-      <input name="user[password]" class="form-control" value="<?php echo isset($user['password']) ? $user['password'] : ''; ?>">
-      <div class="help-block">
-        <?php echo $this->error('password'); ?>
-        <div class="text-muted"><?php echo $this->text('Password to log in this user'); ?></div>
-      </div>
-    </div>
-  </div>
   <?php if (!$is_superadmin) { ?>
   <div class="form-group">
     <label class="col-md-2 control-label"><?php echo $this->text('Status'); ?></label>
@@ -58,6 +28,36 @@
     </div>
   </div>
   <?php } ?>
+  <div class="form-group required<?php echo $this->error('name', ' has-error'); ?>">
+    <label class="col-md-2 control-label"><?php echo $this->text('Name'); ?></label>
+    <div class="col-md-4">
+      <input name="user[name]" maxlength="255" class="form-control" value="<?php echo isset($user['name']) ? $this->e($user['name']) : ''; ?>">
+      <div class="help-block">
+        <?php echo $this->error('name'); ?>
+        <div class="text-muted"><?php echo $this->text('User name, e.g John Smith'); ?></div>
+      </div>
+    </div>
+  </div>
+  <div class="form-group required<?php echo $this->error('email', ' has-error'); ?>">
+    <label class="col-md-2 control-label"><?php echo $this->text('E-mail'); ?></label>
+    <div class="col-md-4">
+      <input name="user[email]" class="form-control" value="<?php echo isset($user['email']) ? $this->e($user['email']) : ''; ?>">
+      <div class="help-block">
+        <?php echo $this->error('email'); ?>
+        <div class="text-muted"><?php echo $this->text('The e-mail is used both for contacting and logging in the user'); ?></div>
+      </div>
+    </div>
+  </div>
+  <div class="form-group required<?php echo $this->error('password', ' has-error'); ?>">
+    <label class="col-md-2 control-label"><?php echo $this->text('Password'); ?></label>
+    <div class="col-md-4">
+      <input name="user[password]" class="form-control" value="<?php echo isset($user['password']) ? $user['password'] : ''; ?>">
+      <div class="help-block">
+        <?php echo $this->error('password'); ?>
+        <div class="text-muted"><?php echo $this->text('Password to log in this user, @min - @max characters', array('@min' => $password_limit[0], '@max' => $password_limit[1])); ?></div>
+      </div>
+    </div>
+  </div>
   <div class="form-group">
     <label class="col-md-2 control-label"><?php echo $this->text('Role'); ?></label>
     <div class="col-md-4">
