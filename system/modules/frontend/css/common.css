@@ -193,6 +193,12 @@ td.middle {
     vertical-align: middle !important;
 }
 
+.cart-item-wrapper {
+    max-height: 500px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
 /**  Rating widget **/
 
 .product-rating .star-rating {
