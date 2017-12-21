@@ -2,7 +2,7 @@
 <FilesMatch "^\.|\.(ini|fla|psd|log|sh|c|twig|exe|cache|json|yml)$">
     Order Allow,Deny
     Deny from all
-</FilesMatch> 
+</FilesMatch>
 
 # Prevent directory listing
 Options -Indexes
@@ -87,9 +87,17 @@ FileETag None
       # Force proxies to cache gzipped & non-gzipped css/js files separately.
       Header append Vary Accept-Encoding
     </FilesMatch>
+</IfModule>
 
-    <FilesMatch "\.(ico|pdf|flv|jpg|jpeg|png|gif|js|css|swf)$">
-        # Cache static files for 1 year
-        Header set Cache-Control "public, max-age=31536000"
-    </FilesMatch>
+<IfModule mod_expires.c>
+  # Enable expirations
+  ExpiresActive On
+
+  # Cache all files for 2 weeks after access
+  ExpiresDefault A1209600
+
+  <FilesMatch \.php$>
+    # Do not allow PHP scripts to be cached
+    ExpiresActive Off
+  </FilesMatch>
 </IfModule>
