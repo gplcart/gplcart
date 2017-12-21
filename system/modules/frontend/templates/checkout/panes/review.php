@@ -21,6 +21,7 @@
     </div>
     <?php } ?>
     <?php } ?>
+    <div class="cart-item-wrapper">
     <?php foreach ($cart['items'] as $sku => $item) { ?>
     <div class="form-group<?php echo $this->error("cart.items.$sku", ' has-error'); ?>">
       <div class="col-md-2">
@@ -50,7 +51,7 @@
           </span>
         </div>
         <div>
-          <div class="input-group">
+          <div class="input-group input-group-sm">
             <span class="input-group-btn">
               <button type="button" class="btn btn-default hidden-no-js" data-spinner="-">
                 <span class="fa fa-minus"></span>
@@ -73,18 +74,14 @@
       </div>
       <div class="col-md-3">
         <div class="btn-toolbar">
-          <button title="<?php echo $this->text('Delete'); ?>" class="btn btn-default" name="order[cart][action][delete]" value="<?php echo $this->e($item['cart_id']); ?>">
+          <button title="<?php echo $this->text('Delete'); ?>" class="btn btn-default btn-sm" name="order[cart][action][delete]" value="<?php echo $this->e($item['cart_id']); ?>">
             <i class="fa fa-trash"></i>
           </button>
-          <?php if (!$admin) { ?>
-          <button title="<?php echo $this->text('Move to wishlist'); ?>" class="btn btn-default" data-ajax="false" name="order[cart][action][wishlist]" value="<?php echo $this->e($item['cart_id']); ?>">
-            <i class="fa fa-star"></i>
-          </button>
-          <?php } ?>
         </div>
       </div>
     </div>
     <?php } ?>
+    </div>
     <div class="form-group">
       <div class="col-md-12">
         <table class="table table-borderless price-components">

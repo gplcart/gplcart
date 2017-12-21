@@ -740,7 +740,6 @@ class Checkout extends FrontendController
     protected function submitCartCheckout()
     {
         $this->submitCartItemsCheckout();
-        $this->moveCartWishlistCheckout();
 
         $this->deleteCartCheckout();
         $this->updateCartCheckout();
@@ -815,22 +814,6 @@ class Checkout extends FrontendController
         $this->setSubmitted("cart.items.$sku", $item);
 
         return $this->validateComponent('cart', array('parents' => "cart.items.$sku"));
-    }
-
-    /**
-     * Moves a cart item to the wishlist
-     */
-    protected function moveCartWishlistCheckout()
-    {
-        $cart_id = $this->getSubmitted('cart.action.wishlist');
-
-        if (!empty($cart_id)) {
-            $result = $this->cart_action->toWishlist($cart_id);
-            if (isset($result['wishlist_id'])) {
-                $this->setSubmitted('cart.action.update', true);
-                $this->setMessage($result['message'], 'success');
-            }
-        }
     }
 
     /**
