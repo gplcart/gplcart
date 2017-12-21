@@ -85,7 +85,6 @@ class CheckoutComplete extends FrontendController
      */
     protected function setDataTemplatesCheckoutComplete()
     {
-
         $templates = array(
             'payment' => $this->getPaymentMethodTemplate('complete', $this->data_order, $this->payment),
             'shipping' => $this->getShippingMethodTemplate('complete', $this->data_order, $this->shipping)

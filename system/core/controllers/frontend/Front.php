@@ -63,7 +63,7 @@ class Front extends FrontendController
     }
 
     /**
-     * Renders the fron page templates
+     * Renders the front page templates
      */
     protected function outputIndexFront()
     {
