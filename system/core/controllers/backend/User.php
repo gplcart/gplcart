@@ -202,6 +202,7 @@ class User extends BackendController
         $this->setData('roles', $this->role->getList());
         $this->setData('can_delete', $this->canDeleteUser());
         $this->setData('is_superadmin', $this->isSuperadminUser());
+        $this->setData('password_limit', $this->user->getPasswordLength());
 
         $this->submitEditUser();
         $this->outputEditUser();

@@ -184,7 +184,7 @@ class Dashboard extends BackendController
         $this->controlAccess('dashboard_edit');
 
         if ($this->dashboard->setByUser($this->uid, $this->getSubmitted())) {
-            $this->redirect('admin', $this->text('Your dashboard has been updated'), 'success');
+            $this->redirect('', $this->text('Your dashboard has been updated'), 'success');
         }
 
         $this->redirect('', $this->text('Your dashboard has not been updated'), 'warning');
@@ -198,7 +198,8 @@ class Dashboard extends BackendController
         $this->controlAccess('dashboard_edit');
 
         if ($this->dashboard->delete($this->data_dashboard['dashboard_id'])) {
-            $this->redirect('admin', $this->text('Your dashboard has been reset'), 'success');
+            $message = $this->text('Your dashboard has been reset');
+            $this->redirect('', $message, 'success');
         }
 
         $this->redirect('admin', $this->text('Your dashboard has not been reset'), 'warning');

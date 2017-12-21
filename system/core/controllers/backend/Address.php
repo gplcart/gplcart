@@ -62,7 +62,7 @@ class Address extends BackendController
     protected function setFilterListAddress()
     {
         $allowed = array('city_id', 'address_id', 'address_1', 'phone',
-            'user_id', 'user_email', 'full_name', 'postcode', 'city_name');
+            'user_id', 'user_email', 'user_email_like', 'full_name', 'postcode', 'city_name');
 
         $this->setFilter($allowed);
     }

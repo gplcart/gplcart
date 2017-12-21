@@ -25,6 +25,12 @@ class Currency extends BackendController
     protected $currency;
 
     /**
+     * Pager limit
+     * @var array
+     */
+    protected $data_limit;
+
+    /**
      * An array of currency data
      * @var array
      */
@@ -47,11 +53,35 @@ class Currency extends BackendController
     {
         $this->setTitleListCurrency();
         $this->setBreadcrumbListCurrency();
+        $this->setFilterListCurrency();
+        $this->setPagerListCurrency();
 
         $this->setData('currencies', $this->getListCurrency());
         $this->setData('default_currency', $this->currency->getDefault());
 
         $this->outputListCurrency();
+    }
+
+    /**
+     * Sets the filter on the currency overview page
+     */
+    protected function setFilterListCurrency()
+    {
+        $this->setFilter(array('name', 'code', 'symbol', 'conversion_rate', 'status', 'modified'));
+    }
+
+    /**
+     * Sets pager
+     * @return array
+     */
+    protected function setPagerListCurrency()
+    {
+        $pager = array(
+            'query' => $this->query_filter,
+            'total' => count($this->currency->getList())
+        );
+
+        return $this->data_limit = $this->setPager($pager);
     }
 
     /**
@@ -61,25 +91,60 @@ class Currency extends BackendController
     protected function getListCurrency()
     {
         $currencies = $this->currency->getList();
-        return $this->preparelistCurrency($currencies);
+
+        $this->sortListCurrency($currencies);
+        $this->limitListCurrency($currencies);
+
+        return $currencies;
     }
 
     /**
-     * Prepare an array of currencies
+     * Sort currencies by a field
      * @param array $currencies
      * @return array
      */
-    protected function preparelistCurrency(array $currencies)
+    protected function sortListCurrency(array &$currencies)
     {
-        $in_database = $codes = $statuses = array();
-        foreach ($currencies as $code => &$currency) {
-            $codes[$code] = $code;
-            $statuses[$code] = !empty($currency['status']);
-            $in_database[$code] = !empty($currency['in_database']);
+        $query = $this->query_filter;
+
+        $query += array(
+            'order' => 'desc',
+            'sort' => 'modified'
+        );
+
+        $allowed_order = array('asc', 'desc');
+        $allowed_sort = array('name', 'code', 'symbol', 'conversion_rate', 'status', 'modified');
+
+        if (!in_array($query['order'], $allowed_order) || !in_array($query['sort'], $allowed_sort)) {
+            return $currencies;
         }
 
-        array_multisort($in_database, SORT_DESC, $statuses, SORT_DESC, $codes, SORT_ASC, $currencies);
+        uasort($currencies, function ($a, $b) use ($query) {
+
+            if (!isset($a[$query['sort']]) || !isset($b[$query['sort']])) {
+                return 0;
+            }
+
+            $diff = strcasecmp($a[$query['sort']], $b[$query['sort']]);
+
+            if ($diff === 0) {
+                return 0;
+            }
+
+            return $query['order'] === 'asc' ? $diff > 0 : $diff < 0;
+        });
+
         return $currencies;
+    }
+
+    /**
+     * Limit an array of currencies
+     * @param array $currencies
+     */
+    protected function limitListCurrency(array &$currencies)
+    {
+        list($from, $to) = $this->data_limit;
+        $currencies = array_slice($currencies, $from, $to, true);
     }
 
     /**

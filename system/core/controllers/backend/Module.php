@@ -258,13 +258,10 @@ class Module extends BackendController
     {
         $query = $this->query_filter;
 
-        if (empty($query['order'])) {
-            $query['order'] = 'asc';
-        }
-
-        if (empty($query['sort'])) {
-            $query['sort'] = 'id';
-        }
+        $query += array(
+            'order' => 'asc',
+            'sort' => 'id'
+        );
 
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('type', 'name', 'version', 'id');
@@ -279,17 +276,13 @@ class Module extends BackendController
                 return 0;
             }
 
-            $diff = strcmp($a[$query['sort']], $b[$query['sort']]);
+            $diff = strcasecmp($a[$query['sort']], $b[$query['sort']]);
 
             if ($diff === 0) {
                 return 0;
             }
 
-            if ($query['order'] === 'asc') {
-                return $diff > 0;
-            }
-
-            return $diff < 0;
+            return $query['order'] === 'asc' ? $diff > 0 : $diff < 0;
         });
 
         return $modules;
