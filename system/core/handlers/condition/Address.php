@@ -9,10 +9,7 @@
 
 namespace gplcart\core\handlers\condition;
 
-use gplcart\core\models\City as CityModel,
-    gplcart\core\models\State as StateModel,
-    gplcart\core\models\Country as CountryModel,
-    gplcart\core\models\Address as AddressModel;
+use gplcart\core\Container;
 use gplcart\core\handlers\condition\Base as BaseHandler;
 
 /**
@@ -46,18 +43,14 @@ class Address extends BaseHandler
     protected $country;
 
     /**
-     * @param CityModel $city
-     * @param StateModel $state
-     * @param CountryModel $country
-     * @param AddressModel $address
+     * Constructor
      */
-    public function __construct(CityModel $city, StateModel $state, CountryModel $country,
-            AddressModel $address)
+    public function __construct()
     {
-        $this->city = $city;
-        $this->state = $state;
-        $this->country = $country;
-        $this->address = $address;
+        $this->city = Container::get('gplcart\\core\\models\\City');
+        $this->state = Container::get('gplcart\\core\\models\\State');
+        $this->country = Container::get('gplcart\\core\\models\\Country');
+        $this->address = Container::get('gplcart\\core\\models\\Address');
     }
 
     /**
@@ -201,6 +194,16 @@ class Address extends BaseHandler
         }
 
         return $result;
+    }
+
+    /**
+     * Sets a property
+     * @param string $name
+     * @param mixed $value
+     */
+    public function setProperty($name, $value)
+    {
+        $this->{$name} = $value;
     }
 
 }
