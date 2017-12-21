@@ -111,10 +111,10 @@ class Route
     /**
      * Processes the route
      */
-    public function output()
+    public function process()
     {
-        $this->outputAlias();
-        $this->outputRoute();
+        $this->processAlias();
+        $this->processRoute();
         $this->output404();
     }
 
@@ -151,7 +151,7 @@ class Route
      * @param string|null $path
      * @return null
      */
-    public function outputAlias($path = null)
+    public function processAlias($path = null)
     {
         if (!$this->db->isInitialized()) {
             return null;
@@ -165,9 +165,25 @@ class Route
             return null;
         }
 
+        $routes = $this->findAlias($path);
+
+        foreach (array_keys($routes) as $pattern) {
+            $this->callHandler($pattern, array($path, $pattern, null), 'alias');
+        }
+
+        return null;
+    }
+
+    /**
+     * Try to find and call an alias handler using the URL path
+     * @param string $path
+     * @return array An array of active routes which don't support aliases
+     */
+    protected function findAlias($path)
+    {
+        $routes = $this->getList();
         $alias = $this->db->fetch('SELECT entity, entity_id FROM alias WHERE alias=?', array($path));
 
-        $routes = $this->getList();
         foreach ($routes as $pattern => $route) {
 
             if (isset($route['status']) && empty($route['status'])) {
@@ -183,18 +199,14 @@ class Route
             $this->callHandler($pattern, array($path, $pattern, $alias), 'alias');
         }
 
-        foreach ($routes as $pattern => $route) {
-            $this->callHandler($pattern, array($path, $pattern, null), 'alias');
-        }
-
-        return null;
+        return $routes;
     }
 
     /**
      * Find an appropriate controller for the URL
      * @throws RouteException
      */
-    public function outputRoute()
+    public function processRoute()
     {
         foreach ($this->getList() as $pattern => $route) {
 
@@ -235,7 +247,7 @@ class Route
             return false;
         }
 
-        $excluded = array('admin', 'account', 'review', 'checkout', 'compare', 'files');
+        $excluded = array('admin', 'account', 'review', 'checkout', 'compare', 'files', 'ajax');
 
         foreach ($excluded as $prefix) {
             if (strpos($path, $prefix) === 0) {
@@ -247,13 +259,13 @@ class Route
     }
 
     /**
-     * Try to find an entity alias
+     * Route alias allback
      * @param string $path
      * @param string $pattern
      * @param array|null $alias
      * @throws RouteException
      */
-    public function findAlias($path, $pattern, $alias)
+    public function aliasCallback($path, $pattern, $alias)
     {
         if (!empty($alias['entity']) && !empty($alias['entity_id'])) {
             if (strpos($pattern, "{$alias['entity']}/") === 0) {
@@ -291,7 +303,7 @@ class Route
             'arguments' => array(),
             'pattern' => $pattern
         );
-        
+
         $route['simple_pattern'] = preg_replace('@\(.*?\)@', '*', $pattern);
         $route['arguments'] = array_merge($arguments, $route['arguments']);
 
