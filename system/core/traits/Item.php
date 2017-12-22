@@ -212,7 +212,9 @@ trait Item
             'imagestyle' => $this->configTheme('image_style_product', 6));
 
         if (empty($item['images'])) {
-            $item['images'][] = array('thumb' => $image_model->getPlaceholder($options['imagestyle']));
+            $item['images'][] = array(
+                'title' => isset($item['title']) ? $item['title'] : '',
+                'thumb' => $image_model->getPlaceholder($options['imagestyle']));
         } else {
             $this->setItemThumb($item, $image_model, $options);
         }
