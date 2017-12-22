@@ -259,7 +259,7 @@ class Route
     }
 
     /**
-     * Route alias allback
+     * Route alias callback
      * @param string $path
      * @param string $pattern
      * @param array|null $alias
@@ -296,38 +296,55 @@ class Route
      */
     public function callHandler($pattern, $arguments = array(), $method = 'controller')
     {
-        $list = $this->getList();
-        $route = $list[$pattern];
+        $this->set($pattern, $arguments);
 
-        $route += array(
-            'arguments' => array(),
-            'pattern' => $pattern
-        );
-
-        $route['simple_pattern'] = preg_replace('@\(.*?\)@', '*', $pattern);
-        $route['arguments'] = array_merge($arguments, $route['arguments']);
-
-        $this->route = $route;
-        $handler = $this->getHandler($route, $method);
-        return call_user_func_array($handler, $this->route['arguments']);
-    }
-
-    /**
-     * Returns a route handler
-     * @param array $route
-     * @param string $method
-     * @return array
-     * @throws RouteException
-     */
-    public function getHandler(array $route, $method = 'controller')
-    {
         try {
-            $handler = Handler::get($route, null, $method);
+            $handler = Handler::call($this->route, null, $method, $this->route['arguments']);
         } catch (\Exception $ex) {
             throw new RouteException($ex->getMessage());
         }
+    }
 
-        return $handler;
+    /**
+     * Returns the current route
+     * @return array
+     */
+    public function get()
+    {
+        return $this->route;
+    }
+
+    /**
+     * Sets a route
+     * @param array|string $route
+     * @param array $arguments
+     */
+    public function set($route, array $arguments = array())
+    {
+        if (!is_array($route)) {
+
+            $pattern = $route;
+            $list = $this->getList();
+
+            if (empty($list[$pattern])) {
+                throw new RouteException("Unknown route pattern $pattern");
+            }
+
+            $route = $list[$pattern];
+
+            $route += array(
+                'arguments' => array(),
+                'pattern' => $pattern
+            );
+
+            $route['simple_pattern'] = preg_replace('@\(.*?\)@', '*', $pattern);
+
+            if (!empty($arguments)) {
+                $route['arguments'] = array_merge($arguments, $route['arguments']);
+            }
+        }
+
+        $this->route = $route;
     }
 
     /**
@@ -337,15 +354,6 @@ class Route
     public function getPath()
     {
         return $this->path;
-    }
-
-    /**
-     * Returns the current route
-     * @return array
-     */
-    public function getCurrent()
-    {
-        return $this->route;
     }
 
     /**

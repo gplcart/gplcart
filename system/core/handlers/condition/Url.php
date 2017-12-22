@@ -43,7 +43,7 @@ class Url extends BaseHandler
             return false;
         }
 
-        $route = $this->route->getCurrent();
+        $route = $this->route->get();
 
         if ($route['pattern'] === '') {
             $route['pattern'] = '/'; // Fix front page

@@ -449,7 +449,7 @@ abstract class Controller
      */
     protected function setRouteProperties()
     {
-        $this->current_route = $this->route->getCurrent();
+        $this->current_route = $this->route->get();
         $this->path = $this->url->path();
         $this->is_backend = $this->url->isBackend();
         $this->is_install = $this->url->isInstall();
