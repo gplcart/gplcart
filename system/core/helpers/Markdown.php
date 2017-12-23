@@ -56,6 +56,63 @@ class Markdown
     }
 
     /**
+     * Adds a rule
+     * @param string|array $rule A single RegExp pattern or array of rules
+     * @param string $replacement A replacement HTML string or callable method
+     * @return $this
+     */
+    public function setRule($rule, $replacement)
+    {
+        if (is_array($rule)) {
+            $this->rules = $rule;
+            return $this;
+        }
+
+        $this->rules[$rule] = $replacement;
+        return $this;
+    }
+
+    /**
+     * Remove a rule
+     * @param string $name
+     * @return $this
+     */
+    public function unsetRule($name)
+    {
+        unset($this->rules[$name]);
+        return $this;
+    }
+
+    /**
+     * Returns an array of replacement rules
+     * @return array
+     */
+    public function getRules()
+    {
+        return $this->rules;
+    }
+
+    /**
+     * Renders Markdown text into HTML
+     * @param string $text
+     * @return string
+     */
+    public function render($text)
+    {
+        $text = trim(str_replace(array("\r\n", "\r"), "\n", $text), "\n");
+
+        foreach ($this->rules as $regex => $replacement) {
+            if (is_callable($replacement)) {
+                $text = preg_replace_callback($regex, $replacement, $text);
+            } else {
+                $text = preg_replace($regex, $replacement, $text);
+            }
+        }
+
+        return trim($text);
+    }
+
+    /**
      * Renders "P" tag
      * @param array $matches
      * @return string
@@ -110,52 +167,6 @@ class Markdown
     {
         $level = strlen($matches[1]);
         return sprintf('<h%d>%s</h%d>', $level, trim($matches[2]), $level);
-    }
-
-    /**
-     * Adds a rule
-     * @param string|array $rule A single RegExp pattern or array of rules
-     * @param string $replacement A replacement HTML string or callable method
-     * @return $this
-     */
-    public function setRule($rule, $replacement)
-    {
-        if (is_array($rule)) {
-            $this->rules = $rule;
-            return $this;
-        }
-
-        $this->rules[$rule] = $replacement;
-        return $this;
-    }
-
-    /**
-     * Returns an array of replacement rules
-     * @return array
-     */
-    public function getRules()
-    {
-        return $this->rules;
-    }
-
-    /**
-     * Renders Markdown text into HTML
-     * @param string $text
-     * @return string
-     */
-    public function render($text)
-    {
-        $text = trim(str_replace(array("\r\n", "\r"), "\n", $text), "\n");
-
-        foreach ($this->rules as $regex => $replacement) {
-            if (is_callable($replacement)) {
-                $text = preg_replace_callback($regex, $replacement, $text);
-            } else {
-                $text = preg_replace($regex, $replacement, $text);
-            }
-        }
-
-        return trim($text);
     }
 
 }
