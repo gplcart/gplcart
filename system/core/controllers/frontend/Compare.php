@@ -50,6 +50,7 @@ class Compare extends FrontendController
     }
 
     /**
+     * Page callback
      * Displays the select to compare page
      */
     public function selectCompare()
@@ -84,7 +85,7 @@ class Compare extends FrontendController
     }
 
     /**
-     * Returns an array of products reindexed by a class ID
+     * Returns an array of products re-indexed by a class ID
      * @return array
      */
     protected function getProductsSelectCompare()
@@ -146,6 +147,7 @@ class Compare extends FrontendController
     }
 
     /**
+     * Page callback
      * Displays the product comparison page
      * @param string $ids
      */

@@ -41,7 +41,10 @@ class Alias extends BackendController
     }
 
     /**
+     * Page callback
      * Displays the alias overview page
+     * @see \gplcart\core\Route
+     * @see /system/config/default/route.php
      */
     public function listAlias()
     {
@@ -105,7 +108,7 @@ class Alias extends BackendController
     }
 
     /**
-     * Returns an array of aliases
+     * Returns an array of aliases using the pager limits and conditions from the URL query
      * @return array
      */
     protected function getListAlias()

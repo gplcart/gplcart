@@ -62,6 +62,7 @@ class CheckoutComplete extends FrontendController
     }
 
     /**
+     * Page callback
      * Displays the checkout complete page
      * @param int $order_id
      */

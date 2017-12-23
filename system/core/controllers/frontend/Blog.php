@@ -13,7 +13,7 @@ use gplcart\core\models\Page as PageModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
- * Handles incoming requests and outputs data related to blog
+ * Handles incoming requests and outputs data related to blogs
  */
 class Blog extends FrontendController
 {
@@ -47,6 +47,7 @@ class Blog extends FrontendController
     }
 
     /**
+     * Page callback
      * Displays the blog page
      */
     public function listBlog()
@@ -91,12 +92,13 @@ class Blog extends FrontendController
         $conditions['category_group_id'] = $this->store->config('blog_category_group_id');
 
         $pages = (array) $this->page->getList($conditions);
-
         return $this->preparePagesBlog($pages);
     }
 
     /**
-     * Prepares an array of pages
+     * Prepare an array of pages
+     * @param array $pages
+     * @return array
      */
     protected function preparePagesBlog(array $pages)
     {

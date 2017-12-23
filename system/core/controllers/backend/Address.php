@@ -41,7 +41,10 @@ class Address extends BackendController
     }
 
     /**
+     * Page callback
      * Displays the address overview page
+     * @see \gplcart\core\Route
+     * @see /system/config/default/route.php
      */
     public function listAddress()
     {
@@ -105,7 +108,7 @@ class Address extends BackendController
     }
 
     /**
-     * Returns an array of addresses
+     * Returns an array of addresses using pager limits and the URL query conditions
      * @return array
      */
     protected function getListAddress()
