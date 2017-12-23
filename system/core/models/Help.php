@@ -10,12 +10,19 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Hook;
+use gplcart\core\helpers\Markdown as MarkdownHelper;
 
 /**
  * Manages basic behaviors and data related to help information
  */
 class Help
 {
+
+    /**
+     * Markdown helper class
+     * @var \gplcart\core\helpers\Markdown $markdown
+     */
+    protected $markdown;
 
     /**
      * Hook class instance
@@ -25,10 +32,12 @@ class Help
 
     /**
      * @param Hook $hook
+     * @param MarkdownHelper $markdown
      */
-    public function __construct(Hook $hook)
+    public function __construct(Hook $hook, MarkdownHelper $markdown)
     {
         $this->hook = $hook;
+        $this->markdown = $markdown;
     }
 
     /**
@@ -69,21 +78,28 @@ class Help
      */
     public function get($file)
     {
-        $data = $this->getMeta($file);
+        $result = null;
+        $this->hook->attach('help.get.before', $file, $result, $this);
 
-        if (empty($data)) {
+        if (isset($result)) {
+            return (array) $result;
+        }
+
+        $result = $this->getMeta($file);
+
+        if (empty($result)) {
             return array();
         }
 
         $hash = gplcart_string_encode(gplcart_path_relative($file));
 
-        $data += array(
+        $result += array(
             'file' => $file,
             'path' => "admin/help/$hash"
         );
 
-        $this->hook->attach('help.get', $file, $data, $this);
-        return $data;
+        $this->hook->attach('help.get.after', $file, $result, $this);
+        return (array) $result;
     }
 
     /**
@@ -123,11 +139,9 @@ class Help
             return array();
         }
 
-        $files = glob("$dir/*.php");
-
         $list = $titles = $weights = array();
 
-        foreach ($files as $file) {
+        foreach (gplcart_file_scan($dir, array('md')) as $file) {
             $data = $this->get($file);
             if (!empty($data['title'])) {
                 $list[] = $data;
@@ -137,6 +151,7 @@ class Help
         }
 
         array_multisort($weights, SORT_ASC, $titles, SORT_ASC, $list);
+        $this->hook->attach('help.list', $list, $this);
         return $list;
     }
 
@@ -158,6 +173,25 @@ class Help
         }
 
         return array();
+    }
+
+    /**
+     * Render a help file
+     * @param string $file
+     * @return string
+     */
+    public function render($file)
+    {
+        $result = null;
+        $this->hook->attach('help.render.before', $file, $result, $this);
+
+        if (isset($result)) {
+            return (string) $result;
+        }
+
+        $result = $this->markdown->render(file_get_contents($file));
+        $this->hook->attach('help.render.after', $file, $result, $this);
+        return (string) $result;
     }
 
 }

@@ -50,7 +50,7 @@ class Help extends BackendController
         $this->setTitleViewHelp();
         $this->setBreadcrumbViewHelp();
 
-        $this->setData('help', $this->render($this->data_file));
+        $this->setData('help', $this->renderHelp());
         $this->outputViewHelp();
     }
 
@@ -102,6 +102,15 @@ class Help extends BackendController
         if (!is_file($this->data_file)) {
             $this->outputHttpStatus(404);
         }
+    }
+
+    /**
+     * Render a file
+     * @return string
+     */
+    protected function renderHelp()
+    {
+        return $this->help->render($this->data_file);
     }
 
     /**
