@@ -78,6 +78,7 @@ class Account extends FrontendController
     }
 
     /**
+     * Page callback
      * Displays the user account page
      * @param integer $user_id
      */
@@ -134,7 +135,7 @@ class Account extends FrontendController
     }
 
     /**
-     * Returns an array of orders for the customer
+     * Returns an array of orders for the user
      * @return array
      */
     protected function getListOrderAccount()
@@ -198,7 +199,8 @@ class Account extends FrontendController
     }
 
     /**
-     * Displays the customer edit account page
+     * Page callback
+     * Displays the edit account page
      * @param integer $user_id
      */
     public function editAccount($user_id)
@@ -215,7 +217,7 @@ class Account extends FrontendController
     }
 
     /**
-     * Controls user access to the edit account page
+     * Controls the user access to the edit account page
      */
     protected function controlAccessEditAccount()
     {
@@ -235,7 +237,7 @@ class Account extends FrontendController
     }
 
     /**
-     * Validates a submitted user
+     * Validates the submitted data
      * @return boolean
      */
     protected function validateEditAccount()
@@ -257,8 +259,11 @@ class Account extends FrontendController
     {
         $this->controlAccessEditAccount();
 
-        $this->user->update($this->data_user['user_id'], $this->getSubmitted());
-        $this->redirect('', $this->text('Account has been updated'), 'success');
+        if ($this->user->update($this->data_user['user_id'], $this->getSubmitted())) {
+            $this->redirect('', $this->text('Account has been updated'), 'success');
+        }
+
+        $this->redirect('', $this->text('Account has not been updated'), 'warning');
     }
 
     /**

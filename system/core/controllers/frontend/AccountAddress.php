@@ -13,7 +13,7 @@ use gplcart\core\models\Address as AddressModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
- * Handles incoming requests and outputs data related to user addresses shown in accounts
+ * Handles incoming requests and outputs data related to customer addresses
  */
 class AccountAddress extends FrontendController
 {
@@ -102,7 +102,7 @@ class AccountAddress extends FrontendController
     }
 
     /**
-     * Deletes an address
+     * Handles various actions
      */
     protected function actionAccountAddress()
     {
@@ -111,11 +111,12 @@ class AccountAddress extends FrontendController
         $address_id = $this->getQuery($key);
 
         if (!empty($address_id)) {
+
             if ($this->address->delete($address_id)) {
                 $this->redirect('', $this->text('Address has been deleted'), 'success');
             }
 
-            $this->redirect('', $this->text('Unable to delete'), 'warning');
+            $this->redirect('', $this->text('Address has not been deleted'), 'warning');
         }
     }
 

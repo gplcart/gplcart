@@ -16,7 +16,7 @@ use gplcart\core\models\Sku as SkuModel,
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
- * Handles incoming requests and outputs data related to AJAX operations
+ * Handles incoming requests and outputs data related to AJAX requests
  */
 class Ajax extends FrontendController
 {
@@ -63,7 +63,8 @@ class Ajax extends FrontendController
     }
 
     /**
-     * Main AJAX callback
+     * Page callback
+     * Entry point for all AJAX requests
      */
     public function responseAjax()
     {
@@ -74,7 +75,7 @@ class Ajax extends FrontendController
         $action = $this->getPosted('action');
 
         if (empty($action)) {
-            $this->outputJson(array('error' => $this->text('Missing handler')));
+            $this->outputJson(array('error' => $this->text('Unknown action')));
         }
 
         $this->outputJson(call_user_func(array($this, $action)));
