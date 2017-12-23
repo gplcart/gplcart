@@ -9,6 +9,8 @@
 
 namespace gplcart\core\controllers\frontend;
 
+use gplcart\core\traits\Collection as CollectionTrait;
+use gplcart\core\models\CollectionItem as CollectionItemModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
@@ -17,12 +19,22 @@ use gplcart\core\controllers\frontend\Controller as FrontendController;
 class Front extends FrontendController
 {
 
+    use CollectionTrait;
+
     /**
-     * Constructor
+     * Collection item model instance
+     * @var \gplcart\core\models\CollectionItem $collection_item
      */
-    public function __construct()
+    protected $collection_item;
+
+    /**
+     * @param CollectionItemModel $collection_item
+     */
+    public function __construct(CollectionItemModel $collection_item)
     {
         parent::__construct();
+
+        $this->collection_item = $collection_item;
     }
 
     /**
@@ -48,8 +60,9 @@ class Front extends FrontendController
         $collection_id = $this->getStore("data.collection_$type");
 
         if (!empty($collection_id)) {
+            $conditions = array('collection_id' => $collection_id);
             $options = array('imagestyle' => $this->configTheme("image_style_collection_$type"));
-            $items = $this->getCollectionItems(array('collection_id' => $collection_id), array_filter($options));
+            $items = $this->getCollectionItems($conditions, array_filter($options), $this->collection_item);
             $this->setData("collection_$type", $this->getWidgetCollection($items));
         }
     }
