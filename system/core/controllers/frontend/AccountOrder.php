@@ -18,7 +18,7 @@ use gplcart\core\controllers\frontend\Controller as FrontendController;
 use gplcart\core\traits\ItemOrder as ItemOrderTrait;
 
 /**
- * Handles incoming requests and outputs data related to orders shown in user accounts
+ * Handles incoming requests and outputs data related to customer orders
  */
 class AccountOrder extends FrontendController
 {
@@ -39,9 +39,9 @@ class AccountOrder extends FrontendController
 
     /**
      * Price rule model instance
-     * @var \gplcart\core\models\PriceRule $pricerule
+     * @var \gplcart\core\models\PriceRule $price_rule
      */
-    protected $pricerule;
+    protected $price_rule;
 
     /**
      * Payment model instance
@@ -70,12 +70,12 @@ class AccountOrder extends FrontendController
     /**
      * @param AddressModel $address
      * @param OrderModel $order
-     * @param PriceRuleModel $pricerule
+     * @param PriceRuleModel $price_rule
      * @param PaymentModel $payment
      * @param ShippingModel $shipping
      */
-    public function __construct(AddressModel $address, OrderModel $order, PriceRuleModel $pricerule,
-            PaymentModel $payment, ShippingModel $shipping)
+    public function __construct(AddressModel $address, OrderModel $order,
+            PriceRuleModel $price_rule, PaymentModel $payment, ShippingModel $shipping)
     {
         parent::__construct();
 
@@ -83,10 +83,11 @@ class AccountOrder extends FrontendController
         $this->address = $address;
         $this->payment = $payment;
         $this->shipping = $shipping;
-        $this->pricerule = $pricerule;
+        $this->price_rule = $price_rule;
     }
 
     /**
+     * Page callback
      * Displays the order overview page
      * @param integer $user_id
      * @param integer $order_id
@@ -182,7 +183,7 @@ class AccountOrder extends FrontendController
     protected function prepareOrderComponentsAccountOrder(array &$order)
     {
         $this->setItemOrderCartComponent($order, $this->price);
-        $this->setItemOrderPriceRuleComponent($order, $this->price, $this->pricerule);
+        $this->setItemOrderPriceRuleComponent($order, $this->price, $this->price_rule);
         $this->setItemOrderPaymentComponent($order, $this->price, $this->payment, $this->order);
         $this->setItemOrderShippingComponent($order, $this->price, $this->shipping, $this->order);
 
