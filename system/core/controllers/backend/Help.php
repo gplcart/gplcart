@@ -110,7 +110,8 @@ class Help extends BackendController
      */
     protected function renderHelp()
     {
-        return $this->help->render($this->data_file);
+        $rendered = $this->help->render($this->data_file);
+        return preg_replace('/<!--(.*)-->/Uis', '', $rendered);
     }
 
     /**
