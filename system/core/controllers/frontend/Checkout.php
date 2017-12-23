@@ -122,12 +122,6 @@ class Checkout extends FrontendController
     protected $show_login_form = false;
 
     /**
-     * Whether the cart has been updated
-     * @var boolean
-     */
-    protected $cart_updated = false;
-
-    /**
      * Admin mode
      * @var string
      */
@@ -219,6 +213,7 @@ class Checkout extends FrontendController
     }
 
     /**
+     * Page callback
      * Displays the checkout page when admin adds a new order for a customer
      * @param integer $user_id
      */
@@ -230,6 +225,7 @@ class Checkout extends FrontendController
     }
 
     /**
+     * Page callback
      * Displays the checkout page when admin cloning an order
      * @param integer $order_id
      */
@@ -278,6 +274,7 @@ class Checkout extends FrontendController
     }
 
     /**
+     * Page callback
      * Displays the checkout page
      */
     public function editCheckout()
@@ -402,7 +399,7 @@ class Checkout extends FrontendController
     }
 
     /**
-     * Returns an array of default initial order data
+     * Returns an array of default order data
      * @return array
      */
     protected function getDefaultOrder()
@@ -459,7 +456,7 @@ class Checkout extends FrontendController
     }
 
     /**
-     * Prepares form data before passing to templates
+     * Prepares the form data before passing to templates
      */
     protected function setFormDataAfterCheckout()
     {
@@ -582,7 +579,7 @@ class Checkout extends FrontendController
     }
 
     /**
-     * Whether a list of shipping/payment methods contains at least one dynamic method
+     * Whether the list of shipping/payment methods contains at least one dynamic method
      * @param array $methods
      * @return boolean
      */
@@ -683,7 +680,7 @@ class Checkout extends FrontendController
     }
 
     /**
-     * Handles login action
+     * Handles the log in action
      */
     protected function submitLoginCheckout()
     {
