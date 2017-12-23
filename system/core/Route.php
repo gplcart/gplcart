@@ -292,14 +292,13 @@ class Route
      * @param string $pattern
      * @param array $arguments
      * @param string $method
-     * @return mixed
      */
     public function callHandler($pattern, $arguments = array(), $method = 'controller')
     {
         $this->set($pattern, $arguments);
 
         try {
-            $handler = Handler::call($this->route, null, $method, $this->route['arguments']);
+            Handler::call($this->route, null, $method, $this->route['arguments']);
         } catch (\Exception $ex) {
             throw new RouteException($ex->getMessage());
         }
