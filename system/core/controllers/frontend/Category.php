@@ -13,16 +13,10 @@ use gplcart\core\models\CategoryGroup as CategoryGroupModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
- * Handles incoming requests and outputs data related to product catalog
+ * Handles incoming requests and outputs data related to product catalog and categories
  */
 class Category extends FrontendController
 {
-
-    /**
-     * Category group model instance
-     * @var \gplcart\core\models\CategoryGroup $category_group
-     */
-    protected $category_group;
 
     /**
      * Pager limit
@@ -31,7 +25,7 @@ class Category extends FrontendController
     protected $data_limit;
 
     /**
-     * Tottal number of category items
+     * Total number of category items
      * @var int
      */
     protected $data_total;
@@ -55,16 +49,15 @@ class Category extends FrontendController
     protected $data_children = array();
 
     /**
-     * @param CategoryGroupModel $category_group
+     * Constructor
      */
-    public function __construct(CategoryGroupModel $category_group)
+    public function __construct()
     {
         parent::__construct();
-
-        $this->category_group = $category_group;
     }
 
     /**
+     * Page callback
      * Displays the catalog page
      */
     public function listCategory()
@@ -106,6 +99,7 @@ class Category extends FrontendController
     }
 
     /**
+     * Page callback
      * Displays the category page
      * @param integer $category_id
      */
