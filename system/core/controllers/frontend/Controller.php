@@ -18,7 +18,7 @@ use gplcart\core\traits\Item as ItemTrait,
     gplcart\core\traits\ProductCompare as ProductCompareTrait;
 
 /**
- * Contents specific to the front-end methods
+ * Parent controller that contents front-end specific methods
  */
 class Controller extends BaseController
 {
@@ -85,12 +85,6 @@ class Controller extends BaseController
     protected $category;
 
     /**
-     * Collection item model instance
-     * @var \gplcart\core\models\CollectionItem $collection_item
-     */
-    protected $collection_item;
-
-    /**
      * Cart action model instance
      * @var \gplcart\core\models\CartAction $cart_action
      */
@@ -139,7 +133,7 @@ class Controller extends BaseController
     }
 
     /**
-     * Returns the number of cart items for the current user
+     * Returns a number of cart items for the current user
      */
     public function getCartQuantity(array $options = array())
     {
@@ -152,7 +146,7 @@ class Controller extends BaseController
     }
 
     /**
-     * Sets default data for front-end templates
+     * Sets default data for templates
      */
     protected function setDefaultDataFrontend()
     {
@@ -190,7 +184,6 @@ class Controller extends BaseController
         $this->currency = $this->getInstance('gplcart\\core\\models\\Currency');
         $this->cart_action = $this->getInstance('gplcart\\core\\models\\CartAction');
         $this->product_compare = $this->getInstance('gplcart\\core\\models\\ProductCompare');
-        $this->collection_item = $this->getInstance('gplcart\\core\\models\\CollectionItem');
         $this->wishlist_action = $this->getInstance('gplcart\\core\\models\\WishlistAction');
         $this->product_compare_action = $this->getInstance('gplcart\\core\\models\\ProductCompareAction');
     }
@@ -262,11 +255,7 @@ class Controller extends BaseController
 
         foreach ($cart['items'] as &$item) {
             $item['currency'] = $cart['currency'];
-            $this->setItemImages($item['product'], 'product', $this->image);
-            $this->setItemThumbCart($item, $this->image);
-            $this->setItemPriceFormatted($item, $this->price, $this->current_currency);
-            $this->setItemTotalFormatted($item, $this->price);
-            $this->setItemProductBundle($item['product'], $this->product, $this->image);
+            $this->prepareCartItem($item);
         }
 
         $this->setItemTotalFormatted($cart, $this->price);
@@ -349,35 +338,6 @@ class Controller extends BaseController
     }
 
     /**
-     * Returns an array of collection items
-     * @param array $conditions
-     * @param array $options
-     * @return array
-     */
-    public function getCollectionItems(array $conditions, array $options)
-    {
-        $conditions += array(
-            'status' => 1,
-            'store_id' => $this->store_id
-        );
-
-        $items = $this->collection_item->getItems($conditions);
-
-        if (empty($items)) {
-            return array();
-        }
-
-        $item = reset($items);
-
-        $options += array(
-            'entity' => $item['collection_item']['type'],
-            'template_item' => $item['collection_handler']['template']['item']
-        );
-
-        return $this->prepareEntityItems($items, $options);
-    }
-
-    /**
      * Prepare an array of entity items like pages, products etc
      * @param array $items
      * @param array $options
@@ -401,25 +361,58 @@ class Controller extends BaseController
         );
 
         foreach ($items as &$item) {
-
-            $this->setItemUrl($item, $options);
-            $this->setItemThumb($item, $this->image, $options);
-
-            if ($options['entity'] === 'product') {
-                $this->setItemProductInComparison($item, $this->product_compare);
-                $this->setItemPriceCalculated($item, $this->product);
-                $this->setItemProductInWishlist($item, $this->wishlist);
-                $this->setItemPriceFormatted($item, $this->price, $this->current_currency);
-                $this->setItemProductBundle($item, $this->product, $this->image);
-                $this->setItemRenderedProduct($item, $options);
-            } else {
-                $this->setItemIndentation($item);
-                $this->setItemUrlActive($item);
-                $this->setItemRendered($item, array('item' => $item), $options);
-            }
+            $this->prepareEntityItem($item, $options);
         }
 
         return $items;
+    }
+
+    /**
+     * Prepare an entity item
+     * @param array $item
+     * @param array $options
+     */
+    protected function prepareEntityItem(array &$item, array $options)
+    {
+        $this->setItemUrl($item, $options);
+        $this->setItemThumb($item, $this->image, $options);
+
+        if ($options['entity'] === 'product') {
+            $this->prepareProductItem($item, $options);
+        } else {
+            $this->setItemIndentation($item);
+            $this->setItemUrlActive($item);
+            $this->setItemRendered($item, array('item' => $item), $options);
+        }
+    }
+
+    /**
+     * Prepare a product item
+     * @param array $product
+     * @param array $options
+     */
+    protected function prepareProductItem(array &$product, array $options)
+    {
+        $this->setItemProductInComparison($product, $this->product_compare);
+        $this->setItemPriceCalculated($product, $this->product);
+        $this->setItemProductInWishlist($product, $this->wishlist);
+        $this->setItemPriceFormatted($product, $this->price, $this->current_currency);
+        $this->setItemProductBundle($product, $this->product, $this->image);
+        $this->setItemRenderedProduct($product, $options);
+    }
+
+    /**
+     * Prepare a cart item
+     * Prepare cart item
+     * @param array $item
+     */
+    protected function prepareCartItem(array &$item)
+    {
+        $this->setItemImages($item['product'], 'product', $this->image);
+        $this->setItemThumbCart($item, $this->image);
+        $this->setItemPriceFormatted($item, $this->price, $this->current_currency);
+        $this->setItemTotalFormatted($item, $this->price);
+        $this->setItemProductBundle($item['product'], $this->product, $this->image);
     }
 
 }
