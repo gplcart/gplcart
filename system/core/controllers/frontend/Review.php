@@ -101,6 +101,7 @@ class Review extends FrontendController
     protected function setProductReview($product_id)
     {
         $product = $this->product->get($product_id);
+        
         if (empty($product['status']) || $product['store_id'] != $this->store_id) {
             $this->outputHttpStatus(404);
         }
@@ -163,23 +164,17 @@ class Review extends FrontendController
      */
     protected function submitEditReview()
     {
-        if ($this->isPosted('delete')) {
-            $this->deleteReview();
-            return null;
-        }
-
         $this->controlSpam();
 
-        if (!$this->isPosted('save') || !$this->validateEditReview()) {
-            return null;
-        }
-
-        $this->submitRatingReview();
-
-        if (isset($this->data_review['review_id'])) {
-            $this->updateReview();
-        } else {
-            $this->addReview();
+        if ($this->isPosted('delete')) {
+            $this->deleteReview();
+        } else if ($this->isPosted('save') && $this->validateEditReview()) {
+            $this->submitRatingReview();
+            if (isset($this->data_review['review_id'])) {
+                $this->updateReview();
+            } else {
+                $this->addReview();
+            }
         }
     }
 
