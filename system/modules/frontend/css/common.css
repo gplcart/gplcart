@@ -1,8 +1,3 @@
-html {
-    position: relative;
-    min-height: 100%;
-}
-
 .navbar-logo > img {
     height: 100%;
     padding: 0;
@@ -15,7 +10,7 @@ html {
 }
 
 .content-wrapper {
-    min-height: calc(100vh - 70px);
+    padding-bottom: 20px;
 }
 
 .panel {
@@ -62,14 +57,6 @@ html {
 .navbar {
     border: none !important;
     position: static; /* Fix overlapping dropdowns */
-}
-
-@media (min-width: 768px) {
-    .navbar-center {
-        position: absolute;
-        left: 50%;
-        transform: translatex(-50%);
-    }
 }
 
 .row.display-flex {
@@ -199,8 +186,6 @@ td.middle {
     overflow-x: hidden;
 }
 
-/**  Rating widget **/
-
 .product-rating .star-rating {
     float: left;
     margin-right: 5px;
@@ -251,8 +236,6 @@ td.middle {
     content: "\f005";
 }
 
-/** Options **/
-
 .option-combination:not(.field-widget-radio) input {
     display: none;
 }
@@ -267,7 +250,7 @@ td.middle {
 }
 
 .option-combination > input:checked  + .btn {
-    border: 2px solid #fff; 
+    border: 2px solid #fff;
     outline: 1px solid #000;
 }
 
@@ -309,7 +292,7 @@ a.disabled {
 .saved-addresses > .address span {
     text-overflow: ellipsis;
     white-space: nowrap;
-    overflow: hidden; 
+    overflow: hidden;
     display: block;
     text-align: left;
 }
@@ -328,7 +311,16 @@ a.disabled {
     display: none;
 }
 
-/* Custom, iPhone Retina */ 
+.navbar-hidden-label {
+    margin-left: 15px;
+}
+
+.footer {
+    border-top: 1px solid #ccc;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
 @media only screen and (min-width : 320px) {
 
     .navbar-form {
@@ -338,39 +330,42 @@ a.disabled {
     .navbar.second .navbar-form {
         background-color: #f8f8f8;
     }
+
+    .navbar.second .navbar-nav li {
+        float: left !important;
+    }
+
+    .navbar.first, .navbar.second {
+        margin-bottom: 0;
+    }
 }
 
-/* Extra small devices, phones */ 
-@media only screen and (min-width : 480px) {
-
-}
-
-/* Small devices, tablets */
 @media only screen and (min-width : 768px) {
+
+    .navbar-center {
+        position: absolute;
+        left: 50%;
+        transform: translatex(-50%);
+    }
 
     .navbar.second .navbar-form {
         background-color: transparent;
     }
 
-    .navbar.second .search .input-group {
-        width: 350px;
-    }
-
-    .navbar.second .navbar-btn {
-        margin-left: 5px;
+    .navbar.first, .navbar.second {
+        margin-bottom: 20px;
     }
 }
 
-/* Medium devices, desktops */
 @media only screen and (min-width : 992px) {
     .navbar.second .search .input-group {
         width: 400px;
     }
 }
 
-/* Large devices, wide screens */
 @media only screen and (min-width : 1200px) {
     .navbar.second .search .input-group {
         width: 600px;
     }
 }
+
