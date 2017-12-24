@@ -32,70 +32,85 @@ $region_content_class = 'col-md-8';
       <div class="row">
         <nav class="navbar navbar-default navbar-static-top first">
           <div class="container">
-            <ul class="nav navbar-nav">
-              <?php if ($show_currency_selector) { ?>
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $this->e($_currency['code']); ?> <span class="caret"></span></a>
-                <ul class="dropdown-menu">
-                  <?php foreach ($_currencies as $currency) { ?>
-                  <?php if ($_currency['code'] !== $currency['code']) { ?>
-                  <li>
-                    <a rel="nofollow" href="<?php echo $this->url('', array('currency' => $currency['code'])); ?>"><?php echo $this->e($currency['code']); ?></a>
-                  </li>
-                  <?php } ?>
-                  <?php } ?>
-                </ul>
-              </li>
-              <?php } else if(count($_currencies) > 1) { ?>
-              <li><?php echo $this->e($_currency['name']); ?></li>
+            <div class="navbar-header">
+              <p class="navbar-text navbar-hidden-label visible-xs-inline-block">
+                <?php if (!empty($_store['data']['phone'][0])) { ?>
+                <?php echo $this->text('Call'); ?>: <?php echo $this->e($_store['data']['phone'][0]); ?>
+                <?php } ?>
+              </p>
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-first">
+                <span class="sr-only"><?php echo $this->text('Toggle navigation'); ?></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+            </div>
+            <div class="navbar-collapse collapse" id="navbar-collapse-first">
+              <ul class="nav navbar-nav">
+                <?php if ($show_currency_selector) { ?>
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $this->e($_currency['code']); ?> <span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    <?php foreach ($_currencies as $currency) { ?>
+                    <?php if ($_currency['code'] !== $currency['code']) { ?>
+                    <li>
+                      <a rel="nofollow" href="<?php echo $this->url('', array('currency' => $currency['code'])); ?>"><?php echo $this->e($currency['code']); ?></a>
+                    </li>
+                    <?php } ?>
+                    <?php } ?>
+                  </ul>
+                </li>
+                <?php } else if(count($_currencies) > 1) { ?>
+                <li><?php echo $this->e($_currency['name']); ?></li>
+                <?php } ?>
+                <?php if (count($_languages) > 1) { ?>
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <?php if (empty($_languages[$_langcode]['status'])) { ?>
+                    <?php echo $this->text('Select language'); ?>
+                    <?php } else { ?>
+                    <?php echo $this->e($_languages[$_langcode]['native_name']); ?>
+                    <?php } ?>
+                    <span class="caret"></span>
+                  </a>
+                  <ul class="dropdown-menu">
+                    <?php foreach ($_languages as $language) { ?>
+                    <?php if ($language['code'] !== $_langcode) { ?>
+                    <li>
+                      <a href="<?php echo $this->lurl($language['code'], '', $_query); ?>"><?php echo $this->e($language['native_name']); ?></a>
+                    </li>
+                    <?php } ?>
+                    <?php } ?>
+                  </ul>
+                </li>
+                <?php } ?>
+              </ul>
+              <?php if (!empty($_store['data']['phone'][0])) { ?>
+              <p class="navbar-text navbar-center hidden-xs">
+                <?php echo $this->text('Call'); ?>: <?php echo $this->e($_store['data']['phone'][0]); ?>
+              </p>
               <?php } ?>
-              <?php if (count($_languages) > 1) { ?>
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                  <?php if (empty($_languages[$_langcode]['status'])) { ?>
-                  <?php echo $this->text('Select language'); ?>
-                  <?php } else { ?>
-                  <?php echo $this->e($_languages[$_langcode]['native_name']); ?>
-                  <?php } ?>
-                  <span class="caret"></span>
-                </a>
-                <ul class="dropdown-menu">
-                  <?php foreach ($_languages as $language) { ?>
-                  <?php if ($language['code'] !== $_langcode) { ?>
-                  <li>
-                    <a href="<?php echo $this->lurl($language['code'], '', $_query); ?>"><?php echo $this->e($language['native_name']); ?></a>
-                  </li>
-                  <?php } ?>
-                  <?php } ?>
-                </ul>
-              </li>
-              <?php } ?>
-            </ul>
-            <?php if (!empty($_store['data']['phone'][0])) { ?>
-            <p class="navbar-text navbar-center">
-              <?php echo $this->text('Call'); ?>: <?php echo $this->e($_store['data']['phone'][0]); ?>
-            </p>
-            <?php } ?>
-            <ul class="nav navbar-nav navbar-right">
-              <?php if ($_is_logged_in) { ?>
-              <li>
-                <a href="<?php echo $this->url("account/$_uid"); ?>">
-                  <?php echo $this->text('Account'); ?>
-                </a>
-              </li>
-              <li>
-                <a href="<?php echo $this->url('logout'); ?>">
-                  <?php echo $this->text('Log out'); ?>
-                </a>
-              </li>
-              <?php } else { ?>
-              <li>
-                <a rel="nofollow" href="<?php echo $this->url('login'); ?>">
-                  <?php echo $this->text('Log in'); ?>
-                </a>
-              </li>
-              <?php } ?>
-            </ul>
+              <ul class="nav navbar-nav navbar-right">
+                <?php if ($_is_logged_in) { ?>
+                <li>
+                  <a href="<?php echo $this->url("account/$_uid"); ?>">
+                    <?php echo $this->text('Account'); ?>
+                  </a>
+                </li>
+                <li>
+                  <a href="<?php echo $this->url('logout'); ?>">
+                    <?php echo $this->text('Log out'); ?>
+                  </a>
+                </li>
+                <?php } else { ?>
+                <li>
+                  <a rel="nofollow" href="<?php echo $this->url('login'); ?>">
+                    <?php echo $this->text('Log in'); ?>
+                  </a>
+                </li>
+                <?php } ?>
+              </ul>
+            </div>
           </div>
         </nav>
       </div>
@@ -103,11 +118,11 @@ $region_content_class = 'col-md-8';
         <nav class="navbar navbar-unstyled navbar-static-top second">
           <div class="container">
             <?php if (empty($_store_logo)) { ?>
-            <a class="navbar-brand" href="<?php echo $this->e($_base); ?>">
+            <a class="navbar-brand hidden-xs" href="<?php echo $this->e($_base); ?>">
               <?php echo $this->e($_store_title); ?>
             </a>
             <?php } else { ?>
-            <a class="navbar-logo" href="<?php echo $this->e($_base); ?>">
+            <a class="navbar-logo hidden-xs" href="<?php echo $this->e($_base); ?>">
               <img class="logo" alt="<?php echo $this->e($_store_title); ?>" title="<?php echo $this->e($_store_title); ?>" src="<?php echo $this->e($_store_logo); ?>">
             </a>
             <?php } ?>
@@ -246,21 +261,53 @@ $region_content_class = 'col-md-8';
     </div>
     <div class="footer">
       <div class="container">
-        <?php if (!empty($_store['data']['owner'])) { ?>
-        <?php echo $this->e($_store['data']['owner']); ?>
-        <?php } ?>
-        &copy; 2015 - <?php echo date('Y'); ?> <a href="http://gplcart.com"><?php echo $this->text('GPLCart'); ?></a>
-        <ul class="list-unstyled">
-          <li>
-            <a rel="nofollow" href="<?php echo $this->url('page/1'); ?>"><?php echo $this->text('Contact'); ?></a>
-          </li>
-          <li>
-            <a rel="nofollow" href="<?php echo $this->url('page/2'); ?>"><?php echo $this->text('Help'); ?></a>
-          </li>
-          <li>
-            <a href="<?php echo $this->url('blog'); ?>"><?php echo $this->text('Blog'); ?></a>
-          </li>
-        </ul>
+        <div class="row">
+          <div class="col-md-4">
+            <?php if (!empty($_store['data']['owner'])) { ?>
+            <?php echo $this->e($_store['data']['owner']); ?>
+            <?php } ?>
+            <?php if (!empty($_store['data']['phone'])) { ?>
+            <h5><?php echo $this->text('Phone'); ?></h5>
+            <ul class="list-unstyled">
+              <?php foreach ($_store['data']['phone'] as $phone) { ?>
+              <li><?php echo $this->e($phone); ?></li>
+              <?php } ?>
+            </ul>
+            <?php } ?>
+            <?php if (!empty($_store['data']['fax'])) { ?>
+            <h5><?php echo $this->text('Fax'); ?></h5>
+            <ul class="list-unstyled">
+              <?php foreach ($_store['data']['fax'] as $fax) { ?>
+              <li><?php echo $this->e($fax); ?></li>
+              <?php } ?>
+            </ul>
+            <?php } ?>
+            <?php if (!empty($_store['data']['email'])) { ?>
+            <h5><?php echo $this->text('E-mail'); ?></h5>
+            <ul class="list-unstyled">
+              <?php foreach ($_store['data']['email'] as $email) { ?>
+              <li><?php echo $this->e($email); ?></li>
+              <?php } ?>
+            </ul>
+            <?php } ?>
+            <?php if (!empty($_store['data']['address'])) { ?>
+            <p><?php echo $this->e($_store['data']['address']); ?></p>
+            <?php } ?>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-unstyled">
+              <li>
+                <a href="<?php echo $this->url('blog'); ?>"><?php echo $this->text('Blog'); ?></a>
+              </li>
+              <li>
+                <a rel="nofollow" href="<?php echo $this->url('page/2'); ?>"><?php echo $this->text('Help'); ?></a>
+              </li>
+              <li>
+                <a rel="nofollow" href="<?php echo $this->url('page/1'); ?>"><?php echo $this->text('Contact'); ?></a>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   </div>

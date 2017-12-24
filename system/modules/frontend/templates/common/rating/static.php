@@ -9,7 +9,7 @@
  */
 ?>
 <?php if (!empty($rating['rating'])) { ?>
-<span class="star-rating static" title="<?php echo $this->text('@num out of @total stars', array('@num' => $rating['rating'], '@total' => 5)); ?>">
+<span class="star-rating static" title="<?php echo $this->text('@num out of @total stars', array('@num' => round($rating['rating'], 1), '@total' => 5)); ?>">
   <span class="star-rating-wrap">
     <span class="star-rating-icons">
     <?php for($stars = 5; $stars > 0; $stars--) { ?>
