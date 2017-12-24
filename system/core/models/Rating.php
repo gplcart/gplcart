@@ -106,10 +106,6 @@ class Rating
             return $result;
         }
 
-        if (empty($data['rating'])) {
-            return array();
-        }
-
         $conditions = array(
             'user_id' => $data['user_id'],
             'product_id' => $data['product_id']
