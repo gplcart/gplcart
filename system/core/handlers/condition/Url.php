@@ -10,6 +10,7 @@
 namespace gplcart\core\handlers\condition;
 
 use gplcart\core\Route;
+use gplcart\core\helpers\Url as UrlHelper;
 use gplcart\core\handlers\condition\Base as BaseHandler;
 
 /**
@@ -25,10 +26,18 @@ class Url extends BaseHandler
     protected $route;
 
     /**
-     * @param Route $route
+     * URL helper class instance
+     * @var \gplcart\core\helpers\Url $url
      */
-    public function __construct(Route $route)
+    protected $url;
+
+    /**
+     * @param Route $route
+     * @param UrlHelper $url
+     */
+    public function __construct(Route $route, UrlHelper $url)
     {
+        $this->url = $url;
         $this->route = $route;
     }
 
@@ -44,11 +53,6 @@ class Url extends BaseHandler
         }
 
         $route = $this->route->get();
-
-        if ($route['pattern'] === '') {
-            $route['pattern'] = '/'; // Fix front page
-        }
-
         return $this->compare($route['pattern'], $condition['value'], $condition['operator']);
     }
 
@@ -63,7 +67,7 @@ class Url extends BaseHandler
             return false;
         }
 
-        $path = $this->route->getPath();
+        $path = $this->url->path();
 
         $found = false;
         foreach ((array) $condition['value'] as $pattern) {
