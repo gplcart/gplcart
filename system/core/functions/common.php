@@ -79,6 +79,10 @@ function gplcart_path_starts($path, $prefix)
  */
 function gplcart_path_match($path, $pattern, &$arguments = array())
 {
+    if (empty($path)) {
+        $path = '/';
+    }
+
     $matches = array();
     if (preg_match("~^$pattern$~i", $path, $matches) === 1) {
         array_shift($matches);
