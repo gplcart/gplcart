@@ -12,6 +12,7 @@
 $config = array();
 
 # $config['account_order_limit']                  = 10; // Max number of orders per page in accout
+# $config['alias']                                = 1; // Whether URL aliasing is enabled
 # $config['autocomplete_limit']                   = 10; // Max number of autocomplete suggestions
 # $config['bookmark_limit']                       = 5; // Max number of bookmarks to quick access
 # $config['blog_limit']                           = 20;// Max posts per blog page
