@@ -374,7 +374,7 @@ class Controller extends BaseController
      */
     protected function prepareEntityItem(array &$item, array $options)
     {
-        $this->setItemUrl($item, $options);
+        $this->setItemEntityUrl($item, $options);
         $this->setItemThumb($item, $this->image, $options);
 
         if ($options['entity'] === 'product') {

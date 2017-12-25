@@ -135,10 +135,16 @@ trait Item
      * @param array $item
      * @param array $options
      */
-    public function setItemUrl(array &$item, array $options = array())
+    public function setItemEntityUrl(array &$item, array $options = array())
     {
         if (!empty($options['entity']) && !empty($item[$options['entity'] . '_id'])) {
-            $path = empty($item['alias']) ? "{$options['entity']}/{$item["{$options['entity']}_id"]}" : $item['alias'];
+
+            $path = "{$options['entity']}/{$item["{$options['entity']}_id"]}";
+
+            if (!empty($item['alias']) && $this->config('alias', true)) {
+                $path = $item['alias'];
+            }
+
             $item['url'] = $this->url($path);
             $item['url_query'] = $this->url($path, $this->getQuery(null, array(), 'array'));
         }
@@ -296,7 +302,7 @@ trait Item
         );
 
         foreach ($products as &$product) {
-            $this->setItemUrl($product, $options);
+            $this->setItemEntityUrl($product, $options);
             $this->setItemThumb($product, $image_model, $options);
             $this->setItemRenderedProductBundle($product, $options);
         }
