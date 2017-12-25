@@ -28,6 +28,12 @@ class Logger
     protected $db;
 
     /**
+     * Whether to convert PHP errors to exceptions
+     * @var bool
+     */
+    protected $error_to_exception = true;
+
+    /**
      * Sets the database instance
      * @param \gplcart\core\Database $db
      * @return $this
@@ -36,6 +42,15 @@ class Logger
     {
         $this->db = $db;
         return $this;
+    }
+
+    /**
+     * Enable/disable converting PHP errors to exceptions
+     * @param bool $convert
+     */
+    public function errorToException($convert = true)
+    {
+        $this->error_to_exception = (bool) $convert;
     }
 
     /**
@@ -143,7 +158,13 @@ class Logger
         $key = md5(json_encode($error));
 
         if (!isset($this->errors[$key])) {
+
             $this->errors[$key] = $error;
+
+            if ($this->error_to_exception) {
+                throw new \Exception($this->getFormattedError($error));
+            }
+
             $this->log('php_error', $error, 'warning', false);
         }
     }

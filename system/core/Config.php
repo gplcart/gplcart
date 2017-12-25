@@ -92,6 +92,7 @@ class Config
         }
 
         $this->logger->setDb($this->db);
+        $this->logger->errorToException($this->get('error_to_exception', false));
 
         register_shutdown_function(array($this->logger, 'shutdownHandler'));
         set_exception_handler(array($this->logger, 'exceptionHandler'));

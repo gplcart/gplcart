@@ -42,6 +42,7 @@ $config = array();
 # $config['date_prefix']                          = 'd.m.Y'; // Default time format - hours
 # $config['date_suffix']                          = ' H:i'; // Default time format - minutes
 # $config['error_level']                          = 2; // Default error reporting level
+# $config['error_to_exception']                   = 0; // Whether to convert all PHP errors to exceptions
 # $config['file_upload_translit']                 = 1; // Whether to transliterate names of uploaded files
 # $config['history_lifespan']                     = 30*24*60*60; // Max number of seconds to keep records in "history" table
 # $config['language']                             = ''; // Default store language
