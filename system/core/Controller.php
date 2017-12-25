@@ -479,16 +479,10 @@ abstract class Controller
 
     /**
      * Returns the current route data
-     * @param string|null $key
-     * @param mixed $default
-     * @return mixed
+     * @return array
      */
-    public function getRoute($key = null, $default = null)
+    public function getRoute()
     {
-        if (isset($key)) {
-            return isset($this->current_route[$key]) ? $this->current_route[$key] : $default;
-        }
-
         return $this->current_route;
     }
 
