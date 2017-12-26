@@ -150,7 +150,7 @@ class Controller extends BaseController
      */
     protected function setDefaultDataFrontend()
     {
-        $currencies = $this->currency->getList(true);
+        $currencies = $this->currency->getList(array('enabled' => true));
 
         $this->data['_currencies'] = $currencies;
         $this->data['_cart'] = $this->getCartQuantity();

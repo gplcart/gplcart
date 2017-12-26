@@ -225,7 +225,7 @@ class PriceRule extends BackendController
      */
     protected function getCurrenciesPriceRule()
     {
-        return $this->currency->getList(true);
+        return $this->currency->getList(array('enabled' => true));
     }
 
     /**
