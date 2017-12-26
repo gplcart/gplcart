@@ -151,7 +151,7 @@ class CategoryGroup extends BackendController
 
         $this->setData('category_group', $this->data_category_group);
         $this->setData('can_delete', $this->canDeleteCategoryGroup());
-        $this->setData('languages', $this->language->getList(false, true));
+        $this->setData('languages', $this->language->getList(array('in_database' => true)));
         $this->setData('category_group_types', $this->category_group->getTypes());
 
         $this->submitEditCategoryGroup();

@@ -14,12 +14,15 @@ use gplcart\core\models\Alias as AliasModel,
     gplcart\core\models\CategoryGroup as CategoryGroupModel,
     gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\traits\Category as CategoryTrait;
 
 /**
  * Handles incoming requests and outputs data related to categories
  */
 class Category extends BackendController
 {
+
+    use CategoryTrait;
 
     /**
      * URL model instance
@@ -250,7 +253,7 @@ class Category extends BackendController
         $this->setData('category_group', $this->data_category_group);
         $this->setData('parent_id', $this->getQuery('parent_id'));
         $this->setData('categories', $this->getOptionsCategory($category_group_id));
-        $this->setData('languages', $this->language->getList(false, true));
+        $this->setData('languages', $this->language->getList(array('in_database' => true)));
 
         $this->submitEditCategory();
 
@@ -266,7 +269,11 @@ class Category extends BackendController
      */
     protected function getOptionsCategory($category_group_id)
     {
-        return $this->category->getOptionList(array('category_group_id' => $category_group_id));
+        $options = array(
+            'category_group_id' => $category_group_id
+        );
+
+        return $this->getCategoryOptions($this->category, $options);
     }
 
     /**

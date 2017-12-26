@@ -41,17 +41,44 @@ class Language
     }
 
     /**
-     * Returns an array of languages
-     * @param bool $enabled Return only enabled languages
-     * @param bool $in_database Returns only languages that saved in the database
+     * Returns a language
+     * @param string $code
      * @return array
      */
-    public function getList($enabled = false, $in_database = false)
+    public function get($code)
     {
-        $languages = &gplcart_static(gplcart_array_hash(array('language.list' => array($enabled, $in_database))));
+        $result = null;
+        $this->hook->attach('language.get.before', $code, $result, $this);
+
+        if (isset($result)) {
+            return (array) $result;
+        }
+
+        $list = $this->getList();
+        $result = isset($list[$code]) ? $list[$code] : array();
+        $this->hook->attach('language.get.after', $code, $result, $this);
+        return (array) $result;
+    }
+
+    /**
+     * Returns an array of languages
+     * @param array $options
+     * @return array
+     */
+    public function getList(array $options = array())
+    {
+        $options += array('enabled' => false, 'in_database' => false);
+
+        $languages = &gplcart_static(gplcart_array_hash(array('language.list' => $options)));
 
         if (isset($languages)) {
             return $languages;
+        }
+
+        $this->hook->attach('language.list.before', $options, $languages, $this);
+
+        if (isset($languages)) {
+            return (array) $languages;
         }
 
         $iso = $this->getIso();
@@ -74,55 +101,20 @@ class Language
             if ($code === 'en') {
                 $language['status'] = true;
             }
-        }
 
-        unset($language);
-
-        $this->hook->attach('language.list', $languages, $this);
-
-        foreach ($languages as $code => $language) {
-            if ($enabled && empty($language['status'])) {
+            if ($options['enabled'] && empty($language['status'])) {
                 unset($languages[$code]);
                 continue;
             }
 
-            if ($in_database && empty($language['in_database'])) {
+            if ($options['in_database'] && empty($language['in_database'])) {
                 unset($languages[$code]);
             }
         }
 
         gplcart_array_sort($languages);
+        $this->hook->attach('language.list.after', $options, $languages, $this);
         return $languages;
-    }
-
-    /**
-     * Returns a default language code
-     * @return string
-     */
-    public function getDefault()
-    {
-        return $this->config->get('language', 'en');
-    }
-
-    /**
-     * Sets default language
-     * @param string $code
-     * @return boolean
-     */
-    public function setDefault($code)
-    {
-        return $this->config->set('language', $code);
-    }
-
-    /**
-     * Returns a language
-     * @param string $code
-     * @return array
-     */
-    public function get($code)
-    {
-        $languages = $this->getList();
-        return isset($languages[$code]) ? $languages[$code] : array();
     }
 
     /**
@@ -153,7 +145,6 @@ class Language
 
         $result = true;
         $this->hook->attach('language.add.after', $data, $result, $this);
-
         return (bool) $result;
     }
 
@@ -196,7 +187,6 @@ class Language
 
         $result = true;
         $this->hook->attach('language.update.after', $code, $data, $result, $this);
-
         return (bool) $result;
     }
 
@@ -244,21 +234,22 @@ class Language
     }
 
     /**
-     * Returns an array of default language data
+     * Sets default language
      * @param string $code
-     * @return array
+     * @return boolean
      */
-    protected function getDefaultData($code = '')
+    public function setDefault($code)
     {
-        return array(
-            'code' => $code,
-            'name' => $code,
-            'weight' => 0,
-            'rtl' => false,
-            'status' => false,
-            'default' => false,
-            'native_name' => $code,
-        );
+        return $this->config->set('language', $code);
+    }
+
+    /**
+     * Returns a default language code
+     * @return string
+     */
+    public function getDefault()
+    {
+        return $this->config->get('language', 'en');
     }
 
     /**
@@ -315,6 +306,24 @@ class Language
         }
 
         return $data;
+    }
+
+    /**
+     * Returns an array of default language data
+     * @param string $code
+     * @return array
+     */
+    protected function getDefaultData($code = '')
+    {
+        return array(
+            'code' => $code,
+            'name' => $code,
+            'weight' => 0,
+            'rtl' => false,
+            'status' => false,
+            'default' => false,
+            'native_name' => $code,
+        );
     }
 
 }

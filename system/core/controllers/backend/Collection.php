@@ -184,7 +184,7 @@ class Collection extends BackendController
         $this->setData('types', $this->collection->getTypes());
         $this->setData('collection', $this->data_collection);
         $this->setData('can_delete', $this->canDeleteCollection());
-        $this->setData('languages', $this->language->getList(false, true));
+        $this->setData('languages', $this->language->getList(array('in_database' => true)));
 
         $this->submitEditCollection();
         $this->outputEditCollection();

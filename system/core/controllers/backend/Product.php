@@ -18,12 +18,15 @@ use gplcart\core\models\Alias as AliasModel,
     gplcart\core\models\CategoryGroup as CategoryGroupModel,
     gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\traits\Category as CategoryTrait;
 
 /**
  * Handles incoming requests and outputs data related to products
  */
 class Product extends BackendController
 {
+
+    use CategoryTrait;
 
     /**
      * Product model instance
@@ -124,7 +127,7 @@ class Product extends BackendController
         $this->setPagerListProduct();
 
         $this->setData('products', $this->getListProduct());
-        $this->setData('currencies', $this->currency->getList(true));
+        $this->setData('currencies', $this->currency->getList(array('enabled' => true)));
 
         $this->outputListProduct();
     }
@@ -258,7 +261,7 @@ class Product extends BackendController
         $this->setData('size_units', $this->product->getSizeUnits());
         $this->setData('weight_units', $this->product->getWeightUnits());
         $this->setData('default_currency', $this->currency->getDefault());
-        $this->setData('languages', $this->language->getList(false, true));
+        $this->setData('languages', $this->language->getList(array('in_database' => true)));
         $this->setData('subtract_default', $this->config->get('product_subtract', 0));
         $this->setData('classes', $this->product_class->getList(array('status' => 1)));
 
@@ -285,7 +288,13 @@ class Product extends BackendController
 
         $categories = array();
         foreach (array_keys($types) as $type) {
-            $data = $this->category->getOptionListByStore($store_id, $type);
+
+            $op = array(
+                'type' => $type,
+                'store_id' => $store_id
+            );
+
+            $data = $this->getCategoryOptionsByStore($this->category, $this->category_group, $op);
             $categories[$type] = reset($data);
         }
 

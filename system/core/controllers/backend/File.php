@@ -216,7 +216,7 @@ class File extends BackendController
         $this->setData('file', $this->data_file);
         $this->setData('can_delete', $this->canDeleteFile());
         $this->setData('extensions', $this->file->supportedExtensions(true));
-        $this->setData('languages', $this->language->getList(false, true));
+        $this->setData('languages', $this->language->getList(array('in_database' => true)));
 
         $this->submitEditFile();
         $this->outputEditFile();

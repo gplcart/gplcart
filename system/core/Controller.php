@@ -343,13 +343,10 @@ abstract class Controller
         $this->setToken();
         $this->setRouteProperties();
         $this->setLanguageProperties();
-
         $this->setUserProperties();
         $this->setStoreProperties();
-
         $this->setDefaultAssets();
         $this->setThemeProperties();
-
         $this->setDefaultData();
         $this->controlCommonAccess();
         $this->controlMaintenanceMode();
@@ -509,7 +506,7 @@ abstract class Controller
      */
     protected function setStoreProperties()
     {
-        $this->current_store = $this->store->getCurrent();
+        $this->current_store = $this->store->get();
 
         if (isset($this->current_store['store_id'])) {
             $this->store_id = $this->current_store['store_id'];
@@ -1913,7 +1910,7 @@ abstract class Controller
         $this->data['_store'] = $this->current_store;
         $this->data['_language'] = $this->current_language;
         $this->data['_messages'] = $this->session->getMessage();
-        $this->data['_languages'] = $this->language->getList(true);
+        $this->data['_languages'] = $this->language->getList(array('enabled' => true));
         $this->data['_store_title'] = $this->store->getTranslation('title', $this->langcode);
 
         if (!empty($this->current_store['data']['logo'])) {
