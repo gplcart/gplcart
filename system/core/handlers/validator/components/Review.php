@@ -107,13 +107,14 @@ class Review extends ComponentValidator
             return false;
         }
 
-        $limits = $this->review->getLimits();
         $length = mb_strlen($value);
+        list($min, $max) = $this->review->getLimits();
 
-        if ($length < $limits['min'] || $length > $limits['max']) {
-            $this->setErrorLengthRange($field, $label, $limits['min'], $limits['max']);
+        if ($length < $min || $length > $max) {
+            $this->setErrorLengthRange($field, $label, $min, $max);
             return false;
         }
+
         return true;
     }
 
