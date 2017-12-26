@@ -12,14 +12,18 @@ namespace gplcart\core\controllers\backend;
 use gplcart\core\models\Page as PageModel,
     gplcart\core\models\Alias as AliasModel,
     gplcart\core\models\Category as CategoryModel,
+    gplcart\core\models\CategoryGroup as CategoryGroupModel,
     gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\traits\Category as CategoryTrait;
 
 /**
  * Handles incoming requests and outputs data related to pages
  */
 class Page extends BackendController
 {
+
+    use CategoryTrait;
 
     /**
      * Page model instance
@@ -32,6 +36,12 @@ class Page extends BackendController
      * @var \gplcart\core\models\Category $category
      */
     protected $category;
+
+    /**
+     * Category group model instance
+     * @var \gplcart\core\models\CategoryGroup $category_group
+     */
+    protected $category_group;
 
     /**
      * URL model instance
@@ -60,10 +70,12 @@ class Page extends BackendController
     /**
      * @param PageModel $page
      * @param CategoryModel $category
+     * @param CategoryGroupModel $category_group
      * @param AliasModel $alias
      * @param TranslationEntityModel $translation_entity
      */
-    public function __construct(PageModel $page, CategoryModel $category, AliasModel $alias,
+    public function __construct(PageModel $page, CategoryModel $category,
+            CategoryGroupModel $category_group, AliasModel $alias,
             TranslationEntityModel $translation_entity)
     {
         parent::__construct();
@@ -71,6 +83,7 @@ class Page extends BackendController
         $this->page = $page;
         $this->alias = $alias;
         $this->category = $category;
+        $this->category_group = $category_group;
         $this->translation_entity = $translation_entity;
     }
 
@@ -215,7 +228,7 @@ class Page extends BackendController
         $this->setBreadcrumbEditPage();
 
         $this->setData('page', $this->data_page);
-        $this->setData('languages', $this->language->getList(false, true));
+        $this->setData('languages', $this->language->getList(array('in_database' => true)));
 
         $this->submitEditPage();
 
@@ -365,8 +378,8 @@ class Page extends BackendController
      */
     protected function setDataCategoriesEditPage()
     {
-        $store_id = $this->getData('page.store_id', $this->store->getDefault());
-        $categories = $this->category->getOptionListByStore($store_id);
+        $op = array('store_id' => $this->getData('page.store_id', $this->store->getDefault()));
+        $categories = $this->getCategoryOptionsByStore($this->category, $this->category_group, $op);
         $this->setData('categories', $categories);
     }
 

@@ -12,14 +12,18 @@ namespace gplcart\core\controllers\frontend;
 use gplcart\core\models\Sku as SkuModel,
     gplcart\core\models\City as CityModel,
     gplcart\core\models\Collection as CollectionModel,
+    gplcart\core\models\CategoryGroup as CategoryGroupModel,
     gplcart\core\models\CollectionItem as CollectionItemModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
+use gplcart\core\traits\Category as CategoryTrait;
 
 /**
  * Handles incoming requests and outputs data related to AJAX requests
  */
 class Ajax extends FrontendController
 {
+
+    use CategoryTrait;
 
     /**
      * SKU model instance
@@ -40,6 +44,12 @@ class Ajax extends FrontendController
     protected $collection;
 
     /**
+     * Category group class instance
+     * @var \gplcart\core\CategoryGroup $category_group
+     */
+    protected $category_group;
+
+    /**
      * Collection item model instance
      * @var \gplcart\core\models\CollectionItem $collection_item
      */
@@ -50,15 +60,17 @@ class Ajax extends FrontendController
      * @param CityModel $city
      * @param CollectionModel $collection
      * @param CollectionItemModel $collection_item
+     * @param CategoryGroupModel $category_group
      */
     public function __construct(SkuModel $sku, CityModel $city, CollectionModel $collection,
-            CollectionItemModel $collection_item)
+            CollectionItemModel $collection_item, CategoryGroupModel $category_group)
     {
         parent::__construct();
 
         $this->sku = $sku;
         $this->city = $city;
         $this->collection = $collection;
+        $this->category_group = $category_group;
         $this->collection_item = $collection_item;
     }
 
@@ -163,8 +175,11 @@ class Ajax extends FrontendController
             return array('error' => $this->text('No access'));
         }
 
-        $store_id = $this->getPosted('store_id', $this->store->getDefault());
-        return $this->category->getOptionListByStore($store_id);
+        $options = array(
+            'store_id' => $this->getPosted('store_id', $this->store->getDefault())
+        );
+
+        return $this->getCategoryOptionsByStore($this->category, $this->category_group, $options);
     }
 
     /**
