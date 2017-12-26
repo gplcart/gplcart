@@ -25,21 +25,28 @@ trait Translation
      */
     public function setTranslations(array $data, $model, $entity, $delete_existing = true)
     {
-        if (empty($data['translation'])//
-                || empty($data["{$entity}_id"])//
-                || !$model->isSupportedEntity($entity)) {
+        if (empty($data['translation']) || empty($data["{$entity}_id"]) || !$model->isSupportedEntity($entity)) {
             return null;
         }
 
         foreach ($data['translation'] as $language => $translation) {
 
             if ($delete_existing) {
-                $model->delete($entity, $data["{$entity}_id"], $language);
+
+                $conditions = array(
+                    'entity' => $entity,
+                    'language' => $language,
+                    "{$entity}_id" => $data["{$entity}_id"]
+                );
+
+                $model->delete($conditions);
             }
 
+            $translation['entity'] = $entity;
             $translation['language'] = $language;
             $translation["{$entity}_id"] = $data["{$entity}_id"];
-            $model->add($entity, $translation);
+
+            $model->add($translation);
         }
 
         return true;

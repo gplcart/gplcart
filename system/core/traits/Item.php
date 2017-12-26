@@ -524,7 +524,7 @@ trait Item
     public function setItemTranslation(array &$item, $entity, $model)
     {
         if (isset($item["{$entity}_id"]) && $model->isSupportedEntity($entity)) {
-            foreach ($model->getList($entity, $item["{$entity}_id"]) as $translation) {
+            foreach ($model->getList(array('entity' => $entity, 'entity_id' => $item["{$entity}_id"])) as $translation) {
                 $item['translation'][$translation['language']] = $translation;
             }
         }

@@ -116,7 +116,7 @@ trait Widget
     public function getWidgetImages($language_model, array $options)
     {
         $options += array(
-            'languages' => $language_model->getList(false, true)
+            'languages' => $language_model->getList(array('in_database' => true))
         );
 
         return $this->render('common/image', $options);
