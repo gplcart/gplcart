@@ -80,7 +80,6 @@ class User
         $this->role = $role;
         $this->address = $address;
         $this->session = $session;
-
         $this->uid = $this->getId();
     }
 
@@ -110,29 +109,6 @@ class User
 
         $this->hook->attach('user.add.after', $data, $result, $this);
         return (int) $result;
-    }
-
-    /**
-     * Adds/updates addresses for the user
-     * @param array $data
-     * @return boolean
-     */
-    protected function setAddress(array $data)
-    {
-        if (empty($data['addresses'])) {
-            return false;
-        }
-
-        foreach ($data['addresses'] as $address) {
-            if (empty($address['address_id'])) {
-                $address['user_id'] = $data['user_id'];
-                $this->address->add($address);
-            } else {
-                $this->address->update($address['address_id'], $address);
-            }
-        }
-
-        return true;
     }
 
     /**
@@ -196,23 +172,6 @@ class User
 
         $this->hook->attach('user.delete.after', $user_id, $check, $result, $this);
         return (bool) $result;
-    }
-
-    /**
-     * Deletes all database records related to the user ID
-     * @param int $user_id
-     */
-    protected function deleteLinked($user_id)
-    {
-        $conditions = array('user_id' => $user_id);
-
-        $this->db->delete('cart', $conditions);
-        $this->db->delete('review', $conditions);
-        $this->db->delete('history', $conditions);
-        $this->db->delete('address', $conditions);
-        $this->db->delete('wishlist', $conditions);
-        $this->db->delete('rating_user', $conditions);
-        $this->db->delete('dashboard', $conditions);
     }
 
     /**
@@ -321,36 +280,33 @@ class User
 
     /**
      * Loads a user
-     * @param integer $user_id
+     * @param int|array|string $condition
      * @return array
      */
-    public function get($user_id)
+    public function get($condition)
     {
-        $result = &gplcart_static("user.get.$user_id");
+        if (!is_array($condition)) {
+            $condition = array('user_id' => (int) $condition);
+        }
+
+        $result = &gplcart_static(gplcart_array_hash(array('user.get' => $condition)));
 
         if (isset($result)) {
             return (array) $result;
         }
 
-        $this->hook->attach('user.get.before', $user_id, $result, $this);
+        $this->hook->attach('user.get.before', $condition, $result, $this);
 
         if (isset($result)) {
             return $result;
         }
 
-        if (empty($user_id)) {
-            return $result = array();
-        }
+        $condition['limit'] = array(0, 1);
+        $list = (array) $this->getList($condition);
+        $result = empty($list) ? array() : reset($list);
 
-        $list = $this->getList(array('user_id' => $user_id));
-
-        $result = array();
-        if (is_array($list) && count($list) == 1) {
-            $result = reset($list);
-        }
-
-        $this->hook->attach('user.get.after', $user_id, $result, $this);
-        return $result;
+        $this->hook->attach('user.get.after', $condition, $result, $this);
+        return (array) $result;
     }
 
     /**
@@ -360,8 +316,7 @@ class User
      */
     public function getByEmail($email)
     {
-        $list = $this->getList(array('email' => $email));
-        return is_array($list) && count($list) == 1 ? reset($list) : array();
+        return $this->get(array('email' => (string) $email));
     }
 
     /**
@@ -382,88 +337,93 @@ class User
 
     /**
      * Returns an array of users or counts them
-     * @param array $data
+     * @param array $options
      * @return array|integer
      */
-    public function getList(array $data = array())
+    public function getList(array $options = array())
     {
+        $result = null;
+        $this->hook->attach('user.list.before', $options, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
         $sql = 'SELECT u.*, r.redirect AS role_redirect, r.status AS role_status,'
                 . 'r.name AS role_name, r.permissions AS role_permissions';
 
-        if (!empty($data['count'])) {
+        if (!empty($options['count'])) {
             $sql = 'SELECT COUNT(u.user_id)';
         }
 
-        $sql .= ' FROM user u'
-                . ' LEFT JOIN role r ON(u.role_id=r.role_id)';
+        $sql .= ' FROM user u LEFT JOIN role r ON(u.role_id=r.role_id)';
 
         $conditions = array();
 
-        if (isset($data['user_id'])) {
+        if (isset($options['user_id'])) {
             $sql .= ' WHERE u.user_id = ?';
-            $conditions[] = (int) $data['user_id'];
+            $conditions[] = (int) $options['user_id'];
         } else {
             $sql .= ' WHERE u.user_id IS NOT NULL';
         }
 
-        if (isset($data['name'])) {
+        if (isset($options['name'])) {
             $sql .= ' AND u.name LIKE ?';
-            $conditions[] = "%{$data['name']}%";
+            $conditions[] = "%{$options['name']}%";
         }
 
-        if (isset($data['email'])) {
+        if (isset($options['email'])) {
             $sql .= ' AND u.email = ?';
-            $conditions[] = $data['email'];
+            $conditions[] = $options['email'];
         }
 
-        if (isset($data['email_like'])) {
+        if (isset($options['email_like'])) {
             $sql .= ' AND u.email LIKE ?';
-            $conditions[] = "%{$data['email_like']}%";
+            $conditions[] = "%{$options['email_like']}%";
         }
 
-        if (isset($data['role_id'])) {
+        if (isset($options['role_id'])) {
             $sql .= ' AND u.role_id = ?';
-            $conditions[] = (int) $data['role_id'];
+            $conditions[] = (int) $options['role_id'];
         }
 
-        if (isset($data['store_id'])) {
+        if (isset($options['store_id'])) {
             $sql .= ' AND u.store_id = ?';
-            $conditions[] = (int) $data['store_id'];
+            $conditions[] = (int) $options['store_id'];
         }
 
-        if (isset($data['status'])) {
+        if (isset($options['status'])) {
             $sql .= ' AND u.status = ?';
-            $conditions[] = (int) $data['status'];
+            $conditions[] = (int) $options['status'];
         }
 
         $allowed_order = array('asc', 'desc');
-        $allowed_sort = array('name', 'email', 'role_id',
-            'store_id', 'status', 'created', 'user_id');
+        $allowed_sort = array('name', 'email', 'role_id', 'store_id', 'status', 'created', 'user_id');
 
-        if (isset($data['sort'])//
-                && in_array($data['sort'], $allowed_sort)//
-                && isset($data['order'])//
-                && in_array($data['order'], $allowed_order)) {
-            $sql .= " ORDER BY u.{$data['sort']} {$data['order']}";
+        if (isset($options['sort']) && in_array($options['sort'], $allowed_sort)//
+                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+            $sql .= " ORDER BY u.{$options['sort']} {$options['order']}";
         } else {
             $sql .= " ORDER BY u.modified DESC";
         }
 
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        if (!empty($options['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
         }
 
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $conditions);
+        if (empty($options['count'])) {
+
+            $fetch_options = array(
+                'index' => 'user_id',
+                'unserialize' => array('data', 'role_permissions'));
+
+            $result = $this->db->fetchAll($sql, $conditions, $fetch_options);
+        } else {
+            $result = (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $options = array(
-            'index' => 'user_id',
-            'unserialize' => array('data', 'role_permissions'));
-
-        $list = $this->db->fetchAll($sql, $conditions, $options);
-        $this->hook->attach('user.list', $list, $this);
-        return $list;
+        $this->hook->attach('user.list.after', $options, $result, $this);
+        return $result;
     }
 
     /**
@@ -491,11 +451,15 @@ class User
     /**
      * Whether the password matches the user's password stored in the database
      * @param string $password
-     * @param array $user
+     * @param array|int $user
      * @return boolean
      */
-    public function passwordMatches($password, array $user)
+    public function passwordMatches($password, $user)
     {
+        if (!is_array($user)) {
+            $user = $this->get((int) $user);
+        }
+
         if (empty($user['hash'])) {
             return false;
         }
@@ -520,6 +484,46 @@ class User
     public function getSuperadminId()
     {
         return (int) $this->config->get('user_superadmin', 1);
+    }
+
+    /**
+     * Deletes all database records related to the user ID
+     * @param int $user_id
+     */
+    protected function deleteLinked($user_id)
+    {
+        $conditions = array('user_id' => $user_id);
+
+        $this->db->delete('cart', $conditions);
+        $this->db->delete('review', $conditions);
+        $this->db->delete('history', $conditions);
+        $this->db->delete('address', $conditions);
+        $this->db->delete('wishlist', $conditions);
+        $this->db->delete('rating_user', $conditions);
+        $this->db->delete('dashboard', $conditions);
+    }
+
+    /**
+     * Adds/updates addresses for the user
+     * @param array $data
+     * @return boolean
+     */
+    protected function setAddress(array $data)
+    {
+        if (empty($data['addresses'])) {
+            return false;
+        }
+
+        foreach ($data['addresses'] as $address) {
+            if (empty($address['address_id'])) {
+                $address['user_id'] = $data['user_id'];
+                $this->address->add($address);
+            } else {
+                $this->address->update($address['address_id'], $address);
+            }
+        }
+
+        return true;
     }
 
 }

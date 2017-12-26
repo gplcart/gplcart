@@ -61,24 +61,51 @@ class CollectionItem
     }
 
     /**
+     * Loads a collection item from the database
+     * @param integer $id
+     * @return array
+     */
+    public function get($id)
+    {
+        $result = null;
+        $this->hook->attach('collection.item.get.before', $id, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
+        $sql = 'SELECT * FROM collection_item WHERE collection_item_id=?';
+        $result = $this->db->fetch($sql, array($id), array('unserialize' => 'data'));
+
+        $this->hook->attach('collection.item.get.after', $id, $result, $this);
+        return $result;
+    }
+
+    /**
      * Returns an array of collection items or counts them
-     * @param array $data
+     * @param array $options
      * @return array|integer
      */
-    public function getList(array $data = array())
+    public function getList(array $options = array())
     {
-        $data += array('language' => $this->translation->getLangcode());
+        $options += array('language' => $this->translation->getLangcode());
 
-        $list = &gplcart_static(gplcart_array_hash(array('collection.item.list' => $data)));
+        $result = &gplcart_static(gplcart_array_hash(array('collection.item.list' => $options)));
 
-        if (isset($list)) {
-            return $list;
+        if (isset($result)) {
+            return $result;
+        }
+
+        $this->hook->attach('collection.item.list.before', $options, $result, $this);
+
+        if (isset($result)) {
+            return $result;
         }
 
         $sql = 'SELECT ci.*, c.status AS collection_status, c.store_id,'
                 . 'c.type, COALESCE(NULLIF(ct.title, ""), c.title) AS collection_title';
 
-        if (!empty($data['count'])) {
+        if (!empty($options['count'])) {
             $sql = 'SELECT COUNT(ci.collection_item_id)';
         }
 
@@ -86,59 +113,59 @@ class CollectionItem
                 . ' LEFT JOIN collection c ON(ci.collection_id=c.collection_id)'
                 . ' LEFT JOIN collection_translation ct ON(ct.collection_id = c.collection_id AND ct.language=?)';
 
+        $conditions = array($options['language']);
 
-        $conditions = array($data['language']);
-
-        if (isset($data['collection_item_id'])) {
+        if (isset($options['collection_item_id'])) {
             $sql .= ' WHERE ci.collection_item_id = ?';
-            $conditions[] = (int) $data['collection_item_id'];
+            $conditions[] = (int) $options['collection_item_id'];
         } else {
             $sql .= ' WHERE ci.collection_item_id IS NOT NULL';
         }
 
-        if (isset($data['value'])) {
+        if (isset($options['value'])) {
             $sql .= ' AND ci.value = ?';
-            $conditions[] = (int) $data['value'];
+            $conditions[] = (int) $options['value'];
         }
 
-        if (isset($data['status'])) {
+        if (isset($options['status'])) {
             $sql .= ' AND c.status = ?';
             $sql .= ' AND ci.status = ?';
-            $conditions[] = (int) $data['status'];
-            $conditions[] = (int) $data['status'];
+            $conditions[] = (int) $options['status'];
+            $conditions[] = (int) $options['status'];
         }
 
-        if (isset($data['store_id'])) {
+        if (isset($options['store_id'])) {
             $sql .= ' AND c.store_id = ?';
-            $conditions[] = (int) $data['store_id'];
+            $conditions[] = (int) $options['store_id'];
         }
 
-        if (isset($data['collection_id'])) {
+        if (isset($options['collection_id'])) {
             $sql .= ' AND ci.collection_id = ?';
-            $conditions[] = (int) $data['collection_id'];
+            $conditions[] = (int) $options['collection_id'];
         }
 
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('weight', 'status', 'collection_id');
 
-        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort))//
-                && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
-            $sql .= " ORDER BY ci.{$data['sort']} {$data['order']}";
+        if (isset($options['sort']) && in_array($options['sort'], $allowed_sort)//
+                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+            $sql .= " ORDER BY ci.{$options['sort']} {$options['order']}";
         } else {
             $sql .= " ORDER BY ci.weight DESC";
         }
 
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $conditions);
+        if (!empty($options['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
         }
 
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        if (empty($options['count'])) {
+            $result = $this->db->fetchAll($sql, $conditions, array('index' => 'collection_item_id', 'unserialize' => 'data'));
+        } else {
+            $result = (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $list = $this->db->fetchAll($sql, $conditions, array('index' => 'collection_item_id', 'unserialize' => 'data'));
-        $this->hook->attach('collection.item.list', $list, $this);
-        return $list;
+        $this->hook->attach('collection.item.list.after', $options, $result, $this);
+        return $result;
     }
 
     /**
@@ -158,27 +185,6 @@ class CollectionItem
         $result = (int) $this->db->insert('collection_item', $data);
         $this->hook->attach('collection.item.add.after', $data, $result, $this);
         return (int) $result;
-    }
-
-    /**
-     * Loads a collection item from the database
-     * @param integer $id
-     * @return array
-     */
-    public function get($id)
-    {
-        $result = null;
-        $this->hook->attach('collection.item.get.before', $id, $result, $this);
-
-        if (isset($result)) {
-            return $result;
-        }
-
-        $sql = 'SELECT * FROM collection_item WHERE collection_item_id=?';
-        $result = $this->db->fetch($sql, array($id), array('unserialize' => 'data'));
-
-        $this->hook->attach('collection.item.get.after', $id, $result, $this);
-        return $result;
     }
 
     /**

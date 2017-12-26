@@ -258,7 +258,7 @@ class FileTransfer
             return true;
         }
 
-        $directory = gplcart_file_absolute($this->file->path($this->destination));
+        $directory = gplcart_file_absolute(gplcart_file_relative($this->destination));
         $pathinfo = $upload ? pathinfo($to) : pathinfo($directory);
 
         if ($upload) {
@@ -429,7 +429,7 @@ class FileTransfer
      */
     public function getTransferred($relative = false)
     {
-        return $relative ? $this->file->path($this->transferred) : $this->transferred;
+        return $relative ? gplcart_file_relative($this->transferred) : $this->transferred;
     }
 
 }

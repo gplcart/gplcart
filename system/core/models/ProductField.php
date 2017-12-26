@@ -41,6 +41,32 @@ class ProductField
     }
 
     /**
+     * Returns an array of fields for a given product
+     * @param integer $prodict_id
+     * @return array
+     */
+    public function getList($prodict_id)
+    {
+        $result = null;
+        $this->hook->attach('product.field.list.before', $prodict_id, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
+        $sql = 'SELECT * FROM product_field WHERE product_id=?';
+        $fields = $this->db->fetchAll($sql, array($prodict_id));
+
+        $result = array();
+        foreach ($fields as $field) {
+            $result[$field['type']][$field['field_id']][] = $field['field_value_id'];
+        }
+
+        $this->hook->attach('product.field.list.after', $prodict_id, $result, $this);
+        return $result;
+    }
+
+    /**
      * Adds a field to a product
      * @param array $data
      * @return integer
@@ -72,33 +98,14 @@ class ProductField
         if (isset($result)) {
             return (bool) $result;
         }
-        
-        if(!is_array($condition)){
+
+        if (!is_array($condition)) {
             $condition = array('product_field_id' => (int) $condition);
         }
 
         $result = (bool) $this->db->delete('product_field', $condition);
         $this->hook->attach('product.field.delete.after', $condition, $result, $this);
         return (bool) $result;
-    }
-
-    /**
-     * Returns an array of fields for a given product
-     * @param integer $prodict_id
-     * @return array
-     */
-    public function getList($prodict_id)
-    {
-        $sql = 'SELECT * FROM product_field WHERE product_id=?';
-        $fields = $this->db->fetchAll($sql, array($prodict_id));
-
-        $list = array();
-        foreach ($fields as $field) {
-            $list[$field['type']][$field['field_id']][] = $field['field_value_id'];
-        }
-
-        $this->hook->attach('product.field.list', $prodict_id, $list, $this);
-        return $list;
     }
 
 }

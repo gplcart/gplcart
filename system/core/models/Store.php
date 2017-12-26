@@ -68,13 +68,19 @@ class Store
 
     /**
      * Loads a store
-     * @param integer|string $store Either store ID or domain
+     * @param integer|string|null $store
      * @return array
      */
-    public function get($store)
+    public function get($store = null)
     {
         if (!$this->db->isInitialized()) {
             return array();
+        }
+
+        if (!isset($store)) {
+            $url = $this->server->httpHost();
+            $basepath = trim($this->request->base(true), '/');
+            $store = trim("$url/$basepath", '/');
         }
 
         $result = &gplcart_static("store.get.$store");
@@ -90,6 +96,7 @@ class Store
         }
 
         $conditions = array();
+
         if (is_numeric($store)) {
             $conditions['store_id'] = $store;
         } else if (strpos($store, '/') === false) {
@@ -100,10 +107,11 @@ class Store
             $conditions['basepath'] = $basepath;
         }
 
-        $result = $this->getList($conditions);
+        $conditions['limit'] = array(0, 1);
+        $list = (array) $this->getList($conditions);
+        $result = empty($list) ? array() : reset($list);
 
         if (!empty($result)) {
-            $result = reset($result);
             $result['data'] += $this->defaultConfig();
         }
 
@@ -113,20 +121,26 @@ class Store
 
     /**
      * Returns an array of stores or counts them
-     * @param array $data
+     * @param array $options
      * @return array|integer
      */
-    public function getList(array $data = array())
+    public function getList(array $options = array())
     {
-        $stores = &gplcart_static(gplcart_array_hash(array('store.list' => $data)));
+        $result = &gplcart_static(gplcart_array_hash(array('store.list' => $options)));
 
-        if (isset($stores)) {
-            return $stores;
+        if (isset($result)) {
+            return $result;
+        }
+
+        $this->hook->attach('store.list.before', $options, $result, $this);
+
+        if (isset($result)) {
+            return $result;
         }
 
         $sql = 'SELECT *';
 
-        if (!empty($data['count'])) {
+        if (!empty($options['count'])) {
             $sql = 'SELECT COUNT(store_id)';
         }
 
@@ -134,87 +148,65 @@ class Store
 
         $conditions = array();
 
-        if (isset($data['store_id'])) {
+        if (isset($options['store_id'])) {
             $sql .= ' WHERE store_id = ?';
-            $conditions[] = $data['store_id'];
+            $conditions[] = $options['store_id'];
         } else {
             $sql .= ' WHERE store_id IS NOT NULL';
         }
 
-        if (isset($data['name'])) {
+        if (isset($options['name'])) {
             $sql .= ' AND name LIKE ?';
-            $conditions[] = "%{$data['name']}%";
+            $conditions[] = "%{$options['name']}%";
         }
 
-        if (isset($data['domain'])) {
+        if (isset($options['domain'])) {
             $sql .= ' AND domain = ?';
-            $conditions[] = $data['domain'];
+            $conditions[] = $options['domain'];
         }
 
-        if (isset($data['basepath'])) {
+        if (isset($options['basepath'])) {
             $sql .= ' AND basepath = ?';
-            $conditions[] = $data['basepath'];
+            $conditions[] = $options['basepath'];
         }
 
-        if (isset($data['domain_like'])) {
+        if (isset($options['domain_like'])) {
             $sql .= ' AND domain LIKE ?';
-            $conditions[] = "%{$data['domain_like']}%";
+            $conditions[] = "%{$options['domain_like']}%";
         }
 
-        if (isset($data['basepath_like'])) {
+        if (isset($options['basepath_like'])) {
             $sql .= ' AND basepath LIKE ?';
-            $conditions[] = "%{$data['basepath_like']}%";
+            $conditions[] = "%{$options['basepath_like']}%";
         }
 
-        if (isset($data['status'])) {
+        if (isset($options['status'])) {
             $sql .= ' AND status = ?';
-            $conditions[] = (int) $data['status'];
+            $conditions[] = (int) $options['status'];
         }
 
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('name', 'domain', 'basepath', 'status', 'created', 'modified', 'store_id');
 
-        if (isset($data['sort'])//
-                && in_array($data['sort'], $allowed_sort)//
-                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
-            $sql .= " ORDER BY {$data['sort']} {$data['order']}";
+        if (isset($options['sort']) && in_array($options['sort'], $allowed_sort)//
+                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+            $sql .= " ORDER BY {$options['sort']} {$options['order']}";
         } else {
             $sql .= " ORDER BY modified DESC";
         }
 
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        if (!empty($options['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
         }
 
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $conditions);
+        if (empty($options['count'])) {
+            $result = $this->db->fetchAll($sql, $conditions, array('unserialize' => 'data', 'index' => 'store_id'));
+        } else {
+            $result = (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $options = array('unserialize' => 'data', 'index' => 'store_id');
-        $stores = $this->db->fetchAll($sql, $conditions, $options);
-
-        $this->hook->attach('store.list', $stores, $this);
-        return $stores;
-    }
-
-    /**
-     * Returns the current store
-     * @return array
-     */
-    public function getCurrent()
-    {
-        return $this->get($this->getCurrentHost());
-    }
-
-    /**
-     * Returns the current host
-     * @return string
-     */
-    public function getCurrentHost()
-    {
-        $url = $this->server->httpHost();
-        $basepath = trim($this->request->base(true), '/');
-        return trim("$url/$basepath", '/');
+        $this->hook->attach('store.list.after', $options, $result, $this);
+        return $result;
     }
 
     /**
@@ -414,7 +406,7 @@ class Store
     public function config($item = null, $store = null)
     {
         if (empty($store)) {
-            $store = $this->getCurrent();
+            $store = $this->get();
         } elseif (!is_array($store)) {
             $store = $this->get((string) $store);
         }
@@ -435,7 +427,7 @@ class Store
      * @param array $store
      * @return string
      */
-    public function url($store)
+    public function url(array $store)
     {
         $scheme = $this->server->httpScheme();
         return rtrim("$scheme{$store['domain']}/{$store['basepath']}", '/');

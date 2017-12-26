@@ -74,12 +74,9 @@ class Sku
             $condition = array('product_sku_id' => (int) $condition);
         }
 
-        $list = $this->getList($condition);
-
-        $result = array();
-        if (is_array($list) && count($list) == 1) {
-            $result = reset($list);
-        }
+        $condition['limit'] = array(0, 1);
+        $list = (array) $this->getList($condition);
+        $result = empty($list) ? array() : reset($list);
 
         $this->hook->attach('sku.get.after', $condition, $result, $this);
         return $result;
@@ -87,14 +84,21 @@ class Sku
 
     /**
      * Returns an array of SKUs or counts them
-     * @param array $data
+     * @param array $options
      * @return array|integer
      */
-    public function getList(array $data = array())
+    public function getList(array $options = array())
     {
+        $result = null;
+        $this->hook->attach('sku.list.before', $options, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
         $sql = 'SELECT ps.*, p.title, p.currency';
 
-        if (!empty($data['count'])) {
+        if (!empty($options['count'])) {
             $sql = 'SELECT COUNT(ps.product_sku_id)';
         }
 
@@ -103,72 +107,59 @@ class Sku
 
         $conditions = array();
 
-        if (isset($data['product_sku_id'])) {
+        if (isset($options['product_sku_id'])) {
             $sql .= ' WHERE ps.product_sku_id = ?';
-            $conditions[] = (int) $data['product_sku_id'];
+            $conditions[] = (int) $options['product_sku_id'];
         } else {
             $sql .= ' WHERE ps.product_sku_id IS NOT NULL';
         }
 
-        if (isset($data['sku'])) {
+        if (isset($options['sku'])) {
             $sql .= ' AND ps.sku=?';
-            $conditions[] = $data['sku'];
+            $conditions[] = $options['sku'];
         }
 
-        if (isset($data['store_id'])) {
+        if (isset($options['store_id'])) {
             $sql .= ' AND p.store_id=?';
-            $conditions[] = (int) $data['store_id'];
+            $conditions[] = (int) $options['store_id'];
         }
 
-        if (isset($data['title_sku'])) {
+        if (isset($options['title_sku'])) {
             $sql .= ' AND (p.title LIKE ? OR ps.sku LIKE ?)';
-            $conditions[] = "%{$data['title_sku']}%";
-            $conditions[] = "%{$data['title_sku']}%";
+            $conditions[] = "%{$options['title_sku']}%";
+            $conditions[] = "%{$options['title_sku']}%";
         }
 
-        if (isset($data['product_id'])) {
+        if (isset($options['product_id'])) {
             $sql .= ' AND ps.product_id=?';
-            $conditions[] = (int) $data['product_id'];
+            $conditions[] = (int) $options['product_id'];
         }
 
-        if (isset($data['combination_id'])) {
+        if (isset($options['combination_id'])) {
             $sql .= ' AND ps.combination_id=?';
-            $conditions[] = $data['combination_id'];
+            $conditions[] = $options['combination_id'];
         }
 
-        if (isset($data['status'])) {
+        if (isset($options['status'])) {
             $sql .= ' AND ps.status=?';
-            $conditions[] = (int) $data['status'];
+            $conditions[] = (int) $options['status'];
         }
 
         $sql .= " ORDER BY ps.sku ASC";
 
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        if (!empty($options['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
         }
 
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $conditions);
+        if (empty($options['count'])) {
+            $list = $this->db->fetchAll($sql, $conditions, array('index' => 'product_sku_id'));
+            $result = $this->prepareList($list);
+        } else {
+            $result = (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $list = $this->db->fetchAll($sql, $conditions, array('index' => 'product_sku_id'));
-        $results = $this->prepareList($list);
-        $this->hook->attach('sku.list', $results, $this);
-        return $results;
-    }
-
-    /**
-     * Prepare an array of product SKU items
-     * @param array $list
-     * @return array
-     */
-    protected function prepareList(array $list)
-    {
-        foreach ($list as &$item) {
-            $item['fields'] = $this->getFieldValues($item['combination_id']);
-        }
-
-        return $list;
+        $this->hook->attach('sku.list.after', $options, $result, $this);
+        return $result;
     }
 
     /**
@@ -385,6 +376,20 @@ class Sku
 
         $this->hook->attach('sku.select.combination.after', $product, $field_value_ids, $result, $this);
         return (array) $result;
+    }
+
+    /**
+     * Prepare an array of product SKU items
+     * @param array $list
+     * @return array
+     */
+    protected function prepareList(array $list)
+    {
+        foreach ($list as &$item) {
+            $item['fields'] = $this->getFieldValues($item['combination_id']);
+        }
+
+        return $list;
     }
 
     /**

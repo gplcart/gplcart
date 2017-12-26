@@ -57,6 +57,133 @@ class Review
     }
 
     /**
+     * Loads a review
+     * @param integer $review_id
+     * @return array
+     */
+    public function get($review_id)
+    {
+        $result = null;
+        $this->hook->attach('review.get.before', $review_id, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
+        $result = $this->db->fetch('SELECT * FROM review WHERE review_id=?', array($review_id));
+        $this->hook->attach('review.get.after', $review_id, $result, $this);
+        return $result;
+    }
+
+    /**
+     * Returns an array of reviews or counts them
+     * @param array $options
+     * @return array|integer
+     */
+    public function getList(array $options = array())
+    {
+        $options += array('language' => $this->translation->getLangcode());
+
+        $result = null;
+        $this->hook->attach('review.list.before', $options, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
+        $sql = 'SELECT r.*, u.name, u.email, COALESCE(NULLIF(pt.title, ""), p.title) AS product_title';
+
+        if (!empty($options['count'])) {
+            $sql = 'SELECT COUNT(r.review_id)';
+        }
+
+        $sql .= ' FROM review r'
+                . ' LEFT JOIN user u ON(r.user_id = u.user_id)'
+                . ' LEFT JOIN product p ON(r.product_id = p.product_id)'
+                . ' LEFT JOIN product_translation pt ON(r.product_id = pt.product_id AND pt.language=?)'
+                . ' WHERE r.review_id IS NOT NULL';
+
+        $conditions = array($options['language']);
+
+        if (isset($options['text'])) {
+            $sql .= ' AND r.text LIKE ?';
+            $conditions[] = "%{$options['text']}%";
+        }
+
+        if (isset($options['product_title'])) {
+            $sql .= ' AND (p.title LIKE ? OR (pt.title LIKE ? AND pt.language=?))';
+            $conditions[] = "%{$options['product_title']}%";
+            $conditions[] = "%{$options['product_title']}%";
+            $conditions[] = $options['language'];
+        }
+
+        if (isset($options['user_id'])) {
+            $sql .= ' AND r.user_id = ?';
+            $conditions[] = (int) $options['user_id'];
+        }
+
+        if (isset($options['email'])) {
+            $sql .= ' AND u.email = ?';
+            $conditions[] = $options['email'];
+        }
+
+        if (isset($options['email_like'])) {
+            $sql .= ' AND u.email LIKE ?';
+            $conditions[] = "%{$options['email_like']}%";
+        }
+
+        if (isset($options['product_id'])) {
+            $sql .= ' AND r.product_id = ?';
+            $conditions[] = (int) $options['product_id'];
+        }
+
+        if (isset($options['status'])) {
+            $sql .= ' AND r.status = ?';
+            $conditions[] = (bool) $options['status'];
+        }
+
+        if (isset($options['created'])) {
+            $sql .= ' AND r.created = ?';
+            $conditions[] = (int) $options['created'];
+        }
+
+        if (isset($options['modified'])) {
+            $sql .= ' AND r.modified = ?';
+            $conditions[] = (int) $options['modified'];
+        }
+
+        if (isset($options['user_status'])) {
+            $sql .= ' AND u.status = ?';
+            $conditions[] = (int) $options['user_status'];
+        }
+
+        $allowed_order = array('asc', 'desc');
+        $allowed_sort = array('product_id' => 'r.product_id', 'email' => 'u.email',
+            'review_id' => 'r.review_id', 'status' => 'r.status', 'created' => 'r.created',
+            'text' => 'r.text', 'product_title' => 'p.title');
+
+        if (isset($options['sort']) && isset($allowed_sort[$options['sort']])//
+                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+            $sql .= " ORDER BY {$allowed_sort[$options['sort']]} {$options['order']}";
+        } else {
+            $sql .= " ORDER BY r.modified DESC";
+        }
+
+        if (!empty($options['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
+        }
+
+        if (empty($options['count'])) {
+            $result = $this->db->fetchAll($sql, $conditions, array('index' => 'review_id'));
+        } else {
+            $result = (int) $this->db->fetchColumn($sql, $conditions);
+        }
+
+        $this->hook->attach('review.list.after', $options, $result, $this);
+        return $result;
+    }
+
+    /**
      * Adds a review
      * @param array $data
      * @return integer
@@ -75,25 +202,6 @@ class Review
 
         $this->hook->attach('review.add.after', $data, $result, $this);
         return (int) $result;
-    }
-
-    /**
-     * Loads a review
-     * @param integer $review_id
-     * @return array
-     */
-    public function get($review_id)
-    {
-        $result = null;
-        $this->hook->attach('review.get.before', $review_id, $result, $this);
-
-        if (isset($result)) {
-            return $result;
-        }
-
-        $result = $this->db->fetch('SELECT * FROM review WHERE review_id=?', array($review_id));
-        $this->hook->attach('review.get.after', $review_id, $result, $this);
-        return $result;
     }
 
     /**
@@ -142,113 +250,14 @@ class Review
     }
 
     /**
-     * Returns an array of reviews or counts them
-     * @param array $data
-     * @return array|integer
-     */
-    public function getList(array $data = array())
-    {
-        $sql = 'SELECT r.*, u.name, u.email, COALESCE(NULLIF(pt.title, ""), p.title) AS product_title';
-
-        if (!empty($data['count'])) {
-            $sql = 'SELECT COUNT(r.review_id)';
-        }
-
-        $sql .= ' FROM review r'
-                . ' LEFT JOIN user u ON(r.user_id = u.user_id)'
-                . ' LEFT JOIN product p ON(r.product_id = p.product_id)'
-                . ' LEFT JOIN product_translation pt ON(r.product_id = pt.product_id AND pt.language=?)'
-                . ' WHERE r.review_id IS NOT NULL';
-
-        $language = $this->translation->getLangcode();
-        $conditions = array($language);
-
-        if (isset($data['text'])) {
-            $sql .= ' AND r.text LIKE ?';
-            $conditions[] = "%{$data['text']}%";
-        }
-
-        if (isset($data['product_title'])) {
-            $sql .= ' AND (p.title LIKE ? OR (pt.title LIKE ? AND pt.language=?))';
-            $conditions[] = "%{$data['product_title']}%";
-            $conditions[] = "%{$data['product_title']}%";
-            $conditions[] = $language;
-        }
-
-        if (isset($data['user_id'])) {
-            $sql .= ' AND r.user_id = ?';
-            $conditions[] = (int) $data['user_id'];
-        }
-
-        if (isset($data['email'])) {
-            $sql .= ' AND u.email = ?';
-            $conditions[] = $data['email'];
-        }
-
-        if (isset($data['email_like'])) {
-            $sql .= ' AND u.email LIKE ?';
-            $conditions[] = "%{$data['email_like']}%";
-        }
-
-        if (isset($data['product_id'])) {
-            $sql .= ' AND r.product_id = ?';
-            $conditions[] = (int) $data['product_id'];
-        }
-
-        if (isset($data['status'])) {
-            $sql .= ' AND r.status = ?';
-            $conditions[] = (bool) $data['status'];
-        }
-
-        if (isset($data['created'])) {
-            $sql .= ' AND r.created = ?';
-            $conditions[] = (int) $data['created'];
-        }
-
-        if (isset($data['modified'])) {
-            $sql .= ' AND r.modified = ?';
-            $conditions[] = (int) $data['modified'];
-        }
-
-        if (isset($data['user_status'])) {
-            $sql .= ' AND u.status = ?';
-            $conditions[] = (int) $data['user_status'];
-        }
-
-        $allowed_order = array('asc', 'desc');
-        $allowed_sort = array(
-            'product_id' => 'r.product_id', 'email' => 'u.email', 'review_id' => 'r.review_id',
-            'status' => 'r.status', 'created' => 'r.created', 'text' => 'r.text', 'product_title' => 'p.title');
-
-        if (isset($data['sort']) && isset($allowed_sort[$data['sort']])//
-                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
-            $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
-        } else {
-            $sql .= " ORDER BY r.modified DESC";
-        }
-
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
-        }
-
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $conditions);
-        }
-
-        $list = $this->db->fetchAll($sql, $conditions, array('index' => 'review_id'));
-        $this->hook->attach('review.list', $list, $this);
-        return $list;
-    }
-
-    /**
      * Returns an array of allowed min and max limits for review text
      * @return array
      */
     public function getLimits()
     {
         return array(
-            'min' => $this->config->get('review_min_length', 10),
-            'max' => $this->config->get('review_max_length', 1000)
+            $this->config->get('review_min_length', 10),
+            $this->config->get('review_max_length', 1000)
         );
     }
 

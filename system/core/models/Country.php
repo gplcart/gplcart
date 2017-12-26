@@ -98,27 +98,91 @@ class Country
     }
 
     /**
-     * Returns a string containing default address template
-     * @return string
+     * Returns an array of countries
+     * @param array $options
+     * @return array|integer
      */
-    public function getDefaultAddressTemplate()
+    public function getList(array $options = array())
     {
-        $parts = array("%first_name|mb_strtoupper %last_name|mb_strtoupper");
-        $parts[] = "%address_2|mb_strtoupper";
-        $parts[] = "%address_1|mb_strtoupper";
-        $parts[] = "%postcode|mb_strtoupper";
-        $parts[] = "%country|mb_strtoupper";
+        $result = &gplcart_static(gplcart_array_hash(array('country.list' => $options)));
 
-        return implode(PHP_EOL, $parts);
+        if (isset($result)) {
+            return $result;
+        }
+
+        $this->hook->attach('country.list.before', $options, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
+        $sql = 'SELECT * ';
+
+        if (!empty($options['count'])) {
+            $sql = 'SELECT COUNT(code)';
+        }
+
+        $sql .= ' FROM country WHERE LENGTH(code) > 0';
+
+        $conditions = array();
+
+        if (isset($options['name'])) {
+            $sql .= ' AND name LIKE ?';
+            $conditions[] = "%{$options['name']}%";
+        }
+
+        if (isset($options['native_name'])) {
+            $sql .= ' AND native_name LIKE ?';
+            $conditions[] = "%{$options['native_name']}%";
+        }
+
+        if (isset($options['code'])) {
+            $sql .= ' AND code LIKE ?';
+            $conditions[] = "%{$options['code']}%";
+        }
+
+        if (isset($options['status'])) {
+            $sql .= ' AND status = ?';
+            $conditions[] = (int) $options['status'];
+        }
+
+        $allowed_order = array('asc', 'desc');
+        $allowed_sort = array('name', 'native_name', 'code', 'status', 'weight');
+
+        if (isset($options['sort']) && in_array($options['sort'], $allowed_sort)//
+                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+            $sql .= " ORDER BY {$options['sort']} {$options['order']}";
+        } else {
+            $sql .= ' ORDER BY weight ASC';
+        }
+
+        if (!empty($options['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
+        }
+
+        if (empty($options['count'])) {
+            $result = $this->db->fetchAll($sql, $conditions, array('unserialize' => 'format', 'index' => 'code'));
+            $result = $this->prepareList($result);
+        } else {
+            $result = (int) $this->db->fetchColumn($sql, $conditions);
+        }
+
+        $this->hook->attach('country.list.after', $options, $result, $this);
+        return $result;
     }
 
     /**
-     * Returns the default country format
+     * Prepare an array of countries
+     * @param array $list
      * @return array
      */
-    public function getDefaultFormat()
+    protected function prepareList(array $list)
     {
-        return (array) gplcart_config_get(GC_FILE_CONFIG_COUNTRY_FORMAT);
+        foreach ($list as &$item) {
+            $item['format'] += $this->getDefaultFormat();
+        }
+
+        return $list;
     }
 
     /**
@@ -214,77 +278,6 @@ class Country
     }
 
     /**
-     * Returns an array of countries
-     * @param array $data
-     * @return array|integer
-     */
-    public function getList(array $data = array())
-    {
-        $list = &gplcart_static(gplcart_array_hash(array('country.list' => $data)));
-
-        if (isset($list)) {
-            return $list;
-        }
-
-        $sql = 'SELECT * ';
-
-        if (!empty($data['count'])) {
-            $sql = 'SELECT COUNT(code)';
-        }
-
-        $sql .= ' FROM country WHERE LENGTH(code) > 0';
-
-        $conditions = array();
-
-        if (isset($data['name'])) {
-            $sql .= ' AND name LIKE ?';
-            $conditions[] = "%{$data['name']}%";
-        }
-
-        if (isset($data['native_name'])) {
-            $sql .= ' AND native_name LIKE ?';
-            $conditions[] = "%{$data['native_name']}%";
-        }
-
-        if (isset($data['code'])) {
-            $sql .= ' AND code LIKE ?';
-            $conditions[] = "%{$data['code']}%";
-        }
-
-        if (isset($data['status'])) {
-            $sql .= ' AND status = ?';
-            $conditions[] = (int) $data['status'];
-        }
-
-        $allowed_order = array('asc', 'desc');
-        $allowed_sort = array('name', 'native_name', 'code', 'status', 'weight');
-
-        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)//
-                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
-            $sql .= " ORDER BY {$data['sort']} {$data['order']}";
-        } else {
-            $sql .= ' ORDER BY weight ASC';
-        }
-
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
-        }
-
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $conditions);
-        }
-
-        $list = $this->db->fetchAll($sql, $conditions, array('unserialize' => 'format', 'index' => 'code'));
-
-        foreach ($list as &$country) {
-            $country['format'] += $this->getDefaultFormat();
-        }
-
-        $this->hook->attach('country.list', $list, $this);
-        return $list;
-    }
-
-    /**
      * Returns an array of country names or a country name if the code parameter is set
      * @param null|string $code
      * @return array|string
@@ -298,6 +291,30 @@ class Country
         }
 
         return $data;
+    }
+
+    /**
+     * Returns a string containing default address template
+     * @return string
+     */
+    public function getDefaultAddressTemplate()
+    {
+        $parts = array("%first_name|mb_strtoupper %last_name|mb_strtoupper");
+        $parts[] = "%address_2|mb_strtoupper";
+        $parts[] = "%address_1|mb_strtoupper";
+        $parts[] = "%postcode|mb_strtoupper";
+        $parts[] = "%country|mb_strtoupper";
+
+        return implode(PHP_EOL, $parts);
+    }
+
+    /**
+     * Returns the default country format
+     * @return array
+     */
+    public function getDefaultFormat()
+    {
+        return (array) gplcart_config_get(GC_FILE_CONFIG_COUNTRY_FORMAT);
     }
 
 }

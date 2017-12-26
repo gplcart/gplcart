@@ -48,6 +48,18 @@ class Page
     protected $config;
 
     /**
+     * File model instance
+     * @var \gplcart\core\models\File $file
+     */
+    protected $file;
+
+    /**
+     * Alias model instance
+     * @var \gplcart\core\models\Alias $alias
+     */
+    protected $alias;
+
+    /**
      * Translation UI model instance
      * @var \gplcart\core\models\Translation $translation
      */
@@ -58,18 +70,6 @@ class Page
      * @var \gplcart\core\models\TranslationEntity $translation_entity
      */
     protected $translation_entity;
-
-    /**
-     * Alias model instance
-     * @var \gplcart\core\models\Alias $alias
-     */
-    protected $alias;
-
-    /**
-     * File model instance
-     * @var \gplcart\core\models\File $file
-     */
-    protected $file;
 
     /**
      * @param Hook $hook
@@ -111,12 +111,9 @@ class Page
             $condition = array('page_id' => $condition);
         }
 
-        $list = $this->getList($condition);
-
-        $result = array();
-        if (is_array($list) && count($list) == 1) {
-            $result = reset($list);
-        }
+        $condition['limit'] = array(0, 1);
+        $list = (array) $this->getList($condition);
+        $result = empty($list) ? array() : reset($list);
 
         $this->hook->attach('page.get.after', $condition, $result, $this);
         return $result;
@@ -124,12 +121,19 @@ class Page
 
     /**
      * Returns an array of pages or counts them
-     * @param array $data
+     * @param array $options
      * @return array|integer
      */
-    public function getList(array $data = array())
+    public function getList(array $options = array())
     {
-        $data += array('language' => $this->translation->getLangcode());
+        $options += array('language' => $this->translation->getLangcode());
+
+        $result = null;
+        $this->hook->attach('page.list.before', $options, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
 
         $sql = 'SELECT p.*, c.category_group_id,'
                 . 'a.alias,'
@@ -140,11 +144,11 @@ class Page
                 . 'COALESCE(NULLIF(pt.meta_title, ""), p.meta_title) AS meta_title,'
                 . 'COALESCE(NULLIF(pt.meta_description, ""), p.meta_description) AS meta_description';
 
-        if (!empty($data['count'])) {
+        if (!empty($options['count'])) {
             $sql = 'SELECT COUNT(p.page_id)';
         }
 
-        $conditions = array($data['language'], 'page');
+        $conditions = array($options['language'], 'page');
 
         $sql .= ' FROM page p'
                 . ' LEFT JOIN page_translation pt ON(pt.page_id = p.page_id AND pt.language=?)'
@@ -152,40 +156,40 @@ class Page
                 . ' LEFT JOIN alias a ON(a.entity=? AND a.entity_id=p.page_id)'
                 . ' LEFT JOIN user u ON(p.user_id = u.user_id)';
 
-        if (!empty($data['page_id'])) {
-            settype($data['page_id'], 'array');
-            $placeholders = rtrim(str_repeat('?,', count($data['page_id'])), ',');
+        if (!empty($options['page_id'])) {
+            settype($options['page_id'], 'array');
+            $placeholders = rtrim(str_repeat('?,', count($options['page_id'])), ',');
             $sql .= " WHERE p.page_id IN($placeholders)";
-            $conditions = array_merge($conditions, $data['page_id']);
+            $conditions = array_merge($conditions, $options['page_id']);
         } else {
             $sql .= ' WHERE p.page_id IS NOT NULL';
         }
 
-        if (isset($data['title'])) {
+        if (isset($options['title'])) {
             $sql .= ' AND (p.title LIKE ? OR (pt.title LIKE ? AND pt.language=?))';
-            $conditions[] = "%{$data['title']}%";
-            $conditions[] = "%{$data['title']}%";
-            $conditions[] = $data['language'];
+            $conditions[] = "%{$options['title']}%";
+            $conditions[] = "%{$options['title']}%";
+            $conditions[] = $options['language'];
         }
 
-        if (isset($data['store_id'])) {
+        if (isset($options['store_id'])) {
             $sql .= ' AND p.store_id = ?';
-            $conditions[] = (int) $data['store_id'];
+            $conditions[] = (int) $options['store_id'];
         }
 
-        if (isset($data['category_group_id'])) {
+        if (isset($options['category_group_id'])) {
             $sql .= ' AND c.category_group_id = ?';
-            $conditions[] = (int) $data['category_group_id'];
+            $conditions[] = (int) $options['category_group_id'];
         }
 
-        if (isset($data['status'])) {
+        if (isset($options['status'])) {
             $sql .= ' AND p.status = ?';
-            $conditions[] = (int) $data['status'];
+            $conditions[] = (int) $options['status'];
         }
 
-        if (isset($data['email'])) {
+        if (isset($options['email'])) {
             $sql .= ' AND u.email LIKE ?';
-            $conditions[] = "%{$data['email']}%";
+            $conditions[] = "%{$options['email']}%";
         }
 
         $allowed_order = array('asc', 'desc');
@@ -193,24 +197,25 @@ class Page
             'page_id' => 'p.page_id', 'status' => 'p.status',
             'created' => 'p.created', 'email' => 'u.email');
 
-        if (isset($data['sort']) && isset($allowed_sort[$data['sort']])//
-                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
-            $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
+        if (isset($options['sort']) && isset($allowed_sort[$options['sort']])//
+                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+            $sql .= " ORDER BY {$allowed_sort[$options['sort']]} {$options['order']}";
         } else {
             $sql .= " ORDER BY p.modified DESC";
         }
 
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        if (!empty($options['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
         }
 
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $conditions);
+        if (empty($options['count'])) {
+            $result = $this->db->fetchAll($sql, $conditions, array('index' => 'page_id'));
+        } else {
+            $result = (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $list = $this->db->fetchAll($sql, $conditions, array('index' => 'page_id'));
-        $this->hook->attach('page.list', $list, $this);
-        return $list;
+        $this->hook->attach('page.list.after', $options, $result, $this);
+        return $result;
     }
 
     /**

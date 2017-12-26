@@ -41,15 +41,43 @@ class Transaction
     }
 
     /**
+     * Loads a transaction from the database
+     * @param integer $transaction_id
+     * @return array
+     */
+    public function get($transaction_id)
+    {
+        $result = null;
+        $this->hook->attach('transaction.get.before', $transaction_id, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
+        $sql = 'SELECT * FROM transactions WHERE transaction_id=?';
+        $result = $this->db->fetch($sql, array($transaction_id), array('unserialize' => 'data'));
+
+        $this->hook->attach('transaction.get.after', $transaction_id, $result, $this);
+        return $result;
+    }
+
+    /**
      * Returns an array of transactions or counts them
-     * @param array $data
+     * @param array $options
      * @return array|integer
      */
-    public function getList(array $data = array())
+    public function getList(array $options = array())
     {
+        $result = null;
+        $this->hook->attach('transaction.list.before', $options, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
         $sql = 'SELECT *';
 
-        if (!empty($data['count'])) {
+        if (!empty($options['count'])) {
             $sql = ' SELECT COUNT(transaction_id) ';
         }
 
@@ -57,47 +85,48 @@ class Transaction
 
         $conditions = array();
 
-        if (isset($data['order_id'])) {
+        if (isset($options['order_id'])) {
             $sql .= ' AND order_id = ?';
-            $conditions[] = (int) $data['order_id'];
+            $conditions[] = (int) $options['order_id'];
         }
 
-        if (isset($data['created'])) {
+        if (isset($options['created'])) {
             $sql .= ' AND created = ?';
-            $conditions[] = (int) $data['created'];
+            $conditions[] = (int) $options['created'];
         }
 
-        if (isset($data['payment_method'])) {
+        if (isset($options['payment_method'])) {
             $sql .= ' AND payment_method LIKE ?';
-            $conditions[] = "%{$data['payment_method']}%";
+            $conditions[] = "%{$options['payment_method']}%";
         }
 
-        if (isset($data['gateway_transaction_id'])) {
+        if (isset($options['gateway_transaction_id'])) {
             $sql .= ' AND gateway_transaction_id LIKE ?';
-            $conditions[] = "%{$data['gateway_transaction_id']}%";
+            $conditions[] = "%{$options['gateway_transaction_id']}%";
         }
 
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('order_id', 'created', 'payment_method', 'gateway_transaction_id');
 
-        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort))//
-                && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
-            $sql .= " ORDER BY {$data['sort']} {$data['order']}";
+        if (isset($options['sort']) && in_array($options['sort'], $allowed_sort)//
+                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+            $sql .= " ORDER BY {$options['sort']} {$options['order']}";
         } else {
             $sql .= ' ORDER BY created DESC';
         }
 
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        if (!empty($options['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
         }
 
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $conditions);
+        if (empty($options['count'])) {
+            $result = $this->db->fetchAll($sql, $conditions, array('index' => 'transaction_id', 'unserialize' => 'data'));
+        } else {
+            $result = (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $results = $this->db->fetchAll($sql, $conditions, array('index' => 'transaction_id', 'unserialize' => 'data'));
-        $this->hook->attach('transaction.list', $results, $this);
-        return $results;
+        $this->hook->attach('transaction.list.after', $options, $result, $this);
+        return $result;
     }
 
     /**
@@ -119,27 +148,6 @@ class Transaction
 
         $this->hook->attach('transaction.add.after', $data, $result, $this);
         return (int) $result;
-    }
-
-    /**
-     * Loads a transaction from the database
-     * @param integer $transaction_id
-     * @return array
-     */
-    public function get($transaction_id)
-    {
-        $result = null;
-        $this->hook->attach('transaction.get.before', $transaction_id, $result, $this);
-
-        if (isset($result)) {
-            return $result;
-        }
-
-        $sql = 'SELECT * FROM transactions WHERE transaction_id=?';
-        $result = $this->db->fetch($sql, array($transaction_id), array('unserialize' => 'data'));
-
-        $this->hook->attach('transaction.get.after', $transaction_id, $result, $this);
-        return $result;
     }
 
     /**

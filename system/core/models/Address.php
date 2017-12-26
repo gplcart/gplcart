@@ -122,36 +122,39 @@ class Address
 
     /**
      * Loads an address from the database
-     * @param integer $address_id
+     * @param int|array|string $condition
      * @return array
      */
-    public function get($address_id)
+    public function get($condition)
     {
-        $result = &gplcart_static("address.get.$address_id");
+        if (!is_array($condition)) {
+            $condition = array('address_id' => (int) $condition);
+        }
+
+        $result = &gplcart_static(gplcart_array_hash(array('address.get' => $condition)));
 
         if (isset($result)) {
             return $result;
         }
 
         $result = null;
-        $this->hook->attach('address.get.before', $address_id, $result, $this);
+        $this->hook->attach('address.get.before', $condition, $result, $this);
 
         if (isset($result)) {
             return (array) $result;
         }
 
-        $list = $this->getList(array('address_id' => $address_id, 'prepare' => false));
+        $condition['prepare'] = false;
+        $condition['limit'] = array(0, 1);
 
-        $result = array();
-        if (is_array($list) && count($list) == 1) {
-            $result = reset($list);
-        }
+        $list = $this->getList($condition);
+        $result = empty($list) ? array() : reset($list);
 
         if (isset($result['country_format'])) {
             $result['country_format'] += $this->country->getDefaultFormat();
         }
 
-        $this->hook->attach('address.get.after', $address_id, $result, $this);
+        $this->hook->attach('address.get.after', $condition, $result, $this);
         return (array) $result;
     }
 
@@ -163,6 +166,13 @@ class Address
     public function getList(array $data = array())
     {
         $data += array('prepare' => true);
+
+        $result = null;
+        $this->hook->attach('address.list.before', $data, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
 
         $sql = 'SELECT a.*, TRIM(a.first_name || " " || a.middle_name || " " || a.last_name) AS full_name,'
                 . ' u.email AS user_email, u.name AS user_name,'
@@ -250,23 +260,24 @@ class Address
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $conditions);
+        if (empty($data['count'])) {
+
+            $options = array(
+                'index' => 'address_id',
+                'unserialize' => array('data', 'country_format')
+            );
+
+            $result = $this->db->fetchAll($sql, $conditions, $options);
+
+            if (!empty($data['prepare'])) {
+                $result = $this->prepareList($result, $data);
+            }
+        } else {
+            $result = (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $options = array(
-            'index' => 'address_id',
-            'unserialize' => array('data', 'country_format')
-        );
-
-        $list = $this->db->fetchAll($sql, $conditions, $options);
-
-        if (!empty($data['prepare'])) {
-            $list = $this->prepareList($list, $data);
-        }
-
-        $this->hook->attach('address.list', $data, $list, $this);
-        return $list;
+        $this->hook->attach('address.list.after', $data, $result, $this);
+        return $result;
     }
 
     /**

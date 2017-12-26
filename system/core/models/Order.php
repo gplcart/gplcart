@@ -95,29 +95,6 @@ class Order
     }
 
     /**
-     * Adds an order
-     * @param array $order
-     * @return integer
-     */
-    public function add(array $order)
-    {
-        $result = null;
-        $this->hook->attach('order.add.before', $order, $result, $this);
-
-        if (isset($result)) {
-            return (int) $result;
-        }
-
-        unset($order['order_id']); // In case we're cloning the order
-        $order['created'] = $order['modified'] = GC_TIME;
-        $order += array('status' => $this->getDefaultStatus());
-
-        $result = $this->db->insert('orders', $order);
-        $this->hook->attach('order.add.after', $order, $result, $this);
-        return (int) $result;
-    }
-
-    /**
      * Loads an order from the database
      * @param integer $order_id
      * @return array
@@ -131,12 +108,13 @@ class Order
             return $result;
         }
 
-        $list = $this->getList(array('order_id' => $order_id));
+        $conditions = array(
+            'limit' => array(0, 1),
+            'order_id' => $order_id
+        );
 
-        $result = array();
-        if (is_array($list) && count($list) == 1) {
-            $result = reset($list);
-        }
+        $list = (array) $this->getList($conditions);
+        $result = empty($list) ? array() : reset($list);
 
         $this->setCart($result);
         $this->hook->attach('order.get.after', $order_id, $result, $this);
@@ -151,6 +129,13 @@ class Order
     public function getList(array $options = array())
     {
         $options += array('current_user' => $this->user->getId());
+
+        $result = null;
+        $this->hook->attach('order.list.before', $options, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
 
         $sql = 'SELECT o.*, u.email AS creator_email, u.name AS creator_name,'
                 . 'uc.name AS customer_name, uc.email AS customer_email,'
@@ -249,13 +234,37 @@ class Order
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
         }
 
-        if (!empty($options['count'])) {
-            return (int) $this->db->fetchColumn($sql, $conditions);
+        if (empty($options['count'])) {
+            $result = $this->db->fetchAll($sql, $conditions, array('unserialize' => 'data', 'index' => 'order_id'));
+        } else {
+            $result = (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $orders = $this->db->fetchAll($sql, $conditions, array('unserialize' => 'data', 'index' => 'order_id'));
-        $this->hook->attach('order.list', $orders, $this);
-        return $orders;
+        $this->hook->attach('order.list.after', $options, $result, $this);
+        return $result;
+    }
+
+    /**
+     * Adds an order
+     * @param array $order
+     * @return integer
+     */
+    public function add(array $order)
+    {
+        $result = null;
+        $this->hook->attach('order.add.before', $order, $result, $this);
+
+        if (isset($result)) {
+            return (int) $result;
+        }
+
+        unset($order['order_id']); // In case we're cloning the order
+        $order['created'] = $order['modified'] = GC_TIME;
+        $order += array('status' => $this->getDefaultStatus());
+
+        $result = $this->db->insert('orders', $order);
+        $this->hook->attach('order.add.after', $order, $result, $this);
+        return (int) $result;
     }
 
     /**
@@ -304,17 +313,6 @@ class Order
 
         $this->hook->attach('order.delete.after', $order_id, $result, $this);
         return (bool) $result;
-    }
-
-    /**
-     * Deletes all database records related to the order ID
-     * @param int $order_id
-     */
-    protected function deleteLinked($order_id)
-    {
-        $this->db->delete('cart', array('order_id' => $order_id));
-        $this->db->delete('order_log', array('order_id' => $order_id));
-        $this->db->delete('history', array('entity' => 'order', 'entity_id' => $order_id));
     }
 
     /**
@@ -473,6 +471,27 @@ class Order
     }
 
     /**
+     * Returns the checkout complete message
+     * @return string
+     */
+    public function getCompleteMessage(array $order)
+    {
+        $vars = array(
+            '@num' => $order['order_id'],
+            '@status' => $this->getStatusName($order['status'])
+        );
+
+        if (is_numeric($order['user_id'])) {
+            $message = $this->translation->text('Thank you for your order! Order ID: @num, status: @status', $vars);
+        } else {
+            $message = $this->translation->text('Thank you for your order! Order ID: @num, status: @status', $vars);
+        }
+
+        $this->hook->attach('order.complete.message', $message, $order, $this);
+        return $message;
+    }
+
+    /**
      * Calculate order components (e.g shipping) using predefined values which can be provided by modules
      * @param int $total
      * @param array $data
@@ -524,6 +543,17 @@ class Order
     }
 
     /**
+     * Deletes all database records related to the order ID
+     * @param int $order_id
+     */
+    protected function deleteLinked($order_id)
+    {
+        $this->db->delete('cart', array('order_id' => $order_id));
+        $this->db->delete('order_log', array('order_id' => $order_id));
+        $this->db->delete('history', array('entity' => 'order', 'entity_id' => $order_id));
+    }
+
+    /**
      * Sets cart items to the order
      * @param array $order
      */
@@ -564,27 +594,6 @@ class Order
                 $order['data']['components']['cart']['items'][$sku]['price'] = $item['total'];
             }
         }
-    }
-
-    /**
-     * Returns the checkout complete message
-     * @return string
-     */
-    public function getCompleteMessage(array $order)
-    {
-        $vars = array(
-            '@num' => $order['order_id'],
-            '@status' => $this->getStatusName($order['status'])
-        );
-
-        if (is_numeric($order['user_id'])) {
-            $message = $this->translation->text('Thank you for your order! Order ID: @num, status: @status', $vars);
-        } else {
-            $message = $this->translation->text('Thank you for your order! Order ID: @num, status: @status', $vars);
-        }
-
-        $this->hook->attach('order.complete.message', $message, $order, $this);
-        return $message;
     }
 
 }

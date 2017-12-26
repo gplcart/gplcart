@@ -29,12 +29,6 @@ class OrderAction
     protected $hook;
 
     /**
-     * Price rule model instance
-     * @var \gplcart\core\models\PriceRule $price_rule
-     */
-    protected $price_rule;
-
-    /**
      * Cart model instance
      * @var \gplcart\core\models\Cart $cart
      */
@@ -51,6 +45,12 @@ class OrderAction
      * @var \gplcart\core\models\Mail $mail
      */
     protected $mail;
+
+    /**
+     * Price rule model instance
+     * @var \gplcart\core\models\PriceRule $price_rule
+     */
+    protected $price_rule;
 
     /**
      * Translation UI model instance

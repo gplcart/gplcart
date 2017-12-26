@@ -48,6 +48,36 @@ class ProductRelation
     }
 
     /**
+     * Returns an array of related products for the given product ID
+     * @param array $options
+     * @return array
+     */
+    public function getList(array $options)
+    {
+        $result = null;
+        $this->hook->attach('product.related.list.before', $options, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
+        $result = array();
+        if (isset($options['product_id'])) {
+
+            $sql = 'SELECT item_product_id FROM product_related WHERE product_id=?';
+
+            if (!empty($options['limit'])) {
+                $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
+            }
+
+            $result = $this->db->fetchColumnAll($sql, array($options['product_id']));
+        }
+
+        $this->hook->attach('product.related.list.after', $options, $result, $this);
+        return $result;
+    }
+
+    /**
      * Deletes product relations
      * @param int $product_id
      * @return bool
@@ -91,28 +121,6 @@ class ProductRelation
 
         $this->hook->attach('product.related.add.after', $related_product_id, $product_id, $result, $this);
         return (bool) $result;
-    }
-
-    /**
-     * Returns an array of related products for the given product ID
-     * @param array $data
-     * @return array
-     */
-    public function getList(array $data)
-    {
-        if (empty($data['product_id'])) {
-            return array();
-        }
-
-        $sql = 'SELECT item_product_id FROM product_related WHERE product_id=?';
-
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
-        }
-
-        $list = $this->db->fetchColumnAll($sql, array($data['product_id']));
-        $this->hook->attach('product.related.list', $data, $list, $this);
-        return $list;
     }
 
 }

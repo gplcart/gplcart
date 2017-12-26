@@ -57,14 +57,41 @@ class Currency
     }
 
     /**
-     * Returns an array of currencies
-     * @param bool $enabled Return only enabled currencies
-     * @param bool $in_database Return only currencies saved in the database
+     * Loads a currency from the database
+     * @param string $code
      * @return array
      */
-    public function getList($enabled = false, $in_database = false)
+    public function get($code)
     {
-        $currencies = &gplcart_static(gplcart_array_hash(array('currency.list' => array($enabled, $in_database))));
+        $result = null;
+        $this->hook->attach('currency.get.before', $code, $result, $this);
+
+        if (isset($result)) {
+            return (array) $result;
+        }
+
+        $list = $this->getList();
+        $result = empty($list[$code]) ? array() : $list[$code];
+        $this->hook->attach('currency.get.after', $code, $result, $this);
+        return (array) $result;
+    }
+
+    /**
+     * Returns an array of currencies
+     * @param array $options
+     * @return array
+     */
+    public function getList(array $options = array())
+    {
+        $options += array('enabled' => false, 'in_database' => false);
+
+        $currencies = &gplcart_static(gplcart_array_hash(array('currency.list' => $options)));
+
+        if (isset($currencies)) {
+            return $currencies;
+        }
+
+        $this->hook->attach('currency.list.before', $options, $currencies, $this);
 
         if (isset($currencies)) {
             return $currencies;
@@ -84,49 +111,19 @@ class Currency
             if ($code === 'USD') {
                 $currency['status'] = $currency['default'] = 1;
             }
-        }
 
-        unset($currency);
-
-        $this->hook->attach('currency.list', $currencies, $this);
-
-        foreach ($currencies as $code => $currency) {
-            if ($enabled && empty($currency['status'])) {
+            if ($options['enabled'] && empty($currency['status'])) {
                 unset($currencies[$code]);
                 continue;
             }
 
-            if ($in_database && empty($currency['in_database'])) {
+            if ($options['in_database'] && empty($currency['in_database'])) {
                 unset($currencies[$code]);
             }
         }
 
+        $this->hook->attach('currency.list.after', $options, $currencies, $this);
         return $currencies;
-    }
-
-    /**
-     * Returns an array of default currency data
-     * @return array
-     */
-    protected function getDefaultData()
-    {
-        return array(
-            'code' => '',
-            'name' => '',
-            'symbol' => '',
-            'status' => 0,
-            'default' => 0,
-            'modified' => 0,
-            'decimals' => 2,
-            'major_unit' => '',
-            'minor_unit' => '',
-            'numeric_code' => '',
-            'rounding_step' => 0,
-            'conversion_rate' => 1,
-            'decimal_separator' => '.',
-            'thousands_separator' => ',',
-            'template' => '%symbol%price'
-        );
     }
 
     /**
@@ -249,6 +246,31 @@ class Currency
     }
 
     /**
+     * Returns an array of default currency data
+     * @return array
+     */
+    protected function getDefaultData()
+    {
+        return array(
+            'code' => '',
+            'name' => '',
+            'symbol' => '',
+            'status' => 0,
+            'default' => 0,
+            'modified' => 0,
+            'decimals' => 2,
+            'major_unit' => '',
+            'minor_unit' => '',
+            'numeric_code' => '',
+            'rounding_step' => 0,
+            'conversion_rate' => 1,
+            'decimal_separator' => '.',
+            'thousands_separator' => ',',
+            'template' => '%symbol%price'
+        );
+    }
+
+    /**
      * Converts currencies
      * @param integer $amount
      * @param string $from_currency
@@ -268,17 +290,6 @@ class Currency
         $amount *= pow(10, $exponent);
 
         return $amount * ($currency['conversion_rate'] / $target_currency['conversion_rate']);
-    }
-
-    /**
-     * Loads a currency from the database
-     * @param string $code
-     * @return array
-     */
-    public function get($code)
-    {
-        $list = $this->getList();
-        return empty($list[$code]) ? array() : $list[$code];
     }
 
     /**

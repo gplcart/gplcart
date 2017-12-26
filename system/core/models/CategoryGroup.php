@@ -80,12 +80,9 @@ class CategoryGroup
             $condition = array('category_group_id' => (int) $condition);
         }
 
-        $list = $this->getList($condition);
-
-        $result = array();
-        if (is_array($list) && count($list) == 1) {
-            $result = reset($list);
-        }
+        $condition['limit'] = array(0, 1);
+        $list = (array) $this->getList($condition);
+        $result = empty($list) ? array() : reset($list);
 
         $this->hook->attach('category.group.get.after', $condition, $result, $this);
         return $result;
@@ -93,14 +90,23 @@ class CategoryGroup
 
     /**
      * Returns an array of category groups
-     * @param array $data
+     * @param array $options
      * @return array|integer
      */
-    public function getList(array $data = array())
+    public function getList(array $options = array())
     {
+        $options += array('language' => $this->translation->getLangcode());
+
+        $result = null;
+        $this->hook->attach('category.group.list.before', $options, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
         $sql = 'SELECT cg.*, COALESCE(NULLIF(cgt.title, ""), cg.title) AS title';
 
-        if (!empty($data['count'])) {
+        if (!empty($options['count'])) {
             $sql = 'SELECT COUNT(cg.category_group_id)';
         }
 
@@ -108,56 +114,54 @@ class CategoryGroup
                 . ' LEFT JOIN category_group_translation cgt'
                 . ' ON(cg.category_group_id = cgt.category_group_id AND cgt.language = ?)';
 
-        $data += array('language' => $this->translation->getLangcode());
+        $conditions = array($options['language']);
 
-        $conditions = array($data['language']);
-
-        if (isset($data['category_group_id'])) {
+        if (isset($options['category_group_id'])) {
             $sql .= ' WHERE cg.category_group_id = ?';
-            $conditions[] = (int) $data['category_group_id'];
+            $conditions[] = (int) $options['category_group_id'];
         } else {
             $sql .= ' WHERE cg.category_group_id IS NOT NULL';
         }
 
-        if (isset($data['title'])) {
+        if (isset($options['title'])) {
             $sql .= ' AND (cg.title LIKE ? OR (cgt.title LIKE ? AND cgt.language=?))';
-            $conditions[] = "%{$data['title']}%";
-            $conditions[] = "%{$data['title']}%";
-            $conditions[] = $data['language'];
+            $conditions[] = "%{$options['title']}%";
+            $conditions[] = "%{$options['title']}%";
+            $conditions[] = $options['language'];
         }
 
-        if (isset($data['type'])) {
+        if (isset($options['type'])) {
             $sql .= ' AND cg.type = ?';
-            $conditions[] = $data['type'];
+            $conditions[] = $options['type'];
         }
 
-        if (isset($data['store_id'])) {
+        if (isset($options['store_id'])) {
             $sql .= ' AND cg.store_id = ?';
-            $conditions[] = (int) $data['store_id'];
+            $conditions[] = (int) $options['store_id'];
         }
 
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('type', 'store_id', 'title', 'category_group_id');
 
-        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort))//
-                && (isset($data['order']) && in_array($data['order'], $allowed_order))
-        ) {
-            $sql .= " ORDER BY cg.{$data['sort']} {$data['order']}";
+        if (isset($options['sort']) && in_array($options['sort'], $allowed_sort)//
+                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+            $sql .= " ORDER BY cg.{$options['sort']} {$options['order']}";
         } else {
             $sql .= " ORDER BY cg.title ASC";
         }
 
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        if (!empty($options['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
         }
 
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $conditions);
+        if (empty($options['count'])) {
+            $result = $this->db->fetchAll($sql, $conditions, array('index' => 'category_group_id'));
+        } else {
+            $result = (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $list = $this->db->fetchAll($sql, $conditions, array('index' => 'category_group_id'));
-        $this->hook->attach('category.group.list', $list, $this);
-        return $list;
+        $this->hook->attach('category.group.list.after', $options, $result, $this);
+        return $result;
     }
 
     /**
@@ -216,7 +220,6 @@ class CategoryGroup
     {
         $sql = 'SELECT category_id FROM category WHERE category_group_id=?';
         $result = $this->db->fetchColumn($sql, array($category_group_id));
-
         return empty($result);
     }
 
@@ -250,22 +253,14 @@ class CategoryGroup
      */
     public function getTypes()
     {
-        $types = $this->getDefaultTypes();
-        $this->hook->attach('category.group.types', $types, $this);
-        return $types;
-    }
-
-    /**
-     * Returns an array of default category group types
-     * @return array
-     */
-    protected function getDefaultTypes()
-    {
-        return array(
+        $types = array(
             'brand' => $this->translation->text('Brand'),
             'common' => $this->translation->text('Common'),
             'catalog' => $this->translation->text('Catalog')
         );
+
+        $this->hook->attach('category.group.types', $types, $this);
+        return $types;
     }
 
 }

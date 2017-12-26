@@ -97,29 +97,33 @@ class FieldValue
             $condition = array('field_value_id' => (int) $condition);
         }
 
-        $list = $this->getList($condition);
-
-        $result = array();
-        if (is_array($list) && count($list) == 1) {
-            $result = reset($list);
-        }
+        $condition['limit'] = array(0, 1);
+        $list = (array) $this->getList($condition);
+        $result = empty($list) ? array() : reset($list);
 
         $this->hook->attach('field.value.get.after', $condition, $result, $this);
         return (array) $result;
     }
 
     /**
-     * Returns an array of values for a given field
-     * @param array $data
+     * Returns an array of values for a given field or counts them
+     * @param array $options
      * @return array|integer
      */
-    public function getList(array $data = array())
+    public function getList(array $options = array())
     {
-        $data += array('language' => $this->translation->getLangcode());
+        $options += array('language' => $this->translation->getLangcode());
+
+        $result = null;
+        $this->hook->attach('field.value.list.before', $options, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
 
         $sql = 'SELECT fv.*, COALESCE(NULLIF(fvt.title, ""), fv.title) AS title, f.path';
 
-        if (!empty($data['count'])) {
+        if (!empty($options['count'])) {
             $sql = 'SELECT COUNT(fv.field_value_id)';
         }
 
@@ -127,51 +131,52 @@ class FieldValue
                 . ' LEFT JOIN file f ON(fv.field_value_id = f.entity_id AND f.entity = ?)'
                 . ' LEFT JOIN field_value_translation fvt ON(fv.field_value_id = fvt.field_value_id AND fvt.language=?)';
 
-        $conditions = array('field_value', $data['language']);
+        $conditions = array('field_value', $options['language']);
 
-        if (isset($data['field_value_id'])) {
+        if (isset($options['field_value_id'])) {
             $sql .= ' WHERE fv.field_value_id = ?';
-            $conditions[] = (int) $data['field_value_id'];
+            $conditions[] = (int) $options['field_value_id'];
         } else {
             $sql .= ' WHERE fv.field_value_id IS NOT NULL';
         }
 
-        if (isset($data['title'])) {
+        if (isset($options['title'])) {
             $sql .= ' AND (fv.title LIKE ? OR (fvt.title LIKE ? AND fvt.language=?))';
-            $conditions[] = "%{$data['title']}%";
-            $conditions[] = "%{$data['title']}%";
-            $conditions[] = $data['language'];
+            $conditions[] = "%{$options['title']}%";
+            $conditions[] = "%{$options['title']}%";
+            $conditions[] = $options['language'];
         }
 
-        if (!empty($data['field_id'])) {
-            settype($data['field_id'], 'array');
-            $placeholders = rtrim(str_repeat('?,', count($data['field_id'])), ',');
+        if (!empty($options['field_id'])) {
+            settype($options['field_id'], 'array');
+            $placeholders = rtrim(str_repeat('?,', count($options['field_id'])), ',');
             $sql .= " AND fv.field_id IN($placeholders)";
-            $conditions = array_merge($conditions, $data['field_id']);
+            $conditions = array_merge($conditions, $options['field_id']);
         }
 
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('title' => 'fv.title', 'weight' => 'fv.weight',
             'color' => 'fv.color', 'image' => 'f.file_id', 'field_value_id' => 'fv.field_value_id');
 
-        if (isset($data['sort']) && isset($allowed_sort[$data['sort']])//
-                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
-            $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
+        if (isset($options['sort']) && isset($allowed_sort[$options['sort']])//
+                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+            $sql .= " ORDER BY {$allowed_sort[$options['sort']]} {$options['order']}";
         } else {
             $sql .= ' ORDER BY fv.weight ASC';
         }
 
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        if (!empty($options['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
         }
 
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $conditions);
+        if (empty($options['count'])) {
+            $result = $this->db->fetchAll($sql, $conditions, array('index' => 'field_value_id'));
+        } else {
+            $result = (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $list = $this->db->fetchAll($sql, $conditions, array('index' => 'field_value_id'));
-        $this->hook->attach('field.value.list', $data, $list, $this);
-        return $list;
+        $this->hook->attach('field.value.list.after', $options, $result, $this);
+        return $result;
     }
 
     /**

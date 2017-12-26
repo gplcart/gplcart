@@ -13,7 +13,6 @@ use gplcart\core\Hook,
     gplcart\core\Config;
 use gplcart\core\models\File as FileModel,
     gplcart\core\models\Alias as AliasModel,
-    gplcart\core\models\CategoryGroup as CategoryGroupModel,
     gplcart\core\models\Translation as TranslationModel,
     gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\traits\Image as ImageTrait,
@@ -49,10 +48,16 @@ class Category
     protected $config;
 
     /**
-     * Category group model instance
-     * @var \gplcart\core\models\CategoryGroup $category_group
+     * File model instance
+     * @var \gplcart\core\models\File $file
      */
-    protected $category_group;
+    protected $file;
+
+    /**
+     * Alias model instance
+     * @var \gplcart\core\models\Alias $alias
+     */
+    protected $alias;
 
     /**
      * Translation UI model instance
@@ -67,29 +72,15 @@ class Category
     protected $translation_entity;
 
     /**
-     * Alias model instance
-     * @var \gplcart\core\models\Alias $alias
-     */
-    protected $alias;
-
-    /**
-     * File model instance
-     * @var \gplcart\core\models\File $file
-     */
-    protected $file;
-
-    /**
      * @param Hook $hook
      * @param Config $config
      * @param AliasModel $alias
      * @param FileModel $file
-     * @param TranslationEntityModel $translation_entity
      * @param TranslationModel $translation
-     * @param CategoryGroupModel $category_group
+     * @param TranslationEntityModel $translation_entity
      */
     public function __construct(Hook $hook, Config $config, AliasModel $alias, FileModel $file,
-            TranslationEntityModel $translation_entity, TranslationModel $translation,
-            CategoryGroupModel $category_group)
+            TranslationModel $translation, TranslationEntityModel $translation_entity)
     {
         $this->hook = $hook;
         $this->config = $config;
@@ -98,64 +89,12 @@ class Category
         $this->file = $file;
         $this->alias = $alias;
         $this->translation = $translation;
-        $this->category_group = $category_group;
         $this->translation_entity = $translation_entity;
     }
 
     /**
-     * Returns a list of categories per store to use directly in <select>
-     * @param integer $store_id
-     * @param string|null $usage
-     * @return array
-     */
-    public function getOptionListByStore($store_id, $usage = null)
-    {
-        $conditions = array(
-            'type' => $usage,
-            'store_id' => $store_id
-        );
-
-        $groups = (array) $this->category_group->getList($conditions);
-
-        $list = array();
-        foreach ($groups as $group) {
-            $list[$group['title']] = $this->getOptionList(array('category_group_id' => $group['category_group_id']));
-        }
-
-        return $list;
-    }
-
-    /**
-     * Returns a list of categories to use directly in <select>
-     * @param array $options
-     * @return array
-     */
-    public function getOptionList(array $options)
-    {
-        $options += array(
-            'status' => 1,
-            'parent_id' => 0,
-            'hierarchy' => true
-        );
-
-        $categories = $this->getTree($options);
-
-        if (empty($categories)) {
-            return array();
-        }
-
-        $list = array();
-        foreach ($categories as $category) {
-            $title = empty($options['hierarchy']) ? $category['title'] : str_repeat('— ', $category['depth']) . $category['title'];
-            $list[$category['category_id']] = $title;
-        }
-
-        return $list;
-    }
-
-    /**
      * Loads a category from the database
-     * @param int|array $condition
+     * @param int|array|string $condition
      * @return array
      */
     public function get($condition)
@@ -171,12 +110,9 @@ class Category
             $condition = array('category_id' => (int) $condition);
         }
 
-        $list = $this->getList($condition);
-
-        $result = array();
-        if (is_array($list) && count($list) == 1) {
-            $result = reset($list);
-        }
+        $condition['limit'] = array(0, 1);
+        $list = (array) $this->getList($condition);
+        $result = empty($list) ? array() : reset($list);
 
         $this->hook->attach('category.get.after', $condition, $result, $this);
         return $result;
@@ -189,6 +125,15 @@ class Category
      */
     public function getList(array $options = array())
     {
+        $options += array('language' => $this->translation->getLangcode());
+
+        $result = null;
+        $this->hook->attach('category.list.before', $options, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
         $sql = 'SELECT c.*, a.alias, cg.type, cg.store_id,'
                 . 'ct.language,'
                 . 'COALESCE(NULLIF(ct.title, ""), c.title) AS title,'
@@ -205,9 +150,6 @@ class Category
                 . ' LEFT JOIN alias a ON(a.entity=? AND a.entity_id=c.category_id)'
                 . ' LEFT JOIN category_group cg ON(cg.category_group_id = c.category_group_id)'
                 . ' LEFT JOIN category_translation ct ON(c.category_id = ct.category_id AND ct.language = ?)';
-
-        $options += array(
-            'language' => $this->translation->getLangcode());
 
         $conditions = array('category', $options['language']);
 
@@ -248,9 +190,8 @@ class Category
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('title', 'category_id', 'weight', 'status');
 
-        if ((isset($options['sort']) && in_array($options['sort'], $allowed_sort))//
-                && (isset($options['order']) && in_array($options['order'], $allowed_order))
-        ) {
+        if (isset($options['sort']) && in_array($options['sort'], $allowed_sort)//
+                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
             $sql .= " ORDER BY c.{$options['sort']} {$options['order']}";
         } else {
             $sql .= " ORDER BY c.weight ASC";
@@ -260,13 +201,14 @@ class Category
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
         }
 
-        if (!empty($options['count'])) {
-            return (int) $this->db->fetchColumn($sql, $conditions);
+        if (empty($options['count'])) {
+            $result = $this->db->fetchAll($sql, $conditions, array('index' => 'category_id'));
+        } else {
+            $result = (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $list = $this->db->fetchAll($sql, $conditions, array('index' => 'category_id'));
-        $this->hook->attach('category.list', $list, $this);
-        return $list;
+        $this->hook->attach('category.list.after', $options, $result, $this);
+        return $result;
     }
 
     /**

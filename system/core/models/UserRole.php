@@ -59,23 +59,29 @@ class UserRole
             return $result;
         }
 
-        $result = $this->db->fetch('SELECT * FROM role WHERE role_id=?', array($role_id), array(
-            'unserialize' => 'permissions'));
-
+        $sql = 'SELECT * FROM role WHERE role_id=?';
+        $result = $this->db->fetch($sql, array($role_id), array('unserialize' => 'permissions'));
         $this->hook->attach('user.role.get.after', $role_id, $result, $this);
         return $result;
     }
 
     /**
      * Returns an array of roles or counts them
-     * @param array $data
+     * @param array $options
      * @return array|integer
      */
-    public function getList(array $data = array())
+    public function getList(array $options = array())
     {
+        $result = null;
+        $this->hook->attach('user.role.list.before', $options, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
         $sql = 'SELECT *';
 
-        if (!empty($data['count'])) {
+        if (!empty($options['count'])) {
             $sql = 'SELECT COUNT(role_id)';
         }
 
@@ -83,42 +89,38 @@ class UserRole
 
         $conditions = array();
 
-        if (isset($data['name'])) {
+        if (isset($options['name'])) {
             $sql .= ' AND name LIKE ?';
-            $conditions[] = "%{$data['name']}%";
+            $conditions[] = "%{$options['name']}%";
         }
 
-        if (isset($data['status'])) {
+        if (isset($options['status'])) {
             $sql .= ' AND status = ?';
-            $conditions[] = (int) $data['status'];
+            $conditions[] = (int) $options['status'];
         }
 
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('name', 'status', 'role_id');
 
-        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)//
-                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
-            $sql .= " ORDER BY {$data['sort']} {$data['order']}";
+        if (isset($options['sort']) && in_array($options['sort'], $allowed_sort)//
+                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+            $sql .= " ORDER BY {$options['sort']} {$options['order']}";
         } else {
             $sql .= " ORDER BY role_id ASC";
         }
 
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        if (!empty($options['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
         }
 
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $conditions);
+        if (empty($options['count'])) {
+            $result = $this->db->fetchAll($sql, $conditions, array('index' => 'role_id', 'unserialize' => 'permissions'));
+        } else {
+            $result = (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $options = array(
-            'index' => 'role_id',
-            'unserialize' => 'permissions'
-        );
-
-        $roles = $this->db->fetchAll($sql, $conditions, $options);
-        $this->hook->attach('user.role.list', $roles, $this);
-        return $roles;
+        $this->hook->attach('user.role.list.after', $options, $result, $this);
+        return $result;
     }
 
     /**

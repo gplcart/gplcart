@@ -41,43 +41,21 @@ class ProductBundle
     }
 
     /**
-     * Load a bundle
-     * @param int|array $condition Either a numeric product bundle ID or an array of conditions for getList()
+     * Returns an array of bundled products
+     * @param array $options
      * @return array
      */
-    public function get($condition)
+    public function getList(array $options = array())
     {
-        $result = null;
-        $this->hook->attach('product.bundle.get.before', $condition, $result, $this);
+        $options += array('index' => 'product_bundle_id');
+
+        $result = &gplcart_static(gplcart_array_hash(array('product.bundle.list' => $options)));
 
         if (isset($result)) {
-            return (array) $result;
+            return $result;
         }
 
-        if (!is_array($condition)) {
-            $condition = array('product_bundle_id' => (int) $condition);
-        }
-
-        $list = $this->getList($condition);
-
-        $result = array();
-        if (is_array($list) && count($list) == 1) {
-            $result = reset($list);
-        }
-
-        $this->hook->attach('product.bundle.get.after', $condition, $result, $this);
-        return (array) $result;
-    }
-
-    /**
-     * Returns an array of bundled products
-     * @param array $data
-     * @param string $index
-     * @return array
-     */
-    public function getList(array $data = array(), $index = 'product_bundle_id')
-    {
-        $result = &gplcart_static(gplcart_array_hash(array('product.bundle.list' => $data)));
+        $this->hook->attach('product.bundle.list.before', $options, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -90,33 +68,37 @@ class ProductBundle
                 . ' LEFT JOIN product p ON(pb.product_id = p.product_id)'
                 . ' LEFT JOIN product p2 ON(pb.item_product_id = p2.product_id)';
 
-        if (isset($data['product_bundle_id'])) {
+        if (isset($options['product_bundle_id'])) {
             $sql .= ' WHERE pb.product_bundle_id = ?';
-            $conditions[] = (int) $data['product_bundle_id'];
+            $conditions[] = (int) $options['product_bundle_id'];
         } else {
             $sql .= ' WHERE pb.product_bundle_id IS NOT NULL';
         }
 
-        if (isset($data['store_id'])) {
+        if (isset($options['store_id'])) {
             $sql .= ' AND p.store_id = ? AND p2.store_id = ?';
-            $conditions[] = (int) $data['store_id'];
-            $conditions[] = (int) $data['store_id'];
+            $conditions[] = (int) $options['store_id'];
+            $conditions[] = (int) $options['store_id'];
         }
 
-        if (isset($data['status'])) {
+        if (isset($options['status'])) {
             $sql .= ' AND p.status = ? AND p2.status = ?';
-            $conditions[] = (int) $data['status'];
-            $conditions[] = (int) $data['status'];
+            $conditions[] = (int) $options['status'];
+            $conditions[] = (int) $options['status'];
         }
 
-        if (isset($data['product_id'])) {
+        if (isset($options['product_id'])) {
             $sql .= ' AND pb.product_id = ?';
-            $conditions[] = (int) $data['product_id'];
+            $conditions[] = (int) $options['product_id'];
         }
 
-        $result = $this->db->fetchAll($sql, $conditions, array('index' => $index));
-        $this->hook->attach('product.bundle.list', $data, $result, $this);
-        return (array) $result;
+        if (!empty($options['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
+        }
+
+        $result = $this->db->fetchAll($sql, $conditions, array('index' => $options['index']));
+        $this->hook->attach('product.bundle.list.after', $options, $result, $this);
+        return $result;
     }
 
     /**

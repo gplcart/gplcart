@@ -270,17 +270,27 @@ class Cart
 
     /**
      * Returns an array of cart items or counts them
-     * @param array $data
-     * @param string $index
+     * @param array $options
      * @return array|integer
      */
-    public function getList(array $data = array(), $index = 'sku')
+    public function getList(array $options = array())
     {
+        $options += array(
+            'index' => 'sku',
+            'language' => $this->translation->getLangcode());
+
+        $result = null;
+        $this->hook->attach('cart.list.before', $options, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
         $sql = 'SELECT c.*, COALESCE(NULLIF(pt.title, ""), p.title) AS title,'
                 . ' p.status AS product_status, p.store_id AS product_store_id,'
                 . ' u.email AS user_email';
 
-        if (!empty($data['count'])) {
+        if (!empty($options['count'])) {
             $sql = 'SELECT COUNT(c.cart_id)';
         }
 
@@ -290,36 +300,36 @@ class Cart
                 . ' LEFT JOIN user u ON(c.user_id = u.user_id)'
                 . ' WHERE cart_id IS NOT NULL';
 
-        $conditions = array($this->translation->getLangcode());
+        $conditions = array($options['language']);
 
-        if (isset($data['user_id'])) {
+        if (isset($options['user_id'])) {
             $sql .= ' AND c.user_id=?';
-            $conditions[] = $data['user_id'];
+            $conditions[] = $options['user_id'];
         }
 
-        if (isset($data['user_email'])) {
+        if (isset($options['user_email'])) {
             $sql .= ' AND u.email LIKE ?';
-            $conditions[] = "%{$data['user_email']}%";
+            $conditions[] = "%{$options['user_email']}%";
         }
 
-        if (isset($data['order_id'])) {
+        if (isset($options['order_id'])) {
             $sql .= ' AND c.order_id=?';
-            $conditions[] = (int) $data['order_id'];
+            $conditions[] = (int) $options['order_id'];
         }
 
-        if (isset($data['store_id'])) {
+        if (isset($options['store_id'])) {
             $sql .= ' AND c.store_id=?';
-            $conditions[] = (int) $data['store_id'];
+            $conditions[] = (int) $options['store_id'];
         }
 
-        if (isset($data['sku'])) {
+        if (isset($options['sku'])) {
             $sql .= ' AND c.sku=?';
-            $conditions[] = $data['sku'];
+            $conditions[] = $options['sku'];
         }
 
-        if (isset($data['sku_like'])) {
+        if (isset($options['sku_like'])) {
             $sql .= ' AND c.sku LIKE ?';
-            $conditions[] = "%{$data['sku_like']}%";
+            $conditions[] = "%{$options['sku_like']}%";
         }
 
         $allowed_order = array('asc', 'desc');
@@ -335,24 +345,25 @@ class Cart
             'product_id' => 'c.product_id'
         );
 
-        if (isset($data['sort']) && isset($allowed_sort[$data['sort']])//
-                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
-            $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
+        if (isset($options['sort']) && isset($allowed_sort[$options['sort']])//
+                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+            $sql .= " ORDER BY {$allowed_sort[$options['sort']]} {$options['order']}";
         } else {
             $sql .= ' ORDER BY c.modified DESC';
         }
 
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        if (!empty($options['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
         }
 
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $conditions);
+        if (empty($options['count'])) {
+            $result = $this->db->fetchAll($sql, $conditions, array('unserialize' => 'data', 'index' => $options['index']));
+        } else {
+            $result = (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $list = $this->db->fetchAll($sql, $conditions, array('unserialize' => 'data', 'index' => $index));
-        $this->hook->attach('cart.list', $list, $this);
-        return $list;
+        $this->hook->attach('cart.list.after', $options, $result, $this);
+        return $result;
     }
 
     /**

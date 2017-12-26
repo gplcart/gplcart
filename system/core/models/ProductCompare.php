@@ -50,6 +50,30 @@ class ProductCompare
     }
 
     /**
+     * Returns an array of product ID to be compared
+     * @return array
+     */
+    public function getList()
+    {
+        $result = &gplcart_static('product.compare.list');
+
+        if (isset($result)) {
+            return (array) $result;
+        }
+
+        $this->hook->attach('product.compare.list.before', $result, $this);
+
+        if (isset($result)) {
+            return (array) $result;
+        }
+
+        $cookie = $this->request->cookie('product_compare', '', 'string');
+        $result = array_filter(array_map('trim', explode('|', urldecode($cookie))), 'ctype_digit');
+        $this->hook->attach('product.compare.list.after', $result, $this);
+        return $result;
+    }
+
+    /**
      * Adds a product to comparison
      * @param integer $product_id
      * @return boolean
@@ -78,87 +102,6 @@ class ProductCompare
     }
 
     /**
-     * Reduces a number of items to save
-     * @param array $product_ids
-     */
-    protected function controlLimit(array &$product_ids)
-    {
-        $limit = $this->getLimit();
-
-        if (!empty($limit)) {
-            $product_ids = array_slice($product_ids, 0, $limit);
-        }
-    }
-
-    /**
-     * Returns a max number of items to compare
-     * @return integer
-     */
-    public function getLimit()
-    {
-        return (int) $this->config->get('product_compare_limit', 10);
-    }
-
-    /**
-     * Returns cookie lifespan (in seconds)
-     * @return int
-     */
-    public function getCookieLifespan()
-    {
-        return (int) $this->config->get('product_compare_cookie_lifespan', 30 * 24 * 60 * 60);
-    }
-
-    /**
-     * Returns an array of product ID to be compared
-     * @return array
-     */
-    public function getList()
-    {
-        $items = &gplcart_static('product.compare.list');
-
-        if (isset($items)) {
-            return (array) $items;
-        }
-
-        $items = array();
-        $cookie = $this->request->cookie('product_compare', '', 'string');
-
-        if (empty($cookie)) {
-            return $items;
-        }
-
-        $array = explode('|', urldecode($cookie));
-        $items = array_filter(array_map('trim', $array), 'ctype_digit');
-
-        $this->hook->attach('product.compare.list', $items, $this);
-        return $items;
-    }
-
-    /**
-     * Whether a product is added to comparison
-     * @param integer $product_id
-     * @return boolean
-     */
-    public function exists($product_id)
-    {
-        return in_array($product_id, $this->getList());
-    }
-
-    /**
-     * Saves an array of product ID in cookie
-     * @param array $product_ids
-     * @return boolean
-     */
-    public function set(array $product_ids)
-    {
-        $lifespan = $this->getCookieLifespan();
-        $result = $this->request->setCookie('product_compare', implode('|', (array) $product_ids), $lifespan);
-
-        gplcart_static_clear();
-        return $result;
-    }
-
-    /**
      * Removes a products from comparison
      * @param integer $product_id
      * @return array|boolean
@@ -184,6 +127,61 @@ class ProductCompare
         $result = $this->set(array_keys($product_ids));
         $this->hook->attach('product.compare.delete.after', $product_id, $result, $this);
         return (bool) $result;
+    }
+
+    /**
+     * Saves an array of product ID in cookie
+     * @param array $product_ids
+     * @return boolean
+     */
+    public function set(array $product_ids)
+    {
+        $lifespan = $this->getCookieLifespan();
+        $result = $this->request->setCookie('product_compare', implode('|', (array) $product_ids), $lifespan);
+
+        gplcart_static_clear();
+        return $result;
+    }
+
+    /**
+     * Returns a max number of items to compare
+     * @return integer
+     */
+    public function getLimit()
+    {
+        return (int) $this->config->get('product_compare_limit', 10);
+    }
+
+    /**
+     * Returns cookie lifespan (in seconds)
+     * @return int
+     */
+    public function getCookieLifespan()
+    {
+        return (int) $this->config->get('product_compare_cookie_lifespan', 30 * 24 * 60 * 60);
+    }
+
+    /**
+     * Whether a product is added to comparison
+     * @param integer $product_id
+     * @return boolean
+     */
+    public function exists($product_id)
+    {
+        return in_array($product_id, $this->getList());
+    }
+
+    /**
+     * Reduces a number of items to save
+     * @param array $product_ids
+     */
+    protected function controlLimit(array &$product_ids)
+    {
+        $limit = $this->getLimit();
+
+        if (!empty($limit)) {
+            $product_ids = array_slice($product_ids, 0, $limit);
+        }
     }
 
 }

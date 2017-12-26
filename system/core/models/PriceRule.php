@@ -12,8 +12,7 @@ namespace gplcart\core\models;
 use gplcart\core\Hook,
     gplcart\core\Config,
     gplcart\core\Handler;
-use gplcart\core\models\Trigger as TriggerModel,
-    gplcart\core\models\Currency as CurrencyModel;
+use gplcart\core\models\Trigger as TriggerModel;
 
 /**
  * Manages basic behaviors and data related to price rules
@@ -34,12 +33,6 @@ class PriceRule
     protected $hook;
 
     /**
-     * Currency model instance
-     * @var \gplcart\core\models\Currency $currency
-     */
-    protected $currency;
-
-    /**
      * Trigger model instance
      * @var \gplcart\core\models\Trigger $trigger
      */
@@ -48,15 +41,12 @@ class PriceRule
     /**
      * @param Hook $hook
      * @param Config $config
-     * @param CurrencyModel $currency
      * @param TriggerModel $trigger
      */
-    public function __construct(Hook $hook, Config $config, CurrencyModel $currency,
-            TriggerModel $trigger)
+    public function __construct(Hook $hook, Config $config, TriggerModel $trigger)
     {
         $this->hook = $hook;
         $this->trigger = $trigger;
-        $this->currency = $currency;
         $this->db = $config->getDb();
     }
 
@@ -126,20 +116,22 @@ class PriceRule
 
     /**
      * Returns an array of price rules or total number of rules
-     * @param array $data
+     * @param array $options
      * @return array|integer
      */
-    public function getList(array $data = array())
+    public function getList(array $options = array())
     {
-        $list = &gplcart_static(gplcart_array_hash(array('price.rule.list' => $data)));
+        $result = &gplcart_static(gplcart_array_hash(array('price.rule.list' => $options)));
 
-        if (isset($list)) {
-            return $list;
+        if (isset($result)) {
+            return $result;
         }
+
+        $this->hook->attach('price.rule.list.before', $options, $result, $this);
 
         $sql = 'SELECT p.*';
 
-        if (!empty($data['count'])) {
+        if (!empty($options['count'])) {
             $sql = 'SELECT COUNT(p.price_rule_id)';
         }
 
@@ -147,50 +139,50 @@ class PriceRule
 
         $conditions = array();
 
-        if (empty($data['price_rule_id'])) {
+        if (empty($options['price_rule_id'])) {
             $sql .= ' WHERE p.price_rule_id IS NOT NULL';
         } else {
-            settype($data['price_rule_id'], 'array');
-            $placeholders = rtrim(str_repeat('?,', count($data['price_rule_id'])), ',');
+            settype($options['price_rule_id'], 'array');
+            $placeholders = rtrim(str_repeat('?,', count($options['price_rule_id'])), ',');
             $sql .= " WHERE p.price_rule_id IN($placeholders)";
-            $conditions = array_merge($conditions, $data['price_rule_id']);
+            $conditions = array_merge($conditions, $options['price_rule_id']);
         }
 
-        if (!empty($data['trigger_id'])) {
-            settype($data['trigger_id'], 'array');
-            $placeholders = rtrim(str_repeat('?,', count($data['trigger_id'])), ',');
+        if (!empty($options['trigger_id'])) {
+            settype($options['trigger_id'], 'array');
+            $placeholders = rtrim(str_repeat('?,', count($options['trigger_id'])), ',');
             $sql .= " AND p.trigger_id IN($placeholders)";
-            $conditions = array_merge($conditions, $data['trigger_id']);
+            $conditions = array_merge($conditions, $options['trigger_id']);
         }
 
-        if (isset($data['name'])) {
+        if (isset($options['name'])) {
             $sql .= ' AND p.name LIKE ?';
-            $conditions[] = "%{$data['name']}%";
+            $conditions[] = "%{$options['name']}%";
         }
 
-        if (isset($data['code'])) {
+        if (isset($options['code'])) {
             $sql .= ' AND p.code LIKE ?';
-            $conditions[] = "%{$data['code']}%";
+            $conditions[] = "%{$options['code']}%";
         }
 
-        if (isset($data['value'])) {
+        if (isset($options['value'])) {
             $sql .= ' AND p.value = ?';
-            $conditions[] = (int) $data['value'];
+            $conditions[] = (int) $options['value'];
         }
 
-        if (isset($data['value_type'])) {
+        if (isset($options['value_type'])) {
             $sql .= ' AND p.value_type = ?';
-            $conditions[] = $data['value_type'];
+            $conditions[] = $options['value_type'];
         }
 
-        if (isset($data['status'])) {
+        if (isset($options['status'])) {
             $sql .= ' AND p.status = ?';
-            $conditions[] = (int) $data['status'];
+            $conditions[] = (int) $options['status'];
         }
 
-        if (isset($data['currency'])) {
+        if (isset($options['currency'])) {
             $sql .= ' AND p.currency = ?';
-            $conditions[] = $data['currency'];
+            $conditions[] = $options['currency'];
         }
 
         $orders = array('asc', 'desc');
@@ -209,24 +201,25 @@ class PriceRule
             'modified' => 'p.modified'
         );
 
-        if ((isset($data['sort']) && isset($sorts[$data['sort']]))//
-                && (isset($data['order']) && in_array($data['order'], $orders, true))) {
-            $sql .= " ORDER BY {$sorts[$data['sort']]} {$data['order']}";
+        if (isset($options['sort']) && isset($sorts[$options['sort']])//
+                && isset($options['order']) && in_array($options['order'], $orders, true)) {
+            $sql .= " ORDER BY {$sorts[$options['sort']]} {$options['order']}";
         } else {
             $sql .= ' ORDER BY p.weight ASC';
         }
 
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        if (!empty($options['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
         }
 
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $conditions);
+        if (empty($options['count'])) {
+            $result = $this->db->fetchAll($sql, $conditions, array('index' => 'price_rule_id'));
+        } else {
+            $result = (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $list = $this->db->fetchAll($sql, $conditions, array('index' => 'price_rule_id'));
-        $this->hook->attach('price.rule.list', $data, $list, $this);
-        return $list;
+        $this->hook->attach('price.rule.list.after', $options, $result, $this);
+        return $result;
     }
 
     /**

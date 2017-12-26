@@ -64,7 +64,7 @@ class Collection
 
     /**
      * Loads a collection from the database
-     * @param array|int $condition
+     * @param array|int|string $condition
      * @return array
      */
     public function get($condition)
@@ -80,12 +80,9 @@ class Collection
             $condition = array('collection_id' => (int) $condition);
         }
 
-        $list = $this->getList($condition);
-
-        $result = array();
-        if (is_array($list) && count($list) == 1) {
-            $result = reset($list);
-        }
+        $condition['limit'] = array(0, 1);
+        $list = (array) $this->getList($condition);
+        $result = empty($list) ? array() : reset($list);
 
         $this->hook->attach('collection.get.after', $condition, $result, $this);
         return $result;
@@ -93,73 +90,80 @@ class Collection
 
     /**
      * Returns an array of collections or counts them
-     * @param array $data
+     * @param array $options
      * @return array|integer
      */
-    public function getList(array $data = array())
+    public function getList(array $options = array())
     {
-        $data += array('language' => $this->translation->getLangcode());
+        $options += array('language' => $this->translation->getLangcode());
+
+        $result = null;
+        $this->hook->attach('collection.list.before', $options, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
 
         $sql = 'SELECT c.*, COALESCE(NULLIF(ct.title, ""), c.title) AS title';
 
-        if (!empty($data['count'])) {
+        if (!empty($options['count'])) {
             $sql = 'SELECT COUNT(c.collection_id)';
         }
 
         $sql .= ' FROM collection c'
                 . ' LEFT JOIN collection_translation ct ON(ct.collection_id = c.collection_id AND ct.language=?)';
 
-        $conditions = array($data['language']);
+        $conditions = array($options['language']);
 
-        if (isset($data['collection_id'])) {
+        if (isset($options['collection_id'])) {
             $sql .= ' WHERE c.collection_id = ?';
-            $conditions[] = (int) $data['collection_id'];
+            $conditions[] = (int) $options['collection_id'];
         } else {
             $sql .= ' WHERE c.collection_id IS NOT NULL';
         }
 
-        if (isset($data['title'])) {
+        if (isset($options['title'])) {
             $sql .= ' AND (c.title LIKE ? OR (ct.title LIKE ? AND ct.language=?))';
-            $conditions[] = "%{$data['title']}%";
-            $conditions[] = "%{$data['title']}%";
-            $conditions[] = $data['language'];
+            $conditions[] = "%{$options['title']}%";
+            $conditions[] = "%{$options['title']}%";
+            $conditions[] = $options['language'];
         }
 
-        if (isset($data['status'])) {
+        if (isset($options['status'])) {
             $sql .= ' AND c.status = ?';
-            $conditions[] = (int) $data['status'];
+            $conditions[] = (int) $options['status'];
         }
 
-        if (isset($data['store_id'])) {
+        if (isset($options['store_id'])) {
             $sql .= ' AND c.store_id = ?';
-            $conditions[] = (int) $data['store_id'];
+            $conditions[] = (int) $options['store_id'];
         }
 
-        if (isset($data['type'])) {
+        if (isset($options['type'])) {
             $sql .= ' AND c.type = ?';
-            $conditions[] = $data['type'];
+            $conditions[] = $options['type'];
         }
 
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('title', 'status', 'type', 'store_id', 'collection_id');
 
-        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort))//
-                && (isset($data['order']) && in_array($data['order'], $allowed_order))
-        ) {
-            $sql .= " ORDER BY c.{$data['sort']} {$data['order']}";
+        if (isset($options['sort']) && in_array($options['sort'], $allowed_sort)//
+                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+            $sql .= " ORDER BY c.{$options['sort']} {$options['order']}";
         }
 
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $conditions);
+        if (!empty($options['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
         }
 
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        if (empty($options['count'])) {
+            $result = $this->db->fetchAll($sql, $conditions, array('index' => 'collection_id'));
+        } else {
+            $result = (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $list = $this->db->fetchAll($sql, $conditions, array('index' => 'collection_id'));
-        $this->hook->attach('collection.list', $list, $this);
-        return $list;
+        $this->hook->attach('collection.list.after', $options, $result, $this);
+        return $result;
     }
 
     /**
@@ -217,10 +221,7 @@ class Collection
      */
     public function canDelete($collection_id)
     {
-        $sql = 'SELECT collection_item_id'
-                . ' FROM collection_item'
-                . ' WHERE collection_id=?';
-
+        $sql = 'SELECT collection_item_id FROM collection_item WHERE collection_id=?';
         $result = $this->db->fetchColumn($sql, array($collection_id));
         return empty($result);
     }

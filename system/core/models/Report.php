@@ -58,81 +58,67 @@ class Report
 
     /**
      * Returns an array of log messages
-     * @param array $data
+     * @param array $options
      * @return array|integer
      */
-    public function getList(array $data = array())
+    public function getList(array $options = array())
     {
+        $result = null;
+        $this->hook->attach('report.event.list.before', $options, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
         $sql = 'SELECT *';
 
-        if (!empty($data['count'])) {
+        if (!empty($options['count'])) {
             $sql = 'SELECT COUNT(log_id)';
         }
 
         $sql .= ' FROM log WHERE log_id IS NOT NULL';
 
-        $where = array();
+        $conditions = array();
 
-        if (isset($data['severity'])) {
+        if (isset($options['severity'])) {
             $sql .= " AND severity=?";
-            $where[] = $data['severity'];
+            $conditions[] = $options['severity'];
         }
 
-        if (isset($data['type'])) {
-            settype($data['type'], 'array');
-            $placeholders = rtrim(str_repeat('?,', count($data['type'])), ',');
+        if (isset($options['type'])) {
+            settype($options['type'], 'array');
+            $placeholders = rtrim(str_repeat('?,', count($options['type'])), ',');
             $sql .= " AND type IN($placeholders)";
-            $where = array_merge($where, $data['type']);
+            $conditions = array_merge($conditions, $options['type']);
         }
 
-        if (isset($data['text'])) {
+        if (isset($options['text'])) {
             $sql .= " AND text LIKE ?";
-            $where[] = "%{$data['text']}%";
+            $conditions[] = "%{$options['text']}%";
         }
 
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('type', 'severity', 'time', 'text');
 
-        if ((isset($data['sort']) && in_array($data['sort'], $allowed_sort))//
-                && (isset($data['order']) && in_array($data['order'], $allowed_order))) {
-            $sql .= " ORDER BY {$data['sort']} {$data['order']}";
+        if ((isset($options['sort']) && in_array($options['sort'], $allowed_sort))//
+                && (isset($options['order']) && in_array($options['order'], $allowed_order))) {
+            $sql .= " ORDER BY {$options['sort']} {$options['order']}";
         } else {
             $sql .= ' ORDER BY time DESC';
         }
 
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        if (!empty($options['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
         }
 
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $where);
+        if (empty($options['count'])) {
+            $result = $this->db->fetchAll($sql, $conditions, array('index' => 'log_id', 'unserialize' => 'data'));
+        } else {
+            $result = (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $list = $this->db->fetchAll($sql, $where, array('index' => 'log_id', 'unserialize' => 'data'));
-        $this->hook->attach('report.list', $list, $this);
-        return $list;
-    }
-
-    /**
-     * Returns an array of log types
-     * @return array
-     */
-    public function getTypes()
-    {
-        return $this->db->fetchColumnAll('SELECT DISTINCT type FROM log', array());
-    }
-
-    /**
-     * Returns an array of log severity types
-     * @return array
-     */
-    public function getSeverities()
-    {
-        return array(
-            'info' => $this->translation->text('Info'),
-            'danger' => $this->translation->text('Danger'),
-            'warning' => $this->translation->text('Warning')
-        );
+        $this->hook->attach('report.event.list.after', $options, $result, $this);
+        return $result;
     }
 
     /**
@@ -282,6 +268,28 @@ class Report
 
         gplcart_array_sort($statuses);
         return $statuses;
+    }
+
+    /**
+     * Returns an array of log types
+     * @return array
+     */
+    public function getTypes()
+    {
+        return $this->db->fetchColumnAll('SELECT DISTINCT type FROM log', array());
+    }
+
+    /**
+     * Returns an array of log severity types
+     * @return array
+     */
+    public function getSeverities()
+    {
+        return array(
+            'info' => $this->translation->text('Info'),
+            'danger' => $this->translation->text('Danger'),
+            'warning' => $this->translation->text('Warning')
+        );
     }
 
     /**

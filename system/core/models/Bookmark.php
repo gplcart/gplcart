@@ -58,12 +58,9 @@ class Bookmark
             $condition = array('bookmark_id' => (int) $condition);
         }
 
-        $list = $this->getList($condition);
-
-        $result = array();
-        if (is_array($list) && count($list) == 1) {
-            $result = reset($list);
-        }
+        $condition['limit'] = array(0, 1);
+        $list = (array) $this->getList($condition);
+        $result = empty($list) ? array() : reset($list);
 
         $this->hook->attach('bookmark.get.after', $condition, $result, $this);
         return (array) $result;
@@ -76,6 +73,13 @@ class Bookmark
      */
     public function getList(array $data = array())
     {
+        $result = null;
+        $this->hook->attach('bookmark.list.before', $data, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
         $sql = 'SELECT *';
 
         if (!empty($data['count'])) {
@@ -111,13 +115,14 @@ class Bookmark
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $conditions);
+        if (empty($data['count'])) {
+            $result = $this->db->fetchAll($sql, $conditions, array('index' => 'path'));
+        } else {
+            $result = (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $list = $this->db->fetchAll($sql, $conditions, array('index' => 'path'));
-        $this->hook->attach('bookmark.list', $list, $this);
-        return $list;
+        $this->hook->attach('bookmark.list.after', $data, $result, $this);
+        return $result;
     }
 
     /**

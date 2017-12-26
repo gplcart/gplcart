@@ -102,12 +102,9 @@ class Alias
             $condition = array('alias_id' => (int) $condition);
         }
 
-        $list = $this->getList($condition);
-
-        $result = array();
-        if (is_array($list) && count($list) == 1) {
-            $result = reset($list);
-        }
+        $condition['limit'] = array(0, 1);
+        $list = (array) $this->getList($condition);
+        $result = empty($list) ? array() : reset($list);
 
         $this->hook->attach('alias.get.after', $condition, $result, $this);
         return (array) $result;
@@ -121,7 +118,12 @@ class Alias
      */
     public function getByEntity($entity, $entity_id)
     {
-        $alias = $this->get(array('entity' => $entity, 'entity_id' => $entity_id));
+        $conditions = array(
+            'entity' => (string) $entity,
+            'entity_id' => (int) $entity_id
+        );
+
+        $alias = $this->get($conditions);
         return isset($alias['alias']) ? $alias['alias'] : null;
     }
 
@@ -156,7 +158,7 @@ class Alias
     public function getList(array $data = array())
     {
         $result = null;
-        $this->hook->attach('alias.list.before', $data, $result);
+        $this->hook->attach('alias.list.before', $data, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -205,9 +207,7 @@ class Alias
         $allowed_sort = array('entity_id', 'entity', 'alias', 'alias_id');
 
         if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)//
-                && isset($data['order'])//
-                && in_array($data['order'], $allowed_order)
-        ) {
+                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
             $sql .= " ORDER BY {$data['sort']} {$data['order']}";
         } else {
             $sql .= " ORDER BY alias DESC";
@@ -217,12 +217,13 @@ class Alias
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $conditions);
+        if (empty($data['count'])) {
+            $result = $this->db->fetchAll($sql, $conditions, array('index' => 'alias_id'));
+        } else {
+            $result = (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $result = $this->db->fetchAll($sql, $conditions, array('index' => 'alias_id'));
-        $this->hook->attach('alias.list.after', $data, $result);
+        $this->hook->attach('alias.list.after', $data, $result, $this);
         return $result;
     }
 

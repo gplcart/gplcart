@@ -34,12 +34,6 @@ class ProductClass
     protected $hook;
 
     /**
-     * Translation UI model instance
-     * @var \gplcart\core\models\Translation $translation
-     */
-    protected $translation;
-
-    /**
      * Field model instance
      * @var \gplcart\core\models\Field $field
      */
@@ -50,6 +44,12 @@ class ProductClass
      * @var \gplcart\core\models\FieldValue $field_value
      */
     protected $field_value;
+
+    /**
+     * Translation UI model instance
+     * @var \gplcart\core\models\Translation $translation
+     */
+    protected $translation;
 
     /**
      * @param Hook $hook
@@ -91,53 +91,60 @@ class ProductClass
 
     /**
      * Returns an array of product classes or counts them
-     * @param array $data
+     * @param array $options
      * @return array|integer
      */
-    public function getList(array $data = array())
+    public function getList(array $options = array())
     {
+        $result = null;
+        $this->hook->attach('product.class.list.before', $options, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
         $sql = 'SELECT *';
 
-        if (!empty($data['count'])) {
+        if (!empty($options['count'])) {
             $sql = 'SELECT COUNT(product_class_id)';
         }
 
-        $sql .= ' FROM product_class WHERE product_class_id > 0';
+        $sql .= ' FROM product_class WHERE product_class_id IS NOT NULL';
 
-        $where = array();
+        $conditions = array();
 
-        if (isset($data['title'])) {
+        if (isset($options['title'])) {
             $sql .= ' AND title LIKE ?';
-            $where[] = "%{$data['title']}%";
+            $conditions[] = "%{$options['title']}%";
         }
 
-        if (isset($data['status'])) {
+        if (isset($options['status'])) {
             $sql .= ' AND status=?';
-            $where[] = (int) $data['status'];
+            $conditions[] = (int) $options['status'];
         }
 
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('title', 'status', 'product_class_id');
 
-        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)//
-                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
-            $sql .= " ORDER BY {$data['sort']} {$data['order']}";
+        if (isset($options['sort']) && in_array($options['sort'], $allowed_sort)//
+                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+            $sql .= " ORDER BY {$options['sort']} {$options['order']}";
         } else {
             $sql .= " ORDER BY title ASC";
         }
 
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        if (!empty($options['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
         }
 
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $where);
+        if (empty($options['count'])) {
+            $result = $this->db->fetchAll($sql, $conditions, array('index' => 'product_class_id'));
+        } else {
+            $result = (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $list = $this->db->fetchAll($sql, $where, array('index' => 'product_class_id'));
-        $this->hook->attach('product.class.list', $list, $this);
-
-        return $list;
+        $this->hook->attach('product.class.list.after', $options, $result, $this);
+        return $result;
     }
 
     /**
@@ -178,15 +185,23 @@ class ProductClass
             return false;
         }
 
-        $conditions = array('product_class_id' => $product_class_id);
-        $result = (bool) $this->db->delete('product_class', $conditions);
+        $result = (bool) $this->db->delete('product_class', array('product_class_id' => $product_class_id));
 
         if ($result) {
-            $this->db->delete('product_class_field', $conditions);
+            $this->deleteLinked($product_class_id);
         }
 
         $this->hook->attach('product.class.delete.after', $product_class_id, $check, $result, $this);
         return (bool) $result;
+    }
+
+    /**
+     * Delete all database records related to the product class ID
+     * @param int $product_class_id
+     */
+    protected function deleteLinked($product_class_id)
+    {
+        $this->db->delete('product_class_field', array('product_class_id' => $product_class_id));
     }
 
     /**
@@ -278,17 +293,13 @@ class ProductClass
         $fields = $this->field->getList();
 
         foreach ($this->getFields(array('product_class_id' => $product_class_id)) as $field) {
-
-            if (!isset($fields[$field['field_id']])) {
-                continue;
+            if (isset($fields[$field['field_id']])) {
+                $options = array('field_id' => $field['field_id']);
+                $data = array('values' => $this->field_value->getList($options));
+                $data += $fields[$field['field_id']];
+                $data += $field;
+                $result[$fields[$field['field_id']]['type']][$field['field_id']] = $data;
             }
-
-            $options = array('field_id' => $field['field_id']);
-            $data = array('values' => $this->field_value->getList($options));
-
-            $data += $fields[$field['field_id']];
-            $data += $field;
-            $result[$fields[$field['field_id']]['type']][$field['field_id']] = $data;
         }
 
         return $result;
@@ -296,12 +307,12 @@ class ProductClass
 
     /**
      * Loads an array of product class fields
-     * @param array $data
+     * @param array $options
      * @return array
      */
-    public function getFields(array $data = array())
+    public function getFields(array $options = array())
     {
-        $data += array('language' => $this->translation->getLangcode());
+        $options += array('language' => $this->translation->getLangcode());
 
         $sql = 'SELECT pcf.*, COALESCE(NULLIF(ft.title, ""), f.title) AS title, f.type AS type'
                 . ' FROM product_class_field pcf'
@@ -309,26 +320,26 @@ class ProductClass
                 . ' LEFT JOIN field_translation ft ON(pcf.field_id = ft.field_id AND ft.language=?)'
                 . ' WHERE pcf.product_class_field_id IS NOT NULL';
 
-        $conditions = array($data['language']);
+        $conditions = array($options['language']);
 
-        if (isset($data['product_class_id'])) {
+        if (isset($options['product_class_id'])) {
             $sql .= ' AND pcf.product_class_id=?';
-            $conditions[] = (int) $data['product_class_id'];
+            $conditions[] = (int) $options['product_class_id'];
         }
 
-        if (isset($data['type'])) {
+        if (isset($options['type'])) {
             $sql .= ' AND f.type=?';
-            $conditions[] = $data['type'];
+            $conditions[] = $options['type'];
         }
 
-        if (isset($data['required'])) {
+        if (isset($options['required'])) {
             $sql .= ' AND pcf.required=?';
-            $conditions[] = (int) $data['required'];
+            $conditions[] = (int) $options['required'];
         }
 
-        if (isset($data['multiple'])) {
+        if (isset($options['multiple'])) {
             $sql .= ' AND pcf.multiple=?';
-            $conditions[] = (int) $data['multiple'];
+            $conditions[] = (int) $options['multiple'];
         }
 
         $allowed_order = array('asc', 'desc');
@@ -336,22 +347,20 @@ class ProductClass
         $allowed_sort = array(
             'type' => 'f.type',
             'title' => 'f.title',
+            'weight' => 'pcf.weight',
             'required' => 'pcf.required',
-            'multiple' => 'pcf.multiple',
-            'weight' => 'pcf.weight'
+            'multiple' => 'pcf.multiple'
         );
 
-        if (isset($data['sort']) && isset($allowed_sort[$data['sort']])//
-                && isset($data['order'])//
-                && in_array($data['order'], $allowed_order)
-        ) {
-            $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
+        if (isset($options['sort']) && isset($allowed_sort[$options['sort']])//
+                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+            $sql .= " ORDER BY {$allowed_sort[$options['sort']]} {$options['order']}";
         } else {
             $sql .= " ORDER BY pcf.weight ASC";
         }
 
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        if (!empty($options['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
         }
 
         return $this->db->fetchAll($sql, $conditions, array('index' => 'field_id'));

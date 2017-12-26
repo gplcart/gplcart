@@ -63,46 +63,106 @@ class Field
     }
 
     /**
-     * Returns an array of widget types
+     * Loads a field from the database
+     * @param int|array|string $condition
      * @return array
      */
-    public function getWidgetTypes()
+    public function get($condition)
     {
-        $types = &gplcart_static('field.widget.types');
+        $result = null;
+        $this->hook->attach('field.get.before', $condition, $result, $this);
 
-        if (isset($types)) {
-            return $types;
+        if (isset($result)) {
+            return $result;
         }
 
-        $types = array(
-            'button' => $this->translation->text('Button'),
-            'radio' => $this->translation->text('Radio buttons'),
-            'select' => $this->translation->text('Dropdown list')
-        );
+        if (!is_array($condition)) {
+            $condition = array('field_id' => (int) $condition);
+        }
 
-        $this->hook->attach('field.widget.types', $types, $this);
-        return $types;
+        $condition['limit'] = array(0, 1);
+        $list = (array) $this->getList($condition);
+        $result = empty($list) ? array() : reset($list);
+
+        $this->hook->attach('field.get.after', $condition, $result, $this);
+        return $result;
     }
 
     /**
-     * Returns an array of field types
-     * @return array
+     * Returns an array of fields
+     * @param array $options
+     * @return array|integer
      */
-    public function getTypes()
+    public function getList(array $options = array())
     {
-        $types = &gplcart_static('field.types');
+        $options += array('language' => $this->translation->getLangcode());
 
-        if (isset($types)) {
-            return $types;
+        $result = null;
+        $this->hook->attach('field.list.before', $options, $result, $this);
+
+        if (isset($result)) {
+            return $result;
         }
 
-        $types = array(
-            'option' => $this->translation->text('Option'),
-            'attribute' => $this->translation->text('Attribute')
-        );
+        $sql = 'SELECT f.*, COALESCE(NULLIF(ft.title, ""), f.title) AS title';
 
-        $this->hook->attach('field.types', $types, $this);
-        return $types;
+        if (!empty($options['count'])) {
+            $sql = 'SELECT COUNT(f.field_id)';
+        }
+
+        $sql .= ' FROM field f'
+                . ' LEFT JOIN field_translation ft ON (f.field_id = ft.field_id AND ft.language=?)';
+
+        $conditions = array($options['language']);
+
+        if (isset($options['field_id'])) {
+            settype($options['field_id'], 'array');
+            $placeholders = rtrim(str_repeat('?,', count($options['field_id'])), ',');
+            $sql .= " WHERE f.field_id IN($placeholders)";
+            $conditions = array_merge($conditions, $options['field_id']);
+        } else {
+            $sql .= ' WHERE f.field_id IS NOT NULL';
+        }
+
+        if (isset($options['title'])) {
+            $sql .= ' AND (f.title LIKE ? OR (ft.title LIKE ? AND ft.language=?))';
+            $conditions[] = "%{$options['title']}%";
+            $conditions[] = "%{$options['title']}%";
+            $conditions[] = $options['language'];
+        }
+
+        if (isset($options['type'])) {
+            $sql .= ' AND f.type=?';
+            $conditions[] = $options['type'];
+        }
+
+        if (isset($options['widget'])) {
+            $sql .= ' AND f.widget=?';
+            $conditions[] = $options['widget'];
+        }
+
+        $allowed_order = array('asc', 'desc');
+        $allowed_sort = array('title', 'type', 'widget', 'field_id');
+
+        if (isset($options['sort']) && in_array($options['sort'], $allowed_sort)//
+                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+            $sql .= " ORDER BY f.{$options['sort']} {$options['order']}";
+        } else {
+            $sql .= ' ORDER BY f.weight ASC';
+        }
+
+        if (!empty($options['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
+        }
+
+        if (empty($options['count'])) {
+            $result = $this->db->fetchAll($sql, $conditions, array('index' => 'field_id'));
+        } else {
+            $result = (int) $this->db->fetchColumn($sql, $conditions);
+        }
+
+        $this->hook->attach('field.list.after', $options, $result, $this);
+        return $result;
     }
 
     /**
@@ -120,109 +180,10 @@ class Field
         }
 
         $result = $data['field_id'] = $this->db->insert('field', $data);
-
         $this->setTranslations($data, $this->translation_entity, 'field', false);
 
         $this->hook->attach('field.add.after', $data, $result, $this);
         return (int) $result;
-    }
-
-    /**
-     * Loads a field from the database
-     * @param int|array $condition
-     * @return array
-     */
-    public function get($condition)
-    {
-        $result = null;
-        $this->hook->attach('field.get.before', $condition, $result, $this);
-
-        if (isset($result)) {
-            return $result;
-        }
-
-        if (!is_array($condition)) {
-            $condition = array('field_id' => (int) $condition);
-        }
-
-        $list = $this->getList($condition);
-
-        $result = array();
-        if (is_array($list) && count($list) == 1) {
-            $result = reset($list);
-        }
-
-        $this->hook->attach('field.get.after', $condition, $result, $this);
-        return $result;
-    }
-
-    /**
-     * Returns an array of fields
-     * @param array $data
-     * @return array|integer
-     */
-    public function getList(array $data = array())
-    {
-        $data += array('language' => $this->translation->getLangcode());
-
-        $sql = 'SELECT f.*, COALESCE(NULLIF(ft.title, ""), f.title) AS title';
-
-        if (!empty($data['count'])) {
-            $sql = 'SELECT COUNT(f.field_id)';
-        }
-
-        $sql .= ' FROM field f'
-                . ' LEFT JOIN field_translation ft ON (f.field_id = ft.field_id AND ft.language=?)';
-
-        $conditions = array($data['language']);
-
-        if (isset($data['field_id'])) {
-            settype($data['field_id'], 'array');
-            $placeholders = rtrim(str_repeat('?,', count($data['field_id'])), ',');
-            $sql .= " WHERE f.field_id IN($placeholders)";
-            $conditions = array_merge($conditions, $data['field_id']);
-        } else {
-            $sql .= ' WHERE f.field_id IS NOT NULL';
-        }
-
-        if (isset($data['title'])) {
-            $sql .= ' AND (f.title LIKE ? OR (ft.title LIKE ? AND ft.language=?))';
-            $conditions[] = "%{$data['title']}%";
-            $conditions[] = "%{$data['title']}%";
-            $conditions[] = $data['language'];
-        }
-
-        if (isset($data['type'])) {
-            $sql .= ' AND f.type=?';
-            $conditions[] = $data['type'];
-        }
-
-        if (isset($data['widget'])) {
-            $sql .= ' AND f.widget=?';
-            $conditions[] = $data['widget'];
-        }
-
-        $allowed_order = array('asc', 'desc');
-        $allowed_sort = array('title', 'type', 'widget', 'field_id');
-
-        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)//
-                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
-            $sql .= " ORDER BY f.{$data['sort']} {$data['order']}";
-        } else {
-            $sql .= ' ORDER BY f.weight ASC';
-        }
-
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
-        }
-
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $conditions);
-        }
-
-        $list = $this->db->fetchAll($sql, $conditions, array('index' => 'field_id'));
-        $this->hook->attach('field.list', $list, $this);
-        return $list;
     }
 
     /**
@@ -319,6 +280,49 @@ class Field
         $result = $updated > 0;
         $this->hook->attach('field.update.after', $field_id, $data, $result, $this);
         return (bool) $result;
+    }
+
+    /**
+     * Returns an array of widget types
+     * @return array
+     */
+    public function getWidgetTypes()
+    {
+        $types = &gplcart_static('field.widget.types');
+
+        if (isset($types)) {
+            return $types;
+        }
+
+        $types = array(
+            'button' => $this->translation->text('Button'),
+            'radio' => $this->translation->text('Radio buttons'),
+            'select' => $this->translation->text('Dropdown list')
+        );
+
+        $this->hook->attach('field.widget.types', $types, $this);
+        return $types;
+    }
+
+    /**
+     * Returns an array of field types
+     * @return array
+     */
+    public function getTypes()
+    {
+        $types = &gplcart_static('field.types');
+
+        if (isset($types)) {
+            return $types;
+        }
+
+        $types = array(
+            'option' => $this->translation->text('Option'),
+            'attribute' => $this->translation->text('Attribute')
+        );
+
+        $this->hook->attach('field.types', $types, $this);
+        return $types;
     }
 
 }

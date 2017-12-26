@@ -60,6 +60,64 @@ class Zone
     }
 
     /**
+     * Returns an array of zones or counts them
+     * @param array $options
+     * @return array|integer
+     */
+    public function getList(array $options = array())
+    {
+        $result = null;
+        $this->hook->attach('zone.list.before', $options, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
+        $sql = 'SELECT *';
+
+        if (!empty($options['count'])) {
+            $sql = 'SELECT COUNT(zone_id)';
+        }
+
+        $sql .= ' FROM zone WHERE zone_id IS NOT NULL';
+
+        $conditions = array();
+
+        if (isset($options['status'])) {
+            $sql .= ' AND status=?';
+            $conditions[] = (int) $options['status'];
+        }
+
+        if (isset($options['title'])) {
+            $sql .= ' AND title LIKE ?';
+            $conditions[] = "%{$options['title']}%";
+        }
+
+        $allowed_order = array('asc', 'desc');
+        $allowed_sort = array('title', 'status');
+
+        if (isset($options['sort']) && in_array($options['sort'], $allowed_sort)//
+                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+            $sql .= " ORDER BY {$options['sort']} {$options['order']}";
+        } else {
+            $sql .= " ORDER BY title ASC";
+        }
+
+        if (!empty($options['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
+        }
+
+        if (empty($options['count'])) {
+            $result = $this->db->fetchAll($sql, $conditions, array('index' => 'zone_id'));
+        } else {
+            $result = (int) $this->db->fetchColumn($sql, $conditions);
+        }
+
+        $this->hook->attach('zone.list.after', $options, $result, $this);
+        return $result;
+    }
+
+    /**
      * Adds a zone
      * @param array $data
      * @return boolean
@@ -134,56 +192,6 @@ class Zone
                 . ' AND NOT EXISTS (SELECT zone_id FROM city WHERE zone_id=:id)';
 
         return (bool) $this->db->fetchColumn($sql, array('id' => $zone_id));
-    }
-
-    /**
-     * Returns an array of zones or counts them
-     * @param array $data
-     * @return array|integer
-     */
-    public function getList(array $data)
-    {
-        $sql = 'SELECT *';
-
-        if (!empty($data['count'])) {
-            $sql = 'SELECT COUNT(zone_id)';
-        }
-
-        $sql .= ' FROM zone WHERE zone_id IS NOT NULL';
-
-        $conditions = array();
-
-        if (isset($data['status'])) {
-            $sql .= ' AND status=?';
-            $conditions[] = (int) $data['status'];
-        }
-
-        if (isset($data['title'])) {
-            $sql .= ' AND title LIKE ?';
-            $conditions[] = "%{$data['title']}%";
-        }
-
-        $allowed_order = array('asc', 'desc');
-        $allowed_sort = array('title', 'status');
-
-        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)//
-                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
-            $sql .= " ORDER BY {$data['sort']} {$data['order']}";
-        } else {
-            $sql .= " ORDER BY title ASC";
-        }
-
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
-        }
-
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $conditions);
-        }
-
-        $list = $this->db->fetchAll($sql, $conditions, array('index' => 'zone_id'));
-        $this->hook->attach('zone.list', $list, $this);
-        return $list;
     }
 
 }

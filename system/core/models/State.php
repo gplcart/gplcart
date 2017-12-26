@@ -85,61 +85,70 @@ class State
 
     /**
      * Returns an array of country states or counts them
-     * @param array $data
+     * @param array $options
      * @return array|integer
      */
-    public function getList(array $data = array())
+    public function getList(array $options = array())
     {
+        $result = null;
+        $this->hook->attach('state.list.before', $options, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
         $sql = 'SELECT *';
 
-        if (!empty($data['count'])) {
+        if (!empty($options['count'])) {
             $sql = 'SELECT COUNT(state_id)';
         }
 
-        $sql .= ' FROM state WHERE state_id > 0';
-        $where = array();
+        $sql .= ' FROM state WHERE state_id IS NOT NULL';
 
-        if (isset($data['name'])) {
+        $conditions = array();
+
+        if (isset($options['name'])) {
             $sql .= ' AND name LIKE ?';
-            $where[] = "%{$data['name']}%";
+            $conditions[] = "%{$options['name']}%";
         }
 
-        if (isset($data['status'])) {
+        if (isset($options['status'])) {
             $sql .= ' AND status = ?';
-            $where[] = (int) $data['status'];
+            $conditions[] = (int) $options['status'];
         }
 
-        if (isset($data['country'])) {
+        if (isset($options['country'])) {
             $sql .= ' AND country = ?';
-            $where[] = $data['country'];
+            $conditions[] = $options['country'];
         }
 
-        if (isset($data['code'])) {
+        if (isset($options['code'])) {
             $sql .= ' AND code LIKE ?';
-            $where[] = "%{$data['code']}%";
+            $conditions[] = "%{$options['code']}%";
         }
 
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('country', 'name', 'code', 'status', 'state_id');
 
-        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)//
-                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
-            $sql .= " ORDER BY {$data['sort']} {$data['order']}";
+        if (isset($options['sort']) && in_array($options['sort'], $allowed_sort)//
+                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+            $sql .= " ORDER BY {$options['sort']} {$options['order']}";
         } else {
             $sql .= ' ORDER BY name ASC';
         }
 
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        if (!empty($options['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
         }
 
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $where);
+        if (empty($options['count'])) {
+            $result = $this->db->fetchAll($sql, $conditions, array('index' => 'state_id'));
+        } else {
+            $result = (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $states = $this->db->fetchAll($sql, $where, array('index' => 'state_id'));
-        $this->hook->attach('state.list', $states, $this);
-        return $states;
+        $this->hook->attach('state.list.after', $options, $result, $this);
+        return $result;
     }
 
     /**

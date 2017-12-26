@@ -140,12 +140,9 @@ class File
             $condition = array('file_id' => (int) $condition);
         }
 
-        $list = $this->getList($condition);
-
-        $result = array();
-        if (is_array($list) && count($list) == 1) {
-            $result = reset($list);
-        }
+        $condition['limit'] = array(0, 1);
+        $list = (array) $this->getList($condition);
+        $result = empty($list) ? array() : reset($list);
 
         $this->hook->attach('file.get.after', $condition, $result, $this);
         return $result;
@@ -153,100 +150,107 @@ class File
 
     /**
      * Returns an array of files or counts them
-     * @param array $data
+     * @param array $options
      * @return array|integer
      */
-    public function getList(array $data = array())
+    public function getList(array $options = array())
     {
-        $data += array('language' => $this->translation->getLangcode());
+        $options += array('language' => $this->translation->getLangcode());
 
-        $files = &gplcart_static(gplcart_array_hash(array('file.list' => $data)));
+        $result = &gplcart_static(gplcart_array_hash(array('file.list' => $options)));
 
-        if (isset($files)) {
-            return $files;
+        if (isset($result)) {
+            return $result;
+        }
+
+        $this->hook->attach('file.list.before', $options, $result, $this);
+
+        if (isset($result)) {
+            return $result;
         }
 
         $sql = 'SELECT f.*, COALESCE(NULLIF(ft.title, ""), f.title) AS title';
 
-        if (!empty($data['count'])) {
+        if (!empty($options['count'])) {
             $sql = 'SELECT COUNT(f.file_id)';
         }
 
         $sql .= ' FROM file f'
                 . ' LEFT JOIN file_translation ft ON(ft.file_id = f.file_id AND ft.language=?)';
 
-        $conditions = array($data['language']);
+        $conditions = array($options['language']);
 
-        if (!empty($data['file_id'])) {
-            settype($data['file_id'], 'array');
-            $placeholders = rtrim(str_repeat('?,', count($data['file_id'])), ',');
+        if (!empty($options['file_id'])) {
+            settype($options['file_id'], 'array');
+            $placeholders = rtrim(str_repeat('?,', count($options['file_id'])), ',');
             $sql .= " WHERE f.file_id IN($placeholders)";
-            $conditions = array_merge($conditions, $data['file_id']);
+            $conditions = array_merge($conditions, $options['file_id']);
         } else {
             $sql .= ' WHERE f.file_id IS NOT NULL';
         }
 
-        if (isset($data['title'])) {
+        if (isset($options['title'])) {
             $sql .= ' AND (f.title LIKE ? OR (ft.title LIKE ? AND ft.language=?))';
-            $conditions[] = "%{$data['title']}%";
-            $conditions[] = "%{$data['title']}%";
-            $conditions[] = $data['language'];
+            $conditions[] = "%{$options['title']}%";
+            $conditions[] = "%{$options['title']}%";
+            $conditions[] = $options['language'];
         }
 
-        if (isset($data['created'])) {
+        if (isset($options['created'])) {
             $sql .= ' AND f.created = ?';
-            $conditions[] = (int) $data['created'];
+            $conditions[] = (int) $options['created'];
         }
 
-        if (isset($data['entity'])) {
+        if (isset($options['entity'])) {
             $sql .= ' AND f.entity = ?';
-            $conditions[] = $data['entity'];
+            $conditions[] = $options['entity'];
         }
 
-        if (!empty($data['entity_id'])) {
-            settype($data['entity_id'], 'array');
-            $placeholders = rtrim(str_repeat('?,', count($data['entity_id'])), ',');
+        if (!empty($options['entity_id'])) {
+            settype($options['entity_id'], 'array');
+            $placeholders = rtrim(str_repeat('?,', count($options['entity_id'])), ',');
             $sql .= " AND f.entity_id IN($placeholders)";
-            $conditions = array_merge($conditions, $data['entity_id']);
+            $conditions = array_merge($conditions, $options['entity_id']);
         }
 
-        if (isset($data['path'])) {
+        if (isset($options['path'])) {
             $sql .= ' AND f.path LIKE ?';
-            $conditions[] = "%{$data['path']}%";
+            $conditions[] = "%{$options['path']}%";
         }
 
-        if (isset($data['mime_type'])) {
+        if (isset($options['mime_type'])) {
             $sql .= ' AND f.mime_type LIKE ?';
-            $conditions[] = "%{$data['mime_type']}%";
+            $conditions[] = "%{$options['mime_type']}%";
         }
 
-        if (isset($data['file_type'])) {
+        if (isset($options['file_type'])) {
             $sql .= ' AND f.file_type = ?';
-            $conditions[] = $data['file_type'];
+            $conditions[] = $options['file_type'];
         }
 
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('title', 'path', 'file_id', 'created',
             'weight', 'mime_type', 'entity', 'entity_id');
 
-        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)//
-                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
-            $sql .= " ORDER BY f.{$data['sort']} {$data['order']}";
+        if (isset($options['sort']) && in_array($options['sort'], $allowed_sort)//
+                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+            $sql .= " ORDER BY f.{$options['sort']} {$options['order']}";
         } else {
             $sql .= " ORDER BY f.modified DESC";
         }
 
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        if (!empty($options['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
         }
 
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $conditions);
+        if (empty($options['count'])) {
+            $result = $this->db->fetchAll($sql, $conditions, array('index' => 'file_id'));
+        } else {
+            $result = (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $files = $this->db->fetchAll($sql, $conditions, array('index' => 'file_id'));
-        $this->hook->attach('file.list', $files, $this);
-        return $files;
+        $this->hook->attach('file.list.after', $options, $result, $this);
+        return $result;
     }
 
     /**
@@ -439,16 +443,6 @@ class File
     public function getEntities()
     {
         return $this->db->fetchColumnAll('SELECT entity FROM file GROUP BY entity');
-    }
-
-    /**
-     * Creates a relative path from a server path
-     * @param string $absolute
-     * @return string
-     */
-    public function path($absolute)
-    {
-        return gplcart_file_relative($absolute);
     }
 
 }

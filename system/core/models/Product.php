@@ -226,17 +226,6 @@ class Product
     }
 
     /**
-     * Converts a price to minor units
-     * @param array $data
-     */
-    protected function setPrice(array &$data)
-    {
-        if (!empty($data['price']) && !empty($data['currency'])) {
-            $data['price'] = $this->price->amount($data['price'], $data['currency']);
-        }
-    }
-
-    /**
      * Deletes and/or adds related products
      * @param array $data
      * @param boolean $update
@@ -296,12 +285,9 @@ class Product
             return $result;
         }
 
-        $list = $this->getList($condition);
-
-        $result = array();
-        if (is_array($list) && count($list) == 1) {
-            $result = reset($list);
-        }
+        $condition['limit'] = array(0, 1);
+        $list = (array) $this->getList($condition);
+        $result = empty($list) ? array() : reset($list);
 
         $this->attachFields($result);
         $this->attachSku($result);
@@ -324,63 +310,6 @@ class Product
         );
 
         return $this->get($options);
-    }
-
-    /**
-     * Adds fields to the product
-     * @param array $product
-     * @return array
-     */
-    protected function attachFields(array &$product)
-    {
-        if (empty($product)) {
-            return $product;
-        }
-
-        $product['field'] = $this->product_field->getList($product['product_id']);
-
-        if (empty($product['field']['option'])) {
-            return $product;
-        }
-
-        foreach ($product['field']['option'] as &$field_values) {
-            $field_values = array_unique($field_values);
-        }
-
-        return $product;
-    }
-
-    /**
-     * Adds option combinations to the product
-     * @param array $product
-     * @return array
-     */
-    protected function attachSku(array &$product)
-    {
-        if (empty($product)) {
-            return $product;
-        }
-
-        $product['default_field_values'] = array();
-        $codes = (array) $this->sku->getList(array('product_id' => $product['product_id']));
-
-        foreach ($codes as $code) {
-
-            if ($code['combination_id'] === '') {
-                $product['sku'] = $code['sku'];
-                $product['price'] = $code['price'];
-                $product['stock'] = $code['stock'];
-                continue;
-            }
-
-            $product['combination'][$code['combination_id']] = $code;
-
-            if (!empty($code['is_default'])) {
-                $product['default_field_values'] = $code['fields'];
-            }
-        }
-
-        return $product;
     }
 
     /**
@@ -410,43 +339,6 @@ class Product
 
         $this->hook->attach('product.delete.after', $product_id, $check, $result, $this);
         return (bool) $result;
-    }
-
-    /**
-     * Delete all database records associated with the product ID
-     * @param int $product_id
-     */
-    protected function deleteLinked($product_id)
-    {
-        $conditions = array('product_id' => $product_id);
-        $conditions2 = array('entity' => 'product', 'entity_id' => $product_id);
-        $conditions3 = array('item_product_id' => $product_id);
-
-        $this->db->delete('cart', $conditions);
-        $this->db->delete('review', $conditions);
-        $this->db->delete('rating', $conditions);
-        $this->db->delete('wishlist', $conditions);
-        $this->db->delete('rating_user', $conditions);
-
-        $this->db->delete('product_sku', $conditions);
-        $this->db->delete('product_field', $conditions);
-        $this->db->delete('product_translation', $conditions);
-        $this->db->delete('product_view', $conditions);
-
-        $this->db->delete('product_related', $conditions);
-        $this->db->delete('product_related', $conditions3);
-        $this->db->delete('product_bundle', $conditions);
-
-        $this->db->delete('file', $conditions2);
-        $this->db->delete('alias', $conditions2);
-        $this->db->delete('search_index', $conditions2);
-
-        $sql = 'DELETE ci'
-                . ' FROM collection_item ci'
-                . ' INNER JOIN collection c ON(ci.collection_id = c.collection_id)'
-                . ' WHERE c.type = ? AND ci.value = ?';
-
-        $this->db->run($sql, array('product', $product_id));
     }
 
     /**
@@ -503,6 +395,13 @@ class Product
     public function getList(array $data = array())
     {
         $data += array('language' => $this->translation->getLangcode());
+
+        $result = null;
+        $this->hook->attach('product.list.before', $data, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
 
         $sql = 'SELECT p.*,'
                 . 'a.alias,'
@@ -617,13 +516,162 @@ class Product
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
         }
 
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $conditions);
+        if (empty($data['count'])) {
+            $result = $this->db->fetchAll($sql, $conditions, array('index' => 'product_id'));
+        } else {
+            $result = (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $list = $this->db->fetchAll($sql, $conditions, array('index' => 'product_id'));
-        $this->hook->attach('product.list', $list, $this);
-        return $list;
+        $this->hook->attach('product.list.after', $data, $result, $this);
+        return $result;
+    }
+
+    /**
+     * Returns an array of weight measurement units
+     * @return array
+     */
+    public function getWeightUnits()
+    {
+        return array(
+            'g' => $this->translation->text('Gram'),
+            'kg' => $this->translation->text('Kilogram'),
+            'lb' => $this->translation->text('Pound'),
+            'oz' => $this->translation->text('Ounce'),
+        );
+    }
+
+    /**
+     * Returns an array of size measurement units
+     * @return array
+     */
+    public function getSizeUnits()
+    {
+        return array(
+            'in' => $this->translation->text('Inch'),
+            'mm' => $this->translation->text('Millimeter'),
+            'cm' => $this->translation->text('Centimetre')
+        );
+    }
+
+    /**
+     * Returns a relative/absolute path for uploaded images
+     * @param boolean $absolute
+     * @return string
+     */
+    public function getImagePath($absolute = false)
+    {
+        $dirname = $this->config->get('product_image_dirname', 'product');
+
+        if ($absolute) {
+            return gplcart_path_absolute($dirname, GC_DIR_IMAGE);
+        }
+
+        return gplcart_path_relative(GC_DIR_IMAGE, GC_DIR_FILE) . "/$dirname";
+    }
+
+    /**
+     * Delete all database records associated with the product ID
+     * @param int $product_id
+     */
+    protected function deleteLinked($product_id)
+    {
+        $conditions = array('product_id' => $product_id);
+        $conditions2 = array('entity' => 'product', 'entity_id' => $product_id);
+        $conditions3 = array('item_product_id' => $product_id);
+
+        $this->db->delete('cart', $conditions);
+        $this->db->delete('review', $conditions);
+        $this->db->delete('rating', $conditions);
+        $this->db->delete('wishlist', $conditions);
+        $this->db->delete('rating_user', $conditions);
+
+        $this->db->delete('product_sku', $conditions);
+        $this->db->delete('product_field', $conditions);
+        $this->db->delete('product_translation', $conditions);
+        $this->db->delete('product_view', $conditions);
+
+        $this->db->delete('product_related', $conditions);
+        $this->db->delete('product_related', $conditions3);
+        $this->db->delete('product_bundle', $conditions);
+
+        $this->db->delete('file', $conditions2);
+        $this->db->delete('alias', $conditions2);
+        $this->db->delete('search_index', $conditions2);
+
+        $sql = 'DELETE ci'
+                . ' FROM collection_item ci'
+                . ' INNER JOIN collection c ON(ci.collection_id = c.collection_id)'
+                . ' WHERE c.type = ? AND ci.value = ?';
+
+        $this->db->run($sql, array('product', $product_id));
+    }
+
+    /**
+     * Converts a price to minor units
+     * @param array $data
+     */
+    protected function setPrice(array &$data)
+    {
+        if (!empty($data['price']) && !empty($data['currency'])) {
+            $data['price'] = $this->price->amount($data['price'], $data['currency']);
+        }
+    }
+
+    /**
+     * Adds fields to the product
+     * @param array $product
+     * @return array
+     */
+    protected function attachFields(array &$product)
+    {
+        if (empty($product)) {
+            return $product;
+        }
+
+        $product['field'] = $this->product_field->getList($product['product_id']);
+
+        if (empty($product['field']['option'])) {
+            return $product;
+        }
+
+        foreach ($product['field']['option'] as &$field_values) {
+            $field_values = array_unique($field_values);
+        }
+
+        return $product;
+    }
+
+    /**
+     * Adds option combinations to the product
+     * @param array $product
+     * @return array
+     */
+    protected function attachSku(array &$product)
+    {
+        if (empty($product)) {
+            return $product;
+        }
+
+        $product['default_field_values'] = array();
+        $codes = (array) $this->sku->getList(array('product_id' => $product['product_id']));
+
+        foreach ($codes as $code) {
+
+            if ($code['combination_id'] === '') {
+                $product['sku'] = $code['sku'];
+                $product['price'] = $code['price'];
+                $product['stock'] = $code['stock'];
+                continue;
+            }
+
+            $product['combination'][$code['combination_id']] = $code;
+
+            if (!empty($code['is_default'])) {
+                $product['default_field_values'] = $code['fields'];
+            }
+        }
+
+        return $product;
     }
 
     /**
@@ -820,49 +868,6 @@ class Product
         }
 
         return true;
-    }
-
-    /**
-     * Returns an array of weight measurement units
-     * @return array
-     */
-    public function getWeightUnits()
-    {
-        return array(
-            'g' => $this->translation->text('Gram'),
-            'kg' => $this->translation->text('Kilogram'),
-            'lb' => $this->translation->text('Pound'),
-            'oz' => $this->translation->text('Ounce'),
-        );
-    }
-
-    /**
-     * Returns an array of size measurement units
-     * @return array
-     */
-    public function getSizeUnits()
-    {
-        return array(
-            'in' => $this->translation->text('Inch'),
-            'mm' => $this->translation->text('Millimeter'),
-            'cm' => $this->translation->text('Centimetre')
-        );
-    }
-
-    /**
-     * Returns a relative/absolute path for uploaded images
-     * @param boolean $absolute
-     * @return string
-     */
-    public function getImagePath($absolute = false)
-    {
-        $dirname = $this->config->get('product_image_dirname', 'product');
-
-        if ($absolute) {
-            return gplcart_path_absolute($dirname, GC_DIR_IMAGE);
-        }
-
-        return gplcart_path_relative(GC_DIR_IMAGE, GC_DIR_FILE) . "/$dirname";
     }
 
 }

@@ -41,20 +41,87 @@ class TranslationEntity
     }
 
     /**
+     * Returns an array of translations
+     * @param array $options
+     * @return array
+     */
+    public function getList(array $options)
+    {
+        $result = null;
+        $this->hook->attach('translation.entity.list.before', $options, $result, $this);
+
+        if (isset($result)) {
+            return (array) $result;
+        }
+
+        $table = $this->getTable($options['entity']);
+        $sql = "SELECT * FROM $table WHERE {$options['entity']}_id = ?";
+
+        $conditions = array($options['entity_id']);
+
+        if (isset($options['language'])) {
+            $sql .= ' AND language = ?';
+            $conditions[] = $options['language'];
+        }
+
+        $result = $this->db->fetchAll($sql, $conditions);
+        $this->hook->attach('translation.entity.list.after', $options, $result, $this);
+        return (array) $result;
+    }
+
+    /**
+     * Adds a translation for the entity
+     * @param array $data
+     * @return int
+     */
+    public function add(array $data)
+    {
+        $result = null;
+        $this->hook->attach('translation.entity.add.before', $data, $result, $this);
+
+        if (isset($result)) {
+            return (int) $result;
+        }
+
+        $result = $this->db->insert($this->getTable($data['entity']), $data);
+        $this->hook->attach('translation.entity.add.after', $data, $result, $this);
+        return (int) $result;
+    }
+
+    /**
+     * Deletes translation(s)
+     * @param array $conditions
+     * @return bool
+     */
+    public function delete(array $conditions)
+    {
+        $result = null;
+        $this->hook->attach('translation.entity.delete.before', $conditions, $result, $this);
+
+        if (isset($result)) {
+            return (bool) $result;
+        }
+
+        $result = (bool) $this->db->delete($this->getTable($conditions['entity']), $conditions);
+        $this->hook->attach('translation.entity.delete.after', $conditions, $result, $this);
+        return (bool) $result;
+    }
+
+    /**
      * Returns an array of database table names keyed by entity name
      * @return array
      */
     public function getTables()
     {
         return array(
-            'category' => 'category_translation',
-            'category_group' => 'category_group_translation',
             'page' => 'page_translation',
-            'product' => 'product_translation',
-            'field' => 'field_translation',
-            'field_value' => 'field_value_translation',
-            'collection' => 'collection_translation',
             'file' => 'file_translation',
+            'field' => 'field_translation',
+            'product' => 'product_translation',
+            'category' => 'category_translation',
+            'collection' => 'collection_translation',
+            'field_value' => 'field_value_translation',
+            'category_group' => 'category_group_translation'
         );
     }
 
@@ -84,78 +151,6 @@ class TranslationEntity
     {
         $tables = $this->getTables();
         return isset($tables[$entity]);
-    }
-
-    /**
-     * Returns an array of translations
-     * @param string $entity
-     * @param int $entity_id
-     * @param string|null $langcode
-     * @return array
-     */
-    public function getList($entity, $entity_id, $langcode = null)
-    {
-        $table = $this->getTable($entity);
-
-        $sql = "SELECT * FROM $table WHERE {$entity}_id = ?";
-
-        $conditions = array($entity_id);
-
-        if (isset($langcode)) {
-            $sql .= ' AND language = ?';
-            $conditions[] = $langcode;
-        }
-
-        $result = $this->db->fetchAll($sql, $conditions);
-        $this->hook->attach('translation.entity.list', $entity, $entity_id, $langcode, $result, $this);
-        return (array) $result;
-    }
-
-    /**
-     * Adds a translation for the entity
-     * @param string $entity
-     * @param array $data
-     * @return int
-     */
-    public function add($entity, array $data)
-    {
-        $result = null;
-        $this->hook->attach('translation.entity.add.before', $entity, $data, $result, $this);
-
-        if (isset($result)) {
-            return (int) $result;
-        }
-
-        $result = $this->db->insert($this->getTable($entity), $data);
-        $this->hook->attach('translation.entity.add.after', $entity, $data, $result, $this);
-        return (int) $result;
-    }
-
-    /**
-     * Deletes translation(s)
-     * @param string $entity
-     * @param int $entity_id
-     * @param null|string $language
-     * @return bool
-     */
-    public function delete($entity, $entity_id, $language = null)
-    {
-        $result = null;
-        $this->hook->attach('translation.entity.delete.before', $entity, $entity_id, $language, $result, $this);
-
-        if (isset($result)) {
-            return (bool) $result;
-        }
-
-        $conditions = array("{$entity}_id" => $entity_id);
-
-        if (isset($language)) {
-            $conditions['language'] = $language;
-        }
-
-        $result = (bool) $this->db->delete($this->getTable($entity), $conditions);
-        $this->hook->attach('translation.entity.delete.after', $entity, $entity_id, $language, $result, $this);
-        return (bool) $result;
     }
 
 }

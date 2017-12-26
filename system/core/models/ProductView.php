@@ -49,14 +49,21 @@ class ProductView
 
     /**
      * Returns an array of viewed products
-     * @param array $data
-     * @return array|integer
+     * @param array $options
+     * @return array|int
      */
-    public function getList(array $data = array())
+    public function getList(array $options = array())
     {
+        $result = null;
+        $this->hook->attach('product.view.list.before', $options, $result, $this);
+
+        if (isset($result)) {
+            return $result;
+        }
+
         $sql = 'SELECT *';
 
-        if (!empty($data['count'])) {
+        if (!empty($options['count'])) {
             $sql = 'SELECT COUNT(product_view_id)';
         }
 
@@ -64,37 +71,77 @@ class ProductView
 
         $conditions = array();
 
-        if (isset($data['user_id'])) {
+        if (isset($options['user_id'])) {
             $sql .= ' AND user_id = ?';
-            $conditions[] = $data['user_id'];
+            $conditions[] = $options['user_id'];
         }
 
-        if (isset($data['product_id'])) {
+        if (isset($options['product_id'])) {
             $sql .= ' AND product_id = ?';
-            $conditions[] = $data['product_id'];
+            $conditions[] = $options['product_id'];
         }
 
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('product_id', 'user_id', 'created');
 
-        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)//
-                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
-            $sql .= " ORDER BY {$data['sort']} {$data['order']}";
+        if (isset($options['sort']) && in_array($options['sort'], $allowed_sort)//
+                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+            $sql .= " ORDER BY {$options['sort']} {$options['order']}";
         } else {
             $sql .= ' ORDER BY created DESC';
         }
 
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        if (!empty($options['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
         }
 
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, $conditions);
+        if (empty($options['count'])) {
+            $result = $this->db->fetchAll($sql, $conditions, array('index' => 'product_view_id'));
+        } else {
+            $result = (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $list = $this->db->fetchAll($sql, $conditions, array('index' => 'product_view_id'));
-        $this->hook->attach('product.view.list', $list, $this);
-        return $list;
+        $this->hook->attach('product.view.list.after', $options, $result, $this);
+        return $result;
+    }
+
+    /**
+     * Adds a viewed product
+     * @param array $data
+     * @return int
+     */
+    public function add(array $data)
+    {
+        $result = null;
+        $this->hook->attach('product.view.add.before', $data, $result, $this);
+
+        if (isset($result)) {
+            return (int) $result;
+        }
+
+        $data['created'] = GC_TIME;
+        $result = $this->db->insert('product_view', $data);
+        $this->hook->attach('product.view.add.after', $data, $result, $this);
+        return (int) $result;
+    }
+
+    /**
+     * Deletes a viewed product
+     * @param int $product_view_id
+     * @return boolean
+     */
+    public function delete($product_view_id)
+    {
+        $result = null;
+        $this->hook->attach('product.view.delete.before', $product_view_id, $result, $this);
+
+        if (isset($result)) {
+            return (bool) $result;
+        }
+
+        $result = (bool) $this->db->delete('product_view', array('product_view_id' => $product_view_id));
+        $this->hook->attach('product.view.delete.after', $product_view_id, $result, $this);
+        return (bool) $result;
     }
 
     /**
@@ -141,45 +188,6 @@ class ProductView
     public function getLimit()
     {
         return (int) $this->config->get('product_view_limit', 100);
-    }
-
-    /**
-     * Adds a viewed product
-     * @param array $data
-     * @return integer
-     */
-    public function add(array $data)
-    {
-        $result = null;
-        $this->hook->attach('product.view.add.before', $data, $result, $this);
-
-        if (isset($result)) {
-            return (int) $result;
-        }
-
-        $data['created'] = GC_TIME;
-        $result = $this->db->insert('product_view', $data);
-        $this->hook->attach('product.view.add.after', $data, $result, $this);
-        return (int) $result;
-    }
-
-    /**
-     * Deletes a viewed product
-     * @param integer $product_view_id
-     * @return boolean
-     */
-    public function delete($product_view_id)
-    {
-        $result = null;
-        $this->hook->attach('product.view.delete.before', $product_view_id, $result, $this);
-
-        if (isset($result)) {
-            return (bool) $result;
-        }
-
-        $result = (bool) $this->db->delete('product_view', array('product_view_id' => $product_view_id));
-        $this->hook->attach('product.view.delete.after', $product_view_id, $result, $this);
-        return (bool) $result;
     }
 
 }
