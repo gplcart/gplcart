@@ -127,32 +127,37 @@ class Help
             $langcode = 'en';
         }
 
-        $list = &gplcart_static("help.list.$langcode");
+        $result = &gplcart_static("help.list.$langcode");
 
-        if (isset($list)) {
-            return $list;
+        if (isset($result)) {
+            return $result;
+        }
+
+        $this->hook->attach('help.list.before', $langcode, $result, $this);
+
+        if (isset($result)) {
+            return $result;
         }
 
         $dir = $this->getDirectory($langcode);
 
         if (!is_dir($dir)) {
-            return array();
+            return $result = array();
         }
 
-        $list = $titles = $weights = array();
-
+        $result = $titles = $weights = array();
         foreach (gplcart_file_scan($dir, array('md')) as $file) {
             $data = $this->get($file);
             if (!empty($data['title'])) {
-                $list[] = $data;
+                $result[] = $data;
                 $titles[] = $data['title'];
                 $weights[] = $data['weight'];
             }
         }
 
-        array_multisort($weights, SORT_ASC, $titles, SORT_ASC, $list);
-        $this->hook->attach('help.list', $list, $this);
-        return $list;
+        array_multisort($weights, SORT_ASC, $titles, SORT_ASC, $result);
+        $this->hook->attach('help.list.after', $langcode, $result, $this);
+        return $result;
     }
 
     /**
@@ -180,7 +185,7 @@ class Help
      * @param string $file
      * @return string
      */
-    public function render($file)
+    public function parse($file)
     {
         $result = null;
         $this->hook->attach('help.render.before', $file, $result, $this);
