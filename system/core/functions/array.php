@@ -192,8 +192,9 @@ function gplcart_array_hash(array $data)
     $key = key($data);
 
     settype($hash, 'array');
-    ksort($hash);
+    $array = gplcart_array_flatten($hash);
 
-    return "$key." . md5(json_encode($hash));
+    sort($array);
+
+    return "$key." . md5(json_encode($array));
 }
-
