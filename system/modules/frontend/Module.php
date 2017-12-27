@@ -12,7 +12,7 @@ namespace gplcart\modules\frontend;
 /**
  * Main class for Frontend theme
  */
-class Frontend
+class Module
 {
 
     /**

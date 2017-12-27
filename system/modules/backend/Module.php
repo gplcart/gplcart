@@ -12,7 +12,7 @@ namespace gplcart\modules\backend;
 /**
  * Main backend theme class
  */
-class Backend
+class Module
 {
 
     /**

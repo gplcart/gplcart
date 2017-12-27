@@ -311,7 +311,7 @@ class Module
             return $information[$module_id];
         }
 
-        $file = GC_DIR_MODULE . "/$module_id/module.json";
+        $file = $this->getModuleInfoFile($module_id);
 
         $decoded = null;
         if (is_file($file)) {
@@ -326,6 +326,16 @@ class Module
         }
 
         return $information[$module_id];
+    }
+
+    /**
+     * Returns a path to the module info file
+     * @param string $module_id
+     * @return string
+     */
+    public function getModuleInfoFile($module_id)
+    {
+        return GC_DIR_MODULE . "/$module_id/module.json";
     }
 
     /**
@@ -363,20 +373,7 @@ class Module
      */
     public function getClass($module_id)
     {
-        $class = $this->getClassName($module_id);
-        $namespace = $this->getNamespace($module_id);
-
-        return "$namespace\\$class";
-    }
-
-    /**
-     * Creates a module class name from the module ID
-     * @param string $module_id
-     * @return string
-     */
-    public function getClassName($module_id)
-    {
-        return ucfirst(str_replace('_', '', $module_id));
+        return $this->getNamespace($module_id) . '\\Module';
     }
 
     /**

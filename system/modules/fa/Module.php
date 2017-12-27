@@ -14,7 +14,7 @@ use gplcart\core\Library;
 /**
  * Main class for Font Awesome module
  */
-class Fa
+class Module
 {
 
     /**
