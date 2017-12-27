@@ -45,7 +45,7 @@ class Ajax extends FrontendController
 
     /**
      * Category group class instance
-     * @var \gplcart\core\CategoryGroup $category_group
+     * @var \gplcart\core\models\CategoryGroup $category_group
      */
     protected $category_group;
 
