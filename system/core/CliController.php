@@ -22,22 +22,10 @@ class CliController
     protected $cli;
 
     /**
-     * User model instance
-     * @var \gplcart\core\models\User $user
-     */
-    protected $user;
-
-    /**
      * Validator model instance
      * @var \gplcart\core\models\Validator $validator
      */
     protected $validator;
-
-    /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
-     */
-    protected $language;
 
     /**
      * Translation UI model instance
@@ -120,18 +108,38 @@ class CliController
     }
 
     /**
-     * Access protected properties
+     * Returns a property
      * @param string $name
      * @return mixed
+     * @throws \InvalidArgumentException
      */
-    public function __get($name)
+    public function getProperty($name)
     {
         if (property_exists($this, $name)) {
-            return $this->$name;
+            return $this->{$name};
         }
 
-        user_error("Property $name does not exist");
-        return null;
+        throw new \InvalidArgumentException("Property $name does not exist");
+    }
+
+    /**
+     * Set a property
+     * @param string $property
+     * @param object $value
+     */
+    public function setProperty($property, $value)
+    {
+        $this->{$property} = $value;
+    }
+
+    /**
+     * Returns an object instance
+     * @param string $class
+     * @return object
+     */
+    public function getInstance($class)
+    {
+        return Container::get($class);
     }
 
     /**
@@ -143,7 +151,7 @@ class CliController
     {
         if (strpos($method, 'composer') === 0 && defined('GC_VERSION')) {
             /* @var $hook \gplcart\core\Hook */
-            $hook = Container::get('gplcart\\core\\Hook');
+            $hook = $this->getInstance('gplcart\\core\\Hook');
             $hook->attach('cli.composer', $method, $arguments);
         }
     }
@@ -153,15 +161,13 @@ class CliController
      */
     protected function setInstanceProperties()
     {
-        $this->hook = Container::get('gplcart\\core\\Hook');
-        $this->config = Container::get('gplcart\\core\\Config');
-        $this->logger = Container::get('gplcart\\core\\Logger');
-        $this->route = Container::get('gplcart\\core\\CliRoute');
-        $this->cli = Container::get('gplcart\\core\\helpers\Cli');
-        $this->user = Container::get('gplcart\\core\\models\\User');
-        $this->language = Container::get('gplcart\\core\\models\\Language');
-        $this->translation = Container::get('gplcart\\core\\models\\Translation');
-        $this->validator = Container::get('gplcart\\core\\models\\Validator');
+        $this->hook = $this->getInstance('gplcart\\core\\Hook');
+        $this->config = $this->getInstance('gplcart\\core\\Config');
+        $this->logger = $this->getInstance('gplcart\\core\\Logger');
+        $this->route = $this->getInstance('gplcart\\core\\CliRoute');
+        $this->cli = $this->getInstance('gplcart\\core\\helpers\Cli');
+        $this->translation = $this->getInstance('gplcart\\core\\models\\Translation');
+        $this->validator = $this->getInstance('gplcart\\core\\models\\Validator');
     }
 
     /**

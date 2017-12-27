@@ -10,7 +10,8 @@
 namespace gplcart\core\controllers\cli;
 
 use gplcart\core\CliController;
-use gplcart\core\models\Install as InstallModel;
+use gplcart\core\models\Install as InstallModel,
+    gplcart\core\models\Language as LanguageModel;
 
 /**
  * Handles CLI commands related to system installation
@@ -25,6 +26,12 @@ class Install extends CliController
     protected $install;
 
     /**
+     * Language model instance
+     * @var \gplcart\core\models\Language $language
+     */
+    protected $language;
+
+    /**
      * Installation language
      * @var string
      */
@@ -32,12 +39,14 @@ class Install extends CliController
 
     /**
      * @param InstallModel $install
+     * @param LanguageModel $language
      */
-    public function __construct(InstallModel $install)
+    public function __construct(InstallModel $install, LanguageModel $language)
     {
         parent::__construct();
 
         $this->install = $install;
+        $this->language = $language;
     }
 
     /**
