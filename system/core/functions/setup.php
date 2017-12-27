@@ -54,22 +54,15 @@ function gplcart_setup_server()
 function gplcart_setup_php()
 {
     if (GC_CLI) {
-
-        $bytes = gplcart_bytes('1G');
-        $limit = trim(ini_get('memory_limit'));
-        if ($limit != -1 && $bytes < 1024 * 1024 * 1024) {
-            ini_set('memory_limit', '1G');
-        }
-
-        ini_set('html_errors', 'off');
-        return null;
+        ini_set('html_errors', '0');
+        ini_set('memory_limit', '-1');
+    } else {
+        ini_set('session.use_cookies', '1');
+        ini_set('session.use_trans_sid', '0');
+        ini_set('session.cache_limiter', '');
+        ini_set('session.cookie_httponly', '1');
+        ini_set('session.use_only_cookies', '1');
     }
-
-    ini_set('session.use_cookies', '1');
-    ini_set('session.use_only_cookies', '1');
-    ini_set('session.use_trans_sid', '0');
-    ini_set('session.cache_limiter', '');
-    ini_set('session.cookie_httponly', '1');
 }
 
 /**
@@ -77,7 +70,7 @@ function gplcart_setup_php()
  */
 function gplcart_setup_autoload()
 {
-    $callback = function($namespace) {
+    spl_autoload_register(function($namespace) {
 
         $path = substr(str_replace('\\', '/', $namespace), 8);
 
@@ -96,9 +89,7 @@ function gplcart_setup_autoload()
                 break;
             }
         }
-    };
-
-    spl_autoload_register($callback);
+    });
 }
 
 /**
@@ -108,6 +99,7 @@ function gplcart_setup_vendor()
 {
     $lock = GC_DIR . '/composer.lock';
     $autoload = GC_DIR . "/vendor/autoload.php";
+
     if (is_file($lock) && is_file($autoload)) {
         include_once $autoload;
     }
