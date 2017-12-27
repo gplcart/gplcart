@@ -14,7 +14,7 @@ use gplcart\core\Hook,
 use gplcart\core\helpers\Url as UrlHelper,
     gplcart\core\helpers\Session as SessionHelper,
     gplcart\core\helpers\SocketClient as SocketClientHelper;
-use gplcart\core\exceptions\OauthAuthorization as OauthAuthorizationException;
+use gplcart\core\exceptions\Oauth as OauthException;
 
 /**
  * Manages basic behaviors and data related to Oauth 2.0 functionality
@@ -242,10 +242,7 @@ class Oauth
     public function isValidToken($provider_id)
     {
         $token = $this->getToken($provider_id);
-
-        return isset($token['access_token'])//
-                && isset($token['expires'])//
-                && GC_TIME < $token['expires'];
+        return isset($token['access_token']) && isset($token['expires']) && GC_TIME < $token['expires'];
     }
 
     /**
@@ -419,7 +416,7 @@ class Oauth
      * @param array $provider
      * @param array $jwt
      * @return mixed
-     * @throws OauthAuthorizationException
+     * @throws OauthException
      * @link https://developers.google.com/accounts/docs/OAuth2ServiceAccount
      */
     public function exchangeTokenServer($provider, $jwt)
@@ -435,8 +432,8 @@ class Oauth
 
         try {
             $assertion = $this->generateJwt($jwt);
-        } catch (\InvalidArgumentException $ex) {
-            throw new OauthAuthorizationException('Failed to exchange Oauth service token: ' . $ex->getMessage());
+        } catch (\Exception $ex) {
+            throw new OauthException('Failed to exchange Oauth service token: ' . $ex->getMessage());
         }
 
         $request = array(

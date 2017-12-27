@@ -10,7 +10,7 @@
 namespace gplcart\core\controllers\frontend;
 
 use gplcart\core\models\Oauth as OauthModel;
-use gplcart\core\exceptions\OauthAuthorization as OauthAuthorizationException;
+use gplcart\core\exceptions\Oauth as OauthException;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
@@ -84,6 +84,7 @@ class Oauth extends FrontendController
 
     /**
      * Set and validates received data from Oauth provider
+     * @throws OauthException
      */
     protected function setReceivedDataOauth()
     {
@@ -97,17 +98,17 @@ class Oauth extends FrontendController
         $parsed = $this->oauth->parseState($this->data_state);
 
         if (empty($parsed['id']) || !isset($parsed['url'])) {
-            throw new OauthAuthorizationException('Invalid provider Id and/or returning URL');
+            throw new OauthException('Invalid provider Id and/or returning URL');
         }
 
         if (!$this->oauth->isValidState($this->data_state, $parsed['id'])) {
-            throw new OauthAuthorizationException('Invalid state code');
+            throw new OauthException('Invalid state code');
         }
 
         $this->data_provider = $this->oauth->getProvider($parsed['id']);
 
         if (empty($this->data_provider)) {
-            throw new OauthAuthorizationException('Invalid Oauth provider');
+            throw new OauthException('Invalid Oauth provider');
         }
 
         $domain = parse_url($parsed['url'], PHP_URL_HOST);
@@ -117,7 +118,7 @@ class Oauth extends FrontendController
         }
 
         if (empty($store['status'])) {
-            throw new OauthAuthorizationException('Invalid domain in redirect URL');
+            throw new OauthException('Invalid domain in redirect URL');
         }
 
         $this->data_url = $parsed['url'];
@@ -141,6 +142,7 @@ class Oauth extends FrontendController
 
     /**
      * Set received token data
+     * @throws OauthException
      */
     protected function setTokenOauth()
     {
@@ -148,7 +150,7 @@ class Oauth extends FrontendController
         $this->data_token = $this->oauth->exchangeToken($this->data_provider, $query);
 
         if (empty($this->data_token['access_token'])) {
-            throw new OauthAuthorizationException('Failed to get access token');
+            throw new OauthException('Failed to get access token');
         }
     }
 

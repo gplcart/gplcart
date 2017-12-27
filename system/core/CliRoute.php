@@ -11,6 +11,7 @@ namespace gplcart\core;
 
 use gplcart\core\helpers\Cli as CliHelper,
     gplcart\core\helpers\Server as ServerHelper;
+use gplcart\core\exceptions\Route as RouteException;
 
 /**
  * Routes CLI commands
@@ -131,7 +132,7 @@ class CliRoute
 
         $this->route = $routes[$command];
         Handler::call($this->route, null, 'controller', array($this->arguments));
-        throw new \RuntimeException('The command was completed incorrectly');
+        throw new RouteException('The command was completed incorrectly');
     }
 
 }

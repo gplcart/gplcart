@@ -7,20 +7,17 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace gplcart\core;
+namespace gplcart\core\exceptions;
 
-use Exception as BaseException;
+use RuntimeException;
 
-/**
- * Base system exception class
- */
-class Exception extends BaseException
+class Session extends RuntimeException
 {
 
     /**
-     * @param mixed $message
+     * @param string|null $message
      * @param integer $code
-     * @param mixed $previous
+     * @param CoreException $previous
      */
     public function __construct($message = null, $code = 0, $previous = null)
     {

@@ -9,9 +9,9 @@
 
 namespace gplcart\core\exceptions;
 
-use gplcart\core\Exception as CoreException;
+use RuntimeException;
 
-class Database extends CoreException
+class Database extends RuntimeException
 {
 
     /**

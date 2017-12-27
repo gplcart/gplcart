@@ -9,9 +9,9 @@
 
 namespace gplcart\core\exceptions;
 
-use gplcart\core\Exception as CoreException;
+use LogicException;
 
-class Route extends CoreException
+class Route extends LogicException
 {
 
     /**
