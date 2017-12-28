@@ -463,6 +463,7 @@ class Category extends BackendController
             $parent_category_id = $this->getQuery('parent_id');
             $vars = array('%name' => $this->data_category_group['title']);
 
+            $parent_category = array();
             if (!empty($parent_category_id)) {
                 $parent_category = $this->category->get($parent_category_id);
             }
