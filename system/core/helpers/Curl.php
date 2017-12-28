@@ -288,6 +288,7 @@ class Curl
      * Sets request parameters
      * @param array|string $param
      * @param null|string $value
+     * @return $this
      */
     public function setParams($param, $value = null)
     {

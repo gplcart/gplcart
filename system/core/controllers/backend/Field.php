@@ -45,6 +45,7 @@ class Field extends BackendController
 
     /**
      * @param FieldModel $field
+     * @param TranslationEntityModel $translation_entity
      */
     public function __construct(FieldModel $field, TranslationEntityModel $translation_entity)
     {

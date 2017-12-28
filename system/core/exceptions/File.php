@@ -17,7 +17,7 @@ class File extends RuntimeException
     /**
      * @param string|null $message
      * @param integer $code
-     * @param CoreException $previous
+     * @param RuntimeException $previous
      */
     public function __construct($message = null, $code = 0, $previous = null)
     {

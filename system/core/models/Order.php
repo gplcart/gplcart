@@ -472,6 +472,7 @@ class Order
 
     /**
      * Returns the checkout complete message
+     * @param array $order
      * @return string
      */
     public function getCompleteMessage(array $order)

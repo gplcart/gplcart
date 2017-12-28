@@ -17,7 +17,7 @@ class Handler extends LogicException
     /**
      * @param string|null $message
      * @param integer $code
-     * @param CoreException $previous
+     * @param LogicException $previous
      */
     public function __construct($message = null, $code = 0, $previous = null)
     {

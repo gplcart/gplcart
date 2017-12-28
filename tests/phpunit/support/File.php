@@ -140,6 +140,7 @@ class File
 
     /**
      * Returns an array of created files
+     * @param string $type
      * @return array
      */
     public function getCreated($type)

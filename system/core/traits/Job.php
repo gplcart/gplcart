@@ -22,27 +22,44 @@ trait Job
 
     /**
      * @see \gplcart\core\Controller::setJsSettings()
+     * @param $key
+     * @param $data
+     * @param null $weight
+     * @return
      */
     abstract public function setJsSettings($key, $data, $weight = null);
 
     /**
      * @see \gplcart\core\Controller::outputJson()
+     * @param $data
+     * @param array $options
+     * @return
      */
     abstract public function outputJson($data, array $options = array());
 
     /**
      * @see \gplcart\core\Controller::getQuery()
+     * @param null $key
+     * @param null $default
+     * @param string $type
+     * @return
      */
     abstract public function getQuery($key = null, $default = null, $type = 'string');
 
     /**
      * @see \gplcart\core\Controller::render()
+     * @param $file
+     * @param array $data
+     * @param bool $merge
+     * @param string $default
+     * @return
      */
     abstract public function render($file, $data = array(), $merge = true, $default = '');
 
     /**
      * Processes the current job
      * @param \gplcart\core\models\Job $job_model
+     * @return null
      */
     public function setJob($job_model)
     {
@@ -63,9 +80,12 @@ trait Job
         }
 
         $this->setJsSettings('job', $job);
+
         if ($this->getQuery('process_job') === $job['id'] && $this->isAjax()) {
             $this->outputJson($job_model->process($job));
         }
+
+        return null;
     }
 
     /**

@@ -21,7 +21,10 @@ trait Collection
     abstract public function getStoreId();
 
     /**
-     * @see \gplcart\core\controllers\frontend::prepareEntityItems()
+     * @see \gplcart\core\controllers\frontend\Controller::prepareEntityItems()
+     * @param $items
+     * @param array $options
+     * @return
      */
     abstract protected function prepareEntityItems($items, $options = array());
 

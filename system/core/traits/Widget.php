@@ -17,26 +17,44 @@ trait Widget
 
     /**
      * @see \gplcart\core\Controller::access()
+     * @param $permission
+     * @return
      */
     abstract public function access($permission);
 
     /**
      * @see \gplcart\core\Controller::config()
+     * @param null $key
+     * @param null $default
+     * @return
      */
     abstract public function config($key = null, $default = null);
 
     /**
      * @see \gplcart\core\Controller::text()
+     * @param null $string
+     * @param array $arguments
+     * @return
      */
     abstract public function text($string = null, array $arguments = array());
 
     /**
      * @see \gplcart\core\Controller::render()
+     * @param $file
+     * @param array $data
+     * @param bool $merge
+     * @param string $default
+     * @return
      */
     abstract public function render($file, $data = array(), $merge = true, $default = '');
 
     /**
      * @see \gplcart\core\Controller::url()
+     * @param string $path
+     * @param array $query
+     * @param bool $abs
+     * @param bool $exclude
+     * @return
      */
     abstract public function url($path = '', array $query = array(), $abs = false, $exclude = false);
 

@@ -131,7 +131,7 @@ class SocketClient
 
     /**
      * Returns an address of the socket
-     * @return resource
+     * @return string
      */
     public function getSocket()
     {
@@ -169,6 +169,7 @@ class SocketClient
      * Sets the context resource
      * @param resource|array $context
      * @param array $options
+     * @return $this
      * @throws UnexpectedValueException
      */
     public function setContext($context, array $options = array())

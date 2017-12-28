@@ -149,7 +149,6 @@ class Route
     /**
      * Finds an alias for a path
      * @param string|null $path
-     * @return null
      */
     public function processAlias($path = null)
     {
@@ -290,7 +289,7 @@ class Route
      * Sets a route
      * @param array|string $route
      * @param array $arguments
-     * @return $this
+     * @return array
      */
     public function set($route, array $arguments = array())
     {

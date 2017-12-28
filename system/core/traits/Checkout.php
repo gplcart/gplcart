@@ -17,11 +17,20 @@ trait Checkout
 
     /**
      * @see \gplcart\core\Controller::render()
+     * @param $file
+     * @param array $data
+     * @param bool $merge
+     * @param string $default
+     * @return
      */
     abstract public function render($file, $data = array(), $merge = true, $default = '');
 
     /**
      * @see \gplcart\core\Controller::getModuleSettings()
+     * @param $module_id
+     * @param null $key
+     * @param null $default
+     * @return
      */
     abstract public function getModuleSettings($module_id, $key = null, $default = null);
 

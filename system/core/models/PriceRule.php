@@ -274,7 +274,6 @@ class PriceRule
      * @param array $data
      * @param array $components
      * @param array $price_rule
-     * @return array
      */
     public function calculate(&$total, $data, &$components, array $price_rule)
     {

@@ -56,7 +56,7 @@ class Translation
 
     /**
      * @param Hook $hook
-     * @param Module $module
+     * @param ModuleCore $module
      */
     public function __construct(Hook $hook, ModuleCore $module)
     {

@@ -85,6 +85,7 @@ class ProductBundle extends BackendController
     /**
      * Sets the product data
      * @param integer $product_id
+     * @return array
      */
     protected function setProductProductBundle($product_id)
     {
