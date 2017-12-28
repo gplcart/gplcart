@@ -32,31 +32,53 @@ trait Item
 
     /**
      * @see \gplcart\core\Controller::path()
+     * @param null $pattern
+     * @return
      */
     abstract public function path($pattern = null);
 
     /**
      * @see \gplcart\core\Controller::config()
+     * @param null $key
+     * @param null $default
+     * @return
      */
     abstract public function config($key = null, $default = null);
 
     /**
      * @see \gplcart\core\Controller::configTheme()
+     * @param null $key
+     * @param null $default
+     * @return
      */
     abstract public function configTheme($key = null, $default = null);
 
     /**
      * @see \gplcart\core\Controller::getQuery()
+     * @param null $key
+     * @param null $default
+     * @param string $type
+     * @return
      */
     abstract public function getQuery($key = null, $default = null, $type = 'string');
 
     /**
      * @see \gplcart\core\Controller::render()
+     * @param $file
+     * @param array $data
+     * @param bool $merge
+     * @param string $default
+     * @return
      */
     abstract public function render($file, $data = array(), $merge = true, $default = '');
 
     /**
      * @see \gplcart\core\Controller::url()
+     * @param string $path
+     * @param array $query
+     * @param bool $abs
+     * @param bool $exclude
+     * @return
      */
     abstract public function url($path = '', array $query = array(), $abs = false, $exclude = false);
 
@@ -259,20 +281,19 @@ trait Item
      */
     public function setItemRenderedProduct(array &$item, $options = array())
     {
-        if (empty($options['template_item'])) {
-            return null;
+        if (!empty($options['template_item'])) {
+
+            $options += array(
+                'buttons' => array(
+                    'cart_add', 'wishlist_add', 'compare_add'));
+
+            $data = array(
+                'item' => $item,
+                'buttons' => $options['buttons']
+            );
+
+            $this->setItemRendered($item, $data, $options);
         }
-
-        $options += array(
-            'buttons' => array(
-                'cart_add', 'wishlist_add', 'compare_add'));
-
-        $data = array(
-            'item' => $item,
-            'buttons' => $options['buttons']
-        );
-
-        $this->setItemRendered($item, $data, $options);
     }
 
     /**
@@ -284,30 +305,29 @@ trait Item
      */
     public function setItemProductBundle(&$item, $product_model, $image_model, $options = array())
     {
-        if (empty($item['bundle'])) {
-            return null;
+        if (!empty($item['bundle'])) {
+
+            $data = array(
+                'status' => 1,
+                'store_id' => $item['store_id'],
+                'product_id' => explode(',', $item['bundle'])
+            );
+
+            $products = (array) $product_model->getList($data);
+
+            $options += array(
+                'entity' => 'product',
+                'entity_id' => array_keys($products)
+            );
+
+            foreach ($products as &$product) {
+                $this->setItemEntityUrl($product, $options);
+                $this->setItemThumb($product, $image_model, $options);
+                $this->setItemRenderedProductBundle($product, $options);
+            }
+
+            $item['bundled_products'] = $products;
         }
-
-        $data = array(
-            'status' => 1,
-            'store_id' => $item['store_id'],
-            'product_id' => explode(',', $item['bundle'])
-        );
-
-        $products = (array) $product_model->getList($data);
-
-        $options += array(
-            'entity' => 'product',
-            'entity_id' => array_keys($products)
-        );
-
-        foreach ($products as &$product) {
-            $this->setItemEntityUrl($product, $options);
-            $this->setItemThumb($product, $image_model, $options);
-            $this->setItemRenderedProductBundle($product, $options);
-        }
-
-        $item['bundled_products'] = $products;
     }
 
     /**
@@ -330,6 +350,7 @@ trait Item
      * @param \gplcart\core\models\ProductClass $pcmodel
      * @param string $type
      * @param array $options
+     * @return null
      */
     public function setItemProductFieldType(&$item, $imodel, $pcmodel, $type, $options = [])
     {
@@ -356,6 +377,7 @@ trait Item
         }
 
         $item['fields'][$type] = $fields[$type];
+        return null;
     }
 
     /**
@@ -376,6 +398,7 @@ trait Item
      * @param array $item
      * @param \gplcart\core\models\Image $image_model
      * @param \gplcart\core\models\Price $price_model
+     * @return null
      */
     public function setItemProductCombination(array &$item, $image_model, $price_model)
     {
@@ -394,12 +417,15 @@ trait Item
 
             $combination['price'] = $price_model->decimal($combination['price'], $item['currency']);
         }
+
+        return null;
     }
 
     /**
      * Adds a cart component information for the order item
      * @param array $item
      * @param \gplcart\core\models\Price $price_model
+     * @return null
      */
     public function setItemOrderCartComponent(&$item, $price_model)
     {
@@ -422,6 +448,7 @@ trait Item
 
         $html = $this->render('backend|sale/order/panes/components/cart', array('order' => $item));
         $item['data']['components']['cart']['rendered'] = $html;
+        return null;
     }
 
     /**
@@ -430,6 +457,7 @@ trait Item
      * @param \gplcart\core\models\Price $pmodel
      * @param \gplcart\core\models\Shipping $shmodel
      * @param \gplcart\core\models\Order $omodel
+     * @return null
      */
     public function setItemOrderShippingComponent(&$item, $pmodel, $shmodel, $omodel)
     {
@@ -453,6 +481,7 @@ trait Item
 
         $html = $this->render('backend|sale/order/panes/components/method', $data);
         $item['data']['components']['shipping']['rendered'] = $html;
+        return null;
     }
 
     /**
@@ -461,6 +490,7 @@ trait Item
      * @param \gplcart\core\models\Price $pmodel
      * @param \gplcart\core\models\Payment $pamodel
      * @param \gplcart\core\models\Order $omodel
+     * @return null
      */
     public function setItemOrderPaymentComponent(&$item, $pmodel, $pamodel, $omodel)
     {
@@ -484,6 +514,7 @@ trait Item
 
         $html = $this->render('backend|sale/order/panes/components/method', $data);
         $item['data']['components']['payment']['rendered'] = $html;
+        return null;
     }
 
     /**
