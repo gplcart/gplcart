@@ -11,13 +11,13 @@ namespace gplcart\core\exceptions;
 
 use RuntimeException;
 
-class Oauth extends RuntimeException
+class File extends RuntimeException
 {
 
     /**
      * @param string|null $message
      * @param integer $code
-     * @param $previous
+     * @param CoreException $previous
      */
     public function __construct($message = null, $code = 0, $previous = null)
     {

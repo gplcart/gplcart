@@ -16,9 +16,14 @@ use gplcart\core\models\File as FileModel,
     gplcart\core\models\Validator as ValidatorModel,
     gplcart\core\models\Translation as TranslationModel;
 use gplcart\core\helpers\SocketClient as SocketClientHelper;
+use Exception;
+use OutOfBoundsException,
+    UnexpectedValueException;
+use gplcart\core\exceptions\File as FileException,
+    gplcart\core\exceptions\Validation as ValidationException;
 
 /**
- * Manages basic behaviors and data related to transfering files
+ * Manages basic behaviors and data related to download/upload files
  */
 class FileTransfer
 {
@@ -138,7 +143,7 @@ class FileTransfer
 
         try {
             $result = $this->finalize($post['tmp_name'], $post['name'], true);
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             $result = $ex->getMessage();
         }
 
@@ -200,20 +205,20 @@ class FileTransfer
 
         try {
             $temp = $this->writeTempFile($url);
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             return $ex->getMessage();
         }
 
         try {
             $this->validateHandler($temp);
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             unlink($temp);
             return $ex->getMessage();
         }
 
         try {
             $result = $this->finalize($temp, $this->destination, false);
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             $result = $ex->getMessage();
         }
 
@@ -225,7 +230,7 @@ class FileTransfer
      * Writes a temporary file from a remote file
      * @param string $url
      * @return string
-     * @throws \RuntimeException
+     * @throws UnexpectedValueException
      */
     protected function writeTempFile($url)
     {
@@ -234,7 +239,7 @@ class FileTransfer
         $fh = fopen($temp, "w");
 
         if (!is_resource($fh)) {
-            throw new \RuntimeException($this->translation->text('Failed to open temporary file'));
+            throw new UnexpectedValueException($this->translation->text('File handle is not a valid resource'));
         }
 
         $response = $this->socket->request($url);
@@ -250,6 +255,8 @@ class FileTransfer
      * @param string $to
      * @param bool $upload
      * @return boolean
+     * @throws FileException
+     * @throws UnexpectedValueException
      */
     protected function finalize($temp, $to, $upload)
     {
@@ -270,7 +277,7 @@ class FileTransfer
 
         if (!file_exists($directory) && !mkdir($directory, 0775, true)) {
             unlink($temp);
-            throw new \RuntimeException($this->translation->text('Unable to create @name', array('@name' => $directory)));
+            throw new FileException($this->translation->text('Unable to create @name', array('@name' => $directory)));
         }
 
         $destination = "$directory/$filename";
@@ -284,7 +291,7 @@ class FileTransfer
 
         if (!$copied) {
             $vars = array('@source' => $temp, '@destination' => $destination);
-            throw new \RuntimeException($this->translation->text('Unable to move @source to @destination', $vars));
+            throw new UnexpectedValueException($this->translation->text('Unable to move @source to @destination', $vars));
         }
 
         chmod($destination, 0644);
@@ -334,44 +341,45 @@ class FileTransfer
         if (!isset($this->handler)) {
             try {
                 $this->setHandlerByExtension($pathinfo['extension']);
-            } catch (\Exception $ex) {
+            } catch (Exception $ex) {
                 return $ex->getMessage();
             }
         }
 
         try {
             return $this->validateHandler($path, $pathinfo['extension']);
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             return $ex->getMessage();
         }
     }
 
     /**
-     *
      * Validates a file using a validator
      * @param string $file
      * @param string|null $extension
      * @return bool
-     * @throws \RuntimeException
+     * @throws OutOfBoundsException
+     * @throws UnexpectedValueException
+     * @throws ValidationException
      */
     protected function validateHandler($file, $extension = null)
     {
         if (empty($this->handler['validator'])) {
-            throw new \RuntimeException($this->translation->text('Unknown handler'));
+            throw new OutOfBoundsException($this->translation->text('Unknown handler'));
         }
 
         if (!empty($this->handler['extensions']) && isset($extension) && !in_array($extension, $this->handler['extensions'])) {
-            throw new \RuntimeException($this->translation->text('Unsupported file extension'));
+            throw new UnexpectedValueException($this->translation->text('Unsupported file extension'));
         }
 
         if (isset($this->handler['filesize']) && filesize($file) > $this->handler['filesize']) {
-            throw new \RuntimeException($this->translation->text('File size exceeds %num bytes', array('%num' => $this->handler['filesize'])));
+            throw new ValidationException($this->translation->text('File size exceeds %num bytes', array('%num' => $this->handler['filesize'])));
         }
 
         $result = $this->validator->run($this->handler['validator'], $file, $this->handler);
 
         if ($result !== true) {
-            throw new \RuntimeException($result);
+            throw new ValidationException($result);
         }
 
         return true;
@@ -400,12 +408,12 @@ class FileTransfer
      * Find and set handler by a file extension
      * @param string $extension
      * @return array
-     * @throws \RuntimeException
+     * @throws UnexpectedValueException
      */
     protected function setHandlerByExtension($extension)
     {
         if (!in_array($extension, $this->file->supportedExtensions())) {
-            throw new \RuntimeException($this->translation->text('Unsupported file extension'));
+            throw new UnexpectedValueException($this->translation->text('Unsupported file extension'));
         }
 
         return $this->handler = $this->file->getHandler(".$extension");

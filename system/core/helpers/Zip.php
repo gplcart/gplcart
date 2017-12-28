@@ -9,7 +9,8 @@
 
 namespace gplcart\core\helpers;
 
-use InvalidArgumentException;
+use UnexpectedValueException;
+use gplcart\core\exceptions\Dependency as DependencyException;
 
 /**
  * Contains methods to work with zipped files
@@ -24,12 +25,12 @@ class Zip
     protected $zip;
 
     /**
-     * Constructor
+     * @throws DependencyException
      */
     public function __construct()
     {
         if (!class_exists('ZipArchive')) {
-            throw new InvalidArgumentException('Class ZipArchive does not exist');
+            throw new DependencyException('Class ZipArchive does not exist');
         }
 
         $this->zip = new \ZipArchive;
@@ -39,7 +40,7 @@ class Zip
      * Sets a file path
      * @param string $path
      * @param bool $create
-     * @throws InvalidArgumentException
+     * @throws UnexpectedValueException
      * @return $this
      */
     public function set($path, $create = false)
@@ -48,7 +49,7 @@ class Zip
         $flag = $create ? $zip::CREATE : null;
 
         if ($this->zip->open($path, $flag) !== true) {
-            throw new InvalidArgumentException("Cannot open ZIP file $path");
+            throw new UnexpectedValueException("Failed to open ZIP file $path");
         }
 
         return $this;

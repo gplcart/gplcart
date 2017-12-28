@@ -9,6 +9,7 @@
 
 namespace gplcart\core\models;
 
+use Exception;
 use gplcart\core\Hook;
 use gplcart\core\helpers\Convertor as ConvertorHelper;
 
@@ -57,13 +58,7 @@ class OrderDimension
 
         $total = 0.0;
         foreach ($cart['items'] as $item) {
-
-            try {
-                $this->sumTotalVolume($total, $item, $order);
-            } catch (\Exception $ex) {
-                trigger_error($ex->getMessage());
-                return null;
-            }
+            $this->sumTotalVolume($total, $item, $order);
         }
 
         $result = round($total, 2);
@@ -88,13 +83,7 @@ class OrderDimension
 
         $total = 0.0;
         foreach ($cart['items'] as $item) {
-
-            try {
-                $this->sumTotalWeight($total, $item, $order);
-            } catch (\Exception $ex) {
-                trigger_error($ex->getMessage());
-                return null;
-            }
+            $this->sumTotalWeight($total, $item, $order);
         }
 
         $result = round($total, 2);
@@ -128,11 +117,11 @@ class OrderDimension
      * @param array $item
      * @param array $order
      * @return null
-     * @throws \InvalidArgumentException
      */
     protected function sumTotalVolume(&$total, array $item, array $order)
     {
         $product = $item['product'];
+
         if (empty($product['width']) || empty($product['height']) || empty($product['length'])) {
             return null;
         }
@@ -147,9 +136,12 @@ class OrderDimension
         $order_cubic = $order['size_unit'] . '3';
         $product_cubic = $product['size_unit'] . '3';
 
-        $converted = $this->convertor->convert($volume, $product_cubic, $order_cubic);
-        $total += (float) ($converted * $item['quantity']);
-        return null;
+        try {
+            $converted = $this->convertor->convert($volume, $product_cubic, $order_cubic);
+            $total += (float) ($converted * $item['quantity']);
+        } catch (Exception $ex) {
+            return null;
+        }
     }
 
     /**
@@ -162,14 +154,18 @@ class OrderDimension
     protected function sumTotalWeight(&$total, array $item, array $order)
     {
         $product = $item['product'];
+
         if (empty($product['weight_unit']) || $product['weight_unit'] == $order['weight_unit']) {
             $total += (float) ($product['weight'] * $item['quantity']);
             return null;
         }
 
-        $converted = $this->convertor->convert($product['weight'], $product['weight_unit'], $order['weight_unit']);
-        $total += (float) ($converted * $item['quantity']);
-        return null;
+        try {
+            $converted = $this->convertor->convert($product['weight'], $product['weight_unit'], $order['weight_unit']);
+            $total += (float) ($converted * $item['quantity']);
+        } catch (Exception $ex) {
+            return null;
+        }
     }
 
 }

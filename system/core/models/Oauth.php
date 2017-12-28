@@ -9,12 +9,16 @@
 
 namespace gplcart\core\models;
 
+use Exception,
+    OutOfBoundsException,
+    UnexpectedValueException;
+use gplcart\core\exceptions\File as FileException,
+    gplcart\core\exceptions\Authorization as AuthorizationException;
 use gplcart\core\Hook,
     gplcart\core\Handler;
 use gplcart\core\helpers\Url as UrlHelper,
     gplcart\core\helpers\Session as SessionHelper,
     gplcart\core\helpers\SocketClient as SocketClientHelper;
-use gplcart\core\exceptions\Oauth as OauthException;
 
 /**
  * Manages basic behaviors and data related to Oauth 2.0 functionality
@@ -94,11 +98,14 @@ class Oauth
         $this->hook->attach('oauth.providers', $providers, $this);
 
         foreach ($providers as $provider_id => &$provider) {
+
             $provider += array('type' => '', 'id' => $provider_id, 'status' => true);
+
             if (isset($data['type']) && $data['type'] !== $provider['type']) {
                 unset($providers[$provider_id]);
                 continue;
             }
+
             if (isset($data['status']) && $data['status'] != $provider['status']) {
                 unset($providers[$provider_id]);
             }
@@ -285,7 +292,7 @@ class Oauth
             $post = array('data' => $query, 'method' => 'POST');
             $response = $this->socket->request($provider['url']['token'], $post);
             $result = json_decode($response['data'], true);
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             trigger_error('Failed to request an Oauth token: ' . $ex->getMessage());
             $result = array();
         }
@@ -320,15 +327,17 @@ class Oauth
      * Generate and sign a JWT token
      * @param array $data
      * @return string
-     * @throws \InvalidArgumentException
      * @link https://developers.google.com/accounts/docs/OAuth2ServiceAccount
+     * @throws OutOfBoundsException
+     * @throws FileException
+     * @throws UnexpectedValueException
      */
     public function generateJwt(array $data)
     {
         $data += array('lifetime' => 3600);
 
         if (empty($data['certificate_file'])) {
-            throw new \InvalidArgumentException('Certificate file not set');
+            throw new OutOfBoundsException('Certificate file is not set');
         }
 
         if (strpos($data['certificate_file'], GC_DIR_FILE) !== 0) {
@@ -336,7 +345,7 @@ class Oauth
         }
 
         if (!is_readable($data['certificate_file']) || !is_file($data['certificate_file'])) {
-            throw new \InvalidArgumentException('Private key does not exist');
+            throw new FileException('File with private key is not readable');
         }
 
         $key = file_get_contents($data['certificate_file']);
@@ -357,17 +366,17 @@ class Oauth
 
         $certs = array();
         if (!openssl_pkcs12_read($key, $certs, $data['certificate_secret'])) {
-            throw new \InvalidArgumentException('Could not parse .p12 file');
+            throw new UnexpectedValueException('Failed to read cerificate file');
         }
 
         if (!isset($certs['pkey'])) {
-            throw new \InvalidArgumentException('Could not find private key in .p12 file');
+            throw new OutOfBoundsException('Could not find private key in the cerificate file');
         }
 
         $sig = '';
         $input = implode('.', $encodings);
         if (!openssl_sign($input, $sig, openssl_pkey_get_private($certs['pkey']), OPENSSL_ALGO_SHA256)) {
-            throw new \InvalidArgumentException('Could not sign data');
+            throw new UnexpectedValueException('Failed to sign the certificate');
         }
 
         $encodings[] = base64_encode($sig);
@@ -406,7 +415,7 @@ class Oauth
         try {
             $providers = $this->getProviders();
             return Handler::call($providers, $provider['id'], $handler, array($params, $provider, $this));
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             return $ex->getMessage();
         }
     }
@@ -416,7 +425,7 @@ class Oauth
      * @param array $provider
      * @param array $jwt
      * @return mixed
-     * @throws OauthException
+     * @throws AuthorizationException
      * @link https://developers.google.com/accounts/docs/OAuth2ServiceAccount
      */
     public function exchangeTokenServer($provider, $jwt)
@@ -432,8 +441,8 @@ class Oauth
 
         try {
             $assertion = $this->generateJwt($jwt);
-        } catch (\Exception $ex) {
-            throw new OauthException('Failed to exchange Oauth service token: ' . $ex->getMessage());
+        } catch (Exception $ex) {
+            throw new AuthorizationException('Failed to exchange Oauth service token: ' . $ex->getMessage());
         }
 
         $request = array(

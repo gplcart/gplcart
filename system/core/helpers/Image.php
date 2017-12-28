@@ -9,7 +9,8 @@
 
 namespace gplcart\core\helpers;
 
-use InvalidArgumentException;
+use UnexpectedValueException,
+    BadFunctionCallException;
 
 /**
  * Methods for image manipulation using GD PHP library
@@ -61,7 +62,7 @@ class Image
      * Load an image
      * @param string $filename
      * @return $this
-     * @throws InvalidArgumentException
+     * @throws UnexpectedValueException
      */
     public function set($filename)
     {
@@ -71,7 +72,7 @@ class Image
         $info = getimagesize($this->filename);
 
         if (empty($info)) {
-            throw new InvalidArgumentException("Invalid image: {$this->filename}");
+            throw new UnexpectedValueException("Failed to get image dimensions for {$this->filename}");
         }
 
         $this->width = $info[0];
@@ -80,7 +81,7 @@ class Image
         $this->image = $this->callFunction('imagecreatefrom', $this->format, array($this->filename));
 
         if (!is_resource($this->image)) {
-            throw new InvalidArgumentException("Failed to create image resource for {$this->filename}");
+            throw new UnexpectedValueException("File handle is not a valid resource. Image: {$this->filename}");
         }
 
         imagesavealpha($this->image, true);
@@ -111,16 +112,22 @@ class Image
      * @param string $format
      * @param array $arguments
      * @return mixed
-     * @throws InvalidArgumentException
+     * @throws UnexpectedValueException
+     * @throws BadFunctionCallException
      */
     protected function callFunction($prefix, $format, array $arguments)
     {
         $function = "$prefix$format";
-        if (in_array($format, $this->getSupportedFormats()) && function_exists($function)) {
-            return call_user_func_array($function, $arguments);
+
+        if (!in_array($format, $this->getSupportedFormats())) {
+            throw new UnexpectedValueException("Image format $format does not match with a set of supported formats");
         }
 
-        throw new InvalidArgumentException('Unsupported function prefix/image format');
+        if (!function_exists($function)) {
+            throw new BadFunctionCallException("Function $function does not exist");
+        }
+
+        return call_user_func_array($function, $arguments);
     }
 
     /**
@@ -242,7 +249,7 @@ class Image
      * @param int|null $quality
      * @param string $format
      * @return $this
-     * @throws InvalidArgumentException
+     * @throws UnexpectedValueException
      */
     public function save($filename = '', $quality = 100, $format = '')
     {
@@ -267,7 +274,7 @@ class Image
         $result = $this->callFunction('image', $format, $arguments);
 
         if (empty($result)) {
-            throw new InvalidArgumentException("Unable to save image $filename");
+            throw new UnexpectedValueException("Failed to save image $filename");
         }
 
         return $this;

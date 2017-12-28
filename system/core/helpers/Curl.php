@@ -9,6 +9,11 @@
 
 namespace gplcart\core\helpers;
 
+use OutOfBoundsException,
+    UnexpectedValueException;
+use gplcart\core\exceptions\File as FileException,
+    gplcart\core\exceptions\Dependency as DependencyException;
+
 /**
  * Provides wrappers for CURL functions
  */
@@ -64,12 +69,12 @@ class Curl
     protected $response;
 
     /**
-     * @throws \RuntimeException
+     * @throws DependencyException
      */
     public function __construct()
     {
         if (!extension_loaded('curl')) {
-            throw new \RuntimeException('CURL extension is not loaded');
+            throw new DependencyException('CURL extension is not loaded');
         }
     }
 
@@ -84,14 +89,14 @@ class Curl
     /**
      * Initialize CURL handle
      * @return $this
-     * @throws \RuntimeException
+     * @throws UnexpectedValueException
      */
     public function open()
     {
         $this->handle = curl_init();
 
         if (!is_resource($this->handle)) {
-            throw new \RuntimeException('Failed to initialize CURL');
+            throw new UnexpectedValueException('CURL handle is not a valid resource');
         }
 
         $this->setDefaultOptions();
@@ -181,12 +186,12 @@ class Curl
      * Sets cookie file
      * @param string $filepath
      * @return $this
-     * @throws \InvalidArgumentException
+     * @throws FileException
      */
     public function setCookieFile($filepath)
     {
         if (!is_writable($filepath)) {
-            throw new \InvalidArgumentException('Invalid cookie file');
+            throw new FileException('Invalid cookie file');
         }
 
         $this->cookie_file = $filepath;
@@ -372,7 +377,7 @@ class Curl
      * @param string $method
      * @param array $params
      * @return $this
-     * @throws \RuntimeException
+     * @throws UnexpectedValueException
      */
     public function request($url, $method = 'GET', array $params = array())
     {
@@ -385,7 +390,7 @@ class Curl
         $this->response = curl_exec($this->handle);
 
         if ($this->response === false) {
-            throw new \RuntimeException('Failed to execute CURL');
+            throw new UnexpectedValueException('Failed to execute the CURL request');
         }
 
         $this->info = curl_getinfo($this->handle);
@@ -441,7 +446,7 @@ class Curl
      * Returns the request info
      * @param null|string $key
      * @return mixed
-     * @throws \InvalidArgumentException
+     * @throws OutOfBoundsException
      */
     public function getInfo($key = null)
     {
@@ -453,7 +458,7 @@ class Curl
             return $this->info[$key];
         }
 
-        throw new \InvalidArgumentException("No such key: $key");
+        throw new OutOfBoundsException("Key $key does not exist in the CURL info array");
     }
 
     /**
@@ -555,7 +560,7 @@ class Curl
 
     /**
      * Sets request options
-     * @throws \RuntimeException
+     * @throws UnexpectedValueException
      */
     protected function setRequestOptions()
     {
@@ -581,7 +586,7 @@ class Curl
         }
 
         if (!curl_setopt_array($this->handle, $this->options)) {
-            throw new \RuntimeException('Failed to set CURL options');
+            throw new UnexpectedValueException('Failed to set CURL options');
         }
     }
 

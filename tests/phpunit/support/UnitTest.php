@@ -9,11 +9,17 @@
 
 namespace gplcart\tests\phpunit\support;
 
-use PHPUnit_Extensions_Database_TestCase;
-use gplcart\core\Database as SystemDatabase;
+use PDO;
+use ReflectionClass,
+    ReflectionMethod;
+use PHPUnit_Extensions_Database_TestCase,
+    PHPUnit_Extensions_Database_DataSet_CompositeDataSet;
 use gplcart\tests\phpunit\support\Tool as ToolHelper;
 use gplcart\tests\phpunit\support\File as FileHelper;
 use gplcart\tests\phpunit\support\ArrayDataSet as ArrayDataSetHelper;
+use gplcart\core\Database as SystemDatabase;
+use gplcart\core\exceptions\File as FileException,
+    gplcart\core\exceptions\Dependency as DependencyException;
 
 /**
  * A TestCase extension that provides extra functionality for testing GPLCart
@@ -79,15 +85,15 @@ class UnitTest extends PHPUnit_Extensions_Database_TestCase
      * @param string $class
      * @param array $mock_config
      * @return object
-     * @throws \ReflectionException
+     * @throws DependencyException
      */
     protected function getInstance($class, array $mock_config = array())
     {
         if (!class_exists($class)) {
-            throw new \ReflectionException("Class $class does not exist");
+            throw new DependencyException("Class $class does not exist");
         }
 
-        $reflection = new \ReflectionClass($class);
+        $reflection = new ReflectionClass($class);
         $constructor = $reflection->getConstructor();
 
         if (empty($constructor)) {
@@ -137,7 +143,7 @@ class UnitTest extends PHPUnit_Extensions_Database_TestCase
 
         $method_names = array();
         /* @var $method \ReflectionMethod */
-        foreach ($reflection->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+        foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
             $method_name = $method->getName();
             if (strpos($method_name, '__') !== 0) { // Exclude __construct() etc
                 $method_names[] = $method_name;
@@ -196,7 +202,7 @@ class UnitTest extends PHPUnit_Extensions_Database_TestCase
         }
 
         if (!isset(static::$pdo)) {
-            static::$pdo = new \PDO('sqlite::memory:');
+            static::$pdo = new PDO('sqlite::memory:');
         }
 
         $this->connection = $this->createDefaultDBConnection(static::$pdo, ':memory:');
@@ -209,7 +215,7 @@ class UnitTest extends PHPUnit_Extensions_Database_TestCase
      */
     protected function getDataSet()
     {
-        $dataset = new \PHPUnit_Extensions_Database_DataSet_CompositeDataSet;
+        $dataset = new PHPUnit_Extensions_Database_DataSet_CompositeDataSet;
 
         foreach ($this->fixtures as $fixture) {
             $dataset->addDataSet($this->createFixtureDataSet($fixture));
@@ -233,7 +239,7 @@ class UnitTest extends PHPUnit_Extensions_Database_TestCase
      * Returns an array of fixture data
      * @param string $fixture
      * @return array
-     * @throws \InvalidArgumentException
+     * @throws FileException
      */
     protected function getFixtureData($fixture)
     {
@@ -246,7 +252,7 @@ class UnitTest extends PHPUnit_Extensions_Database_TestCase
         $file = $this->getFixtureDirectory() . "/$fixture.php";
 
         if (!is_file($file)) {
-            throw new \InvalidArgumentException("File '$file' not found for fixture '$fixture'");
+            throw new FileException("File '$file' not found for fixture '$fixture'");
         }
 
         $fixtures[$fixture] = require $file;

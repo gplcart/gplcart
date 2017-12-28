@@ -9,7 +9,10 @@
 
 namespace gplcart\core;
 
-use InvalidArgumentException;
+use Exception,
+    OutOfBoundsException,
+    BadMethodCallException;
+use gplcart\core\exceptions\Handler as HandlerException;
 
 /**
  * Provides methods to retrieve and execute handlers
@@ -24,15 +27,15 @@ class Handler
      * @param string $method
      * @param array $arguments
      * @return mixed
-     * @throws \InvalidArgumentException
+     * @throws HandlerException
      */
     public static function call($handlers, $handler_id, $method, $arguments = array())
     {
         try {
             $callback = static::get($handlers, $handler_id, $method);
             return call_user_func_array($callback, $arguments);
-        } catch (\Exception $ex) {
-            throw new InvalidArgumentException($ex->getMessage());
+        } catch (Exception $ex) {
+            throw new HandlerException($ex->getMessage());
         }
     }
 
@@ -42,7 +45,8 @@ class Handler
      * @param string|null $handler_id
      * @param string $name
      * @return object|array
-     * @throws InvalidArgumentException
+     * @throws BadMethodCallException
+     * @throws HandlerException
      */
     public static function get($handlers, $handler_id, $name)
     {
@@ -55,14 +59,14 @@ class Handler
                 return $callable;
             }
 
-            throw new InvalidArgumentException(implode('::', $callable) . ' is not callable');
+            throw new BadMethodCallException(implode('::', $callable) . ' is not callable');
         }
 
         if ($callable instanceof \Closure) {
             return $callable;
         }
 
-        throw new InvalidArgumentException('Unexpected handler format');
+        throw new HandlerException('Unexpected handler format');
     }
 
     /**
@@ -71,21 +75,21 @@ class Handler
      * @param string|null $handler_id
      * @param string $name
      * @return array|object
-     * @throws InvalidArgumentException
+     * @throws OutOfBoundsException
      */
     protected static function getCallable($handlers, $handler_id, $name)
     {
         if (isset($handler_id)) {
 
             if (empty($handlers[$handler_id]['handlers'][$name])) {
-                throw new InvalidArgumentException("No such handler name '$name'");
+                throw new OutOfBoundsException("Failed to get handler using ID $handler_id and name $name");
             }
 
             return $handlers[$handler_id]['handlers'][$name];
         }
 
         if (empty($handlers['handlers'][$name])) {
-            throw new InvalidArgumentException("No such handler name '$name'");
+            throw new OutOfBoundsException("Failed to get handler using name $name");
         }
 
         return $handlers['handlers'][$name];

@@ -9,6 +9,8 @@
 
 namespace gplcart\core;
 
+use InvalidArgumentException;
+
 /**
  * Base parent CLI controller
  */
@@ -111,7 +113,7 @@ class CliController
      * Returns a property
      * @param string $name
      * @return mixed
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function getProperty($name)
     {
@@ -119,7 +121,7 @@ class CliController
             return $this->{$name};
         }
 
-        throw new \InvalidArgumentException("Property $name does not exist");
+        throw new InvalidArgumentException("Property $name does not exist");
     }
 
     /**

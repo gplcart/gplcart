@@ -9,6 +9,9 @@
 
 namespace gplcart\tests\phpunit\support;
 
+use UnexpectedValueException;
+use gplcart\core\exceptions\File as FileException;
+
 /**
  * Helper methods to test files
  */
@@ -40,14 +43,15 @@ class File
      * @param string $filename
      * @param string $content
      * @param null|string $group
-     * @throws \RuntimeException
+     * @throws FileException
+     * @throws UnexpectedValueException
      */
     public function setFile($filename, $content, $group = null)
     {
         $file = "$this->temp/$filename";
 
         if (file_exists($file) && !unlink($file)) {
-            throw new \RuntimeException("File $file already exists");
+            throw new FileException("File $file already exists");
         }
 
         $pathinfo = pathinfo($file);
@@ -58,12 +62,12 @@ class File
 
         if (!empty($pathinfo['dirname'])) {
             if (!file_exists($pathinfo['dirname']) && !mkdir($pathinfo['dirname'])) {
-                throw new \RuntimeException("Failed to create directory {$pathinfo['dirname']}");
+                throw new FileException("Failed to create directory {$pathinfo['dirname']}");
             }
         }
 
         if (file_put_contents($file, $content) === false) {
-            throw new \RuntimeException("Failed to create file $file");
+            throw new UnexpectedValueException("Failed to write a string to file $file");
         }
 
         $this->created[$group][] = $file;
@@ -118,7 +122,7 @@ class File
 
     /**
      * Creates ZIP files
-     * @throws \RuntimeException
+     * @throws UnexpectedValueException
      */
     public function setZip()
     {
@@ -126,7 +130,7 @@ class File
         $file = "$this->temp/test.zip";
 
         if (!$zip->open($file, \ZipArchive::CREATE)) {
-            throw new \RuntimeException("Failed to open ZIP file $file");
+            throw new UnexpectedValueException("Failed to open ZIP file $file");
         }
 
         $zip->addFromString('test.txt', 'test');

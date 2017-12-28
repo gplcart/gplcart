@@ -9,9 +9,9 @@
 
 namespace gplcart\core\exceptions;
 
-use RuntimeException;
+use LogicException;
 
-class Session extends RuntimeException
+class Handler extends LogicException
 {
 
     /**

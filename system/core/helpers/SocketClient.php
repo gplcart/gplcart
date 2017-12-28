@@ -9,6 +9,9 @@
 
 namespace gplcart\core\helpers;
 
+use OutOfBoundsException,
+    UnexpectedValueException;
+
 /**
  * Provides wrappers for PHP's stream socket client
  */
@@ -166,11 +169,16 @@ class SocketClient
      * Sets the context resource
      * @param resource|array $context
      * @param array $options
+     * @throws UnexpectedValueException
      */
     public function setContext($context, array $options = array())
     {
         if (isset($context) && !is_resource($context)) {
             $context = stream_context_create((array) $context, $options);
+        }
+
+        if (!is_resource($context)) {
+            throw new UnexpectedValueException('Stream context is not a valid resource');
         }
 
         $this->context = $context;
@@ -251,12 +259,13 @@ class SocketClient
     /**
      * Sets a socket depending on the current URI parameters
      * @return $this
-     * @throws \RuntimeException
+     * @throws OutOfBoundsException
+     * @throws UnexpectedValueException
      */
     public function setSocket()
     {
         if (empty($this->uri['scheme'])) {
-            throw new \RuntimeException('Unknown URL scheme');
+            throw new OutOfBoundsException('Unknown URL scheme');
         }
 
         if ($this->uri['scheme'] === 'http') {
@@ -266,7 +275,7 @@ class SocketClient
             $port = 443;
             $protocol = 'ssl';
         } else {
-            throw new \RuntimeException("Unsupported URL scheme: {$this->uri['scheme']}");
+            throw new UnexpectedValueException("Unsupported URL scheme: {$this->uri['scheme']}");
         }
 
         if (isset($this->uri['port'])) {
@@ -284,7 +293,7 @@ class SocketClient
 
     /**
      * Open Internet or Unix domain socket connection and execute a query
-     * @throws \RuntimeException
+     * @throws UnexpectedValueException
      * @return $this
      */
     public function exec()
@@ -298,7 +307,7 @@ class SocketClient
         }
 
         if (!empty($errstr)) {
-            throw new \RuntimeException($errstr);
+            throw new UnexpectedValueException($errstr);
         }
 
         fwrite($this->stream, $this->getRequestBody());
@@ -329,6 +338,7 @@ class SocketClient
         }
 
         $body = "{$this->method} $path HTTP/1.0\r\n";
+
         foreach ($this->headers as $name => $value) {
             $body .= "$name: " . trim($value) . "\r\n";
         }

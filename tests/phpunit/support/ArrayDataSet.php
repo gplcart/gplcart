@@ -9,7 +9,7 @@
 
 namespace gplcart\tests\phpunit\support;
 
-use InvalidArgumentException;
+use OutOfBoundsException;
 use PHPUnit_Extensions_Database_DataSet_DefaultTable;
 use PHPUnit_Extensions_Database_DataSet_AbstractDataSet;
 use PHPUnit_Extensions_Database_DataSet_DefaultTableMetaData;
@@ -55,7 +55,7 @@ class ArrayDataSet extends PHPUnit_Extensions_Database_DataSet_AbstractDataSet
     /**
      * Creates an iterator over the tables in the data set. If $reverse is true a reverse iterator will be returned
      * @param bool $reverse
-     * @return \PHPUnit_Extensions_Database_DataSet_DefaultTableIterator
+     * @return PHPUnit_Extensions_Database_DataSet_DefaultTableIterator
      */
     protected function createIterator($reverse = false)
     {
@@ -65,13 +65,13 @@ class ArrayDataSet extends PHPUnit_Extensions_Database_DataSet_AbstractDataSet
     /**
      * Returns a table object for the given table
      * @param string $table
-     * @return \PHPUnit_Extensions_Database_DataSet_DefaultTable
-     * @throws InvalidArgumentException
+     * @return PHPUnit_Extensions_Database_DataSet_DefaultTable
+     * @throws OutOfBoundsException
      */
     public function getTable($table)
     {
         if (!isset($this->tables[$table])) {
-            throw new InvalidArgumentException("$table is not a table in the current database");
+            throw new OutOfBoundsException("$table is not a table in the current database");
         }
 
         return $this->tables[$table];

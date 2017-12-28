@@ -9,8 +9,10 @@
 
 namespace gplcart\core\controllers\frontend;
 
+use OutOfBoundsException,
+    UnexpectedValueException;
+use gplcart\core\exceptions\Authorization as AuthorizationException;
 use gplcart\core\models\Oauth as OauthModel;
-use gplcart\core\exceptions\Oauth as OauthException;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
@@ -84,7 +86,9 @@ class Oauth extends FrontendController
 
     /**
      * Set and validates received data from Oauth provider
-     * @throws OauthException
+     * @throws OutOfBoundsException
+     * @throws AuthorizationException
+     * @throws UnexpectedValueException
      */
     protected function setReceivedDataOauth()
     {
@@ -98,17 +102,17 @@ class Oauth extends FrontendController
         $parsed = $this->oauth->parseState($this->data_state);
 
         if (empty($parsed['id']) || !isset($parsed['url'])) {
-            throw new OauthException('Invalid provider Id and/or returning URL');
+            throw new OutOfBoundsException('Invalid provider Id and/or returning URL');
         }
 
         if (!$this->oauth->isValidState($this->data_state, $parsed['id'])) {
-            throw new OauthException('Invalid state code');
+            throw new AuthorizationException('Invalid state code');
         }
 
         $this->data_provider = $this->oauth->getProvider($parsed['id']);
 
         if (empty($this->data_provider)) {
-            throw new OauthException('Invalid Oauth provider');
+            throw new UnexpectedValueException('Failed to get Oauth provider data');
         }
 
         $domain = parse_url($parsed['url'], PHP_URL_HOST);
@@ -118,7 +122,7 @@ class Oauth extends FrontendController
         }
 
         if (empty($store['status'])) {
-            throw new OauthException('Invalid domain in redirect URL');
+            throw new OutOfBoundsException('Invalid domain in the redirect URL');
         }
 
         $this->data_url = $parsed['url'];
@@ -142,7 +146,7 @@ class Oauth extends FrontendController
 
     /**
      * Set received token data
-     * @throws OauthException
+     * @throws OutOfBoundsException
      */
     protected function setTokenOauth()
     {
@@ -150,7 +154,7 @@ class Oauth extends FrontendController
         $this->data_token = $this->oauth->exchangeToken($this->data_provider, $query);
 
         if (empty($this->data_token['access_token'])) {
-            throw new OauthException('Failed to get access token');
+            throw new OutOfBoundsException('Empty Oauth access token');
         }
     }
 

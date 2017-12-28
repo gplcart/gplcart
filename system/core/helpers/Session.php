@@ -9,7 +9,7 @@
 
 namespace gplcart\core\helpers;
 
-use gplcart\core\exceptions\Session as SessionException;
+use UnexpectedValueException;
 
 /**
  * Provides methods to work with sessions
@@ -19,12 +19,12 @@ class Session
 
     /**
      * Initialize a new session
-     * @throws SessionException
+     * @throws UnexpectedValueException
      */
     public function init()
     {
         if (!GC_CLI && !$this->isInitialized() && !session_start()) {
-            throw new SessionException('Failed to start the session');
+            throw new UnexpectedValueException('Failed to start the session');
         }
     }
 
@@ -40,12 +40,12 @@ class Session
     /**
      * Regenerates the current session
      * @param bool $delete_old_session
-     * @throws SessionException
+     * @throws UnexpectedValueException
      */
     public function regenerate($delete_old_session)
     {
         if (!session_regenerate_id($delete_old_session)) {
-            throw new SessionException('Failed to regenerate the current session');
+            throw new UnexpectedValueException('Failed to regenerate the current session');
         }
     }
 
@@ -80,7 +80,7 @@ class Session
      * Deletes a data from the session
      * @param mixed $key
      * @return bool
-     * @throws SessionException
+     * @throws UnexpectedValueException
      */
     public function delete($key = null)
     {
@@ -91,7 +91,7 @@ class Session
         if (!isset($key)) {
             session_unset();
             if (!session_destroy()) {
-                throw new SessionException('Failed to delete the session');
+                throw new UnexpectedValueException('Failed to delete the session');
             }
             return true;
         }
