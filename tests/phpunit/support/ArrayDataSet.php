@@ -9,7 +9,7 @@
 
 namespace gplcart\tests\phpunit\support;
 
-use OutOfBoundsException;
+use OutOfRangeException;
 use PHPUnit_Extensions_Database_DataSet_DefaultTable;
 use PHPUnit_Extensions_Database_DataSet_AbstractDataSet;
 use PHPUnit_Extensions_Database_DataSet_DefaultTableMetaData;
@@ -66,12 +66,12 @@ class ArrayDataSet extends PHPUnit_Extensions_Database_DataSet_AbstractDataSet
      * Returns a table object for the given table
      * @param string $table
      * @return PHPUnit_Extensions_Database_DataSet_DefaultTable
-     * @throws OutOfBoundsException
+     * @throws OutOfRangeException
      */
     public function getTable($table)
     {
         if (!isset($this->tables[$table])) {
-            throw new OutOfBoundsException("$table is not a table in the current database");
+            throw new OutOfRangeException("$table is not a table in the current database");
         }
 
         return $this->tables[$table];

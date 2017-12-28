@@ -9,7 +9,7 @@
 
 namespace gplcart\core\helpers;
 
-use OutOfBoundsException,
+use OutOfRangeException,
     UnexpectedValueException;
 use gplcart\core\exceptions\File as FileException,
     gplcart\core\exceptions\Dependency as DependencyException;
@@ -447,7 +447,7 @@ class Curl
      * Returns the request info
      * @param null|string $key
      * @return mixed
-     * @throws OutOfBoundsException
+     * @throws OutOfRangeException
      */
     public function getInfo($key = null)
     {
@@ -459,7 +459,7 @@ class Curl
             return $this->info[$key];
         }
 
-        throw new OutOfBoundsException("Key $key does not exist in the CURL info array");
+        throw new OutOfRangeException("Key $key does not exist in the CURL info array");
     }
 
     /**

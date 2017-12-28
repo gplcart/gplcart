@@ -10,7 +10,7 @@
 namespace gplcart\core;
 
 use Exception,
-    OutOfBoundsException,
+    OutOfRangeException,
     BadMethodCallException;
 use gplcart\core\exceptions\Handler as HandlerException;
 
@@ -75,21 +75,21 @@ class Handler
      * @param string|null $handler_id
      * @param string $name
      * @return array|object
-     * @throws OutOfBoundsException
+     * @throws OutOfRangeException
      */
     protected static function getCallable($handlers, $handler_id, $name)
     {
         if (isset($handler_id)) {
 
             if (empty($handlers[$handler_id]['handlers'][$name])) {
-                throw new OutOfBoundsException("Failed to get handler using ID $handler_id and name $name");
+                throw new OutOfRangeException("Failed to get handler using ID $handler_id and name $name");
             }
 
             return $handlers[$handler_id]['handlers'][$name];
         }
 
         if (empty($handlers['handlers'][$name])) {
-            throw new OutOfBoundsException("Failed to get handler using name $name");
+            throw new OutOfRangeException("Failed to get handler using name $name");
         }
 
         return $handlers['handlers'][$name];

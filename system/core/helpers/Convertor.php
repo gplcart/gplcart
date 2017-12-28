@@ -9,7 +9,8 @@
 
 namespace gplcart\core\helpers;
 
-use UnexpectedValueException;
+use OutOfRangeException,
+    InvalidArgumentException;
 
 /**
  * Helper class to convert measurement units
@@ -80,7 +81,7 @@ class Convertor
      * @param number $value
      * @param string $unit
      * @return $this
-     * @throws UnexpectedValueException
+     * @throws OutOfRangeException
      */
     public function from($value, $unit)
     {
@@ -89,11 +90,11 @@ class Convertor
         $key = strtolower($unit);
 
         if (empty($this->units[$key]['base'])) {
-            throw new UnexpectedValueException('Unit does not exist');
+            throw new OutOfRangeException('Unit does not exist');
         }
 
         if (!isset($this->units[$key]['conversion'])) {
-            throw new UnexpectedValueException("Conversion is not set for unit $unit");
+            throw new OutOfRangeException("Conversion is not set for unit $unit");
         }
 
         $this->base_unit = $this->units[$key]['base'];
@@ -107,12 +108,13 @@ class Convertor
      * @param null|integer $decimals
      * @param bool $round
      * @return mixed
-     * @throws UnexpectedValueException
+     * @throws OutOfRangeException
+     * @throws InvalidArgumentException
      */
     public function to($unit, $decimals = null, $round = true)
     {
         if (!isset($this->value)) {
-            throw new UnexpectedValueException('From value not set');
+            throw new InvalidArgumentException('From value not set');
         }
 
         if (is_array($unit)) {
@@ -122,7 +124,7 @@ class Convertor
         $key = strtolower($unit);
 
         if (empty($this->units[$key]['base'])) {
-            throw new UnexpectedValueException('Unit does not exist');
+            throw new OutOfRangeException('Unit does not exist');
         }
 
         if (!isset($this->base_unit)) {
@@ -130,7 +132,7 @@ class Convertor
         }
 
         if ($this->units[$key]['base'] != $this->base_unit) {
-            throw new UnexpectedValueException('Cannot convert between units of different types');
+            throw new InvalidArgumentException('Cannot convert between units of different types');
         }
 
         if (is_callable($this->units[$key]['conversion'])) {
@@ -173,16 +175,16 @@ class Convertor
      * @param number $decimals
      * @param bool $round
      * @return array
-     * @throws UnexpectedValueException
+     * @throws InvalidArgumentException
      */
     public function toAll($decimals = null, $round = true)
     {
         if (!isset($this->value)) {
-            throw new UnexpectedValueException('From value not set');
+            throw new InvalidArgumentException('From value not set');
         }
 
         if (empty($this->base_unit)) {
-            throw new UnexpectedValueException('No from unit set');
+            throw new InvalidArgumentException('No from unit set');
         }
 
         $units = array();
@@ -201,16 +203,17 @@ class Convertor
      * @param string $base
      * @param mixed $conversion
      * @return $this
-     * @throws UnexpectedValueException
+     * @throws OutOfRangeException
+     * @throws InvalidArgumentException
      */
     public function setUnit($unit, $base, $conversion)
     {
         if (isset($this->units[$unit])) {
-            throw new UnexpectedValueException('Unit already exists');
+            throw new OutOfRangeException('Unit already set');
         }
 
         if (!isset($this->units[$base]) && $base != $unit) {
-            throw new UnexpectedValueException('Base unit does not exist');
+            throw new InvalidArgumentException('Invalid base unit');
         }
 
         $this->units[$unit] = array('base' => $base, 'conversion' => $conversion);
@@ -242,12 +245,12 @@ class Convertor
      * List all available conversion units for given unit
      * @param string $unit
      * @return array
-     * @throws UnexpectedValueException
+     * @throws OutOfRangeException
      */
     public function getUnits($unit)
     {
         if (empty($this->units[$unit])) {
-            throw new UnexpectedValueException('Unit does not exist');
+            throw new OutOfRangeException('Unit is not set');
         }
 
         $units = array();

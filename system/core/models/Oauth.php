@@ -10,6 +10,7 @@
 namespace gplcart\core\models;
 
 use Exception,
+    OutOfRangeException,
     OutOfBoundsException,
     UnexpectedValueException;
 use gplcart\core\exceptions\File as FileException,
@@ -330,6 +331,7 @@ class Oauth
      * @link https://developers.google.com/accounts/docs/OAuth2ServiceAccount
      * @throws OutOfBoundsException
      * @throws FileException
+     * @throws OutOfRangeException
      * @throws UnexpectedValueException
      */
     public function generateJwt(array $data)
@@ -337,7 +339,7 @@ class Oauth
         $data += array('lifetime' => 3600);
 
         if (empty($data['certificate_file'])) {
-            throw new OutOfBoundsException('Certificate file is not set');
+            throw new OutOfRangeException('Certificate file is not set');
         }
 
         if (strpos($data['certificate_file'], GC_DIR_FILE) !== 0) {
@@ -370,7 +372,7 @@ class Oauth
         }
 
         if (!isset($certs['pkey'])) {
-            throw new OutOfBoundsException('Could not find private key in the cerificate file');
+            throw new OutOfBoundsException('Could not find private key in the cerificate');
         }
 
         $sig = '';

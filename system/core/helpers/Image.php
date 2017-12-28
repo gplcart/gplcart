@@ -9,7 +9,8 @@
 
 namespace gplcart\core\helpers;
 
-use UnexpectedValueException,
+use OutOfRangeException,
+    UnexpectedValueException,
     BadFunctionCallException;
 
 /**
@@ -112,7 +113,7 @@ class Image
      * @param string $format
      * @param array $arguments
      * @return mixed
-     * @throws UnexpectedValueException
+     * @throws OutOfRangeException
      * @throws BadFunctionCallException
      */
     protected function callFunction($prefix, $format, array $arguments)
@@ -120,7 +121,7 @@ class Image
         $function = "$prefix$format";
 
         if (!in_array($format, $this->getSupportedFormats())) {
-            throw new UnexpectedValueException("Image format $format does not match with a set of supported formats");
+            throw new OutOfRangeException("Image format $format does not match with a set of supported formats");
         }
 
         if (!function_exists($function)) {

@@ -17,7 +17,7 @@ use gplcart\core\models\File as FileModel,
     gplcart\core\models\Translation as TranslationModel;
 use gplcart\core\helpers\SocketClient as SocketClientHelper;
 use Exception;
-use OutOfBoundsException,
+use OutOfRangeException,
     UnexpectedValueException;
 use gplcart\core\exceptions\File as FileException,
     gplcart\core\exceptions\Validation as ValidationException;
@@ -358,18 +358,17 @@ class FileTransfer
      * @param string $file
      * @param string|null $extension
      * @return bool
-     * @throws OutOfBoundsException
-     * @throws UnexpectedValueException
+     * @throws OutOfRangeException
      * @throws ValidationException
      */
     protected function validateHandler($file, $extension = null)
     {
         if (empty($this->handler['validator'])) {
-            throw new OutOfBoundsException($this->translation->text('Unknown handler'));
+            throw new OutOfRangeException($this->translation->text('Unknown handler'));
         }
 
         if (!empty($this->handler['extensions']) && isset($extension) && !in_array($extension, $this->handler['extensions'])) {
-            throw new UnexpectedValueException($this->translation->text('Unsupported file extension'));
+            throw new OutOfRangeException($this->translation->text('Unsupported file extension'));
         }
 
         if (isset($this->handler['filesize']) && filesize($file) > $this->handler['filesize']) {
@@ -408,12 +407,12 @@ class FileTransfer
      * Find and set handler by a file extension
      * @param string $extension
      * @return array
-     * @throws UnexpectedValueException
+     * @throws OutOfRangeException
      */
     protected function setHandlerByExtension($extension)
     {
         if (!in_array($extension, $this->file->supportedExtensions())) {
-            throw new UnexpectedValueException($this->translation->text('Unsupported file extension'));
+            throw new OutOfRangeException($this->translation->text('Unsupported file extension'));
         }
 
         return $this->handler = $this->file->getHandler(".$extension");

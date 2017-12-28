@@ -10,6 +10,7 @@
 namespace gplcart\core\helpers;
 
 use OutOfBoundsException,
+    InvalidArgumentException,
     UnexpectedValueException;
 
 /**
@@ -261,7 +262,7 @@ class SocketClient
      * Sets a socket depending on the current URI parameters
      * @return $this
      * @throws OutOfBoundsException
-     * @throws UnexpectedValueException
+     * @throws InvalidArgumentException
      */
     public function setSocket()
     {
@@ -276,7 +277,7 @@ class SocketClient
             $port = 443;
             $protocol = 'ssl';
         } else {
-            throw new UnexpectedValueException("Unsupported URL scheme: {$this->uri['scheme']}");
+            throw new InvalidArgumentException("Unsupported URL scheme: {$this->uri['scheme']}");
         }
 
         if (isset($this->uri['port'])) {
