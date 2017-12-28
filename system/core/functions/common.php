@@ -18,28 +18,6 @@ function gplcart_version($major = false)
 }
 
 /**
- * Converts human readable file sizes to numeric bytes
- * @param string $value
- * @return integer
- */
-function gplcart_bytes($value)
-{
-    $bytes = (int) $value;
-    $unit = strtolower(substr($value, -1, 1));
-
-    switch ($unit) {
-        case 'g':
-            $bytes *= 1024;
-        case 'm':
-            $bytes *= 1024;
-        case 'k':
-            $bytes *= 1024;
-    }
-
-    return $bytes;
-}
-
-/**
  * Returns XSS-safe JSON string
  * @param mixed $data
  * @param bool $pretty
