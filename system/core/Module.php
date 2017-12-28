@@ -9,8 +9,6 @@
 
 namespace gplcart\core;
 
-use gplcart\core\Config;
-
 /**
  * Parent class for modules
  */
@@ -102,7 +100,7 @@ class Module
     {
         $weight = (int) $this->db->fetchColumn('SELECT COUNT(*) FROM module', array());
 
-        $data += array('weight' => $weight++);
+        $data += array('weight' => $weight + 1);
         $data['created'] = $data['modified'] = GC_TIME;
         $this->db->insert('module', $data);
     }

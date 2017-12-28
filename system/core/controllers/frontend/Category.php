@@ -9,7 +9,6 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\CategoryGroup as CategoryGroupModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 
 /**
