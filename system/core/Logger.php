@@ -9,6 +9,8 @@
 
 namespace gplcart\core;
 
+use Exception;
+
 /**
  * Provides methods to log various errors and events
  */
@@ -126,7 +128,7 @@ class Logger
 
         try {
             $results = $this->db->fetchAll($sql, array('php_%'), array('unserialize' => 'data'));
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             return array();
         }
 
@@ -144,6 +146,7 @@ class Logger
      * @param string $message
      * @param string $file
      * @param string $line
+     * @throws Exception
      */
     public function errorHandler($code, $message, $file = '', $line = '')
     {
@@ -162,7 +165,7 @@ class Logger
             $this->errors[$key] = $error;
 
             if ($this->error_to_exception) {
-                throw new \Exception($this->getFormattedError($error));
+                throw new Exception($this->getFormattedError($error));
             }
 
             $this->log('php_error', $error, 'warning', false);
@@ -201,9 +204,9 @@ class Logger
 
     /**
      * Common exception handler
-     * @param \Exception $exc
+     * @param Exception $exc
      */
-    public function exceptionHandler(\Exception $exc)
+    public function exceptionHandler(Exception $exc)
     {
         $error = array(
             'code' => $exc->getCode(),
@@ -272,7 +275,7 @@ class Logger
      */
     public function backtrace()
     {
-        $e = new \Exception;
+        $e = new Exception;
 
         $trace = array_reverse(explode("\n", $e->getTraceAsString()));
         array_shift($trace);
