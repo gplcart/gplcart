@@ -33,7 +33,7 @@ class Logger
      * Whether to convert PHP errors to exceptions
      * @var bool
      */
-    protected $error_to_exception = true;
+    protected $error_to_exception = false;
 
     /**
      * Sets the database instance
@@ -65,10 +65,6 @@ class Logger
      */
     public function log($type, $data, $severity = 'info', $translatable = true)
     {
-        if (!$this->db->isInitialized()) {
-            return false;
-        }
-
         $message = '';
         if (is_string($data)) {
             $message = $data;
@@ -94,6 +90,10 @@ class Logger
      */
     public function add(array $data)
     {
+        if (!$this->dbIsReady()) {
+            return false;
+        }
+
         $data += array(
             'time' => GC_TIME,
             'log_id' => gplcart_string_random(6)
@@ -101,7 +101,7 @@ class Logger
 
         try {
             $result = (bool) $this->db->insert('log', $data);
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             $result = false;
         }
 
@@ -115,7 +115,7 @@ class Logger
      */
     public function selectErrors($limit = null)
     {
-        if (!$this->db->isInitialized()) {
+        if (!$this->dbIsReady()) {
             return array();
         }
 
@@ -147,6 +147,7 @@ class Logger
      * @param string $file
      * @param string $line
      * @throws Exception
+     * @return bool
      */
     public function errorHandler($code, $message, $file = '', $line = '')
     {
@@ -160,16 +161,24 @@ class Logger
 
         $key = md5(json_encode($error));
 
-        if (!isset($this->errors[$key])) {
-
-            $this->errors[$key] = $error;
-
-            if ($this->error_to_exception) {
-                throw new Exception($this->getFormattedError($error));
-            }
-
-            $this->log('php_error', $error, 'warning', false);
+        if (isset($this->errors[$key])) {
+            return false;
         }
+
+        $this->errors[$key] = $error;
+
+        $formatted_error = $this->getFormattedError($error, 'PHP error');
+
+        if ($this->error_to_exception) {
+            throw new Exception($formatted_error);
+        }
+
+        if (!$this->dbIsReady()) {
+            echo $formatted_error;
+            return true;
+        }
+
+        return $this->log('php_error', $error, 'warning', false);
     }
 
     /**
@@ -289,6 +298,15 @@ class Logger
         }
 
         return $result;
+    }
+
+    /**
+     * Whether the database is ready
+     * @return bool
+     */
+    protected function dbIsReady()
+    {
+        return $this->db instanceof \gplcart\core\Database && $this->db->isInitialized();
     }
 
 }
