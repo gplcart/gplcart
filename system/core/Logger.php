@@ -69,7 +69,7 @@ class Logger
         if (is_string($data)) {
             $message = $data;
         } elseif (isset($data['message'])) {
-            $message = $data['message'];
+            $message = (string) $data['message'];
         }
 
         $values = array(
@@ -156,7 +156,7 @@ class Logger
             'file' => $file,
             'line' => $line,
             'message' => $message,
-            'backtrace' => $this->backtrace()
+            'backtrace' => gplcart_backtrace()
         );
 
         $key = md5(json_encode($error));
@@ -222,7 +222,7 @@ class Logger
             'file' => $exc->getFile(),
             'line' => $exc->getLine(),
             'message' => $exc->getMessage(),
-            'backtrace' => $this->backtrace()
+            'backtrace' => gplcart_backtrace()
         );
 
         $this->log('php_exception', $error, 'danger', false);
@@ -276,28 +276,6 @@ class Logger
         }
 
         return $formatted;
-    }
-
-    /**
-     * Generates a backtrace
-     * @return array
-     */
-    public function backtrace()
-    {
-        $e = new Exception;
-
-        $trace = array_reverse(explode("\n", $e->getTraceAsString()));
-        array_shift($trace);
-        array_pop($trace);
-        $length = count($trace);
-        $root = str_replace('/', DIRECTORY_SEPARATOR, GC_DIR) . DIRECTORY_SEPARATOR;
-
-        $result = array();
-        for ($i = 0; $i < $length; $i++) {
-            $result[] = str_replace($root, '', substr($trace[$i], strpos($trace[$i], ' ')));
-        }
-
-        return $result;
     }
 
     /**
