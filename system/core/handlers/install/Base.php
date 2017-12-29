@@ -193,7 +193,7 @@ class Base
         $default['email'] = array($this->data['user']['email']);
 
         $store = array(
-            'status' => 1,
+            'status' => 0,
             'data' => $default,
             'name' => $this->data['store']['title'],
             'domain' => $this->data['store']['host'],
