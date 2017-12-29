@@ -271,3 +271,30 @@ function gplcart_config_delete($file)
 
     return false;
 }
+
+/**
+ * Improved version of debug_backtrace()
+ * @param bool $print
+ * @return array
+ */
+function gplcart_backtrace($print = false)
+{
+    $e = new \Exception;
+
+    $trace = array_reverse(explode("\n", $e->getTraceAsString()));
+    array_shift($trace);
+    array_pop($trace);
+    $length = count($trace);
+    $root = str_replace('/', DIRECTORY_SEPARATOR, GC_DIR) . DIRECTORY_SEPARATOR;
+
+    $result = array();
+    for ($i = 0; $i < $length; $i++) {
+        $result[] = str_replace($root, '', substr($trace[$i], strpos($trace[$i], ' ')));
+    }
+
+    if ($print) {
+        echo implode("\n", $result);
+    }
+
+    return $result;
+}
