@@ -121,9 +121,9 @@ class Dashboard extends Handler
      * @param PriceRuleModel $pricerule
      */
     public function __construct(Config $config, CartModel $cart, UserModel $user,
-            ProductModel $product, TranslationModel $translation, PriceModel $price, OrderModel $order,
-            OrderHistoryModel $order_history, ReportModel $report, ReviewModel $review,
-            TransactionModel $transaction, PriceRuleModel $pricerule)
+            ProductModel $product, TranslationModel $translation, PriceModel $price,
+            OrderModel $order, OrderHistoryModel $order_history, ReportModel $report,
+            ReviewModel $review, TransactionModel $transaction, PriceRuleModel $pricerule)
     {
         $this->cart = $cart;
         $this->user = $user;
@@ -266,30 +266,19 @@ class Dashboard extends Handler
      */
     public function event()
     {
-        $items = array();
-        foreach (array_keys($this->report->getSeverities()) as $severity) {
+        $options = array(
+            'limit' => array(0, $this->config->get('dashboard_limit', 10))
+        );
 
-            $options = array(
-                'severity' => $severity,
-                'limit' => array(0, $this->config->get('dashboard_limit', 10))
-            );
+        $events = (array) $this->report->getList($options);
 
-            $events = (array) $this->report->getList($options);
-
-            if (empty($events)) {
-                continue;
-            }
-
-            foreach ($events as &$event) {
-                $variables = empty($event['data']['variables']) ? array() : (array) $event['data']['variables'];
-                $message = empty($event['translatable']) ? $event['text'] : $this->translation->text($event['text'], $variables);
-                $event['message'] = strip_tags($message);
-            }
-
-            $items[$severity] = $events;
+        foreach ($events as &$event) {
+            $variables = empty($event['data']['variables']) ? array() : (array) $event['data']['variables'];
+            $message = empty($event['translatable']) ? $event['text'] : $this->translation->text($event['text'], $variables);
+            $event['message'] = strip_tags($message);
         }
 
-        return $items;
+        return $events;
     }
 
 }
