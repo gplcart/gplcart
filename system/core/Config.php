@@ -64,12 +64,14 @@ class Config
     {
         $this->initialized = false;
 
+        $this->setErrorHandlers();
+
         if (is_file($file)) {
-            $this->config = (array) gplcart_config_get($file);
-            $this->setDb($this->config['database']);
-            $this->config = array_merge($this->config, $this->select());
+            $this->setConfig($file);
+            $this->setErrorLevel();
             $this->setKey();
-            $this->setEnvironment();
+            $this->setLogger();
+            date_default_timezone_set($this->get('timezone', 'Europe/London'));
             $this->initialized = true;
         }
 
@@ -77,28 +79,55 @@ class Config
     }
 
     /**
-     * Configure environment
+     * Set PHP error reporting level
      */
-    protected function setEnvironment()
+    protected function setErrorLevel()
     {
-        $level = $this->get('error_level', 2);
-
-        if ($level == 0) {
-            error_reporting(0);
-        } else if ($level == 1) {
-            error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
-        } else if ($level == 2) {
-            error_reporting(E_ALL);
+        switch ($this->get('error_level', 2)) {
+            case 0:
+                error_reporting(0);
+                break;
+            case 1:
+                error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
+                break;
+            case 2:
+                error_reporting(E_ALL);
+                break;
         }
+    }
 
-        $this->logger->setDb($this->db);
-        $this->logger->errorToException($this->get('error_to_exception', false));
-
+    /**
+     * Sets PHP error handlers
+     */
+    protected function setErrorHandlers()
+    {
         register_shutdown_function(array($this->logger, 'shutdownHandler'));
         set_exception_handler(array($this->logger, 'exceptionHandler'));
         set_error_handler(array($this->logger, 'errorHandler'), error_reporting());
+    }
 
-        date_default_timezone_set($this->get('timezone', 'Europe/London'));
+    /**
+     * Sets logger
+     */
+    protected function setLogger()
+    {
+        $this->logger->setDb($this->db);
+        $this->logger->errorToException($this->get('error_to_exception', false));
+    }
+
+    /**
+     * Set array of configuration options
+     * @param array|string $config Either a file path or an array of configuration options
+     */
+    public function setConfig($config)
+    {
+        if (is_array($config)) {
+            $this->config = $config;
+        } else {
+            $this->config = (array) gplcart_config_get((string) $config);
+            $this->setDb($this->config['database']);
+            $this->config = array_merge($this->config, $this->select());
+        }
     }
 
     /**
@@ -231,9 +260,11 @@ class Config
 
         $settings = array();
         foreach ($results as $result) {
+
             if (!empty($result['serialized'])) {
                 $result['value'] = unserialize($result['value']);
             }
+
             $settings[$result['id']] = $result['value'];
         }
 
