@@ -9,6 +9,7 @@
 
 namespace gplcart\core\models;
 
+use Exception;
 use gplcart\core\Hook,
     gplcart\core\Handler,
     gplcart\core\Database,
@@ -138,7 +139,7 @@ class Install
             $handlers = $this->getHandlers();
             $method = isset($data['step']) ? 'install_' . $data['step'] : 'install';
             $result = Handler::call($handlers, $handler_id, $method, array($data, $this->db));
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             $result = array();
         }
 
@@ -191,7 +192,7 @@ class Install
         try {
             $this->db = new Database;
             $this->db->init($settings);
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             $this->db = null;
             return $this->translation->text($ex->getMessage());
         }

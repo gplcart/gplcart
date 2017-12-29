@@ -49,7 +49,7 @@ class Type
      */
     public function percent(&$amount, array &$components, array $price_rule)
     {
-        $value = $amount * ((float) $price_rule['value'] / 100);
+        $value = $amount * ($price_rule['value'] / 100);
         $components[$price_rule['price_rule_id']] = array('rule' => $price_rule, 'price' => $value);
         return $amount += $value;
     }

@@ -124,7 +124,6 @@ class Install extends CliController
     public function wizardInstall()
     {
         $this->controlAccessInstall();
-
         $this->validateWizardInstall();
         $this->processInstall();
         $this->output();
