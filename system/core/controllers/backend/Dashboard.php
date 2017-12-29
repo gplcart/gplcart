@@ -64,6 +64,9 @@ class Dashboard extends BackendController
         $this->setData('columns', $columns);
         $this->setData('dashboard', gplcart_array_split($this->data_dashboard['data'], $columns));
 
+        $stores = $this->store->getList(array('status' => 1));
+        $this->setData('no_enabled_stores', empty($stores));
+
         if ($this->config('intro', false) && $this->isSuperadmin()) {
             $this->setData('intro', $this->render('dashboard/intro'));
         }

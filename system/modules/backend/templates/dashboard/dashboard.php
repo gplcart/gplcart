@@ -8,6 +8,11 @@
  * To see available variables <?php print_r(get_defined_vars()); ?>
  */
 ?>
+<?php if($no_enabled_stores && $this->access('store_edit')) { ?>
+<div class="alert alert-warning">
+  <?php echo $this->text('All your stores are disabled and cannot be accessed by customers. You can enable them <a href="@url">here</a> by editing "Status" option', array('@url' => $this->url('admin/settings/store'))); ?>
+</div>
+<?php } ?>
 <?php if(empty($intro)) { ?>
 <?php if($this->access('dashboard_edit')) { ?>
 <p>
