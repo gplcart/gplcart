@@ -9,6 +9,7 @@
 
 namespace gplcart\core\handlers\install;
 
+use Exception;
 use gplcart\core\Container;
 
 /**
@@ -223,7 +224,7 @@ class Base
             $this->createCountries();
             $this->createLanguages();
             $this->createPages();
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             return $ex->getMessage();
         }
 
@@ -309,16 +310,11 @@ class Base
         $this->setCliMessage('Creating database tables...');
 
         try {
-            $result = $this->db->import($this->db->getScheme());
-        } catch (\Exception $ex) {
-            $result = $ex->getMessage();
+            $this->db->import($this->db->getScheme());
+            return true;
+        } catch (Exception $ex) {
+            return $ex->getMessage();
         }
-
-        if (empty($result)) {
-            return $this->translation->text('Failed to import database tables');
-        }
-
-        return $result;
     }
 
     /**
