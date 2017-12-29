@@ -11,9 +11,10 @@ namespace gplcart\core;
 
 use gplcart\core\helpers\Url as UrlHelper,
     gplcart\core\helpers\Session as SessionHelper;
+use gplcart\core\exceptions\Access as AccessException;
 
 /**
- * Provides methods to route incoming requests and setup the system
+ * An intermediary class that provides methods to route incoming requests and setup the system
  */
 class Facade
 {
@@ -86,7 +87,7 @@ class Facade
     public function routeCli()
     {
         if (!$this->config->get('cli_status', 1)) {
-            throw new \Exception('CLI access is disabled!');
+            throw new AccessException('CLI access is disabled!');
         }
 
         $this->cli->process();
