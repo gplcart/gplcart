@@ -10,7 +10,8 @@
 namespace gplcart\core;
 
 use PDO;
-use PDOException;
+use Exception,
+    OutOfRangeException;
 use gplcart\core\exceptions\Database as DatabaseException;
 
 /**
@@ -64,7 +65,7 @@ class Database
             $options = array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET sql_mode='PIPES_AS_CONCAT'");
             $this->pdo = new PDO($dns, $config['user'], $config['password'], $options);
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $ex) {
+        } catch (Exception $ex) {
             $this->pdo = null;
             throw new DatabaseException('Cannot connect to database: ' . $ex->getMessage());
         }
@@ -220,9 +221,7 @@ class Database
     {
         $reindexed = array();
         foreach ($results as &$result) {
-
             $this->prepareResult($result, $options);
-
             if (!empty($options['index'])) {
                 $reindexed[$result[$options['index']]] = $result;
             }
@@ -345,11 +344,6 @@ class Database
     public function getDefaultValues($table)
     {
         $scheme = $this->getScheme($table);
-
-        if (empty($scheme['fields'])) {
-            return array();
-        }
-
         $values = array();
         foreach ($scheme['fields'] as $name => $info) {
 
@@ -368,9 +362,9 @@ class Database
 
     /**
      * Returns an array of database scheme
-     * @staticvar array $scheme
      * @param string|null $table
      * @return array
+     * @throws OutOfRangeException
      */
     public function getScheme($table = null)
     {
@@ -378,7 +372,10 @@ class Database
         $scheme = array_merge($this->scheme, $default);
 
         if (isset($table)) {
-            return empty($scheme[$table]) ? array() : $scheme[$table];
+            if (empty($scheme[$table]['fields'])) {
+                throw new OutOfRangeException("Database table $table either does not exist or has invalid structure");
+            }
+            return $scheme[$table];
         }
 
         return $scheme;
@@ -402,11 +399,6 @@ class Database
     protected function filterValues($table, array $data)
     {
         $scheme = $this->getScheme($table);
-
-        if (empty($scheme['fields'])) {
-            return array();
-        }
-
         $values = array_intersect_key($data, $scheme['fields']);
 
         if (empty($values)) {
@@ -469,48 +461,44 @@ class Database
     /**
      * Creates tables using an array of scheme data
      * @param array $tables
-     * @return bool
+     * @throws DatabaseException
      */
     public function import(array $tables)
     {
-        $imported = 0;
         foreach ($tables as $table => $data) {
 
             $sql = $this->getSqlCreateTable($table, $data);
 
-            if ($this->query($sql) !== false) {
-                $imported++;
+            if (!$this->query($sql)) {
+                throw new DatabaseException("Failed to import database table $table");
             }
 
             $alter = $this->getSqlAlterTable($table, $data);
 
-            if (!empty($alter)) {
-                $this->query($alter);
+            if (!empty($alter) && !$this->query($alter)) {
+                throw new DatabaseException("Failed to alter table $table");
             }
         }
-
-        return $imported == count($tables);
     }
 
     /**
      * Install a database table using the scheme
      * @param string $table
      * @param array $scheme
-     * @return boolean|string
      * @throws DatabaseException
      */
     public function importScheme($table, array $scheme)
     {
         if ($this->tableExists($table)) {
-            throw new DatabaseException(/* @text */'Table already exists');
+            throw new DatabaseException('Table already exists');
         }
 
-        if (!$this->import($scheme)) {
+        try {
+            $this->import($scheme);
+        } catch (Exception $ex) {
             $this->deleteTable($table);
-            throw new DatabaseException(/* @text */'An error occurred while importing the database table');
+            throw new DatabaseException("Failed to import database table $table: " . $ex->getMessage());
         }
-
-        return true;
     }
 
     /**
@@ -521,11 +509,13 @@ class Database
      */
     protected function getSqlCreateTable($table, array $data)
     {
-        $fields = $this->getSqlFields($data['fields']);
-        $engine = isset($data['engine']) ? $data['engine'] : 'InnoDB';
-        $collate = isset($data['collate']) ? $data['collate'] : 'utf8_general_ci';
+        $data += array(
+            'engine' => 'InnoDB',
+            'collate' => 'utf8_general_ci'
+        );
 
-        return "CREATE TABLE $table($fields) ENGINE=$engine CHARACTER SET utf8 COLLATE $collate";
+        $fields = $this->getSqlFields($data['fields']);
+        return "CREATE TABLE $table($fields) ENGINE={$data['engine']} CHARACTER SET utf8 COLLATE {$data['collate']}";
     }
 
     /**
