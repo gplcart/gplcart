@@ -391,8 +391,8 @@ class Module
         }
 
         $options = array(
-            'unserialize' => 'settings',
-            'index' => 'module_id'
+            'index' => 'module_id',
+            'unserialize' => 'settings'
         );
 
         return $modules = $this->db->fetchAll('SELECT * FROM module', array(), $options);
