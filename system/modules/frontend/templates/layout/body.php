@@ -176,7 +176,6 @@ $region_content_class = 'col-md-8';
         </nav>
       </div>
       <div class="row">
-        <?php if (!empty($_menu)) { ?>
         <nav class="navbar navbar-inverse navbar-static-top third">
           <div class="container">
             <div class="navbar-header">
@@ -189,11 +188,12 @@ $region_content_class = 'col-md-8';
               </button>
             </div>
             <div class="navbar-collapse collapse" id="navbar-collapse-third">
-            <?php echo $_menu; ?>
+              <?php if (!empty($_menu)) { ?>
+              <?php echo $_menu; ?>
+              <?php } ?>
             </div>
           </div>
         </nav>
-        <?php } ?>
       </div>
       <div class="row">
         <div class="container">
