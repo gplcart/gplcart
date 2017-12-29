@@ -60,12 +60,6 @@ class CliController
     protected $hook;
 
     /**
-     * An array of the current CLI route data
-     * @var array
-     */
-    protected $current_route = array();
-
-    /**
      * The current CLI command
      * @var string
      */
@@ -88,6 +82,12 @@ class CliController
      * @var array
      */
     protected $errors = array();
+
+    /**
+     * An array of the current CLI route data
+     * @var array
+     */
+    protected $current_route = array();
 
     /**
      * Constructor
@@ -400,8 +400,10 @@ class CliController
         $this->line($this->text('List of available commands. To see help for a certain command use --help option'));
 
         foreach ($this->route->getList() as $command => $info) {
-            $description = $this->text('No description available');
-            if (!empty($info['help']['description'])) {
+
+            if (empty($info['help']['description'])) {
+                $description = $this->text('No description available');
+            } else {
                 $description = $this->text($info['help']['description']);
             }
 
