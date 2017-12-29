@@ -11,7 +11,7 @@ namespace gplcart\core\controllers\frontend;
 
 use OutOfBoundsException,
     UnexpectedValueException;
-use gplcart\core\exceptions\Authorization as AuthorizationException;
+use gplcart\core\exceptions\Access as AccessException;
 use gplcart\core\models\Oauth as OauthModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
 
@@ -87,7 +87,7 @@ class Oauth extends FrontendController
     /**
      * Set and validates received data from Oauth provider
      * @throws OutOfBoundsException
-     * @throws AuthorizationException
+     * @throws AccessException
      * @throws UnexpectedValueException
      */
     protected function setReceivedDataOauth()
@@ -106,7 +106,7 @@ class Oauth extends FrontendController
         }
 
         if (!$this->oauth->isValidState($this->data_state, $parsed['id'])) {
-            throw new AuthorizationException('Invalid state code');
+            throw new AccessException('Invalid state code');
         }
 
         $this->data_provider = $this->oauth->getProvider($parsed['id']);

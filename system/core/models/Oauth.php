@@ -14,7 +14,7 @@ use Exception,
     OutOfBoundsException,
     UnexpectedValueException;
 use gplcart\core\exceptions\File as FileException,
-    gplcart\core\exceptions\Authorization as AuthorizationException;
+    gplcart\core\exceptions\Access as AccessException;
 use gplcart\core\Hook,
     gplcart\core\Handler;
 use gplcart\core\helpers\Url as UrlHelper,
@@ -427,7 +427,7 @@ class Oauth
      * @param array $provider
      * @param array $jwt
      * @return mixed
-     * @throws AuthorizationException
+     * @throws AccessException
      * @link https://developers.google.com/accounts/docs/OAuth2ServiceAccount
      */
     public function exchangeTokenServer($provider, $jwt)
@@ -444,7 +444,7 @@ class Oauth
         try {
             $assertion = $this->generateJwt($jwt);
         } catch (Exception $ex) {
-            throw new AuthorizationException('Failed to exchange Oauth service token: ' . $ex->getMessage());
+            throw new AccessException('Failed to exchange Oauth service token: ' . $ex->getMessage());
         }
 
         $request = array(
