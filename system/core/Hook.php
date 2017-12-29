@@ -120,6 +120,8 @@ class Hook
      */
     public function attach($hook, &$a = null, &$b = null, &$c = null, &$d = null, &$e = null)
     {
+        $module_id = null;
+
         if (strpos($hook, '|') !== false) {
             list($hook, $module_id) = explode('|', $hook, 2);
         }
