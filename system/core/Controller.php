@@ -431,7 +431,6 @@ abstract class Controller
         $this->filter = $this->getInstance('gplcart\\core\\models\\Filter');
         $this->language = $this->getInstance('gplcart\\core\\models\\Language');
         $this->validator = $this->getInstance('gplcart\\core\\models\\Validator');
-
         $this->translation = $this->getInstance('gplcart\\core\\models\\Translation');
 
         $this->url = $this->getInstance('gplcart\\core\\helpers\\Url');
@@ -449,15 +448,18 @@ abstract class Controller
     protected function setRouteProperties()
     {
         $this->current_route = $this->route->get();
+
         $this->path = $this->url->path();
         $this->is_backend = $this->url->isBackend();
         $this->is_install = $this->url->isInstall();
-        $this->base = $this->request->base();
-        $this->uri_path = $this->server->requestUri();
+
         $this->host = $this->server->httpHost();
         $this->scheme = $this->server->httpScheme();
+        $this->uri_path = $this->server->requestUri();
         $this->is_ajax = $this->server->isAjaxRequest();
         $this->uri = $this->scheme . $this->host . $this->uri_path;
+
+        $this->base = $this->request->base();
         $this->query = (array) $this->request->get(null, array(), 'array');
     }
 
@@ -521,10 +523,9 @@ abstract class Controller
     protected function setDefaultAssets()
     {
         if (!$this->isInternalRoute()) {
-            $options = array('aggregate' => false);
-            $this->addAssetLibrary('jquery', $options);
-            $this->setJs('files/assets/system/js/common.js', $options);
-            $this->setCss('files/assets/system/css/common.css', $options);
+            $this->addAssetLibrary('jquery', array('aggregate' => false));
+            $this->setJs('files/assets/system/js/common.js', array('aggregate' => false));
+            $this->setCss('files/assets/system/css/common.css', array('aggregate' => false));
         }
     }
 
@@ -740,26 +741,21 @@ abstract class Controller
      * Formats a local time/date
      * @param null|integer $timestamp
      * @param bool $full
-     * @param string $format
      * @return string
      */
-    public function date($timestamp = null, $full = true, $format = '')
+    public function date($timestamp = null, $full = true)
     {
         if (empty($timestamp)) {
             $timestamp = GC_TIME;
         }
 
-        if (!empty($format)) {
-            $timestamp = \DateTime::createFromFormat($format, $timestamp)->getTimestamp();
-        }
-
-        $dateformat = $this->config('date_prefix', 'd.m.y');
+        $format = $this->config('date_prefix', 'd.m.y');
 
         if ($full) {
-            $dateformat .= $this->config('date_suffix', ' H:i');
+            $format .= $this->config('date_suffix', ' H:i');
         }
 
-        return date($dateformat, $timestamp);
+        return date($format, $timestamp);
     }
 
     /**
@@ -1527,7 +1523,9 @@ abstract class Controller
      */
     protected function controlMaintenanceMode()
     {
-        $allowed_path = $this->is_install || $this->is_backend || in_array($this->path, array('login', 'logout'));
+        $allowed_path = $this->is_install || $this->is_backend//
+                || in_array($this->path, array('login', 'logout', 'forgot'));
+
         $this->is_maintenance = empty($this->current_store['status']) && !$allowed_path;
 
         if ($this->is_maintenance && !$this->access('maintenance')) {
