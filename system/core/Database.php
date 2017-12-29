@@ -497,16 +497,17 @@ class Database
      * @param string $table
      * @param array $scheme
      * @return boolean|string
+     * @throws DatabaseException
      */
     public function importScheme($table, array $scheme)
     {
         if ($this->tableExists($table)) {
-            return 'Table already exists';
+            throw new DatabaseException(/* @text */'Table already exists');
         }
 
         if (!$this->import($scheme)) {
             $this->deleteTable($table);
-            return 'An error occurred while importing the database table';
+            throw new DatabaseException(/* @text */'An error occurred while importing the database table');
         }
 
         return true;
