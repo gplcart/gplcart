@@ -118,10 +118,6 @@ class Logger
      */
     public function log($type, $data, $severity = 'info', $translatable = true)
     {
-        if (!$this->isDb()) {
-            return false;
-        }
-
         $message = '';
         if (is_string($data)) {
             $message = $data;
@@ -303,7 +299,7 @@ class Logger
 
         $message = implode("<br>\n", $parts);
 
-        if ($header !== '') {
+        if (!empty($header)) {
             $message = "<h3>$header</h3>$message";
         }
 
