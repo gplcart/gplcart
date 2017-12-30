@@ -87,6 +87,7 @@ class Route
     public function init()
     {
         $this->setLangcode();
+
         $this->path = $this->url->path();
         $this->db = $this->config->getDb();
     }
