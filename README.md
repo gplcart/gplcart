@@ -5,7 +5,7 @@
 ## WARNING. Dev branch in not for production. Please wait until the release of 1.X ##
 
 ## About ##
-GPLCart is an open source e-commerce platform based on the classical LAMP stack (Linux+ Apache+Mysql+PHP). It's a free, simple, modern and extensible solution that allows you to build online shops fast and easy. GplCart is not a fork of an existing software. It's completely unique, made "with blood, sweat and tears" from the scratch.
+GPLCart is an open source e-commerce platform based on the classical LAMP stack (Linux+ Apache+Mysql+PHP). It's free, simple and extensible solution that allows you to build online shops fast and easy. GplCart is not a fork of an existing software. It's completely unique, made "with blood, sweat and tears" from the scratch.
 
 ## Requirements ##
 
