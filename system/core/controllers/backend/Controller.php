@@ -51,11 +51,10 @@ class Controller extends BaseController
     {
         parent::__construct();
 
-        $this->setInstancesBackend();
+        $this->setBackendInstances();
         $this->setJob($this->job);
         $this->setCron();
-        $this->setDataBackend();
-        $this->getPostedAction();
+        $this->setBackendData();
 
         $this->hook->attach('construct.controller.backend', $this);
         $this->controlHttpStatus();
@@ -64,7 +63,7 @@ class Controller extends BaseController
     /**
      * Sets default class instances
      */
-    protected function setInstancesBackend()
+    protected function setBackendInstances()
     {
         $this->job = $this->getInstance('gplcart\\core\\models\\Job');
         $this->help = $this->getInstance('gplcart\\core\\models\\Help');
@@ -74,7 +73,7 @@ class Controller extends BaseController
     /**
      * Sets default variables for backend templates
      */
-    protected function setDataBackend()
+    protected function setBackendData()
     {
         $this->data['_job'] = $this->getWidgetJob($this->job);
         $this->data['_stores'] = (array) $this->store->getList();

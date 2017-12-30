@@ -120,8 +120,8 @@ class Controller extends BaseController
 
         if (!$this->isInternalRoute()) {
 
-            $this->setDefaultDataFrontend();
-            $this->setDefaultJsStoreFrontend();
+            $this->setFrontendData();
+            $this->setFrontendJs();
 
             $this->submitCart($this->cart_action);
             $this->submitWishlist($this->wishlist_action);
@@ -150,7 +150,7 @@ class Controller extends BaseController
     /**
      * Sets default data for templates
      */
-    protected function setDefaultDataFrontend()
+    protected function setFrontendData()
     {
         $currencies = $this->currency->getList(array('enabled' => true));
 
@@ -166,7 +166,7 @@ class Controller extends BaseController
     /**
      * Set per-store JS (Google Analytics etc)
      */
-    protected function setDefaultJsStoreFrontend()
+    protected function setFrontendJs()
     {
         if (!empty($this->current_store['data']['js'])) {
             $this->setJs($this->current_store['data']['js'], array('position' => 'bottom', 'aggregate' => false));
