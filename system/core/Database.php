@@ -31,7 +31,7 @@ class Database
      * An array of collected queries
      * @var array
      */
-    protected $logs = array();
+    protected $executed = array();
 
     /**
      * An array of database scheme
@@ -92,35 +92,35 @@ class Database
     }
 
     /**
-     * Returns an array of collected query logs
+     * Returns an array of collected queries
      * @return array
      */
-    public function getLogs()
+    public function getExecutedQueries()
     {
-        return $this->logs;
+        return $this->executed;
     }
 
     /**
      * Executes an SQL statement, returning a result set as a PDOStatement object
-     * @param string $statement
+     * @param string $sql
      * @return \PDOStatement|false
      */
-    public function query($statement)
+    public function query($sql)
     {
-        $result = $this->pdo->query($statement);
-        $this->logs[] = $statement;
+        $result = $this->pdo->query($sql);
+        $this->executed[] = $sql;
         return $result;
     }
 
     /**
      * Execute an SQL statement and return the number of affected rows
-     * @param string $statement
+     * @param string $sql
      * @return integer
      */
-    public function exec($statement)
+    public function exec($sql)
     {
-        $result = $this->pdo->exec($statement);
-        $this->logs[] = $statement;
+        $result = $this->pdo->exec($sql);
+        $this->executed[] = $sql;
         return $result;
     }
 
@@ -152,7 +152,7 @@ class Database
         }
 
         $sth->execute($params);
-        $this->logs[] = $sql;
+        $this->executed[] = $sql;
         return $sth;
     }
 
@@ -299,7 +299,7 @@ class Database
         }
 
         $stmt->execute();
-        $this->logs[] = $sql;
+        $this->executed[] = $sql;
         return $stmt->rowCount();
     }
 
