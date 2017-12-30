@@ -28,7 +28,7 @@ class Database
     protected $pdo;
 
     /**
-     * An array of collected queries
+     * An array of executed queries
      * @var array
      */
     protected $executed = array();
