@@ -90,8 +90,9 @@ class Config
             case 1:
                 error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
                 break;
-            default:
+            case 2:
                 error_reporting(E_ALL);
+                break;
         }
     }
 
@@ -224,53 +225,23 @@ class Config
             return isset($name) ? $default : array();
         }
 
+        $conditions = array();
+        $sql = 'SELECT * FROM settings';
+
         if (isset($name)) {
-            return $this->selectOne($name, $default);
+            $conditions[] = $name;
+            $sql .= ' WHERE id=? LIMIT 0,1';
         }
-
-        return $this->selectAll();
-    }
-
-    /**
-     * Select a single setting from the database
-     * @param string $name
-     * @param mixed $default
-     * @return mixed
-     */
-    protected function selectOne($name, $default = null)
-    {
-        $result = $this->db->fetch('SELECT * FROM settings WHERE id=?', array($name));
-
-        if (empty($result)) {
-            return $default;
-        }
-
-        if (!empty($result['serialized'])) {
-            return unserialize($result['value']);
-        }
-
-        return $result['value'];
-    }
-
-    /**
-     * Select all settings from the database
-     * @return array
-     */
-    protected function selectAll()
-    {
-        $results = $this->db->fetchAll('SELECT * FROM settings', array());
 
         $settings = array();
-        foreach ($results as $result) {
-
+        foreach ($this->db->fetchAll($sql, $conditions) as $result) {
             if (!empty($result['serialized'])) {
                 $result['value'] = unserialize($result['value']);
             }
-
             $settings[$result['id']] = $result['value'];
         }
 
-        return $settings;
+        return isset($name) ? reset($settings) : $settings;
     }
 
     /**
