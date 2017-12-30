@@ -36,6 +36,24 @@ class Logger
     protected $error_to_exception = false;
 
     /**
+     * Whether to log error backtrace
+     * @var bool
+     */
+    protected $log_backtrace = true;
+
+    /**
+     * Whether to print error backtrace
+     * @var bool
+     */
+    protected $print_backtrace = false;
+
+    /**
+     * Whether to print PHP errors
+     * @var bool
+     */
+    protected $print_error = false;
+
+    /**
      * Sets the database instance
      * @param \gplcart\core\Database $db
      * @return $this
@@ -49,10 +67,45 @@ class Logger
     /**
      * Enable/disable converting PHP errors to exceptions
      * @param bool $convert
+     * @return $this
      */
     public function errorToException($convert = true)
     {
         $this->error_to_exception = (bool) $convert;
+        return $this;
+    }
+
+    /**
+     * Enable / disable error backtrace logging
+     * @param type $value
+     * @return $this
+     */
+    public function logBacktrace($value = true)
+    {
+        $this->log_backtrace = (bool) $value;
+        return $this;
+    }
+
+    /**
+     * Enable / disable error output
+     * @param bool $value
+     * @return $this
+     */
+    public function printError($value = true)
+    {
+        $this->print_error = (bool) $value;
+        return $this;
+    }
+
+    /**
+     * Whether to add a backtrace to each printed error
+     * @param bool $value
+     * @return $this
+     */
+    public function printBacktrace($value = true)
+    {
+        $this->print_backtrace = (bool) $value;
+        return $this;
     }
 
     /**
@@ -65,6 +118,10 @@ class Logger
      */
     public function log($type, $data, $severity = 'info', $translatable = true)
     {
+        if (!$this->isDb()) {
+            return false;
+        }
+
         $message = '';
         if (is_string($data)) {
             $message = $data;
@@ -76,8 +133,8 @@ class Logger
             'text' => $message,
             'data' => (array) $data,
             'translatable' => $translatable,
-            'type' => mb_substr($type, 0, 255, 'UTF-8'),
-            'severity' => mb_substr($severity, 0, 255, 'UTF-8')
+            'type' => mb_substr($type, 0, 255),
+            'severity' => mb_substr($severity, 0, 255)
         );
 
         return $this->add($values);
@@ -90,7 +147,7 @@ class Logger
      */
     public function add(array $data)
     {
-        if (!$this->dbIsReady()) {
+        if (!$this->isDb()) {
             return false;
         }
 
@@ -115,7 +172,7 @@ class Logger
      */
     public function selectErrors($limit = null)
     {
-        if (!$this->dbIsReady()) {
+        if (!$this->isDb()) {
             return array();
         }
 
@@ -151,34 +208,42 @@ class Logger
      */
     public function errorHandler($code, $message, $file = '', $line = '')
     {
+        if ($this->error_to_exception) {
+            throw new Exception($message);
+        }
+
         $error = array(
             'code' => $code,
             'file' => $file,
             'line' => $line,
             'message' => $message,
-            'backtrace' => gplcart_backtrace()
+            'backtrace' => $this->log_backtrace ? gplcart_backtrace() : array()
         );
+
+        $print = $this->print_error || !$this->isDb();
+
+        if (in_array($code, $this->getFatalErrorTypes())) {
+            if ($print) {
+                return false; // Let it fall through to the standard PHP error handler
+            }
+            $this->log('php_shutdown', $error, 'danger', false);
+            return true;
+        }
 
         $key = md5(json_encode($error));
 
         if (isset($this->errors[$key])) {
-            return false;
+            return true;
         }
 
         $this->errors[$key] = $error;
 
-        $formatted_error = $this->getFormattedError($error, 'PHP error');
-
-        if ($this->error_to_exception) {
-            throw new Exception($formatted_error);
+        if ($print) {
+            echo $this->getFormattedError($error);
         }
 
-        if (!$this->dbIsReady()) {
-            echo $formatted_error;
-            return true;
-        }
-
-        return $this->log('php_error', $error, 'warning', false);
+        $this->log('php_error', $error, 'warning', false);
+        return true;
     }
 
     /**
@@ -188,27 +253,9 @@ class Logger
     {
         $error = error_get_last();
 
-        if (in_array($error['type'], $this->getFatalErrorTypes())) {
+        if (isset($error['type']) && in_array($error['type'], $this->getFatalErrorTypes())) {
             $this->log('php_shutdown', $error, 'danger', false);
         }
-    }
-
-    /**
-     * Returns an array of PHP error types which are fatal
-     * @return array
-     */
-    protected function getFatalErrorTypes()
-    {
-        return array(
-            E_ERROR,
-            E_PARSE,
-            E_CORE_ERROR,
-            E_USER_ERROR,
-            E_CORE_WARNING,
-            E_COMPILE_ERROR,
-            E_COMPILE_WARNING,
-            E_RECOVERABLE_ERROR,
-        );
     }
 
     /**
@@ -222,7 +269,7 @@ class Logger
             'file' => $exc->getFile(),
             'line' => $exc->getLine(),
             'message' => $exc->getMessage(),
-            'backtrace' => gplcart_backtrace()
+            'backtrace' => $this->log_backtrace ? gplcart_backtrace() : array()
         );
 
         $this->log('php_exception', $error, 'danger', false);
@@ -235,7 +282,7 @@ class Logger
      * @param string $header
      * @return string
      */
-    public function getFormattedError($error, $header = '')
+    public function getFormattedError(array $error, $header = '')
     {
         $parts = array("Message: {$error['message']}");
 
@@ -249,6 +296,10 @@ class Logger
 
         $parts[] = "File: {$error['file']}";
         $parts[] = "Line: {$error['line']}";
+
+        if ($this->print_backtrace && !empty($error['backtrace'])) {
+            $parts[] = "Backtrace:<br>\n" . implode("<br>\n", $error['backtrace']);
+        }
 
         $message = implode("<br>\n", $parts);
 
@@ -279,10 +330,28 @@ class Logger
     }
 
     /**
+     * Returns an array of PHP error types which are fatal
+     * @return array
+     */
+    public function getFatalErrorTypes()
+    {
+        return array(
+            E_ERROR,
+            E_PARSE,
+            E_CORE_ERROR,
+            E_USER_ERROR,
+            E_CORE_WARNING,
+            E_COMPILE_ERROR,
+            E_COMPILE_WARNING,
+            E_RECOVERABLE_ERROR,
+        );
+    }
+
+    /**
      * Whether the database is ready
      * @return bool
      */
-    protected function dbIsReady()
+    protected function isDb()
     {
         return $this->db instanceof \gplcart\core\Database && $this->db->isInitialized();
     }
