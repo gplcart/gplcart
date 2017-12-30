@@ -90,9 +90,8 @@ class Config
             case 1:
                 error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
                 break;
-            case 2:
+            default :
                 error_reporting(E_ALL);
-                break;
         }
     }
 
@@ -111,8 +110,11 @@ class Config
      */
     protected function setLogger()
     {
-        $this->logger->setDb($this->db);
-        $this->logger->errorToException($this->get('error_to_exception', false));
+        $this->logger->setDb($this->db)
+                ->printError($this->get('error_print', false))
+                ->logBacktrace($this->get('error_log_backtrace', true))
+                ->printBacktrace($this->get('error_print_backtrace', false))
+                ->errorToException($this->get('error_to_exception', false));
     }
 
     /**
