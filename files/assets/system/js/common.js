@@ -68,7 +68,7 @@ var Gplcart = typeof Gplcart !== 'undefined' ? Gplcart : {
             text = Gplcart.translations[text][0];
         }
 
-        return Gplcart.formatString(text, options);
+        return Gplcart.format(text, options);
     };
 
     /**
@@ -77,7 +77,7 @@ var Gplcart = typeof Gplcart !== 'undefined' ? Gplcart : {
      * @param {Object} args
      * @returns {String}
      */
-    Gplcart.formatString = function (str, args) {
+    Gplcart.format = function (str, args) {
 
         for (var key in args) {
             switch (key.charAt(0)) {
