@@ -14,22 +14,31 @@
      */
     var htmlModal = function (content, id, header) {
 
-        var html = '', mod;
+        var vars = {
+            '@id': id,
+            '@header': header,
+            '!content': content
+        };
 
-        html = '<div class="modal fade" id="' + id + '">';
-        html += '<div class="modal-dialog">';
-        html += '<div class="modal-content">';
-        html += '<div class="modal-header clearfix">';
-        html += '<a href="#" class="pull-right" data-dismiss="modal">';
-        html += '<i class="fa fa-times"></i></a>';
+        var html = '<div class="modal fade" id="@id">\n\
+                    <div class="modal-dialog">\n\
+                    <div class="modal-content">\n\
+                    <div class="modal-header clearfix">\n\
+                    <a href="#" class="pull-right" data-dismiss="modal">\n\
+                    <i class="fa fa-times"></i></a>';
 
         if (typeof header !== 'undefined') {
-            html += '<h4 class="modal-title pull-left">' + header + '</h4>';
+            html += '<h4 class="modal-title pull-left">@header</h4>';
         }
 
-        html += '</div><div class="modal-body">' + content + '</div></div></div>';
+        html += '</div>\n\
+                <div class="modal-body">!content</div>\n\
+                </div>\n\
+                </div>';
 
-        mod = Gplcart.hook('html.modal', html);
+        html = Gplcart.format(html, vars);
+
+        var mod = Gplcart.hook('html.modal', html);
         return mod === undefined ? html : mod;
     };
 
@@ -41,23 +50,24 @@
      */
     var htmlModalGallery = function (src, id) {
 
-        var html = '', mod;
+        var vars = {'@id': id, '@src': src};
 
-        html = '<div class="modal fade gallery" id="' + id + '">';
-        html += '<div class="modal-dialog">';
-        html += '<div class="modal-content">';
-        html += '<div class="modal-header clearfix">';
-        html += '<a href="#" class="pull-right" data-dismiss="modal">';
-        html += '<i class="fa fa-times"></i></a>';
-        html += '</div>';
-        html += '<div class="modal-body text-center">';
-        html += '<img class="img-responsive" src="' + src + '">';
-        html += '</div>';
-        html += '</div>';
-        html += '</div>';
-        html += '</div>';
+        var html = '<div class="modal fade gallery" id="@id">\n\
+                    <div class="modal-dialog">\n\
+                    <div class="modal-content">\n\
+                    <div class="modal-header clearfix">\n\
+                    <a href="#" class="pull-right" data-dismiss="modal">\n\
+                    <i class="fa fa-times"></i></a>\n\
+                    </div>\n\
+                    <div class="modal-body text-center">\n\
+                    <img class="img-responsive" src="@src">\n\
+                    </div>\n\
+                    </div>\n\
+                    </div>\n\
+                    </div>';
 
-        mod = Gplcart.hook('html.modal.gallery', html);
+        html = Gplcart.format(html, vars);
+        var mod = Gplcart.hook('html.modal.gallery', html);
         return mod === undefined ? html : mod;
     };
 
@@ -67,12 +77,17 @@
      */
     var htmlBtnInCompare = function () {
 
-        var html = '', mod;
-        html += '<a title="' + Gplcart.text('Already in comparison') + '" href="' + Gplcart.settings.base + 'compare" class="btn btn-default active">';
-        html += '<i class="fa fa-balance-scale"></i>';
-        html += '</a>';
+        var vars = {
+            '@href': Gplcart.settings.base + 'compare',
+            '@title': Gplcart.text('Already in comparison')
+        };
 
-        mod = Gplcart.hook('html.btn.in.compare', html);
+        var html = '<a title="@title" href="@href" class="btn btn-default active">\n\
+                      <i class="fa fa-balance-scale"></i>\n\
+                    </a>';
+
+        html = Gplcart.format(html, vars);
+        var mod = Gplcart.hook('html.btn.in.compare', html);
         return mod === undefined ? html : mod;
     };
 
@@ -82,15 +97,17 @@
      */
     var htmlBtnInWishlist = function () {
 
-        var html = '',
-                mod,
-                url = Gplcart.settings.base + 'wishlist',
-                title = Gplcart.text('Already in wishlist');
+        var vars = {
+            '@href': Gplcart.settings.base + 'wishlist',
+            '@title': Gplcart.text('Already in wishlist')
+        };
 
-        html += '<a title="' + title + '" href="' + url + '" class="btn btn-default active">';
-        html += '<i class="fa fa-heart"></i></a>';
+        var html = '<a title="@title" href="@href" class="btn btn-default active">\n\
+                    <i class="fa fa-heart"></i>\n\
+                    </a>';
 
-        mod = Gplcart.hook('html.btn.in.wishlist', html);
+        html = Gplcart.format(html, vars);
+        var mod = Gplcart.hook('html.btn.in.wishlist', html);
         return mod === undefined ? html : mod;
     };
 
@@ -102,14 +119,18 @@
      */
     var htmlBtnSelectedOptions = function (fid, title) {
 
-        var html = '', mod;
+        var vars = {
+            '@fid': fid,
+            '@label': title,
+            '@title': Gplcart.text('Remove')
+        };
 
-        html += '<span title="' + Gplcart.text('Remove') + '" data-reset-field-id="' + fid + '" class="btn btn-default btn-xs">';
-        html += title;
-        html += '<span class="fa fa-times"></span>';
-        html += '</span>';
+        var html = '<span title="@title" data-reset-field-id="@fid" class="btn btn-default btn-xs">\n\
+                    @label<span class="fa fa-times"></span>\n\
+                    </span>';
 
-        mod = Gplcart.hook('html.btn.selected.options', html);
+        html = Gplcart.format(html, vars);
+        var mod = Gplcart.hook('html.btn.selected.options', html);
         return mod === undefined ? html : mod;
     };
 
