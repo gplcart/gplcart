@@ -310,8 +310,16 @@ class Category extends BackendController
      */
     protected function prepareCategory(array $category)
     {
-        $category['alias'] = $this->alias->getByEntity('category', $category['category_id']);
+        $this->setItemAlias($category, 'category', $this->alias);
+        $this->setItemImages($category, 'category', $this->image);
         $this->setItemTranslation($category, 'category', $this->translation_entity);
+
+        if (!empty($category['images'])) {
+            foreach ($category['images'] as &$file) {
+                $this->setItemTranslation($file, 'file', $this->translation_entity);
+            }
+        }
+
         return $category;
     }
 
@@ -338,6 +346,8 @@ class Category extends BackendController
      */
     protected function deleteImagesCategory()
     {
+        $this->controlAccess('category_edit');
+
         $file_ids = $this->getPosted('delete_images', array(), true, 'array');
         return $this->image->delete($file_ids);
     }

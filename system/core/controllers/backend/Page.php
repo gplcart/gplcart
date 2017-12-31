@@ -32,6 +32,12 @@ class Page extends BackendController
     protected $page;
 
     /**
+     * URL model instance
+     * @var \gplcart\core\models\Alias $alias
+     */
+    protected $alias;
+
+    /**
      * Category model instance
      * @var \gplcart\core\models\Category $category
      */
@@ -42,12 +48,6 @@ class Page extends BackendController
      * @var \gplcart\core\models\CategoryGroup $category_group
      */
     protected $category_group;
-
-    /**
-     * URL model instance
-     * @var \gplcart\core\models\Alias $alias
-     */
-    protected $alias;
 
     /**
      * Entity translation model instance
@@ -234,7 +234,6 @@ class Page extends BackendController
 
         $this->setDataImagesEditPage();
         $this->setDataCategoriesEditPage();
-
         $this->outputEditPage();
     }
 
@@ -262,11 +261,17 @@ class Page extends BackendController
     {
         $user = $this->user->get($page['user_id']);
 
-        $page['author'] = isset($user['email']) ? $user['email'] : $this->text('Unknown');
-        $page['alias'] = $this->alias->getByEntity('page', $page['page_id']);
-
+        $this->setItemAlias($page, 'page', $this->alias);
+        $this->setItemImages($page, 'page', $this->image);
         $this->setItemTranslation($page, 'page', $this->translation_entity);
 
+        if (!empty($page['images'])) {
+            foreach ($page['images'] as &$file) {
+                $this->setItemTranslation($file, 'file', $this->translation_entity);
+            }
+        }
+
+        $page['author'] = isset($user['email']) ? $user['email'] : $this->text('Unknown');
         return $page;
     }
 
@@ -293,6 +298,8 @@ class Page extends BackendController
      */
     protected function deleteImagesPage()
     {
+        $this->controlAccess('page_edit');
+
         $file_ids = $this->getPosted('delete_images', array(), true, 'array');
         return $this->image->delete($file_ids);
     }

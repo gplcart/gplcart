@@ -261,9 +261,9 @@ class Product extends BackendController
         $this->setData('size_units', $this->product->getSizeUnits());
         $this->setData('weight_units', $this->product->getWeightUnits());
         $this->setData('default_currency', $this->currency->getDefault());
-        $this->setData('languages', $this->language->getList(array('in_database' => true)));
         $this->setData('subtract_default', $this->config->get('product_subtract', 0));
         $this->setData('classes', $this->product_class->getList(array('status' => 1)));
+        $this->setData('languages', $this->language->getList(array('in_database' => true)));
 
         $this->submitEditProduct();
 
@@ -330,12 +330,43 @@ class Product extends BackendController
         );
 
         $product['related'] = $this->product->getRelated($options);
-        $product['alias'] = $this->alias->getByEntity('product', $product['product_id']);
         $product['price'] = $this->price->decimal($product['price'], $product['currency']);
 
-        $this->setItemProductCombination($product, $this->image, $this->price);
+        $this->setSkuCombinationProduct($product);
+        $this->setItemAlias($product, 'product', $this->alias);
+        $this->setItemImages($product, 'product', $this->image);
         $this->setItemTranslation($product, 'product', $this->translation_entity);
+
+        if (!empty($product['images'])) {
+            foreach ($product['images'] as &$file) {
+                $this->setItemTranslation($file, 'file', $this->translation_entity);
+            }
+        }
+
         return $product;
+    }
+
+    /**
+     * Sets product SKU combinations data
+     * @param array $product
+     * @return null
+     */
+    protected function setSkuCombinationProduct(array &$product)
+    {
+        if (empty($product['combination'])) {
+            return null;
+        }
+
+        foreach ($product['combination'] as &$combination) {
+            $combination['path'] = $combination['thumb'] = '';
+            if (!empty($product['images'][$combination['file_id']])) {
+                $combination['path'] = $product['images'][$combination['file_id']]['path'];
+                $this->setItemThumb($combination, $this->image);
+            }
+            $combination['price'] = $this->price->decimal($combination['price'], $product['currency']);
+        }
+
+        return null;
     }
 
     /**
@@ -361,6 +392,8 @@ class Product extends BackendController
      */
     protected function deleteImagesProduct()
     {
+        $this->controlAccess('product_edit');
+
         $file_ids = $this->getPosted('delete_images', array(), true, 'array');
         return $this->image->delete($file_ids);
     }

@@ -243,9 +243,24 @@ class FieldValue extends BackendController
         $this->setData('languages', $this->language->getList(array('in_database' => true)));
 
         $this->submitEditFieldValue();
-        $this->setDataEditFieldValue();
+        $this->setDataImagesEditFieldValue();
 
         $this->outputEditFieldValue();
+    }
+
+    /**
+     * Adds images on the edit field value page
+     */
+    protected function setDataImagesEditFieldValue()
+    {
+        $options = array(
+            'single' => true,
+            'entity' => 'field_value',
+            'images' => $this->getData('field_value.images', array())
+        );
+
+        $this->setItemThumb($options, $this->image);
+        $this->setData('attached_images', $this->getWidgetImages($this->language, $options));
     }
 
     /**
@@ -256,11 +271,7 @@ class FieldValue extends BackendController
         if ($this->isPosted('delete')) {
             $this->deleteFieldValue();
         } else if ($this->isPosted('save') && $this->validateEditFieldValue()) {
-
-            if ($this->isPosted('delete_image')) {
-                $this->deleteImageFieldValue();
-            }
-
+            $this->deleteImageFieldValue();
             if (isset($this->data_field_value['field_value_id'])) {
                 $this->updateFieldValue();
             } else {
@@ -307,7 +318,15 @@ class FieldValue extends BackendController
      */
     protected function prepareFieldValue(array $field_value)
     {
+        $this->setItemImages($field_value, 'field_value', $this->image);
         $this->setItemTranslation($field_value, 'field_value', $this->translation_entity);
+
+        if (!empty($field_value['images'])) {
+            foreach ($field_value['images'] as &$file) {
+                $this->setItemTranslation($file, 'file', $this->translation_entity);
+            }
+        }
+
         return $field_value;
     }
 
@@ -333,9 +352,13 @@ class FieldValue extends BackendController
     {
         $this->controlAccess('field_value_edit');
 
-        $this->field_value->update($this->data_field_value['field_value_id'], array('file_id' => 0));
-        $this->file->delete($this->data_field_value['file_id']);
-        $this->file->deleteFromDisk($this->file->get($this->data_field_value['file_id']));
+        $file_ids = $this->getPosted('delete_images', array(), true, 'array');
+
+        if (!empty($file_ids) && isset($this->data_field_value['field_value_id'])) {
+            $file_id = reset($file_ids);
+            $this->file->deleteAll($file_id, false);
+            $this->field_value->update($this->data_field_value['field_value_id'], array('file_id' => 0));
+        }
     }
 
     /**
@@ -366,19 +389,6 @@ class FieldValue extends BackendController
         }
 
         $this->redirect('', $this->text('Field value has not been added'), 'warning');
-    }
-
-    /**
-     * Set template data on the edit field value page
-     */
-    protected function setDataEditFieldValue()
-    {
-        $path = $this->getData('field_value.path');
-
-        if (!empty($path)) {
-            $thumb = $this->image($path, $this->config('image_style', 3));
-            $this->setData('field_value.thumb', $thumb);
-        }
     }
 
     /**
