@@ -337,9 +337,7 @@ trait Item
      */
     public function setItemRenderedProductBundle(array &$item, array $options = array())
     {
-        $options += array(
-            'template_item' => 'product/item/bundle');
-
+        $options += array('template_item' => 'product/item/bundle');
         $this->setItemRendered($item, array('item' => $item), $options);
     }
 
@@ -391,34 +389,6 @@ trait Item
     {
         $this->setItemProductFieldType($item, $image_model, $class_model, 'option', $options);
         $this->setItemProductFieldType($item, $image_model, $class_model, 'attribute', $options);
-    }
-
-    /**
-     * Set a data to product combinations
-     * @param array $item
-     * @param \gplcart\core\models\Image $image_model
-     * @param \gplcart\core\models\Price $price_model
-     * @return null
-     */
-    public function setItemProductCombination(array &$item, $image_model, $price_model)
-    {
-        if (empty($item['combination'])) {
-            return null;
-        }
-
-        foreach ($item['combination'] as &$combination) {
-
-            $combination['path'] = $combination['thumb'] = '';
-
-            if (!empty($item['images'][$combination['file_id']])) {
-                $combination['path'] = $item['images'][$combination['file_id']]['path'];
-                $this->setItemThumb($combination, $image_model);
-            }
-
-            $combination['price'] = $price_model->decimal($combination['price'], $item['currency']);
-        }
-
-        return null;
     }
 
     /**
@@ -550,12 +520,13 @@ trait Item
      * Adds a key containing translations for the entity
      * @param array $item
      * @param string $entity
-     * @param \gplcart\core\models\TranslationEntity $model
+     * @param \gplcart\core\models\TranslationEntity $translation_entity_model
      */
-    public function setItemTranslation(array &$item, $entity, $model)
+    public function setItemTranslation(array &$item, $entity, $translation_entity_model)
     {
-        if (isset($item["{$entity}_id"]) && $model->isSupportedEntity($entity)) {
-            foreach ($model->getList(array('entity' => $entity, 'entity_id' => $item["{$entity}_id"])) as $translation) {
+        if (isset($item["{$entity}_id"]) && $translation_entity_model->isSupportedEntity($entity)) {
+            $conditions = array('entity' => $entity, 'entity_id' => $item["{$entity}_id"]);
+            foreach ($translation_entity_model->getList($conditions) as $translation) {
                 $item['translation'][$translation['language']] = $translation;
             }
         }
@@ -567,7 +538,7 @@ trait Item
      * @param string $entity
      * @param \gplcart\core\models\Image $image_model
      */
-    public function setItemImages(&$item, $entity, $image_model)
+    public function setItemImages(array &$item, $entity, $image_model)
     {
         if (!empty($item[$entity . '_id'])) {
 
@@ -577,6 +548,19 @@ trait Item
             );
 
             $item['images'] = (array) $image_model->getList($options);
+        }
+    }
+
+    /**
+     * Sets "alias" key
+     * @param array $item
+     * @param string $entity
+     * @param \gplcart\core\models\Alias $alias_model
+     */
+    public function setItemAlias(array &$item, $entity, $alias_model)
+    {
+        if (isset($item[$entity . '_id'])) {
+            $item['alias'] = $alias_model->getByEntity($entity, $item[$entity . '_id']);
         }
     }
 

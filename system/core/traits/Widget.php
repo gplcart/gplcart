@@ -134,6 +134,7 @@ trait Widget
     public function getWidgetImages($language_model, array $options)
     {
         $options += array(
+            'single' => false,
             'languages' => $language_model->getList(array('in_database' => true))
         );
 
