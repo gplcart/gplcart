@@ -34,6 +34,17 @@ $region_content_class = 'col-md-8';
           <div class="container">
             <div class="navbar-header">
               <p class="navbar-text navbar-hidden-label visible-xs-inline-block">
+                <a href="#" class="collapsed" data-toggle="collapse" data-target="#navbar-collapse-first">
+                <?php echo $this->text('Account'); ?>
+                <?php if(count($_currencies) > 1) { ?>
+                ,<?php echo $this->text('Currency'); ?>
+                <?php } ?>
+                <?php if (count($_languages) > 1) { ?>
+                ,<?php echo $this->text('Language'); ?>
+                <?php } ?>
+                </a>
+              </p>
+              <p class="navbar-text navbar-hidden-label visible-xs-inline-block">
                 <?php if (!empty($_store['data']['phone'][0])) { ?>
                 <?php echo $this->text('Call'); ?>: <?php echo $this->e($_store['data']['phone'][0]); ?>
                 <?php } ?>
@@ -179,7 +190,11 @@ $region_content_class = 'col-md-8';
         <nav class="navbar navbar-inverse navbar-static-top third">
           <div class="container">
             <div class="navbar-header">
-              <p class="navbar-text navbar-hidden-label visible-xs-inline-block"><?php echo $this->text('Categories'); ?></p>
+              <p class="navbar-text navbar-hidden-label visible-xs-inline-block">
+                <a href="#" class="collapsed" data-toggle="collapse" data-target="#navbar-collapse-third">
+                  <?php echo $this->text('Categories'); ?>
+                </a>
+              </p>
               <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-third">
                 <span class="sr-only"><?php echo $this->text('Toggle navigation'); ?></span>
                 <span class="icon-bar"></span>
