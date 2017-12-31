@@ -407,20 +407,4 @@ class Category
         return (bool) $this->db->fetchColumn($sql, array('id' => $category_id));
     }
 
-    /**
-     * Returns a relative/absolute path for uploaded images
-     * @param boolean $absolute
-     * @return string
-     */
-    public function getImagePath($absolute = false)
-    {
-        $dirname = $this->config->get('category_image_dirname', 'category');
-
-        if ($absolute) {
-            return gplcart_path_absolute($dirname, GC_DIR_IMAGE);
-        }
-
-        return gplcart_path_relative(GC_DIR_IMAGE, GC_DIR_FILE) . "/$dirname";
-    }
-
 }

@@ -554,22 +554,6 @@ class Product
     }
 
     /**
-     * Returns a relative/absolute path for uploaded images
-     * @param boolean $absolute
-     * @return string
-     */
-    public function getImagePath($absolute = false)
-    {
-        $dirname = $this->config->get('product_image_dirname', 'product');
-
-        if ($absolute) {
-            return gplcart_path_absolute($dirname, GC_DIR_IMAGE);
-        }
-
-        return gplcart_path_relative(GC_DIR_IMAGE, GC_DIR_FILE) . "/$dirname";
-    }
-
-    /**
      * Delete all database records associated with the product ID
      * @param int $product_id
      */

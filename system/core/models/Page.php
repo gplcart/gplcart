@@ -313,20 +313,4 @@ class Page
         $this->db->run($sql, array('page', $page_id));
     }
 
-    /**
-     * Returns a relative/absolute path for uploaded images
-     * @param boolean $absolute
-     * @return string
-     */
-    public function getImagePath($absolute = false)
-    {
-        $dirname = $this->config->get('page_image_dirname', 'page');
-
-        if ($absolute) {
-            return gplcart_path_absolute($dirname, GC_DIR_IMAGE);
-        }
-
-        return gplcart_path_relative(GC_DIR_IMAGE, GC_DIR_FILE) . "/$dirname";
-    }
-
 }
