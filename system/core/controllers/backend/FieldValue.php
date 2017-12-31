@@ -182,7 +182,7 @@ class FieldValue extends BackendController
     protected function prepareFieldValues(array $values)
     {
         foreach ($values as &$value) {
-            $this->setItemThumb($value, $this->image);
+            $this->setItemThumb($value, $this->image, array('placeholder' => false));
         }
 
         return $values;

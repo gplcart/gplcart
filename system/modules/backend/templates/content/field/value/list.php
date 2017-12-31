@@ -60,14 +60,16 @@
           <td class="middle title"><?php echo $this->truncate($this->e($value['title'])); ?></td>
           <td class="middle image">
             <div class="view thumb">
-              <?php if (!empty($value['thumb'])) { ?>
+              <?php if (empty($value['thumb'])) { ?>
+              <?php echo $this->text('None'); ?>
+              <?php } else { ?>
               <img class="img-rounded" src="<?php echo $this->e($value['thumb']); ?>">
               <?php } ?>
             </div>
           </td>
           <td class="middle color">
             <?php if ($value['color']) { ?>
-            <div class="btn btn-default" style="background:<?php echo $this->e($value['color']); ?>;"></div>
+            <span class="label" style="background:<?php echo $this->e($value['color']); ?>;"><?php echo $this->e($value['color']); ?></span>
             <?php } ?>
           </td>
           <td class="middle weight">
