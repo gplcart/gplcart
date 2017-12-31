@@ -279,11 +279,20 @@ class File
         $result = (bool) $this->db->delete('file', $condition);
 
         if ($result && isset($condition['file_id'])) {
-            $this->db->delete('file_translation', array('file_id' => $condition['file_id']));
+            $this->deleteLinked($condition['file_id']);
         }
 
         $this->hook->attach('file.delete.after', $condition, $check, $result, $this);
         return (bool) $result;
+    }
+
+    /**
+     * Delete all database records related to the file ID
+     * @param int $file_id
+     */
+    protected function deleteLinked($file_id)
+    {
+        $this->db->delete('file_translation', array('file_id' => $file_id));
     }
 
     /**

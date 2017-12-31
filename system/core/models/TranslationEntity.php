@@ -103,7 +103,11 @@ class TranslationEntity
             return (bool) $result;
         }
 
-        $result = (bool) $this->db->delete($this->getTable($conditions['entity']), $conditions);
+        $table = $this->getTable($conditions['entity']);
+
+        unset($conditions['entity']);
+
+        $result = (bool) $this->db->delete($table, $conditions);
         $this->hook->attach('translation.entity.delete.after', $conditions, $result, $this);
         return (bool) $result;
     }

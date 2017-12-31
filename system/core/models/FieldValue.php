@@ -14,7 +14,8 @@ use gplcart\core\Hook,
 use gplcart\core\models\File as FileModel,
     gplcart\core\models\Translation as TranslationModel,
     gplcart\core\models\TranslationEntity as TranslationEntityModel;
-use gplcart\core\traits\Translation as TranslationTrait;
+use gplcart\core\traits\Image as ImageTrait,
+    gplcart\core\traits\Translation as TranslationTrait;
 
 /**
  * Manages basic behaviors and data related to field values
@@ -22,7 +23,8 @@ use gplcart\core\traits\Translation as TranslationTrait;
 class FieldValue
 {
 
-    use TranslationTrait;
+    use ImageTrait,
+        TranslationTrait;
 
     /**
      * Database class instance
@@ -195,38 +197,11 @@ class FieldValue
 
         $result = $data['field_value_id'] = $this->db->insert('field_value', $data);
 
-        $this->setFile($data, false);
+        $this->setImage($data);
         $this->setTranslations($data, $this->translation_entity, 'field_value', false);
+
         $this->hook->attach('field.value.add.after', $data, $result, $this);
         return (int) $result;
-    }
-
-    /**
-     * Adds an image to the field value
-     * @param array $data
-     * @param boolean $delete
-     * @return boolean
-     */
-    protected function setFile(array $data, $delete = true)
-    {
-        if (empty($data['path'])) {
-            return false;
-        }
-
-        $conditions = array(
-            'entity' => 'field_value',
-            'entity_id' => $data['field_value_id']
-        );
-
-        if ($delete) {
-            $this->db->delete('file', $conditions);
-        }
-
-        $conditions['path'] = $data['path'];
-        $file_id = $this->file->add($conditions);
-
-        $this->update($data['field_value_id'], array('file_id' => $file_id));
-        return true;
     }
 
     /**
@@ -248,12 +223,28 @@ class FieldValue
 
         $data['field_value_id'] = $field_value_id;
 
-        $updated += (int) $this->setFile($data);
+        $updated += (int) $this->setImage($data, $field_value_id);
         $updated += (int) $this->setTranslations($data, $this->translation_entity, 'field_value');
 
         $result = $updated > 0;
         $this->hook->attach('field.value.update.after', $field_value_id, $data, $result, $this);
         return (bool) $result;
+    }
+
+    /**
+     * Sets a single image
+     * @param array $data
+     * @param null|int $field_value_id
+     * @return bool
+     */
+    protected function setImage(array $data, $field_value_id = null)
+    {
+
+        if (!empty($data['images']) && !empty($field_value_id)) {
+            $this->file->delete(array('entity' => 'field_value', 'entity_id' => $field_value_id));
+        }
+
+        return $this->setImages($data, $this->file, 'field_value');
     }
 
     /**
@@ -310,22 +301,6 @@ class FieldValue
 
         $result = $this->db->fetchColumn($sql, array($field_value_id));
         return empty($result);
-    }
-
-    /**
-     * Returns a relative/absolute path for uploaded images
-     * @param boolean $absolute
-     * @return string
-     */
-    public function getImagePath($absolute = false)
-    {
-        $dirname = $this->config->get('field_value_image_dirname', 'field_value');
-
-        if ($absolute) {
-            return gplcart_path_absolute($dirname, GC_DIR_IMAGE);
-        }
-
-        return trim(substr(GC_DIR_IMAGE, strlen(GC_DIR_FILE)), '/') . "/$dirname";
     }
 
 }
