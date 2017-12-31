@@ -20,7 +20,7 @@
       <input type="hidden" name="<?php echo $entity; ?>[images][<?php echo $index; ?>][path]" value="<?php echo $this->e($image['path']); ?>">
       <input type="hidden" name="<?php echo $entity; ?>[images][<?php echo $index; ?>][weight]" value="<?php echo $weight; ?>">
       <div class="panel-heading clearfix">
-        <?php if(empty($single)) { ?>
+        <?php if(empty($single) && count($images) > 1) { ?>
         <span class="handle pull-left"><i class="fa fa-arrows-alt"></i></span>
         <?php } ?>
         <span class="pull-right">
