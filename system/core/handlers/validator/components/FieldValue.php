@@ -65,7 +65,7 @@ class FieldValue extends ComponentValidator
         $this->validateTranslation();
         $this->validateFieldFieldValue();
         $this->validateColorFieldValue();
-        $this->validateFileFieldValue();
+        $this->validateUploadImages('field_value');
 
         return $this->getResult();
     }
@@ -152,47 +152,6 @@ class FieldValue extends ComponentValidator
             $this->setSubmitted('color', '');
         }
 
-        return true;
-    }
-
-    /**
-     * Validates uploaded image
-     * @return boolean|null
-     */
-    protected function validateFileFieldValue()
-    {
-        if ($this->isError()) {
-            return null;
-        }
-
-        $file = $this->request->file('file');
-        $path = $this->getSubmitted('path');
-
-        if ($this->isUpdating() && (!isset($path) && empty($file))) {
-            return null;
-        }
-
-        if (isset($path)) {
-            if (is_readable(gplcart_file_absolute($path))) {
-                return true;
-            }
-            $this->setErrorUnavailable('file', $this->translation->text('File'));
-            return false;
-        }
-
-        if (empty($file)) {
-            return true;
-        }
-
-        $result = $this->file_transfer->upload($file, 'image', self::UPLOAD_PATH);
-
-        if ($result !== true) {
-            $this->setError('file', (string) $result);
-            return false;
-        }
-
-        $uploaded = $this->file_transfer->getTransferred(true);
-        $this->setSubmitted('path', $uploaded);
         return true;
     }
 

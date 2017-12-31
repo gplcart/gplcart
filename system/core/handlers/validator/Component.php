@@ -335,8 +335,7 @@ class Component extends BaseValidator
         }
 
         if (!empty($results['errors'])) {
-            $message = $this->translation->text('@num errors occurred while uploading files', array('@num' => count($results['errors'])));
-            $this->setError('images', $message);
+            $this->setError('images', implode('<br>', (array) $results['errors']));
             return false;
         }
 
