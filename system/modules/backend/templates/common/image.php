@@ -14,13 +14,15 @@
 <?php $file_id = empty($image['file_id']) ? '' : $image['file_id']; ?>
 <?php $weight = empty($image['weight']) ? 0 : $image['weight']; ?>
 <div class="sortable-thumb">
-  <div class="col-md-3">
+  <div class="<?php echo empty($single) ? 'col-md-3' : 'col-md-12'; ?>">
     <div class="panel panel-default thumb">
       <input type="hidden" name="<?php echo $entity; ?>[images][<?php echo $index; ?>][file_id]" value="<?php echo $file_id; ?>">
       <input type="hidden" name="<?php echo $entity; ?>[images][<?php echo $index; ?>][path]" value="<?php echo $this->e($image['path']); ?>">
       <input type="hidden" name="<?php echo $entity; ?>[images][<?php echo $index; ?>][weight]" value="<?php echo $weight; ?>">
       <div class="panel-heading clearfix">
+        <?php if(empty($single)) { ?>
         <span class="handle pull-left"><i class="fa fa-arrows-alt"></i></span>
+        <?php } ?>
         <span class="pull-right">
           <?php echo $this->text('Delete'); ?> <input type="checkbox" name="delete_images[]" value="<?php echo $file_id; ?>">
         </span>
@@ -89,8 +91,8 @@
 <?php } ?>
 <?php if ($this->access('file_upload')) { ?>
 <div class="form-group<?php echo $this->error('images', ' has-error'); ?>">
-  <div class="col-md-4">
-    <input type="file" class="form-control" name="files[]" multiple accept="image/*">
+  <div class="<?php echo empty($single) ? 'col-md-4' : 'col-md-12'; ?>">
+    <input type="file" class="form-control" name="files[]"<?php echo empty($single) ? ' multiple' : ''; ?>>
     <div class="help-block">
        <?php echo $this->error('images'); ?>
       <div class="text-muted">

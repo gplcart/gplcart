@@ -94,7 +94,7 @@
     <div class="form-group required<?php echo $this->error('weight', ' has-error'); ?>">
       <label class="col-md-2 control-label"><?php echo $this->text('Weight'); ?></label>
       <div class="col-md-4">
-        <input maxlength="255" name="category[weight]" class="form-control" value="<?php echo isset($category['weight']) ? $this->e($category['weight']) : ''; ?>">
+        <input maxlength="255" name="category[weight]" class="form-control" value="<?php echo isset($category['weight']) ? $this->e($category['weight']) : 0; ?>">
         <div class="help-block">
           <?php echo $this->error('weight'); ?>
           <div class="text-muted">

@@ -56,28 +56,13 @@
       </div>
     </div>
   </div>
-  <?php if ($this->access('file_upload')) { ?>
-  <div class="form-group<?php echo $this->error('file', ' has-error'); ?>">
-    <label class="col-md-2 control-label"><?php echo $this->text('Image'); ?></label>
-    <div class="col-md-4">
-      <input type="file" name="file" accept="image/*" class="form-control">
-      <div class="help-block">
-        <?php echo $this->error('file'); ?>
-        <div class="text-muted">
-        <?php echo $this->text("Upload an image. It's applicable only for fields with image widgets"); ?>
-        </div>
-      </div>
-    </div>
-  </div>
-  <?php } ?>
-  <?php if (isset($field_value['thumb'])) { ?>
+  <?php if (!empty($attached_images)) { ?>
   <div class="form-group">
-    <div class="col-md-4 col-md-offset-2">
-      <div class="checkbox">
-        <label>
-          <input type="checkbox" name="delete_image" value="1"> <?php echo $this->text('Delete existing <a target="_blank" href="@url">image</a>', array('@url' => $field_value['thumb'])); ?>
-        </label>
-      </div>
+    <label class="col-md-2 control-label">
+      <?php echo $this->text('Image'); ?>
+    </label>
+    <div class="col-md-4">
+      <?php echo $attached_images; ?>
     </div>
   </div>
   <?php } ?>
