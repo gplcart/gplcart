@@ -105,22 +105,7 @@ trait Item
             foreach ($item['images'] as &$image) {
                 $image['url'] = $image_model->url($image['path']);
                 $image['thumb'] = $image_model->url($image['path'], $options['imagestyle']);
-                $this->setItemThumbIsPlaceholder($image, $image_model);
             }
-        }
-
-        $this->setItemThumbIsPlaceholder($item, $image_model);
-    }
-
-    /**
-     * Adds "thumb_placeholder" key
-     * @param array $item
-     * @param \gplcart\core\models\Image $image_model
-     */
-    public function setItemThumbIsPlaceholder(array &$item, $image_model)
-    {
-        if (!empty($item['thumb'])) {
-            $item['thumb_placeholder'] = $image_model->isPlaceholder($item['thumb']);
         }
     }
 
