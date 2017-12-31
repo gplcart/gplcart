@@ -9,6 +9,7 @@
 
 namespace gplcart\core;
 
+use Exception;
 use gplcart\core\helpers\Url as UrlHelper,
     gplcart\core\helpers\Request as RequestHelper;
 use gplcart\core\exceptions\Route as RouteException;
@@ -258,7 +259,7 @@ class Route
         try {
             $route = $this->set($route, $arguments);
             Handler::call($route, null, $method, $route['arguments']);
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             throw new RouteException($ex->getMessage());
         }
     }

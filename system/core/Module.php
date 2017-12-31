@@ -9,6 +9,8 @@
 
 namespace gplcart\core;
 
+use Exception;
+
 /**
  * Parent class for modules
  */
@@ -347,7 +349,7 @@ class Module
 
         try {
             $instance = Container::get($namespace);
-        } catch (\Exception $exc) {
+        } catch (Exception $exc) {
             return null;
         }
 
