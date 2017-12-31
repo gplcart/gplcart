@@ -139,17 +139,6 @@ class Image
     }
 
     /**
-     * Whether the path is an image placeholder
-     * @param string $path
-     * @return bool
-     */
-    public function isPlaceholder($path)
-    {
-        $placeholder = $this->getPlaceholderPath();
-        return substr(strtok($path, '?'), -strlen($placeholder)) === $placeholder;
-    }
-
-    /**
      * Returns a string containing the image cache URL
      * @param string $path
      * @param null|string|int $imagestyle_id
