@@ -120,23 +120,53 @@ class CliRoute
      */
     public function process()
     {
-        $routes = $this->getList();
-        $command = array_shift($this->arguments);
-
-        if (empty($routes[$command])) {
-            $command = 'help';
-        }
-
-        if (empty($routes[$command])) {
-            throw new RouteException('Unknown command');
-        }
-
-        $routes[$command]['command'] = $command;
-        $routes[$command]['arguments'] = $this->arguments;
-
-        $this->route = $routes[$command];
-        Handler::call($this->route, null, 'controller', array($this->arguments));
+        $this->set();
+        $this->callHandler();
         throw new RouteException('The command was completed incorrectly');
+    }
+
+    /**
+     * Sets the current route
+     * @param array|null $route
+     * @return array|null
+     * @throws RouteException
+     */
+    public function set($route = null)
+    {
+        if (!isset($route)) {
+
+            $routes = $this->getList();
+            $command = array_shift($this->arguments);
+
+            if (empty($routes[$command])) {
+                $command = 'help';
+            }
+
+            if (empty($routes[$command])) {
+                throw new RouteException('Unknown command');
+            }
+
+            $route = $routes[$command];
+            $route['command'] = $command;
+            $route['arguments'] = $this->arguments;
+        }
+
+        return $this->route = (array) $route;
+    }
+
+    /**
+     * Call a route handler
+     * @param string $method
+     * @param array $arguments
+     */
+    public function callHandler($method = 'controller', array $arguments = array())
+    {
+        try {
+            $arguments = array_merge(array($this->route['arguments']), $arguments);
+            Handler::call($this->route, null, $method, $arguments);
+        } catch (Exception $ex) {
+            throw new RouteException($ex->getMessage());
+        }
     }
 
 }
