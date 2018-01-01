@@ -306,16 +306,21 @@ class ProductClass
     }
 
     /**
-     * Loads an array of product class fields
+     * Loads an array of product class fields or counts them
      * @param array $options
-     * @return array
+     * @return array|int
      */
     public function getFields(array $options = array())
     {
         $options += array('language' => $this->translation->getLangcode());
 
-        $sql = 'SELECT pcf.*, COALESCE(NULLIF(ft.title, ""), f.title) AS title, f.type AS type'
-                . ' FROM product_class_field pcf'
+        if (empty($options['count'])) {
+            $sql = 'SELECT pcf.*, COALESCE(NULLIF(ft.title, ""), f.title) AS title, f.type AS type';
+        } else {
+            $sql = 'SELECT COUNT(pcf.product_class_field_id)';
+        }
+
+        $sql .= ' FROM product_class_field pcf'
                 . ' LEFT JOIN field f ON(pcf.field_id = f.field_id)'
                 . ' LEFT JOIN field_translation ft ON(pcf.field_id = ft.field_id AND ft.language=?)'
                 . ' WHERE pcf.product_class_field_id IS NOT NULL';
@@ -346,6 +351,7 @@ class ProductClass
 
         $allowed_sort = array(
             'type' => 'f.type',
+            'field_id' => 'f.field_id',
             'title' => 'f.title',
             'weight' => 'pcf.weight',
             'required' => 'pcf.required',
@@ -363,7 +369,13 @@ class ProductClass
             $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
         }
 
-        return $this->db->fetchAll($sql, $conditions, array('index' => 'field_id'));
+        if (empty($options['count'])) {
+            $result = $this->db->fetchAll($sql, $conditions, array('index' => 'field_id'));
+        } else {
+            $result = $this->db->fetchColumn($sql, $conditions);
+        }
+
+        return $result;
     }
 
 }
