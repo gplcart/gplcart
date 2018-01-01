@@ -23,6 +23,7 @@ class Response
 
     /**
      * Sends HTTP headers
+     * @return $this
      */
     public function sendHeaders()
     {
@@ -33,6 +34,7 @@ class Response
         }
 
         $this->headers = array();
+        return $this;
     }
 
     /**
@@ -230,22 +232,38 @@ class Response
     }
 
     /**
+     * Output 500 error page
+     * @param bool $message
+     * @param string $error
+     */
+    public function outputError500($message = true, $error = '')
+    {
+        $this->addHeader(500)->sendHeaders();
+
+        if ($message) {
+            echo $this->getError500($error);
+        }
+
+        exit;
+    }
+
+    /**
      * Returns 403 error message
      * @return string
      */
     protected function getError403()
     {
-        $text = '<html>';
-        $text .= '<head>';
-        $text .= '<title>403 Error - Permission Denied</title>';
-        $text .= '</head>';
-        $text .= '<body>';
-        $text .= '<h1>403 - Permission Denied</h1>';
-        $text .= '<p>You do not have permission to retrieve the URL or link you requested<p>';
-        $text .= '</body>';
-        $text .= '</html>';
-        $text .= str_repeat(' ', 512);
-        return $text;
+        $text = '<html>
+                  <head>
+                    <title>403 Error - Permission Denied</title>
+                  </head>
+                  <body>
+                    <h1>403 - Permission Denied</h1>
+                    <p>You do not have permission to retrieve the URL or link you requested<p>
+                  </body>
+                </html>';
+
+        return $text . str_repeat(' ', 512);
     }
 
     /**
@@ -254,17 +272,38 @@ class Response
      */
     protected function getError404()
     {
-        $text = '<html>';
-        $text .= '<head>';
-        $text .= '<title>404 Error - Page Not Found</title>';
-        $text .= '</head>';
-        $text .= '<body>';
-        $text .= '<h1>404 Error - Page Not Found</h1>';
-        $text .= '<p>Page you requested cannot be found.<p>';
-        $text .= '</body>';
-        $text .= '</html>';
-        $text .= str_repeat(' ', 512);
-        return $text;
+        $text = '<html>
+                  <head>
+                    <title>404 Error - Page Not Found</title>
+                  </head>
+                  <body>
+                    <h1>404 Error - Page Not Found</h1>
+                    <p>Page you requested cannot be found.<p>
+                  </body>
+                </html>';
+
+        return $text . str_repeat(' ', 512);
+    }
+
+    /**
+     * Returns 500 error message
+     * @param string $error
+     * @return string
+     */
+    protected function getError500($error = '')
+    {
+        $text = "<html>
+                  <head>
+                    <title>500 Error - Internal Server Error</title>
+                  </head>
+                  <body>
+                    <h1>500 Error - Internal Server Error</h1>
+                    <p>The server encountered an error processing the request.<p>
+                    <p>$error<p>
+                  </body>
+                </html>";
+
+        return $text . str_repeat(' ', 512);
     }
 
 }
