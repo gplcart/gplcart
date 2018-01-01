@@ -99,12 +99,12 @@
   <div class="row">
     <div class="col-md-10 col-md-offset-2">
       <div class="btn-toolbar">
-      <?php if ($can_delete) { ?>
-      <button class="btn btn-danger delete" name="delete" value="1" onclick="return confirm('<?php echo $this->text('Are you sure? It cannot be undone!'); ?>');">
-        <?php echo $this->text('Delete'); ?>
-      </button>
-      <?php } ?>
-        <a class="cancel btn btn-default" href="<?php echo $this->url('admin/content/field'); ?>">
+        <?php if ($can_delete) { ?>
+        <button class="btn btn-danger delete" name="delete" value="1" onclick="return confirm('<?php echo $this->text('Are you sure? It cannot be undone!'); ?>');">
+          <?php echo $this->text('Delete'); ?>
+        </button>
+        <?php } ?>
+        <a class="cancel btn btn-default" href="<?php echo isset($_target) ? $this->url($_target) : $this->url('admin/content/field'); ?>">
           <?php echo $this->text('Cancel'); ?>
         </a>
         <?php if ($this->access('field_edit') || $this->access('field_add')) { ?>

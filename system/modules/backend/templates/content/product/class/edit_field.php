@@ -22,7 +22,10 @@
       <div class="help-block">
         <?php echo $this->error('values'); ?>
         <div class="text-muted">
-          <?php echo $this->text('Assign one or more fields to the product class'); ?>
+          <?php echo $this->text('Assign one or more fields to the product class.'); ?>
+          <?php if ($this->access('field_add')) { ?>
+          <?php echo $this->text('You can add new fields <a href="@url">here</a>', array('@url' => $this->url('admin/content/field/add', array('target' => $this->path())))); ?>
+          <?php } ?>
         </div>
       </div>
     </div>
@@ -41,8 +44,8 @@
   </div>
 </form>
 <?php } else { ?>
-<?php echo $this->text('No fields to add to %name', array('%name' => $product_class['title'])); ?>&nbsp;
+<?php echo $this->text('No fields to add to %name.', array('%name' => $product_class['title'])); ?>&nbsp;
 <?php if ($this->access('field_add')) { ?>
-<?php echo $this->text('You can add one or more fields <a href="@url">here</a>', array('@url' => $this->url('admin/content/field/add'))); ?>
+<?php echo $this->text('You can add new fields <a href="@url">here</a>', array('@url' => $this->url('admin/content/field/add', array('target' => $this->path())))); ?>
 <?php } ?>
 <?php } ?>

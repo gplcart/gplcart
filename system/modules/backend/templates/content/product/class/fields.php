@@ -9,6 +9,7 @@
  */
 ?>
 <?php if (!empty($fields)) { ?>
+<?php $draggable = count($fields) > 1 ;?>
 <form method="post" class="form-horizontal">
   <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <div class="btn-toolbar actions">
@@ -23,6 +24,11 @@
     <table class="table fields" data-sortable-input-weight="true">
       <thead>
         <tr>
+          <th>
+            <a href="<?php echo $sort_field_id; ?>">
+              <?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i>
+            </a>
+          </th>
           <th>
             <a href="<?php echo $sort_title; ?>">
               <?php echo $this->text('Title'); ?> <i class="fa fa-sort"></i>
@@ -56,6 +62,9 @@
         <?php foreach ($fields as $field_id => $field) { ?>
         <tr>
           <td class="middle">
+            <?php echo $this->e($field_id); ?>
+          </td>
+          <td class="middle">
             <?php echo $this->e($field['title']); ?>
             <input type="hidden" name="fields[<?php echo $field_id; ?>][weight]" value="<?php echo $field['weight']; ?>">
           </td>
@@ -69,7 +78,10 @@
             <input type="checkbox" name="fields[<?php echo $field_id; ?>][multiple]" value="1"<?php echo $field['multiple'] ? ' checked' : ''; ?>>
           </td>
           <td class="middle">
-            <i class="fa fa-arrows handle"></i> <span class="weight"><?php echo $this->e($field['weight']); ?></span>
+            <?php if($draggable) { ?>
+            <i class="fa fa-arrows handle"></i>
+            <?php } ?>
+            <span class="weight"><?php echo $this->e($field['weight']); ?></span>
           </td>
           <td class="middle">
             <input type="checkbox" name="fields[<?php echo $field_id; ?>][remove]" value="1">
@@ -78,7 +90,7 @@
             <ul class="list-inline">
               <?php if ($this->access('field_edit')) { ?>
               <li>
-                <a href="<?php echo $this->url("admin/content/field/edit/$field_id"); ?>">
+                <a href="<?php echo $this->url("admin/content/field/edit/$field_id", array('target' => $this->path())); ?>">
                   <?php echo $this->lower($this->text('Edit')); ?>
                 </a>
               </li>
@@ -92,7 +104,7 @@
               <?php } ?>
               <?php if ($this->access('field_value_add')) { ?>
               <li>
-                <a href="<?php echo $this->url("admin/content/field/value/$field_id/add"); ?>">
+                <a href="<?php echo $this->url("admin/content/field/value/$field_id/add", array('target' => $this->path())); ?>">
                   <?php echo $this->lower($this->text('Add value')); ?>
                 </a>
               </li>
