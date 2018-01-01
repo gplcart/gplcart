@@ -300,7 +300,7 @@ class Logger
         $message = implode("<br>\n", $parts);
 
         if (!empty($header)) {
-            $message = "<h3>$header</h3>$message";
+            $message = "<h3>$header</h3>\n$message";
         }
 
         return GC_CLI ? strip_tags($message) : $message;
