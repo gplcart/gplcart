@@ -916,7 +916,9 @@ class Checkout extends FrontendController
         if ($this->{"show_{$type}_address_form"} && !empty($submitted)) {
             $address_id = $this->address->add($submitted);
             $this->setSubmitted("{$type}_address", $address_id);
-            $this->address->controlLimit($this->order_user_id);
+            foreach ($this->address->getExceeded($this->order_user_id) as $address) {
+                $this->address->delete($address['address_id']);
+            }
         }
     }
 
