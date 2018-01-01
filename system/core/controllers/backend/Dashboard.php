@@ -120,7 +120,7 @@ class Dashboard extends BackendController
      */
     protected function setDashboard($active)
     {
-        $dashboard = $this->dashboard->getByUser($this->uid, $active);
+        $dashboard = $this->dashboard->getList(array('user_id' => $this->uid, 'active' => $active));
         $this->data_dashboard = $this->prepareDashboard($dashboard);
     }
 
@@ -186,7 +186,7 @@ class Dashboard extends BackendController
     {
         $this->controlAccess('dashboard_edit');
 
-        if ($this->dashboard->setByUser($this->uid, $this->getSubmitted())) {
+        if ($this->dashboard->set($this->uid, $this->getSubmitted())) {
             $this->redirect('', $this->text('Your dashboard has been updated'), 'success');
         }
 

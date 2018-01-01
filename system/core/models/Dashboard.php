@@ -9,10 +9,10 @@
 
 namespace gplcart\core\models;
 
+use Exception;
 use gplcart\core\Hook,
     gplcart\core\Config,
     gplcart\core\Handler;
-use gplcart\core\models\Translation as TranslationModel;
 
 /**
  * Manages basic behaviors and data related admin dashboard
@@ -33,38 +33,37 @@ class Dashboard
     protected $hook;
 
     /**
-     * Translation UI model instance
-     * @var \gplcart\core\models\Translation $translation
-     */
-    protected $translation;
-
-    /**
      * @param Hook $hook
      * @param Config $config
-     * @param Translation $translation
      */
-    public function __construct(Hook $hook, Config $config, TranslationModel $translation)
+    public function __construct(Hook $hook, Config $config)
     {
         $this->hook = $hook;
         $this->db = $config->getDb();
-        $this->translation = $translation;
     }
 
     /**
-     * Returns an array of dashboard handlers
+     * Returns a dashboard record by a user ID
+     * @param array $options
      * @return array
      */
-    public function getHandlers()
+    public function getList(array $options)
     {
-        $handlers = &gplcart_static('dashboard.handlers');
+        $options += array('active' => true);
 
-        if (isset($handlers)) {
-            return $handlers;
+        $sql = 'SELECT * FROM dashboard';
+
+        $conditions = array();
+        if (isset($options['user_id'])) {
+            $sql .= ' WHERE user_id=?';
+            $conditions[] = $options['user_id'];
         }
 
-        $handlers = (array) gplcart_config_get(GC_FILE_CONFIG_DASHBOARD);
-        $this->hook->attach('dashboard.handlers', $handlers, $this);
-        return $handlers;
+        $result = $this->db->fetch($sql, $conditions, array('unserialize' => 'data'));
+        $result = $this->prepareList($result, $options);
+
+        $this->hook->attach('dashboard.get.user', $result, $this);
+        return $result;
     }
 
     /**
@@ -84,6 +83,25 @@ class Dashboard
         $result = $this->db->insert('dashboard', $data);
         $this->hook->attach('dashboard.add.after', $data, $result, $this);
         return (int) $result;
+    }
+
+    /**
+     * Deletes a dashboard record
+     * @param integer $dashboard_id
+     * @return boolean
+     */
+    public function delete($dashboard_id)
+    {
+        $result = null;
+        $this->hook->attach('dashboard.delete.before', $dashboard_id, $result, $this);
+
+        if (isset($result)) {
+            return (bool) $result;
+        }
+
+        $result = (bool) $this->db->delete('dashboard', array('dashboard_id' => $dashboard_id));
+        $this->hook->attach('dashboard.delete.after', $dashboard_id, $result, $this);
+        return (bool) $result;
     }
 
     /**
@@ -107,53 +125,14 @@ class Dashboard
     }
 
     /**
-     * Returns a dashboard record by a user ID
-     * @param integer $user_id
-     * @param bool $active
-     * @return array
-     */
-    public function getByUser($user_id, $active = true)
-    {
-        $sql = 'SELECT * FROM dashboard WHERE user_id=?';
-        $result = $this->db->fetch($sql, array($user_id), array('unserialize' => 'data'));
-
-        $handlers = $this->getHandlers();
-
-        if (empty($result['data'])) {
-            $result['data'] = $handlers;
-        } else {
-            $result['data'] = array_replace_recursive($handlers, $result['data']);
-        }
-
-        foreach ($result['data'] as $handler_id => &$handler) {
-            if ($active && empty($handler['status'])) {
-                unset($result['data'][$handler_id]);
-                continue;
-            }
-
-            try {
-                $handler['data'] = Handler::call($handlers, $handler_id, 'data');
-            } catch (\Exception $ex) {
-                continue;
-            }
-
-            $handler['title'] = $this->translation->text($handler['title']);
-        }
-
-        gplcart_array_sort($result['data']);
-        $this->hook->attach('dashboard.get.user', $result, $this);
-        return $result;
-    }
-
-    /**
      * Add/update a dashboard record for a user
      * @param integer $user_id
      * @param array $data
      * @return bool|integer
      */
-    public function setByUser($user_id, array $data)
+    public function set($user_id, array $data)
     {
-        $existing = $this->getByUser($user_id);
+        $existing = $this->getList(array('user_id' => $user_id));
 
         if (isset($existing['dashboard_id'])) {
             return $this->update($existing['dashboard_id'], array('data' => $data));
@@ -163,22 +142,67 @@ class Dashboard
     }
 
     /**
-     * Deletes a dashboard record
-     * @param integer $dashboard_id
-     * @return boolean
+     * Returns an array of dashboard handlers
+     * @return array
      */
-    public function delete($dashboard_id)
+    public function getHandlers()
     {
-        $result = null;
-        $this->hook->attach('dashboard.delete.before', $dashboard_id, $result, $this);
+        $handlers = &gplcart_static('dashboard.handlers');
 
-        if (isset($result)) {
-            return (bool) $result;
+        if (isset($handlers)) {
+            return $handlers;
         }
 
-        $result = (bool) $this->db->delete('dashboard', array('dashboard_id' => $dashboard_id));
-        $this->hook->attach('dashboard.delete.after', $dashboard_id, $result, $this);
-        return (bool) $result;
+        $handlers = (array) gplcart_config_get(GC_FILE_CONFIG_DASHBOARD);
+        $this->hook->attach('dashboard.handlers', $handlers, $this);
+        return $handlers;
+    }
+
+    /**
+     * Call a dashboard handler
+     * @param string $handler_id
+     * @param string $method
+     * @param array $arguments
+     * @return mixed
+     */
+    public function callHandler($handler_id, $method = 'data', array $arguments = array())
+    {
+        try {
+            $handlers = $this->getHandlers();
+            return Handler::call($handlers, $handler_id, $method, $arguments);
+        } catch (Exception $ex) {
+            return null;
+        }
+    }
+
+    /**
+     * Prepare an array of dashboard items
+     * @param array $result
+     * @param array $options
+     * @return array
+     */
+    protected function prepareList($result, array $options)
+    {
+        $handlers = $this->getHandlers();
+
+        if (empty($result['data'])) {
+            $result['data'] = $handlers;
+        } else {
+            $result['data'] = array_replace_recursive($handlers, $result['data']);
+        }
+
+        foreach ($result['data'] as $handler_id => &$handler) {
+
+            if (!empty($options['active']) && empty($handler['status'])) {
+                unset($result['data'][$handler_id]);
+                continue;
+            }
+
+            $handler['data'] = (array) $this->callHandler($handler_id);
+        }
+
+        gplcart_array_sort($result['data']);
+        return $result;
     }
 
 }
