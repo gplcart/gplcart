@@ -11,7 +11,8 @@ namespace gplcart\core;
 
 use Exception;
 use gplcart\core\helpers\Url as UrlHelper,
-    gplcart\core\helpers\Request as RequestHelper;
+    gplcart\core\helpers\Request as RequestHelper,
+    gplcart\core\helpers\Response as ResponseHelper;
 use gplcart\core\exceptions\Route as RouteException;
 
 /**
@@ -31,6 +32,12 @@ class Route
      * @var \gplcart\core\helpers\Request $request
      */
     protected $request;
+
+    /**
+     * Request class instance
+     * @var \gplcart\core\helpers\Response $response
+     */
+    protected $response;
 
     /**
      * Hook class instance
@@ -73,13 +80,16 @@ class Route
      * @param Hook $hook
      * @param UrlHelper $url
      * @param RequestHelper $request
+     * @param ResponseHelper $response
      */
-    public function __construct(Config $config, Hook $hook, UrlHelper $url, RequestHelper $request)
+    public function __construct(Config $config, Hook $hook, UrlHelper $url, RequestHelper $request,
+            ResponseHelper $response)
     {
         $this->url = $url;
         $this->hook = $hook;
         $this->config = $config;
         $this->request = $request;
+        $this->response = $response;
     }
 
     /**
@@ -115,9 +125,14 @@ class Route
      */
     public function process()
     {
-        $this->processAlias();
-        $this->processRoute();
-        $this->output404();
+        try {
+            $this->processAlias();
+            $this->processRoute();
+            $this->output404();
+        } catch (Exception $ex) {
+            trigger_error($ex->getMessage());
+            $this->response->outputError500();
+        }
     }
 
     /**
@@ -249,7 +264,7 @@ class Route
     }
 
     /**
-     * Call a route controller
+     * Call a route handler
      * @param string|array $route
      * @param array $arguments
      * @param string $method
