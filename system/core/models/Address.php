@@ -281,49 +281,7 @@ class Address
     }
 
     /**
-     * Returns an array of filtered addresses
-     * @param array $addresses
-     * @param array $data
-     * @return array
-     */
-    protected function prepareList(array $addresses, array $data)
-    {
-        $countries = $this->country->getList();
-
-        $list = array();
-        foreach ($addresses as $address_id => $address) {
-
-            $list[$address_id] = $address;
-
-            if (empty($data['status'])) {
-                continue; // Do not check enabled country, state and city
-            }
-
-            if (empty($countries)) {
-                continue; // No countries defined in the system
-            }
-
-            if ($address['country'] !== '' && $address['country_status'] == 0) {
-                unset($list[$address_id]);
-                continue;
-            }
-
-            if (!empty($address['state_id']) && $address['state_status'] == 0) {
-                unset($list[$address_id]);
-                continue;
-            }
-
-            // City ID can also be not numeric (user input)
-            if (is_numeric($address['city_id']) && $address['city_status'] == 0) {
-                unset($list[$address_id]);
-            }
-        }
-
-        return $list;
-    }
-
-    /**
-     * Returns an array of addresses with translated address fields
+     * Returns an array of addresses with translated address fields for the user
      * @param integer $user_id
      * @param boolean $status
      * @return array
@@ -386,7 +344,7 @@ class Address
     }
 
     /**
-     * Returns the formatted address
+     * Returns a formatted address
      * @param integer|array $address
      * @return string
      */
@@ -408,17 +366,6 @@ class Address
     }
 
     /**
-     * Reduces max number of addresses the user can have
-     * @param integer $user_id
-     */
-    public function controlLimit($user_id)
-    {
-        foreach ($this->getExceeded($user_id) as $address) {
-            $this->delete($address['address_id']);
-        }
-    }
-
-    /**
      * Returns an array of exceeded addresses for the user ID
      * @param string|integer $user_id
      * @param null|array $existing
@@ -437,6 +384,7 @@ class Address
         }
 
         $count = count($existing);
+
         if (empty($count) || $count <= $limit) {
             return array();
         }
@@ -478,6 +426,48 @@ class Address
     public function getTypes()
     {
         return array('shipping', 'payment');
+    }
+
+    /**
+     * Returns an array of filtered addresses
+     * @param array $addresses
+     * @param array $data
+     * @return array
+     */
+    protected function prepareList(array $addresses, array $data)
+    {
+        $countries = $this->country->getList();
+
+        $list = array();
+        foreach ($addresses as $address_id => $address) {
+
+            $list[$address_id] = $address;
+
+            if (empty($data['status'])) {
+                continue; // Do not check enabled country, state and city
+            }
+
+            if (empty($countries)) {
+                continue; // No countries defined in the system
+            }
+
+            if ($address['country'] !== '' && $address['country_status'] == 0) {
+                unset($list[$address_id]);
+                continue;
+            }
+
+            if (!empty($address['state_id']) && $address['state_status'] == 0) {
+                unset($list[$address_id]);
+                continue;
+            }
+
+            // City ID can also be not numeric (user input)
+            if (is_numeric($address['city_id']) && $address['city_status'] == 0) {
+                unset($list[$address_id]);
+            }
+        }
+
+        return $list;
     }
 
 }

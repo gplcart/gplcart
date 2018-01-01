@@ -19,16 +19,16 @@ class Help
 {
 
     /**
-     * Markdown helper class
-     * @var \gplcart\core\helpers\Markdown $markdown
-     */
-    protected $markdown;
-
-    /**
      * Hook class instance
      * @var \gplcart\core\Hook $hook
      */
     protected $hook;
+
+    /**
+     * Markdown helper class
+     * @var \gplcart\core\helpers\Markdown $markdown
+     */
+    protected $markdown;
 
     /**
      * @param Hook $hook
@@ -146,6 +146,7 @@ class Help
         }
 
         $result = $titles = $weights = array();
+
         foreach (gplcart_file_scan($dir, array('md')) as $file) {
             $data = $this->get($file);
             if (!empty($data['title'])) {
