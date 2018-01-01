@@ -11,7 +11,7 @@
 <?php if ($this->access('report_events')) { ?>
 <div class="panel panel-default">
   <div class="panel-heading">
-    <?php echo $this->e($content['title']); ?>
+    <?php echo $this->text($content['title']); ?>
   </div>
   <div class="panel-body">
     <?php if (!empty($content['data'])) { ?>

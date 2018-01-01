@@ -11,7 +11,7 @@
 
 <?php if($this->access('user')) { ?>
 <div class="panel panel-default">
-  <div class="panel-heading"><?php echo $this->e($content['title']); ?></div>
+  <div class="panel-heading"><?php echo $this->text($content['title']); ?></div>
   <div class="panel-body">
     <table class="table table-condensed">
       <?php foreach ($content['data'] as $item) { ?>
