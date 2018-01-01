@@ -72,7 +72,7 @@ class ProductClass extends BackendController
     }
 
     /**
-     * Set pager
+     * Set pager on the product class overview page
      * @return array
      */
     public function setPagerListProductClass()
@@ -348,7 +348,7 @@ class ProductClass extends BackendController
      */
     protected function setFilterFieldsProductClass()
     {
-        $allowed = array('title', 'required', 'multiple', 'type', 'weight');
+        $allowed = array('title', 'required', 'multiple', 'type', 'weight', 'field_id');
         $this->setFilter($allowed);
     }
 
@@ -359,10 +359,11 @@ class ProductClass extends BackendController
      */
     protected function getFieldsProductClass($unique = false)
     {
-        $options = array(
-            'product_class_id' => $this->data_product_class['product_class_id']) + $this->query_filter;
+        $conditions = $this->query_filter;
+        $conditions['limit'] = $this->data_limit;
+        $conditions['product_class_id'] = $this->data_product_class['product_class_id'];
 
-        $fields = $this->product_class->getFields($options);
+        $fields = $this->product_class->getFields($conditions);
         return $unique ? $this->prepareFieldsProductClass($fields) : $fields;
     }
 
