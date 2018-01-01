@@ -1912,6 +1912,7 @@ abstract class Controller
         $this->data['_messages'] = $this->session->getMessage();
         $this->data['_languages'] = $this->language->getList(array('enabled' => true));
         $this->data['_store_title'] = $this->store->getTranslation('title', $this->langcode);
+        $this->data['_target'] = isset($this->query['target']) ? $this->query['target'] : null;
 
         if (!empty($this->current_store['data']['logo'])) {
             $this->data['_store_logo'] = $this->image($this->current_store['data']['logo']);
