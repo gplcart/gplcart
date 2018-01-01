@@ -10,9 +10,9 @@
 namespace gplcart\core\helpers;
 
 use OutOfRangeException,
-    UnexpectedValueException;
-use gplcart\core\exceptions\File as FileException,
-    gplcart\core\exceptions\Dependency as DependencyException;
+    UnexpectedValueException,
+    InvalidArgumentException;
+use gplcart\core\exceptions\Dependency as DependencyException;
 
 /**
  * Provides wrappers for CURL functions
@@ -186,12 +186,12 @@ class Curl
      * Sets cookie file
      * @param string $filepath
      * @return $this
-     * @throws FileException
+     * @throws InvalidArgumentException
      */
     public function setCookieFile($filepath)
     {
         if (!is_writable($filepath)) {
-            throw new FileException('Invalid cookie file');
+            throw new InvalidArgumentException('Invalid cookie file');
         }
 
         $this->cookie_file = $filepath;

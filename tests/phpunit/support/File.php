@@ -10,7 +10,6 @@
 namespace gplcart\tests\phpunit\support;
 
 use UnexpectedValueException;
-use gplcart\core\exceptions\File as FileException;
 
 /**
  * Helper methods to test files
@@ -43,7 +42,6 @@ class File
      * @param string $filename
      * @param string $content
      * @param null|string $group
-     * @throws FileException
      * @throws UnexpectedValueException
      */
     public function setFile($filename, $content, $group = null)
@@ -51,7 +49,7 @@ class File
         $file = "$this->temp/$filename";
 
         if (file_exists($file) && !unlink($file)) {
-            throw new FileException("File $file already exists");
+            throw new UnexpectedValueException("File $file already exists");
         }
 
         $pathinfo = pathinfo($file);
@@ -62,7 +60,7 @@ class File
 
         if (!empty($pathinfo['dirname'])) {
             if (!file_exists($pathinfo['dirname']) && !mkdir($pathinfo['dirname'])) {
-                throw new FileException("Failed to create directory {$pathinfo['dirname']}");
+                throw new UnexpectedValueException("Failed to create directory {$pathinfo['dirname']}");
             }
         }
 

@@ -18,7 +18,7 @@ use gplcart\tests\phpunit\support\Tool as ToolHelper;
 use gplcart\tests\phpunit\support\File as FileHelper;
 use gplcart\tests\phpunit\support\ArrayDataSet as ArrayDataSetHelper;
 use gplcart\core\Database as SystemDatabase;
-use gplcart\core\exceptions\File as FileException,
+use InvalidArgumentException,
     gplcart\core\exceptions\Dependency as DependencyException;
 
 /**
@@ -239,7 +239,7 @@ class UnitTest extends PHPUnit_Extensions_Database_TestCase
      * Returns an array of fixture data
      * @param string $fixture
      * @return array
-     * @throws FileException
+     * @throws InvalidArgumentException
      */
     protected function getFixtureData($fixture)
     {
@@ -252,7 +252,7 @@ class UnitTest extends PHPUnit_Extensions_Database_TestCase
         $file = $this->getFixtureDirectory() . "/$fixture.php";
 
         if (!is_file($file)) {
-            throw new FileException("File '$file' not found for fixture '$fixture'");
+            throw new InvalidArgumentException("File '$file' not found for fixture '$fixture'");
         }
 
         $fixtures[$fixture] = require $file;
