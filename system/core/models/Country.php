@@ -41,32 +41,6 @@ class Country
     }
 
     /**
-     * Returns an array of country format
-     * @param string|array $country
-     * @param bool $only_enabled
-     * @return array
-     */
-    public function getFormat($country, $only_enabled = false)
-    {
-        $data = is_string($country) ? $this->get($country) : (array) $country;
-
-        if (empty($data['format'])) {
-            $format = $this->getDefaultFormat();
-            gplcart_array_sort($format);
-        } else {
-            $format = $data['format'];
-        }
-
-        if ($only_enabled) {
-            return array_filter($format, function ($item) {
-                return !empty($item['status']);
-            });
-        }
-
-        return $format;
-    }
-
-    /**
      * Loads a country from the database
      * @param string $code
      * @return array
@@ -172,17 +146,29 @@ class Country
     }
 
     /**
-     * Prepare an array of countries
-     * @param array $list
+     * Returns an array of country format
+     * @param string|array $country
+     * @param bool $only_enabled
      * @return array
      */
-    protected function prepareList(array $list)
+    public function getFormat($country, $only_enabled = false)
     {
-        foreach ($list as &$item) {
-            $item['format'] += $this->getDefaultFormat();
+        $data = is_string($country) ? $this->get($country) : (array) $country;
+
+        if (empty($data['format'])) {
+            $format = $this->getDefaultFormat();
+            gplcart_array_sort($format);
+        } else {
+            $format = $data['format'];
         }
 
-        return $list;
+        if ($only_enabled) {
+            return array_filter($format, function ($item) {
+                return !empty($item['status']);
+            });
+        }
+
+        return $format;
     }
 
     /**
@@ -257,16 +243,6 @@ class Country
     }
 
     /**
-     * Deletes all database records related to the country
-     * @param string $code
-     */
-    protected function deleteLinked($code)
-    {
-        $this->db->delete('city', array('country' => $code));
-        $this->db->delete('state', array('country' => $code));
-    }
-
-    /**
      * Whether the country can be deleted
      * @param string $code
      * @return boolean
@@ -315,6 +291,30 @@ class Country
     public function getDefaultFormat()
     {
         return (array) gplcart_config_get(GC_FILE_CONFIG_COUNTRY_FORMAT);
+    }
+
+    /**
+     * Deletes all database records related to the country
+     * @param string $code
+     */
+    protected function deleteLinked($code)
+    {
+        $this->db->delete('city', array('country' => $code));
+        $this->db->delete('state', array('country' => $code));
+    }
+
+    /**
+     * Prepare an array of countries
+     * @param array $list
+     * @return array
+     */
+    protected function prepareList(array $list)
+    {
+        foreach ($list as &$item) {
+            $item['format'] += $this->getDefaultFormat();
+        }
+
+        return $list;
     }
 
 }

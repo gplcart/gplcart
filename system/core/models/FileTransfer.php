@@ -9,6 +9,9 @@
 
 namespace gplcart\core\models;
 
+use Exception;
+use OutOfRangeException,
+    UnexpectedValueException;
 use gplcart\core\Hook,
     gplcart\core\Config;
 use gplcart\core\models\File as FileModel,
@@ -16,11 +19,7 @@ use gplcart\core\models\File as FileModel,
     gplcart\core\models\Validator as ValidatorModel,
     gplcart\core\models\Translation as TranslationModel;
 use gplcart\core\helpers\SocketClient as SocketClientHelper;
-use Exception;
-use OutOfRangeException,
-    UnexpectedValueException;
-use gplcart\core\exceptions\File as FileException,
-    gplcart\core\exceptions\Validation as ValidationException;
+use gplcart\core\exceptions\Validation as ValidationException;
 
 /**
  * Manages basic behaviors and data related to download/upload files
@@ -170,15 +169,12 @@ class FileTransfer
         }
 
         foreach ($files as $key => $file) {
-
             $result = $this->upload($file, $handler, $path);
-
             if ($result === true) {
                 $return['transferred'][$key] = $this->getTransferred(true);
-                continue;
+            } else {
+                $return['errors'][$key] = (string) $result;
             }
-
-            $return['errors'][$key] = (string) $result;
         }
 
         return $return;
@@ -255,7 +251,6 @@ class FileTransfer
      * @param string $to
      * @param bool $upload
      * @return boolean
-     * @throws FileException
      * @throws UnexpectedValueException
      */
     protected function finalize($temp, $to, $upload)
@@ -277,7 +272,7 @@ class FileTransfer
 
         if (!file_exists($directory) && !mkdir($directory, 0775, true)) {
             unlink($temp);
-            throw new FileException($this->translation->text('Unable to create @name', array('@name' => $directory)));
+            throw new UnexpectedValueException($this->translation->text('Unable to create @name', array('@name' => $directory)));
         }
 
         $destination = "$directory/$filename";

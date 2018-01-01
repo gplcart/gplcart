@@ -9,6 +9,7 @@
 
 namespace gplcart\core\models;
 
+use Exception;
 use gplcart\core\Hook,
     gplcart\core\Handler;
 use gplcart\core\models\Translation as TranslationModel;
@@ -98,7 +99,7 @@ class Condition
         try {
             $handlers = $this->getHandlers();
             $result = Handler::call($handlers, $condition['id'], 'process', array($condition, $data, $this));
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             return false;
         }
 

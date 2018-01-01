@@ -20,10 +20,10 @@ class Image
 {
 
     /**
-     * Config class instance
-     * @var \gplcart\core\Config $config
+     * URL class instance
+     * @var \gplcart\core\helpers\Url $url
      */
-    protected $config;
+    protected $url;
 
     /**
      * File model instance
@@ -32,10 +32,10 @@ class Image
     protected $file;
 
     /**
-     * URL class instance
-     * @var \gplcart\core\helpers\Url $url
+     * Config class instance
+     * @var \gplcart\core\Config $config
      */
-    protected $url;
+    protected $config;
 
     /**
      * @param Config $config
@@ -90,12 +90,10 @@ class Image
             return false;
         }
 
-        $files = (array) $this->file->getList(array('file_id' => $file_id));
-
         $deleted = $count = 0;
-        foreach ($files as $file) {
-            $count++;
+        foreach ((array) $this->file->getList(array('file_id' => $file_id)) as $file) {
             $deleted += (int) $this->file->delete($file['file_id']);
+            $count++;
         }
 
         return $count && $count == $deleted;

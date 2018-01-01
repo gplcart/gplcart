@@ -67,7 +67,10 @@ class Language
      */
     public function getList(array $options = array())
     {
-        $options += array('enabled' => false, 'in_database' => false);
+        $options += array(
+            'enabled' => false,
+            'in_database' => false
+        );
 
         $languages = &gplcart_static(gplcart_array_hash(array('language.list' => $options)));
 
@@ -86,6 +89,8 @@ class Language
         $default_data = $this->getDefaultData();
         $saved = $this->config->get('languages', array());
         $languages = array_replace_recursive($iso, $saved);
+
+        $this->hook->attach('language.list.after', $options, $languages, $this);
 
         foreach ($languages as $code => &$language) {
 
@@ -113,7 +118,6 @@ class Language
         }
 
         gplcart_array_sort($languages);
-        $this->hook->attach('language.list.after', $options, $languages, $this);
         return $languages;
     }
 

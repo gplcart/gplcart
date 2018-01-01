@@ -9,6 +9,7 @@
 
 namespace gplcart\core\models;
 
+use Exception;
 use gplcart\core\Hook,
     gplcart\core\Config,
     gplcart\core\Handler;
@@ -57,7 +58,6 @@ class ImageStyle
 
         $imagestyles = $this->getList();
         $result = isset($imagestyles[$imagestyle_id]) ? $imagestyles[$imagestyle_id] : array();
-
         $this->hook->attach('image.style.get.after', $imagestyle_id, $result, $this);
         return (array) $result;
     }
@@ -253,7 +253,7 @@ class ImageStyle
         try {
             $callback = Handler::get($handler, null, 'process');
             $result = call_user_func_array($callback, array(&$source, &$target, &$action));
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             $result = false;
         }
 

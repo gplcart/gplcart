@@ -129,7 +129,7 @@ class History
     }
 
     /**
-     * History record lifespan
+     * The history record lifespan
      * @return integer
      */
     public function getLifespan()

@@ -231,74 +231,6 @@ class Category
     }
 
     /**
-     * Create tree structure from an array of categories
-     * @param array $categories
-     * @param array $options
-     * @return array
-     */
-    protected function prepareTree(array $categories, array $options)
-    {
-        $tree = array();
-        $parents_tree = array();
-        $children_tree = array();
-        $categories_tree = array();
-
-        $parent = isset($options['parent_id']) ? (int) $options['parent_id'] : 0;
-
-        foreach ($categories as $category) {
-            $children_tree[$category['parent_id']][] = $category['category_id'];
-            $parents_tree[$category['category_id']][] = $category['parent_id'];
-            $categories_tree[$category['category_id']] = $category;
-        }
-
-        $max_depth = isset($options['depth']) ? (int) $options['depth'] : count($children_tree);
-
-        $process_parents = array();
-        $process_parents[] = $parent;
-
-        while (count($process_parents)) {
-            $parent = array_pop($process_parents);
-            $depth = count($process_parents);
-
-            if ($max_depth <= $depth || empty($children_tree[$parent])) {
-                continue;
-            }
-
-            $has_children = false;
-
-            $child = current($children_tree[$parent]);
-
-            do {
-                if (empty($child)) {
-                    break;
-                }
-
-                $category = $categories_tree[$child];
-
-                $category['depth'] = $depth;
-                $category['parents'] = $parents_tree[$category['category_id']];
-
-                $tree[$category['category_id']] = $category;
-
-                if (!empty($children_tree[$category['category_id']])) {
-                    $has_children = true;
-                    $process_parents[] = $parent;
-                    $process_parents[] = $category['category_id'];
-                    reset($categories_tree[$category['category_id']]);
-                    next($children_tree[$parent]);
-                    break;
-                }
-            } while ($child = next($children_tree[$parent]));
-
-            if (!$has_children) {
-                reset($children_tree[$parent]);
-            }
-        }
-
-        return $tree;
-    }
-
-    /**
      * Adds a category
      * @param array $data
      * @return integer
@@ -377,6 +309,21 @@ class Category
     }
 
     /**
+     * Whether a category can be deleted
+     * @param integer $category_id
+     * @return boolean
+     */
+    public function canDelete($category_id)
+    {
+        $sql = 'SELECT NOT EXISTS (SELECT product_id FROM product WHERE category_id=:id)'
+                . ' AND NOT EXISTS (SELECT product_id FROM product WHERE brand_category_id=:id)'
+                . ' AND NOT EXISTS (SELECT page_id FROM page WHERE category_id=:id)'
+                . ' AND NOT EXISTS (SELECT category_id FROM category WHERE parent_id=:id)';
+
+        return (bool) $this->db->fetchColumn($sql, array('id' => $category_id));
+    }
+
+    /**
      * Delete all database records related to the category ID
      * @param string $category_id
      */
@@ -393,18 +340,71 @@ class Category
     }
 
     /**
-     * Whether a category can be deleted
-     * @param integer $category_id
-     * @return boolean
+     * Create a tree structure from an array of categories
+     * @param array $categories
+     * @param array $options
+     * @return array
      */
-    public function canDelete($category_id)
+    protected function prepareTree(array $categories, array $options)
     {
-        $sql = 'SELECT NOT EXISTS (SELECT product_id FROM product WHERE category_id=:id)'
-                . ' AND NOT EXISTS (SELECT product_id FROM product WHERE brand_category_id=:id)'
-                . ' AND NOT EXISTS (SELECT page_id FROM page WHERE category_id=:id)'
-                . ' AND NOT EXISTS (SELECT category_id FROM category WHERE parent_id=:id)';
+        $tree = array();
+        $parents_tree = array();
+        $children_tree = array();
+        $categories_tree = array();
 
-        return (bool) $this->db->fetchColumn($sql, array('id' => $category_id));
+        $parent = isset($options['parent_id']) ? (int) $options['parent_id'] : 0;
+
+        foreach ($categories as $category) {
+            $children_tree[$category['parent_id']][] = $category['category_id'];
+            $parents_tree[$category['category_id']][] = $category['parent_id'];
+            $categories_tree[$category['category_id']] = $category;
+        }
+
+        $max_depth = isset($options['depth']) ? (int) $options['depth'] : count($children_tree);
+
+        $process_parents = array();
+        $process_parents[] = $parent;
+
+        while (count($process_parents)) {
+            $parent = array_pop($process_parents);
+            $depth = count($process_parents);
+
+            if ($max_depth <= $depth || empty($children_tree[$parent])) {
+                continue;
+            }
+
+            $has_children = false;
+
+            $child = current($children_tree[$parent]);
+
+            do {
+                if (empty($child)) {
+                    break;
+                }
+
+                $category = $categories_tree[$child];
+
+                $category['depth'] = $depth;
+                $category['parents'] = $parents_tree[$category['category_id']];
+
+                $tree[$category['category_id']] = $category;
+
+                if (!empty($children_tree[$category['category_id']])) {
+                    $has_children = true;
+                    $process_parents[] = $parent;
+                    $process_parents[] = $category['category_id'];
+                    reset($categories_tree[$category['category_id']]);
+                    next($children_tree[$parent]);
+                    break;
+                }
+            } while ($child = next($children_tree[$parent]));
+
+            if (!$has_children) {
+                reset($children_tree[$parent]);
+            }
+        }
+
+        return $tree;
     }
 
 }

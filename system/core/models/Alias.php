@@ -289,7 +289,7 @@ class Alias
      * @param string $entity_name
      * @return string
      */
-    protected function getEntityPattern($entity_name)
+    public function getEntityPattern($entity_name)
     {
         return $this->config->get("{$entity_name}_alias_pattern", '%t.html');
     }
@@ -299,7 +299,7 @@ class Alias
      * @param string $entity_name
      * @return array
      */
-    protected function getEntityPatternPlaceholders($entity_name)
+    public function getEntityPatternPlaceholders($entity_name)
     {
         return $this->config->get("{$entity_name}_alias_placeholder", array('%t' => 'title'));
     }

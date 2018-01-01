@@ -97,26 +97,6 @@ class Install
     }
 
     /**
-     * Returns an array of default installers
-     * @return array
-     */
-    protected function getDefaultHandler()
-    {
-        return array(
-            'default' => array(
-                'weight' => 0,
-                'module' => '',
-                'id' => 'default',
-                'title' => $this->translation->text('Default'),
-                'description' => '',
-                'handlers' => array(
-                    'install' => array('gplcart\\core\\handlers\\install\\DefaultProfile', 'install')
-                )
-            )
-        );
-    }
-
-    /**
      * Returns an installer handler
      * @param string $handler_id
      * @return array
@@ -239,6 +219,26 @@ class Install
         $result = $this->callHandler($data['installer'], $data);
         $this->hook->attach('install.after', $data, $result, $cli_route, $this);
         return array_merge($default_result, (array) $result);
+    }
+
+    /**
+     * Returns an array of default installers
+     * @return array
+     */
+    protected function getDefaultHandler()
+    {
+        return array(
+            'default' => array(
+                'weight' => 0,
+                'module' => '',
+                'id' => 'default',
+                'title' => $this->translation->text('Default'),
+                'description' => '',
+                'handlers' => array(
+                    'install' => array('gplcart\\core\\handlers\\install\\DefaultProfile', 'install')
+                )
+            )
+        );
     }
 
 }

@@ -13,8 +13,6 @@ use Exception,
     OutOfRangeException,
     OutOfBoundsException,
     UnexpectedValueException;
-use gplcart\core\exceptions\File as FileException,
-    gplcart\core\exceptions\Access as AccessException;
 use gplcart\core\Hook,
     gplcart\core\Handler;
 use gplcart\core\helpers\Url as UrlHelper,
@@ -330,7 +328,6 @@ class Oauth
      * @return string
      * @link https://developers.google.com/accounts/docs/OAuth2ServiceAccount
      * @throws OutOfBoundsException
-     * @throws FileException
      * @throws OutOfRangeException
      * @throws UnexpectedValueException
      */
@@ -347,7 +344,7 @@ class Oauth
         }
 
         if (!is_readable($data['certificate_file']) || !is_file($data['certificate_file'])) {
-            throw new FileException('File with private key is not readable');
+            throw new UnexpectedValueException('File with private key is not readable');
         }
 
         $key = file_get_contents($data['certificate_file']);
@@ -427,7 +424,6 @@ class Oauth
      * @param array $provider
      * @param array $jwt
      * @return mixed
-     * @throws AccessException
      * @link https://developers.google.com/accounts/docs/OAuth2ServiceAccount
      */
     public function exchangeTokenServer($provider, $jwt)
@@ -441,14 +437,8 @@ class Oauth
             'token_url' => $provider['url']['token']
         );
 
-        try {
-            $assertion = $this->generateJwt($jwt);
-        } catch (Exception $ex) {
-            throw new AccessException('Failed to exchange Oauth service token: ' . $ex->getMessage());
-        }
-
         $request = array(
-            'assertion' => $assertion,
+            'assertion' => $this->generateJwt($jwt),
             'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer'
         );
 

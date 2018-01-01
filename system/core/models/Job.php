@@ -22,15 +22,15 @@ class Job
 {
 
     /**
+     * Max milliseconds for one iteration
+     */
+    const LIMIT = 1000;
+
+    /**
      * Hook class instance
      * @var \gplcart\core\Hook $hook
      */
     protected $hook;
-
-    /**
-     * Max milliseconds for one iteration
-     */
-    const LIMIT = 1000;
 
     /**
      * Translation UI model instance

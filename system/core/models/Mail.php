@@ -9,6 +9,7 @@
 
 namespace gplcart\core\models;
 
+use Exception;
 use gplcart\core\Hook,
     gplcart\core\Handler;
 
@@ -87,7 +88,7 @@ class Mail
             $handlers = $this->getHandlers();
             $data = Handler::call($handlers, $handler_id, 'data', $arguments);
             return call_user_func_array(array($this, 'send'), $data);
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             trigger_error($ex->getMessage());
             return false;
         }

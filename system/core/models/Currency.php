@@ -83,7 +83,10 @@ class Currency
      */
     public function getList(array $options = array())
     {
-        $options += array('enabled' => false, 'in_database' => false);
+        $options += array(
+            'enabled' => false,
+            'in_database' => false
+        );
 
         $currencies = &gplcart_static(gplcart_array_hash(array('currency.list' => $options)));
 
@@ -101,6 +104,8 @@ class Currency
         $default = $this->getDefaultData();
         $saved = $this->config->get('currencies', array());
         $currencies = array_replace_recursive($iso, $saved);
+
+        $this->hook->attach('currency.list.after', $options, $currencies, $this);
 
         foreach ($currencies as $code => &$currency) {
 
@@ -122,7 +127,6 @@ class Currency
             }
         }
 
-        $this->hook->attach('currency.list.after', $options, $currencies, $this);
         return $currencies;
     }
 
@@ -246,31 +250,6 @@ class Currency
     }
 
     /**
-     * Returns an array of default currency data
-     * @return array
-     */
-    protected function getDefaultData()
-    {
-        return array(
-            'code' => '',
-            'name' => '',
-            'symbol' => '',
-            'status' => 0,
-            'default' => 0,
-            'modified' => 0,
-            'decimals' => 2,
-            'major_unit' => '',
-            'minor_unit' => '',
-            'numeric_code' => '',
-            'rounding_step' => 0,
-            'conversion_rate' => 1,
-            'decimal_separator' => '.',
-            'thousands_separator' => ',',
-            'template' => '%symbol%price'
-        );
-    }
-
-    /**
      * Converts currencies
      * @param integer $amount
      * @param string $from_currency
@@ -368,6 +347,31 @@ class Currency
         }
 
         return $data;
+    }
+
+    /**
+     * Returns an array of default currency data
+     * @return array
+     */
+    protected function getDefaultData()
+    {
+        return array(
+            'code' => '',
+            'name' => '',
+            'symbol' => '',
+            'status' => 0,
+            'default' => 0,
+            'modified' => 0,
+            'decimals' => 2,
+            'major_unit' => '',
+            'minor_unit' => '',
+            'numeric_code' => '',
+            'rounding_step' => 0,
+            'conversion_rate' => 1,
+            'decimal_separator' => '.',
+            'thousands_separator' => ',',
+            'template' => '%symbol%price'
+        );
     }
 
 }

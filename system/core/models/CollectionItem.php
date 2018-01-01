@@ -9,6 +9,7 @@
 
 namespace gplcart\core\models;
 
+use Exception;
 use gplcart\core\Hook,
     gplcart\core\Config,
     gplcart\core\Handler;
@@ -299,7 +300,7 @@ class CollectionItem
         try {
             $handlers = $this->collection->getHandlers();
             return Handler::call($handlers, $collection_id, 'list', array($arguments));
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             trigger_error($ex->getMessage());
             return array();
         }

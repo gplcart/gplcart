@@ -239,7 +239,6 @@ class FieldValue
      */
     protected function setImage(array $data, $field_value_id = null)
     {
-
         if (!empty($data['images']) && !empty($field_value_id)) {
             $this->file->delete(array('entity' => 'field_value', 'entity_id' => $field_value_id));
         }

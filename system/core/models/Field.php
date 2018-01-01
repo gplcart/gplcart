@@ -217,37 +217,6 @@ class Field
     }
 
     /**
-     * Delete all field values and their translations related to the field
-     * @param int $field_id
-     * @return bool
-     */
-    protected function deleteLinkedFieldValues($field_id)
-    {
-        $sql = 'DELETE fvt'
-                . ' FROM field_value_translation AS fvt'
-                . ' WHERE fvt.field_value_id IN (SELECT DISTINCT(fv.field_value_id)'
-                . ' FROM field_value AS fv'
-                . ' INNER JOIN field_value AS fv2'
-                . ' ON (fv.field_value_id = fv2.field_value_id)'
-                . ' WHERE fv.field_id = ?);';
-
-        return (bool) $this->db->run($sql, array($field_id))->rowCount();
-    }
-
-    /**
-     * Delete all database tables related to the field
-     * @param int $field_id
-     */
-    protected function deleteLinked($field_id)
-    {
-        $conditions = array('field_id' => $field_id);
-
-        $this->db->delete('field_value', $conditions);
-        $this->db->delete('field_translation', $conditions);
-        $this->db->delete('product_class_field', $conditions);
-    }
-
-    /**
      * Whether the field can be deleted
      * @param integer $field_id
      * @return boolean
@@ -323,6 +292,35 @@ class Field
 
         $this->hook->attach('field.types', $types, $this);
         return $types;
+    }
+
+    /**
+     * Delete all field values and their translations related to the field
+     * @param int $field_id
+     * @return bool
+     */
+    protected function deleteLinkedFieldValues($field_id)
+    {
+        $sql = 'DELETE fvt'
+                . ' FROM field_value_translation AS fvt'
+                . ' WHERE fvt.field_value_id IN (SELECT DISTINCT(fv.field_value_id)'
+                . ' FROM field_value AS fv'
+                . ' INNER JOIN field_value AS fv2'
+                . ' ON (fv.field_value_id = fv2.field_value_id)'
+                . ' WHERE fv.field_id = ?);';
+
+        return (bool) $this->db->run($sql, array($field_id))->rowCount();
+    }
+
+    /**
+     * Delete all database tables related to the field
+     * @param int $field_id
+     */
+    protected function deleteLinked($field_id)
+    {
+        $this->db->delete('field_value', array('field_id' => $field_id));
+        $this->db->delete('field_translation', array('field_id' => $field_id));
+        $this->db->delete('product_class_field', array('field_id' => $field_id));
     }
 
 }

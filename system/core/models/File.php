@@ -287,15 +287,6 @@ class File
     }
 
     /**
-     * Delete all database records related to the file ID
-     * @param int $file_id
-     */
-    protected function deleteLinked($file_id)
-    {
-        $this->db->delete('file_translation', array('file_id' => $file_id));
-    }
-
-    /**
      * Deletes a file from disk
      * @param array|int $file
      * @return boolean
@@ -344,15 +335,11 @@ class File
             return array('database' => 0, 'disk' => 0);
         }
 
-        $deleted_database = $this->delete($file['file_id'], $check);
-
-        if (empty($deleted_database)) {
+        if (!$this->delete($file['file_id'], $check)) {
             return array('database' => 0, 'disk' => 0);
         }
 
-        $deleted_disk = $this->deleteFromDisk($file);
-
-        if (empty($deleted_disk)) {
+        if (!$this->deleteFromDisk($file)) {
             return array('database' => 1, 'disk' => 0);
         }
 
@@ -398,23 +385,6 @@ class File
     }
 
     /**
-     * Returns an array of all defined file handlers
-     * @return array
-     */
-    protected function getHandlers()
-    {
-        $handlers = &gplcart_static('file.handlers');
-
-        if (isset($handlers)) {
-            return $handlers;
-        }
-
-        $handlers = (array) gplcart_config_get(GC_FILE_CONFIG_FILE);
-        $this->hook->attach('file.handlers', $handlers, $this);
-        return $handlers;
-    }
-
-    /**
      * Returns a handler data
      * @param string $name
      * @return array
@@ -452,6 +422,32 @@ class File
     public function getEntities()
     {
         return $this->db->fetchColumnAll('SELECT entity FROM file GROUP BY entity');
+    }
+
+    /**
+     * Delete all database records related to the file ID
+     * @param int $file_id
+     */
+    protected function deleteLinked($file_id)
+    {
+        $this->db->delete('file_translation', array('file_id' => $file_id));
+    }
+
+    /**
+     * Returns an array of all defined file handlers
+     * @return array
+     */
+    protected function getHandlers()
+    {
+        $handlers = &gplcart_static('file.handlers');
+
+        if (isset($handlers)) {
+            return $handlers;
+        }
+
+        $handlers = (array) gplcart_config_get(GC_FILE_CONFIG_FILE);
+        $this->hook->attach('file.handlers', $handlers, $this);
+        return $handlers;
     }
 
 }
