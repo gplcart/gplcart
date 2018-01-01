@@ -60,7 +60,8 @@ class FileType
     public function json($file)
     {
         $contents = file_get_contents($file);
-        return json_decode($contents) !== null;
+        json_decode($contents);
+        return json_last_error() === JSON_ERROR_NONE;
     }
 
 }
