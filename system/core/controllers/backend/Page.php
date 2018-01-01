@@ -109,7 +109,7 @@ class Page extends BackendController
     protected function setFilterListPage()
     {
         $allowed = array('title', 'store_id', 'page_id',
-            'status', 'created', 'email');
+            'status', 'created', 'email', 'blog_post');
 
         $this->setFilter($allowed);
     }
@@ -314,6 +314,7 @@ class Page extends BackendController
         $this->setSubmitted('form', true);
         $this->setSubmitted('update', $this->data_page);
         $this->setSubmittedBool('status');
+        $this->setSubmittedBool('blog_post');
 
         if (empty($this->data_page['page_id'])) {
             $this->setSubmitted('user_id', $this->uid);

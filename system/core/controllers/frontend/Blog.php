@@ -72,8 +72,8 @@ class Blog extends FrontendController
 
         $conditions['status'] = 1;
         $conditions['count'] = true;
+        $conditions['blog_post'] = 1;
         $conditions['store_id'] = $this->store_id;
-        $conditions['category_group_id'] = $this->store->config('blog_category_group_id');
 
         return $this->data_total = (int) $this->page->getList($conditions);
     }
@@ -87,9 +87,9 @@ class Blog extends FrontendController
         $conditions = $this->query_filter;
 
         $conditions['status'] = 1;
+        $conditions['blog_post'] = 1;
         $conditions['limit'] = $this->data_limit;
         $conditions['store_id'] = $this->store_id;
-        $conditions['category_group_id'] = $this->store->config('blog_category_group_id');
 
         $pages = (array) $this->page->getList($conditions);
         return $this->preparePagesBlog($pages);

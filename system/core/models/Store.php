@@ -236,7 +236,6 @@ class Store
             'collection_file' => 1,
             'collection_product' => 2,
             'collection_page' => 3,
-            'blog_category_group_id' => 0,
             'js' => ''
         );
     }

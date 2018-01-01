@@ -293,6 +293,7 @@ return array(
             'category_id' => array('type' => 'integer', 'length' => 10, 'not_null' => true, 'default' => 0),
             'created' => array('type' => 'integer', 'length' => 10, 'not_null' => true),
             'modified' => array('type' => 'integer', 'length' => 10, 'not_null' => true, 'default' => 0),
+            'blog_post' => array('type' => 'integer', 'length' => 1, 'not_null' => true, 'default' => 0),
             'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
             'meta_title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
             'meta_description' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),

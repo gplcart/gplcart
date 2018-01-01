@@ -373,32 +373,13 @@
     </div>
     <div class="form-group">
       <label class="col-md-2 control-label"><?php echo $this->text('Code'); ?></label>
-      <div class="col-md-6">
-        <textarea name="store[data][js]" rows="10" class="form-control"><?php echo $this->e($store['data']['js']); ?></textarea>
+      <div class="col-md-4">
+        <textarea name="store[data][js]" class="form-control"><?php echo $this->e($store['data']['js']); ?></textarea>
         <div class="help-block">
            <?php echo $this->text('Java-Script code without script tags to add on each public, non-admin and non-internal page, e.g Google Analytics tracking code'); ?>
         </div>
       </div>
     </div>
-    <?php if(isset($store['store_id'])) { ?>
-    <div class="form-group<?php echo $this->error('data.blog_category_group_id', ' has-error'); ?>">
-      <label class="col-md-2 control-label"><?php echo $this->text('Blog category group'); ?></label>
-      <div class="col-md-4">
-        <select name="store[data][blog_category_group_id]" class="form-control">
-          <option value="0"><?php echo $this->text('- select -'); ?></option>
-          <?php foreach ($category_groups as $category_group_id => $category_group) { ?>
-          <option value="<?php echo $category_group_id; ?>"<?php echo $store['data']['blog_category_group_id'] == $category_group_id ? ' selected' : ''; ?>><?php echo $this->e($category_group['title']); ?></option>
-          <?php } ?>
-        </select>
-        <div class="help-block">
-          <?php echo $this->error('data.blog_category_group_id'); ?>
-          <div class="text-muted">
-            <?php echo $this->text('All <a href="@url">pages</a> with the selected category group will be treated as blog posts', array('@url' => $this->url('admin/content/page'))); ?>
-          </div>
-        </div>
-      </div>
-    </div>
-    <?php } ?>
   </fieldset>
   <?php if (isset($store['store_id']) && !empty($collections)) { ?>
   <fieldset>

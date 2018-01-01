@@ -80,8 +80,7 @@ class Page
      * @param TranslationEntityModel $translation_entity
      */
     public function __construct(Hook $hook, Config $config, FileModel $file, AliasModel $alias,
-            TranslationModel $translation, TranslationEntityModel $translation_entity
-    )
+            TranslationModel $translation, TranslationEntityModel $translation_entity)
     {
         $this->hook = $hook;
         $this->config = $config;
@@ -177,6 +176,11 @@ class Page
             $conditions[] = (int) $options['store_id'];
         }
 
+        if (isset($options['blog_post'])) {
+            $sql .= ' AND p.blog_post = ?';
+            $conditions[] = (int) $options['blog_post'];
+        }
+
         if (isset($options['category_group_id'])) {
             $sql .= ' AND c.category_group_id = ?';
             $conditions[] = (int) $options['category_group_id'];
@@ -194,7 +198,7 @@ class Page
 
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('title' => 'p.title', 'store_id' => 'p.store_id',
-            'page_id' => 'p.page_id', 'status' => 'p.status',
+            'blog_post' => 'p.blog_post', 'page_id' => 'p.page_id', 'status' => 'p.status',
             'created' => 'p.created', 'email' => 'u.email');
 
         if (isset($options['sort']) && isset($allowed_sort[$options['sort']])//

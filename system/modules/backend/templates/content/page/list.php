@@ -76,6 +76,11 @@
             </a>
           </th>
           <th>
+            <a href="<?php echo $sort_blog_post; ?>">
+              <?php echo $this->text('Blog post'); ?> <i class="fa fa-sort"></i>
+            </a>
+          </th>
+          <th>
             <a href="<?php echo $sort_created; ?>">
               <?php echo $this->text('Created'); ?> <i class="fa fa-sort"></i>
             </a>
@@ -112,6 +117,17 @@
               </option>
             </select>
           </th>
+          <th>
+            <select class="form-control" name="blog_post">
+              <option value=""><?php echo $this->text('Any'); ?></option>
+              <option value="1"<?php echo $filter_blog_post === '1' ? ' selected' : ''; ?>>
+                <?php echo $this->text('Yes'); ?>
+              </option>
+              <option value="0"<?php echo $filter_blog_post === '0' ? ' selected' : ''; ?>>
+                <?php echo $this->text('No'); ?>
+              </option>
+            </select>
+          </th>
           <th></th>
           <th>
             <a href="<?php echo $this->url($_path); ?>" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
@@ -126,7 +142,7 @@
       <tbody>
         <?php if ($_filtering && empty($pages)) { ?>
         <tr>
-          <td colspan="8">
+          <td colspan="9">
             <?php echo $this->text('No results'); ?>
             <a href="<?php echo $this->url($_path); ?>" class="clear-filter"><?php echo $this->text('Reset'); ?></a>
           </td>
@@ -151,6 +167,13 @@
           </td>
           <td class="middle">
             <?php if (empty($page['status'])) { ?>
+            <i class="fa fa-square-o"></i>
+            <?php } else { ?>
+            <i class="fa fa-check-square-o"></i>
+            <?php } ?>
+          </td>
+          <td class="middle">
+            <?php if (empty($page['blog_post'])) { ?>
             <i class="fa fa-square-o"></i>
             <?php } else { ?>
             <i class="fa fa-check-square-o"></i>

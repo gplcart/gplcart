@@ -19,7 +19,8 @@ return array(
         'meta_title' => 'Page meta title',
         'meta_description' => 'Page meta description',
         'description' => 'Page description',
-        'related_page_id' => ''
+        'related_page_id' => '',
+        'blog_post' => 0
     ),
     array(
         'page_id' => 2,
@@ -33,6 +34,7 @@ return array(
         'meta_title' => 'Page meta title 2',
         'meta_description' => 'Page meta description 2',
         'description' => 'Page description 2',
-        'related_page_id' => ''
+        'related_page_id' => '',
+        'blog_post' => 1
     )
 );

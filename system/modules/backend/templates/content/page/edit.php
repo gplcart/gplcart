@@ -40,6 +40,22 @@
         </div>
       </div>
     </div>
+    <div class="form-group">
+      <label class="col-md-2 control-label"><?php echo $this->text('Blog post'); ?></label>
+      <div class="col-md-8">
+        <div class="btn-group" data-toggle="buttons">
+          <label class="btn btn-default<?php echo empty($page['blog_post']) ? '' : ' active'; ?>">
+            <input name="page[blog_post]" type="radio" autocomplete="off" value="1"<?php echo empty($page['blog_post']) ? '' : ' checked'; ?>><?php echo $this->text('Yes'); ?>
+          </label>
+          <label class="btn btn-default<?php echo empty($page['blog_post']) ? ' active' : ''; ?>">
+            <input name="page[blog_post]" type="radio" autocomplete="off" value="0"<?php echo empty($page['blog_post']) ? ' checked' : ''; ?>><?php echo $this->text('No'); ?>
+          </label>
+        </div>
+        <div class="help-block">
+          <?php echo $this->text('Whether to show this page as a blog post on the <a href="@url">blog page</a>', array('@url' => $this->url('blog'))); ?>
+        </div>
+      </div>
+    </div>
     <div class="form-group required<?php echo $this->error('title', ' has-error'); ?>">
       <label class="col-md-2 control-label"><?php echo $this->text('Title'); ?></label>
       <div class="col-md-10">
