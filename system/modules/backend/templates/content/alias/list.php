@@ -66,7 +66,7 @@
               <option value=""><?php echo $this->text('Any'); ?></option>
               <?php foreach ($entities as $entity) { ?>
               <option value="<?php echo $this->e($entity); ?>"<?php echo $filter_entity == $entity ? ' selected' : '' ?>>
-                <?php echo $this->e($entity); ?>
+                <?php echo $this->text(ucfirst($entity)); ?>
               </option>
               <?php } ?>
             </select>
@@ -103,7 +103,7 @@
             <?php echo $this->e($alias['alias']); ?>
           </td>
           <td class="middle">
-            <?php echo $this->e($this->text(ucfirst($alias['entity']))); ?>
+            <?php echo $this->text(ucfirst($alias['entity'])); ?>
           </td>
           <td class="middle">
             <?php echo $this->e($alias['entity_id']); ?>
