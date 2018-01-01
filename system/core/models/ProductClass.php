@@ -292,7 +292,7 @@ class ProductClass
         $result = array();
         $fields = $this->field->getList();
 
-        foreach ($this->getFields(array('product_class_id' => $product_class_id)) as $field) {
+        foreach ((array) $this->getFields(array('product_class_id' => $product_class_id)) as $field) {
             if (isset($fields[$field['field_id']])) {
                 $options = array('field_id' => $field['field_id']);
                 $data = array('values' => $this->field_value->getList($options));

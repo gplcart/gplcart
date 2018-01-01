@@ -363,7 +363,7 @@ class ProductClass extends BackendController
         $conditions['limit'] = $this->data_limit;
         $conditions['product_class_id'] = $this->data_product_class['product_class_id'];
 
-        $fields = $this->product_class->getFields($conditions);
+        $fields = (array) $this->product_class->getFields($conditions);
         return $unique ? $this->prepareFieldsProductClass($fields) : $fields;
     }
 
