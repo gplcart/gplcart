@@ -63,6 +63,11 @@
               <?php echo $this->text('Created'); ?> <i class="fa fa-sort"></i>
             </a>
           </th>
+          <th>
+            <a href="<?php echo $sort_modified; ?>">
+              <?php echo $this->text('Modified'); ?> <i class="fa fa-sort"></i>
+            </a>
+          </th>
           <th></th>
         </tr>
         <tr class="filters active hidden-no-js">
@@ -86,6 +91,7 @@
           </th>
           <th></th>
           <th></th>
+          <th></th>
           <th>
             <a href="<?php echo $this->url($_path); ?>" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
               <i class="fa fa-refresh"></i>
@@ -99,7 +105,7 @@
       <tbody>
         <?php if ($_filtering && empty($carts)) { ?>
         <tr>
-          <td class="middle" colspan="8">
+          <td class="middle" colspan="9">
             <?php echo $this->text('No results'); ?>
             <a href="<?php echo $this->url($_path); ?>" class="clear-filter"><?php echo $this->text('Reset'); ?></a>
           </td>
@@ -142,6 +148,7 @@
           </td>
           <td class="middle"><?php echo $this->e($cart['quantity']); ?></td>
           <td class="middle"><?php echo $this->date($cart['created']); ?></td>
+          <td class="middle"><?php echo $this->date($cart['modified']); ?></td>
           <td></td>
         </tr>
         <?php } ?>

@@ -241,34 +241,6 @@ class Cart
     }
 
     /**
-     * Prepare a cart item
-     * @param array $item
-     * @param array $data
-     * @return array
-     */
-    protected function prepareItem(array $item, array $data)
-    {
-        $product = $this->product->getBySku($item['sku'], $item['store_id']);
-
-        if (empty($product['status']) || $data['store_id'] != $product['store_id']) {
-            return array();
-        }
-
-        $product['price'] = $this->currency->convert($product['price'], $product['currency'], $data['currency']);
-        $calculated = $this->product->calculate($product);
-
-        if ($calculated != $product['price']) {
-            $item['original_price'] = $product['price'];
-        }
-
-        $item['product'] = $product;
-        $item['price'] = $calculated;
-        $item['total'] = $item['price'] * $item['quantity'];
-
-        return $item;
-    }
-
-    /**
      * Returns an array of cart items or counts them
      * @param array $options
      * @return array|integer
@@ -337,6 +309,7 @@ class Cart
         $allowed_sort = array(
             'sku' => 'c.sku',
             'created' => 'c.created',
+            'modified' => 'c.modified',
             'user_id' => 'c.user_id',
             'user_email' => 'u.email',
             'store_id' => 'c.store_id',
@@ -469,6 +442,34 @@ class Cart
     public function getCookieLifespan()
     {
         return $this->config->get('cart_cookie_lifespan', 365 * 24 * 60 * 60);
+    }
+
+    /**
+     * Prepare a cart item
+     * @param array $item
+     * @param array $data
+     * @return array
+     */
+    protected function prepareItem(array $item, array $data)
+    {
+        $product = $this->product->getBySku($item['sku'], $item['store_id']);
+
+        if (empty($product['status']) || $data['store_id'] != $product['store_id']) {
+            return array();
+        }
+
+        $product['price'] = $this->currency->convert($product['price'], $product['currency'], $data['currency']);
+        $calculated = $this->product->calculate($product);
+
+        if ($calculated != $product['price']) {
+            $item['original_price'] = $product['price'];
+        }
+
+        $item['product'] = $product;
+        $item['price'] = $calculated;
+        $item['total'] = $item['price'] * $item['quantity'];
+
+        return $item;
     }
 
 }
