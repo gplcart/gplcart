@@ -298,3 +298,37 @@ function gplcart_backtrace($print = false)
 
     return $result;
 }
+
+/**
+ * Returns a class instance
+ * @param string $class
+ * @return object
+ */
+function gplcart_instance($class)
+{
+    if (strpos($class, '\\') === false) {
+        $class = "gplcart\\core\\$class";
+    }
+
+    return \gplcart\core\Container::get($class);
+}
+
+/**
+ * Get a model class instance
+ * @param string $name
+ * @return object
+ */
+function gplcart_instance_model($name)
+{
+    return gplcart_instance("gplcart\\core\\models\\$name");
+}
+
+/**
+ * Get a helper class instance
+ * @param string $name
+ * @return object
+ */
+function gplcart_instance_helper($name)
+{
+    return gplcart_instance("gplcart\\core\\helpers\\$name");
+}
