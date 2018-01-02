@@ -316,12 +316,6 @@ td.required:before {
     }
 }
 
-@media (min-width: 768px) {
-    .table-responsive {
-        overflow: visible;
-    }
-}
-
 @media (max-width: 991px) {
 
     .navbar-header {
