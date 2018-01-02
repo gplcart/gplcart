@@ -71,7 +71,9 @@
               <?php } ?>
             </select>
           </th>
-          <th></th>
+          <th>
+            <input class="form-control" name="entity_id" value="<?php echo $filter_entity_id; ?>" placeholder="<?php echo $this->text('Any'); ?>">
+          </th>
           <th>
             <a href="<?php echo $this->url($_path); ?>" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
               <i class="fa fa-refresh"></i>
