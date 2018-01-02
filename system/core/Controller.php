@@ -1885,6 +1885,7 @@ abstract class Controller
         $data['_is_admin'] = $this->access('admin');
         $data['_is_superadmin'] = $this->isSuperadmin();
         $data['_langcode'] = empty($this->langcode) ? 'en' : $this->langcode;
+        $data['_url'] = $this->scheme . $this->host . $this->base . $this->path;
 
         return $data;
     }
@@ -2183,9 +2184,9 @@ abstract class Controller
         foreach ($allowed as $filter) {
 
             $this->data["filter_$filter"] = '';
-            if (isset($this->query[$filter])) {
+            if (isset($this->query[$filter]) && is_string($this->query[$filter])) {
                 $this->data['_filtering'] = true;
-                $this->data["filter_$filter"] = (string) $this->query[$filter];
+                $this->data["filter_$filter"] = $this->query[$filter];
             }
 
             $sort = array(
