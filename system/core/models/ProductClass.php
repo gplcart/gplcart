@@ -103,34 +103,38 @@ class ProductClass
             return $result;
         }
 
-        $sql = 'SELECT *';
+        $sql = 'SELECT pc.*, GROUP_CONCAT(pcf.field_id) AS fields';
 
         if (!empty($options['count'])) {
-            $sql = 'SELECT COUNT(product_class_id)';
+            $sql = 'SELECT COUNT(pc.product_class_id)';
         }
 
-        $sql .= ' FROM product_class WHERE product_class_id IS NOT NULL';
+        $sql .= ' FROM product_class pc'
+                . ' LEFT JOIN product_class_field pcf ON(pc.product_class_id = pcf.product_class_id)'
+                . ' WHERE pc.product_class_id IS NOT NULL';
 
         $conditions = array();
 
         if (isset($options['title'])) {
-            $sql .= ' AND title LIKE ?';
+            $sql .= ' AND pc.title LIKE ?';
             $conditions[] = "%{$options['title']}%";
         }
 
         if (isset($options['status'])) {
-            $sql .= ' AND status=?';
+            $sql .= ' AND pc.status=?';
             $conditions[] = (int) $options['status'];
         }
 
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('title', 'status', 'product_class_id');
 
+        $sql .= ' GROUP BY pc.product_class_id';
+
         if (isset($options['sort']) && in_array($options['sort'], $allowed_sort)//
                 && isset($options['order']) && in_array($options['order'], $allowed_order)) {
-            $sql .= " ORDER BY {$options['sort']} {$options['order']}";
+            $sql .= " ORDER BY pc.{$options['sort']} {$options['order']}";
         } else {
-            $sql .= " ORDER BY title ASC";
+            $sql .= ' ORDER BY pc.title ASC';
         }
 
         if (!empty($options['limit'])) {
