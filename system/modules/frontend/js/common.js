@@ -429,7 +429,7 @@
                 $.ajax({
                     type: 'POST',
                     dataType: 'json',
-                    url: Gplcart.settings.urn,
+                    url: Gplcart.settings.url,
                     data: button.closest('form').serialize() + '&' + action + '=1',
                     success: function (data) {
 
@@ -509,7 +509,7 @@
                 $.ajax({
                     type: 'POST',
                     dataType: 'html',
-                    url: Gplcart.settings.urn,
+                    url: Gplcart.settings.url,
                     data: $('form#checkout').serialize(),
                     success: function (data) {
                         if (data.length) {
