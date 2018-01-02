@@ -135,26 +135,7 @@ class ProductClass extends BackendController
         $conditions = $this->query_filter;
         $conditions['limit'] = $this->data_limit;
 
-        $list = (array) $this->product_class->getList($conditions);
-        return $this->prepareListProductClass($list);
-    }
-
-    /**
-     * Prepare an array of product classes
-     * @param array $list
-     * @return array
-     */
-    protected function prepareListProductClass(array $list)
-    {
-        foreach ($list as &$item) {
-            if (empty($item['fields'])) {
-                $item['fields'] = array();
-            } else {
-                $item['fields'] = explode(',', $item['fields']);
-            }
-        }
-
-        return $list;
+        return (array) $this->product_class->getList($conditions);
     }
 
     /**
