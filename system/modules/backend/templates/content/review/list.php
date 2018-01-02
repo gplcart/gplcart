@@ -54,7 +54,7 @@
           <th class="middle"><a href="<?php echo $sort_text; ?>"><?php echo $this->text('Text'); ?> <i class="fa fa-sort"></i></a></th>
           <th class="middle"><a href="<?php echo $sort_product_title; ?>"><?php echo $this->text('Product'); ?> <i class="fa fa-sort"></i></a></th>
           <th class="middle"><a href="<?php echo $sort_email_like; ?>"><?php echo $this->text('Author'); ?> <i class="fa fa-sort"></i></a></th>
-          <th class="middle"><a href="<?php echo $sort_status; ?>"><?php echo $this->text('Enabled'); ?> <i class="fa fa-sort"></i></a></th>
+          <th class="middle"><a href="<?php echo $sort_status; ?>"><?php echo $this->text('Status'); ?> <i class="fa fa-sort"></i></a></th>
           <th class="middle"><a href="<?php echo $sort_created; ?>"><?php echo $this->text('Created'); ?> <i class="fa fa-sort"></i></a></th>
           <th></th>
         </tr>
