@@ -8,7 +8,7 @@
  * To see available variables <?php print_r(get_defined_vars()); ?>
  */
 ?>
-<?php if (!empty($product_classes)) { ?>
+<?php if (!empty($product_classes) || $_filtering) { ?>
 <form method="post">
   <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <?php if ($this->access('product_class_edit') || $this->access('product_class_delete') || $this->access('product_class_add')) { ?>
@@ -53,11 +53,44 @@
           <th><a href="<?php echo $sort_product_class_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_title; ?>"><?php echo $this->text('Title'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_status; ?>"><?php echo $this->text('Enabled'); ?> <i class="fa fa-sort"></i></a></th>
-          <th><?php echo $this->text('Fields'); ?></th>
           <th></th>
+        </tr>
+        <tr class="filters active hidden-no-js">
+          <th></th>
+          <th></th>
+          <th>
+            <input class="form-control" name="title" value="<?php echo $filter_title; ?>" placeholder="<?php echo $this->text('Any'); ?>">
+          </th>
+          <th>
+            <select class="form-control" name="status">
+              <option value=""><?php echo $this->text('Any'); ?></option>
+              <option value="1"<?php echo $filter_status === '1' ? ' selected' : ''; ?>>
+                <?php echo $this->text('Enabled'); ?>
+              </option>
+              <option value="0"<?php echo $filter_status === '0' ? ' selected' : ''; ?>>
+                <?php echo $this->text('Disabled'); ?>
+              </option>
+            </select>
+          </th>
+          <th>
+            <a href="<?php echo $this->url($_path); ?>" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
+              <i class="fa fa-refresh"></i>
+            </a>
+            <button class="btn btn-default filter" title="<?php echo $this->text('Filter'); ?>">
+              <i class="fa fa-search"></i>
+            </button>
+          </th>
         </tr>
       </thead>
       <tbody>
+        <?php if ($_filtering && empty($product_classes)) { ?>
+        <tr>
+          <td colspan="5">
+            <?php echo $this->text('No results'); ?>
+            <a href="<?php echo $this->url($_path); ?>" class="clear-filter"><?php echo $this->text('Reset'); ?></a>
+          </td>
+        </tr>
+        <?php } ?>
         <?php foreach ($product_classes as $id => $product_class) { ?>
         <tr>
           <td class="middle">
@@ -73,9 +106,6 @@
             <?php } ?>
           </td>
           <td class="middle">
-            <?php echo count($product_class['fields']); ?>
-          </td>
-          <td class="middle">
             <ul class="list-inline">
               <?php if ($this->access('product_class_edit')) { ?>
               <li>
@@ -84,13 +114,9 @@
                 </a>
               </li>
               <li>
-                <?php if(empty($product_class['fields'])) { ?>
-                <span class="text-muted"><?php echo $this->lower($this->text('Fields')); ?></span>
-                <?php } else { ?>
                 <a href="<?php echo $this->url("admin/content/product-class/field/{$product_class['product_class_id']}"); ?>">
                   <?php echo $this->lower($this->text('Fields')); ?>
                 </a>
-                <?php } ?>
               </li>
               <li>
                 <a href="<?php echo $this->url("admin/content/product-class/field/{$product_class['product_class_id']}/add"); ?>">
