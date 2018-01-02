@@ -205,7 +205,11 @@ class Logger
     public function errorHandler($code, $message, $file = '', $line = '')
     {
         if ($this->error_to_exception) {
-            ob_end_clean(); // Fix templates
+
+            if (ob_get_length() > 0) {
+                ob_end_clean(); // Fix templates
+            }
+
             throw new Exception($message);
         }
 
