@@ -8,7 +8,7 @@
  * To see available variables <?php print_r(get_defined_vars()); ?>
  */
 ?>
-<?php if (!empty($classes)) { ?>
+<?php if (!empty($product_classes)) { ?>
 <form method="post">
   <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <?php if ($this->access('product_class_edit') || $this->access('product_class_delete') || $this->access('product_class_add')) { ?>
@@ -53,37 +53,48 @@
           <th><a href="<?php echo $sort_product_class_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_title; ?>"><?php echo $this->text('Title'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_status; ?>"><?php echo $this->text('Enabled'); ?> <i class="fa fa-sort"></i></a></th>
+          <th><?php echo $this->text('Fields'); ?></th>
           <th></th>
         </tr>
       </thead>
       <tbody>
-        <?php foreach ($classes as $id => $class) { ?>
+        <?php foreach ($product_classes as $id => $product_class) { ?>
         <tr>
           <td class="middle">
             <input type="checkbox" class="select-all" name="action[items][]" value="<?php echo $id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>>
           </td>
           <td class="middle"><?php echo $id; ?></td>
-          <td class="middle"><?php echo $this->e($class['title']); ?></td>
+          <td class="middle"><?php echo $this->e($product_class['title']); ?></td>
           <td class="middle">
-            <?php if (empty($class['status'])) { ?>
+            <?php if (empty($product_class['status'])) { ?>
             <i class="fa fa-square-o"></i>
             <?php } else { ?>
             <i class="fa fa-check-square-o"></i>
             <?php } ?>
           </td>
           <td class="middle">
+            <?php echo count($product_class['fields']); ?>
+          </td>
+          <td class="middle">
             <ul class="list-inline">
               <?php if ($this->access('product_class_edit')) { ?>
               <li>
-                <a href="<?php echo $this->url("admin/content/product-class/edit/{$class['product_class_id']}"); ?>">
+                <a href="<?php echo $this->url("admin/content/product-class/edit/{$product_class['product_class_id']}"); ?>">
                   <?php echo $this->lower($this->text('Edit')); ?>
                 </a>
               </li>
-              <?php } ?>
-              <?php if ($this->access('product_class_field')) { ?>
               <li>
-                <a href="<?php echo $this->url("admin/content/product-class/field/{$class['product_class_id']}"); ?>">
+                <?php if(empty($product_class['fields'])) { ?>
+                <span class="text-muted"><?php echo $this->lower($this->text('Fields')); ?></span>
+                <?php } else { ?>
+                <a href="<?php echo $this->url("admin/content/product-class/field/{$product_class['product_class_id']}"); ?>">
                   <?php echo $this->lower($this->text('Fields')); ?>
+                </a>
+                <?php } ?>
+              </li>
+              <li>
+                <a href="<?php echo $this->url("admin/content/product-class/field/{$product_class['product_class_id']}/add"); ?>">
+                  <?php echo $this->lower($this->text('Add field')); ?>
                 </a>
               </li>
               <?php } ?>
