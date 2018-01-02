@@ -103,15 +103,13 @@ class ProductClass
             return $result;
         }
 
-        $sql = 'SELECT pc.*, GROUP_CONCAT(pcf.field_id) AS fields';
+        $sql = 'SELECT pc.*';
 
         if (!empty($options['count'])) {
             $sql = 'SELECT COUNT(pc.product_class_id)';
         }
 
-        $sql .= ' FROM product_class pc'
-                . ' LEFT JOIN product_class_field pcf ON(pc.product_class_id = pcf.product_class_id)'
-                . ' WHERE pc.product_class_id IS NOT NULL';
+        $sql .= ' FROM product_class pc WHERE pc.product_class_id IS NOT NULL';
 
         $conditions = array();
 
