@@ -12,4 +12,7 @@ ini_set('display_startup_errors', '1');
 
 require 'system/bootstrap.php';
 
-\gplcart\core\Container::get('gplcart\\core\\Facade')->routeHttp();
+/**
+ * @uses \gplcart\core\Facade::routeHttp()
+ */
+gplcart_instance('Facade')->routeHttp();
