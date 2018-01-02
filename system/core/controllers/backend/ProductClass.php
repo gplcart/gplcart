@@ -67,7 +67,7 @@ class ProductClass extends BackendController
         $this->setFilterListProductClass();
         $this->setPagerListProductClass();
 
-        $this->setData('classes', $this->getListProductClass());
+        $this->setData('product_classes', $this->getListProductClass());
         $this->outputListProductClass();
     }
 
@@ -135,7 +135,26 @@ class ProductClass extends BackendController
         $conditions = $this->query_filter;
         $conditions['limit'] = $this->data_limit;
 
-        return (array) $this->product_class->getList($conditions);
+        $list = (array) $this->product_class->getList($conditions);
+        return $this->prepareListProductClass($list);
+    }
+
+    /**
+     * Prepare an array of product classes
+     * @param array $list
+     * @return array
+     */
+    protected function prepareListProductClass(array $list)
+    {
+        foreach ($list as &$item) {
+            if (empty($item['fields'])) {
+                $item['fields'] = array();
+            } else {
+                $item['fields'] = explode(',', $item['fields']);
+            }
+        }
+
+        return $list;
     }
 
     /**
