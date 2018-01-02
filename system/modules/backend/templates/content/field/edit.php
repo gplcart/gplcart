@@ -104,7 +104,7 @@
           <?php echo $this->text('Delete'); ?>
         </button>
         <?php } ?>
-        <a class="cancel btn btn-default" href="<?php echo isset($_target) ? $this->url($_target) : $this->url('admin/content/field'); ?>">
+        <a class="cancel btn btn-default" href="<?php echo isset($_query['target']) && is_string($_query['target']) ? $this->url($_query['target']) : $this->url('admin/content/field'); ?>">
           <?php echo $this->text('Cancel'); ?>
         </a>
         <?php if ($this->access('field_edit') || $this->access('field_add')) { ?>
