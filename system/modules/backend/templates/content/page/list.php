@@ -89,7 +89,7 @@
         </tr>
         <tr class="filters active hidden-no-js">
           <th></th>
-          <th><?php echo $this->text('ID'); ?></th>
+          <th></th>
           <th>
             <input class="form-control" name="title" value="<?php echo $filter_title; ?>" placeholder="<?php echo $this->text('Any'); ?>">
           </th>
