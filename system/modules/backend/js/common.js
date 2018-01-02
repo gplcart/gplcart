@@ -237,7 +237,7 @@
     var loadProductFields = function (id) {
         $.ajax({
             dataType: 'html',
-            url: Gplcart.settings.urn + '?product_class_id=' + id,
+            url: Gplcart.settings.url + '?product_class_id=' + id,
             success: function (response) {
                 $('#attribute-form-wrapper').html($(response).find('div#attribute-form').html());
                 $('#option-form-wrapper').html($(response).find('#option-form').html());
