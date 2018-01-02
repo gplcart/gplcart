@@ -373,7 +373,7 @@ class Module
      */
     public function getClass($module_id)
     {
-        return $this->getNamespace($module_id) . '\\Module';
+        return $this->getNamespace($module_id) . '\\Main';
     }
 
     /**

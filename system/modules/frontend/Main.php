@@ -7,13 +7,27 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace gplcart\modules\backend;
+namespace gplcart\modules\frontend;
 
 /**
- * Main backend theme class
+ * Main class for Frontend theme
  */
-class Module
+class Main
 {
+
+    /**
+     * Implements hook "route.list"
+     * @param array $routes
+     */
+    public function hookRouteList(array &$routes)
+    {
+        $routes['admin/module/settings/frontend'] = array(
+            'access' => 'module_edit',
+            'handlers' => array(
+                'controller' => array('gplcart\\modules\\frontend\\controllers\\Settings', 'editSettings')
+            )
+        );
+    }
 
     /**
      * Implements hook "theme"
@@ -21,7 +35,7 @@ class Module
      */
     public function hookTheme($controller)
     {
-        if ($controller->isCurrentTheme('backend') && !$controller->isInternalRoute()) {
+        if ($controller->isCurrentTheme('frontend') && !$controller->isInternalRoute()) {
             $this->setThemeAssets($controller);
             $this->setThemeMetaTags($controller);
         }
@@ -33,14 +47,17 @@ class Module
      */
     protected function setThemeAssets($controller)
     {
-        $controller->addAssetLibrary('jquery_ui');
-        $controller->addAssetLibrary('bootstrap');
         $controller->addAssetLibrary('html5shiv', array('aggregate' => false, 'condition' => 'if lt IE 9'));
         $controller->addAssetLibrary('respond', array('aggregate' => false, 'condition' => 'if lt IE 9'));
         $controller->addAssetLibrary('font_awesome');
+        $controller->addAssetLibrary('bootstrap');
 
-        $controller->setJs(__DIR__ . '/js/common.js');
-        $controller->setCss(__DIR__ . '/css/common.css');
+        if ($controller->isInstall()) {
+            $controller->setCss(__DIR__ . '/css/install.css');
+        } else {
+            $controller->setCss(__DIR__ . '/css/common.css');
+            $controller->setJs(__DIR__ . '/js/common.js');
+        }
     }
 
     /**
@@ -52,7 +69,6 @@ class Module
         $controller->setMeta(array('charset' => 'utf-8'));
         $controller->setMeta(array('http-equiv' => 'X-UA-Compatible', 'content' => 'IE=edge'));
         $controller->setMeta(array('name' => 'viewport', 'content' => 'width=device-width, initial-scale=1'));
-        $controller->setMeta(array('name' => 'author', 'content' => 'GPLCart'));
     }
 
 }
