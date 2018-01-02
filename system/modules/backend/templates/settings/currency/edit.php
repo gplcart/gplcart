@@ -24,7 +24,7 @@
         </label>
       </div>
       <div class="help-block">
-          <?php echo $this->text('Default currency is the base currency of the store'); ?>
+          <?php echo $this->text('Default currency is a base currency of the store'); ?>
       </div>
     </div>
   </div>
@@ -53,7 +53,7 @@
       <div class="help-block">
         <?php echo $this->error('conversion_rate'); ?>
         <div class="text-muted">
-          <?php echo $this->text('Exchange rate against default (base) currency. Only numeric positive values'); ?>
+          <?php echo $this->text('Exchange rate against default (base) currency. Only numeric positive values are allowed'); ?>
         </div>
       </div>
     </div>
@@ -177,7 +177,7 @@
     <div class="col-md-4">
       <input name="currency[template]" class="form-control" value="<?php echo isset($currency['template']) ? $this->e($currency['template']) : '%symbol%price'; ?>">
       <div class="help-block">
-        <?php echo $this->text('Template to format prices in this currency. See the field descriptions for available placeholders. For price value use %price'); ?>
+        <?php echo $this->text('Template to format prices displayed in this currency. See the field descriptions for available placeholders. For numeric price value use placeholder %price'); ?>
       </div>
     </div>
   </div>
