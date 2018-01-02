@@ -71,9 +71,10 @@ class Module extends BackendController
         $this->setFilterListModule();
         $this->setPagerListModule();
 
-        $this->setData('modules', $this->getListModule());
-        $this->setData('cached', is_file(GC_FILE_CONFIG_COMPILED_MODULE));
+        $this->setData('types', $this->getTypesModule());
+        $this->setData('modules', (array) $this->getListModule());
         $this->setData('available_modules', $this->module->getList());
+        $this->setData('cached', is_file(GC_FILE_CONFIG_COMPILED_MODULE));
 
         $this->outputListModule();
     }
@@ -95,7 +96,16 @@ class Module extends BackendController
      */
     protected function setFilterListModule()
     {
-        $this->setFilter(array('type', 'name', 'version', 'id'));
+        $this->setFilter($this->getAllowedFiltersModule());
+    }
+
+    /**
+     * Returns an array of allowed sorters/filters
+     * @return array
+     */
+    protected function getAllowedFiltersModule()
+    {
+        return array('type', 'name', 'version', 'id', 'has_dependencies', 'created', 'modified');
     }
 
     /**
@@ -176,17 +186,27 @@ class Module extends BackendController
 
     /**
      * Returns an array of modules
-     * @return array
+     * @param bool $count
+     * @return array|int
      */
-    protected function getListModule()
+    protected function getListModule($count = false)
     {
         $modules = $this->module->getList();
         $this->checkDependenciesListModule($modules);
 
+        foreach ($modules as &$module) {
+            // Add key to sort and filter by dependencies
+            $module['has_dependencies'] = !empty($module['requires']) || !empty($module['required_by']);
+        }
+
         $this->sortListModule($modules);
         $this->filterListModule($modules);
-        $this->limitListModule($modules);
 
+        if ($count) {
+            return count($modules);
+        }
+
+        $this->limitListModule($modules);
         return $modules;
     }
 
@@ -198,55 +218,6 @@ class Module extends BackendController
     {
         $this->validateDependencies($modules);
         $modules = $this->graph->build($modules);
-    }
-
-    /**
-     * Sets pager
-     * @return array
-     */
-    protected function setPagerListModule()
-    {
-        $pager = array(
-            'query' => $this->query_filter,
-            'total' => count($this->module->getList())
-        );
-
-        return $this->data_limit = $this->setPager($pager);
-    }
-
-    /**
-     * Filters modules by a field
-     * @param array $modules
-     * @return array
-     */
-    protected function filterListModule(array &$modules)
-    {
-        $query = $this->query_filter;
-        $allowed = array('type', 'name', 'version', 'id');
-        $filter = array_intersect_key($query, array_flip($allowed));
-
-        if (empty($filter)) {
-            return $modules;
-        }
-
-        $term = reset($filter);
-        $field = key($filter);
-
-        $filtered = array_filter($modules, function ($module) use ($field, $term) {
-            return stripos($module[$field], $term) !== false;
-        });
-
-        return $modules = $filtered;
-    }
-
-    /**
-     * Slices an array of modules
-     * @param array $modules
-     */
-    protected function limitListModule(array &$modules)
-    {
-        list($from, $to) = $this->data_limit;
-        $modules = array_slice($modules, $from, $to, true);
     }
 
     /**
@@ -263,29 +234,114 @@ class Module extends BackendController
             'sort' => 'id'
         );
 
-        $allowed_order = array('asc', 'desc');
-        $allowed_sort = array('type', 'name', 'version', 'id');
+        if (in_array($query['sort'], $this->getAllowedFiltersModule())) {
+            uasort($modules, function ($a, $b) use ($query) {
+                return $this->callbackSortModule($a, $b, $query);
+            });
+        }
 
-        if (!in_array($query['order'], $allowed_order) || !in_array($query['sort'], $allowed_sort)) {
+        return $modules;
+    }
+
+    /**
+     * Callback function for uasort()
+     * @param array $a
+     * @param array $b
+     * @param array $query
+     * @return int
+     */
+    protected function callbackSortModule($a, $b, array $query)
+    {
+        $arg1 = isset($a[$query['sort']]) ? (string) $a[$query['sort']] : '0';
+        $arg2 = isset($b[$query['sort']]) ? (string) $b[$query['sort']] : '0';
+
+        $diff = strcasecmp($arg1, $arg2);
+
+        if ($diff == 0) {
+            return 0;
+        } else if ($query['order'] === 'asc') {
+            return $diff > 0;
+        } else {
+            return $diff < 0;
+        }
+    }
+
+    /**
+     * Filters modules by a field
+     * @param array $modules
+     * @return array
+     */
+    protected function filterListModule(array &$modules)
+    {
+        $query = $this->query_filter;
+        $filter = array_intersect_key($query, array_flip($this->getAllowedFiltersModule()));
+
+        if (empty($filter)) {
             return $modules;
         }
 
-        uasort($modules, function ($a, $b) use ($query) {
+        $term = reset($filter);
+        $field = key($filter);
 
-            if (empty($a[$query['sort']]) || empty($b[$query['sort']])) {
-                return 0;
-            }
-
-            $diff = strcasecmp($a[$query['sort']], $b[$query['sort']]);
-
-            if ($diff === 0) {
-                return 0;
-            }
-
-            return $query['order'] === 'asc' ? $diff > 0 : $diff < 0;
+        $filtered = array_filter($modules, function ($module) use ($field, $term) {
+            return $this->callbackFilterModule($module, $field, $term);
         });
 
-        return $modules;
+        return $modules = $filtered;
+    }
+
+    /**
+     * Callback for array_filter() function
+     * @param array $module
+     * @param string $field
+     * @param string $term
+     * @return bool
+     */
+    protected function callbackFilterModule(array $module, $field, $term)
+    {
+        if (empty($module[$field])) {
+            $module[$field] = '0';
+        }
+
+        return stripos($module[$field], $term) !== false;
+    }
+
+    /**
+     * Returns an array of module types
+     * @return array
+     */
+    protected function getTypesModule()
+    {
+        $types = array();
+        foreach ($this->module->getList() as $module) {
+            $types[$module['type']] = $this->text(ucfirst($module['type']));
+        }
+
+        return $types;
+    }
+
+    /**
+     * Slices an array of modules
+     * @param array $modules
+     */
+    protected function limitListModule(array &$modules)
+    {
+        list($from, $to) = $this->data_limit;
+        $modules = array_slice($modules, $from, $to, true);
+    }
+
+    /**
+     * Sets pager
+     * @return array
+     */
+    protected function setPagerListModule()
+    {
+        $pager = array(
+            'query' => $this->query_filter,
+            'total' => $this->getListModule(true)
+        );
+
+        return $this->data_limit = $this->setPager($pager);
     }
 
     /**

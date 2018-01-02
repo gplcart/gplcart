@@ -9,10 +9,6 @@
  */
 ?>
 <?php if (!empty($modules) || $_filtering) { ?>
-<?php if ($_filtering && empty($modules)) { ?>
-<?php echo $this->text('No results'); ?>
-<?php } ?>
-<?php if (!empty($modules)) { ?>
 <?php if($cached) { ?>
 <div class="btn-toolbar actions">
   <a class="btn btn-default" href="<?php echo $this->url('', array('refresh' => 1, 'token' => $_token)); ?>" class="refresh">
@@ -28,13 +24,57 @@
         <th><a href="<?php echo $sort_name; ?>"><?php echo $this->text('Name'); ?> <i class="fa fa-sort"></i></a></th>
         <th><a href="<?php echo $sort_version; ?>"><?php echo $this->text('Version'); ?> <i class="fa fa-sort"></i></a></th>
         <th><a href="<?php echo $sort_type; ?>"><?php echo $this->text('Type'); ?> <i class="fa fa-sort"></i></a></th>
-        <th><?php echo $this->text('Dependencies'); ?></th>
-        <th><?php echo $this->text('Installed'); ?></th>
-        <th><?php echo $this->text('Updated'); ?></th>
+        <th><a href="<?php echo $sort_has_dependencies; ?>"><?php echo $this->text('Dependencies'); ?> <i class="fa fa-sort"></i></a></th>
+        <th><a href="<?php echo $sort_created; ?>"><?php echo $this->text('Installed'); ?> <i class="fa fa-sort"></i></a></th>
+        <th><a href="<?php echo $sort_modified; ?>"><?php echo $this->text('Updated'); ?> <i class="fa fa-sort"></i></a></th>
         <th></th>
+      </tr>
+      <tr class="filters active hidden-no-js">
+        <th><input class="form-control" name="id" value="<?php echo $filter_id; ?>" placeholder="<?php echo $this->text('Any'); ?>"></th>
+        <th><input class="form-control" name="name" value="<?php echo $filter_name; ?>" placeholder="<?php echo $this->text('Any'); ?>"></th>
+        <th><input class="form-control" name="version" value="<?php echo $filter_version; ?>" placeholder="<?php echo $this->text('Any'); ?>"></th>
+        <th>
+          <select name="type" class="form-control">
+            <option value=""><?php echo $this->text('Any'); ?></option>
+            <?php foreach ($types as $type => $type_name) { ?>
+            <option value="<?php echo $this->e($type); ?>"<?php echo $filter_type == $type ? ' selected' : '' ?>>
+              <?php echo $this->e($type_name); ?>
+            </option>
+            <?php } ?>
+          </select>
+        </th>
+        <th>
+          <select class="form-control" name="has_dependencies">
+            <option value=""><?php echo $this->text('Any'); ?></option>
+            <option value="1"<?php echo $filter_has_dependencies === '1' ? ' selected' : ''; ?>>
+              <?php echo $this->text('Yes'); ?>
+            </option>
+            <option value="0"<?php echo $filter_has_dependencies === '0' ? ' selected' : ''; ?>>
+              <?php echo $this->text('No'); ?>
+            </option>
+          </select>
+        </th>
+        <th></th>
+        <th></th>
+        <th>
+          <a href="<?php echo $this->url($_path); ?>" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
+            <i class="fa fa-refresh"></i>
+          </a>
+          <button class="btn btn-default filter" title="<?php echo $this->text('Filter'); ?>">
+            <i class="fa fa-search"></i>
+          </button>
+        </th>
       </tr>
     </thead>
     <tbody>
+      <?php if ($_filtering && empty($modules)) { ?>
+      <tr>
+        <td colspan="8">
+          <?php echo $this->text('No results'); ?>
+          <a href="<?php echo $this->url($_path); ?>" class="clear-filter"><?php echo $this->text('Reset'); ?></a>
+        </td>
+      </tr>
+      <?php } ?>
       <?php foreach ($modules as $module_id => $info) { ?>
       <tr class="module-<?php echo $module_id; ?><?php echo empty($info['errors']) ? '' : ' bg-danger'; ?>">
         <td class="middle">
@@ -51,15 +91,15 @@
           <?php echo empty($info['version']) ? $this->text('Unknown') : $this->e($info['version']); ?>
         </td>
         <td class="middle">
-          <?php echo $this->text(ucfirst($info['type'])); ?>
+          <?php echo $this->e($types[$info['type']]); ?>
         </td>
         <td>
-          <?php if (empty($info['requires']) && empty($info['required_by'])) { ?>
-          <?php echo $this->text('No'); ?>
-          <?php } else { ?>
+          <?php if ($info['has_dependencies']) { ?>
           <a data-toggle="collapse" href="#module-details-<?php echo $module_id; ?>">
             <?php echo $this->text('Yes'); ?>
           </a>
+          <?php } else { ?>
+          <?php echo $this->text('No'); ?>
           <?php } ?>
         </td>
         <td class="middle">
@@ -154,29 +194,25 @@
           <?php if (!empty($info['requires'])) { ?>
           <div class="requires">
             <b><?php echo $this->text('Requires'); ?>:</b>
-            <p>
-              <?php foreach ($info['requires'] as $requires_id => $version) { ?>
-              <?php if (isset($available_modules[$requires_id]['name'])) { ?>
-              <span class="label label-default"><?php echo $this->text($available_modules[$requires_id]['name']); ?> <?php echo $this->e($version); ?></span>
-              <?php } else { ?>
-              <span class="label label-danger"><?php echo $this->e($requires_id); ?> (<?php echo $this->text('invalid'); ?>)</span>
-              <?php } ?>
-              <?php } ?>
-            </p>
+            <?php foreach ($info['requires'] as $requires_id => $version) { ?>
+            <?php if (isset($available_modules[$requires_id]['name'])) { ?>
+            <?php echo $this->text($available_modules[$requires_id]['name']); ?> <?php echo $this->e($version); ?>
+            <?php } else { ?>
+            <span class="text-danger"><?php echo $this->e($requires_id); ?> (<?php echo $this->text('invalid'); ?>)</span>
+            <?php } ?>
+            <?php } ?>
           </div>
           <?php } ?>
           <?php if (!empty($info['required_by'])) { ?>
           <div class="required-by">
             <b><?php echo $this->text('Required by'); ?>:</b>
-            <p>
-              <?php foreach ($info['required_by'] as $required_by_id => $version) { ?>
-              <?php if (isset($available_modules[$required_by_id]['name'])) { ?>
-              <span class="label label-default"><?php echo $this->text($available_modules[$required_by_id]['name']); ?> <?php echo $this->e($version); ?></span>
-              <?php } else { ?>
-              <span class="label label-danger"><?php echo $this->e($required_by_id); ?> (<?php echo $this->text('invalid'); ?>)</span>
-              <?php } ?>
-              <?php } ?>
-            </p>
+            <?php foreach ($info['required_by'] as $required_by_id => $version) { ?>
+            <?php if (isset($available_modules[$required_by_id]['name'])) { ?>
+            <?php echo $this->text($available_modules[$required_by_id]['name']); ?> <?php echo $this->e($version); ?>
+            <?php } else { ?>
+            <span class="text-danger"><?php echo $this->e($required_by_id); ?> (<?php echo $this->text('invalid'); ?>)</span>
+            <?php } ?>
+            <?php } ?>
           </div>
           <?php } ?>
           <?php if (!empty($info['errors'])) { ?>
@@ -204,9 +240,8 @@
 <?php if (!empty($_pager)) { ?>
 <?php echo $_pager; ?>
 <?php } ?>
-<?php } ?>
 <?php } else { ?>
 <div class="row">
-  <div class="col-md-12"><?php echo $this->text('No modules'); ?></div>
+  <div class="col-md-12"><?php echo $this->text('No results'); ?></div>
 </div>
 <?php } ?>
