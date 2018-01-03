@@ -9,6 +9,7 @@
 
 namespace gplcart\core\controllers\backend;
 
+use gplcart\core\traits\Listing as ListingTrait;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -16,6 +17,14 @@ use gplcart\core\controllers\backend\Controller as BackendController;
  */
 class Language extends BackendController
 {
+
+    use ListingTrait;
+
+    /**
+     * Pager limit
+     * @var array
+     */
+    protected $data_limit;
 
     /**
      * An array of language data
@@ -199,38 +208,66 @@ class Language extends BackendController
 
         $this->setTitleListLanguage();
         $this->setBreadcrumbListLanguage();
+        $this->setFilterListLanguage();
+        $this->setPagerListLanguage();
 
-        $this->setData('languages', $this->getListLanguage());
+        $this->setData('languages', (array) $this->getListLanguage());
         $this->outputListLanguage();
     }
 
     /**
-     * Returns an array of prepared languages
-     * @return array
+     * Sets the filter on the language overview page
      */
-    protected function getListLanguage()
+    protected function setFilterListLanguage()
     {
-        $languages = $this->language->getList();
-        return $this->prepareListLanguage($languages);
+        $this->setFilter($this->getAllowedFiltersLanguage());
     }
 
     /**
-     * Prepare an array of languages
-     * @param array $languages
+     * Sets pager
      * @return array
      */
-    protected function prepareListLanguage(array $languages)
+    protected function setPagerListLanguage()
     {
-        $in_database = $codes = $statuses = array();
+        $pager = array(
+            'query' => $this->query_filter,
+            'total' => (int) $this->getListLanguage(true)
+        );
+
+        return $this->data_limit = $this->setPager($pager);
+    }
+
+    /**
+     * Returns an array of allowed fields for sorting and filtering
+     * @return array
+     */
+    protected function getAllowedFiltersLanguage()
+    {
+        return array('name', 'native_name', 'code', 'rtl', 'default', 'in_database', 'status');
+    }
+
+    /**
+     * Returns an array of prepared languages
+     * @param bool $count
+     * @return array|int
+     */
+    protected function getListLanguage($count = false)
+    {
+        $languages = $this->language->getList();
 
         foreach ($languages as $code => &$language) {
-            $codes[$code] = $code;
-            $statuses[$code] = !empty($language['status']);
-            $in_database[$code] = !empty($language['in_database']);
             $language['file_exists'] = is_file($this->translation->getFile($code));
         }
 
-        array_multisort($in_database, SORT_DESC, $statuses, SORT_DESC, $codes, SORT_ASC, $languages);
+        $allowed = $this->getAllowedFiltersLanguage();
+        $this->filterList($languages, $allowed, $this->query_filter);
+        $this->sortList($languages, $allowed, $this->query_filter, array('name' => 'desc'));
+
+        if ($count) {
+            return count($languages);
+        }
+
+        $this->limitList($languages, $this->data_limit);
         return $languages;
     }
 
