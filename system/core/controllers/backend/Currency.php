@@ -9,6 +9,7 @@
 
 namespace gplcart\core\controllers\backend;
 
+use gplcart\core\traits\Listing as ListingTrait;
 use gplcart\core\models\Currency as CurrencyModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
@@ -17,6 +18,8 @@ use gplcart\core\controllers\backend\Controller as BackendController;
  */
 class Currency extends BackendController
 {
+
+    use ListingTrait;
 
     /**
      * Currency model instance
@@ -56,7 +59,7 @@ class Currency extends BackendController
         $this->setFilterListCurrency();
         $this->setPagerListCurrency();
 
-        $this->setData('currencies', $this->getListCurrency());
+        $this->setData('currencies', (array) $this->getListCurrency());
         $this->setData('default_currency', $this->currency->getDefault());
 
         $this->outputListCurrency();
@@ -67,7 +70,7 @@ class Currency extends BackendController
      */
     protected function setFilterListCurrency()
     {
-        $this->setFilter(array('name', 'code', 'symbol', 'conversion_rate', 'status', 'modified'));
+        $this->setFilter($this->getAllowedFiltersCurrency());
     }
 
     /**
@@ -78,73 +81,41 @@ class Currency extends BackendController
     {
         $pager = array(
             'query' => $this->query_filter,
-            'total' => count($this->currency->getList())
+            'total' => (int) $this->getListCurrency(true)
         );
 
         return $this->data_limit = $this->setPager($pager);
     }
 
     /**
-     * Returns an array of sorted currencies
+     * Returns an array of allowed filters
      * @return array
      */
-    protected function getListCurrency()
+    protected function getAllowedFiltersCurrency()
+    {
+        return array('name', 'code', 'symbol', 'conversion_rate', 'status',
+            'modified', 'default', 'in_database');
+    }
+
+    /**
+     * Returns an array of sorted currencies
+     * @param bool $count
+     * @return array|int
+     */
+    protected function getListCurrency($count = false)
     {
         $currencies = $this->currency->getList();
 
-        $this->sortListCurrency($currencies);
-        $this->limitListCurrency($currencies);
+        $allowed = $this->getAllowedFiltersCurrency();
+        $this->filterList($currencies, $allowed, $this->query_filter);
+        $this->sortList($currencies, $allowed, $this->query_filter, array('modified' => 'desc'));
 
-        return $currencies;
-    }
-
-    /**
-     * Sort currencies by a field
-     * @param array $currencies
-     * @return array
-     */
-    protected function sortListCurrency(array &$currencies)
-    {
-        $query = $this->query_filter;
-
-        $query += array(
-            'order' => 'desc',
-            'sort' => 'modified'
-        );
-
-        $allowed_order = array('asc', 'desc');
-        $allowed_sort = array('name', 'code', 'symbol', 'conversion_rate', 'status', 'modified');
-
-        if (!in_array($query['order'], $allowed_order) || !in_array($query['sort'], $allowed_sort)) {
-            return $currencies;
+        if ($count) {
+            return count($currencies);
         }
 
-        uasort($currencies, function ($a, $b) use ($query) {
-
-            if (!isset($a[$query['sort']]) || !isset($b[$query['sort']])) {
-                return 0;
-            }
-
-            $diff = strcasecmp($a[$query['sort']], $b[$query['sort']]);
-
-            if ($diff === 0) {
-                return 0;
-            }
-
-            return $query['order'] === 'asc' ? $diff > 0 : $diff < 0;
-        });
-
+        $this->limitList($currencies, $this->data_limit);
         return $currencies;
-    }
-
-    /**
-     * Limit an array of currencies
-     * @param array $currencies
-     */
-    protected function limitListCurrency(array &$currencies)
-    {
-        list($from, $to) = $this->data_limit;
-        $currencies = array_slice($currencies, $from, $to, true);
     }
 
     /**
