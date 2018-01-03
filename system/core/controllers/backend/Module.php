@@ -11,7 +11,8 @@ namespace gplcart\core\controllers\backend;
 
 use gplcart\core\helpers\Graph as GraphHelper;
 use gplcart\core\models\Module as ModuleModel;
-use gplcart\core\traits\Dependency as DependencyTrait;
+use gplcart\core\traits\Listing as ListingTrait,
+    gplcart\core\traits\Dependency as DependencyTrait;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -20,7 +21,8 @@ use gplcart\core\controllers\backend\Controller as BackendController;
 class Module extends BackendController
 {
 
-    use DependencyTrait;
+    use ListingTrait,
+        DependencyTrait;
 
     /**
      * Module model instance
@@ -199,14 +201,16 @@ class Module extends BackendController
             $module['has_dependencies'] = !empty($module['requires']) || !empty($module['required_by']);
         }
 
-        $this->sortListModule($modules);
-        $this->filterListModule($modules);
+        $allowed = $this->getAllowedFiltersModule();
+        $this->filterList($modules, $allowed, $this->query_filter);
+        $this->sortList($modules, $allowed, $this->query_filter, array('id' => 'asc'));
+
 
         if ($count) {
             return count($modules);
         }
 
-        $this->limitListModule($modules);
+        $this->limitList($modules, $this->data_limit);
         return $modules;
     }
 
@@ -218,92 +222,6 @@ class Module extends BackendController
     {
         $this->validateDependencies($modules);
         $modules = $this->graph->build($modules);
-    }
-
-    /**
-     * Sort modules by a field
-     * @param array $modules
-     * @return array
-     */
-    protected function sortListModule(array &$modules)
-    {
-        $query = $this->query_filter;
-
-        $query += array(
-            'order' => 'asc',
-            'sort' => 'id'
-        );
-
-        if (in_array($query['sort'], $this->getAllowedFiltersModule())) {
-            uasort($modules, function ($a, $b) use ($query) {
-                return $this->callbackSortModule($a, $b, $query);
-            });
-        }
-
-        return $modules;
-    }
-
-    /**
-     * Callback function for uasort()
-     * @param array $a
-     * @param array $b
-     * @param array $query
-     * @return int
-     */
-    protected function callbackSortModule($a, $b, array $query)
-    {
-        $arg1 = isset($a[$query['sort']]) ? (string) $a[$query['sort']] : '0';
-        $arg2 = isset($b[$query['sort']]) ? (string) $b[$query['sort']] : '0';
-
-        $diff = strcasecmp($arg1, $arg2);
-
-        if ($diff == 0) {
-            return 0;
-        } else if ($query['order'] === 'asc') {
-            return $diff > 0;
-        } else {
-            return $diff < 0;
-        }
-    }
-
-    /**
-     * Filters modules by a field
-     * @param array $modules
-     * @return array
-     */
-    protected function filterListModule(array &$modules)
-    {
-        $query = $this->query_filter;
-        $filter = array_intersect_key($query, array_flip($this->getAllowedFiltersModule()));
-
-        if (empty($filter)) {
-            return $modules;
-        }
-
-        $term = reset($filter);
-        $field = key($filter);
-
-        $filtered = array_filter($modules, function ($module) use ($field, $term) {
-            return $this->callbackFilterModule($module, $field, $term);
-        });
-
-        return $modules = $filtered;
-    }
-
-    /**
-     * Callback for array_filter() function
-     * @param array $module
-     * @param string $field
-     * @param string $term
-     * @return bool
-     */
-    protected function callbackFilterModule(array $module, $field, $term)
-    {
-        if (empty($module[$field])) {
-            $module[$field] = '0';
-        }
-
-        return stripos($module[$field], $term) !== false;
     }
 
     /**
@@ -321,16 +239,6 @@ class Module extends BackendController
     }
 
     /**
-     * Slices an array of modules
-     * @param array $modules
-     */
-    protected function limitListModule(array &$modules)
-    {
-        list($from, $to) = $this->data_limit;
-        $modules = array_slice($modules, $from, $to, true);
-    }
-
-    /**
      * Sets pager
      * @return array
      */
@@ -338,7 +246,7 @@ class Module extends BackendController
     {
         $pager = array(
             'query' => $this->query_filter,
-            'total' => $this->getListModule(true)
+            'total' => (int) $this->getListModule(true)
         );
 
         return $this->data_limit = $this->setPager($pager);
