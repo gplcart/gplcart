@@ -44,7 +44,7 @@
       <input name="user[email]" class="form-control" value="<?php echo isset($user['email']) ? $this->e($user['email']) : ''; ?>">
       <div class="help-block">
         <?php echo $this->error('email'); ?>
-        <div class="text-muted"><?php echo $this->text('The e-mail is used both for contacting and logging in the user'); ?></div>
+        <div class="text-muted"><?php echo $this->text('The e-mail is used both for contacting and authorizing the user'); ?></div>
       </div>
     </div>
   </div>
