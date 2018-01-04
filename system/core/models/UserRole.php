@@ -94,13 +94,23 @@ class UserRole
             $conditions[] = "%{$options['name']}%";
         }
 
+        if (isset($options['redirect'])) {
+            $sql .= ' AND redirect = ?';
+            $conditions[] = $options['redirect'];
+        }
+
+        if (isset($options['redirect_like'])) {
+            $sql .= ' AND redirect LIKE ?';
+            $conditions[] = "%{$options['redirect_like']}%";
+        }
+
         if (isset($options['status'])) {
             $sql .= ' AND status = ?';
             $conditions[] = (int) $options['status'];
         }
 
         $allowed_order = array('asc', 'desc');
-        $allowed_sort = array('name', 'status', 'role_id');
+        $allowed_sort = array('name', 'status', 'role_id', 'redirect');
 
         if (isset($options['sort']) && in_array($options['sort'], $allowed_sort)//
                 && isset($options['order']) && in_array($options['order'], $allowed_order)) {
