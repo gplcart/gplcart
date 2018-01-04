@@ -9,6 +9,7 @@
 
 namespace gplcart\core\controllers\backend;
 
+use gplcart\core\traits\Listing as ListingTrait;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
 /**
@@ -16,6 +17,14 @@ use gplcart\core\controllers\backend\Controller as BackendController;
  */
 class ReportLibrary extends BackendController
 {
+
+    use ListingTrait;
+
+    /**
+     * Pager limit
+     * @var array
+     */
+    protected $data_limit;
 
     /**
      * Constructor
@@ -34,24 +43,85 @@ class ReportLibrary extends BackendController
 
         $this->setTitleListReportLibrary();
         $this->setBreadcrumbListReportLibrary();
+        $this->setFilterListReportLibrary();
+        $this->setPagerListReportLibrary();
 
-        $this->setData('libraries', $this->getListReportLibrary());
+        $this->setData('types', $this->getTypesLibrary());
+        $this->setData('libraries', (array) $this->getListReportLibrary());
+
         $this->outputListReportLibrary();
     }
 
     /**
-     * Returns an array of libraries
+     * Sets the filter on the library overview page
+     */
+    protected function setFilterListReportLibrary()
+    {
+        $this->setFilter($this->getAllowedFiltersReportLibrary());
+    }
+
+    /**
+     * Returns an array of allowed fields for sorting and filtering
      * @return array
      */
-    protected function getListReportLibrary()
+    protected function getAllowedFiltersReportLibrary()
+    {
+        return array('name', 'id', 'type', 'has_dependencies', 'status', 'version');
+    }
+
+    /**
+     * Sets pager
+     * @return array
+     */
+    protected function setPagerListReportLibrary()
+    {
+        $pager = array(
+            'query' => $this->query_filter,
+            'total' => (int) $this->getListReportLibrary(true)
+        );
+
+        return $this->data_limit = $this->setPager($pager);
+    }
+
+    /**
+     * Returns an array of libraries
+     * @param bool $count
+     * @return array|int
+     */
+    protected function getListReportLibrary($count = false)
     {
         $libraries = $this->library->getList();
 
-        uasort($libraries, function($a, $b) {
-            return strcmp($a['type'], $b['type']);
-        });
+        foreach ($libraries as &$library) {
+            // Add key to sort and filter by dependencies
+            $library['status'] = empty($library['errors']);
+            $library['has_dependencies'] = !empty($library['requires']) || !empty($library['required_by']);
+        }
 
+        $allowed = $this->getAllowedFiltersReportLibrary();
+        $this->filterList($libraries, $allowed, $this->query_filter);
+        $this->sortList($libraries, $allowed, $this->query_filter, array('name' => 'desc'));
+
+        if ($count) {
+            return count($libraries);
+        }
+
+        $this->limitList($libraries, $this->data_limit);
         return $libraries;
+    }
+
+    /**
+     * Returns an array of library type names
+     * @return array
+     */
+    protected function getTypesLibrary()
+    {
+        $types = array();
+        foreach (array_keys($this->library->getTypes()) as $id) {
+            $types[$id] = $this->text(ucfirst($id));
+        }
+
+        return $types;
     }
 
     /**
