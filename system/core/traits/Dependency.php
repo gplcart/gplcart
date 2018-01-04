@@ -35,42 +35,47 @@ trait Dependency
      * @param array $item
      * @param array $items
      * @param bool $enabled
+     * @return null
      */
     protected function validateDependency(&$item, $items, $enabled = false)
     {
-        if (!empty($item['dependencies'])) {
-            foreach ($item['dependencies'] as $id => $version) {
+        if (empty($item['dependencies'])) {
+            return null;
+        }
 
-                if (!isset($items[$id])) {
-                    $item['errors'][] = array('Unknown dependency @id', array('@id' => $id));
-                    continue;
-                }
+        foreach ($item['dependencies'] as $id => $version) {
 
-                if ($enabled && empty($items[$id]['status'])) {
-                    $item['errors'][] = array('Requires @id to be enabled', array('@id' => $items[$id]['name']));
-                    continue;
-                }
+            if (!isset($items[$id])) {
+                $item['errors'][] = array('Unknown dependency @id', array('@id' => $id));
+                continue;
+            }
 
-                $components = $this->getVersionComponents($version);
+            if ($enabled && empty($items[$id]['status'])) {
+                $item['errors'][] = array('Requires @id to be enabled', array('@id' => $items[$id]['name']));
+                continue;
+            }
 
-                if (empty($components)) {
-                    $item['errors'][] = array('Unknown version of @name', array('@name' => $id));
-                    continue;
-                }
+            $components = $this->getVersionComponents($version);
 
-                list($operator, $number) = $components;
+            if (empty($components)) {
+                $item['errors'][] = array('Unknown version of @name', array('@name' => $id));
+                continue;
+            }
 
-                if ($operator === '=' && strpos($number, 'x') !== false) {
-                    $allowed = version_compare($items[$id]['version'], $number);
-                } else {
-                    $allowed = version_compare($items[$id]['version'], $number, $operator);
-                }
+            list($operator, $number) = $components;
 
-                if (!$allowed) {
-                    $item['errors'][] = array('Requires incompatible version of @name', array('@name' => $id));
-                }
+            if ($operator === '=' && strpos($number, 'x') !== false) {
+                $allowed = version_compare($items[$id]['version'], $number);
+            } else {
+                $allowed = version_compare($items[$id]['version'], $number, $operator);
+            }
+
+            if (!$allowed) {
+                $item['errors'][] = array('Requires incompatible version of @name', array('@name' => $id));
             }
         }
+
+        return null;
     }
 
     /**
