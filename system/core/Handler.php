@@ -83,14 +83,14 @@ class Handler
         if (isset($handler_id)) {
 
             if (empty($handlers[$handler_id]['handlers'][$name])) {
-                throw new OutOfRangeException("Failed to get handler using ID $handler_id and name $name");
+                throw new OutOfRangeException("Unknown handler ID $handler_id and/or method name $name");
             }
 
             return $handlers[$handler_id]['handlers'][$name];
         }
 
         if (empty($handlers['handlers'][$name])) {
-            throw new OutOfRangeException("Failed to get handler using name $name");
+            throw new OutOfRangeException("Unknown handler method name $name");
         }
 
         return $handlers['handlers'][$name];
