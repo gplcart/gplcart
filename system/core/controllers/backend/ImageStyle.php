@@ -114,7 +114,21 @@ class ImageStyle extends BackendController
         }
 
         $this->limitList($list, $this->data_limit);
-        return $list;
+        return $this->prepareListImageStyle($list);
+    }
+
+    /**
+     * Prepare an array of image styles
+     * @param array $imagestyles
+     * @return array
+     */
+    protected function prepareListImageStyle(array $imagestyles)
+    {
+        foreach ($imagestyles as $imagestyle_id => &$imagestyle) {
+            $imagestyle['directory_exists'] = is_dir($this->image_style->getDirectory($imagestyle_id));
+        }
+
+        return $imagestyles;
     }
 
     /**
