@@ -12,7 +12,8 @@ namespace gplcart\core\models;
 use Exception,
     OutOfRangeException,
     OutOfBoundsException,
-    UnexpectedValueException;
+    UnexpectedValueException,
+    gplcart\core\exceptions\Dependency as DependencyException;
 use gplcart\core\Hook,
     gplcart\core\Handler;
 use gplcart\core\helpers\Url as UrlHelper,
@@ -327,27 +328,85 @@ class Oauth
      * @param array $data
      * @return string
      * @link https://developers.google.com/accounts/docs/OAuth2ServiceAccount
-     * @throws OutOfBoundsException
+     * @throws DependencyException
      * @throws OutOfRangeException
-     * @throws UnexpectedValueException
      */
     public function generateJwt(array $data)
     {
+        if (!extension_loaded('openssl')) {
+            throw new DependencyException('OpenSSL extension is not enabled');
+        }
+
         $data += array('lifetime' => 3600);
 
         if (empty($data['certificate_file'])) {
             throw new OutOfRangeException('Certificate file is not set');
         }
 
-        if (strpos($data['certificate_file'], GC_DIR_FILE) !== 0) {
-            $data['certificate_file'] = gplcart_file_absolute($data['certificate_file']);
+        if (!isset($data['certificate_secret'])) {
+            throw new OutOfRangeException('Certificate secret is not set');
         }
 
-        if (!is_readable($data['certificate_file']) || !is_file($data['certificate_file'])) {
-            throw new UnexpectedValueException('File with private key is not readable');
+        $content = $this->getCertificateContent($data['certificate_file']);
+        $key = $this->getCertificateKey($content, $data['certificate_secret']);
+        return implode('.', $this->signCertificate($data, $key));
+    }
+
+    /**
+     * Returns a string with content from the certificate file
+     * @param string $file
+     * @return string
+     * @throws UnexpectedValueException
+     */
+    protected function getCertificateContent($file)
+    {
+        $file = gplcart_file_absolute($file);
+
+        if (!is_readable($file) || !is_file($file)) {
+            throw new UnexpectedValueException('Invalid certificate file');
         }
 
-        $key = file_get_contents($data['certificate_file']);
+        $content = file_get_contents($file);
+
+        if (empty($content)) {
+            throw new UnexpectedValueException('Failed to get certificate content');
+        }
+
+        return $content;
+    }
+
+    /**
+     * Returns a pkcs12 key from the certificate content
+     * @param string $pkcs12
+     * @param string $secret
+     * @return array
+     * @throws UnexpectedValueException
+     * @throws OutOfBoundsException
+     */
+    protected function getCertificateKey($pkcs12, $secret)
+    {
+        $certs = array();
+
+        if (!openssl_pkcs12_read($pkcs12, $certs, $secret)) {
+            throw new UnexpectedValueException('Failed to read cerificate file');
+        }
+
+        if (!isset($certs['pkey'])) {
+            throw new OutOfBoundsException('Could not find private key in the cerificate');
+        }
+
+        return $certs['pkey'];
+    }
+
+    /**
+     * Sign a certificate using the pkcs12 key
+     * @param array $data
+     * @param string $key
+     * @return array
+     * @throws UnexpectedValueException
+     */
+    protected function signCertificate(array $data, $key)
+    {
         $header = array('alg' => 'RS256', 'typ' => 'JWT');
 
         $params = array(
@@ -363,23 +422,16 @@ class Oauth
             base64_encode(json_encode($params)),
         );
 
-        $certs = array();
-        if (!openssl_pkcs12_read($key, $certs, $data['certificate_secret'])) {
-            throw new UnexpectedValueException('Failed to read cerificate file');
-        }
-
-        if (!isset($certs['pkey'])) {
-            throw new OutOfBoundsException('Could not find private key in the cerificate');
-        }
-
         $sig = '';
         $input = implode('.', $encodings);
-        if (!openssl_sign($input, $sig, openssl_pkey_get_private($certs['pkey']), OPENSSL_ALGO_SHA256)) {
+        $result = openssl_sign($input, $sig, openssl_pkey_get_private($key), OPENSSL_ALGO_SHA256);
+
+        if (empty($result) || empty($sig)) {
             throw new UnexpectedValueException('Failed to sign the certificate');
         }
 
         $encodings[] = base64_encode($sig);
-        return implode('.', $encodings);
+        return $encodings;
     }
 
     /**

@@ -31,10 +31,24 @@ function gplcart_string_hash($string, $salt = '', $iterations = 10)
  * Generates a random string
  * @param integer $size
  * @return string
+ * @throws UnexpectedValueException
  */
 function gplcart_string_random($size = 32)
 {
-    return bin2hex(openssl_random_pseudo_bytes($size));
+    $bytes = '';
+    if (function_exists('random_bytes')) {
+        $bytes = random_bytes($size);
+    } else if (function_exists('openssl_random_pseudo_bytes')) {
+        $bytes = openssl_random_pseudo_bytes($size);
+    } else if (function_exists('mcrypt_create_iv')) {
+        $bytes = mcrypt_create_iv($size, MCRYPT_DEV_URANDOM);
+    }
+
+    if (empty($bytes)) {
+        throw new \UnexpectedValueException('Failed to generate random bytes');
+    }
+
+    return bin2hex($bytes);
 }
 
 /**
@@ -95,7 +109,7 @@ function gplcart_string_explode_whitespace($string, $limit = null)
  */
 function gplcart_string_is_regexp($string)
 {
-    return @preg_match("~$string~", null) !== false;
+    return preg_match("~$string~", null) !== false;
 }
 
 /**
