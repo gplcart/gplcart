@@ -268,7 +268,7 @@ class PriceRule extends ComponentValidator
      */
     protected function validateValuePriceRule()
     {
-        if ($this->isError()) {
+        if ($this->isError('value_type')) {
             return null;
         }
 
