@@ -28,11 +28,6 @@ return array(
             'severity' => 'danger',
             'message' => /* @text */'FileInfo extension installed'
         ),
-        'openssl' => array(
-            'status' => extension_loaded('openssl'),
-            'severity' => 'danger',
-            'message' => /* @text */'OpenSSL extension installed'
-        ),
         'ctype' => array(
             'status' => extension_loaded('ctype'),
             'severity' => 'danger',
