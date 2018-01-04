@@ -241,7 +241,5 @@
 <?php echo $_pager; ?>
 <?php } ?>
 <?php } else { ?>
-<div class="row">
-  <div class="col-md-12"><?php echo $this->text('No results'); ?></div>
-</div>
+<?php echo $this->text('There are no items yet'); ?>
 <?php } ?>
