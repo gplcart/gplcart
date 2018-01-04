@@ -119,38 +119,7 @@ class Library
     protected function prepareList(array $libraries)
     {
         foreach ($libraries as $library_id => &$library) {
-
-            if (empty($library['type'])) {
-                unset($libraries[$library_id]);
-                continue;
-            }
-
-            $library['id'] = $library_id;
-
-            if (!empty($library['module']) && empty($library['basepath'])) {
-                $library['basepath'] = GC_DIR_MODULE . "/{$library['module']}";
-            }
-
-            if (empty($library['basepath']) && $library['type'] === 'asset') {
-                $library['basepath'] = GC_DIR_ASSET_VENDOR . "/$library_id";
-            }
-
-            if (empty($library['basepath'])) {
-                unset($libraries[$library_id]);
-                continue;
-            }
-
-            if (!isset($library['version'])) {
-                $library['version'] = $this->getVersion($library);
-            }
-
-            if (!isset($library['version'])) {
-                $library['errors'][] = array('Unknown version', array());
-            }
-
-            if (!$this->validateFiles($library)) {
-                $library['errors'][] = array('Missing files', array());
-            }
+            $this->prepareListItem($libraries, $library_id, $library);
         }
 
         $this->validateDependencies($libraries);
@@ -158,6 +127,57 @@ class Library
         gplcart_array_sort($prepared);
 
         return $prepared;
+    }
+
+    /**
+     * Prepare a library list item
+     * @param array $libraries
+     * @param string $library_id
+     * @param array $library
+     * @return null
+     */
+    protected function prepareListItem(array &$libraries, $library_id, array &$library)
+    {
+        if (empty($library['type'])) {
+            unset($libraries[$library_id]);
+            return null;
+        }
+
+        $types = $this->getTypes();
+
+        if (empty($types[$library['type']])) {
+            unset($libraries[$library_id]);
+            return null;
+        }
+
+        $library['id'] = $library_id;
+
+        if (!empty($library['module']) && empty($library['basepath'])) {
+            $library['basepath'] = GC_DIR_MODULE . "/{$library['module']}";
+        }
+
+        if (!isset($library['basepath']) && isset($types[$library['type']]['basepath'])) {
+            $library['basepath'] = "{$types[$library['type']]['basepath']}/$library_id";
+        }
+
+        if (empty($library['basepath'])) {
+            unset($libraries[$library_id]);
+            return null;
+        }
+
+        if (!isset($library['version'])) {
+            $library['version'] = $this->getVersion($library);
+        }
+
+        if (!isset($library['version'])) {
+            $library['errors'][] = array('Unknown version', array());
+        }
+
+        if (!$this->validateFiles($library)) {
+            $library['errors'][] = array('Missing files', array());
+        }
+
+        return null;
     }
 
     /**
@@ -171,13 +191,14 @@ class Library
             return true; // Assume files will be loaded on dynamically
         }
 
-        $readable = 0;
+        $readable = $count = 0;
         foreach ($library['files'] as $path) {
+            $count++;
             $file = $library['basepath'] . "/$path";
             $readable += (int) (is_file($file) && is_readable($file));
         }
 
-        return count($library['files']) == $readable;
+        return $count == $readable;
     }
 
     /**
@@ -308,6 +329,7 @@ class Library
     {
         settype($ids, 'array');
 
+        $types = $this->getTypes();
         $libraries = $this->getList();
 
         foreach ($ids as $key => $id) {
@@ -322,7 +344,7 @@ class Library
                 continue;
             }
 
-            if ($libraries[$id]['type'] !== 'php') {
+            if (empty($types[$libraries[$id]['type']]['load'])) {
                 unset($ids[$key]);
             }
         }
@@ -351,7 +373,7 @@ class Library
     }
 
     /**
-     * Whether a given library is already loaded
+     * Whether the library is already loaded
      * @param string $name
      * @return bool
      */
@@ -361,7 +383,23 @@ class Library
     }
 
     /**
-     * Prepares files of given library IDs
+     * Returns an array of supported library types
+     * @return array
+     */
+    public function getTypes()
+    {
+        return array(
+            'php' => array(
+                'load' => true
+            ),
+            'asset' => array(
+                'basepath' => GC_DIR_ASSET_VENDOR
+            )
+        );
+    }
+
+    /**
+     * Prepares files of the given libraries
      * @param array $ids
      * @param array $libraries
      * @return array
