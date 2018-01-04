@@ -96,7 +96,7 @@ class CliController
     {
         $this->setInstanceProperties();
         $this->setRouteProperties();
-        $this->outputHelp();
+        $this->outputCommandHelp();
 
         $this->hook->attach('construct.cli.controller', $this);
     }
@@ -356,65 +356,6 @@ class CliController
     }
 
     /**
-     * Displays --help message for the current command
-     */
-    public function outputHelp()
-    {
-        if (!empty($this->arguments['help'])) {
-            $this->outputCommandHelpMessage();
-            $this->abort();
-        }
-    }
-
-    /**
-     * Output a formatted help message
-     */
-    public function outputCommandHelpMessage()
-    {
-        $output = false;
-
-        if (!empty($this->current_route['help']['description'])) {
-            $output = true;
-            $this->line($this->text($this->current_route['help']['description']));
-        }
-
-        if (!empty($this->current_route['help']['options'])) {
-            $output = true;
-            $this->line($this->text('Options'));
-            foreach ($this->current_route['help']['options'] as $option => $description) {
-                $vars = array('@option' => $option, '@description' => $this->text($description));
-                $this->line($this->text('  @option - @description', $vars));
-            }
-        }
-
-        if (!$output) {
-            $this->line($this->text('No description available'));
-        }
-    }
-
-    /**
-     * Help command callback. Lists all available commands
-     */
-    public function help()
-    {
-        $this->line($this->text('List of available commands. To see help for a certain command use --help option'));
-
-        foreach ($this->route->getList() as $command => $info) {
-
-            if (empty($info['help']['description'])) {
-                $description = $this->text('No description available');
-            } else {
-                $description = $this->text($info['help']['description']);
-            }
-
-            $vars = array('@command' => $command, '@description' => $description);
-            $this->line($this->text('  @command - @description', $vars));
-        }
-
-        $this->output();
-    }
-
-    /**
      * Map the command line options to an array of submitted data to be passed to validators
      * @param array $map An array of pairs "options-name" => "some.array.value", e.g 'db-name' => 'database.name'
      * which turns --db-name command option into the nested array $submitted['database']['name']
@@ -554,6 +495,39 @@ class CliController
     public function in($format = '')
     {
         return $this->cli->in($format);
+    }
+
+    /**
+     * Displays message for the current command
+     * The message will appear automatically if a user entered the --help option
+     */
+    protected function outputCommandHelp()
+    {
+        if (empty($this->arguments['help'])) {
+            return null;
+        }
+
+        $output = false;
+
+        if (!empty($this->current_route['help']['description'])) {
+            $output = true;
+            $this->line($this->text($this->current_route['help']['description']));
+        }
+
+        if (!empty($this->current_route['help']['options'])) {
+            $output = true;
+            $this->line($this->text('Options'));
+            foreach ($this->current_route['help']['options'] as $option => $description) {
+                $vars = array('@option' => $option, '@description' => $this->text($description));
+                $this->line($this->text('  @option - @description', $vars));
+            }
+        }
+
+        if (!$output) {
+            $this->line($this->text('No description available'));
+        }
+
+        $this->abort();
     }
 
 }

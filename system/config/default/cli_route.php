@@ -8,17 +8,17 @@
  */
 return array(
     'help' => array(
+        'alias' => 'h',
         'handlers' => array(
-            /* {@see \gplcart\core\CliController::help()} */
-            'controller' => array('gplcart\\core\\CliController', 'help')
+            'controller' => array('gplcart\\core\\controllers\\cli\\Help', 'help')
         ),
         'help' => array(
             'description' => /* @text */'Displays all available commands'
         )
     ),
     'install' => array(
+        'alias' => 'i',
         'handlers' => array(
-            /* {@see \gplcart\core\controllers\cli\Install::wizardInstall()} */
             'controller' => array('gplcart\\core\\controllers\\cli\\Install', 'wizardInstall')
         ),
         'help' => array(
@@ -26,8 +26,8 @@ return array(
         )
     ),
     'install-fast' => array(
+        'alias' => 'if',
         'handlers' => array(
-            /* {@see \gplcart\core\controllers\cli\Install::fastInstall()} */
             'controller' => array('gplcart\\core\\controllers\\cli\\Install', 'fastInstall')
         ),
         'help' => array(

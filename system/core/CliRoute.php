@@ -50,6 +50,12 @@ class CliRoute
     protected $arguments = array();
 
     /**
+     * An array of commands keyed by their aliases
+     * @var array
+     */
+    protected $aliases = array();
+
+    /**
      * @param Hook $hook
      * @param CliHelper $cli
      * @param ServerHelper $server
@@ -84,6 +90,15 @@ class CliRoute
     }
 
     /**
+     * Returns an array of commands keyed by their aliases
+     * @return array
+     */
+    public function getAliases()
+    {
+        return $this->aliases;
+    }
+
+    /**
      * Set CLI arguments
      * @param array|null $arguments
      * @return array
@@ -101,6 +116,8 @@ class CliRoute
 
     /**
      * Returns an array of CLI routes
+     * @return array
+     * @throws RouteException
      */
     public function getList()
     {
@@ -111,8 +128,31 @@ class CliRoute
         }
 
         $routes = (array) gplcart_config_get(GC_FILE_CONFIG_ROUTE_CLI);
+
         $this->hook->attach('cli.route.list', $routes, $this);
+        $this->setAliases($routes);
         return $routes;
+    }
+
+    /**
+     * Sets an array of commands keyed by their aliases
+     * @param array $routes
+     * @throws RouteException
+     */
+    protected function setAliases(array $routes)
+    {
+        foreach ($routes as $command => $route) {
+
+            if (!isset($route['alias'])) {
+                continue;
+            }
+
+            if (isset($this->aliases[$route['alias']])) {
+                throw new RouteException("Command alias '{$route['alias']}' is not unique");
+            }
+
+            $this->aliases[$route['alias']] = $command;
+        }
     }
 
     /**
@@ -137,6 +177,10 @@ class CliRoute
 
             $routes = $this->getList();
             $command = array_shift($this->arguments);
+
+            if (isset($this->aliases[$command])) {
+                $command = $this->aliases[$command];
+            }
 
             if (empty($routes[$command])) {
                 $command = 'help';
