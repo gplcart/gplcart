@@ -32,11 +32,11 @@ trait Widget
 
     /**
      * @see \gplcart\core\Controller::text()
-     * @param null $string
+     * @param string $string
      * @param array $arguments
      * @return
      */
-    abstract public function text($string = null, array $arguments = array());
+    abstract public function text($string, array $arguments = array());
 
     /**
      * @see \gplcart\core\Controller::render()

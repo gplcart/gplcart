@@ -597,7 +597,7 @@ abstract class Controller
      * @param array $arguments
      * @return string
      */
-    public function text($string = null, array $arguments = array())
+    public function text($string, array $arguments = array())
     {
         return $this->translation->text($string, $arguments);
     }
