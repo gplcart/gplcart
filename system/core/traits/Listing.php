@@ -111,7 +111,7 @@ trait Listing
         $arg1 = isset($a[$query['sort']]) ? (string) $a[$query['sort']] : '0';
         $arg2 = isset($b[$query['sort']]) ? (string) $b[$query['sort']] : '0';
 
-        $diff = strcasecmp($arg1, $arg2);
+        $diff = strnatcasecmp($arg1, $arg2);
 
         if ($diff == 0) {
             return 0;
