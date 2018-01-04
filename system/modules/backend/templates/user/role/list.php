@@ -8,7 +8,7 @@
  * To see available variables <?php print_r(get_defined_vars()); ?>
  */
 ?>
-<?php if (!empty($roles) || $_filtering) { ?>
+<?php if (!empty($user_roles) || $_filtering) { ?>
 <form method="post">
   <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <?php if ($this->access('user_role_edit') || $this->access('user_role_delete') || $this->access('user_role_add')) { ?>
@@ -52,6 +52,7 @@
           <th><input type="checkbox" onchange="Gplcart.selectAll(this);"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
           <th><a href="<?php echo $sort_role_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_name; ?>"><?php echo $this->text('Name'); ?> <i class="fa fa-sort"></i></a></th>
+          <th><a href="<?php echo $sort_redirect; ?>"><?php echo $this->text('Redirect'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_status; ?>"><?php echo $this->text('Status'); ?> <i class="fa fa-sort"></i></a></th>
           <th></th>
         </tr>
@@ -60,6 +61,9 @@
           <th></th>
           <th>
             <input class="form-control" name="name" maxlength="255" value="<?php echo $filter_name; ?>" placeholder="<?php echo $this->text('Any'); ?>">
+          </th>
+          <th>
+            <input class="form-control" name="redirect_like" maxlength="255" value="<?php echo $filter_redirect_like; ?>" placeholder="<?php echo $this->text('Any'); ?>">
           </th>
           <th>
             <select class="form-control" name="status">
@@ -83,21 +87,28 @@
         </tr>
       </thead>
       <tbody>
-        <?php if ($_filtering && empty($roles)) { ?>
+        <?php if ($_filtering && empty($user_roles)) { ?>
         <tr>
-          <td colspan="5">
+          <td colspan="6">
             <?php echo $this->text('No results'); ?>
             <a href="<?php echo $this->url($_path); ?>" class="clear-filter"><?php echo $this->text('Reset'); ?></a>
           </td>
         </tr>
         <?php } ?>
-        <?php foreach ($roles as $role_id => $role) { ?>
+        <?php foreach ($user_roles as $user_role_id => $user_role) { ?>
         <tr>
-          <td class="middle"><input type="checkbox" class="select-all" name="action[items][]" value="<?php echo $role_id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>></td>
-          <td class="middle"><?php echo $role_id; ?></td>
-          <td class="middle"><?php echo $this->e($role['name']); ?></td>
+          <td class="middle"><input type="checkbox" class="select-all" name="action[items][]" value="<?php echo $user_role_id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>></td>
+          <td class="middle"><?php echo $user_role_id; ?></td>
+          <td class="middle"><?php echo $this->e($user_role['name']); ?></td>
           <td class="middle">
-            <?php if (empty($role['status'])) { ?>
+            <?php if($user_role['redirect'] === '') { ?>
+            <?php echo $this->text('Default'); ?>
+            <?php } else { ?>
+            /<?php echo $this->e($user_role['redirect']); ?>
+            <?php } ?>
+          </td>
+          <td class="middle">
+            <?php if (empty($user_role['status'])) { ?>
             <i class="fa fa-square-o"></i>
             <?php } else { ?>
             <i class="fa fa-check-square-o"></i>
@@ -105,7 +116,7 @@
           </td>
           <td>
             <?php if ($this->access('user_role_edit')) { ?>
-            <a href="<?php echo $this->url("admin/user/role/edit/$role_id"); ?>">
+            <a href="<?php echo $this->url("admin/user/role/edit/$user_role_id"); ?>">
               <?php echo $this->lower($this->text('Edit')); ?>
             </a>
             <?php } ?>
