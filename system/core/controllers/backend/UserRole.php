@@ -145,7 +145,7 @@ class UserRole extends BackendController
         $this->controlAccess('user_role_edit');
 
         if ($this->role->update($this->data_role['role_id'], $this->getSubmitted())) {
-            $this->redirect('', $this->text('Role has been updated'), 'success');
+            $this->redirect('admin/user/role', $this->text('Role has been updated'), 'success');
         }
 
         $this->redirect('', $this->text('Role has not been updated'), 'warning');
@@ -219,7 +219,7 @@ class UserRole extends BackendController
         $this->setFilterListUserRole();
         $this->setPagerListUserRole();
 
-        $this->setData('roles', $this->getListUserRole());
+        $this->setData('user_roles', $this->getListUserRole());
         $this->outputListUserRole();
     }
 
@@ -228,7 +228,8 @@ class UserRole extends BackendController
      */
     protected function setFilterListUserRole()
     {
-        $this->setFilter(array('name', 'role_id', 'status', 'created'));
+        $allowed = array('name', 'role_id', 'status', 'created', 'redirect', 'redirect_like');
+        $this->setFilter($allowed);
     }
 
     /**
