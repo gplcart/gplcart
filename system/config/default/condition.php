@@ -9,7 +9,7 @@
 return array(
     'scope_product' => array(
         'title' => /* @text */'Product scope',
-        'description' => /* @text */'Make a trigger available only for products. Only = and != operators allowed. One boolean parameter',
+        'description' => /* @text */'Make a trigger available only for products. Only <code>=</code> and <code>!=</code> operators allowed. One boolean parameter',
         'handlers' => array(
             'process' => array('gplcart\\core\\handlers\\condition\\Scope', 'product'),
             'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Scope', 'product')
@@ -17,7 +17,7 @@ return array(
     ),
     'scope_cart' => array(
         'title' => /* @text */'Cart scope',
-        'description' => /* @text */'Make a trigger available only for cart items. Only = and != operators allowed. One boolean parameter',
+        'description' => /* @text */'Make a trigger available only for cart items. Only <code>=</code> and <code>!=</code> operators allowed. One boolean parameter',
         'handlers' => array(
             'process' => array('gplcart\\core\\handlers\\condition\\Scope', 'cart'),
             'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Scope', 'cart')
@@ -25,7 +25,7 @@ return array(
     ),
     'scope_order' => array(
         'title' => /* @text */'Order scope',
-        'description' => /* @text */'Make a trigger available only for orders. Only = and != operators allowed. One boolean parameter',
+        'description' => /* @text */'Make a trigger available only for orders. Only <code>=</code> and <code>!=</code> operators allowed. One boolean parameter',
         'handlers' => array(
             'process' => array('gplcart\\core\\handlers\\condition\\Scope', 'order'),
             'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Scope', 'order')
@@ -33,7 +33,7 @@ return array(
     ),
     'url_route' => array(
         'title' => /* @text */'System URL route',
-        'description' => /* @text */'Parameters: system route pattern, e.g "product/(\d+)". Only = and != operators allowed',
+        'description' => /* @text */'Parameters: system route pattern, e.g "product/(\d+)". Only <code>=</code> and <code>!=</code> operators allowed',
         'handlers' => array(
             'process' => array('gplcart\\core\\handlers\\condition\\Url', 'route'),
             'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Url', 'route'),
@@ -41,7 +41,7 @@ return array(
     ),
     'url_path' => array(
         'title' => /* @text */'URL path',
-        'description' => /* @text */'Parameters: URL path with regexp pattern, e.g "account/(\d+)". Only = and != operators allowed. No trailing slashes!',
+        'description' => /* @text */'Parameters: URL path with regexp pattern, e.g "account/(\d+)". Only <code>=</code> and <code>!=</code> operators allowed. No trailing slashes!',
         'handlers' => array(
             'process' => array('gplcart\\core\\handlers\\condition\\Url', 'path'),
             'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Url', 'path'),
