@@ -104,7 +104,7 @@ return array(
         ),
     ),
     'shipping_state_id' => array(
-        'title' => /* @text */'Order shipping state ID',
+        'title' => /* @text */'Order shipping country state ID',
         'description' => /* @text */'Parameters: list of ID, separated by comma',
         'handlers' => array(
             'process' => array('gplcart\\core\\handlers\\condition\\Shipping', 'stateId'),
@@ -128,7 +128,7 @@ return array(
         ),
     ),
     'payment_state_id' => array(
-        'title' => /* @text */'Order payment state ID',
+        'title' => /* @text */'Order payment country state ID',
         'description' => /* @text */'Parameters: list of ID, separated by comma',
         'handlers' => array(
             'process' => array('gplcart\\core\\handlers\\condition\\Payment', 'stateId'),
