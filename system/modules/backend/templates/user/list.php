@@ -187,7 +187,7 @@
                 </a>
               </li>
               <?php } ?>
-              <?php if ($this->access('order_add')) { ?>
+              <?php if ($this->access('order_add') && !empty($user['status'])) { ?>
               <li>
                 <a href="<?php echo $this->url("checkout/add/$id"); ?>">
                   <?php echo $this->lower($this->text('Add order')); ?>
