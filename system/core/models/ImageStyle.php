@@ -295,15 +295,19 @@ class ImageStyle
             return (bool) $result;
         }
 
-        $directory = GC_DIR_IMAGE_CACHE;
-
-        if (!empty($imagestyle_id)) {
-            $directory = "$directory/$imagestyle_id";
-        }
-
-        $result = gplcart_file_delete_recursive($directory);
+        $result = gplcart_file_delete_recursive($this->getDirectory($imagestyle_id));
         $this->hook->attach('image.style.clear.cache.after', $imagestyle_id, $result, $this);
         return (bool) $result;
+    }
+
+    /**
+     * Returns the full path to the image style directory
+     * @param int|string $imagestyle_id
+     * @return string
+     */
+    public function getDirectory($imagestyle_id)
+    {
+        return trim(GC_DIR_IMAGE_CACHE . "/$imagestyle_id", '/');
     }
 
     /**
