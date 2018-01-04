@@ -9,6 +9,7 @@
 
 namespace gplcart\core\controllers\backend;
 
+use gplcart\core\traits\Listing as ListingTrait;
 use gplcart\core\models\ImageStyle as ImageStyleModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
@@ -18,11 +19,19 @@ use gplcart\core\controllers\backend\Controller as BackendController;
 class ImageStyle extends BackendController
 {
 
+    use ListingTrait;
+
     /**
      * Image style model class instance
      * @var \gplcart\core\models\ImageStyle $image_style
      */
     protected $image_style;
+
+    /**
+     * Pager limit
+     * @var array
+     */
+    protected $data_limit;
 
     /**
      * An array of image style data
@@ -49,18 +58,63 @@ class ImageStyle extends BackendController
 
         $this->setTitleListImageStyle();
         $this->setBreadcrumbListImageStyle();
+        $this->setFilterListImageStyle();
+        $this->setPagerListImageStyle();
 
-        $this->setData('styles', $this->getListImageStyle());
+        $this->setData('image_styles', (array) $this->getListImageStyle());
         $this->outputListImageStyle();
     }
 
     /**
-     * Returns an array of image styles
+     * Sets the filter on the image style overview page
+     */
+    protected function setFilterListImageStyle()
+    {
+        $this->setFilter($this->getAllowedFiltersImageStyle());
+    }
+
+    /**
+     * Returns an array of allowed fields for sorting and filtering
      * @return array
      */
-    protected function getListImageStyle()
+    protected function getAllowedFiltersImageStyle()
     {
-        return $this->image_style->getList();
+        return array('name', 'imagestyle_id', 'default', 'in_database', 'status');
+    }
+
+    /**
+     * Sets pager
+     * @return array
+     */
+    protected function setPagerListImageStyle()
+    {
+        $pager = array(
+            'query' => $this->query_filter,
+            'total' => (int) $this->getListImageStyle(true)
+        );
+
+        return $this->data_limit = $this->setPager($pager);
+    }
+
+    /**
+     * Returns an array of image styles
+     * @param bool $count
+     * @return array|int
+     */
+    protected function getListImageStyle($count = false)
+    {
+        $list = $this->image_style->getList();
+
+        $allowed = $this->getAllowedFiltersImageStyle();
+        $this->filterList($list, $allowed, $this->query_filter);
+        $this->sortList($list, $allowed, $this->query_filter, array('name' => 'desc'));
+
+        if ($count) {
+            return count($list);
+        }
+
+        $this->limitList($list, $this->data_limit);
+        return $list;
     }
 
     /**
