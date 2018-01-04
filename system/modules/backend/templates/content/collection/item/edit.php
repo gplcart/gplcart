@@ -33,14 +33,14 @@
     <label class="col-md-2 control-label">
       <?php echo $this->e($handler['title']); ?>
     </label>
-    <div class="col-md-6">
+    <div class="col-md-4">
       <input name="collection_item[title]" class="form-control" value="<?php echo isset($collection_item['title']) ? $collection_item['title'] : ''; ?>">
       <div class="help-block">
         <?php echo $this->error('value'); ?>
         <div class="text-muted">
           <?php echo $this->text('Start to type in the field an entity title to get suggestions or enter a numeric entity ID'); ?>
           <?php if($this->access('file_add') && $this->access('file_upload')) { ?>
-          <a href="<?php echo $this->url('admin/content/file/add'); ?>"><?php echo $this->text('Upload new file'); ?></a>
+          <p><a href="<?php echo $this->url('admin/content/file/add'); ?>"><?php echo $this->text('Upload new file'); ?></a></p>
           <?php } ?>
       </div>
       </div>
@@ -48,12 +48,12 @@
   </div>
   <div class="form-group<?php echo $this->error('data.url', ' has-error'); ?>">
     <label class="col-md-2 control-label"><?php echo $this->text('URL'); ?></label>
-    <div class="col-md-6">
+    <div class="col-md-4">
       <input name="collection_item[data][url]" class="form-control" value="<?php echo isset($collection_item['data']['url']) ? $this->e($collection_item['data']['url']) : ''; ?>">
       <div class="help-block">
         <?php echo $this->error('data.url'); ?>
         <div class="text-muted">
-          <?php echo $this->text('Enter a referring URL. You can use either absolute (with http://) or relative URLs'); ?>
+          <?php echo $this->text('Enter a referring URL. You can use either absolute (i.e starting with <i>http://</i>) or relative URLs'); ?>
         </div>
       </div>
     </div>

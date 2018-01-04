@@ -23,7 +23,7 @@
           </label>
         </div>
         <div class="help-block">
-          <?php echo $this->text('Disabled stores will be closed and show maintenance status'); ?>
+          <?php echo $this->text('Disabled stores will not be available to customers. Instead of normal interface they will show a page with a maintenance status message'); ?>
         </div>
       </div>
     </div>
@@ -73,7 +73,7 @@
         <input type="text" maxlength="70" name="store[data][title]" class="form-control" value="<?php echo $this->e($store['data']['title']); ?>">
         <div class="help-block">
           <?php echo $this->error('data.title'); ?>
-          <div class="text-muted"><?php echo $this->text('The default site name'); ?></div>
+          <div class="text-muted"><?php echo $this->text('Default site name that is displayed to customers. This string will be used by default in <code>title</code> meta-tag, outcoming e-mails etc'); ?></div>
         </div>
       </div>
     </div>
@@ -111,7 +111,7 @@
         <div class="help-block">
           <?php echo $this->error('data.meta_title'); ?>
           <div class="text-muted">
-            <?php echo $this->text('Optional text to be placed between %tags tags', array('%tags' => '<title>')); ?>
+            <?php echo $this->text('An optional text to be placed between <code>title</code> meta-tag. This value overrides the default site name'); ?>
           </div>
         </div>
       </div>
@@ -122,7 +122,7 @@
         <textarea maxlength="160" class="form-control" name="store[data][meta_description]"><?php echo $this->e($store['data']['meta_description']); ?></textarea>
         <div class="help-block">
           <?php echo $this->error('data.meta_description'); ?>
-          <?php echo $this->text('An optional text to be used in meta description tag'); ?>
+          <?php echo $this->text('An optional text to be used in <code>description</code> meta-tag'); ?>
         </div>
       </div>
     </div>
@@ -295,7 +295,7 @@
         <div class="help-block">
           <?php echo $this->error('data.theme'); ?>
           <div class="text-muted">
-            <?php echo $this->text('Select a theme module used to display front-end of the store to all devices'); ?>
+            <?php echo $this->text('Select a theme to display the store to customers in all devices (desktops, mobile phones, tablets etc)'); ?>
           </div>
         </div>
       </div>
@@ -367,7 +367,7 @@
           </label>
         </div>
         <div class="help-block">
-          <?php echo $this->text('Whether or not anonymous customers should log in before checkout'); ?>
+          <?php echo $this->text('If enabled, then anonymous customers must log in before checkout process'); ?>
         </div>
       </div>
     </div>
@@ -376,7 +376,7 @@
       <div class="col-md-4">
         <textarea name="store[data][js]" class="form-control"><?php echo $this->e($store['data']['js']); ?></textarea>
         <div class="help-block">
-           <?php echo $this->text('Java-Script code without script tags to add on each public, non-admin and non-internal page, e.g Google Analytics tracking code'); ?>
+           <?php echo $this->text('Java-Script code to be added on each public, non-admin and non-internal page, e.g Google Analytics tracking code. Do not use wrapping <code>script</code> tags!'); ?>
         </div>
       </div>
     </div>
@@ -400,7 +400,7 @@
           <?php } ?>
         </select>
         <div class="help-block">
-          <?php echo $this->text('Select a <a href="@url">collection</a> to be used for banner slideshow on front page', array('@url' => $this->url('admin/content/collection'))); ?>
+          <?php echo $this->text('Select a <a href="@url">collection</a> to be used for banner slideshow on the front page', array('@url' => $this->url('admin/content/collection'))); ?>
         </div>
       </div>
     </div>
@@ -420,7 +420,7 @@
           <?php } ?>
         </select>
         <div class="help-block">
-          <?php echo $this->text('Select a <a href="@url">collection</a> to be used for list of featured products on front page', array('@url' => $this->url('admin/content/collection'))); ?>
+          <?php echo $this->text('Select a <a href="@url">collection</a> to be used for list of featured products on the front page', array('@url' => $this->url('admin/content/collection'))); ?>
         </div>
       </div>
     </div>
@@ -440,7 +440,7 @@
           <?php } ?>
         </select>
         <div class="help-block">
-          <?php echo $this->text('Select a <a href="@url">collection</a> to be used for list of articles/news on front page', array('@url' => $this->url('admin/content/collection'))); ?>
+          <?php echo $this->text('Select a <a href="@url">collection</a> to be used for list of articles/news on the front page', array('@url' => $this->url('admin/content/collection'))); ?>
         </div>
       </div>
     </div>

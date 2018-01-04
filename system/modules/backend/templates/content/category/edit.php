@@ -25,7 +25,7 @@
           </label>
         </div>
         <div class="help-block">
-          <?php echo $this->text('Disabled categories will not be available to frontend users and search engines'); ?>
+          <?php echo $this->text('Disabled categories will not be available to customers and search engines'); ?>
         </div>
       </div>
     </div>
@@ -46,7 +46,7 @@
       <div class="col-md-8">
         <textarea class="form-control" rows="10" name="category[description_1]"><?php echo isset($category['description_1']) ? $this->filter($category['description_1']) : ''; ?></textarea>
         <div class="help-block">
-          <?php echo $this->text('Text that usually placed at the top of a category page'); ?>
+          <?php echo $this->text('The appearance of the text is controlled by the corresponding theme. Usually it will be displayed at the top of the category page'); ?>
         </div>
       </div>
     </div>
@@ -55,7 +55,7 @@
       <div class="col-md-8">
         <textarea class="form-control" rows="10" name="category[description_2]"><?php echo isset($category['description_2']) ? $this->filter($category['description_2']) : ''; ?></textarea>
         <div class="help-block">
-          <?php echo $this->text('Text that usually placed at the bottom of a category page'); ?>
+          <?php echo $this->text('The appearance of the text is controlled by the corresponding theme. Usually it will be displayed at the bottom of the category page'); ?>
         </div>
       </div>
     </div>
@@ -98,7 +98,7 @@
         <div class="help-block">
           <?php echo $this->error('weight'); ?>
           <div class="text-muted">
-            <?php echo $this->text('Position of the category among other categories. Categories with lower weight go first'); ?>
+            <?php echo $this->text('Items are sorted in lists by the weight value. Lower value means higher position'); ?>
           </div>
         </div>
       </div>
@@ -161,7 +161,7 @@
       <div class="col-md-8">
         <textarea maxlength="160" class="form-control" name="category[meta_description]"><?php echo isset($category['meta_description']) ? $this->e($category['meta_description']) : ''; ?></textarea>
         <div class="help-block">
-          <?php echo $this->text('Optional text to be used in meta description tag. The tag is commonly used on search engine result pages (SERPs) to display preview snippets for a given page. Important for SEO'); ?>
+          <?php echo $this->text('An optional text to be used in meta description tag'); ?>
         </div>
       </div>
     </div>

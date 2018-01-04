@@ -51,7 +51,7 @@
         </option>
       </select>
       <div class="help-block">
-        <?php echo $this->text('Select which PHP errors should be tracked by logging system'); ?>
+        <?php echo $this->text('Select which PHP errors should be tracked by the logging system'); ?>
       </div>
     </div>
   </div>
@@ -67,7 +67,7 @@
         </label>
       </div>
       <div class="help-block">
-        <?php echo $this->text('If enabled, JS files will be merged into several big files. It reduces number of HTTP queries and improves site loading speed'); ?>
+        <?php echo $this->text('If enabled, then JS files will be merged into several big files. It reduces number of HTTP queries and improves site loading speed'); ?>
       </div>
     </div>
   </div>
@@ -83,7 +83,7 @@
         </label>
       </div>
       <div class="help-block">
-        <?php echo $this->text('If enabled, CSS files will be minified and merged into one big file. It reduces number of HTTP queries and improves site loading speed'); ?>
+        <?php echo $this->text('If enabled, then CSS files will be minified and merged into one big file. It reduces number of HTTP queries and improves site loading speed'); ?>
       </div>
     </div>
   </div>
@@ -91,7 +91,7 @@
     <div class="col-md-6 col-md-offset-2">
       <div class="btn-toolbar">
         <button class="btn btn-default" name="delete_cached_assets" value="1" onclick="return confirm('<?php echo $this->text('Are you sure?'); ?>');">
-          <?php echo $this->text('Delete cached assets'); ?>
+          <?php echo $this->text('Delete cached JS and CSS files'); ?>
         </button>
         <button class="btn btn-default" name="save" value="1">
           <?php echo $this->text('Save'); ?>

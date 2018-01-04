@@ -23,7 +23,7 @@
       </div>
       <div class="help-block">
         <?php echo $this->error('default'); ?>
-        <div class="text-muted"><?php echo $this->text('If selected the language will be considered as default fallback language'); ?></div>
+        <div class="text-muted"><?php echo $this->text('If selected, then the language will be considered as default fallback language'); ?></div>
       </div>
     </div>
   </div>
@@ -68,7 +68,7 @@
       <div class="help-block">
         <?php echo $this->error('code'); ?>
         <div class="text-muted">
-          <?php echo $this->text('Language code according to ISO 639-1. Culture names also accepted'); ?>
+          <?php echo $this->text('Language code according to ISO 639-1 standard. Culture names (e.g en-US) also accepted'); ?>
         </div>
       </div>
     </div>

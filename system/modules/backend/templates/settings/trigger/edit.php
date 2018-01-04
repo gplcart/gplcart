@@ -80,7 +80,7 @@
           <div class="help-block">
             <?php echo $this->error('data.conditions'); ?>
             <div class="text-muted">
-              <?php echo $this->text('Which conditions must be met to invoke the trigger. One condition per line. See the legend. Conditions are checked from the top to bottom. Format: [condition ID][space][operator][space][parameter(s)]'); ?>
+              <?php echo $this->text('Specify which conditions must be met to invoke the trigger. One condition per line. See the legend. Conditions are checked from the top to bottom. Format: <code>[condition ID][space][operator][space][parameter(s)]</code>'); ?>
             </div>
           </div>
         </div>
@@ -144,7 +144,7 @@
                 <td>
                   <?php echo $this->e($this->text($info['title'])); ?>
                   <?php if (!empty($info['description'])) { ?>
-                  <div class="text-muted small"><?php echo $this->filter($this->text($info['description'])); ?></div>
+                  <div class="text-muted small"><?php echo $this->text($info['description']); ?></div>
                   <?php } ?>
                 </td>
               </tr>

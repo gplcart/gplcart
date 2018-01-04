@@ -21,13 +21,17 @@
           <input name="collection[status]" type="radio" autocomplete="off" value="0"<?php echo empty($collection['status']) ? ' checked' : ''; ?>><?php echo $this->text('Disabled'); ?>
         </label>
       </div>
+      <div class="help-block"><?php echo $this->text('Disabled collections will not be displayed to customers'); ?></div>
     </div>
   </div>
   <div class="form-group required<?php echo $this->error('title', ' has-error'); ?>">
     <label class="col-md-2 control-label"><?php echo $this->text('Title'); ?></label>
     <div class="col-md-4">
       <input name="collection[title]" maxlength="255" class="form-control" value="<?php echo isset($collection['title']) ? $this->e($collection['title']) : ''; ?>">
-      <div class="help-block"><?php echo $this->error('title'); ?></div>
+      <div class="help-block">
+        <?php echo $this->error('title'); ?>
+        <div class="text-muted"><?php echo $this->text('The name will be displayed to customers in the corresponding block provided by the collection'); ?></div>
+      </div>
     </div>
   </div>
   <?php if (!empty($languages)) { ?>
@@ -82,6 +86,10 @@
         <?php } ?>
         <?php } ?>
       </select>
+      <div class="help-block">
+        <?php echo $this->error('store_id'); ?>
+        <div class="text-muted"><?php echo $this->text('Associate the collection with a certain store'); ?></div>
+      </div>
     </div>
   </div>
   <div class="row">

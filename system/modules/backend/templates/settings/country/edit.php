@@ -39,7 +39,7 @@
       <div class="help-block">
         <?php echo $this->error('code'); ?>
         <div class="text-muted">
-          <?php echo $this->text('ISO 3166-2 code, e.g US'); ?>
+          <?php echo $this->text('Country code according to ISO 3166-2 standard, e.g US'); ?>
         </div>
       </div>
     </div>
@@ -75,7 +75,7 @@
       <div class="help-block">
         <?php echo $this->error('template'); ?>
         <div class="text-muted">
-          <?php echo $this->text('This template will be used to print addresses for this country. Each replaced placeholder can be additionally processed by an optional filter. Filter is a existing global function with ONE required parameter. E.g to uppercase resulting value of %name placeholder: %name|mb_strtoupper'); ?>
+          <?php echo $this->text('This template will be used to print addresses for this country. Each replaced placeholder can be additionally processed by an optional filter. Filter is an existing global function with ONE required parameter. E.g to uppercase resulting value of %name placeholder enter the code: <code>%name|mb_strtoupper</code>'); ?>
         </div>
       </div>
     </div>

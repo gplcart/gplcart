@@ -181,7 +181,7 @@
       <div class="col-md-10">
         <textarea maxlength="160" class="form-control" name="page[meta_description]"><?php echo (isset($page['meta_description'])) ? $this->e($page['meta_description']) : ''; ?></textarea>
         <div class="help-block">
-          <?php echo $this->text('Optional text to be used in meta description tag. The tag is commonly used on search engine result pages (SERPs) to display preview snippets for a given page. Important for SEO'); ?>
+          <?php echo $this->text('An optional text to be used in meta description tag'); ?>
         </div>
       </div>
     </div>

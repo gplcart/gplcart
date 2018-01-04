@@ -24,7 +24,7 @@
             </label>
           </div>
           <div class="help-block">
-            <?php echo $this->text('Disabled imagestyles will not process images'); ?>
+            <?php echo $this->text('Disabled image styles will not process images'); ?>
           </div>
         </div>
       </div>
@@ -47,7 +47,7 @@
           <div class="help-block">
             <?php echo $this->error('actions'); ?>
             <div class="text-muted">
-              <?php echo $this->text('List of actions in format [action ID][whitespace][parameters]. One action per line. See the legend. Actions will be applied from the top to bottom. For example to make thumbnail 50X50: <i>thumbnail 50,50</i>'); ?>
+              <?php echo $this->text('List of image style actions in format <code>[action ID][whitespace][parameters]</code>. One action per line. Actions will be applied from the top to bottom. For example to make thumbnail 50X50 enter the following code: <code>thumbnail 50,50</code>'); ?>
             </div>
           </div>
         </div>

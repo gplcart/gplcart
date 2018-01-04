@@ -266,7 +266,7 @@
         <div class="help-block">
           <?php echo $this->error('meta_description'); ?>
           <div class="text-muted">
-            <?php echo $this->text('Optional text to be used in meta description tag. The tag is commonly used on search engine result pages (SERPs) to display preview snippets for a given page. Important for SEO'); ?>
+            <?php echo $this->text('An optional text to be used in meta description tag'); ?>
           </div>
         </div>
       </div>

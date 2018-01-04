@@ -24,7 +24,7 @@
         </label>
       </div>
       <div class="help-block">
-          <?php echo $this->text('Default currency is a base currency of the store'); ?>
+          <?php echo $this->text('Default currency is the base currency. Conversion rates of other currencies are converted relative to the base currency'); ?>
       </div>
     </div>
   </div>
@@ -67,7 +67,7 @@
       <div class="help-block">
         <?php echo $this->error('name'); ?>
         <div class="text-muted">
-          <?php echo $this->text('Official currency name in english'); ?> <?php echo $this->text('Template placeholder'); ?>: %name
+          <?php echo $this->text('Official currency name in english. Template placeholder: <code>@value</code>', array('@value' => '%name')); ?>
         </div>
       </div>
     </div>
@@ -79,7 +79,7 @@
       <div class="help-block">
         <?php echo $this->error('code'); ?>
         <div class="text-muted">
-          <?php echo $this->text('Three-letter upper-case code according to ISO 4217 standard, e.g USD'); ?> <?php echo $this->text('Template placeholder'); ?>: %code
+          <?php echo $this->text('Three-letter upper-case code according to ISO 4217 standard, e.g USD. Template placeholder: <code>@value</code>', array('@value' => '%code')); ?>
         </div>
       </div>
     </div>
@@ -91,7 +91,7 @@
       <div class="help-block">
         <?php echo $this->error('symbol'); ?>
         <div class="text-muted">
-          <?php echo $this->text('Sign of the currency, e.g $.'); ?> <?php echo $this->text('Template placeholder'); ?>: %symbol
+          <?php echo $this->text('Sign of the currency, e.g $. Template placeholder: <code>@value</code>', array('@value' => '%symbol')); ?>
         </div>
       </div>
     </div>
@@ -103,7 +103,7 @@
       <div class="help-block">
         <?php echo $this->error('numeric_code'); ?>
         <div class="text-muted">
-          <?php echo $this->text('Numeric code according to ISO 4217 standard.'); ?> <?php echo $this->text('Template placeholder'); ?>: %numeric_code
+          <?php echo $this->text('Numeric code according to ISO 4217 standard. Template placeholder: <code>@value</code>', array('@value' => '%numeric_code')); ?>
         </div>
       </div>
     </div>
@@ -115,7 +115,7 @@
       <div class="help-block">
         <?php echo $this->error('major_unit'); ?>
         <div class="text-muted">
-          <?php echo $this->text('Name of the highest valued currency unit, e.g Dollar.'); ?> <?php echo $this->text('Template placeholder'); ?>: %major_unit
+          <?php echo $this->text('Name of the highest valued currency unit, e.g Dollar. Template placeholder: <code>@value</code>', array('@value' => '%major_unit')); ?>
         </div>
       </div>
     </div>
@@ -127,7 +127,7 @@
       <div class="help-block">
         <?php echo $this->error('minor_unit'); ?>
         <div class="text-muted">
-          <?php echo $this->text("Name of the lowest valued currency unit. Usually it's 1/100 of the major unit, e.g Cent."); ?> <?php echo $this->text('Template placeholder'); ?>: %minor_unit
+          <?php echo $this->text("Name of the lowest valued currency unit. Usually it's 1/100 of the major unit, e.g Cent. Template placeholder: <code>@value</code>", array('@value' => '%minor_unit')); ?>
         </div>
       </div>
     </div>
@@ -177,7 +177,7 @@
     <div class="col-md-4">
       <input name="currency[template]" class="form-control" value="<?php echo isset($currency['template']) ? $this->e($currency['template']) : '%symbol%price'; ?>">
       <div class="help-block">
-        <?php echo $this->text('Template to format prices displayed in this currency. See the field descriptions for available placeholders. For numeric price value use placeholder %price'); ?>
+        <?php echo $this->text('Template to format prices displayed in this currency. See the field descriptions for available placeholders. For numeric price value use placeholder <code>%price</code>'); ?>
       </div>
     </div>
   </div>
