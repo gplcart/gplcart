@@ -24,7 +24,7 @@
         </label>
       </div>
       <div class="help-block">
-        <?php echo $this->text('Disabled rules will not affect store prices'); ?>
+        <?php echo $this->text('Disabled price rules will not affect store prices'); ?>
       </div>
     </div>
   </div>
@@ -41,7 +41,7 @@
       </select>
       <div class="help-block">
         <?php echo $this->error('trigger_id'); ?>
-        <div class="text-muted"><?php echo $this->text('Select an enabled <a href="@url">trigger</a> that applies this rule. Keep in mind that triggers are per store', array('@url' => $this->url('admin/settings/trigger'))); ?></div>
+        <div class="text-muted"><?php echo $this->text('Select a <a href="@url">trigger</a> to apply this price rule. Keep in mind that triggers are per store', array('@url' => $this->url('admin/settings/trigger'))); ?></div>
       </div>
     </div>
   </div>
@@ -78,8 +78,23 @@
       <div class="help-block">
         <?php echo $this->error('value'); ?>
         <div class="text-muted">
-          <?php echo $this->text('Numeric value to be added to the original price when the rule is applied. <b>To substract use negative numbers</b>'); ?>
+          <?php echo $this->text('Numeric value to be added to the original price when the price rule is applied. <b>To substract use negative numbers</b>'); ?>
         </div>
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-md-2 control-label"><?php echo $this->text('Currency'); ?></label>
+    <div class="col-md-4">
+      <select name="price_rule[currency]" class="form-control">
+        <?php foreach ($currencies as $code => $currency) { ?>
+        <option value="<?php echo $this->e($code); ?>"<?php echo isset($price_rule['currency']) && $price_rule['currency'] == $code ? ' selected' : ''; ?>>
+        <?php echo $this->e($code); ?>
+        </option>
+        <?php } ?>
+      </select>
+      <div class="help-block">
+        <?php echo $this->text('The price value will be converted according to the selected currency'); ?>
       </div>
     </div>
   </div>
@@ -103,21 +118,6 @@
       </div>
     </div>
   </div>
-  <div class="form-group">
-    <label class="col-md-2 control-label"><?php echo $this->text('Currency'); ?></label>
-    <div class="col-md-4">
-      <select name="price_rule[currency]" class="form-control">
-        <?php foreach ($currencies as $code => $currency) { ?>
-        <option value="<?php echo $this->e($code); ?>"<?php echo isset($price_rule['currency']) && $price_rule['currency'] == $code ? ' selected' : ''; ?>>
-        <?php echo $this->e($code); ?>
-        </option>
-        <?php } ?>
-      </select>
-      <div class="help-block">
-        <?php echo $this->text('The price value will be converted according to the selected currency'); ?>
-      </div>
-    </div>
-  </div>
   <div class="form-group<?php echo $this->error('weight', ' has-error'); ?>">
     <label class="col-md-2 control-label"><?php echo $this->text('Weight'); ?></label>
     <div class="col-md-4">
@@ -125,7 +125,7 @@
       <div class="help-block">
         <?php echo $this->error('weight'); ?>
         <div class="text-muted">
-          <?php echo $this->text('Position of the rule among other enabled rules. Rules with lower weight are applied earlier'); ?>
+          <?php echo $this->text('Position of the price rule among other enabled rules. Rules with lower weight are applied earlier'); ?>
         </div>
       </div>
     </div>

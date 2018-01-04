@@ -54,7 +54,7 @@
       <input name="user[password]" class="form-control" value="<?php echo isset($user['password']) ? $user['password'] : ''; ?>">
       <div class="help-block">
         <?php echo $this->error('password'); ?>
-        <div class="text-muted"><?php echo $this->text('Password to log in this user, @min - @max characters', array('@min' => $password_limit[0], '@max' => $password_limit[1])); ?></div>
+        <div class="text-muted"><?php echo $this->text('The password is used for authorizing the user. It should be @min - @max characters long', array('@min' => $password_limit[0], '@max' => $password_limit[1])); ?></div>
       </div>
     </div>
   </div>
