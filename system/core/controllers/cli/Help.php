@@ -32,7 +32,11 @@ class Help extends CliController
     {
         $this->line($this->text('List of available commands. To see help for a certain command use --help option'));
 
-        foreach ($this->route->getList() as $command => $info) {
+        $routes = $this->route->getList();
+
+        ksort($routes);
+
+        foreach ($routes as $command => $info) {
 
             if (empty($info['help']['description'])) {
                 $description = $this->text('No description available');
@@ -44,7 +48,11 @@ class Help extends CliController
                 $command .= ", {$info['alias']}";
             }
 
-            $vars = array('@command' => $command, '@description' => $description);
+            $vars = array(
+                '@command' => $command,
+                '@description' => $description
+            );
+
             $this->line($this->text('  @command - @description', $vars));
         }
 
