@@ -111,7 +111,8 @@ class Shipping
                 'template' => array('complete' => ''),
                 'image' => '',
                 'status' => true,
-                'weight' => 0
+                'weight' => 0,
+                'module' => 'core'
             )
         );
     }
