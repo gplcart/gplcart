@@ -483,7 +483,7 @@ class Module
             return false;
         }
 
-        return !in_array($id, array('core', 'gplcart'));
+        return !in_array($id, array('core', 'gplcart', 'module'));
     }
 
     /**
