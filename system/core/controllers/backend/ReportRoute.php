@@ -9,6 +9,7 @@
 
 namespace gplcart\core\controllers\backend;
 
+use gplcart\core\traits\Listing as ListingTrait;
 use gplcart\core\models\UserRole as UserRoleModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
@@ -18,11 +19,19 @@ use gplcart\core\controllers\backend\Controller as BackendController;
 class ReportRoute extends BackendController
 {
 
+    use ListingTrait;
+
     /**
      * User role model instance
      * @var \gplcart\core\models\UserRole $role
      */
     protected $role;
+
+    /**
+     * Pager limit
+     * @var array
+     */
+    protected $data_limit;
 
     /**
      * @param UserRoleModel $role
@@ -41,18 +50,64 @@ class ReportRoute extends BackendController
     {
         $this->setTitleListReportRoute();
         $this->setBreadcrumbListReportRoute();
+        $this->setFilterListReportRoute();
+        $this->setPagerListReportRoute();
 
-        $this->setData('routes', $this->getListReportRoute());
+        $this->setData('routes', (array) $this->getListReportRoute());
+        $this->setData('permissions', $this->getPermissionsReportRole());
         $this->outputListReportRoute();
     }
 
     /**
-     * Returns an array of routes
+     * Sets the filter on the route overview page
      */
-    protected function getListReportRoute()
+    protected function setFilterListReportRoute()
     {
-        $routes = $this->route->getList();
-        return $this->prepareListReportRoute($routes);
+        $this->setFilter($this->getAllowedFiltersReportRoute());
+    }
+
+    /**
+     * Returns an array of allowed fields for sorting and filtering
+     * @return array
+     */
+    protected function getAllowedFiltersReportRoute()
+    {
+        return array('pattern', 'access', 'status', 'internal');
+    }
+
+    /**
+     * Sets pager
+     * @return array
+     */
+    protected function setPagerListReportRoute()
+    {
+        $pager = array(
+            'query' => $this->query_filter,
+            'total' => (int) $this->getListReportRoute(true)
+        );
+
+        return $this->data_limit = $this->setPager($pager);
+    }
+
+    /**
+     * Returns an array of routes or counts them
+     * @param bool $count
+     * @return array|int
+     */
+    protected function getListReportRoute($count = false)
+    {
+        $list = $this->prepareListReportRoute($this->route->getList());
+
+        $allowed = $this->getAllowedFiltersReportRoute();
+        $this->filterList($list, $allowed, $this->query_filter);
+        $this->sortList($list, $allowed, $this->query_filter, array('pattern' => 'asc'));
+
+        if ($count) {
+            return count($list);
+        }
+
+        $this->limitList($list, $this->data_limit);
+        return $list;
     }
 
     /**
@@ -62,35 +117,50 @@ class ReportRoute extends BackendController
      */
     protected function prepareListReportRoute(array $routes)
     {
-        $permissions = $this->role->getPermissions();
+        $permissions = $this->getPermissionsReportRole();
 
         foreach ($routes as $pattern => &$route) {
 
+            $access_names = array();
             if (strpos($pattern, 'admin') === 0) {
-                $route['permission_name'] = array($this->text($permissions['admin']));
-            } else {
-                $route['permission_name'] = array($this->text('Public'));
+                $access_names = array('admin' => $this->text($permissions['admin']));
+                if (!isset($route['access'])) {
+                    $route['access'] = 'admin';
+                }
             }
 
             if (!isset($route['access'])) {
-                continue;
+                $route['access'] = '_public';
             }
 
-            if ($route['access'] === '__superadmin') {
-                $route['permission_name'] = array($this->text('Superadmin'));
-                continue;
+            if (isset($permissions[$route['access']])) {
+                $access_names[$route['access']] = $this->text($permissions[$route['access']]);
+            } else {
+                $access_names[''] = $this->text($permissions['_public']);
             }
 
-            if (!isset($permissions[$route['access']])) {
-                $route['permission_name'] = array($this->text('Unknown'));
-                continue;
+            if ($route['access'] === '_superadmin') {
+                $access_names = array('_superadmin' => $this->text($permissions['_superadmin']));
             }
 
-            $route['permission_name'][] = $this->text($permissions[$route['access']]);
+            $route['pattern'] = $pattern;
+            $route['access_name'] = implode(' + ', $access_names);
+            $route['access'] = implode('', array_keys($access_names));
+            $route['status'] = !isset($route['status']) || !empty($route['status']);
         }
 
-        ksort($routes);
         return $routes;
+    }
+
+    /**
+     * Returns an array of permissions
+     * @return array
+     */
+    protected function getPermissionsReportRole()
+    {
+        return array(
+            '_public' => 'Public',
+            '_superadmin' => 'Superadmin') + $this->role->getPermissions();
     }
 
     /**
