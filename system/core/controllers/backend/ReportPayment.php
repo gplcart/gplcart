@@ -9,6 +9,7 @@
 
 namespace gplcart\core\controllers\backend;
 
+use gplcart\core\traits\Listing as ListingTrait;
 use gplcart\core\models\Payment as PaymentModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
@@ -18,11 +19,19 @@ use gplcart\core\controllers\backend\Controller as BackendController;
 class ReportPayment extends BackendController
 {
 
+    use ListingTrait;
+
     /**
      * Payment model instance
      * @var \gplcart\core\models\Payment $payment
      */
     protected $payment;
+
+    /**
+     * Pager limit
+     * @var array
+     */
+    protected $data_limit;
 
     /**
      * @param PaymentModel $payment
@@ -41,18 +50,63 @@ class ReportPayment extends BackendController
     {
         $this->setTitleListReportPayment();
         $this->setBreadcrumbListReportPayment();
+        $this->setFilterListReportPayment();
+        $this->setPagerListReportPayment();
 
-        $this->setData('methods', $this->getListReportPayment());
+        $this->setData('methods', (array) $this->getListReportPayment());
         $this->outputListReportPayment();
     }
 
     /**
-     * Returns an array of payment methods
+     * Sets the filter on the payment methods overview page
+     */
+    protected function setFilterListReportPayment()
+    {
+        $this->setFilter($this->getAllowedFiltersReportPayment());
+    }
+
+    /**
+     * Returns an array of allowed fields for sorting and filtering
      * @return array
      */
-    protected function getListReportPayment()
+    protected function getAllowedFiltersReportPayment()
     {
-        return $this->payment->getList();
+        return array('id', 'title', 'status', 'module');
+    }
+
+    /**
+     * Sets pager
+     * @return array
+     */
+    protected function setPagerListReportPayment()
+    {
+        $pager = array(
+            'query' => $this->query_filter,
+            'total' => (int) $this->getListReportPayment(true)
+        );
+
+        return $this->data_limit = $this->setPager($pager);
+    }
+
+    /**
+     * Returns an array of payment methods
+     * @param bool $count
+     * @return array|int
+     */
+    protected function getListReportPayment($count = false)
+    {
+        $list = $this->payment->getList();
+
+        $allowed = $this->getAllowedFiltersReportPayment();
+        $this->filterList($list, $allowed, $this->query_filter);
+        $this->sortList($list, $allowed, $this->query_filter, array('id' => 'asc'));
+
+        if ($count) {
+            return count($list);
+        }
+
+        $this->limitList($list, $this->data_limit);
+        return $list;
     }
 
     /**
