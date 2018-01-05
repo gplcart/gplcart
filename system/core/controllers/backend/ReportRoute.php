@@ -121,18 +121,15 @@ class ReportRoute extends BackendController
 
         foreach ($routes as $pattern => &$route) {
 
-            $access_names = array();
-            if (strpos($pattern, 'admin') === 0) {
-                $access_names = array('admin' => $this->text($permissions['admin']));
-                if (!isset($route['access'])) {
-                    $route['access'] = 'admin';
-                }
+            if (strpos($pattern, 'admin') === 0 && !isset($route['access'])) {
+                $route['access'] = 'admin';
             }
 
             if (!isset($route['access'])) {
                 $route['access'] = '_public';
             }
 
+            $access_names = array();
             if (isset($permissions[$route['access']])) {
                 $access_names[$route['access']] = $this->text($permissions[$route['access']]);
             } else {
