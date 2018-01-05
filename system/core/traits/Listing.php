@@ -69,11 +69,8 @@ trait Listing
             return $list;
         }
 
-        $term = reset($filter);
-        $field = key($filter);
-
-        $filtered = array_filter($list, function ($item) use ($field, $term) {
-            return $this->callbackFilterList($item, $field, $term);
+        $filtered = array_filter($list, function ($item) use ($filter) {
+            return $this->callbackFilterList($item, $filter);
         });
 
         return $list = $filtered;
@@ -82,21 +79,27 @@ trait Listing
     /**
      * Callback for array_filter() function
      * @param array $item
-     * @param string $field
-     * @param string $term
+     * @param array $filter
      * @return bool
      */
-    protected function callbackFilterList(array $item, $field, $term)
+    protected function callbackFilterList(array $item, $filter)
     {
-        if (empty($item[$field])) {
-            $item[$field] = '0';
+        foreach ($filter as $field => $term) {
+
+            if (empty($item[$field])) {
+                $item[$field] = '0';
+            }
+
+            if (!is_string($item[$field])) {
+                $item[$field] = (string) (int) !empty($item[$field]);
+            }
+
+            if (stripos($item[$field], $term) === false) {
+                return false;
+            }
         }
 
-        if (!is_string($item[$field])) {
-            $item[$field] = (string) (int) !empty($item[$field]);
-        }
-
-        return stripos($item[$field], $term) !== false;
+        return true;
     }
 
     /**
@@ -112,14 +115,7 @@ trait Listing
         $arg2 = isset($b[$query['sort']]) ? (string) $b[$query['sort']] : '0';
 
         $diff = strnatcasecmp($arg1, $arg2);
-
-        if ($diff == 0) {
-            return 0;
-        } else if ($query['order'] === 'asc') {
-            return $diff > 0;
-        } else {
-            return $diff < 0;
-        }
+        return $query['order'] === 'asc' ? $diff : -$diff;
     }
 
 }
