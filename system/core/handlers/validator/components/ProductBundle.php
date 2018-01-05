@@ -58,9 +58,13 @@ class ProductBundle extends ComponentValidator
     protected function validateProductProductBundle()
     {
         $field = 'product_id';
-        $label = $this->translation->text('Product');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
 
         $product_id = $this->getSubmitted($field);
+        $label = $this->translation->text('Product');
 
         if (!ctype_digit($product_id)) {
             $this->setErrorInteger($field, $label);

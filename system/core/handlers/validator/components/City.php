@@ -113,8 +113,13 @@ class City extends ComponentValidator
     protected function validateStateCity()
     {
         $field = 'state_id';
-        $label = $this->translation->text('State');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $state_id = $this->getSubmitted($field);
+        $label = $this->translation->text('State');
 
         if ($this->isUpdating() && !isset($state_id)) {
             return null;
@@ -136,21 +141,22 @@ class City extends ComponentValidator
             $this->setErrorUnavailable($field, $label);
             return false;
         }
+
         return true;
     }
 
     /**
      * Validates a zone ID
-     * @return boolean
+     * @return boolean|null
      */
     protected function validateZoneCity()
     {
         $field = 'zone_id';
-        $label = $this->translation->text('Zone');
         $zone_id = $this->getSubmitted($field);
+        $label = $this->translation->text('Zone');
 
         if (empty($zone_id)) {
-            return true;
+            return null;
         }
 
         if (!is_numeric($zone_id)) {
@@ -175,8 +181,13 @@ class City extends ComponentValidator
     protected function validateCountryCity()
     {
         $field = 'country';
-        $label = $this->translation->text('Country');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $code = $this->getSubmitted($field);
+        $label = $this->translation->text('Country');
 
         if ($this->isUpdating() && !isset($code)) {
             return null;
@@ -193,6 +204,7 @@ class City extends ComponentValidator
             $this->setErrorUnavailable($field, $label);
             return false;
         }
+
         return true;
     }
 

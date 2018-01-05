@@ -115,6 +115,11 @@ class Address extends ComponentValidator
     protected function validateUserIdAddress()
     {
         $field = 'user_id';
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $label = $this->translation->text('User');
         $user_id = $this->getSubmitted($field);
 
@@ -147,6 +152,11 @@ class Address extends ComponentValidator
     protected function validateCountryAddress()
     {
         $field = 'country';
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $label = $this->translation->text('Country');
         $code = $this->getSubmitted($field);
 
@@ -175,10 +185,14 @@ class Address extends ComponentValidator
     protected function validateStateAddress()
     {
         $field = 'state_id';
-        $label = $this->translation->text('State');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
 
         $format = $this->getSubmitted('format');
         $state_id = $this->getSubmitted($field);
+        $label = $this->translation->text('State');
 
         if (!isset($state_id) || empty($format)) {
             return null;
@@ -204,6 +218,7 @@ class Address extends ComponentValidator
             $this->setErrorUnavailable($field, $label);
             return false;
         }
+
         return true;
     }
 
@@ -214,8 +229,13 @@ class Address extends ComponentValidator
     protected function validateCityAddress()
     {
         $field = 'city_id';
-        $label = $this->translation->text('City');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $city_id = $this->getSubmitted($field);
+        $label = $this->translation->text('City');
 
         if ($this->isUpdating() && !isset($city_id)) {
             return null;
@@ -296,6 +316,7 @@ class Address extends ComponentValidator
             $this->setErrorUnavailable($field, $this->translation->text('Type'));
             return false;
         }
+
         return true;
     }
 
@@ -305,7 +326,8 @@ class Address extends ComponentValidator
      */
     protected function validateTextFieldsAddress()
     {
-        $format = $this->getSubmitted('format');
+        $source_field = 'format';
+        $format = $this->getSubmitted($source_field);
 
         if (empty($format) || $this->isError('country')) {
             return null;

@@ -116,6 +116,11 @@ class Cart extends ComponentValidator
     protected function validateProductCart()
     {
         $field = 'product_id';
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $label = $this->translation->text('Product');
         $product_id = $this->getSubmitted($field);
 
@@ -155,9 +160,8 @@ class Cart extends ComponentValidator
         }
 
         $field = 'sku';
-        $label = $this->translation->text('SKU');
-
         $sku = $this->getSubmitted($field);
+        $label = $this->translation->text('SKU');
         $store_id = $this->getSubmitted('store_id');
 
         if (!isset($sku)) {
@@ -187,8 +191,8 @@ class Cart extends ComponentValidator
     protected function validateOrderCart()
     {
         $field = 'order_id';
-        $label = $this->translation->text('Order');
         $order_id = $this->getSubmitted($field);
+        $label = $this->translation->text('Order');
 
         if (empty($order_id)) {
             return null;
@@ -205,6 +209,7 @@ class Cart extends ComponentValidator
             $this->setErrorUnavailable($field, $label);
             return false;
         }
+
         return true;
     }
 
@@ -215,8 +220,13 @@ class Cart extends ComponentValidator
     protected function validateQuantityCart()
     {
         $field = 'quantity';
-        $label = $this->translation->text('Quantity');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $quantity = $this->getSubmitted($field);
+        $label = $this->translation->text('Quantity');
 
         if ($this->isUpdating() && !isset($quantity)) {
             return null;
@@ -236,6 +246,7 @@ class Cart extends ComponentValidator
             $this->setErrorLengthRange($field, $label, 1, 2);
             return false;
         }
+
         return true;
     }
 

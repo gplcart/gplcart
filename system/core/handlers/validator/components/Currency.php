@@ -93,8 +93,13 @@ class Currency extends ComponentValidator
     protected function validateSymbolCurrency()
     {
         $field = 'symbol';
-        $label = $this->translation->text('Symbol');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $symbol = $this->getSubmitted($field);
+        $label = $this->translation->text('Symbol');
 
         if ($this->isUpdating() && !isset($symbol)) {
             return null;
@@ -115,8 +120,13 @@ class Currency extends ComponentValidator
     protected function validateMajorUnitCurrency()
     {
         $field = 'major_unit';
-        $label = $this->translation->text('Major unit');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $major_unit = $this->getSubmitted($field);
+        $label = $this->translation->text('Major unit');
 
         if ($this->isUpdating() && !isset($major_unit)) {
             return null;
@@ -137,8 +147,13 @@ class Currency extends ComponentValidator
     protected function validateMinorUnitCurrency()
     {
         $field = 'minor_unit';
-        $label = $this->translation->text('Minor unit');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $minor_unit = $this->getSubmitted($field);
+        $label = $this->translation->text('Minor unit');
 
         if ($this->isUpdating() && !isset($minor_unit)) {
             return null;
@@ -148,6 +163,7 @@ class Currency extends ComponentValidator
             $this->setErrorLengthRange($field, $label, 1, 50);
             return false;
         }
+
         return true;
     }
 
@@ -158,8 +174,13 @@ class Currency extends ComponentValidator
     protected function validateConvertionRateCurrency()
     {
         $field = 'conversion_rate';
-        $label = $this->translation->text('Conversion rate');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $conversion_rate = $this->getSubmitted($field);
+        $label = $this->translation->text('Conversion rate');
 
         if ($this->isUpdating() && !isset($conversion_rate)) {
             return null;
@@ -174,6 +195,7 @@ class Currency extends ComponentValidator
             $this->setErrorInvalid($field, $label);
             return false;
         }
+
         return true;
     }
 
@@ -184,8 +206,13 @@ class Currency extends ComponentValidator
     protected function validateRoundingStepCurrency()
     {
         $field = 'rounding_step';
-        $label = $this->translation->text('Rounding step');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $rounding_step = $this->getSubmitted($field);
+        $label = $this->translation->text('Rounding step');
 
         if ($this->isUpdating() && !isset($rounding_step)) {
             return null;
@@ -200,6 +227,7 @@ class Currency extends ComponentValidator
             $this->setErrorInvalid($field, $label);
             return false;
         }
+
         return true;
     }
 
@@ -210,22 +238,28 @@ class Currency extends ComponentValidator
     protected function validateDecimalsCurrency()
     {
         $field = 'decimals';
-        $label = $this->translation->text('Decimals');
-        $decimals = $this->getSubmitted($field);
 
-        if ($this->isUpdating() && !isset($decimals)) {
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
             return null;
         }
 
-        if (!isset($decimals)) {
+        $value = $this->getSubmitted($field);
+        $label = $this->translation->text('Decimals');
+
+        if ($this->isUpdating() && !isset($value)) {
+            return null;
+        }
+
+        if (!isset($value)) {
             $this->setErrorRequired($field, $label);
             return false;
         }
 
-        if (preg_match('/^[0-2]+$/', $decimals) !== 1) {
+        if (preg_match('/^[0-2]+$/', $value) !== 1) {
             $this->setErrorInvalid($field, $label);
             return false;
         }
+
         return true;
     }
 
@@ -236,32 +270,36 @@ class Currency extends ComponentValidator
     protected function validateNumericCodeCurrency()
     {
         $field = 'numeric_code';
-        $label = $this->translation->text('Numeric code');
-        $numeric_code = $this->getSubmitted($field);
 
-        if ($this->isUpdating() && !isset($numeric_code)) {
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
             return null;
         }
 
-        if (empty($numeric_code)) {
+        $value = $this->getSubmitted($field);
+        $label = $this->translation->text('Numeric code');
+
+        if ($this->isUpdating() && !isset($value)) {
+            return null;
+        }
+
+        if (empty($value)) {
             $this->setErrorRequired($field, $label);
             return false;
         }
 
-        if (preg_match('/^[0-9]{3}$/', $numeric_code) !== 1) {
+        if (preg_match('/^[0-9]{3}$/', $value) !== 1) {
             $this->setErrorInvalid($field, $label);
             return false;
         }
 
         $updating = $this->getUpdating();
 
-        if (isset($updating['numeric_code'])//
-                && ($updating['numeric_code'] == $numeric_code)) {
+        if (isset($updating['numeric_code']) && ($updating['numeric_code'] == $value)) {
             return true;
         }
 
         foreach ($this->currency->getList() as $currency) {
-            if ($currency['numeric_code'] == $numeric_code) {
+            if ($currency['numeric_code'] == $value) {
                 $this->setErrorExists($field, $label);
                 return false;
             }
@@ -277,27 +315,32 @@ class Currency extends ComponentValidator
     protected function validateCodeCurrency()
     {
         $field = 'code';
-        $label = $this->translation->text('Code');
-        $code = $this->getSubmitted($field);
 
-        if ($this->isUpdating() && !isset($code)) {
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
             return null;
         }
 
-        if (empty($code)) {
+        $value = $this->getSubmitted($field);
+        $label = $this->translation->text('Code');
+
+        if ($this->isUpdating() && !isset($value)) {
+            return null;
+        }
+
+        if (empty($value)) {
             $this->setErrorRequired($field, $label);
             return false;
         }
 
-        if (preg_match('/^[A-Z]{3}$/', $code) !== 1) {
+        if (preg_match('/^[A-Z]{3}$/', $value) !== 1) {
             $this->setErrorInvalid($field, $label);
             return false;
         }
 
-        $code = strtoupper($code);
+        $code = strtoupper($value);
         $updating = $this->getUpdating();
 
-        if (isset($updating['code']) && ($updating['code'] === $code)) {
+        if (isset($updating['code']) && $updating['code'] === $code) {
             return true;
         }
 

@@ -140,8 +140,13 @@ class Order extends ComponentValidator
     protected function validatePaymentOrder()
     {
         $field = 'payment';
-        $label = $this->translation->text('Payment');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $module_id = $this->getSubmitted($field);
+        $label = $this->translation->text('Payment');
 
         if ($this->isUpdating() && !isset($module_id)) {
             return null;
@@ -158,6 +163,7 @@ class Order extends ComponentValidator
             $this->setErrorUnavailable($field, $label);
             return false;
         }
+
         return true;
     }
 
@@ -168,8 +174,13 @@ class Order extends ComponentValidator
     protected function validateShippingOrder()
     {
         $field = 'shipping';
-        $label = $this->translation->text('Shipping');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $module_id = $this->getSubmitted($field);
+        $label = $this->translation->text('Shipping');
 
         if ($this->isUpdating() && !isset($module_id)) {
             return null;
@@ -186,6 +197,7 @@ class Order extends ComponentValidator
             $this->setErrorUnavailable($field, $label);
             return false;
         }
+
         return true;
     }
 
@@ -196,8 +208,8 @@ class Order extends ComponentValidator
     protected function validateStatusOrder()
     {
         $field = 'status';
-        $label = $this->translation->text('Status');
         $status = $this->getSubmitted($field);
+        $label = $this->translation->text('Status');
 
         if (!isset($status)) {
             return null;
@@ -209,6 +221,7 @@ class Order extends ComponentValidator
             $this->setErrorUnavailable($field, $label);
             return false;
         }
+
         return true;
     }
 
@@ -219,8 +232,13 @@ class Order extends ComponentValidator
     protected function validateShippingAddressOrder()
     {
         $field = 'shipping_address';
-        $label = $this->translation->text('Shipping address');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $address_id = $this->getSubmitted($field);
+        $label = $this->translation->text('Shipping address');
 
         if ($this->isUpdating() && !isset($address_id)) {
             return null;
@@ -242,6 +260,7 @@ class Order extends ComponentValidator
             $this->setErrorUnavailable($field, $label);
             return false;
         }
+
         return true;
     }
 
@@ -252,8 +271,13 @@ class Order extends ComponentValidator
     protected function validatePaymentAddressOrder()
     {
         $field = 'payment_address';
-        $label = $this->translation->text('Payment address');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $address_id = $this->getSubmitted($field);
+        $label = $this->translation->text('Payment address');
 
         if (empty($address_id) && !$this->isError('shipping_address')) {
             $address_id = $this->getSubmitted('shipping_address');
@@ -276,7 +300,7 @@ class Order extends ComponentValidator
             return false;
         }
 
-        $this->setSubmitted('payment_address', $address_id);
+        $this->setSubmitted($field, $address_id);
         return true;
     }
 
@@ -287,8 +311,8 @@ class Order extends ComponentValidator
     protected function validateCreatorOrder()
     {
         $field = 'creator';
-        $label = $this->translation->text('Creator');
         $creator = $this->getSubmitted($field);
+        $label = $this->translation->text('Creator');
 
         if (empty($creator)) {
             return null;
@@ -305,6 +329,7 @@ class Order extends ComponentValidator
             $this->setErrorUnavailable($field, $label);
             return false;
         }
+
         return true;
     }
 
@@ -315,8 +340,8 @@ class Order extends ComponentValidator
     protected function validateTotalOrder()
     {
         $field = 'total';
-        $label = $this->translation->text('Total');
         $total = $this->getSubmitted($field);
+        $label = $this->translation->text('Total');
 
         if (!isset($total)) {
             return null;
@@ -331,6 +356,7 @@ class Order extends ComponentValidator
             $this->setErrorLengthRange($field, $label, 0, 10);
             return false;
         }
+
         return true;
     }
 
@@ -381,6 +407,7 @@ class Order extends ComponentValidator
             $this->setErrorUnavailable($field, $this->translation->text('Currency'));
             return false;
         }
+
         return true;
     }
 
@@ -392,10 +419,12 @@ class Order extends ComponentValidator
     {
         $field = 'comment';
         $comment = $this->getSubmitted($field);
+
         if (isset($comment) && mb_strlen($comment) > 65535) {
             $this->setErrorLengthRange($field, $this->translation->text('Comment'), 0, 65535);
             return false;
         }
+
         return true;
     }
 
@@ -424,6 +453,7 @@ class Order extends ComponentValidator
             $this->setErrorUnavailable($field, $label);
             return false;
         }
+
         return true;
     }
 
@@ -437,6 +467,7 @@ class Order extends ComponentValidator
             $this->setErrorLengthRange('log', $this->translation->text('Log'), 0, 255);
             return false;
         }
+
         return true;
     }
 

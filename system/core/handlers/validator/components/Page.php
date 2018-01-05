@@ -101,8 +101,13 @@ class Page extends ComponentValidator
     protected function validateDescriptionPage()
     {
         $field = 'description';
-        $label = $this->translation->text('Description');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $description = $this->getSubmitted($field);
+        $label = $this->translation->text('Description');
 
         if ($this->isUpdating() && !isset($description)) {
             return null;
@@ -112,6 +117,7 @@ class Page extends ComponentValidator
             $this->setErrorLengthRange($field, $label, 1, 65535);
             return false;
         }
+
         return true;
     }
 
@@ -122,11 +128,11 @@ class Page extends ComponentValidator
     protected function validateCategoryPage()
     {
         $field = 'category_id';
-        $label = $this->translation->text('Category');
         $category_id = $this->getSubmitted($field);
+        $label = $this->translation->text('Category');
 
         if (empty($category_id)) {
-            return null; // Category ID is not required
+            return null;
         }
 
         if (!is_numeric($category_id)) {
@@ -140,6 +146,7 @@ class Page extends ComponentValidator
             $this->setErrorUnavailable($field, $label);
             return false;
         }
+
         return true;
     }
 

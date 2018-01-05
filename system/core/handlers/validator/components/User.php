@@ -101,27 +101,6 @@ class User extends ComponentValidator
     }
 
     /**
-     * Validates user status
-     * @return boolean
-     */
-    protected function validateStatusUser()
-    {
-        $user = $this->getSubmitted('user');
-
-        if (is_numeric($user)) {
-            $user = $this->user->get($user);
-        }
-
-        if (empty($user['status']) || empty($user['user_id'])) {
-            $this->setErrorUnavailable('user', $this->translation->text('User'));
-            return false;
-        }
-
-        $this->setSubmitted('user', $user);
-        return true;
-    }
-
-    /**
      * Validates a user to be updated
      * @return boolean
      */
@@ -145,14 +124,41 @@ class User extends ComponentValidator
     }
 
     /**
+     * Validates user status
+     * @return boolean
+     */
+    protected function validateStatusUser()
+    {
+        $field = 'user';
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
+        $user = $this->getSubmitted($field);
+
+        if (is_numeric($user)) {
+            $user = $this->user->get($user);
+        }
+
+        if (empty($user['status']) || empty($user['user_id'])) {
+            $this->setErrorUnavailable($field, $this->translation->text('User'));
+            return false;
+        }
+
+        $this->setSubmitted($field, $user);
+        return true;
+    }
+
+    /**
      * Validates uniqueness of submitted E-mail
      * @return boolean|null
      */
     protected function validateEmailUniqueUser()
     {
-        $value = $this->getSubmitted('email');
+        $field = 'email';
+        $value = $this->getSubmitted($field);
 
-        if ($this->isError('email') || !isset($value)) {
+        if ($this->isError($field) || !isset($value)) {
             return null;
         }
 
@@ -168,7 +174,7 @@ class User extends ComponentValidator
             return true;
         }
 
-        $this->setErrorExists('email', $this->translation->text('E-mail'));
+        $this->setErrorExists($field, $this->translation->text('E-mail'));
         return false;
     }
 
@@ -178,20 +184,21 @@ class User extends ComponentValidator
      */
     protected function validateEmailExistsUser()
     {
-        $value = $this->getSubmitted('email');
+        $field = 'email';
+        $value = $this->getSubmitted($field);
 
-        if ($this->isError('email') || !isset($value)) {
+        if ($this->isError($field) || !isset($value)) {
             return null;
         }
 
         $user = $this->user->getByEmail($value);
 
         if (empty($user['status'])) {
-            $this->setErrorUnavailable('email', $this->translation->text('E-mail'));
+            $this->setErrorUnavailable($field, $this->translation->text('E-mail'));
             return false;
         }
 
-        $this->setSubmitted('user', $user);
+        $this->setSubmitted($field, $user);
         return true;
     }
 
@@ -201,16 +208,23 @@ class User extends ComponentValidator
      */
     protected function validatePasswordUser()
     {
-        $value = $this->getSubmitted('password');
+        $field = 'password';
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
+        $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && (!isset($value) || $value === '')) {
             return null;
         }
 
         if (empty($value)) {
-            $this->setErrorRequired('password', $this->translation->text('Password'));
+            $this->setErrorRequired($field, $this->translation->text('Password'));
             return false;
         }
+
         return true;
     }
 
@@ -220,11 +234,17 @@ class User extends ComponentValidator
      */
     protected function validatePasswordLengthUser()
     {
-        $value = $this->getSubmitted('password');
+        $field = 'password';
 
-        if ($this->isError('password')) {
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
             return null;
         }
+
+        if ($this->isError($field)) {
+            return null;
+        }
+
+        $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && (!isset($value) || $value === '')) {
             return null;
@@ -234,7 +254,7 @@ class User extends ComponentValidator
         list($min, $max) = $this->user->getPasswordLength();
 
         if ($length < $min || $length > $max) {
-            $this->setErrorLengthRange('password', $this->translation->text('Password'), $min, $max);
+            $this->setErrorLengthRange($field, $this->translation->text('Password'), $min, $max);
             return false;
         }
         return true;
@@ -246,6 +266,12 @@ class User extends ComponentValidator
      */
     protected function validatePasswordOldUser()
     {
+        $field = 'password_old';
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         if (!$this->isUpdating() || !empty($this->options['admin'])) {
             return null;
         }
@@ -256,10 +282,10 @@ class User extends ComponentValidator
             return null;
         }
 
-        $old_password = $this->getSubmitted('password_old');
+        $old_password = $this->getSubmitted($field);
 
         if (!isset($old_password) || $old_password === '') {
-            $this->setErrorRequired('password_old', $this->translation->text('Old password'));
+            $this->setErrorRequired($field, $this->translation->text('Old password'));
             return false;
         }
 
@@ -268,7 +294,7 @@ class User extends ComponentValidator
 
         if (!gplcart_string_equals($updating['hash'], $hash)) {
             $error = $this->translation->text('Old and new password not matching');
-            $this->setError('password_old', $error);
+            $this->setError($field, $error);
             return false;
         }
 
@@ -282,8 +308,8 @@ class User extends ComponentValidator
     protected function validateRoleUser()
     {
         $field = 'role_id';
-        $label = $this->translation->text('Role');
         $value = $this->getSubmitted($field);
+        $label = $this->translation->text('Role');
 
         if (empty($value)) {
             return null;

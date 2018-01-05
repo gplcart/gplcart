@@ -92,8 +92,13 @@ class Wishlist extends ComponentValidator
     protected function validateProductWishlist()
     {
         $field = 'product_id';
-        $label = $this->translation->text('Product');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $value = $this->getSubmitted($field);
+        $label = $this->translation->text('Product');
 
         if ($this->isUpdating() && !isset($value)) {
             return null;

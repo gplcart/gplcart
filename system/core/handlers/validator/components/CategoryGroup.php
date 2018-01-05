@@ -87,9 +87,13 @@ class CategoryGroup extends ComponentValidator
         }
 
         $field = 'type';
-        $label = $this->translation->text('Type');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
 
         $type = $this->getSubmitted($field);
+        $label = $this->translation->text('Type');
         $store_id = $this->getSubmitted('store_id');
 
         if ($this->isUpdating() && !isset($type)) {

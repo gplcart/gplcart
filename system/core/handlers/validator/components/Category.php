@@ -102,8 +102,13 @@ class Category extends ComponentValidator
     protected function validateGroupCategory()
     {
         $field = 'category_group_id';
-        $label = $this->translation->text('Category group');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $category_group_id = $this->getSubmitted($field);
+        $label = $this->translation->text('Category group');
 
         if ($this->isUpdating() && !isset($category_group_id)) {
             return null;
@@ -136,8 +141,8 @@ class Category extends ComponentValidator
     protected function validateParentCategory()
     {
         $field = 'parent_id';
-        $label = $this->translation->text('Parent category');
         $parent_id = $this->getSubmitted($field);
+        $label = $this->translation->text('Parent category');
 
         if (empty($parent_id)) {
             return null;
@@ -161,6 +166,7 @@ class Category extends ComponentValidator
             $this->setErrorUnavailable($field, $label);
             return false;
         }
+
         return true;
     }
 

@@ -174,8 +174,13 @@ class Product extends ComponentValidator
     protected function validateCurrencyProduct()
     {
         $field = 'currency';
-        $label = $this->translation->text('Currency');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $value = $this->getSubmitted($field);
+        $label = $this->translation->text('Currency');
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
@@ -272,8 +277,8 @@ class Product extends ComponentValidator
     protected function validatePriceProduct()
     {
         $field = 'price';
-        $label = $this->translation->text('Price');
         $value = $this->getSubmitted($field);
+        $label = $this->translation->text('Price');
 
         if (!isset($value)) {
             return null;
@@ -288,6 +293,7 @@ class Product extends ComponentValidator
             $this->setErrorLengthRange($field, $label, 0, 8);
             return false;
         }
+
         return true;
     }
 
@@ -298,8 +304,8 @@ class Product extends ComponentValidator
     protected function validateStockProduct()
     {
         $field = 'stock';
-        $label = $this->translation->text('Stock');
         $value = $this->getSubmitted($field);
+        $label = $this->translation->text('Stock');
 
         if (!isset($value)) {
             return null;
@@ -314,6 +320,7 @@ class Product extends ComponentValidator
             $this->setErrorLengthRange($field, $label, 0, 10);
             return false;
         }
+
         return true;
     }
 
@@ -359,11 +366,16 @@ class Product extends ComponentValidator
      */
     protected function validateRelatedProduct()
     {
+        $field = 'related';
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         if ($this->isError('store_id')) {
             return null;
         }
 
-        $field = 'related';
         $value = $this->getSubmitted($field);
         $store_id = $this->getSubmitted('store_id');
 
@@ -407,13 +419,18 @@ class Product extends ComponentValidator
      */
     protected function validateSkuProduct()
     {
+        $field = 'sku';
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         if ($this->isError()) {
             return null;
         }
 
-        $field = 'sku';
-        $label = $this->translation->text('SKU');
         $value = $this->getSubmitted($field);
+        $label = $this->translation->text('SKU');
 
         if ($this->isUpdating() && empty($value)) {
             $data = $this->getSubmitted();
@@ -468,8 +485,8 @@ class Product extends ComponentValidator
     protected function validateClassProduct()
     {
         $field = 'product_class_id';
-        $label = $this->translation->text('Product class');
         $value = $this->getSubmitted($field);
+        $label = $this->translation->text('Product class');
 
         if (empty($value)) {
             return null;

@@ -103,8 +103,13 @@ class State extends ComponentValidator
     protected function validateCountryState()
     {
         $field = 'country';
-        $label = $this->translation->text('Country');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $value = $this->getSubmitted($field);
+        $label = $this->translation->text('Country');
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
@@ -121,6 +126,7 @@ class State extends ComponentValidator
             $this->setErrorUnavailable($field, $label);
             return false;
         }
+
         return true;
     }
 
@@ -131,6 +137,11 @@ class State extends ComponentValidator
     public function validateCodeState()
     {
         $field = 'code';
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $updating = $this->getUpdating();
         $value = $this->getSubmitted($field);
         $label = $this->translation->text('Code');
@@ -161,8 +172,8 @@ class State extends ComponentValidator
     protected function validateZoneState()
     {
         $field = 'zone_id';
-        $label = $this->translation->text('Code');
         $value = $this->getSubmitted($field);
+        $label = $this->translation->text('Code');
 
         if (empty($value)) {
             return null;
@@ -179,6 +190,7 @@ class State extends ComponentValidator
             $this->setErrorUnavailable($field, $label);
             return false;
         }
+
         return true;
     }
 

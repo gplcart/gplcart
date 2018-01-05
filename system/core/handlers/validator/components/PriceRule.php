@@ -9,6 +9,7 @@
 
 namespace gplcart\core\handlers\validator\components;
 
+use Exception;
 use gplcart\core\models\Price as PriceModel,
     gplcart\core\models\Trigger as TriggerModel,
     gplcart\core\models\Currency as CurrencyModel,
@@ -116,8 +117,13 @@ class PriceRule extends ComponentValidator
     protected function validateTriggerPriceRule()
     {
         $field = 'trigger_id';
-        $label = $this->translation->text('Trigger');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $trigger_id = $this->getSubmitted($field);
+        $label = $this->translation->text('Trigger');
 
         if ($this->isUpdating() && !isset($trigger_id)) {
             return null;
@@ -177,8 +183,13 @@ class PriceRule extends ComponentValidator
     protected function validateCurrencyPriceRule()
     {
         $field = 'currency';
-        $label = $this->translation->text('Currency');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $code = $this->getSubmitted($field);
+        $label = $this->translation->text('Currency');
 
         if ($this->isUpdating() && !isset($code)) {
             return null;
@@ -206,6 +217,11 @@ class PriceRule extends ComponentValidator
     protected function validateValueTypePriceRule()
     {
         $field = 'value_type';
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $type = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($type)) {
@@ -229,8 +245,8 @@ class PriceRule extends ComponentValidator
     protected function validateCodePriceRule()
     {
         $field = 'code';
-        $label = $this->translation->text('Code');
         $code = $this->getSubmitted($field);
+        $label = $this->translation->text('Code');
 
         if (empty($code)) {
             return null;
@@ -268,11 +284,16 @@ class PriceRule extends ComponentValidator
      */
     protected function validateValuePriceRule()
     {
+        $field = 'value';
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         if ($this->isError('value_type')) {
             return null;
         }
 
-        $field = 'value';
         $value = $this->getSubmitted($field);
         $label = $this->translation->text('Value');
 
@@ -300,7 +321,7 @@ class PriceRule extends ComponentValidator
         try {
             $handlers = $this->price_rule->getTypes();
             return static::call($handlers, $value_type, 'validate', array($value, $this));
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             $this->setError($field, $ex->getMessage());
             return false;
         }

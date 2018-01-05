@@ -17,6 +17,7 @@ use gplcart\core\handlers\validator\Component as ComponentValidator;
  */
 class Language extends ComponentValidator
 {
+
     /**
      * Language module class instance
      * @var \gplcart\core\models\Language $language
@@ -87,8 +88,13 @@ class Language extends ComponentValidator
     protected function validateCodeLanguage()
     {
         $field = 'code';
-        $label = $this->translation->text('Code');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $code = $this->getSubmitted($field);
+        $label = $this->translation->text('Code');
 
         if ($this->isUpdating() && !isset($code)) {
             return null;
@@ -116,18 +122,24 @@ class Language extends ComponentValidator
             $this->setErrorExists($field, $label);
             return false;
         }
+
         return true;
     }
 
     /**
      * Validates a language name
-     * @return boolean
+     * @return boolean|null
      */
     protected function validateNameLanguage()
     {
         $field = 'name';
-        $label = $this->translation->text('Name');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $name = $this->getSubmitted($field);
+        $label = $this->translation->text('Name');
 
         if (!isset($name)) {
             return true; // If not set, code will be used instead
@@ -143,13 +155,18 @@ class Language extends ComponentValidator
 
     /**
      * Validates an language native name
-     * @return boolean
+     * @return boolean|null
      */
     protected function validateNativeNameLanguage()
     {
         $field = 'native_name';
-        $label = $this->translation->text('Native name');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $name = $this->getSubmitted($field);
+        $label = $this->translation->text('Native name');
 
         if (!isset($name)) {
             return true; // If not set, code will be used instead
@@ -159,6 +176,7 @@ class Language extends ComponentValidator
             $this->setErrorLengthRange($field, $label, 0, 50);
             return false;
         }
+
         return true;
     }
 

@@ -83,14 +83,20 @@ class UserRole extends ComponentValidator
      */
     protected function validatePermissionsUserRole()
     {
-        $value = $this->getSubmitted('permissions');
+        $field = 'permissions';
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
+        $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
         }
 
         if (empty($value)) {
-            $this->setSubmitted('permissions', array());
+            $this->setSubmitted($field, array());
             return null;
         }
 
@@ -98,7 +104,7 @@ class UserRole extends ComponentValidator
         $difference = array_diff($value, array_keys($permissions));
 
         if (!empty($difference)) {
-            $this->setErrorUnavailable('permissions', implode(',', $difference));
+            $this->setErrorUnavailable($field, implode(',', $difference));
             return false;
         }
 
@@ -112,10 +118,12 @@ class UserRole extends ComponentValidator
     protected function validateRedirectUserRole()
     {
         $value = $this->getSubmitted('redirect');
+
         if (isset($value) && mb_strlen($value) > 255) {
             $this->setErrorLengthRange('redirect', $this->translation->text('Redirect'), 0, 255);
             return false;
         }
+
         return true;
     }
 

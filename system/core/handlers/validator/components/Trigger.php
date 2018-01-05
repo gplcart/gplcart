@@ -9,6 +9,7 @@
 
 namespace gplcart\core\handlers\validator\components;
 
+use Exception;
 use gplcart\core\models\Trigger as TriggerModel,
     gplcart\core\models\Condition as ConditionModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
@@ -94,6 +95,11 @@ class Trigger extends ComponentValidator
     public function validateConditionsTrigger()
     {
         $field = 'data.conditions';
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($value)) {
@@ -187,7 +193,7 @@ class Trigger extends ComponentValidator
         try {
             $handlers = $this->condition->getHandlers();
             return static::call($handlers, $condition_id, 'validate', $args);
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             return $ex->getMessage();
         }
     }

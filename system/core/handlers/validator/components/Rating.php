@@ -68,8 +68,13 @@ class Rating extends ComponentValidator
     protected function validateProductRating()
     {
         $field = 'product_id';
-        $label = $this->translation->text('Product');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $value = $this->getSubmitted($field);
+        $label = $this->translation->text('Product');
 
         if (empty($value)) {
             $this->setErrorRequired($field, $label);
@@ -100,8 +105,13 @@ class Rating extends ComponentValidator
     protected function validateValueRating()
     {
         $field = 'rating';
-        $label = $this->translation->text('Rating');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $value = $this->getSubmitted($field);
+        $label = $this->translation->text('Rating');
 
         if (!isset($value)) {
             $this->setErrorRequired($field, $label);
@@ -113,7 +123,7 @@ class Rating extends ComponentValidator
             return false;
         }
 
-        if ((float) $value > 5) {
+        if ($value > 5) {
             $this->setErrorInvalid($field, $label);
             return false;
         }

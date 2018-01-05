@@ -105,8 +105,8 @@ class Country extends ComponentValidator
     protected function validateZoneCountry()
     {
         $field = 'zone_id';
-        $label = $this->translation->text('Zone');
         $zone_id = $this->getSubmitted($field);
+        $label = $this->translation->text('Zone');
 
         if (empty($zone_id)) {
             return null;
@@ -134,8 +134,13 @@ class Country extends ComponentValidator
     protected function validateNativeNameCountry()
     {
         $field = 'native_name';
-        $label = $this->translation->text('Native name');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $native_name = $this->getSubmitted($field);
+        $label = $this->translation->text('Native name');
 
         if ($this->isUpdating() && !isset($native_name)) {
             return null;
@@ -156,8 +161,13 @@ class Country extends ComponentValidator
     protected function validateTemplateCountry()
     {
         $field = 'template';
-        $label = $this->translation->text('Address template');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $template = $this->getSubmitted($field);
+        $label = $this->translation->text('Address template');
 
         if ($this->isUpdating() && !isset($template)) {
             return null;
@@ -178,26 +188,31 @@ class Country extends ComponentValidator
     protected function validateCodeCountry()
     {
         $field = 'code';
-        $label = $this->translation->text('Code');
-        $code = $this->getSubmitted($field);
 
-        if ($this->isUpdating() && !isset($code)) {
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
             return null;
         }
 
-        if (empty($code)) {
+        $value = $this->getSubmitted($field);
+        $label = $this->translation->text('Code');
+
+        if ($this->isUpdating() && !isset($value)) {
+            return null;
+        }
+
+        if (empty($value)) {
             $this->setErrorRequired($field, $label);
             return false;
         }
 
-        if (preg_match('/^[A-Z]{2}$/', $code) !== 1) {
+        if (preg_match('/^[A-Z]{2}$/', $value) !== 1) {
             $this->setErrorInvalid($field, $label);
             return false;
         }
 
-        $code = strtoupper($code);
-
+        $code = strtoupper($value);
         $updating = $this->getUpdating();
+
         if (isset($updating['code']) && ($updating['code'] === $code)) {
             return true;
         }

@@ -81,10 +81,12 @@ class File extends ComponentValidator
     protected function validateTitleFile()
     {
         $title = $this->getSubmitted('title');
+
         if (isset($title) && mb_strlen($title) > 255) {
             $this->setErrorLengthRange('title', $this->translation->text('Title'), 0, 255);
             return false;
         }
+
         return true;
     }
 
@@ -99,8 +101,13 @@ class File extends ComponentValidator
         }
 
         $field = 'file';
-        $label = $this->translation->text('File');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $path = $this->getSubmitted('path');
+        $label = $this->translation->text('File');
 
         if (isset($path)) {
             if (is_readable(gplcart_file_absolute($path))) {
@@ -120,7 +127,7 @@ class File extends ComponentValidator
         $result = $this->file_transfer->upload($file, null, self::PATH);
 
         if ($result !== true) {
-            $this->setError('file', (string) $result);
+            $this->setError($field, (string) $result);
             return false;
         }
 

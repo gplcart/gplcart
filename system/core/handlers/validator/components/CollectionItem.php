@@ -9,6 +9,7 @@
 
 namespace gplcart\core\handlers\validator\components;
 
+use Exception;
 use gplcart\core\models\Page as PageModel,
     gplcart\core\models\Product as ProductModel,
     gplcart\core\models\Collection as CollectionModel,
@@ -117,8 +118,13 @@ class CollectionItem extends ComponentValidator
     protected function validateCollectionCollectionItem()
     {
         $field = 'collection_id';
-        $label = $this->translation->text('Collection ID');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $collection_id = $this->getSubmitted($field);
+        $label = $this->translation->text('Collection ID');
 
         if ($this->isUpdating() && !isset($collection_id)) {
             return null;
@@ -152,10 +158,14 @@ class CollectionItem extends ComponentValidator
     protected function validateValueCollectionItem()
     {
         $field = 'value';
-        $label = $this->translation->text('Value');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
 
         $value = $this->getSubmitted($field);
         $title = $this->getSubmitted('title');
+        $label = $this->translation->text('Value');
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
@@ -224,7 +234,7 @@ class CollectionItem extends ComponentValidator
         try {
             $handlers = $this->collection->getHandlers();
             $result = static::call($handlers, $collection['type'], 'validate', array($value));
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             $result = $ex->getMessage();
         }
 

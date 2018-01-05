@@ -100,8 +100,13 @@ class FieldValue extends ComponentValidator
     protected function validateFieldFieldValue()
     {
         $field = 'field_id';
-        $label = $this->translation->text('Field');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $field_id = $this->getSubmitted($field);
+        $label = $this->translation->text('Field');
 
         if ($this->isUpdating() && !isset($field_id)) {
             return null;
@@ -134,14 +139,20 @@ class FieldValue extends ComponentValidator
      */
     protected function validateColorFieldValue()
     {
-        $color = $this->getSubmitted('color');
+        $field = 'color';
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
+        $color = $this->getSubmitted($field);
 
         if (!isset($color) || $color === '') {
             return null;
         }
 
         if (preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $color) !== 1) {
-            $this->setErrorInvalid('color', $this->translation->text('Color'));
+            $this->setErrorInvalid($field, $this->translation->text('Color'));
             return false;
         }
 
@@ -149,7 +160,7 @@ class FieldValue extends ComponentValidator
         // Default value is #000000
         // Assuming black is empty
         if ($color === '#000000') {
-            $this->setSubmitted('color', '');
+            $this->setSubmitted($field, '');
         }
 
         return true;

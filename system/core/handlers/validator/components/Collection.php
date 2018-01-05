@@ -89,8 +89,13 @@ class Collection extends ComponentValidator
         }
 
         $field = 'type';
-        $label = $this->translation->text('Type');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $type = $this->getSubmitted($field);
+        $label = $this->translation->text('Type');
 
         if (empty($type)) {
             $this->setErrorRequired($field, $label);
@@ -103,6 +108,7 @@ class Collection extends ComponentValidator
             $this->setErrorUnavailable($field, $label);
             return false;
         }
+
         return true;
     }
 

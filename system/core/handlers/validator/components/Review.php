@@ -95,8 +95,13 @@ class Review extends ComponentValidator
     protected function validateTextReview()
     {
         $field = 'text';
-        $label = $this->translation->text('Text');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $value = $this->getSubmitted($field);
+        $label = $this->translation->text('Text');
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
@@ -149,8 +154,13 @@ class Review extends ComponentValidator
     protected function validateProductReview()
     {
         $field = 'product_id';
-        $label = $this->translation->text('Product');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $value = $this->getSubmitted($field);
+        $label = $this->translation->text('Product');
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
@@ -172,6 +182,7 @@ class Review extends ComponentValidator
             $this->setErrorUnavailable($field, $label);
             return false;
         }
+
         return true;
     }
 
@@ -182,8 +193,8 @@ class Review extends ComponentValidator
     protected function validateEmailReview()
     {
         $field = 'email';
-        $label = $this->translation->text('Email');
         $value = $this->getSubmitted($field);
+        $label = $this->translation->text('Email');
 
         if (!isset($value)) {
             return null;

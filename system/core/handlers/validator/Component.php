@@ -83,8 +83,13 @@ class Component extends BaseValidator
     protected function validateTitle()
     {
         $field = 'title';
-        $label = $this->translation->text('Title');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $title = $this->getSubmitted($field);
+        $label = $this->translation->text('Title');
 
         if ($this->isUpdating() && !isset($title)) {
             return null;
@@ -105,8 +110,13 @@ class Component extends BaseValidator
     protected function validateName()
     {
         $field = 'name';
-        $label = $this->translation->text('Name');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $name = $this->getSubmitted($field);
+        $label = $this->translation->text('Name');
 
         if ($this->isUpdating() && !isset($name)) {
             return null;
@@ -127,8 +137,8 @@ class Component extends BaseValidator
     protected function validateMetaTitle()
     {
         $field = 'meta_title';
-        $label = $this->translation->text('Meta title');
         $meta_title = $this->getSubmitted($field);
+        $label = $this->translation->text('Meta title');
 
         if (isset($meta_title) && mb_strlen($meta_title) > 60) {
             $this->setErrorLengthRange($field, $label, 0, 60);
@@ -145,8 +155,8 @@ class Component extends BaseValidator
     protected function validateMetaDescription()
     {
         $field = 'meta_description';
-        $label = $this->translation->text('Meta description');
         $meta_description = $this->getSubmitted($field);
+        $label = $this->translation->text('Meta description');
 
         if (isset($meta_description) && mb_strlen($meta_description) > 160) {
             $this->setErrorLengthRange($field, $label, 0, 160);
@@ -163,8 +173,8 @@ class Component extends BaseValidator
     protected function validateDescription()
     {
         $field = 'description';
-        $label = $this->translation->text('Description');
         $description = $this->getSubmitted($field);
+        $label = $this->translation->text('Description');
 
         if (isset($description) && mb_strlen($description) > 65535) {
             $this->setErrorLengthRange($field, $label, 0, 65535);
@@ -181,8 +191,8 @@ class Component extends BaseValidator
     protected function validateWeight()
     {
         $field = 'weight';
-        $label = $this->translation->text('Weight');
         $weight = $this->getSubmitted($field);
+        $label = $this->translation->text('Weight');
 
         if (isset($weight) && !is_numeric($weight)) {
             $this->setErrorNumeric($field, $label);
@@ -349,8 +359,8 @@ class Component extends BaseValidator
     protected function validateAlias()
     {
         $field = 'alias';
-        $label = $this->translation->text('Alias');
         $alias = $this->getSubmitted($field);
+        $label = $this->translation->text('Alias');
 
         if (empty($alias)) {
             return null;
@@ -389,8 +399,13 @@ class Component extends BaseValidator
     protected function validateStoreId()
     {
         $field = 'store_id';
-        $label = $this->translation->text('Store');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $store_id = $this->getSubmitted($field);
+        $label = $this->translation->text('Store');
 
         if ($this->isUpdating() && !isset($store_id)) {
             return null;
@@ -423,8 +438,13 @@ class Component extends BaseValidator
     protected function validateUserId()
     {
         $field = 'user_id';
-        $label = $this->translation->text('User');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $user_id = $this->getSubmitted($field);
+        $label = $this->translation->text('User');
 
         if ($this->isUpdating() && !isset($user_id)) {
             return null;
@@ -457,8 +477,13 @@ class Component extends BaseValidator
     protected function validateUserCartId()
     {
         $field = 'user_id';
-        $label = $this->translation->text('User');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $user_id = $this->getSubmitted($field);
+        $label = $this->translation->text('User');
 
         if ($this->isUpdating() && !isset($user_id)) {
             return null;
@@ -495,8 +520,13 @@ class Component extends BaseValidator
     protected function validateEmail()
     {
         $field = 'email';
-        $label = $this->translation->text('E-mail');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $value = $this->getSubmitted($field);
+        $label = $this->translation->text('E-mail');
 
         if ($this->isUpdating() && !isset($value)) {
             return null;

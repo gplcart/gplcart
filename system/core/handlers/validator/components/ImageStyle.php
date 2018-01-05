@@ -9,6 +9,7 @@
 
 namespace gplcart\core\handlers\validator\components;
 
+use Exception;
 use gplcart\core\models\ImageStyle as ImageStyleModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
 
@@ -84,8 +85,13 @@ class ImageStyle extends ComponentValidator
     public function validateActionsImageStyle()
     {
         $field = 'actions';
-        $label = $this->translation->text('Actions');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $actions = $this->getSubmitted($field);
+        $label = $this->translation->text('Actions');
 
         if ($this->isUpdating() && !isset($actions)) {
             return null;
@@ -120,7 +126,7 @@ class ImageStyle extends ComponentValidator
             return false;
         }
 
-        $this->setSubmitted('actions', $modified);
+        $this->setSubmitted($field, $modified);
         return true;
     }
 
@@ -141,7 +147,7 @@ class ImageStyle extends ComponentValidator
         try {
             $callback = static::get($handler, null, 'validate');
             return call_user_func_array($callback, array(&$value));
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             return false;
         }
     }

@@ -89,8 +89,13 @@ class Field extends ComponentValidator
         }
 
         $field = 'type';
-        $label = $this->translation->text('Type');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $type = $this->getSubmitted($field);
+        $label = $this->translation->text('Type');
 
         if (empty($type)) {
             $this->setErrorRequired($field, $label);
@@ -103,6 +108,7 @@ class Field extends ComponentValidator
             $this->setErrorUnavailable($field, $label);
             return false;
         }
+
         return true;
     }
 
@@ -113,8 +119,13 @@ class Field extends ComponentValidator
     protected function validateWidgetTypeField()
     {
         $field = 'widget';
-        $label = $this->translation->text('Widget');
+
+        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+            return null;
+        }
+
         $type = $this->getSubmitted($field);
+        $label = $this->translation->text('Widget');
 
         if ($this->isUpdating() && !isset($type)) {
             return null;
@@ -131,6 +142,7 @@ class Field extends ComponentValidator
             $this->setErrorUnavailable($field, $label);
             return false;
         }
+
         return true;
     }
 
