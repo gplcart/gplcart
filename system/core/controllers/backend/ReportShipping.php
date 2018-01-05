@@ -9,6 +9,7 @@
 
 namespace gplcart\core\controllers\backend;
 
+use gplcart\core\traits\Listing as ListingTrait;
 use gplcart\core\models\Shipping as ShippingModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
 
@@ -18,11 +19,19 @@ use gplcart\core\controllers\backend\Controller as BackendController;
 class ReportShipping extends BackendController
 {
 
+    use ListingTrait;
+
     /**
      * Shipping model instance
      * @var \gplcart\core\models\Shipping $shipping
      */
     protected $shipping;
+
+    /**
+     * Pager limit
+     * @var array
+     */
+    protected $data_limit;
 
     /**
      * @param ShippingModel $shipping
@@ -41,19 +50,64 @@ class ReportShipping extends BackendController
     {
         $this->setTitleListReportShipping();
         $this->setBreadcrumbListReportShipping();
+        $this->setFilterListReportShipping();
+        $this->setPagerListReportShipping();
 
-        $this->setData('methods', $this->getListReportShipping());
+        $this->setData('methods', (array) $this->getListReportShipping());
 
         $this->outputListReportShipping();
     }
 
     /**
-     * Returns an array of shipping methods
+     * Sets the filter on the shipping methods overview page
+     */
+    protected function setFilterListReportShipping()
+    {
+        $this->setFilter($this->getAllowedFiltersReportShipping());
+    }
+
+    /**
+     * Returns an array of allowed fields for sorting and filtering
      * @return array
      */
-    protected function getListReportShipping()
+    protected function getAllowedFiltersReportShipping()
     {
-        return $this->shipping->getList();
+        return array('id', 'title', 'status', 'module');
+    }
+
+    /**
+     * Sets pager
+     * @return array
+     */
+    protected function setPagerListReportShipping()
+    {
+        $pager = array(
+            'query' => $this->query_filter,
+            'total' => (int) $this->getListReportShipping(true)
+        );
+
+        return $this->data_limit = $this->setPager($pager);
+    }
+
+    /**
+     * Returns an array of shipping methods or counts them
+     * @param bool $count
+     * @return array|int
+     */
+    protected function getListReportShipping($count = false)
+    {
+        $list = $this->shipping->getList();
+
+        $allowed = $this->getAllowedFiltersReportShipping();
+        $this->filterList($list, $allowed, $this->query_filter);
+        $this->sortList($list, $allowed, $this->query_filter, array('id' => 'asc'));
+
+        if ($count) {
+            return count($list);
+        }
+
+        $this->limitList($list, $this->data_limit);
+        return $list;
     }
 
     /**
