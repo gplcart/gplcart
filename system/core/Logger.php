@@ -274,7 +274,7 @@ class Logger
         );
 
         $this->log('php_exception', $error, 'danger', false);
-        echo $this->getFormattedError($error, 'PHP Exception');
+        echo $this->getFormattedError($error, 'Exception');
     }
 
     /**
@@ -285,30 +285,32 @@ class Logger
      */
     public function getFormattedError(array $error, $header = '')
     {
-        $parts = array("Message: {$error['message']}");
+        $output = "<table style='background:#f2dede;color:#a94442;width:100%;'>";
+
+        if (!empty($header)) {
+            $output .= "<tr><td colspan='2'><h1 style='padding:0;margin:0;'>$header</h3></td></tr>\n";
+        }
+
+        $output .= "<tr><td>Message </td><td>{$error['message']}</td></tr>\n";
 
         if (isset($error['code'])) {
-            $parts[] = "Code: {$error['code']}";
+            $output .= "<tr><td>Code </td><td>{$error['code']}</td></tr>\n";
         }
 
         if (isset($error['type'])) {
-            $parts[] = "Type: {$error['type']}";
+            $output .= "<tr><td>Type </td><td>{$error['type']}</td></tr>\n";
         }
 
-        $parts[] = "File: {$error['file']}";
-        $parts[] = "Line: {$error['line']}";
+        $output .= "<tr><td>File </td><td>{$error['file']}</td></tr>\n";
+        $output .= "<tr><td>Line </td><td>{$error['line']}</td></tr>\n";
 
         if ($this->print_backtrace && !empty($error['backtrace'])) {
-            $parts[] = "Backtrace:<br>\n" . implode("<br>\n", $error['backtrace']);
+            $error['backtrace'] = implode("<br>\n", $error['backtrace']);
+            $output .= "<tr><td>Backtrace </td><td>{$error['backtrace']}</td></tr>\n";
         }
 
-        $message = implode("<br>\n", $parts);
-
-        if (!empty($header)) {
-            $message = "<h3>$header</h3>\n$message";
-        }
-
-        return GC_CLI ? strip_tags($message) : $message;
+        $output .= '</table>';
+        return GC_CLI ? strip_tags($output) : $output;
     }
 
     /**
