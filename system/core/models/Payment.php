@@ -110,6 +110,7 @@ class Payment
                 'description' => $this->translation->text('Payment for an order is made at the time of delivery'),
                 'template' => array('complete' => ''),
                 'image' => '',
+                'module' => 'core',
                 'status' => true,
                 'weight' => 0
             )
