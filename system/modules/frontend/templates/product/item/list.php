@@ -30,12 +30,12 @@
             <p><?php echo $this->truncate($this->teaser(strip_tags($item['description'])), 500); ?></p>
           </div>
           <?php } ?>
-          <?php if(!empty($item['bundle'])) { ?>
+          <?php if(!empty($item['bundled_products'])) { ?>
           <div class="bundle-title">
-            <?php echo $this->text('+ @num bundled products!', array('@num' => count($item['bundle']))); ?>
+            <?php echo $this->text('+ @num bundled products!', array('@num' => count($item['bundled_products']))); ?>
           </div>
           <div class="bundle-items">
-            <?php foreach($item['bundle'] as $bundle_item) { ?>
+            <?php foreach($item['bundled_products'] as $bundle_item) { ?>
             <?php echo $bundle_item['rendered']; ?>
             <?php } ?>
           </div>
