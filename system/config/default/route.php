@@ -579,7 +579,7 @@ return array(
         )
     ),
     'admin/settings/common' => array(
-        'access' => '__superadmin',
+        'access' => '_superadmin',
         'menu' => array('admin' => /* @text */'Common'),
         'handlers' => array(
             'controller' => array('gplcart\\core\\controllers\\backend\\Settings', 'editSettings')

@@ -370,7 +370,7 @@ class User
             return true;
         }
 
-        if ($permission === '__superadmin') {
+        if ($permission === '_superadmin') {
             return false;
         }
 
