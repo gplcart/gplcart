@@ -9,12 +9,12 @@
 
 namespace gplcart\core\handlers\validator\elements;
 
-use gplcart\core\handlers\validator\Element as ElementValidator;
+use gplcart\core\handlers\validator\BaseElement as BaseElementValidator;
 
 /**
  * Methods to validate single elements
  */
-class Common extends ElementValidator
+class Common extends BaseElementValidator
 {
 
     /**
@@ -178,11 +178,13 @@ class Common extends ElementValidator
 
         $value = gplcart_array_get($submitted, $options['field']);
 
-        if (json_decode($value) === null) {
-            return $this->setErrorInvalid($options['field'], $options['label']);
+        json_decode($value);
+
+        if (json_last_error() === JSON_ERROR_NONE) {
+            return true;
         }
 
-        return true;
+        return $this->setErrorInvalid($options['field'], $options['label']);
     }
 
 }
