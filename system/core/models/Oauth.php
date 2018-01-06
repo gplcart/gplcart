@@ -18,7 +18,7 @@ use gplcart\core\Hook,
     gplcart\core\Handler;
 use gplcart\core\helpers\Url as UrlHelper,
     gplcart\core\helpers\Session as SessionHelper,
-    gplcart\core\helpers\SocketClient as SocketClientHelper;
+    gplcart\core\helpers\Socket as SocketHelper;
 
 /**
  * Manages basic behaviors and data related to Oauth 2.0 functionality
@@ -34,7 +34,7 @@ class Oauth
 
     /**
      * Socket client helper instance
-     * @var \gplcart\core\helpers\SocketClient $socket
+     * @var \gplcart\core\helpers\Socket $socket
      */
     protected $socket;
 
@@ -52,11 +52,11 @@ class Oauth
 
     /**
      * @param Hook $hook
-     * @param SocketClientHelper $socket
+     * @param SocketHelper $socket
      * @param SessionHelper $session
      * @param UrlHelper $url
      */
-    public function __construct(Hook $hook, SocketClientHelper $socket, SessionHelper $session,
+    public function __construct(Hook $hook, SocketHelper $socket, SessionHelper $session,
             UrlHelper $url)
     {
         $this->url = $url;

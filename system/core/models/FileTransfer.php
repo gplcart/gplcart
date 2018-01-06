@@ -14,11 +14,11 @@ use OutOfRangeException,
     UnexpectedValueException;
 use gplcart\core\Hook,
     gplcart\core\Config;
+use gplcart\core\helpers\Socket as SocketHelper;
 use gplcart\core\models\File as FileModel,
     gplcart\core\models\Language as LanguageModel,
     gplcart\core\models\Validator as ValidatorModel,
     gplcart\core\models\Translation as TranslationModel;
-use gplcart\core\helpers\SocketClient as SocketClientHelper;
 use gplcart\core\exceptions\Validation as ValidationException;
 
 /**
@@ -65,7 +65,7 @@ class FileTransfer
 
     /**
      * Socket client class instance
-     * @var \gplcart\core\helpers\SocketClient $socket
+     * @var \gplcart\core\helpers\Socket $socket
      */
     protected $socket;
 
@@ -94,11 +94,11 @@ class FileTransfer
      * @param ValidatorModel $validator
      * @param FileModel $file
      * @param TranslationModel $translation
-     * @param SocketClientHelper $socket
+     * @param SocketHelper $socket
      */
     public function __construct(Hook $hook, Config $config, LanguageModel $language,
             ValidatorModel $validator, FileModel $file, TranslationModel $translation,
-            SocketClientHelper $socket)
+            SocketHelper $socket)
     {
         $this->hook = $hook;
         $this->config = $config;

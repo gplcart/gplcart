@@ -16,7 +16,7 @@ use OutOfBoundsException,
 /**
  * Provides wrappers for PHP's stream socket client
  */
-class SocketClient
+class Socket
 {
 
     /**
