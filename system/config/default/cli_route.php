@@ -28,15 +28,15 @@ return array(
                 '--db-name' => /* @text */'Required. Database name',
                 '--db-user' => /* @text */'Optional. Database user. Defaults to "root"',
                 '--db-host' => /* @text */'Optional. Database host. Defaults to "localhost"',
-                '--db-password' => /* @text */'Optional. Database password. Defaults to empty string',
+                '--db-pass' => /* @text */'Optional. Database password. Defaults to empty string',
                 '--db-type' => /* @text */'Optional. Database type, e.g "mysql" or "sqlite". Defaults to "mysql"',
                 '--db-port' => /* @text */'Optional. Database port. Defaults to "3306"',
-                '--user-email' => /* @text */'Required. Admin e-mail',
-                '--user-password' => /* @text */'Required. Admin password',
-                '--store-title' => /* @text */'Optional. Name of the store. Defaults to "GPL Cart"',
-                '--store-basepath' => /* @text */'Optional. Subfolder name. Defaults to empty string, i.e domain root folder',
-                '--store-timezone' => /* @text */'Optional. Timezone of the store. Defaults to the current timezone',
-                '--store-host' => /* @text */'Optional. Domain name e.g "example.com" without scheme prefix and slashes. Defaults to the current hostname/IP'
+                '--email' => /* @text */'Required. Admin e-mail',
+                '--pass' => /* @text */'Required. Admin password',
+                '--title' => /* @text */'Optional. Name of the store. Defaults to "GPL Cart"',
+                '--basepath' => /* @text */'Optional. Subfolder name. Defaults to empty string, i.e domain root folder',
+                '--timezone' => /* @text */'Optional. Timezone of the store. Defaults to the current timezone',
+                '--host' => /* @text */'Optional. Domain name e.g "example.com" without scheme prefix and slashes. Defaults to the current hostname/IP'
             )
         )
     )

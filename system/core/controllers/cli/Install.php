@@ -106,16 +106,16 @@ class Install extends CliController
         return array(
             'db-name' => 'database.name',
             'db-user' => 'database.user',
-            'db-password' => 'database.password',
+            'db-pass' => 'database.password',
             'db-type' => 'database.type',
             'db-port' => 'database.port',
             'db-host' => 'database.host',
-            'user-email' => 'user.email',
-            'user-password' => 'user.password',
-            'store-host' => 'store.host',
-            'store-title' => 'store.title',
-            'store-basepath' => 'store.basepath',
-            'store-timezone' => 'store.timezone',
+            'email' => 'user.email',
+            'pass' => 'user.password',
+            'host' => 'store.host',
+            'title' => 'store.title',
+            'basepath' => 'store.basepath',
+            'timezone' => 'store.timezone',
             'installer' => 'installer'
         );
     }
