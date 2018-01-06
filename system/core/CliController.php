@@ -96,7 +96,6 @@ class CliController
     {
         $this->setInstanceProperties();
         $this->setRouteProperties();
-        $this->outputCommandHelp();
 
         $this->hook->attach('construct.cli.controller', $this);
     }
@@ -190,6 +189,7 @@ class CliController
     {
         $mapped = $this->mapArguments($map, $arguments);
         $merged = gplcart_array_merge($default, $mapped);
+
         return $this->setSubmitted(null, $merged);
     }
 
@@ -481,39 +481,6 @@ class CliController
     public function in($format = '')
     {
         return $this->cli->in($format);
-    }
-
-    /**
-     * Displays message for the current command
-     * The message will appear automatically if a user entered the --help option
-     */
-    protected function outputCommandHelp()
-    {
-        if (empty($this->arguments['help'])) {
-            return null;
-        }
-
-        $output = false;
-
-        if (!empty($this->current_route['help']['description'])) {
-            $output = true;
-            $this->line($this->text($this->current_route['help']['description']));
-        }
-
-        if (!empty($this->current_route['help']['options'])) {
-            $output = true;
-            $this->line($this->text('Options'));
-            foreach ($this->current_route['help']['options'] as $option => $description) {
-                $vars = array('@option' => $option, '@description' => $this->text($description));
-                $this->line($this->text('  @option - @description', $vars));
-            }
-        }
-
-        if (!$output) {
-            $this->line($this->text('No description available'));
-        }
-
-        $this->abort();
     }
 
 }
