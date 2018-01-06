@@ -34,13 +34,6 @@
             "gplcart\\tests\\unit\\": "tests/unit/"
         }
     },
-    "scripts": {
-        "pre-install-cmd": "gplcart\\core\\CliController::composerPreInstallCmd",
-        "post-install-cmd": "gplcart\\core\\CliController::composerPostInstallCmd",
-        "pre-update-cmd": "gplcart\\core\\CliController::composerPreUpdateCmd",
-        "post-update-cmd": "gplcart\\core\\CliController::composerPostUpdateCmd",
-        "post-create-project-cmd": "gplcart\\core\\CliController::composerPostCreateProjectCmd"
-    },
     "minimum-stability": "dev",
     "prefer-stable": true
 }

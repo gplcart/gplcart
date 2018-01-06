@@ -145,20 +145,6 @@ class CliController
     }
 
     /**
-     * Handle calls to non-existing static methods
-     * @param string $method
-     * @param array $arguments
-     */
-    public static function __callStatic($method, $arguments)
-    {
-        if (strpos($method, 'composer') === 0 && defined('GC_VERSION')) {
-            /* @var $hook \gplcart\core\Hook */
-            $hook = Container::get('gplcart\\core\\Hook');
-            $hook->attach('cli.composer', $method, $arguments);
-        }
-    }
-
-    /**
      * Sets class instance properties
      */
     protected function setInstanceProperties()
