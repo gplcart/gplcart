@@ -147,7 +147,7 @@ class Cli
     public function prompt($question, $default = '', $marker = ': ')
     {
         if ($default !== '' && strpos($question, '[') === false) {
-            $question .= ' [' . $default . ']';
+            $question .= ' [default: ' . $default . ']';
         }
 
         $this->out($question . $marker);
@@ -171,7 +171,7 @@ class Cli
     public function menu($items, $default = null, $title = 'Choose an item')
     {
         if (isset($items[$default]) && strpos($title, '[') === false) {
-            $title .= ' [' . $items[$default] . ']';
+            $title .= ' [default: ' . $items[$default] . ']';
         }
 
         $this->line(sprintf('%s: ', $title));
