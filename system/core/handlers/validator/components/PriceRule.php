@@ -14,12 +14,12 @@ use gplcart\core\models\Price as PriceModel,
     gplcart\core\models\Trigger as TriggerModel,
     gplcart\core\models\Currency as CurrencyModel,
     gplcart\core\models\PriceRule as PriceRuleModel;
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\BaseComponent as BaseComponentValidator;
 
 /**
  * Provides methods to validate price rule data
  */
-class PriceRule extends ComponentValidator
+class PriceRule extends BaseComponentValidator
 {
 
     /**
@@ -118,7 +118,7 @@ class PriceRule extends ComponentValidator
     {
         $field = 'trigger_id';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -184,7 +184,7 @@ class PriceRule extends ComponentValidator
     {
         $field = 'currency';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -218,7 +218,7 @@ class PriceRule extends ComponentValidator
     {
         $field = 'value_type';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -286,7 +286,7 @@ class PriceRule extends ComponentValidator
     {
         $field = 'value';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 

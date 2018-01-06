@@ -10,12 +10,12 @@
 namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\models\Language as LanguageModel;
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\BaseComponent as BaseComponentValidator;
 
 /**
  * Provides methods to validate languages
  */
-class Language extends ComponentValidator
+class Language extends BaseComponentValidator
 {
 
     /**
@@ -89,7 +89,7 @@ class Language extends ComponentValidator
     {
         $field = 'code';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -134,7 +134,7 @@ class Language extends ComponentValidator
     {
         $field = 'name';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -161,7 +161,7 @@ class Language extends ComponentValidator
     {
         $field = 'native_name';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 

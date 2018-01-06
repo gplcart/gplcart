@@ -15,12 +15,12 @@ use gplcart\core\models\Order as OrderModel,
     gplcart\core\models\Currency as CurrencyModel,
     gplcart\core\models\Shipping as ShippingModel,
     gplcart\core\models\Transaction as TransactionModel;
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\BaseComponent as BaseComponentValidator;
 
 /**
  * Provides methods to validate orders to be stored in the database
  */
-class Order extends ComponentValidator
+class Order extends BaseComponentValidator
 {
 
     /**
@@ -141,7 +141,7 @@ class Order extends ComponentValidator
     {
         $field = 'payment';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -175,7 +175,7 @@ class Order extends ComponentValidator
     {
         $field = 'shipping';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -233,7 +233,7 @@ class Order extends ComponentValidator
     {
         $field = 'shipping_address';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -272,7 +272,7 @@ class Order extends ComponentValidator
     {
         $field = 'payment_address';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 

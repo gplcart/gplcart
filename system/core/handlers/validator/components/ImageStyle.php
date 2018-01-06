@@ -11,12 +11,12 @@ namespace gplcart\core\handlers\validator\components;
 
 use Exception;
 use gplcart\core\models\ImageStyle as ImageStyleModel;
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\BaseComponent as BaseComponentValidator;
 
 /**
  * Provides methods to validate image style data
  */
-class ImageStyle extends ComponentValidator
+class ImageStyle extends BaseComponentValidator
 {
 
     /**
@@ -86,7 +86,7 @@ class ImageStyle extends ComponentValidator
     {
         $field = 'actions';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 

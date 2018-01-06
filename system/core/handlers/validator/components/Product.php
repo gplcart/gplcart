@@ -14,12 +14,12 @@ use gplcart\core\models\Sku as SkuModel,
     gplcart\core\models\Currency as CurrencyModel,
     gplcart\core\models\Category as CategoryModel,
     gplcart\core\models\ProductClass as ProductClassModel;
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\BaseComponent as BaseComponentValidator;
 
 /**
  * Provides methods to validate a product data
  */
-class Product extends ComponentValidator
+class Product extends BaseComponentValidator
 {
 
     /**
@@ -175,7 +175,7 @@ class Product extends ComponentValidator
     {
         $field = 'currency';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -368,7 +368,7 @@ class Product extends ComponentValidator
     {
         $field = 'related';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -421,7 +421,7 @@ class Product extends ComponentValidator
     {
         $field = 'sku';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 

@@ -13,12 +13,12 @@ use gplcart\core\models\Sku as SkuModel,
     gplcart\core\models\Cart as CartModel,
     gplcart\core\models\Order as OrderModel,
     gplcart\core\models\Product as ProductModel;
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\BaseComponent as BaseComponentValidator;
 
 /**
  * Provides methods to validate cart data
  */
-class Cart extends ComponentValidator
+class Cart extends BaseComponentValidator
 {
 
     /**
@@ -117,12 +117,12 @@ class Cart extends ComponentValidator
     {
         $field = 'product_id';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
-
-        $label = $this->translation->text('Product');
+        
         $product_id = $this->getSubmitted($field);
+        $label = $this->translation->text('Product');
 
         if ($this->isUpdating() && !isset($product_id)) {
             return null;
@@ -221,7 +221,7 @@ class Cart extends ComponentValidator
     {
         $field = 'quantity';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -296,7 +296,7 @@ class Cart extends ComponentValidator
         $limit_item = $this->cart->getLimits('item');
 
         if (!empty($limit_item) && !isset($existing_quantity['sku'][$sku])//
-                && (count($existing_quantity['sku']) >= $limit_item)) {
+                && count($existing_quantity['sku']) >= $limit_item) {
 
             $error = $this->translation->text('Please no more than @num items', array('@num' => $limit_item));
             $this->setError('quantity', $error);

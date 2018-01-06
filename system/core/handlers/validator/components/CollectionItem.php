@@ -14,12 +14,12 @@ use gplcart\core\models\Page as PageModel,
     gplcart\core\models\Product as ProductModel,
     gplcart\core\models\Collection as CollectionModel,
     gplcart\core\models\CollectionItem as CollectionItemModel;
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\BaseComponent as BaseComponentValidator;
 
 /**
  * Provides methods to validate collection item data
  */
-class CollectionItem extends ComponentValidator
+class CollectionItem extends BaseComponentValidator
 {
 
     /**
@@ -119,7 +119,7 @@ class CollectionItem extends ComponentValidator
     {
         $field = 'collection_id';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -159,7 +159,7 @@ class CollectionItem extends ComponentValidator
     {
         $field = 'value';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 

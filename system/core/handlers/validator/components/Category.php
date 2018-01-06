@@ -11,12 +11,12 @@ namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\models\Category as CategoryModel,
     gplcart\core\models\CategoryGroup as CategoryGroupModel;
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\BaseComponent as BaseComponentValidator;
 
 /**
  * Provides methods to validate various data related to categories
  */
-class Category extends ComponentValidator
+class Category extends BaseComponentValidator
 {
 
     /**
@@ -103,7 +103,7 @@ class Category extends ComponentValidator
     {
         $field = 'category_group_id';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 

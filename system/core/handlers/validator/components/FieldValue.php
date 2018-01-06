@@ -11,12 +11,12 @@ namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\models\Field as FieldModel,
     gplcart\core\models\FieldValue as FieldValueModel;
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\BaseComponent as BaseComponentValidator;
 
 /**
  * Provides methods to validate field data
  */
-class FieldValue extends ComponentValidator
+class FieldValue extends BaseComponentValidator
 {
 
     /**
@@ -101,7 +101,7 @@ class FieldValue extends ComponentValidator
     {
         $field = 'field_id';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -141,7 +141,7 @@ class FieldValue extends ComponentValidator
     {
         $field = 'color';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 

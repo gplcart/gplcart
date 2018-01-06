@@ -12,12 +12,12 @@ namespace gplcart\core\handlers\validator\components;
 use gplcart\core\models\Zone as ZoneModel,
     gplcart\core\models\State as StateModel,
     gplcart\core\models\Country as CountryModel;
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\BaseComponent as BaseComponentValidator;
 
 /**
  * Provides methods to validate various database related data
  */
-class Country extends ComponentValidator
+class Country extends BaseComponentValidator
 {
 
     /**
@@ -135,7 +135,7 @@ class Country extends ComponentValidator
     {
         $field = 'native_name';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -162,7 +162,7 @@ class Country extends ComponentValidator
     {
         $field = 'template';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -189,7 +189,7 @@ class Country extends ComponentValidator
     {
         $field = 'code';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 

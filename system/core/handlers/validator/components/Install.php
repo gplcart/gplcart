@@ -10,12 +10,12 @@
 namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\models\Install as InstallModel;
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\BaseComponent as BaseComponentValidator;
 
 /**
  * Provides methods to validate installation data
  */
-class Install extends ComponentValidator
+class Install extends BaseComponentValidator
 {
 
     /**
@@ -133,7 +133,7 @@ class Install extends ComponentValidator
     protected function validateUserPasswordInstall()
     {
         $field = 'user.password';
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -163,7 +163,7 @@ class Install extends ComponentValidator
     protected function validateStoreHostInstall()
     {
         $field = 'store.host';
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -185,7 +185,7 @@ class Install extends ComponentValidator
     protected function validateStoreTitleInstall()
     {
         $field = 'store.title';
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -205,7 +205,7 @@ class Install extends ComponentValidator
     protected function validateStoreBasepathInstall()
     {
         $field = 'store.basepath';
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -230,7 +230,7 @@ class Install extends ComponentValidator
     protected function validateStoreTimezoneInstall()
     {
         $field = 'store.timezone';
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -258,7 +258,7 @@ class Install extends ComponentValidator
     protected function validateInstallerInstall()
     {
         $field = 'installer';
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -286,7 +286,7 @@ class Install extends ComponentValidator
     protected function validateDbNameInstall()
     {
         $field = 'database.name';
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -306,7 +306,7 @@ class Install extends ComponentValidator
     protected function validateDbUserInstall()
     {
         $field = 'database.user';
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -326,7 +326,7 @@ class Install extends ComponentValidator
     protected function validateDbPasswordInstall()
     {
         $field = 'database.password';
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -346,7 +346,7 @@ class Install extends ComponentValidator
     protected function validateDbHostInstall()
     {
         $field = 'database.host';
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -366,7 +366,7 @@ class Install extends ComponentValidator
     protected function validateDbTypeInstall()
     {
         $field = 'database.type';
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -395,7 +395,7 @@ class Install extends ComponentValidator
     protected function validateDbPortInstall()
     {
         $field = 'database.port';
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -426,7 +426,7 @@ class Install extends ComponentValidator
         }
 
         $field = 'database.connect';
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 

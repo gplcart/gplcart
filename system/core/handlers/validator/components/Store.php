@@ -10,12 +10,12 @@
 namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\Module;
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\BaseComponent as BaseComponentValidator;
 
 /**
  * Provides methods to validate store data
  */
-class Store extends ComponentValidator
+class Store extends BaseComponentValidator
 {
 
     /**
@@ -101,7 +101,7 @@ class Store extends ComponentValidator
     {
         $field = 'domain';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -141,7 +141,7 @@ class Store extends ComponentValidator
     {
         $field = 'basepath';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -184,7 +184,7 @@ class Store extends ComponentValidator
     {
         $field = 'data.email';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -361,7 +361,7 @@ class Store extends ComponentValidator
     {
         $field = 'data.theme';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 

@@ -10,12 +10,12 @@
 namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\models\CategoryGroup as CategoryGroupModel;
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\BaseComponent as BaseComponentValidator;
 
 /**
  * Provides methods to validate category groups
  */
-class CategoryGroup extends ComponentValidator
+class CategoryGroup extends BaseComponentValidator
 {
 
     /**
@@ -82,13 +82,13 @@ class CategoryGroup extends ComponentValidator
      */
     protected function validateTypeCategoryGroup()
     {
-        if ($this->isError('store_id')) {
+        $field = 'type';
+
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
-        $field = 'type';
-
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isError('store_id')) {
             return null;
         }
 

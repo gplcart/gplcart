@@ -11,12 +11,12 @@ namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\models\Review as ReviewModel,
     gplcart\core\models\Product as ProductModel;
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\BaseComponent as BaseComponentValidator;
 
 /**
  * Provides methods to validate reviews
  */
-class Review extends ComponentValidator
+class Review extends BaseComponentValidator
 {
 
     /**
@@ -96,7 +96,7 @@ class Review extends ComponentValidator
     {
         $field = 'text';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -155,7 +155,7 @@ class Review extends ComponentValidator
     {
         $field = 'product_id';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 

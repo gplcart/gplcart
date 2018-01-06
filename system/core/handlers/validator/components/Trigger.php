@@ -12,12 +12,12 @@ namespace gplcart\core\handlers\validator\components;
 use Exception;
 use gplcart\core\models\Trigger as TriggerModel,
     gplcart\core\models\Condition as ConditionModel;
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\BaseComponent as BaseComponentValidator;
 
 /**
  * Provides methods to validate trigger data
  */
-class Trigger extends ComponentValidator
+class Trigger extends BaseComponentValidator
 {
 
     /**
@@ -96,7 +96,7 @@ class Trigger extends ComponentValidator
     {
         $field = 'data.conditions';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 

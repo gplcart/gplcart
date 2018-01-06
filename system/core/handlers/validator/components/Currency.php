@@ -10,12 +10,12 @@
 namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\models\Currency as CurrencyModel;
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\BaseComponent as BaseComponentValidator;
 
 /**
  * Provides methods to validate various currency related data
  */
-class Currency extends ComponentValidator
+class Currency extends BaseComponentValidator
 {
 
     /**
@@ -94,7 +94,7 @@ class Currency extends ComponentValidator
     {
         $field = 'symbol';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -121,7 +121,7 @@ class Currency extends ComponentValidator
     {
         $field = 'major_unit';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -148,7 +148,7 @@ class Currency extends ComponentValidator
     {
         $field = 'minor_unit';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -175,7 +175,7 @@ class Currency extends ComponentValidator
     {
         $field = 'conversion_rate';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -207,7 +207,7 @@ class Currency extends ComponentValidator
     {
         $field = 'rounding_step';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -239,7 +239,7 @@ class Currency extends ComponentValidator
     {
         $field = 'decimals';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -271,7 +271,7 @@ class Currency extends ComponentValidator
     {
         $field = 'numeric_code';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -316,7 +316,7 @@ class Currency extends ComponentValidator
     {
         $field = 'code';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 

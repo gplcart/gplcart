@@ -10,12 +10,12 @@
 namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\models\UserRole as UserRoleModel;
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\BaseComponent as BaseComponentValidator;
 
 /**
  * Provides methods to validate various user related data
  */
-class User extends ComponentValidator
+class User extends BaseComponentValidator
 {
 
     /**
@@ -130,7 +130,7 @@ class User extends ComponentValidator
     protected function validateStatusUser()
     {
         $field = 'user';
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -210,7 +210,7 @@ class User extends ComponentValidator
     {
         $field = 'password';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -236,7 +236,7 @@ class User extends ComponentValidator
     {
         $field = 'password';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -268,7 +268,7 @@ class User extends ComponentValidator
     {
         $field = 'password_old';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 

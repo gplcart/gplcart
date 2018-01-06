@@ -10,12 +10,12 @@
 namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\models\Product as ProductModel;
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\BaseComponent as BaseComponentValidator;
 
 /**
  * Provides methods to validate a product bundle data
  */
-class ProductBundle extends ComponentValidator
+class ProductBundle extends BaseComponentValidator
 {
 
     /**
@@ -59,7 +59,7 @@ class ProductBundle extends ComponentValidator
     {
         $field = 'product_id';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 

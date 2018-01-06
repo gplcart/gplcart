@@ -11,12 +11,12 @@ namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\models\Page as PageModel,
     gplcart\core\models\Category as CategoryModel;
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\BaseComponent as BaseComponentValidator;
 
 /**
  * Provides methods to validate page data
  */
-class Page extends ComponentValidator
+class Page extends BaseComponentValidator
 {
 
     /**
@@ -102,7 +102,7 @@ class Page extends ComponentValidator
     {
         $field = 'description';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 

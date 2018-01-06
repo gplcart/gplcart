@@ -13,12 +13,12 @@ use gplcart\core\models\Zone as ZoneModel,
     gplcart\core\models\City as CityModel,
     gplcart\core\models\State as StateModel,
     gplcart\core\models\Country as CountryModel;
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\BaseComponent as BaseComponentValidator;
 
 /**
  * Provides methods to validate city data
  */
-class City extends ComponentValidator
+class City extends BaseComponentValidator
 {
 
     /**
@@ -114,7 +114,7 @@ class City extends ComponentValidator
     {
         $field = 'state_id';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -182,7 +182,7 @@ class City extends ComponentValidator
     {
         $field = 'country';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 

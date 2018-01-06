@@ -10,12 +10,12 @@
 namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\models\Collection as CollectionModel;
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\BaseComponent as BaseComponentValidator;
 
 /**
  * Provides methods to validate collection data
  */
-class Collection extends ComponentValidator
+class Collection extends BaseComponentValidator
 {
 
     /**
@@ -84,14 +84,14 @@ class Collection extends ComponentValidator
      */
     protected function validateTypeCollection()
     {
-        if ($this->isUpdating()) {
-            return true; // Type cannot be updated
-        }
-
         $field = 'type';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
+        }
+
+        if ($this->isUpdating()) {
+            return true; // Type cannot be updated
         }
 
         $type = $this->getSubmitted($field);

@@ -11,12 +11,12 @@ namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\models\Rating as RatingModel,
     gplcart\core\models\Product as ProductModel;
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\BaseComponent as BaseComponentValidator;
 
 /**
  * Provides methods to validate product rating data
  */
-class Rating extends ComponentValidator
+class Rating extends BaseComponentValidator
 {
 
     /**
@@ -69,7 +69,7 @@ class Rating extends ComponentValidator
     {
         $field = 'product_id';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -106,7 +106,7 @@ class Rating extends ComponentValidator
     {
         $field = 'rating';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
