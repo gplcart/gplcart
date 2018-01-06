@@ -15,7 +15,7 @@ use gplcart\core\handlers\validator\Base as BaseValidator;
 /**
  * Methods to validate components
  */
-class Component extends BaseValidator
+class BaseComponent extends BaseValidator
 {
 
     /**
@@ -77,6 +77,16 @@ class Component extends BaseValidator
     }
 
     /**
+     * Whether the field should be excluded from validation
+     * @param string $field
+     * @return bool
+     */
+    protected function isExcludedField($field)
+    {
+        return isset($this->options['field']) && $this->options['field'] !== $field;
+    }
+
+    /**
      * Validates a title
      * @return boolean|null
      */
@@ -84,7 +94,7 @@ class Component extends BaseValidator
     {
         $field = 'title';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -111,19 +121,18 @@ class Component extends BaseValidator
     {
         $field = 'name';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
         $name = $this->getSubmitted($field);
-        $label = $this->translation->text('Name');
 
         if ($this->isUpdating() && !isset($name)) {
             return null;
         }
 
         if (empty($name) || mb_strlen($name) > 255) {
-            $this->setErrorLengthRange($field, $label);
+            $this->setErrorLengthRange($field, $this->translation->text('Name'));
             return false;
         }
 
@@ -400,7 +409,7 @@ class Component extends BaseValidator
     {
         $field = 'store_id';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -439,7 +448,7 @@ class Component extends BaseValidator
     {
         $field = 'user_id';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -478,7 +487,7 @@ class Component extends BaseValidator
     {
         $field = 'user_id';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
@@ -521,7 +530,7 @@ class Component extends BaseValidator
     {
         $field = 'email';
 
-        if (isset($this->options['field']) && $this->options['field'] !== $field) {
+        if ($this->isExcludedField($field)) {
             return null;
         }
 
