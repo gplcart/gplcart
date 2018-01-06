@@ -9,6 +9,7 @@
 
 namespace gplcart\core\controllers\cli;
 
+use PDO;
 use gplcart\core\CliController;
 use gplcart\core\models\Install as InstallModel,
     gplcart\core\models\Language as LanguageModel;
@@ -50,15 +51,36 @@ class Install extends CliController
     }
 
     /**
-     * Performs one-step "fast" installation
+     * Performs full system installation
      */
-    public function fastInstall()
+    public function install()
     {
         $this->controlAccessInstall();
 
-        $this->validateFastInstall();
+        if (empty($this->arguments)) {
+            $this->validateWizardInstall();
+        } else {
+            $this->validateFastInstall();
+        }
+
         $this->processInstall();
         $this->output();
+    }
+
+    /**
+     * Display simple installation wizard and validates user input
+     */
+    protected function validateWizardInstall()
+    {
+        $this->validateInputLanguageInstall();
+        $this->validateRequirementsInstall();
+        $this->validateInstallerInstall();
+        $this->validateInputTitleInstall();
+        $this->validateInputEmailInstall();
+        $this->validateInputPasswordInstall();
+        $this->validateInputBasepathInstall();
+        $this->validateInputDbInstall();
+        $this->validateInputInstall();
     }
 
     /**
@@ -119,17 +141,6 @@ class Install extends CliController
     }
 
     /**
-     * Performs step-by-step installation
-     */
-    public function wizardInstall()
-    {
-        $this->controlAccessInstall();
-        $this->validateWizardInstall();
-        $this->processInstall();
-        $this->output();
-    }
-
-    /**
      * Controls access to installation process
      */
     protected function controlAccessInstall()
@@ -144,31 +155,18 @@ class Install extends CliController
      */
     protected function processInstall()
     {
-        $settings = $this->getSubmitted();
-        $this->install->connectDb($settings['database']);
-        $result = $this->install->process($settings, $this->current_route);
+        if (!$this->isError()) {
 
-        if ($result['severity'] === 'success') {
-            $this->line($result['message']);
-        } else {
-            $this->error($result['message']);
+            $settings = $this->getSubmitted();
+            $this->install->connectDb($settings['database']);
+            $result = $this->install->process($settings, $this->current_route);
+
+            if ($result['severity'] === 'success') {
+                $this->line($result['message']);
+            } else {
+                $this->error($result['message']);
+            }
         }
-    }
-
-    /**
-     * Display simple installation wizard and validates user input
-     */
-    protected function validateWizardInstall()
-    {
-        $this->validateInputLanguageInstall();
-        $this->validateRequirementsInstall();
-        $this->validateInstallerInstall();
-        $this->validateInputTitleInstall();
-        $this->validateInputEmailInstall();
-        $this->validateInputPasswordInstall();
-        $this->validateInputBasepathInstall();
-        $this->validateInputDbInstall();
-        $this->validateInputInstall();
     }
 
     /**
@@ -396,7 +394,7 @@ class Install extends CliController
      */
     protected function validateInputDbTypeInstall()
     {
-        $drivers = \PDO::getAvailableDrivers();
+        $drivers = PDO::getAvailableDrivers();
         $input = $this->menu(array_combine($drivers, $drivers), 'mysql', $this->text('Database type (enter a number)'));
 
         if (!$this->isValidInput($input, 'database.type', 'install')) {

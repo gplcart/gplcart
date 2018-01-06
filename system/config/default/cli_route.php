@@ -19,19 +19,10 @@ return array(
     'install' => array(
         'alias' => 'i',
         'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\cli\\Install', 'wizardInstall')
+            'controller' => array('gplcart\\core\\controllers\\cli\\Install', 'install')
         ),
         'help' => array(
-            'description' => /* @text */'Performs full system installation. Simple step-by-step wizard without options'
-        )
-    ),
-    'install-fast' => array(
-        'alias' => 'if',
-        'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\cli\\Install', 'fastInstall')
-        ),
-        'help' => array(
-            'description' => /* @text */'Allows to perform full system installation at once',
+            'description' => /* @text */'Performs full system installation. If no options provided, then you will be guided step by step with the interactive wizard',
             'options' => array(
                 '--installer' => /* @text */'Optional. ID of module to be used for this installation process',
                 '--db-name' => /* @text */'Required. Database name',
