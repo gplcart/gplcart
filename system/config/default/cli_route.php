@@ -5,39 +5,45 @@
  * @author Iurii Makukh <gplcart.software@gmail.com>
  * @copyright Copyright (c) 2015, Iurii Makukh
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
+ * @link http://docopt.org
  */
 return array(
     'help' => array(
         'alias' => 'h',
+        'description' => /* @text */'Displays all available commands',
+        'usage' => array(
+            'php gplcart help [<command>]'
+        ),
         'handlers' => array(
             'controller' => array('gplcart\\core\\controllers\\cli\\Help', 'help')
-        ),
-        'help' => array(
-            'description' => /* @text */'Displays all available commands'
         )
     ),
     'install' => array(
         'alias' => 'i',
+        'description' => /* @text */'Performs full system installation. If no options provided, then you will be guided step by step with the interactive wizard',
+        'options' => array(
+            // Required
+            '--email=value' => /* @text */'Admin e-mail',
+            '--pass=value' => /* @text */'Admin password',
+            '--db-name=value' => /* @text */'Database name',
+            // Optional
+            '--db-pass=value' => /* @text */'Database password [default:]',
+            '--db-user=value' => /* @text */'Database user [default: root]',
+            '--db-host=value' => /* @text */'Database host [default: localhost]',
+            '--db-type=value' => /* @text */'Database type [default: mysql]',
+            '--db-port=value' => /* @text */'Database port [default: 3306]',
+            '--title=value' => /* @text */'Store name [default: GPL Cart]',
+            '--basepath=value' => /* @text */'Installation subfolder name [default:]',
+            '--timezone=value' => /* @text */'Store timezone [default:]',
+            '--host=value' => /* @text */'Domain name [default:]',
+            '--installer=module' => /* @text */'ID of installer module that manages the installation'
+        ),
+        'usage' => array(
+            'php gplcart (install | i) [(--email=e-mail --pass=password --db-name=name)]',
+            'php gplcart (install | i) --email=e-mail --pass=password --db-name=name [options]'
+        ),
         'handlers' => array(
             'controller' => array('gplcart\\core\\controllers\\cli\\Install', 'install')
-        ),
-        'help' => array(
-            'description' => /* @text */'Performs full system installation. If no options provided, then you will be guided step by step with the interactive wizard',
-            'options' => array(
-                '--installer' => /* @text */'Optional. ID of module to be used for this installation process',
-                '--db-name' => /* @text */'Required. Database name',
-                '--db-user' => /* @text */'Optional. Database user. Defaults to "root"',
-                '--db-host' => /* @text */'Optional. Database host. Defaults to "localhost"',
-                '--db-pass' => /* @text */'Optional. Database password. Defaults to empty string',
-                '--db-type' => /* @text */'Optional. Database type, e.g "mysql" or "sqlite". Defaults to "mysql"',
-                '--db-port' => /* @text */'Optional. Database port. Defaults to "3306"',
-                '--email' => /* @text */'Required. Admin e-mail',
-                '--pass' => /* @text */'Required. Admin password',
-                '--title' => /* @text */'Optional. Name of the store. Defaults to "GPL Cart"',
-                '--basepath' => /* @text */'Optional. Subfolder name. Defaults to empty string, i.e domain root folder',
-                '--timezone' => /* @text */'Optional. Timezone of the store. Defaults to the current timezone',
-                '--host' => /* @text */'Optional. Domain name e.g "example.com" without scheme prefix and slashes. Defaults to the current hostname/IP'
-            )
         )
     )
 );
