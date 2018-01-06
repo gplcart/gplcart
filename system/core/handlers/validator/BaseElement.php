@@ -14,7 +14,7 @@ use gplcart\core\handlers\validator\Base as BaseValidator;
 /**
  * Parent class handlers containing methods to validate single elements
  */
-class Element extends BaseValidator
+class BaseElement extends BaseValidator
 {
 
     /**
