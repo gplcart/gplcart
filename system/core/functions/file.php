@@ -56,10 +56,12 @@ function gplcart_file_scan($path, $pattern)
 function gplcart_file_delete_recursive($file, &$errors = 0, &$success = 0)
 {
     if (is_file($file)) {
+
         if (unlink($file)) {
             $success++;
             return true;
         }
+
         $errors++;
         return false;
     }
