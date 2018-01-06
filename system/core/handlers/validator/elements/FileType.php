@@ -7,7 +7,7 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 
-namespace gplcart\core\handlers\validator;
+namespace gplcart\core\handlers\validator\elements;
 
 /**
  * Provides methods to validate file types

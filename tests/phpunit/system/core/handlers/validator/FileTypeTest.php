@@ -19,7 +19,7 @@ class FileTypeTest extends UnitTest
 
     /**
      * Object class instance
-     * @var \gplcart\core\handlers\validator\FileType
+     * @var \gplcart\core\handlers\validator\elements\FileType
      */
     protected $object;
 
@@ -29,7 +29,7 @@ class FileTypeTest extends UnitTest
      */
     protected function setUp()
     {
-        $this->object = $this->getInstance('gplcart\\core\\handlers\\validator\\FileType');
+        $this->object = $this->getInstance('gplcart\\core\\handlers\\validator\\elements\\FileType');
 
         $this->file->setImage();
         $this->file->setCsv();

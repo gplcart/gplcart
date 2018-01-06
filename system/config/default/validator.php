@@ -10,22 +10,22 @@ return array(
     // File type validators
     'image' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\FileType', 'image')
+            'validate' => array('gplcart\\core\\handlers\\validator\\elements\\FileType', 'image')
         )
     ),
     'csv' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\FileType', 'csv')
+            'validate' => array('gplcart\\core\\handlers\\validator\\elements\\FileType', 'csv')
         )
     ),
     'json' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\FileType', 'json')
+            'validate' => array('gplcart\\core\\handlers\\validator\\elements\\FileType', 'json')
         )
     ),
     'zip' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\FileType', 'zip')
+            'validate' => array('gplcart\\core\\handlers\\validator\\elements\\FileType', 'zip')
         )
     ),
     // Component validators
