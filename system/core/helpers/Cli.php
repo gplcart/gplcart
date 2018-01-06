@@ -105,7 +105,7 @@ class Cli
      */
     public function line($text = '')
     {
-        $text .= "\n";
+        $text .= PHP_EOL;
         $this->out($text);
         return $this;
     }
@@ -131,7 +131,7 @@ class Cli
         if (empty($format)) {
             $line = fgets(STDIN);
         } else {
-            $line = fscanf(STDIN, $format . "\n", $line);
+            $line = fscanf(STDIN, $format . PHP_EOL, $line);
         }
 
         return trim($line);
@@ -253,10 +253,37 @@ class Cli
         }
 
         if ($output) {
-            $this->out(implode("\n", $shell_output));
+            $this->out(implode(PHP_EOL, $shell_output));
         }
 
         return $result;
+    }
+
+    /**
+     * Output simple table
+     * @param array $data
+     */
+    public function table(array $data)
+    {
+        $columns = array();
+        foreach ($data as $rkey => $row) {
+            foreach ($row as $ckey => $cell) {
+                $length = strlen($cell);
+                if (empty($columns[$ckey]) || $columns[$ckey] < $length) {
+                    $columns[$ckey] = $length;
+                }
+            }
+        }
+
+        $table = '';
+        foreach ($data as $rkey => $row) {
+            foreach ($row as $ckey => $cell) {
+                $table .= str_pad($cell, $columns[$ckey]) . '   ';
+            }
+            $table .= PHP_EOL;
+        }
+
+        $this->line($table);
     }
 
 }
