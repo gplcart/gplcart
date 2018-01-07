@@ -36,12 +36,6 @@ class CliController
     protected $translation;
 
     /**
-     * Logger class instance
-     * @var \gplcart\core\Logger $logger
-     */
-    protected $logger;
-
-    /**
      * Config class instance
      * @var \gplcart\core\Config $config
      */
@@ -150,7 +144,6 @@ class CliController
     {
         $this->hook = $this->getInstance('gplcart\\core\\Hook');
         $this->config = $this->getInstance('gplcart\\core\\Config');
-        $this->logger = $this->getInstance('gplcart\\core\\Logger');
         $this->route = $this->getInstance('gplcart\\core\\CliRoute');
         $this->cli = $this->getInstance('gplcart\\core\\helpers\Cli');
         $this->translation = $this->getInstance('gplcart\\core\\models\\Translation');
@@ -236,13 +229,19 @@ class CliController
 
     /**
      * Returns a single argument value
-     * @param string $key
+     * @param string|array $key
      * @param mixed $default
      * @return mixed
      */
     public function getArgument($key, $default = null)
     {
-        return isset($this->arguments[$key]) ? $this->arguments[$key] : $default;
+        foreach ((array) $key as $k) {
+            if (isset($this->arguments[$k])) {
+                return $this->arguments[$k];
+            }
+        }
+
+        return $default;
     }
 
     /**
@@ -327,24 +326,26 @@ class CliController
     }
 
     /**
-     * Output all to the user
+     * Output an error message and stop the script execution
+     * @param string $text
+     */
+    public function outputError($text)
+    {
+        $this->error($text)->line()->abort(1);
+    }
+
+    /**
+     * Output all to the user and stop the script execution
      */
     public function output()
     {
-        $errors = $this->logger->getErrors();
-
-        if (!empty($errors)) {
-            $this->setError('php_errors', $errors);
-        }
-
         $this->outputErrors(null, true);
         $this->abort();
     }
 
     /**
      * Map the command line options to an array of submitted data to be passed to validators
-     * @param array $map An array of pairs "options-name" => "some.array.value", e.g 'db-name' => 'database.name'
-     * which turns --db-name command option into the nested array $submitted['database']['name']
+     * @param array $map
      * @param null|array $arguments
      * @return array
      */
@@ -383,7 +384,7 @@ class CliController
     }
 
     /**
-     * Whether an input passed the field validation
+     * Whether the user input passed the field validation
      * @param string $input
      * @param string $field
      * @param string $handler_id
@@ -407,7 +408,7 @@ class CliController
     }
 
     /**
-     * Output a text
+     * Output inline text
      * @param string $text
      * @return $this
      */
