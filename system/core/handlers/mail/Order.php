@@ -14,7 +14,7 @@ use gplcart\core\models\Price as PriceModel,
 use gplcart\core\handlers\mail\Base as BaseHandler;
 
 /**
- * Mail data handlers related to orders
+ * Mail handlers related to orders
  */
 class Order extends BaseHandler
 {
@@ -44,7 +44,7 @@ class Order extends BaseHandler
     }
 
     /**
-     * Sends an email to an admin after a customer created an order
+     * Sends an email to admin after a customer created an order
      * @param array $order
      * @return array
      */

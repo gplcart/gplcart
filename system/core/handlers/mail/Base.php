@@ -12,7 +12,7 @@ namespace gplcart\core\handlers\mail;
 use gplcart\core\Container;
 
 /**
- * Base mail data handler class
+ * Base mail handler class
  */
 class Base
 {
