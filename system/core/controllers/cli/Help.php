@@ -73,9 +73,8 @@ class Help extends CliController
             $this->outputErrors($this->text('Unknown command'), true);
         }
 
-        $this->line();
         if (empty($routes[$command]['description'])) {
-            $this->output($this->text('No description provided for the command'));
+            $this->line($this->text('No description provided for the command'))->abort();
         }
 
         $this->line($this->text($routes[$command]['description']));
