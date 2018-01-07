@@ -27,15 +27,15 @@ return array(
             '--pass=value' => /* @text */'Admin password',
             '--db-name=value' => /* @text */'Database name',
             // Optional
-            '--db-pass=value' => /* @text */'Database password [default:]',
+            '--db-pass=value' => /* @text */'Database password',
             '--db-user=value' => /* @text */'Database user [default: root]',
             '--db-host=value' => /* @text */'Database host [default: localhost]',
             '--db-type=value' => /* @text */'Database type [default: mysql]',
             '--db-port=value' => /* @text */'Database port [default: 3306]',
             '--title=value' => /* @text */'Store name [default: GPL Cart]',
-            '--basepath=value' => /* @text */'Installation subfolder name [default:]',
-            '--timezone=value' => /* @text */'Store timezone [default:]',
-            '--host=value' => /* @text */'Domain name [default:]',
+            '--basepath=value' => /* @text */'Installation subfolder name',
+            '--timezone=value' => /* @text */'Store timezone',
+            '--host=value' => /* @text */'Domain name',
             '--installer=module' => /* @text */'ID of installer module that manages the installation'
         ),
         'usage' => array(
