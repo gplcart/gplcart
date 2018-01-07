@@ -170,7 +170,7 @@ class Cli
      */
     public function menu($items, $default = null, $title = 'Choose an item')
     {
-        if (isset($items[$default]) && strpos($title, '[') === false) {
+        if (isset($items[$default]) && $items[$default] !== '' && strpos($title, '[') === false) {
             $title .= ' [default: ' . $items[$default] . ']';
         }
 
@@ -262,9 +262,14 @@ class Cli
     /**
      * Output simple table
      * @param array $data
+     * @param array $header
      */
-    public function table(array $data)
+    public function table(array $data, array $header = array())
     {
+        if (!empty($header)) {
+            array_unshift($data, $header);
+        }
+
         $columns = array();
         foreach ($data as $rkey => $row) {
             foreach ($row as $ckey => $cell) {
