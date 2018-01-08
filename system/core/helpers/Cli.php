@@ -16,11 +16,11 @@ class Cli
 {
 
     /**
-     * Parses command line arguments
+     * Parses command line parameters
      * @param array|string $argv
      * @return array
      */
-    public function parseArguments($argv)
+    public function parseParams($argv)
     {
         if (is_string($argv)) {
             $argv = gplcart_string_explode_whitespace($argv);
@@ -262,14 +262,9 @@ class Cli
     /**
      * Output simple table
      * @param array $data
-     * @param array $header
      */
-    public function table(array $data, array $header = array())
+    public function table(array $data)
     {
-        if (!empty($header)) {
-            array_unshift($data, $header);
-        }
-
         $columns = array();
         foreach ($data as $rkey => $row) {
             foreach ($row as $ckey => $cell) {
