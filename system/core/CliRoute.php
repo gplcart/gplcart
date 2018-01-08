@@ -44,10 +44,10 @@ class CliRoute
     protected $route = array();
 
     /**
-     * An array of parsed CLI arguments
+     * An array of parsed CLI parameters
      * @var array
      */
-    protected $arguments = array();
+    protected $params = array();
 
     /**
      * An array of commands keyed by their aliases
@@ -66,7 +66,7 @@ class CliRoute
         $this->hook = $hook;
         $this->server = $server;
 
-        $this->setArguments();
+        $this->setParams();
 
         $this->hook->attach('construct.cli.route', $this);
     }
@@ -81,12 +81,12 @@ class CliRoute
     }
 
     /**
-     * Returns an array of arguments for the current command
+     * Returns an array of parameters for the current command
      * @return array
      */
-    public function getArguments()
+    public function getParams()
     {
-        return $this->arguments;
+        return $this->params;
     }
 
     /**
@@ -99,19 +99,19 @@ class CliRoute
     }
 
     /**
-     * Set CLI arguments
-     * @param array|null $arguments
+     * Set CLI params (both options and arguments)
+     * @param array|null $params
      * @return array
      */
-    public function setArguments($arguments = null)
+    public function setParams($params = null)
     {
-        if (isset($arguments)) {
-            $this->arguments = (array) $arguments;
+        if (isset($params)) {
+            $this->params = (array) $params;
         } else {
-            $this->arguments = $this->cli->parseArguments($this->server->cliArgs());
+            $this->params = $this->cli->parseParams($this->server->cliArgs());
         }
 
-        return $this->arguments;
+        return $this->params;
     }
 
     /**
@@ -176,7 +176,7 @@ class CliRoute
         if (!isset($route)) {
 
             $routes = $this->getList();
-            $command = array_shift($this->arguments);
+            $command = array_shift($this->params);
 
             if (isset($this->aliases[$command])) {
                 $command = $this->aliases[$command];
@@ -192,7 +192,7 @@ class CliRoute
 
             $route = $routes[$command];
             $route['command'] = $command;
-            $route['arguments'] = $this->arguments;
+            $route['params'] = $this->params;
         }
 
         return $this->route = (array) $route;
@@ -201,13 +201,13 @@ class CliRoute
     /**
      * Call a route handler
      * @param string $method
-     * @param array $arguments
+     * @param array $params
      */
-    public function callHandler($method = 'controller', array $arguments = array())
+    public function callHandler($method = 'controller', array $params = array())
     {
         try {
-            $arguments = array_merge(array($this->route['arguments']), $arguments);
-            Handler::call($this->route, null, $method, $arguments);
+            $params = array_merge(array($this->route['params']), $params);
+            Handler::call($this->route, null, $method, $params);
         } catch (Exception $ex) {
             throw new RouteException($ex->getMessage());
         }
