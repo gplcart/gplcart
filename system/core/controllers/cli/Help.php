@@ -30,10 +30,18 @@ class Help extends CliController
      */
     public function help()
     {
+        $this->outputCommandHelp();
+        $this->outputCommandListHelp();
+    }
+
+    /**
+     * Output a list of all available CLI commands
+     */
+    protected function outputCommandListHelp()
+    {
         $routes = $this->route->getList();
         ksort($routes);
 
-        $this->outputCommandHelp($routes);
         $this->line($this->text('List of available commands'));
 
         foreach ($routes as $command => $info) {
@@ -54,49 +62,21 @@ class Help extends CliController
 
             $this->line($this->text('  @command - @description', $vars));
         }
-
+        
         $this->output();
     }
 
     /**
      * Displays help message for a command
      */
-    protected function outputCommandHelp(array $routes)
+    protected function outputCommandHelp()
     {
-        $command = $this->getArgument(0);
+        $command = $this->getParam(0);
 
-        if (!isset($command)) {
-            return null;
+        if (!empty($command)) {
+            $this->outputHelp($command);
+            $this->output();
         }
-
-        if (empty($routes[$command])) {
-            $this->outputErrors($this->text('Unknown command'), true);
-        }
-
-        if (empty($routes[$command]['description'])) {
-            $this->line($this->text('No description provided for the command'))->abort();
-        }
-
-        $this->line($this->text($routes[$command]['description']));
-
-        if (!empty($routes[$command]['usage'])) {
-            $this->line();
-            $this->line($this->text('Usage:'));
-            foreach ($routes[$command]['usage'] as $usage) {
-                $this->line($usage);
-            }
-        }
-
-        if (!empty($routes[$command]['options'])) {
-            $this->line();
-            $this->line($this->text('Options:'));
-            foreach ($routes[$command]['options'] as $option => $description) {
-                $vars = array('@option' => $option, '@description' => $this->text($description));
-                $this->line($this->text('  @option  @description', $vars));
-            }
-        }
-
-        $this->abort();
     }
 
 }
