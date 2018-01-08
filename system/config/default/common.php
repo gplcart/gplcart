@@ -39,8 +39,8 @@ $config = array();
 # $config['csv_delimiter_key_value']              = ":"; // Character to separate key => value items in CSV
 # $config['currency']                             = 'USD'; // Default store currency
 # $config['currency_cookie_lifespan']             = 365*24*60*60; // Lifetime of cookie that keeps the current currency, in seconds
-# $config['date_prefix']                          = 'd.m.Y'; // Default time format - hours
-# $config['date_suffix']                          = ' H:i'; // Default time format - minutes
+# $config['date_short_format']                    = 'd.m.Y'; // Short time format
+# $config['date_full_format']                     = 'd.m.Y H:i'; // Full time format
 # $config['error_level']                          = 2; // Default error reporting level
 # $config['error_print']                          = 0; // Whether to print PHP errors in browser
 # $config['error_to_exception']                   = 0; // Whether to convert all PHP errors to exceptions

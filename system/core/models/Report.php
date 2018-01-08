@@ -234,8 +234,7 @@ class Report
             'weight' => 6
         );
 
-        $date_format = $this->config->get('date_prefix', 'd.m.Y');
-        $date_format .= $this->config->get('date_suffix', ' H:i');
+        $date_format = $this->config->get('date_full_format', 'd.m.Y H:i');
 
         $statuses['cron'] = array(
             'title' => $this->translation->text('Cron last run'),

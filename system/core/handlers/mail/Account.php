@@ -89,8 +89,7 @@ class Account extends BaseHandler
         $store_name = $this->store->getTranslation('title', $this->translation->getLangcode(), $store);
         $base = $this->store->url($store);
 
-        $date_format = $this->config->get('date_prefix', 'd.m.Y');
-        $date_format .= $this->config->get('date_suffix', ' H:i');
+        $date_format = $this->config->get('date_full_format', 'd.m.Y H:i');
 
         $vars = array(
             '@name' => $user['name'],

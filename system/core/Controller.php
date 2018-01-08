@@ -749,10 +749,10 @@ abstract class Controller
             $timestamp = GC_TIME;
         }
 
-        $format = $this->config('date_prefix', 'd.m.y');
-
         if ($full) {
-            $format .= $this->config('date_suffix', ' H:i');
+            $format = $this->config->get('date_full_format', 'd.m.Y H:i');
+        } else {
+            $format = $this->config->get('date_short_format', 'd.m.y');
         }
 
         return date($format, $timestamp);
