@@ -60,7 +60,19 @@ class CliController
     protected $command;
 
     /**
-     * The current CLI command arguments
+     * The current CLI command parameters
+     * @var array
+     */
+    protected $params = array();
+
+    /**
+     * An array of command options
+     * @var array
+     */
+    protected $options = array();
+
+    /**
+     * An array of command arguments
      * @var array
      */
     protected $arguments = array();
@@ -92,6 +104,8 @@ class CliController
         $this->setRouteProperties();
 
         $this->hook->attach('construct.cli.controller', $this);
+
+        $this->outputHelp();
     }
 
     /**
@@ -157,7 +171,15 @@ class CliController
     {
         $this->current_route = $this->route->get();
         $this->command = $this->current_route['command'];
-        $this->arguments = gplcart_array_trim($this->current_route['arguments'], true);
+        $this->params = gplcart_array_trim($this->current_route['params'], true);
+
+        foreach ($this->params as $key => $value) {
+            if (is_int($key)) {
+                $this->arguments[$key] = $value;
+            } else {
+                $this->options[$key] = $value;
+            }
+        }
     }
 
     /**
@@ -174,13 +196,13 @@ class CliController
     /**
      * Sets an array of submitted mapped data
      * @param array $map
-     * @param null|array $arguments
+     * @param null|array $params
      * @param array $default
      * @return array
      */
-    public function setSubmittedMapped(array $map, $arguments = null, array $default = array())
+    public function setSubmittedMapped(array $map, $params = null, array $default = array())
     {
-        $mapped = $this->mapArguments($map, $arguments);
+        $mapped = $this->mapParams($map, $params);
         $merged = gplcart_array_merge($default, $mapped);
 
         return $this->setSubmitted(null, $merged);
@@ -219,29 +241,59 @@ class CliController
     }
 
     /**
-     * Returns an array of filtered arguments
+     * Returns an array of filtered command parameters
      * @return array
      */
-    public function getArguments()
+    public function getParams()
     {
-        return $this->arguments;
+        return $this->params;
     }
 
     /**
-     * Returns a single argument value
+     * Returns a single parameter value
      * @param string|array $key
      * @param mixed $default
      * @return mixed
      */
-    public function getArgument($key, $default = null)
+    public function getParam($key, $default = null)
     {
         foreach ((array) $key as $k) {
-            if (isset($this->arguments[$k])) {
-                return $this->arguments[$k];
+            if (isset($this->params[$k])) {
+                return $this->params[$k];
             }
         }
 
         return $default;
+    }
+
+    /**
+     * Returns one or all command options
+     * @param null|string $name
+     * @param mixed $default
+     * @return mixed
+     */
+    public function getOption($name = null, $default = null)
+    {
+        if (isset($name)) {
+            return isset($this->options[$name]) ? $this->options[$name] : $default;
+        }
+
+        return $this->options;
+    }
+
+    /**
+     * Returns one or all command arguments
+     * @param null|string $name
+     * @param mixed $default
+     * @return mixed
+     */
+    public function getArgument($name = null, $default = null)
+    {
+        if (isset($name)) {
+            return isset($this->arguments[$name]) ? $this->arguments[$name] : $default;
+        }
+
+        return $this->arguments;
     }
 
     /**
@@ -275,6 +327,23 @@ class CliController
     }
 
     /**
+     * Formats a local time/date
+     * @param integer $timestamp
+     * @param bool $full
+     * @return string
+     */
+    public function date($timestamp, $full = true)
+    {
+        if ($full) {
+            $format = $this->config->get('date_full_format', 'd.m.Y H:i');
+        } else {
+            $format = $this->config->get('date_short_format', 'd.m.y');
+        }
+
+        return date($format, $timestamp);
+    }
+
+    /**
      * Sets an error
      * @param null|string $key
      * @param mixed $error
@@ -305,33 +374,37 @@ class CliController
     }
 
     /**
-     * Output and clear up all existing errors
-     * @param mixed $errors
-     * @param boolean $abort
+     * Output an error message and stop the script execution
+     * @param string $text
+     * @param bool $exit
      */
-    public function outputErrors($errors = null, $abort = false)
+    public function errorLine($text, $exit = true)
     {
-        if (isset($errors)) {
-            $this->errors = (array) $errors;
-        }
+        $this->error($text)->line();
 
-        if (!empty($this->errors)) {
-            $this->error(implode("\n", gplcart_array_flatten($this->errors)));
-            $this->errors = array();
-            $this->line();
-            if ($abort) {
-                $this->abort(1);
-            }
+        if ($exit) {
+            $this->abort(1);
         }
     }
 
     /**
-     * Output an error message and stop the script execution
-     * @param string $text
+     * Output and clear up all existing errors
+     * @param boolean $exit_on_error
      */
-    public function outputError($text)
+    public function outputErrors($exit_on_error = false)
     {
-        $this->error($text)->line()->abort(1);
+        if (!empty($this->errors)) {
+
+            foreach (gplcart_array_flatten($this->errors) as $error) {
+                $this->errorLine($error, false);
+            }
+
+            $this->errors = array();
+
+            if ($exit_on_error) {
+                $this->abort(1);
+            }
+        }
     }
 
     /**
@@ -339,24 +412,24 @@ class CliController
      */
     public function output()
     {
-        $this->outputErrors(null, true);
+        $this->outputErrors(true);
         $this->abort();
     }
 
     /**
-     * Map the command line options to an array of submitted data to be passed to validators
+     * Map the command line parameters to an array of submitted data to be passed to validators
      * @param array $map
-     * @param null|array $arguments
+     * @param null|array $params
      * @return array
      */
-    public function mapArguments(array $map, $arguments = null)
+    public function mapParams(array $map, $params = null)
     {
-        if (!isset($arguments)) {
-            $arguments = $this->arguments;
+        if (!isset($params)) {
+            $params = $this->params;
         }
 
         $mapped = array();
-        foreach ($arguments as $key => $value) {
+        foreach ($params as $key => $value) {
             if (isset($map[$key]) && is_string($map[$key])) {
                 gplcart_array_set($mapped, $map[$key], $value);
             }
@@ -394,6 +467,53 @@ class CliController
     {
         $this->setSubmitted($field, $input);
         return $this->validateComponent($handler_id, array('field' => $field)) === true;
+    }
+
+    /**
+     * Output help for a certain command or the current command if a help option is presented
+     * @param string|null $command
+     * @param array|string $help_options One or several help options, e.g -h, --help
+     */
+    public function outputHelp($command = null, $help_options = array('h', 'help'))
+    {
+        if (!isset($command) && !$this->getParam($help_options, false)) {
+            return null;
+        }
+
+        if (!isset($command)) {
+            $command = $this->command;
+        }
+
+        $routes = $this->route->getList();
+
+        $shown = false;
+        if (!empty($routes[$command]['description'])) {
+            $shown = true;
+            $this->line($this->text($routes[$command]['description']));
+        }
+
+        if (!empty($routes[$command]['usage'])) {
+            $shown = true;
+            $this->line()->line($this->text('Usage:'));
+            foreach ($routes[$command]['usage'] as $usage) {
+                $this->line($usage);
+            }
+        }
+
+        if (!empty($routes[$command]['options'])) {
+            $shown = true;
+            $this->line()->line($this->text('Options:'));
+            foreach ($routes[$command]['options'] as $name => $description) {
+                $vars = array('@option' => $name, '@description' => $this->text($description));
+                $this->line($this->text('  @option  @description', $vars));
+            }
+        }
+
+        if (!$shown) {
+            $this->line($this->text('No help found for the command'));
+        }
+
+        $this->output();
     }
 
     /**
@@ -482,6 +602,17 @@ class CliController
     public function in($format = '')
     {
         return $this->cli->in($format);
+    }
+
+    /**
+     * Output simple table
+     * @param array $data
+     * @return $this
+     */
+    public function table(array $data)
+    {
+        $this->cli->table($data);
+        return $this;
     }
 
 }
