@@ -57,7 +57,7 @@ class Install extends CliController
     {
         $this->controlAccessInstall();
 
-        if (empty($this->arguments)) {
+        if (empty($this->params)) {
             $this->validateWizardInstall();
         } else {
             $this->validateFastInstall();
@@ -93,7 +93,7 @@ class Install extends CliController
 
         $this->setSubmittedMapped($mapping, null, $default);
         $this->validateComponent('install');
-        $this->outputErrors(null, true);
+        $this->outputErrors(true);
     }
 
     /**
@@ -146,7 +146,7 @@ class Install extends CliController
     protected function controlAccessInstall()
     {
         if ($this->config->isInitialized()) {
-            $this->outputErrors($this->text('System already installed'), true);
+            $this->errorLine($this->text('System already installed'));
         }
     }
 
@@ -185,7 +185,7 @@ class Install extends CliController
             $this->validateInputDbInstall();
         }
 
-        $this->outputErrors(null, true);
+        $this->outputErrors(true);
     }
 
     /**
@@ -231,7 +231,7 @@ class Install extends CliController
         $selected = $this->menu($languages, 'en', $this->text('Language (enter a number)'));
 
         if (empty($languages[$selected])) {
-            $this->outputErrors($this->text('Invalid language'));
+            $this->errorLine($this->text('Invalid language'), false);
             $this->validateInputLanguageInstall();
         } else {
             $this->langcode = (string) $selected;
@@ -269,7 +269,7 @@ class Install extends CliController
     protected function validateRequirementsInstall()
     {
         $this->validateComponent('install', array('field' => 'requirements'));
-        $this->outputErrors(null, true);
+        $this->outputErrors(true);
     }
 
     /**
