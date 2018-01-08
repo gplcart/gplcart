@@ -12,7 +12,10 @@ return array(
         'alias' => 'h',
         'description' => /* @text */'Displays all available commands',
         'usage' => array(
-            'php gplcart help [<command>]'
+            'php gplcart help [<command>] [options]'
+        ),
+        'options' => array(
+            '-h, --help' => /* @text */'Show command help'
         ),
         'handlers' => array(
             'controller' => array('gplcart\\core\\controllers\\cli\\Help', 'help')
@@ -36,11 +39,11 @@ return array(
             '--basepath=value' => /* @text */'Installation subfolder name',
             '--timezone=value' => /* @text */'Store timezone',
             '--host=value' => /* @text */'Domain name',
-            '--installer=module' => /* @text */'ID of installer module that manages the installation'
+            '--installer=module' => /* @text */'ID of installer module that manages the installation',
+            '-h, --help' => /* @text */'Show command help',
         ),
         'usage' => array(
-            'php gplcart (install | i) [(--email=e-mail --pass=password --db-name=name)]',
-            'php gplcart (install | i) --email=e-mail --pass=password --db-name=name [options]'
+            'php gplcart (install | i) [(--email=<e-mail> --pass=<password> --db-name=<name>)] [options]'
         ),
         'handlers' => array(
             'controller' => array('gplcart\\core\\controllers\\cli\\Install', 'install')
