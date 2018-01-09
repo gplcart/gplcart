@@ -66,18 +66,6 @@ class CliController
     protected $params = array();
 
     /**
-     * An array of command options
-     * @var array
-     */
-    protected $options = array();
-
-    /**
-     * An array of command arguments
-     * @var array
-     */
-    protected $arguments = array();
-
-    /**
      * An array of mapped data ready for validation
      * @var array
      */
@@ -104,7 +92,6 @@ class CliController
         $this->setRouteProperties();
 
         $this->hook->attach('construct.cli.controller', $this);
-
         $this->outputHelp();
     }
 
@@ -172,14 +159,6 @@ class CliController
         $this->current_route = $this->route->get();
         $this->command = $this->current_route['command'];
         $this->params = gplcart_array_trim($this->current_route['params'], true);
-
-        foreach ($this->params as $key => $value) {
-            if (is_int($key)) {
-                $this->arguments[$key] = $value;
-            } else {
-                $this->options[$key] = $value;
-            }
-        }
     }
 
     /**
@@ -241,22 +220,17 @@ class CliController
     }
 
     /**
-     * Returns an array of filtered command parameters
-     * @return array
-     */
-    public function getParams()
-    {
-        return $this->params;
-    }
-
-    /**
      * Returns a single parameter value
-     * @param string|array $key
+     * @param string|array|null $key
      * @param mixed $default
      * @return mixed
      */
-    public function getParam($key, $default = null)
+    public function getParam($key = null, $default = null)
     {
+        if (!isset($key)) {
+            return $this->params;
+        }
+
         foreach ((array) $key as $k) {
             if (isset($this->params[$k])) {
                 return $this->params[$k];
@@ -264,36 +238,6 @@ class CliController
         }
 
         return $default;
-    }
-
-    /**
-     * Returns one or all command options
-     * @param null|string $name
-     * @param mixed $default
-     * @return mixed
-     */
-    public function getOption($name = null, $default = null)
-    {
-        if (isset($name)) {
-            return isset($this->options[$name]) ? $this->options[$name] : $default;
-        }
-
-        return $this->options;
-    }
-
-    /**
-     * Returns one or all command arguments
-     * @param null|string $name
-     * @param mixed $default
-     * @return mixed
-     */
-    public function getArgument($name = null, $default = null)
-    {
-        if (isset($name)) {
-            return isset($this->arguments[$name]) ? $this->arguments[$name] : $default;
-        }
-
-        return $this->arguments;
     }
 
     /**
@@ -472,10 +416,11 @@ class CliController
     /**
      * Output help for a certain command or the current command if a help option is presented
      * @param string|null $command
-     * @param array|string $help_options One or several help options, e.g -h, --help
      */
-    public function outputHelp($command = null, $help_options = array('h', 'help'))
+    public function outputHelp($command = null)
     {
+        $help_options = $this->config->get('cli_help_option', array('h', 'help'));
+
         if (!isset($command) && !$this->getParam($help_options, false)) {
             return null;
         }
