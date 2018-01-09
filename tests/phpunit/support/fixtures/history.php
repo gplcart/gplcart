@@ -12,13 +12,13 @@ return array(
         'user_id' => 1,
         'entity_id' => 1,
         'entity' => 'order',
-        'time' => 1234567890
+        'created' => 1234567890
     ),
     array(
         'history_id' => 2,
         'user_id' => 2,
         'entity_id' => 2,
         'entity' => 'order',
-        'time' => 1234567890
+        'created' => 1234567890
     )
 );
