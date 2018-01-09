@@ -108,6 +108,7 @@ $config = array();
 # $config['user_reset_password_lifespan']         = 24*60*60; // Max number of seconds before password reset link will expire
 # $config['user_superadmin']                      = 1; // Default database ID for superadmin
 # $config['cli_status']                           = 1; // Enable/disable CLI
+# $config['cli_help_option']                      = array('h', 'help'); // CLI options used to output a command help, e.g -h or --help
 # $config['field_value_image_dirname']            = 'field_value'; // Default folder for uploaded field value images
 # $config['compress_js']                          = 0; // Whether to aggregate JS files
 # $config['compress_css']                         = 0; // Whether to aggregate and compress CSS files
