@@ -148,7 +148,7 @@ class Logger
         }
 
         $data += array(
-            'time' => GC_TIME,
+            'created' => GC_TIME,
             'log_id' => gplcart_string_random(6)
         );
 
@@ -172,7 +172,7 @@ class Logger
             return array();
         }
 
-        $sql = "SELECT * FROM log WHERE type LIKE ? ORDER BY time DESC";
+        $sql = "SELECT * FROM log WHERE type LIKE ? ORDER BY created DESC";
 
         if (isset($limit)) {
             settype($limit, 'integer');

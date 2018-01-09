@@ -98,13 +98,13 @@ class Report
         }
 
         $allowed_order = array('asc', 'desc');
-        $allowed_sort = array('type', 'severity', 'time', 'text');
+        $allowed_sort = array('type', 'severity', 'created', 'text');
 
         if ((isset($options['sort']) && in_array($options['sort'], $allowed_sort))//
                 && (isset($options['order']) && in_array($options['order'], $allowed_order))) {
             $sql .= " ORDER BY {$options['sort']} {$options['order']}";
         } else {
-            $sql .= ' ORDER BY time DESC';
+            $sql .= ' ORDER BY created DESC';
         }
 
         if (!empty($options['limit'])) {
@@ -158,7 +158,7 @@ class Report
     public function deleteExpired()
     {
         $time = GC_TIME - $this->getExpiredLogLifespan();
-        $this->db->run('DELETE FROM log WHERE time < ?', array($time));
+        $this->db->run('DELETE FROM log WHERE created < ?', array($time));
     }
 
     /**

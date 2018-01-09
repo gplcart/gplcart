@@ -80,7 +80,7 @@ class ReportEvent extends BackendController
      */
     protected function setFilterListReportEvent()
     {
-        $this->setFilter(array('severity', 'type', 'time', 'text'));
+        $this->setFilter(array('severity', 'type', 'created', 'text'));
     }
 
     /**
@@ -141,7 +141,7 @@ class ReportEvent extends BackendController
                 $variables = $record['data']['variables'];
             }
 
-            $record['time'] = $this->date($record['time']);
+            $record['created'] = $this->date($record['created']);
 
             $type = "event_{$record['type']}";
             $record['type'] = $this->text($type);

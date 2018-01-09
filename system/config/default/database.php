@@ -230,7 +230,7 @@ return array(
     'log' => array(
         'fields' => array(
             'log_id' => array('type' => 'varchar', 'length' => 50, 'primary' => true),
-            'time' => array('type' => 'integer', 'length' => 10, 'not_null' => true),
+            'created' => array('type' => 'integer', 'length' => 10, 'not_null' => true),
             'text' => array('type' => 'text', 'not_null' => true),
             'type' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
             'severity' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),

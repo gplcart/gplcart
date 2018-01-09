@@ -35,7 +35,7 @@
           <th><a href="<?php echo $sort_text; ?>"><?php echo $this->text('Message'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_type; ?>"><?php echo $this->text('Type'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_severity; ?>"><?php echo $this->text('Severity'); ?> <i class="fa fa-sort"></i></a></th>
-          <th><a href="<?php echo $sort_time; ?>"><?php echo $this->text('Created'); ?> <i class="fa fa-sort"></i></a></th>
+          <th><a href="<?php echo $sort_created; ?>"><?php echo $this->text('Created'); ?> <i class="fa fa-sort"></i></a></th>
           <th></th>
         </tr>
         <tr class="filters active">
@@ -99,7 +99,7 @@
               <?php echo $this->e($record['severity_text']); ?>
             </span>
           </td>
-          <td><?php echo $record['time']; ?></td>
+          <td><?php echo $record['created']; ?></td>
           <td></td>
         </tr>
         <tr class="collapse active" id="message-<?php echo $record['log_id']; ?>">
