@@ -254,28 +254,13 @@ class Route
             $arguments = array();
             if (gplcart_path_match($path, $pattern, $arguments)) {
                 $conditions = array(strtok($pattern, '/'), reset($arguments));
-                $alias_path = $this->db->fetchColumn('SELECT alias FROM alias WHERE entity=? AND entity_id=?', $conditions);
+                $sql = 'SELECT alias FROM alias WHERE entity=? AND entity_id=?';
+                $alias_path = $this->db->fetchColumn($sql, $conditions);
             }
 
             if (!empty($alias_path)) {
                 $this->url->redirect($alias_path);
             }
-        }
-    }
-
-    /**
-     * Call a route handler
-     * @param string|array $route
-     * @param array $arguments
-     * @param string $method
-     */
-    public function callHandler($route, $arguments = array(), $method = 'controller')
-    {
-        try {
-            $route = $this->set($route, $arguments);
-            Handler::call($route, null, $method, $route['arguments']);
-        } catch (Exception $ex) {
-            throw new RouteException($ex->getMessage());
         }
     }
 
@@ -287,7 +272,18 @@ class Route
      */
     public function callController($route, array $arguments = array())
     {
-        $this->callHandler($route, $arguments);
+        try {
+            $route = $this->set($route, $arguments);
+            $callback = Handler::get($route, null, 'controller');
+            if (!$callback[0] instanceof \gplcart\core\Controller) {
+                throw new RouteException('Controller must be instance of \gplcart\core\Controller');
+            }
+            call_user_func_array($callback, $route['arguments']);
+        } catch (Exception $ex) {
+            throw new RouteException($ex->getMessage());
+        }
+
+        // We should never get here as the page callback must abort the script execution
         throw new RouteException('An error occurred while processing the route');
     }
 
@@ -299,7 +295,12 @@ class Route
      */
     public function callAliasController($pattern, $path, $alias)
     {
-        $this->callHandler($pattern, array($pattern, $path, $alias), 'alias');
+        try {
+            $route = $this->set($pattern, array($pattern, $path, $alias));
+            Handler::call($route, null, 'alias', $route['arguments']);
+        } catch (Exception $ex) {
+            throw new RouteException($ex->getMessage());
+        }
     }
 
     /**
