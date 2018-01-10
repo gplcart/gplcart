@@ -12,13 +12,26 @@ return array(
         'alias' => 'h',
         'description' => /* @text */'Displays all available commands',
         'usage' => array(
-            'php gplcart help [<command>] [options]'
+            'php gplcart help [<command>] [--help]'
         ),
         'options' => array(
             '-h, --help' => /* @text */'Show command help'
         ),
         'handlers' => array(
             'controller' => array('gplcart\\core\\controllers\\cli\\Help', 'help')
+        )
+    ),
+    'lang' => array(
+        'alias' => 'l',
+        'description' => /* @text */'Sets the current UI language',
+        'usage' => array(
+            'php gplcart lang [<code>] [--help]'
+        ),
+        'options' => array(
+            '-h, --help' => /* @text */'Show command help'
+        ),
+        'handlers' => array(
+            'controller' => array('gplcart\\core\\controllers\\cli\\Language', 'language')
         )
     ),
     'install' => array(
