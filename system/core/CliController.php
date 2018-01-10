@@ -36,6 +36,12 @@ class CliController
     protected $translation;
 
     /**
+     * Language model instance
+     * @var \gplcart\core\models\Language $language
+     */
+    protected $language;
+
+    /**
      * Config class instance
      * @var \gplcart\core\Config $config
      */
@@ -52,6 +58,12 @@ class CliController
      * @var \gplcart\core\Hook $hook
      */
     protected $hook;
+
+    /**
+     * The current language code
+     * @var string
+     */
+    protected $langcode = '';
 
     /**
      * The current CLI command
@@ -90,8 +102,10 @@ class CliController
     {
         $this->setInstanceProperties();
         $this->setRouteProperties();
+        $this->setLanguage();
 
         $this->hook->attach('construct.cli.controller', $this);
+
         $this->outputHelp();
     }
 
@@ -101,6 +115,22 @@ class CliController
     public function __destruct()
     {
         $this->hook->attach('destruct.cli.controller', $this);
+    }
+
+    /**
+     * Sets the current language
+     * @param null|string $code
+     * @return $this
+     */
+    public function setLanguage($code = null)
+    {
+        if (!isset($code)) {
+            $code = $this->config->get('cli_langcode', '');
+        }
+
+        $this->langcode = $code;
+        $this->translation->set($code, null);
+        return $this;
     }
 
     /**
@@ -147,8 +177,9 @@ class CliController
         $this->config = $this->getInstance('gplcart\\core\\Config');
         $this->route = $this->getInstance('gplcart\\core\\CliRoute');
         $this->cli = $this->getInstance('gplcart\\core\\helpers\Cli');
-        $this->translation = $this->getInstance('gplcart\\core\\models\\Translation');
+        $this->language = $this->getInstance('gplcart\\core\\models\\Language');
         $this->validator = $this->getInstance('gplcart\\core\\models\\Validator');
+        $this->translation = $this->getInstance('gplcart\\core\\models\\Translation');
     }
 
     /**
@@ -322,25 +353,21 @@ class CliController
      * @param string $text
      * @param bool $exit
      */
-    public function errorLine($text, $exit = true)
+    public function errorExit($text)
     {
-        $this->error($text)->line();
-
-        if ($exit) {
-            $this->abort(1);
-        }
+        $this->error($text)->abort(1);
     }
 
     /**
-     * Output and clear up all existing errors
+     * Print and clear up all existing errors
      * @param boolean $exit_on_error
      */
-    public function outputErrors($exit_on_error = false)
+    public function errors($exit_on_error = false)
     {
         if (!empty($this->errors)) {
 
             foreach (gplcart_array_flatten($this->errors) as $error) {
-                $this->errorLine($error, false);
+                $this->error($error);
             }
 
             $this->errors = array();
@@ -356,7 +383,7 @@ class CliController
      */
     public function output()
     {
-        $this->outputErrors(true);
+        $this->errors(true);
         $this->abort();
     }
 
@@ -462,13 +489,49 @@ class CliController
     }
 
     /**
+     * Shows language selector and validates user's input
+     * @param null|string $langcode
+     * @return string
+     */
+    public function selectLanguage($langcode = null)
+    {
+        $languages = array();
+        foreach ($this->language->getList() as $code => $language) {
+            if ($code === 'en' || is_file($this->translation->getFile($code))) {
+                $languages[$code] = $language['name'];
+            }
+        }
+
+        if (count($languages) < 2 && !isset($langcode)) {
+            return null;
+        }
+
+        if (isset($langcode)) {
+            $selected = $langcode;
+        } else {
+            $selected = $this->menu($languages, 'en', $this->text('Language (enter a number)'));
+        }
+
+        if (empty($languages[$selected])) {
+            $this->error($this->text('Invalid language'));
+            $this->selectLanguage();
+        } else {
+            $this->langcode = (string) $selected;
+            $this->translation->set($this->langcode, null);
+            $this->config->set('cli_langcode', $this->langcode);
+        }
+
+        return $this->langcode;
+    }
+
+    /**
      * Output an error message
      * @param string $text
      * @return $this
      */
     public function error($text)
     {
-        $this->cli->error($text);
+        $this->cli->error($text . PHP_EOL);
         return $this;
     }
 
