@@ -161,7 +161,7 @@ class CliRoute
     public function process()
     {
         $this->set();
-        $this->callHandler();
+        $this->callController();
         throw new RouteException('The command was completed incorrectly');
     }
 
@@ -199,15 +199,16 @@ class CliRoute
     }
 
     /**
-     * Call a route handler
-     * @param string $method
-     * @param array $params
+     * Call a route controller
      */
-    public function callHandler($method = 'controller', array $params = array())
+    protected function callController()
     {
         try {
-            $params = array_merge(array($this->route['params']), $params);
-            Handler::call($this->route, null, $method, $params);
+            $callback = Handler::get($this->route, null, 'controller');
+            if (!$callback[0] instanceof \gplcart\core\CliController) {
+                throw new RouteException('Controller must be instance of \gplcart\core\CliController');
+            }
+            call_user_func_array($callback, array());
         } catch (Exception $ex) {
             throw new RouteException($ex->getMessage());
         }
