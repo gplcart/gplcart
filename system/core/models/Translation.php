@@ -265,6 +265,10 @@ class Translation
      */
     public function getContextFile($context, $langcode)
     {
+        if (empty($context)) {
+            return '';
+        }
+
         static $files = array();
 
         if (!isset($files["$context$langcode"])) {
@@ -338,7 +342,7 @@ class Translation
 
         $translations = array();
 
-        if (!is_file($file)) {
+        if (empty($file) || !is_file($file)) {
             return $translations = array();
         }
 
