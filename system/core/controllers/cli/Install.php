@@ -11,8 +11,7 @@ namespace gplcart\core\controllers\cli;
 
 use PDO;
 use gplcart\core\CliController;
-use gplcart\core\models\Install as InstallModel,
-    gplcart\core\models\Language as LanguageModel;
+use gplcart\core\models\Install as InstallModel;
 
 /**
  * Handles CLI commands related to system installation
@@ -27,27 +26,13 @@ class Install extends CliController
     protected $install;
 
     /**
-     * Language model instance
-     * @var \gplcart\core\models\Language $language
-     */
-    protected $language;
-
-    /**
-     * Installation language
-     * @var string
-     */
-    protected $langcode = '';
-
-    /**
      * @param InstallModel $install
-     * @param LanguageModel $language
      */
-    public function __construct(InstallModel $install, LanguageModel $language)
+    public function __construct(InstallModel $install)
     {
         parent::__construct();
 
         $this->install = $install;
-        $this->language = $language;
     }
 
     /**
@@ -72,7 +57,7 @@ class Install extends CliController
      */
     protected function validateWizardInstall()
     {
-        $this->validateInputLanguageInstall();
+        $this->selectLanguage();
         $this->validateRequirementsInstall();
         $this->validateInstallerInstall();
         $this->validateInputTitleInstall();
@@ -93,7 +78,7 @@ class Install extends CliController
 
         $this->setSubmittedMapped($mapping, null, $default);
         $this->validateComponent('install');
-        $this->outputErrors(true);
+        $this->errors(true);
     }
 
     /**
@@ -146,7 +131,7 @@ class Install extends CliController
     protected function controlAccessInstall()
     {
         if ($this->config->isInitialized()) {
-            $this->errorLine($this->text('System already installed'));
+            $this->errorExit($this->text('System already installed'));
         }
     }
 
@@ -181,11 +166,11 @@ class Install extends CliController
         $this->validateComponent('install');
 
         if ($this->isError('database')) {
-            $this->outputErrors();
+            $this->errors();
             $this->validateInputDbInstall();
         }
 
-        $this->outputErrors(true);
+        $this->errors(true);
     }
 
     /**
@@ -211,35 +196,6 @@ class Install extends CliController
     }
 
     /**
-     * Validates a language input
-     */
-    protected function validateInputLanguageInstall()
-    {
-        $this->langcode = '';
-
-        $languages = array();
-        foreach ($this->language->getList() as $code => $language) {
-            if ($code === 'en' || is_file($this->translation->getFile($code))) {
-                $languages[$code] = $language['name'];
-            }
-        }
-
-        if (count($languages) < 2) {
-            return null;
-        }
-
-        $selected = $this->menu($languages, 'en', $this->text('Language (enter a number)'));
-
-        if (empty($languages[$selected])) {
-            $this->errorLine($this->text('Invalid language'), false);
-            $this->validateInputLanguageInstall();
-        } else {
-            $this->langcode = (string) $selected;
-            $this->translation->set($this->langcode, null);
-        }
-    }
-
-    /**
      * Validates installation profile input
      */
     protected function validateInstallerInstall()
@@ -258,7 +214,7 @@ class Install extends CliController
         $input = $this->menu($options, 'default', $this->text('Installation profile (enter a number)'));
 
         if (!$this->isValidInput($input, 'installer', 'install')) {
-            $this->outputErrors();
+            $this->errors();
             $this->validateInstallerInstall();
         }
     }
@@ -269,7 +225,7 @@ class Install extends CliController
     protected function validateRequirementsInstall()
     {
         $this->validateComponent('install', array('field' => 'requirements'));
-        $this->outputErrors(true);
+        $this->errors(true);
     }
 
     /**
@@ -278,9 +234,8 @@ class Install extends CliController
     protected function validateInputTitleInstall()
     {
         $input = $this->prompt($this->text('Store title'), 'GPLCart');
-
         if (!$this->isValidInput($input, 'store.title', 'install')) {
-            $this->outputErrors();
+            $this->errors();
             $this->validateInputTitleInstall();
         }
     }
@@ -291,9 +246,8 @@ class Install extends CliController
     protected function validateInputEmailInstall()
     {
         $input = $this->prompt($this->text('E-mail'), '');
-
         if (!$this->isValidInput($input, 'user.email', 'install')) {
-            $this->outputErrors();
+            $this->errors();
             $this->validateInputEmailInstall();
         }
     }
@@ -304,9 +258,8 @@ class Install extends CliController
     protected function validateInputPasswordInstall()
     {
         $input = $this->prompt($this->text('Password'), '');
-
         if (!$this->isValidInput($input, 'user.password', 'install')) {
-            $this->outputErrors();
+            $this->errors();
             $this->validateInputPasswordInstall();
         }
     }
@@ -317,9 +270,8 @@ class Install extends CliController
     protected function validateInputBasepathInstall()
     {
         $input = $this->prompt($this->text('Installation subdirectory'), '');
-
         if (!$this->isValidInput($input, 'store.basepath', 'install')) {
-            $this->outputErrors();
+            $this->errors();
             $this->validateInputBasepathInstall();
         }
     }
@@ -330,9 +282,8 @@ class Install extends CliController
     protected function validateInputDbNameInstall()
     {
         $input = $this->prompt($this->text('Database name'), '');
-
         if (!$this->isValidInput($input, 'database.name', 'install')) {
-            $this->outputErrors();
+            $this->errors();
             $this->validateInputDbNameInstall();
         }
     }
@@ -343,9 +294,8 @@ class Install extends CliController
     protected function validateInputDbUserInstall()
     {
         $input = $this->prompt($this->text('Database user'), 'root');
-
         if (!$this->isValidInput($input, 'database.user', 'install')) {
-            $this->outputErrors();
+            $this->errors();
             $this->validateInputDbUserInstall();
         }
     }
@@ -356,9 +306,8 @@ class Install extends CliController
     protected function validateInputDbPasswordInstall()
     {
         $input = $this->prompt($this->text('Database password'), '');
-
         if (!$this->isValidInput($input, 'database.password', 'install')) {
-            $this->outputErrors();
+            $this->errors();
             $this->validateInputDbPasswordInstall();
         }
     }
@@ -369,9 +318,8 @@ class Install extends CliController
     protected function validateInputDbPortInstall()
     {
         $input = $this->prompt($this->text('Database port'), '3306');
-
         if (!$this->isValidInput($input, 'database.port', 'install')) {
-            $this->outputErrors();
+            $this->errors();
             $this->validateInputDbPortInstall();
         }
     }
@@ -382,9 +330,8 @@ class Install extends CliController
     protected function validateInputDbHostInstall()
     {
         $input = $this->prompt($this->text('Database host'), 'localhost');
-
         if (!$this->isValidInput($input, 'database.host', 'install')) {
-            $this->outputErrors();
+            $this->errors();
             $this->validateInputDbHostInstall();
         }
     }
@@ -395,10 +342,11 @@ class Install extends CliController
     protected function validateInputDbTypeInstall()
     {
         $drivers = PDO::getAvailableDrivers();
-        $input = $this->menu(array_combine($drivers, $drivers), 'mysql', $this->text('Database type (enter a number)'));
+        $title = $this->text('Database type (enter a number)');
+        $input = $this->menu(array_combine($drivers, $drivers), 'mysql', $title);
 
         if (!$this->isValidInput($input, 'database.type', 'install')) {
-            $this->outputErrors();
+            $this->errors();
             $this->validateInputDbTypeInstall();
         }
     }
