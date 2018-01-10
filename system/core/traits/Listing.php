@@ -31,7 +31,6 @@ trait Listing
      * @param array $allowed
      * @param array $query
      * @param array $default
-     * @return array
      */
     protected function sortList(array &$list, array $allowed, array $query, array $default = array())
     {
@@ -50,8 +49,6 @@ trait Listing
                 return $this->callbackSortList($a, $b, $query);
             });
         }
-
-        return $list;
     }
 
     /**
@@ -59,21 +56,16 @@ trait Listing
      * @param array $list
      * @param array $allowed_fields
      * @param array $query
-     * @return array
      */
     protected function filterList(array &$list, array $allowed_fields, array $query)
     {
         $filter = array_intersect_key($query, array_flip($allowed_fields));
 
-        if (empty($filter)) {
-            return $list;
+        if (!empty($filter)) {
+            $list = array_filter($list, function ($item) use ($filter) {
+                return $this->callbackFilterList($item, $filter);
+            });
         }
-
-        $filtered = array_filter($list, function ($item) use ($filter) {
-            return $this->callbackFilterList($item, $filter);
-        });
-
-        return $list = $filtered;
     }
 
     /**
