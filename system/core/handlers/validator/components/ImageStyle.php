@@ -102,10 +102,19 @@ class ImageStyle extends BaseComponentValidator
             return false;
         }
 
-        $modified = $errors = array();
+        $modified = $errors = $processed = array();
         foreach ($actions as $line => $action) {
 
             $parts = gplcart_string_explode_whitespace($action, 2);
+
+            // Check action uniqueness
+            $key = implode('', $parts);
+            if (in_array($key, $processed)) {
+                $this->setError($field, $this->translation->text('Actions must be unique'));
+                return false;
+            }
+            $processed[] = $key;
+
             $action_id = array_shift($parts);
             $value = array_filter(explode(',', implode('', $parts)));
 
@@ -118,7 +127,7 @@ class ImageStyle extends BaseComponentValidator
         }
 
         if (!empty($errors)) {
-            $error = $this->translation->text('Error on line @num', array('@num' => implode(',', $errors)));
+            $error = $this->translation->text('Error on @num action definition', array('@num' => implode(',', $errors)));
             $this->setError($field, $error);
         }
 
