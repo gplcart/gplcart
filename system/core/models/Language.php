@@ -183,9 +183,14 @@ class Language
         }
 
         $default = $this->getDefaultData($code);
-        $data += $default;
-
         $languages = $this->config->select('languages', array());
+
+        if (empty($languages[$code])) {
+            $data += $default;
+        } else {
+            $data += $languages[$code];
+        }
+
         $languages[$code] = array_intersect_key($data, $default);
         $this->config->set('languages', $languages);
 
