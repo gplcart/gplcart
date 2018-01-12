@@ -1,16 +1,10 @@
 #!/usr/bin/env php
-
 <?php
 
-
 if (PHP_SAPI !== 'cli') {
-
     throw new \Exception('Only CLI access allowed!');
-
 }
 
-
 require 'system/bootstrap.php';
-
 
 \gplcart\core\Container::get('gplcart\\core\\Facade')->routeCli();
