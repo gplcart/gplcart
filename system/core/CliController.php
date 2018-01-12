@@ -10,6 +10,7 @@
 namespace gplcart\core;
 
 use InvalidArgumentException;
+use gplcart\core\exceptions\Access as AccessException;
 
 /**
  * Base parent CLI controller
@@ -103,9 +104,9 @@ class CliController
         $this->setInstanceProperties();
         $this->setRouteProperties();
         $this->setLanguage();
+        $this->controlAccess();
 
         $this->hook->attach('construct.cli.controller', $this);
-
         $this->outputHelp();
     }
 
@@ -115,6 +116,17 @@ class CliController
     public function __destruct()
     {
         $this->hook->attach('destruct.cli.controller', $this);
+    }
+
+    /**
+     * Control access to the route
+     * @throws AccessException
+     */
+    protected function controlAccess()
+    {
+        if (!$this->config->get('cli_status', 0)) {
+            throw new AccessException('CLI access is disabled!');
+        }
     }
 
     /**
@@ -201,6 +213,18 @@ class CliController
     public function text($text, array $arguments = array())
     {
         return $this->translation->text($text, $arguments);
+    }
+
+    /**
+     * Returns a truncated string
+     * @param string $string
+     * @param integer $length
+     * @param string $trimmarker
+     * @return string
+     */
+    public function truncate($string, $length = 100, $trimmarker = '...')
+    {
+        return mb_strimwidth($string, 0, $length, $trimmarker, 'UTF-8');
     }
 
     /**
@@ -457,6 +481,10 @@ class CliController
         }
 
         $routes = $this->route->getList();
+
+        if (empty($routes[$command])) {
+            $this->errorExit($this->text('Unknown command'));
+        }
 
         $shown = false;
         if (!empty($routes[$command]['description'])) {
