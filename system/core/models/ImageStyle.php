@@ -137,9 +137,14 @@ class ImageStyle
         }
 
         $default = $this->getDefaultData();
-        $data += $default;
-
         $imagestyles = $this->config->select('imagestyles', array());
+
+        if (empty($imagestyles[$imagestyle_id])) {
+            $data += $default;
+        } else {
+            $data += $imagestyles[$imagestyle_id];
+        }
+
         $imagestyles[$imagestyle_id] = array_intersect_key($data, $default);
         $this->config->set('imagestyles', $imagestyles);
 
