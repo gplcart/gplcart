@@ -56,6 +56,22 @@
     </div>
   </div>
   <div class="form-group">
+    <label class="col-md-2 control-label"><?php echo $this->text('CLI access'); ?></label>
+    <div class="col-md-4">
+      <div class="btn-group" data-toggle="buttons">
+        <label class="btn btn-default<?php echo empty($settings['cli_status']) ? '' : ' active'; ?>">
+          <input name="settings[cli_status]" type="radio" autocomplete="off" value="1"<?php echo empty($settings['cli_status']) ? '' : ' checked'; ?>><?php echo $this->text('Enabled'); ?>
+        </label>
+        <label class="btn btn-default<?php echo empty($settings['cli_status']) ? ' active' : ''; ?>">
+          <input name="settings[cli_status]" type="radio" autocomplete="off" value="0"<?php echo empty($settings['cli_status']) ? ' checked' : ''; ?>><?php echo $this->text('Disabled'); ?>
+        </label>
+      </div>
+      <div class="help-block">
+        <?php echo $this->text('If disabled, then all CLI commands made through standard entry point will be declined'); ?>
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
     <label class="col-md-2 control-label"><?php echo $this->text('Compress JS'); ?></label>
     <div class="col-md-4">
       <div class="btn-group" data-toggle="buttons">

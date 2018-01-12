@@ -49,6 +49,9 @@ class Settings extends BackendController
         return array(
             'cron_key' => '',
             'error_level' => 2,
+            'cli_status' => 0,
+            'compress_css' => 0,
+            'compress_js' => 0,
             'timezone' => 'Europe/London'
         );
     }
