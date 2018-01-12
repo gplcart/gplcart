@@ -186,9 +186,14 @@ class Currency
         }
 
         $default = $this->getDefaultData();
-        $data += $default;
-
         $currencies = $this->config->select('currencies', array());
+
+        if (empty($currencies[$code])) {
+            $data += $default;
+        } else {
+            $data += $currencies[$code];
+        }
+
         $currencies[$code] = array_intersect_key($data, $default);
         $this->config->set('currencies', $currencies);
 
