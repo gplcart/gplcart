@@ -205,6 +205,7 @@ class City extends BaseComponentValidator
             return false;
         }
 
+        $this->setSubmitted('country', $country['code']);
         return true;
     }
 
