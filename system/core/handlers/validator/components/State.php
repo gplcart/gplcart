@@ -142,10 +142,14 @@ class State extends BaseComponentValidator
             return null;
         }
 
-        $updating = $this->getUpdating();
         $value = $this->getSubmitted($field);
         $label = $this->translation->text('Code');
 
+        if ($this->isUpdating() && !isset($value)) {
+            return null;
+        }
+
+        $updating = $this->getUpdating();
         if (isset($updating['code']) && $updating['code'] === $value) {
             return true;
         }
@@ -173,7 +177,7 @@ class State extends BaseComponentValidator
     {
         $field = 'zone_id';
         $value = $this->getSubmitted($field);
-        $label = $this->translation->text('Code');
+        $label = $this->translation->text('Zone');
 
         if (empty($value)) {
             return null;
