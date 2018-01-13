@@ -70,7 +70,7 @@ class Country extends BaseComponentValidator
         $this->validateName();
         $this->validateNativeNameCountry();
         $this->validateZoneCountry();
-        $this->validateTemplateCountry();
+        $this->validateFormatCountry();
 
         return $this->getResult();
     }
@@ -155,27 +155,43 @@ class Country extends BaseComponentValidator
     }
 
     /**
-     * Validates country address template
+     * Validates country format
      * @return boolean
      */
-    protected function validateTemplateCountry()
+    protected function validateFormatCountry()
     {
-        $field = 'template';
+        $field = 'format';
+        $format = $this->getSubmitted($field);
+        $label = $this->translation->text('Format');
 
-        if ($this->isExcludedField($field)) {
+        if (!isset($format)) {
             return null;
         }
 
-        $template = $this->getSubmitted($field);
-        $label = $this->translation->text('Address template');
-
-        if ($this->isUpdating() && !isset($template)) {
-            return null;
-        }
-
-        if (empty($template)) {
-            $this->setErrorRequired($field, $label);
+        if (!is_array($format)) {
+            $this->setErrorInvalid($field, $label);
             return false;
+        }
+
+        $default = $this->country->getDefaultFormat();
+
+        if (!array_intersect_key($format, $default)) {
+            $this->setErrorInvalid($field, $label);
+            return false;
+        }
+
+        foreach ($format as $key => $value) {
+            if (!is_array($value) || !array_intersect_key($value, $default[$key])) {
+                $this->setErrorInvalid($field, $label);
+                return false;
+            }
+
+            foreach ($value as $v) {
+                if (!in_array(gettype($v), array('string', 'integer', 'boolean'))) {
+                    $this->setErrorInvalid($field, $label);
+                    return false;
+                }
+            }
         }
 
         return true;
@@ -205,7 +221,7 @@ class Country extends BaseComponentValidator
             return false;
         }
 
-        if (preg_match('/^[A-Z]{2}$/', $value) !== 1) {
+        if (preg_match('/^[a-zA-Z]{2}$/', $value) !== 1) {
             $this->setErrorInvalid($field, $label);
             return false;
         }
