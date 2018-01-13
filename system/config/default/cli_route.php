@@ -12,10 +12,12 @@ return array(
         'alias' => 'h',
         'description' => /* @text */'Displays all available commands',
         'usage' => array(
-            'php gplcart help [<command>] [--help]'
+            'php gplcart help -h',
+            'php gplcart (help | h)',
+            'php gplcart (help | h) <command>'
         ),
         'options' => array(
-            '-h, --help' => /* @text */'Show command help'
+            '-h' => /* @text */'Show command help'
         ),
         'handlers' => array(
             'controller' => array('gplcart\\core\\controllers\\cli\\Help', 'help')
@@ -23,12 +25,14 @@ return array(
     ),
     'lang' => array(
         'alias' => 'l',
-        'description' => /* @text */'Sets the current UI language',
+        'description' => /* @text */'Set UI language',
         'usage' => array(
-            'php gplcart lang [<code>] [--help]'
+            'php gplcart lang -h',
+            'php gplcart (lang | l)',
+            'php gplcart (lang | l) <code>'
         ),
         'options' => array(
-            '-h, --help' => /* @text */'Show command help'
+            '-h' => /* @text */'Show command help'
         ),
         'handlers' => array(
             'controller' => array('gplcart\\core\\controllers\\cli\\Language', 'language')
@@ -36,27 +40,29 @@ return array(
     ),
     'install' => array(
         'alias' => 'i',
-        'description' => /* @text */'Performs full system installation. If no options provided, then you will be guided step by step with the interactive wizard',
+        'description' => /* @text */'Performs full system installation',
+        'usage' => array(
+            'php gplcart -h',
+            'php gplcart (install | i)',
+            'php gplcart (install | i) (--email=<e-mail> --pass=<password> --db-name=<name>) [options]'
+        ),
         'options' => array(
             // Required
-            '--email=value' => /* @text */'Admin e-mail',
-            '--pass=value' => /* @text */'Admin password',
-            '--db-name=value' => /* @text */'Database name',
+            '--email' => /* @text */'Admin e-mail',
+            '--pass' => /* @text */'Admin password',
+            '--db-name' => /* @text */'Database name',
             // Optional
-            '--db-pass=value' => /* @text */'Database password',
-            '--db-user=value' => /* @text */'Database user [default: root]',
-            '--db-host=value' => /* @text */'Database host [default: localhost]',
-            '--db-type=value' => /* @text */'Database type [default: mysql]',
-            '--db-port=value' => /* @text */'Database port [default: 3306]',
-            '--title=value' => /* @text */'Store name [default: GPL Cart]',
-            '--basepath=value' => /* @text */'Installation subfolder name',
-            '--timezone=value' => /* @text */'Store timezone',
-            '--host=value' => /* @text */'Domain name',
-            '--installer=module' => /* @text */'ID of installer module that manages the installation',
-            '-h, --help' => /* @text */'Show command help',
-        ),
-        'usage' => array(
-            'php gplcart (install | i) [(--email=<e-mail> --pass=<password> --db-name=<name>)] [options]'
+            '--db-pass' => /* @text */'Database password',
+            '--db-user' => /* @text */'Database user [default: root]',
+            '--db-host' => /* @text */'Database host [default: localhost]',
+            '--db-type' => /* @text */'Database type [default: mysql]',
+            '--db-port' => /* @text */'Database port [default: 3306]',
+            '--title' => /* @text */'Store name [default: GPL Cart]',
+            '--basepath' => /* @text */'Installation subfolder name',
+            '--timezone' => /* @text */'Store timezone',
+            '--host' => /* @text */'Domain name',
+            '--installer' => /* @text */'ID of installer module that manages the installation',
+            '-h' => /* @text */'Show command help',
         ),
         'handlers' => array(
             'controller' => array('gplcart\\core\\controllers\\cli\\Install', 'install')
