@@ -14,8 +14,7 @@ return array(
         'status' => 0,
         'weight' => -9,
         'format' => serialize(array('phone' => array())),
-        'zone_id' => 1,
-        'template' => '%'
+        'zone_id' => 1
     ),
     array(
         'code' => 'UK',
@@ -24,7 +23,6 @@ return array(
         'status' => 1,
         'weight' => 9,
         'format' => serialize(array('phone' => array())),
-        'zone_id' => 2,
-        'template' => '%'
+        'zone_id' => 2
     )
 );

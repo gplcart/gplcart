@@ -68,18 +68,6 @@
       </div>
     </div>
   </div>
-  <div class="form-group required<?php echo $this->error('template', ' has-error'); ?>">
-    <label class="col-md-2 control-label"><?php echo $this->text('Address template'); ?></label>
-    <div class="col-md-4">
-      <textarea rows="6" name="country[template]" class="form-control"><?php echo isset($country['template']) ? $this->e($country['template']) : $default_address_template; ?></textarea>
-      <div class="help-block">
-        <?php echo $this->error('template'); ?>
-        <div class="text-muted">
-          <?php echo $this->text('This template will be used to print addresses for this country. Each replaced placeholder can be additionally processed by an optional filter. Filter is an existing global function with ONE required parameter. E.g to uppercase resulting value of %name placeholder enter the code: <code>%name|mb_strtoupper</code>'); ?>
-        </div>
-      </div>
-    </div>
-  </div>
   <div class="form-group<?php echo $this->error('zone_id', ' has-error'); ?>">
     <label class="col-md-2 control-label"><?php echo $this->text('Zone'); ?></label>
     <div class="col-md-4">

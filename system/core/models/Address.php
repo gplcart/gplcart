@@ -344,28 +344,6 @@ class Address
     }
 
     /**
-     * Returns a formatted address
-     * @param integer|array $address
-     * @return string
-     */
-    public function getFormatted($address)
-    {
-        if (!is_array($address)) {
-            $address = $this->get($address);
-        }
-
-        if (empty($address)) {
-            return '';
-        }
-
-        if (empty($address['country_address_template'])) {
-            $address['country_address_template'] = $this->country->getDefaultAddressTemplate();
-        }
-
-        return gplcart_string_render($address['country_address_template'], $address);
-    }
-
-    /**
      * Returns an array of exceeded addresses for the user ID
      * @param string|integer $user_id
      * @param null|array $existing

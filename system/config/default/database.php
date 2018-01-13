@@ -120,8 +120,7 @@ return array(
             'status' => array('type' => 'integer', 'length' => 1, 'not_null' => true, 'default' => 0),
             'weight' => array('type' => 'integer', 'length' => 2, 'not_null' => true, 'default' => 0),
             'format' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
-            'zone_id' => array('type' => 'integer', 'length' => 10, 'not_null' => true, 'default' => 0),
-            'template' => array('type' => 'text', 'not_null' => true, 'default' => '')
+            'zone_id' => array('type' => 'integer', 'length' => 10, 'not_null' => true, 'default' => 0)
         )
     ),
     'collection' => array(
