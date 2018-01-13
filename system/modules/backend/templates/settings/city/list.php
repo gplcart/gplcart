@@ -53,6 +53,7 @@
           <th><a href="<?php echo $sort_city_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_name; ?>"><?php echo $this->text('Name'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_status; ?>"><?php echo $this->text('Status'); ?> <i class="fa fa-sort"></i></a></th>
+          <th><?php echo $this->text('Country'); ?></th>
           <th></th>
         </tr>
         <tr class="filters active hidden-no-js">
@@ -72,6 +73,7 @@
               </option>
             </select>
           </th>
+          <th></th>
           <th class="middle">
             <a href="<?php echo $this->url($_path); ?>" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
               <i class="fa fa-refresh"></i>
@@ -85,7 +87,7 @@
       <tbody>
         <?php if ($_filtering && empty($cities)) { ?>
         <tr>
-          <td class="middle" colspan="5">
+          <td class="middle" colspan="6">
             <?php echo $this->text('No results'); ?>
             <a href="<?php echo $this->url($_path); ?>" class="clear-filter"><?php echo $this->text('Reset'); ?></a>
           </td>
@@ -103,6 +105,7 @@
             <i class="fa fa-check-square-o"></i>
             <?php } ?>
           </td>
+          <td class="middle"><?php echo $this->e($city['country']); ?></td>
           <td class="middle">
             <?php if ($this->access('city_edit')) { ?>
             <a href="<?php echo $this->url("admin/settings/city/edit/{$country['code']}/{$state['state_id']}/{$city['city_id']}"); ?>">
