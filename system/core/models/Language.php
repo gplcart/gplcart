@@ -176,25 +176,24 @@ class Language
             $data['status'] = true;
         }
 
-        $iso = $this->getIso();
+        $existing = $this->getList();
 
-        if (!empty($iso[$code])) {
-            $data += $iso[$code];
+        if (empty($existing[$code])) {
+            return false;
+        }
+
+        $saved = $this->config->select('languages', array());
+
+        if (empty($saved[$code])) {
+            $data += $existing[$code];
+        } else {
+            $data += $saved[$code];
         }
 
         $default = $this->getDefaultData($code);
-        $languages = $this->config->select('languages', array());
+        $saved[$code] = array_intersect_key($data, $default);
 
-        if (empty($languages[$code])) {
-            $data += $default;
-        } else {
-            $data += $languages[$code];
-        }
-
-        $languages[$code] = array_intersect_key($data, $default);
-        $this->config->set('languages', $languages);
-
-        $result = true;
+        $result = $this->config->set('languages', $saved);
         $this->hook->attach('language.update.after', $code, $data, $result, $this);
         return (bool) $result;
     }
