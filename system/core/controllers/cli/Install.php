@@ -42,10 +42,10 @@ class Install extends CliController
     {
         $this->controlAccessInstall();
 
-        if (empty($this->params)) {
-            $this->validateWizardInstall();
-        } else {
+        if ($this->getParam()) {
             $this->validateFastInstall();
+        } else {
+            $this->validateWizardInstall();
         }
 
         $this->processInstall();
