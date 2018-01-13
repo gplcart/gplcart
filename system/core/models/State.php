@@ -170,11 +170,10 @@ class State
             return false;
         }
 
-        $conditions = array('state_id' => $state_id);
-        $result = (bool) $this->db->delete('state', $conditions);
+        $result = (bool) $this->db->delete('state', array('state_id' => $state_id));
 
         if ($result) {
-            $this->db->delete('city', $conditions);
+            $this->db->delete('city', array('state_id' => $state_id));
         }
 
         $this->hook->attach('state.delete.after', $state_id, $check, $result, $this);
