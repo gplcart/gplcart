@@ -26,7 +26,8 @@ class Help extends CliController
     }
 
     /**
-     * Help command callback. Lists all available commands
+     * Callback for "help" command
+     * Shows help for a certain command or a list of all available commands
      */
     public function help()
     {
@@ -42,27 +43,23 @@ class Help extends CliController
         $routes = $this->route->getList();
         ksort($routes);
 
-        $this->line($this->text('List of available commands'));
+        $rows = array(
+            array(
+                $this->text('Command'),
+                $this->text('Alias'),
+                $this->text('Description')
+            )
+        );
 
         foreach ($routes as $command => $info) {
-
-            if (!empty($info['alias'])) {
-                $command .= ", {$info['alias']}";
-            }
-
-            if (empty($info['description'])) {
-                $this->line("  $command");
-                continue;
-            }
-
-            $vars = array(
-                '@command' => $command,
-                '@description' => $this->text($info['description'])
+            $rows[] = array(
+                $command,
+                empty($info['alias']) ? '' : $info['alias'],
+                empty($info['description']) ? '' : $info['description']
             );
-
-            $this->line($this->text('  @command - @description', $vars));
         }
-        
+
+        $this->table($rows);
         $this->output();
     }
 
