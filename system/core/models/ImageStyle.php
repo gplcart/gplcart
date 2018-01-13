@@ -136,19 +136,24 @@ class ImageStyle
             return (bool) $result;
         }
 
-        $default = $this->getDefaultData();
-        $imagestyles = $this->config->select('imagestyles', array());
+        $existing = $this->getList();
 
-        if (empty($imagestyles[$imagestyle_id])) {
-            $data += $default;
-        } else {
-            $data += $imagestyles[$imagestyle_id];
+        if (empty($existing[$imagestyle_id])) {
+            return false;
         }
 
-        $imagestyles[$imagestyle_id] = array_intersect_key($data, $default);
-        $this->config->set('imagestyles', $imagestyles);
+        $saved = $this->config->select('imagestyles', array());
 
-        $result = true;
+        if (empty($saved[$imagestyle_id])) {
+            $data += $existing[$imagestyle_id];
+        } else {
+            $data += $saved[$imagestyle_id];
+        }
+
+        $default = $this->getDefaultData();
+        $saved[$imagestyle_id] = array_intersect_key($data, $default);
+
+        $result = $this->config->set('imagestyles', $saved);
         $this->hook->attach('image.style.update.after', $imagestyle_id, $data, $result, $this);
         return (bool) $result;
     }
@@ -174,9 +179,8 @@ class ImageStyle
 
         $imagestyles = $this->config->select('imagestyles', array());
         unset($imagestyles[$imagestyle_id]);
-        $this->config->set('imagestyles', $imagestyles);
 
-        $result = true;
+        $result = $this->config->set('imagestyles', $imagestyles);
         $this->hook->attach('image.style.delete.after', $imagestyle_id, $check, $result, $this);
         return (bool) $result;
     }
