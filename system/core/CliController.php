@@ -470,7 +470,7 @@ class CliController
      */
     public function outputHelp($command = null)
     {
-        $help_options = $this->config->get('cli_help_option', array('h', 'help'));
+        $help_options = $this->config->get('cli_help_option', 'h');
 
         if (!isset($command) && !$this->getParam($help_options, false)) {
             return null;
