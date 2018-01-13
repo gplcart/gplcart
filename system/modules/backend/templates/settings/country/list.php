@@ -50,22 +50,22 @@
       <thead>
         <tr>
           <th><input type="checkbox" onchange="Gplcart.selectAll(this);"<?php echo $access_options ? '' : ' disabled'; ?>></th>
+          <th><a href="<?php echo $sort_code; ?>"><?php echo $this->text('Code'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_name; ?>"><?php echo $this->text('Name'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_native_name; ?>"><?php echo $this->text('Native name'); ?> <i class="fa fa-sort"></i></a></th>
-          <th><a href="<?php echo $sort_code; ?>"><?php echo $this->text('Code'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_status; ?>"><?php echo $this->text('Status'); ?> <i class="fa fa-sort"></i></a></th>
           <th></th>
         </tr>
         <tr class="filters active hidden-no-js">
           <th></th>
           <th class="middle">
+            <input class="form-control" name="code" value="<?php echo $filter_code; ?>" placeholder="<?php echo $this->text('Any'); ?>">
+          </th>
+          <th class="middle">
             <input class="form-control" name="name" value="<?php echo $filter_name; ?>" placeholder="<?php echo $this->text('Any'); ?>">
           </th>
           <th class="middle">
             <input class="form-control" name="native_name" value="<?php echo $filter_native_name; ?>" placeholder="<?php echo $this->text('Any'); ?>">
-          </th>
-          <th class="middle">
-            <input class="form-control" name="code" value="<?php echo $filter_code; ?>" placeholder="<?php echo $this->text('Any'); ?>">
           </th>
           <th class="middle">
             <select class="form-control" name="status">
@@ -100,9 +100,9 @@
         <?php foreach ($countries as $code => $country) { ?>
         <tr>
           <td class="middle"><input type="checkbox" class="select-all" name="action[items][]" value="<?php echo $code; ?>"<?php echo $access_options ? '' : ' disabled'; ?>></td>
+          <td class="middle"><?php echo $this->e($code); ?></td>
           <td class="middle"><?php echo $this->text($country['name']); ?></td>
           <td class="middle"><?php echo $this->e($country['native_name']); ?></td>
-          <td class="middle"><?php echo $this->e($code); ?></td>
           <td class="middle">
             <?php if (empty($country['status'])) { ?>
             <i class="fa fa-square-o"></i>
