@@ -185,19 +185,24 @@ class Currency
             $this->config->set('currency', $code);
         }
 
-        $default = $this->getDefaultData();
-        $currencies = $this->config->select('currencies', array());
+        $existing = $this->getList();
 
-        if (empty($currencies[$code])) {
-            $data += $default;
-        } else {
-            $data += $currencies[$code];
+        if (empty($existing[$code])) {
+            return false;
         }
 
-        $currencies[$code] = array_intersect_key($data, $default);
-        $this->config->set('currencies', $currencies);
+        $saved = $this->config->select('currencies', array());
 
-        $result = true;
+        if (empty($saved[$code])) {
+            $data += $existing[$code];
+        } else {
+            $data += $saved[$code];
+        }
+
+        $default = $this->getDefaultData();
+
+        $saved[$code] = array_intersect_key($data, $default);
+        $result = $this->config->set('currencies', $saved);
         $this->hook->attach('currency.update.after', $code, $data, $result, $this);
         return (bool) $result;
     }
