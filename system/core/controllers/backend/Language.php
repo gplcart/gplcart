@@ -50,6 +50,7 @@ class Language extends BackendController
         $this->setTitleEditLanguage();
         $this->setBreadcrumbEditLanguage();
 
+        $this->setData('edit', isset($code));
         $this->setData('language', $this->data_language);
         $this->setData('can_delete', $this->canDeleteLanguage());
         $this->setData('default_language', $this->language->getDefault());
