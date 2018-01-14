@@ -465,6 +465,23 @@ class CliController
     }
 
     /**
+     * Validates a user input
+     * @param string $field
+     * @param string $label
+     * @param string $validator
+     * @param string $default
+     */
+    protected function validateInput($field, $label, $validator, $default = '')
+    {
+        $input = $this->prompt($label, $default);
+        if (!$this->isValidInput($input, $field, $validator)) {
+            $this->errors();
+            // Prompt until correct input
+            $this->validateInput($field, $label, $validator, $default);
+        }
+    }
+
+    /**
      * Output help for a certain command or the current command if a help option is presented
      * @param string|null $command
      */
@@ -472,38 +489,53 @@ class CliController
     {
         $help_options = $this->config->get('cli_help_option', 'h');
 
-        if (!isset($command) && !$this->getParam($help_options, false)) {
-            return null;
+        if (isset($command) || $this->getParam($help_options)) {
+
+            if (!isset($command)) {
+                $command = $this->command;
+            }
+
+            $aliases = $this->route->getAliases();
+
+            if (isset($aliases[$command])) {
+                $command = $aliases[$command];
+            }
+
+            $routes = $this->route->getList();
+
+            if (empty($routes[$command])) {
+                $this->errorExit($this->text('Unknown command'));
+            }
+
+            $this->printHelpText($routes[$command]);
+            $this->output();
         }
+    }
 
-        if (!isset($command)) {
-            $command = $this->command;
-        }
-
-        $routes = $this->route->getList();
-
-        if (empty($routes[$command])) {
-            $this->errorExit($this->text('Unknown command'));
-        }
-
+    /**
+     * Print command help text
+     * @param array $command
+     */
+    protected function printHelpText(array $command)
+    {
         $shown = false;
-        if (!empty($routes[$command]['description'])) {
+        if (!empty($command['description'])) {
             $shown = true;
-            $this->line($this->text($routes[$command]['description']));
+            $this->line($this->text($command['description']));
         }
 
-        if (!empty($routes[$command]['usage'])) {
+        if (!empty($command['usage'])) {
             $shown = true;
             $this->line()->line($this->text('Usage:'));
-            foreach ($routes[$command]['usage'] as $usage) {
+            foreach ($command['usage'] as $usage) {
                 $this->line($usage);
             }
         }
 
-        if (!empty($routes[$command]['options'])) {
+        if (!empty($command['options'])) {
             $shown = true;
             $this->line()->line($this->text('Options:'));
-            foreach ($routes[$command]['options'] as $name => $description) {
+            foreach ($command['options'] as $name => $description) {
                 $vars = array('@option' => $name, '@description' => $this->text($description));
                 $this->line($this->text('  @option  @description', $vars));
             }
@@ -512,8 +544,6 @@ class CliController
         if (!$shown) {
             $this->line($this->text('No help found for the command'));
         }
-
-        $this->output();
     }
 
     /**
