@@ -95,14 +95,14 @@
         <td class="middle"><?php echo $this->e($currency['symbol']); ?></td>
         <td class="middle"><?php echo $this->e($currency['conversion_rate']); ?></td>
         <td class="middle">
-          <?php if ($default_currency == $code) { ?>
-          <i class="fa fa-check-square-o"></i>
-          <?php } else { ?>
+          <?php if (empty($currency['status'])) { ?>
           <i class="fa fa-square-o"></i>
+          <?php } else { ?>
+          <i class="fa fa-check-square-o"></i>
           <?php } ?>
         </td>
         <td class="middle">
-          <?php if (!empty($currency['status']) || $default_currency == $code) { ?>
+          <?php if ($default_currency == $code) { ?>
           <i class="fa fa-check-square-o"></i>
           <?php } else { ?>
           <i class="fa fa-square-o"></i>

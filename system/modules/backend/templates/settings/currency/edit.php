@@ -75,7 +75,7 @@
   <div class="required form-group<?php echo $this->error('code', ' has-error'); ?>">
     <label class="col-md-2 control-label"><?php echo $this->text('Code'); ?></label>
     <div class="col-md-4">
-      <input name="currency[code]" class="form-control" value="<?php echo (isset($currency['code'])) ? $this->e($currency['code']) : ''; ?>">
+      <input name="currency[code]" class="form-control" value="<?php echo (isset($currency['code'])) ? $this->e($currency['code']) : ''; ?>"<?php echo empty($edit) ? '' : ' disabled'; ?>>
       <div class="help-block">
         <?php echo $this->error('code'); ?>
         <div class="text-muted">

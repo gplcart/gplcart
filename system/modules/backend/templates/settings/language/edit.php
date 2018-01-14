@@ -64,7 +64,7 @@
   <div class="form-group required<?php echo $this->error('code', ' has-error'); ?>">
     <label class="col-md-2 control-label"><?php echo $this->text('Code'); ?></label>
     <div class="col-md-4">
-      <input name="language[code]" class="form-control" value="<?php echo isset($language['code']) ? $this->e($language['code']) : ''; ?>">
+      <input name="language[code]" class="form-control" value="<?php echo isset($language['code']) ? $this->e($language['code']) : ''; ?>"<?php echo empty($edit) ? '' : ' disabled'; ?>>
       <div class="help-block">
         <?php echo $this->error('code'); ?>
         <div class="text-muted">
