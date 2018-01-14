@@ -70,6 +70,8 @@ class Currency
             return (array) $result;
         }
 
+        $code = strtoupper($code);
+
         $list = $this->getList();
         $result = empty($list[$code]) ? array() : $list[$code];
         $this->hook->attach('currency.get.after', $code, $result, $this);
@@ -145,20 +147,20 @@ class Currency
         }
 
         $data['modified'] = GC_TIME;
-
-        $default = $this->getDefaultData();
-        $data += $default;
-
-        $currencies = $this->config->select('currencies', array());
-        $currencies[$data['code']] = array_intersect_key($data, $default);
-        $this->config->set('currencies', $currencies);
+        $data['code'] = strtoupper($data['code']);
 
         if (!empty($data['default'])) {
             $data['status'] = 1;
             $this->config->set('currency', $data['code']);
         }
 
-        $result = true;
+        $default = $this->getDefaultData();
+        $data += $default;
+
+        $currencies = $this->config->select('currencies', array());
+        $currencies[$data['code']] = array_intersect_key($data, $default);
+
+        $result = $this->config->set('currencies', $currencies);
         $this->hook->attach('currency.add.after', $data, $result, $this);
         return (bool) $result;
     }
@@ -178,17 +180,19 @@ class Currency
             return (bool) $result;
         }
 
+        $code = strtoupper($code);
+        $existing = $this->getList();
+
+        if (empty($existing[$code])) {
+            return false;
+        }
+
+        unset($data['code']);
         $data['modified'] = GC_TIME;
 
         if (!empty($data['default'])) {
             $data['status'] = 1;
             $this->config->set('currency', $code);
-        }
-
-        $existing = $this->getList();
-
-        if (empty($existing[$code])) {
-            return false;
         }
 
         $saved = $this->config->select('currencies', array());
@@ -222,15 +226,16 @@ class Currency
             return (bool) $result;
         }
 
+        $code = strtoupper($code);
+
         if ($check && !$this->canDelete($code)) {
             return false;
         }
 
         $currencies = $this->config->select('currencies', array());
         unset($currencies[$code]);
-        $this->config->set('currencies', $currencies);
 
-        $result = true;
+        $result = $this->config->set('currencies', $currencies);
         $this->hook->attach('currency.delete.after', $code, $check, $result, $this);
         return (bool) $result;
     }
@@ -242,6 +247,8 @@ class Currency
      */
     public function canDelete($code)
     {
+        $code = strtoupper($code);
+
         if ($code == $this->getDefault()) {
             return false;
         }
@@ -322,7 +329,8 @@ class Currency
      */
     public function getFromCookie()
     {
-        return $this->request->cookie('currency', '', 'string');
+        $code = $this->request->cookie('currency', '', 'string');
+        return strtoupper($code);
     }
 
     /**
@@ -331,7 +339,8 @@ class Currency
      */
     public function getFromUrl()
     {
-        return $this->request->get('currency', '', 'string');
+        $code = $this->request->get('currency', '', 'string');
+        return strtoupper($code);
     }
 
     /**
@@ -340,7 +349,8 @@ class Currency
      */
     public function getDefault()
     {
-        return $this->config->get('currency', 'USD');
+        $code = $this->config->get('currency', 'USD');
+        return strtoupper($code);
     }
 
     /**
@@ -363,7 +373,7 @@ class Currency
      * Returns an array of default currency data
      * @return array
      */
-    protected function getDefaultData()
+    public function getDefaultData()
     {
         return array(
             'code' => '',
