@@ -7,4 +7,7 @@ if (PHP_SAPI !== 'cli') {
 
 require 'system/bootstrap.php';
 
-\gplcart\core\Container::get('gplcart\\core\\Facade')->routeCli();
+/**
+ * @uses \gplcart\core\Facade::routeCli()
+ */
+gplcart_instance('Facade')->routeCli();
