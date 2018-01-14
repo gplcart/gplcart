@@ -168,21 +168,16 @@ class Currency extends BaseComponentValidator
     }
 
     /**
-     * Validates currency Conversion rate
+     * Validates currency conversion rate
      * @return boolean|null
      */
     protected function validateConvertionRateCurrency()
     {
         $field = 'conversion_rate';
-
-        if ($this->isExcludedField($field)) {
-            return null;
-        }
-
         $conversion_rate = $this->getSubmitted($field);
         $label = $this->translation->text('Conversion rate');
 
-        if ($this->isUpdating() && !isset($conversion_rate)) {
+        if (!isset($conversion_rate)) {
             return null;
         }
 
@@ -206,19 +201,14 @@ class Currency extends BaseComponentValidator
     protected function validateRoundingStepCurrency()
     {
         $field = 'rounding_step';
-
-        if ($this->isExcludedField($field)) {
-            return null;
-        }
-
         $rounding_step = $this->getSubmitted($field);
         $label = $this->translation->text('Rounding step');
 
-        if ($this->isUpdating() && !isset($rounding_step)) {
+        if (!isset($rounding_step)) {
             return null;
         }
 
-        if (!isset($rounding_step) || strlen($rounding_step) > 10) {
+        if (strlen($rounding_step) > 10) {
             $this->setErrorLengthRange($field, $label, 1, 10);
             return false;
         }
@@ -238,21 +228,11 @@ class Currency extends BaseComponentValidator
     protected function validateDecimalsCurrency()
     {
         $field = 'decimals';
-
-        if ($this->isExcludedField($field)) {
-            return null;
-        }
-
         $value = $this->getSubmitted($field);
         $label = $this->translation->text('Decimals');
 
-        if ($this->isUpdating() && !isset($value)) {
-            return null;
-        }
-
         if (!isset($value)) {
-            $this->setErrorRequired($field, $label);
-            return false;
+            return null;
         }
 
         if (preg_match('/^[0-2]+$/', $value) !== 1) {
@@ -332,7 +312,7 @@ class Currency extends BaseComponentValidator
             return false;
         }
 
-        if (preg_match('/^[A-Z]{3}$/', $value) !== 1) {
+        if (preg_match('/^[a-zA-Z]{3}$/', $value) !== 1) {
             $this->setErrorInvalid($field, $label);
             return false;
         }
@@ -351,7 +331,7 @@ class Currency extends BaseComponentValidator
             return false;
         }
 
-        $this->setSubmitted('code', $code);
+        $this->setSubmitted($field, $code);
         return true;
     }
 
