@@ -184,6 +184,7 @@ class CliRoute
 
             if (empty($routes[$command])) {
                 $command = 'help';
+                $this->params = array();
             }
 
             if (empty($routes[$command])) {
