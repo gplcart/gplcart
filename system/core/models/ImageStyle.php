@@ -291,7 +291,7 @@ class ImageStyle
     }
 
     /**
-     * Removes cached files for a given image style
+     * Removes cached files for all or a certain image style
      * @param integer|null $imagestyle_id
      * @return boolean
      */
