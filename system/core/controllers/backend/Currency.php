@@ -157,6 +157,7 @@ class Currency extends BackendController
         $this->setTitleEditCurrency();
         $this->setBreadcrumbEditCurrency();
 
+        $this->setData('edit', isset($code));
         $this->setData('currency', $this->data_currency);
         $this->setData('can_delete', $this->canDeleteCurrency());
         $this->setData('default_currency', $this->currency->getDefault());
@@ -203,10 +204,8 @@ class Currency extends BackendController
      */
     protected function canDeleteCurrency()
     {
-        return isset($this->data_currency['code'])//
-                && $this->access('currency_delete')//
-                && !$this->isPosted()//
-                && $this->currency->canDelete($this->data_currency['code']);
+        return isset($this->data_currency['code']) && $this->access('currency_delete')//
+                && !$this->isPosted() && $this->currency->canDelete($this->data_currency['code']);
     }
 
     /**
