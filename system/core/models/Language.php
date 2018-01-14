@@ -145,9 +145,8 @@ class Language
 
         $languages = $this->config->select('languages', array());
         $languages[$data['code']] = array_intersect_key($data, $default);
-        $this->config->set('languages', $languages);
 
-        $result = true;
+        $result = $this->config->set('languages', $languages);
         $this->hook->attach('language.add.after', $data, $result, $this);
         return (bool) $result;
     }
@@ -167,6 +166,14 @@ class Language
             return (bool) $result;
         }
 
+        $existing = $this->getList();
+
+        if (empty($existing[$code])) {
+            return false;
+        }
+
+        unset($data['code']);
+
         if (!empty($data['default'])) {
             $data['status'] = true;
             $this->setDefault($code);
@@ -174,12 +181,6 @@ class Language
 
         if ($this->isDefault($code)) {
             $data['status'] = true;
-        }
-
-        $existing = $this->getList();
-
-        if (empty($existing[$code])) {
-            return false;
         }
 
         $saved = $this->config->select('languages', array());
@@ -217,15 +218,14 @@ class Language
             return false;
         }
 
-        $languages = $this->config->select('languages', array());
-        unset($languages[$code]);
-        $this->config->set('languages', $languages);
-
         if ($this->isDefault($code)) {
             $this->config->reset('language');
         }
 
-        $result = true;
+        $languages = $this->config->select('languages', array());
+        unset($languages[$code]);
+
+        $result = $this->config->set('languages', $languages);
         $this->hook->attach('language.delete.after', $code, $check, $result, $this);
         return (bool) $result;
     }
