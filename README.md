@@ -49,7 +49,7 @@ In one line: `composer create-project gplcart/gplcart test --stability dev --no-
 - Dependency injection
 - Modules are damn simple, theme = module. [See how you can generate your module](https://github.com/gplcart/skeleton)
 - Hooks
-- Command line support (extensible)
+- Command line support ([extensible](https://github.com/gplcart/cli))
 - Ability to rewrite almost any core method from a module (no monkey patching, "VQ mods")
 - Supports any template engine, including [TWIG](https://github.com/gplcart/twig)
 - Supports versioned dependencies for modules and 3-d party libraries
