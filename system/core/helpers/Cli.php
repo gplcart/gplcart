@@ -140,13 +140,13 @@ class Cli
     /**
      * Displays an input prompt
      * @param string $question
-     * @param string $default
+     * @param string|null $default
      * @param string $marker
      * @return mixed
      */
-    public function prompt($question, $default = '', $marker = ': ')
+    public function prompt($question, $default = null, $marker = ': ')
     {
-        if ($default !== '' && strpos($question, '[') === false) {
+        if (isset($default) && strpos($question, '[') === false) {
             $question .= ' [default: ' . $default . ']';
         }
 
@@ -170,7 +170,7 @@ class Cli
      */
     public function menu($items, $default = null, $title = 'Choose an item')
     {
-        if (isset($items[$default]) && $items[$default] !== '' && strpos($title, '[') === false) {
+        if (isset($items[$default]) && strpos($title, '[') === false) {
             $title .= ' [default: ' . $items[$default] . ']';
         }
 
