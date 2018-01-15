@@ -245,7 +245,7 @@ class Install extends CliController
      */
     protected function validateInputEmailInstall()
     {
-        $input = $this->prompt($this->text('E-mail'), '');
+        $input = $this->prompt($this->text('E-mail'));
         if (!$this->isValidInput($input, 'user.email', 'install')) {
             $this->errors();
             $this->validateInputEmailInstall();
@@ -257,7 +257,7 @@ class Install extends CliController
      */
     protected function validateInputPasswordInstall()
     {
-        $input = $this->prompt($this->text('Password'), '');
+        $input = $this->prompt($this->text('Password'));
         if (!$this->isValidInput($input, 'user.password', 'install')) {
             $this->errors();
             $this->validateInputPasswordInstall();
@@ -281,7 +281,7 @@ class Install extends CliController
      */
     protected function validateInputDbNameInstall()
     {
-        $input = $this->prompt($this->text('Database name'), '');
+        $input = $this->prompt($this->text('Database name'));
         if (!$this->isValidInput($input, 'database.name', 'install')) {
             $this->errors();
             $this->validateInputDbNameInstall();
