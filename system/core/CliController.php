@@ -296,6 +296,28 @@ class CliController
     }
 
     /**
+     * Returns an array of command positional arguments
+     * @return array
+     */
+    public function getArguments()
+    {
+        return array_filter($this->params, function($key) {
+            return is_int($key);
+        }, ARRAY_FILTER_USE_KEY);
+    }
+
+    /**
+     * Returns an array of command options like --op or -o
+     * @return array
+     */
+    public function getOptions()
+    {
+        return array_filter($this->params, function($key) {
+            return !is_numeric($key);
+        }, ARRAY_FILTER_USE_KEY);
+    }
+
+    /**
      * Returns the current CLI command
      * @return string
      */
