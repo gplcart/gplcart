@@ -65,8 +65,7 @@ class Language extends BackendController
      */
     protected function canDeleteLanguage()
     {
-        return isset($this->data_language['code'])//
-                && $this->access('language_delete')//
+        return isset($this->data_language['code']) && $this->access('language_delete')//
                 && $this->language->canDelete($this->data_language['code']);
     }
 
@@ -262,7 +261,7 @@ class Language extends BackendController
 
         $allowed = $this->getAllowedFiltersLanguage();
         $this->filterList($languages, $allowed, $this->query_filter);
-        $this->sortList($languages, $allowed, $this->query_filter, array('name' => 'desc'));
+        $this->sortList($languages, $allowed, $this->query_filter, array('code' => 'asc'));
 
         if ($count) {
             return count($languages);
