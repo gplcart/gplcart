@@ -10,17 +10,19 @@
 ?>
 <?php if (!empty($languages) || $_filtering) { ?>
 <?php if ($this->access('language_add')) { ?>
-<a class="btn btn-default" href="<?php echo $this->url("admin/settings/language/add"); ?>">
-  <?php echo $this->text('Add'); ?>
-</a>
+<div class="btn-toolbar actions">
+  <a class="btn btn-default" href="<?php echo $this->url("admin/settings/language/add"); ?>">
+    <?php echo $this->text('Add'); ?>
+  </a>
+</div>
 <?php } ?>
 <div class="table-responsive">
   <table class="table languages">
     <thead>
       <tr>
+        <th><a href="<?php echo $sort_code; ?>"><?php echo $this->text('Code'); ?> <i class="fa fa-sort"></i></a></th>
         <th><a href="<?php echo $sort_name; ?>"><?php echo $this->text('Name'); ?> <i class="fa fa-sort"></i></a></th>
         <th><a href="<?php echo $sort_native_name; ?>"><?php echo $this->text('Native name'); ?> <i class="fa fa-sort"></i></a></th>
-        <th><a href="<?php echo $sort_code; ?>"><?php echo $this->text('Code'); ?> <i class="fa fa-sort"></i></a></th>
         <th><a href="<?php echo $sort_rtl; ?>"><?php echo $this->text('Right-to-left'); ?> <i class="fa fa-sort"></i></a></th>
         <th><a href="<?php echo $sort_default; ?>"><?php echo $this->text('Default'); ?> <i class="fa fa-sort"></i></a></th>
         <th><a href="<?php echo $sort_in_database; ?>"><?php echo $this->text('In database'); ?> <i class="fa fa-sort"></i></a></th>
@@ -28,9 +30,9 @@
         <th></th>
       </tr>
       <tr class="filters active hidden-no-js">
+        <th><input class="form-control" name="code" value="<?php echo $filter_code; ?>" placeholder="<?php echo $this->text('Any'); ?>"></th>
         <th><input class="form-control" name="name" value="<?php echo $filter_name; ?>" placeholder="<?php echo $this->text('Any'); ?>"></th>
         <th><input class="form-control" name="native_name" value="<?php echo $filter_native_name; ?>" placeholder="<?php echo $this->text('Any'); ?>"></th>
-        <th><input class="form-control" name="code" value="<?php echo $filter_code; ?>" placeholder="<?php echo $this->text('Any'); ?>"></th>
         <th>
           <select class="form-control" name="rtl">
             <option value=""><?php echo $this->text('Any'); ?></option>
@@ -96,9 +98,9 @@
       <?php } ?>
       <?php foreach ($languages as $code => $language) { ?>
       <tr data-code="<?php echo $code; ?>">
+        <td class="middle"><?php echo $this->e($code); ?></td>
         <td class="middle"><?php echo $this->text($language['name']); ?></td>
         <td class="middle"><?php echo $this->e($language['native_name']); ?></td>
-        <td class="middle"><?php echo $this->e($code); ?></td>
         <td class="middle">
           <?php if (empty($language['rtl'])) { ?>
           <i class="fa fa-square-o"></i>
