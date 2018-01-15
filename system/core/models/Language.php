@@ -140,8 +140,16 @@ class Language
             $this->setDefault($data['code']);
         }
 
-        $default = $this->getDefaultData($data['code']);
+        $default = $this->getDefaultData();
         $data += $default;
+
+        if (empty($data['name'])) {
+            $data['name'] = $data['code'];
+        }
+
+        if (empty($data['native_name'])) {
+            $data['native_name'] = $data['name'];
+        }
 
         $languages = $this->config->select('languages', array());
         $languages[$data['code']] = array_intersect_key($data, $default);
@@ -191,7 +199,7 @@ class Language
             $data += $saved[$code];
         }
 
-        $default = $this->getDefaultData($code);
+        $default = $this->getDefaultData();
         $saved[$code] = array_intersect_key($data, $default);
 
         $result = $this->config->set('languages', $saved);
@@ -318,19 +326,18 @@ class Language
 
     /**
      * Returns an array of default language data
-     * @param string $code
      * @return array
      */
-    protected function getDefaultData($code = '')
+    public function getDefaultData()
     {
         return array(
-            'code' => $code,
-            'name' => $code,
+            'code' => '',
+            'name' => '',
             'weight' => 0,
             'rtl' => false,
             'status' => false,
             'default' => false,
-            'native_name' => $code,
+            'native_name' => '',
         );
     }
 
