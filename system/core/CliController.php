@@ -469,9 +469,9 @@ class CliController
      * @param string $field
      * @param string $label
      * @param string $validator
-     * @param string $default
+     * @param string|null $default
      */
-    protected function validateInput($field, $label, $validator, $default = '')
+    protected function validateInput($field, $label, $validator, $default = null)
     {
         $input = $this->prompt($label, $default);
         if (!$this->isValidInput($input, $field, $validator)) {
@@ -618,11 +618,11 @@ class CliController
     /**
      * Output an input prompt
      * @param string $question
-     * @param string $default
+     * @param string|null $default
      * @param string $marker
      * @return mixed
      */
-    public function prompt($question, $default = '', $marker = ': ')
+    public function prompt($question, $default = null, $marker = ': ')
     {
         return $this->cli->prompt($question, $default, $marker);
     }
