@@ -99,7 +99,11 @@ class Oauth
 
         foreach ($providers as $provider_id => &$provider) {
 
-            $provider += array('type' => '', 'id' => $provider_id, 'status' => true);
+            $provider += array(
+                'type' => '',
+                'status' => true,
+                'id' => $provider_id
+            );
 
             if (isset($data['type']) && $data['type'] !== $provider['type']) {
                 unset($providers[$provider_id]);
