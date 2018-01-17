@@ -105,12 +105,7 @@ class Trigger
 
         if (isset($options['store_id'])) {
             $sql .= ' AND store_id = ?';
-            $conditions[] = (int) $options['store_id'];
-        }
-
-        if (isset($options['weight'])) {
-            $sql .= ' AND weight = ?';
-            $conditions[] = (int) $options['weight'];
+            $conditions[] = $options['store_id'];
         }
 
         if (isset($options['name'])) {
