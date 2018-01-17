@@ -68,7 +68,7 @@
           <div class="help-block">
             <?php echo $this->error('weight'); ?>
             <div class="text-muted">
-              <?php echo $this->text('Position of the trigger among other enabled triggers. Triggers with lower weight are invoked earlier'); ?>
+              <?php echo $this->text('Position of the trigger among other enabled triggers. Triggers with lower weight are processed earlier'); ?>
             </div>
           </div>
         </div>
@@ -80,7 +80,7 @@
           <div class="help-block">
             <?php echo $this->error('data.conditions'); ?>
             <div class="text-muted">
-              <?php echo $this->text('Specify which conditions must be met to invoke the trigger. One condition per line. See the legend. Conditions are checked from the top to bottom. Format: <code>[condition ID][space][operator][space][parameter(s)]</code>'); ?>
+              <?php echo $this->text('Specify which conditions must be met to fire the trigger. One condition per line. Conditions are checked from the top to bottom. Format: <code>[condition ID][space][operator][space][parameter(s)]</code>. E.g, to fire the trigger for logged in users: <code>user_id > 0</code>'); ?>
             </div>
           </div>
         </div>

@@ -27,7 +27,6 @@
         </div>
       </div>
     </div>
-    <?php if (!isset($store['store_id']) || $store['store_id']) { ?>
     <div class="form-group required<?php echo $this->error('name', ' has-error'); ?>">
       <label class="col-md-2 control-label">
         <?php echo $this->text('Name'); ?>
@@ -40,7 +39,16 @@
         </div>
       </div>
     </div>
-    <?php } ?>
+    <div class="form-group<?php echo $this->error('data.title', ' has-error'); ?>">
+      <label class="col-md-2 control-label"><?php echo $this->text('Title'); ?></label>
+      <div class="col-md-4">
+        <input type="text" maxlength="70" name="store[data][title]" class="form-control" value="<?php echo $this->e($store['data']['title']); ?>">
+        <div class="help-block">
+          <?php echo $this->error('data.title'); ?>
+          <div class="text-muted"><?php echo $this->text('Site name that is displayed to customers in <code>title</code> meta-tag, outcoming e-mails etc'); ?></div>
+        </div>
+      </div>
+    </div>
     <?php if (!$is_default) { ?>
     <div class="form-group required<?php echo $this->error('domain', ' has-error'); ?>">
       <label class="col-md-2 control-label"><?php echo $this->text('Domain'); ?></label>
@@ -55,7 +63,7 @@
       </div>
     </div>
     <div class="form-group<?php echo $this->error('basepath', ' has-error'); ?>">
-      <label class="col-md-2 control-label"><?php echo $this->text('Base path'); ?></label>
+      <label class="col-md-2 control-label"><?php echo $this->text('Path'); ?></label>
       <div class="col-md-4">
         <input maxlength="50" name="store[basepath]" class="form-control" value="<?php echo isset($store['basepath']) ? $this->e($store['basepath']) : ''; ?>">
         <div class="help-block">
@@ -67,17 +75,7 @@
       </div>
     </div>
     <?php } ?>
-    <div class="required form-group<?php echo $this->error('data.title', ' has-error'); ?>">
-      <label class="col-md-2 control-label"><?php echo $this->text('Title'); ?></label>
-      <div class="col-md-4">
-        <input type="text" maxlength="70" name="store[data][title]" class="form-control" value="<?php echo $this->e($store['data']['title']); ?>">
-        <div class="help-block">
-          <?php echo $this->error('data.title'); ?>
-          <div class="text-muted"><?php echo $this->text('Default site name that is displayed to customers. This string will be used by default in <code>title</code> meta-tag, outcoming e-mails etc'); ?></div>
-        </div>
-      </div>
-    </div>
-    <div class="form-group required<?php echo $this->error('data.email', ' has-error'); ?>">
+    <div class="form-group<?php echo $this->error('data.email', ' has-error'); ?><?php echo $is_default ? ' required' : ''; ?>">
       <label class="col-md-2 control-label"><?php echo $this->text('E-mail'); ?></label>
       <div class="col-md-4">
         <textarea name="store[data][email]" class="form-control"><?php echo $this->e($store['data']['email']); ?></textarea>
