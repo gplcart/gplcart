@@ -577,7 +577,7 @@ abstract class Controller
      */
     public function image($path, $imagestyle_id = null, $absolute = false)
     {
-        return $this->image->url($path, $imagestyle_id, $absolute);
+        return $this->image->getUrl($path, $imagestyle_id, $absolute);
     }
 
     /**
@@ -1126,7 +1126,8 @@ abstract class Controller
         } elseif ($this->is_install) {
             $this->theme = $this->theme_frontend;
         } elseif (!empty($this->current_store)) {
-            $this->theme_frontend = $this->theme = $this->store->config('theme');
+            $this->theme_frontend = $this->store->getConfig('theme');
+            $this->theme = $this->theme_frontend;
         }
 
         $this->hook->attach('theme', $this);
