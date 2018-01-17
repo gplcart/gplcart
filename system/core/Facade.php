@@ -85,7 +85,7 @@ class Facade
      */
     public function routeCli()
     {
-        if (!$this->config->get('cli_status', 0)) {
+        if (!$this->config->get('cli_status', 1)) {
             echo 'CLI access is disabled!' . PHP_EOL;
             exit(1);
         }
