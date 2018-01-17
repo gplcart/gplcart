@@ -124,7 +124,7 @@ class CliController
      */
     protected function controlAccess()
     {
-        if (!$this->config->get('cli_status', 0)) {
+        if (!$this->config->get('cli_status', 1)) {
             throw new AccessException('CLI access is disabled!');
         }
     }
@@ -256,6 +256,17 @@ class CliController
         }
 
         return $this->submitted = (array) $data;
+    }
+
+    /**
+     * Removes a value(s) from an array of submitted data
+     * @param string|array $key
+     * @return array
+     */
+    public function unsetSubmitted($key)
+    {
+        gplcart_array_unset($this->submitted, $key);
+        return $this->submitted;
     }
 
     /**
@@ -397,7 +408,6 @@ class CliController
     /**
      * Output an error message and stop the script execution
      * @param string $text
-     * @param bool $exit
      */
     public function errorExit($text)
     {
