@@ -112,7 +112,7 @@ class Store
         $result = empty($list) ? array() : reset($list);
 
         if (!empty($result)) {
-            $result['data'] += $this->defaultConfig();
+            $result['data'] += $this->getDefaultData();
         }
 
         $this->hook->attach('store.get.after', $store, $result, $this);
@@ -213,7 +213,7 @@ class Store
      * Returns an array of default store settings
      * @return array
      */
-    public function defaultConfig()
+    public function getDefaultData()
     {
         return array(
             'address' => '',
@@ -227,12 +227,12 @@ class Store
             'fax' => array(),
             'logo' => '',
             'map' => array(),
-            'meta_title' => 'GPLCart',
+            'meta_title' => '',
             'meta_description' => '',
             'owner' => '',
             'phone' => array(),
             'theme' => 'frontend',
-            'title' => 'GPLCart',
+            'title' => '',
             'collection_file' => 1,
             'collection_product' => 2,
             'collection_page' => 3,
@@ -254,7 +254,9 @@ class Store
             return (int) $result;
         }
 
+        $data['data'] += $this->getDefaultData();
         $data['created'] = $data['modified'] = GC_TIME;
+
         $result = $this->db->insert('store', $data);
 
         $this->hook->attach('store.add.after', $data, $result, $this);
@@ -383,7 +385,7 @@ class Store
      */
     public function getTranslation($item, $langcode, $store = null)
     {
-        $config = $this->config(null, $store);
+        $config = $this->getConfig(null, $store);
 
         if (!empty($config['translation'][$langcode][$item])) {
             return $config['translation'][$langcode][$item];
@@ -402,7 +404,7 @@ class Store
      * @param mixed $store
      * @return mixed
      */
-    public function config($item = null, $store = null)
+    public function getConfig($item = null, $store = null)
     {
         if (empty($store)) {
             $store = $this->get();
@@ -411,7 +413,7 @@ class Store
         }
 
         if (empty($store['data'])) {
-            $store['data'] = $this->defaultConfig();
+            $store['data'] = $this->getDefaultData();
         }
 
         if (!isset($item)) {
@@ -426,7 +428,7 @@ class Store
      * @param array $store
      * @return string
      */
-    public function url(array $store)
+    public function getUrl(array $store)
     {
         $scheme = $this->server->httpScheme();
         return rtrim("$scheme{$store['domain']}/{$store['basepath']}", '/');

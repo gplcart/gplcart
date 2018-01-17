@@ -55,7 +55,7 @@ class Order extends BaseHandler
         $options = array('from' => reset($store['data']['email']));
 
         $default = (array) $this->store->getDefault(true);
-        $url = $this->store->url($default);
+        $url = $this->store->getUrl($default);
 
         $vars = array(
             '@store' => $store_name,
@@ -79,11 +79,11 @@ class Order extends BaseHandler
     public function createdToCustomer($order)
     {
         $store = $this->store->get($order['store_id']);
-        $url = $this->store->url($store);
+        $url = $this->store->getUrl($store);
         $user = $this->user->get($order['user_id']);
         $store_name = $this->store->getTranslation('title', $this->translation->getLangcode(), $store);
 
-        $options = $this->store->config(null, $store);
+        $options = $this->store->getConfig(null, $store);
         $options['from'] = reset($store['data']['email']);
 
         $vars = array(
@@ -108,11 +108,11 @@ class Order extends BaseHandler
     public function updatedToCustomer(array $order)
     {
         $store = $this->store->get($order['store_id']);
-        $url = $this->store->url($store);
+        $url = $this->store->getUrl($store);
         $user = $this->user->get($order['user_id']);
         $store_name = $this->store->getTranslation('title', $this->translation->getLangcode(), $store);
 
-        $options = $this->store->config(null, $store);
+        $options = $this->store->getConfig(null, $store);
         $options['from'] = reset($store['data']['email']);
 
         $vars = array(
