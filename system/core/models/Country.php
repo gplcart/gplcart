@@ -135,8 +135,8 @@ class Country
         }
 
         if (empty($options['count'])) {
-            $result = $this->db->fetchAll($sql, $conditions, array('unserialize' => 'format', 'index' => 'code'));
-            $result = $this->prepareList($result);
+            $list = $this->db->fetchAll($sql, $conditions, array('unserialize' => 'format', 'index' => 'code'));
+            $result = $this->prepareList($list);
         } else {
             $result = (int) $this->db->fetchColumn($sql, $conditions);
         }
@@ -267,21 +267,6 @@ class Country
         }
 
         return $data;
-    }
-
-    /**
-     * Returns a string containing default address template
-     * @return string
-     */
-    public function getDefaultAddressTemplate()
-    {
-        $parts = array("%first_name|mb_strtoupper %last_name|mb_strtoupper");
-        $parts[] = "%address_2|mb_strtoupper";
-        $parts[] = "%address_1|mb_strtoupper";
-        $parts[] = "%postcode|mb_strtoupper";
-        $parts[] = "%country|mb_strtoupper";
-
-        return implode(PHP_EOL, $parts);
     }
 
     /**
