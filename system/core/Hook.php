@@ -129,16 +129,16 @@ class Hook
         $method = $this->getMethod($hook);
 
         if (isset($module_id)) {
-            $namespace = $this->module->getClass($module_id);
-            return $this->call($namespace, $method, $a, $b, $c, $d, $e);
+            $class = $this->module->getClass($module_id);
+            return $this->call($class, $method, $a, $b, $c, $d, $e);
         }
 
         if (empty($this->hooks[$method])) {
             return false;
         }
 
-        foreach (array_keys($this->hooks[$method]) as $namespace) {
-            $this->call($namespace, $method, $a, $b, $c, $d, $e);
+        foreach (array_keys($this->hooks[$method]) as $class) {
+            $this->call($class, $method, $a, $b, $c, $d, $e);
         }
 
         return true;
