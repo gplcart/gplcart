@@ -9,6 +9,7 @@
 
 namespace gplcart\core\models;
 
+use Exception;
 use gplcart\core\Hook,
     gplcart\core\Handler;
 use gplcart\core\helpers\Url as UrlHelper,
@@ -184,7 +185,7 @@ class Job
         $this->hook->attach('job.process.before', $job, $this);
 
         if (empty($job['status'])) {
-            return $this->result($job, array('finish' => true));
+            return $this->getResult($job, array('finish' => true));
         }
 
         $progress = 0;
@@ -216,7 +217,7 @@ class Job
             'message' => $job['message']['process']
         );
 
-        $response = $this->result($job, $result);
+        $response = $this->getResult($job, $result);
 
         $this->hook->attach('job.process.after', $job, $result, $response, $this);
         return $response;
@@ -232,7 +233,7 @@ class Job
             $handlers = $this->getHandlers();
             $callback = Handler::get($handlers, $job['id'], 'process');
             call_user_func_array($callback, array(&$job));
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             $job['status'] = false;
             $job['errors'] ++;
         }
@@ -249,7 +250,7 @@ class Job
         try {
             $handlers = $this->getHandlers();
             return (int) Handler::call($handlers, $handler_id, 'total', array($arguments));
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             return 0;
         }
     }
@@ -279,7 +280,7 @@ class Job
      * @param array $result
      * @return array
      */
-    protected function result(array $job, array $result = array())
+    protected function getResult(array $job, array $result = array())
     {
         $result += array(
             'done' => 0,
