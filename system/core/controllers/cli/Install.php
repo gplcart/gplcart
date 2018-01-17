@@ -60,10 +60,12 @@ class Install extends CliController
         $this->selectLanguage();
         $this->validateRequirementsInstall();
         $this->validateInstallerInstall();
-        $this->validateInputTitleInstall();
-        $this->validateInputEmailInstall();
-        $this->validateInputPasswordInstall();
-        $this->validateInputBasepathInstall();
+
+        $this->validateInput('store.title', $this->text('Store title'), 'install', 'GPLCart');
+        $this->validateInput('user.email', $this->text('E-mail'), 'install');
+        $this->validateInput('user.password', $this->text('Password'), 'install');
+        $this->validateInput('store.basepath', $this->text('Installation subdirectory'), 'install', '');
+
         $this->validateInputDbInstall();
         $this->validateInputInstall();
     }
@@ -187,36 +189,13 @@ class Install extends CliController
      */
     protected function validateInputDbInstall()
     {
-        $this->validateInputDbNameInstall();
-        $this->validateInputDbUserInstall();
-        $this->validateInputDbPasswordInstall();
-        $this->validateInputDbPortInstall();
-        $this->validateInputDbHostInstall();
+        $this->validateInput('database.name', $this->text('Database name'), 'install');
+        $this->validateInput('database.user', $this->text('Database user'), 'install', 'root');
+        $this->validateInput('database.password', $this->text('Database password'), 'install', '');
+        $this->validateInput('database.port', $this->text('Database port'), 'install', '3306');
+        $this->validateInput('database.host', $this->text('Database port'), 'install', 'localhost');
+
         $this->validateInputDbTypeInstall();
-    }
-
-    /**
-     * Validates installation profile input
-     */
-    protected function validateInstallerInstall()
-    {
-        $handlers = $this->install->getHandlers();
-
-        if (count($handlers) < 2) {
-            return null;
-        }
-
-        $options = array();
-        foreach ($handlers as $id => $handler) {
-            $options[$id] = $handler['title'];
-        }
-
-        $input = $this->menu($options, 'default', $this->text('Installation profile (enter a number)'));
-
-        if (!$this->isValidInput($input, 'installer', 'install')) {
-            $this->errors();
-            $this->validateInstallerInstall();
-        }
     }
 
     /**
@@ -226,114 +205,6 @@ class Install extends CliController
     {
         $this->validateComponent('install', array('field' => 'requirements'));
         $this->errors(true);
-    }
-
-    /**
-     * Validates store title
-     */
-    protected function validateInputTitleInstall()
-    {
-        $input = $this->prompt($this->text('Store title'), 'GPLCart');
-        if (!$this->isValidInput($input, 'store.title', 'install')) {
-            $this->errors();
-            $this->validateInputTitleInstall();
-        }
-    }
-
-    /**
-     * Validates a user E-mail
-     */
-    protected function validateInputEmailInstall()
-    {
-        $input = $this->prompt($this->text('E-mail'));
-        if (!$this->isValidInput($input, 'user.email', 'install')) {
-            $this->errors();
-            $this->validateInputEmailInstall();
-        }
-    }
-
-    /**
-     * Validates user password
-     */
-    protected function validateInputPasswordInstall()
-    {
-        $input = $this->prompt($this->text('Password'));
-        if (!$this->isValidInput($input, 'user.password', 'install')) {
-            $this->errors();
-            $this->validateInputPasswordInstall();
-        }
-    }
-
-    /**
-     * Validates server base path input
-     */
-    protected function validateInputBasepathInstall()
-    {
-        $input = $this->prompt($this->text('Installation subdirectory'), '');
-        if (!$this->isValidInput($input, 'store.basepath', 'install')) {
-            $this->errors();
-            $this->validateInputBasepathInstall();
-        }
-    }
-
-    /**
-     * Validates a database name input
-     */
-    protected function validateInputDbNameInstall()
-    {
-        $input = $this->prompt($this->text('Database name'));
-        if (!$this->isValidInput($input, 'database.name', 'install')) {
-            $this->errors();
-            $this->validateInputDbNameInstall();
-        }
-    }
-
-    /**
-     * Validates a database username input
-     */
-    protected function validateInputDbUserInstall()
-    {
-        $input = $this->prompt($this->text('Database user'), 'root');
-        if (!$this->isValidInput($input, 'database.user', 'install')) {
-            $this->errors();
-            $this->validateInputDbUserInstall();
-        }
-    }
-
-    /**
-     * Validates a database password input
-     */
-    protected function validateInputDbPasswordInstall()
-    {
-        $input = $this->prompt($this->text('Database password'), '');
-        if (!$this->isValidInput($input, 'database.password', 'install')) {
-            $this->errors();
-            $this->validateInputDbPasswordInstall();
-        }
-    }
-
-    /**
-     * Validates a database port input
-     */
-    protected function validateInputDbPortInstall()
-    {
-        $input = $this->prompt($this->text('Database port'), '3306');
-        if (!$this->isValidInput($input, 'database.port', 'install')) {
-            $this->errors();
-            $this->validateInputDbPortInstall();
-        }
-    }
-
-    /**
-     * Validates a database host input
-     */
-    protected function validateInputDbHostInstall()
-    {
-        $input = $this->prompt($this->text('Database host'), 'localhost');
-        if (!$this->isValidInput($input, 'database.host', 'install')) {
-            $this->errors();
-            $this->validateInputDbHostInstall();
-        }
     }
 
     /**
@@ -348,6 +219,29 @@ class Install extends CliController
         if (!$this->isValidInput($input, 'database.type', 'install')) {
             $this->errors();
             $this->validateInputDbTypeInstall();
+        }
+    }
+
+    /**
+     * Validates installation profile input
+     */
+    protected function validateInstallerInstall()
+    {
+        $handlers = $this->install->getHandlers();
+
+        if (count($handlers) >= 2) {
+
+            $options = array();
+            foreach ($handlers as $id => $handler) {
+                $options[$id] = $handler['title'];
+            }
+
+            $input = $this->menu($options, 'default', $this->text('Installation profile (enter a number)'));
+
+            if (!$this->isValidInput($input, 'installer', 'install')) {
+                $this->errors();
+                $this->validateInstallerInstall();
+            }
         }
     }
 
