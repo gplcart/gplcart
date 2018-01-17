@@ -78,7 +78,9 @@ class Store extends BackendController
      */
     protected function setFilterListStore()
     {
-        $allowed = array('name', 'domain', 'basepath', 'status', 'domain_like', 'basepath_like', 'store_id');
+        $allowed = array('name', 'domain', 'basepath',
+            'status', 'domain_like', 'basepath_like', 'store_id');
+
         $this->setFilter($allowed);
     }
 
@@ -231,7 +233,7 @@ class Store extends BackendController
      */
     protected function setStore($store_id)
     {
-        $this->data_store = array('data' => $this->store->defaultConfig());
+        $this->data_store = array('data' => $this->store->getDefaultData());
 
         if (is_numeric($store_id)) {
             $this->data_store = $this->store->get($store_id);
