@@ -150,7 +150,7 @@ class User extends BackendController
         foreach ($users as &$user) {
             $user['url'] = '';
             if (isset($stores[$user['store_id']])) {
-                $user['url'] = $this->store->url($stores[$user['store_id']]) . "/account/{$user['user_id']}";
+                $user['url'] = $this->store->getUrl($stores[$user['store_id']]) . "/account/{$user['user_id']}";
             }
         }
 

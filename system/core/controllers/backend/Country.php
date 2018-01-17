@@ -182,7 +182,6 @@ class Country extends BackendController
         $this->setData('country', $this->data_country);
         $this->setData('zones', $this->getZonesCountry());
         $this->setData('can_delete', $this->canDeleteCountry());
-        $this->setData('default_address_template', $this->country->getDefaultAddressTemplate());
 
         $this->submitEditCountry();
         $this->outputEditCountry();
