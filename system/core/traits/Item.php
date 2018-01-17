@@ -94,17 +94,17 @@ trait Item
             'imagestyle' => $this->config('image_style', 3));
 
         if (!empty($options['path'])) {
-            $item['thumb'] = $image_model->url($options['path'], $options['imagestyle']);
+            $item['thumb'] = $image_model->getUrl($options['path'], $options['imagestyle']);
         } else if (!empty($item['path'])) {
-            $item['thumb'] = $image_model->url($item['path'], $options['imagestyle']);
+            $item['thumb'] = $image_model->getUrl($item['path'], $options['imagestyle']);
         } else if (empty($item['images'])) {
             $item['thumb'] = $image_model->getThumb($item, $options);
         } else {
             $first = reset($item['images']);
-            $item['thumb'] = $image_model->url($first['path'], $options['imagestyle']);
+            $item['thumb'] = $image_model->getUrl($first['path'], $options['imagestyle']);
             foreach ($item['images'] as &$image) {
-                $image['url'] = $image_model->url($image['path']);
-                $image['thumb'] = $image_model->url($image['path'], $options['imagestyle']);
+                $image['url'] = $image_model->getUrl($image['path']);
+                $image['thumb'] = $image_model->getUrl($image['path'], $options['imagestyle']);
             }
         }
     }
@@ -172,7 +172,7 @@ trait Item
         if (isset($entity) && isset($item['store_id']) && isset($item["{$entity}_id"])) {
             $store = $store_model->get($item['store_id']);
             if (!empty($store)) {
-                $url = $store_model->url($store);
+                $url = $store_model->getUrl($store);
                 $item['url'] = "$url/$entity/{$item["{$entity}_id"]}";
             }
         }

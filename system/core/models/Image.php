@@ -72,7 +72,7 @@ class Image
 
         foreach ($this->getList($conditions) as $file) {
             if (isset($data[$options['entity'] . '_id']) && $file['entity_id'] == $data[$options['entity'] . '_id']) {
-                return $this->url($file['path'], $options['imagestyle']);
+                return $this->getUrl($file['path'], $options['imagestyle']);
             }
         }
 
@@ -124,7 +124,7 @@ class Image
     public function getPlaceholder($imagestyle_id = null, $absolute = false)
     {
         $placeholder = $this->getPlaceholderPath();
-        return $this->url($placeholder, $imagestyle_id, $absolute);
+        return $this->getUrl($placeholder, $imagestyle_id, $absolute);
     }
 
     /**
@@ -143,7 +143,7 @@ class Image
      * @param bool $absolute
      * @return string
      */
-    public function url($path, $imagestyle_id = null, $absolute = false)
+    public function getUrl($path, $imagestyle_id = null, $absolute = false)
     {
         if (empty($path)) {
             return $this->getPlaceholder($imagestyle_id, $absolute);
