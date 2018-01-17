@@ -188,7 +188,7 @@ class Base
     {
         $this->setCliMessage('Creating store...');
 
-        $default = $this->getStoreModel()->defaultConfig();
+        $default = $this->getStoreModel()->getDefaultData();
 
         $default['title'] = $this->data['store']['title'];
         $default['email'] = array($this->data['user']['email']);
@@ -322,17 +322,16 @@ class Base
      */
     protected function createCountries()
     {
-        $template = $this->getCountryModel()->getDefaultAddressTemplate();
-
         $rows = $placeholders = array();
+
         foreach ((array) $this->getCountryModel()->getIso() as $code => $country) {
-            $placeholders[] = '(?,?,?,?,?,?)';
+            $placeholders[] = '(?,?,?,?,?)';
             $native_name = isset($country['native_name']) ? $country['native_name'] : $country['name'];
-            $rows = array_merge($rows, array(0, $country['name'], $code, $native_name, $template, serialize(array())));
+            $rows = array_merge($rows, array(0, $country['name'], $code, $native_name, serialize(array())));
         }
 
         $values = implode(',', $placeholders);
-        $sql = "INSERT INTO country (status, name, code, native_name, template, format) VALUES $values";
+        $sql = "INSERT INTO country (status, name, code, native_name, format) VALUES $values";
         $this->db->run($sql, $rows);
     }
 
