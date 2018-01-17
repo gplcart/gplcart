@@ -101,7 +101,7 @@ class Image extends FrontendController
         if (empty($actions)) {
             $this->response->outputError404(false);
         } else {
-            $this->image_style->applyAll($actions, $this->data_source_file, $this->data_cached_file);
+            $this->image_style->applyActions($actions, $this->data_source_file, $this->data_cached_file);
         }
     }
 

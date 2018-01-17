@@ -250,7 +250,7 @@ class ImageStyle
      * @param array $action
      * @return boolean
      */
-    public function apply(&$source, &$target, $handler, &$action)
+    public function applyAction(&$source, &$target, $handler, &$action)
     {
         $result = null;
         $this->hook->attach('image.style.apply.before', $source, $target, $handler, $action, $result);
@@ -277,13 +277,13 @@ class ImageStyle
      * @param string $target
      * @return int
      */
-    public function applyAll(array $actions, $source, $target)
+    public function applyActions(array $actions, $source, $target)
     {
         $applied = 0;
         foreach ($actions as $action_id => $data) {
             $handler = $this->getActionHandler($action_id);
             if (!empty($handler)) {
-                $applied += (int) $this->apply($source, $target, $handler, $data);
+                $applied += (int) $this->applyAction($source, $target, $handler, $data);
             }
         }
 
