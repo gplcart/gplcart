@@ -9,7 +9,7 @@
 
 namespace gplcart\core\handlers\validator\elements;
 
-use gplcart\core\handlers\validator\BaseElement as BaseElementValidator;
+use gplcart\core\handlers\validator\Element as BaseElementValidator;
 
 /**
  * Methods to validate single elements

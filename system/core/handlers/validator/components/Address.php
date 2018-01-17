@@ -13,7 +13,7 @@ use gplcart\core\models\City as CityModel,
     gplcart\core\models\State as StateModel,
     gplcart\core\models\Country as CountryModel,
     gplcart\core\models\Address as AddressModel;
-use gplcart\core\handlers\validator\BaseComponent as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as BaseComponentValidator;
 
 /**
  * Provides methods to validate address data

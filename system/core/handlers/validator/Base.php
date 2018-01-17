@@ -9,20 +9,13 @@
 
 namespace gplcart\core\handlers\validator;
 
-use gplcart\core\Handler,
-    gplcart\core\Container;
+use gplcart\core\Handler;
 
 /**
  * Base validator class
  */
 class Base extends Handler
 {
-
-    /**
-     * Translation UI model instance
-     * @var \gplcart\core\models\Translation $translation
-     */
-    protected $translation;
 
     /**
      * An array of validation errors
@@ -41,14 +34,6 @@ class Base extends Handler
      * @var array
      */
     protected $options = array();
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->translation = Container::get('gplcart\\core\\models\\Translation');
-    }
 
     /**
      * Sets a property
@@ -71,13 +56,13 @@ class Base extends Handler
             return $this->submitted;
         }
 
-        $parents = $this->getParents($key);
+        $path = $this->getKeyPath($key);
 
-        if (!isset($parents)) {
-            return $this->submitted;
+        if (isset($path)) {
+            return gplcart_array_get($this->submitted, $path);
         }
 
-        return gplcart_array_get($this->submitted, $parents);
+        return $this->submitted;
     }
 
     /**
@@ -87,8 +72,7 @@ class Base extends Handler
      */
     public function setSubmitted($key, $value)
     {
-        $parents = $this->getParents($key);
-        gplcart_array_set($this->submitted, $parents, $value);
+        gplcart_array_set($this->submitted, $this->getKeyPath($key), $value);
     }
 
     /**
@@ -97,8 +81,7 @@ class Base extends Handler
      */
     public function unsetSubmitted($key)
     {
-        $parents = $this->getParents($key);
-        gplcart_array_unset($this->submitted, $parents);
+        gplcart_array_unset($this->submitted, $this->getKeyPath($key));
     }
 
     /**
@@ -147,11 +130,11 @@ class Base extends Handler
     }
 
     /**
-     * Returns an array that represents a path to the nested array value
-     * @param string|array $key A base key
+     * Returns an array that represents a path to a nested array value
+     * @param string|array $key
      * @return array
      */
-    protected function getParents($key)
+    protected function getKeyPath($key)
     {
         if (empty($this->options['parents'])) {
             return $key;
@@ -161,7 +144,31 @@ class Base extends Handler
             $this->options['parents'] = explode('.', $this->options['parents']);
         }
 
+        if (is_string($key)) {
+            $key = explode('.', $key);
+        }
+
         return array_merge((array) $this->options['parents'], (array) $key);
+    }
+
+    /**
+     * Returns a normalized array key with the current parents prepended
+     * @param string $key
+     * @return string
+     */
+    protected function getKey($key)
+    {
+        return trim(implode('.', (array) $this->getKeyPath($key)), '.');
+    }
+
+    /**
+     * Whether the field should be excluded from validation
+     * @param string $field
+     * @return bool
+     */
+    protected function isExcludedField($field)
+    {
+        return isset($this->options['field']) && $this->options['field'] !== $this->getKey($field);
     }
 
     /**
@@ -172,7 +179,7 @@ class Base extends Handler
      */
     protected function setError($key, $error)
     {
-        gplcart_array_set($this->errors, $this->getParents($key), $error);
+        gplcart_array_set($this->errors, $this->getKeyPath($key), $error);
         return $this->errors;
     }
 
@@ -202,8 +209,7 @@ class Base extends Handler
             return $this->errors;
         }
 
-        $parents = $this->getParents($key);
-        return gplcart_array_get($this->errors, $parents);
+        return gplcart_array_get($this->errors, $this->getKeyPath($key));
     }
 
     /**
@@ -215,93 +221,6 @@ class Base extends Handler
         $result = empty($this->errors) ? true : $this->errors;
         $this->errors = array();
         return $result;
-    }
-
-    /**
-     * Set "Field required" error
-     * @param string $field
-     * @param string $label
-     * @return array
-     */
-    protected function setErrorRequired($field, $label)
-    {
-        $error = $this->translation->text('@field is required', array('@field' => $label));
-        return $this->setError($field, $error);
-    }
-
-    /**
-     * Set "Field not numeric" error
-     * @param string $field
-     * @param string $label
-     * @return array
-     */
-    protected function setErrorNumeric($field, $label)
-    {
-        $error = $this->translation->text('@field must be numeric', array('@field' => $label));
-        return $this->setError($field, $error);
-    }
-
-    /**
-     * Set "Field not integer" error
-     * @param string $field
-     * @param string $label
-     * @return array
-     */
-    protected function setErrorInteger($field, $label)
-    {
-        $error = $this->translation->text('@field must be integer', array('@field' => $label));
-        return $this->setError($field, $error);
-    }
-
-    /**
-     * Set "Object unavailable" error
-     * @param string $field
-     * @param string $label
-     * @return array
-     */
-    protected function setErrorUnavailable($field, $label)
-    {
-        $error = $this->translation->text('@name is unavailable', array('@name' => $label));
-        return $this->setError($field, $error);
-    }
-
-    /**
-     * Set "Length must be between min and max" error
-     * @param string $field
-     * @param string $label
-     * @param int $min
-     * @param int $max
-     * @return array
-     */
-    protected function setErrorLengthRange($field, $label, $min = 1, $max = 255)
-    {
-        $vars = array('@min' => $min, '@max' => $max, '@field' => $label);
-        $error = $this->translation->text('@field must be @min - @max characters long', $vars);
-        return $this->setError($field, $error);
-    }
-
-    /**
-     * Set "Invalid value" error
-     * @param string $field
-     * @param string $label
-     * @return array
-     */
-    protected function setErrorInvalid($field, $label)
-    {
-        $error = $this->translation->text('@field has invalid value', array('@field' => $label));
-        return $this->setError($field, $error);
-    }
-
-    /**
-     * Set "Object already exists" error
-     * @param string $field
-     * @param string $label
-     * @return array
-     */
-    protected function setErrorExists($field, $label)
-    {
-        $error = $this->translation->text('@name already exists', array('@name' => $label));
-        return $this->setError($field, $error);
     }
 
 }

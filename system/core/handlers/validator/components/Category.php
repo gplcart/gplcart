@@ -11,7 +11,7 @@ namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\models\Category as CategoryModel,
     gplcart\core\models\CategoryGroup as CategoryGroupModel;
-use gplcart\core\handlers\validator\BaseComponent as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as BaseComponentValidator;
 
 /**
  * Provides methods to validate various data related to categories

@@ -11,7 +11,7 @@ namespace gplcart\core\handlers\validator\components;
 
 use Exception;
 use gplcart\core\models\ImageStyle as ImageStyleModel;
-use gplcart\core\handlers\validator\BaseComponent as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as BaseComponentValidator;
 
 /**
  * Provides methods to validate image style data
@@ -102,24 +102,21 @@ class ImageStyle extends BaseComponentValidator
             return false;
         }
 
-        $modified = $errors = $processed = array();
+        if (!is_array($actions)) {
+            $this->setErrorInvalid($field, $label);
+            return false;
+        }
+
+        $modified = $errors = array();
         foreach ($actions as $line => $action) {
 
+            $line++;
             $parts = gplcart_string_explode_whitespace($action, 2);
-
-            // Check action uniqueness
-            $key = implode('', $parts);
-            if (in_array($key, $processed)) {
-                $this->setError($field, $this->translation->text('Actions must be unique'));
-                return false;
-            }
-            $processed[] = $key;
-
             $action_id = array_shift($parts);
             $value = array_filter(explode(',', implode('', $parts)));
 
             if (!$this->validateActionImageStyle($action_id, $value)) {
-                $errors[] = $line + 1;
+                $errors[] = $line;
                 continue;
             }
 
@@ -127,7 +124,7 @@ class ImageStyle extends BaseComponentValidator
         }
 
         if (!empty($errors)) {
-            $error = $this->translation->text('Error on @num action definition', array('@num' => implode(',', $errors)));
+            $error = $this->translation->text('Error in @num definition', array('@num' => implode(',', $errors)));
             $this->setError($field, $error);
         }
 

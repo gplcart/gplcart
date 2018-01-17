@@ -11,7 +11,7 @@ namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\models\Field as FieldModel,
     gplcart\core\models\FieldValue as FieldValueModel;
-use gplcart\core\handlers\validator\BaseComponent as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as BaseComponentValidator;
 
 /**
  * Provides methods to validate field data

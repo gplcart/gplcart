@@ -11,7 +11,7 @@ namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\models\Rating as RatingModel,
     gplcart\core\models\Product as ProductModel;
-use gplcart\core\handlers\validator\BaseComponent as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as BaseComponentValidator;
 
 /**
  * Provides methods to validate product rating data

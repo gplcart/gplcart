@@ -13,7 +13,7 @@ use gplcart\core\models\Sku as SkuModel,
     gplcart\core\models\Cart as CartModel,
     gplcart\core\models\Order as OrderModel,
     gplcart\core\models\Product as ProductModel;
-use gplcart\core\handlers\validator\BaseComponent as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as BaseComponentValidator;
 
 /**
  * Provides methods to validate cart data

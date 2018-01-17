@@ -12,7 +12,7 @@ namespace gplcart\core\handlers\validator\components;
 use Exception;
 use gplcart\core\models\Trigger as TriggerModel,
     gplcart\core\models\Condition as ConditionModel;
-use gplcart\core\handlers\validator\BaseComponent as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as BaseComponentValidator;
 
 /**
  * Provides methods to validate trigger data
@@ -106,39 +106,48 @@ class Trigger extends BaseComponentValidator
             return null;
         }
 
+        $label = $this->translation->text('Conditions');
+
         if (empty($value)) {
-            $this->setErrorRequired($field, $this->translation->text('Conditions'));
+            $this->setErrorRequired($field, $label);
             return false;
         }
 
-        $errors = $modified = array();
-        $submitted = $this->getSubmitted();
-        $operators = $this->condition->getOperators();
-        $prepared_operators = array_map('htmlspecialchars', array_keys($operators));
+        if (!is_array($value)) {
+            $this->setErrorInvalid($field, $label);
+            return false;
+        }
 
+        $submitted = $this->getSubmitted();
+        $operators = array_map('htmlspecialchars', array_keys($this->condition->getOperators()));
+
+        $errors = $modified = array();
         foreach ($value as $line => $condition) {
 
             $line++;
-            list($condition_id, $operator, $parameters) = $this->getParameters($condition);
+
+            $parts = gplcart_string_explode_whitespace($condition, 3);
+            $condition_id = array_shift($parts);
+            $operator = array_shift($parts);
+            $parameters = array_filter(explode(',', implode('', $parts)), function ($value) {
+                return $value !== '';
+            });
 
             if (empty($parameters)) {
-                $errors[] = $this->translation->text('Error on line @num: !error', array(
-                    '@num' => $line,
-                    '!error' => $this->translation->text('No parameters')));
+                $errors[] = $line;
                 continue;
             }
 
-            if (!in_array(htmlspecialchars($operator), $prepared_operators)) {
-                $errors[] = $this->translation->text('Error on line @num: !error', array(
-                    '@num' => $line,
-                    '!error' => $this->translation->text('Invalid operator')));
+            if (!in_array(htmlspecialchars($operator), $operators)) {
+                $errors[] = $line;
                 continue;
             }
 
-            $result = $this->callValidator($condition_id, array($parameters, $operator, $condition_id, $submitted));
+            $args = array($parameters, $operator, $condition_id, $submitted);
+            $result = $this->validateConditionTrigger($condition_id, $args);
 
             if ($result !== true) {
-                $errors[] = $this->translation->text('Error on line @num: !error', array('@num' => $line, '!error' => $result));
+                $errors[] = $line;
                 continue;
             }
 
@@ -152,34 +161,16 @@ class Trigger extends BaseComponentValidator
         }
 
         if (!empty($errors)) {
-            $this->setError($field, implode('<br>', $errors));
+            $error = $this->translation->text('Error in @num definition', array('@num' => implode(',', $errors)));
+            $this->setError($field, $error);
         }
 
-        if (!$this->isError()) {
-            $this->setSubmitted($field, $modified);
-            return true;
+        if ($this->isError()) {
+            return false;
         }
 
-        return false;
-    }
-
-    /**
-     * Returns exploded and prepared condition parameters
-     * @param string $string
-     * @return array
-     */
-    protected function getParameters($string)
-    {
-        $parts = gplcart_string_explode_whitespace($string, 3);
-
-        $condition_id = array_shift($parts);
-        $operator = array_shift($parts);
-
-        $parameters = array_filter(explode(',', implode('', $parts)), function ($value) {
-            return ($value !== "");
-        });
-
-        return array($condition_id, $operator, array_unique($parameters));
+        $this->setSubmitted($field, $modified);
+        return true;
     }
 
     /**
@@ -188,7 +179,7 @@ class Trigger extends BaseComponentValidator
      * @param array $args
      * @return mixed
      */
-    protected function callValidator($condition_id, array $args)
+    protected function validateConditionTrigger($condition_id, array $args)
     {
         try {
             $handlers = $this->condition->getHandlers();

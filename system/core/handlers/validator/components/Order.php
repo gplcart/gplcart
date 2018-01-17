@@ -15,7 +15,7 @@ use gplcart\core\models\Order as OrderModel,
     gplcart\core\models\Currency as CurrencyModel,
     gplcart\core\models\Shipping as ShippingModel,
     gplcart\core\models\Transaction as TransactionModel;
-use gplcart\core\handlers\validator\BaseComponent as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as BaseComponentValidator;
 
 /**
  * Provides methods to validate orders to be stored in the database

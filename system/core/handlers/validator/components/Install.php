@@ -10,7 +10,7 @@
 namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\models\Install as InstallModel;
-use gplcart\core\handlers\validator\BaseComponent as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as BaseComponentValidator;
 
 /**
  * Provides methods to validate installation data
@@ -75,7 +75,7 @@ class Install extends BaseComponentValidator
      */
     protected function validateRequirementsInstall()
     {
-        if (isset($this->options['field']) && $this->options['field'] !== 'requirements') {
+        if ($this->isExcludedField('requirements')) {
             return null;
         }
 
@@ -114,7 +114,7 @@ class Install extends BaseComponentValidator
      */
     protected function validateUserEmailInstall()
     {
-        if (isset($this->options['field']) && $this->options['field'] !== 'user.email') {
+        if ($this->isExcludedField('user.email')) {
             return null;
         }
 
@@ -133,20 +133,22 @@ class Install extends BaseComponentValidator
     protected function validateUserPasswordInstall()
     {
         $field = 'user.password';
+
         if ($this->isExcludedField($field)) {
             return null;
         }
 
-        $label = $this->translation->text('Password');
         $password = $this->getSubmitted($field);
+        $label = $this->translation->text('Password');
 
         if (empty($password)) {
             $this->setErrorRequired($field, $label);
             return false;
         }
 
-        $length = mb_strlen($password);
         list($min, $max) = $this->user->getPasswordLength();
+
+        $length = mb_strlen($password);
 
         if ($length < $min || $length > $max) {
             $this->setErrorLengthRange($field, $label, $min, $max);
@@ -163,15 +165,15 @@ class Install extends BaseComponentValidator
     protected function validateStoreHostInstall()
     {
         $field = 'store.host';
+
         if ($this->isExcludedField($field)) {
             return null;
         }
 
-        $label = $this->translation->text('Host');
         $host = $this->getSubmitted($field);
 
         if (empty($host)) {
-            $this->setErrorRequired($field, $label);
+            $this->setErrorRequired($field, $this->translation->text('Host'));
             return false;
         }
 
@@ -185,11 +187,13 @@ class Install extends BaseComponentValidator
     protected function validateStoreTitleInstall()
     {
         $field = 'store.title';
+
         if ($this->isExcludedField($field)) {
             return null;
         }
 
         $title = $this->getSubmitted($field);
+
         if (empty($title) || mb_strlen($title) > 255) {
             $this->setErrorLengthRange($field, $this->translation->text('Title'));
             return false;
@@ -205,6 +209,7 @@ class Install extends BaseComponentValidator
     protected function validateStoreBasepathInstall()
     {
         $field = 'store.basepath';
+
         if ($this->isExcludedField($field)) {
             return null;
         }
@@ -230,6 +235,7 @@ class Install extends BaseComponentValidator
     protected function validateStoreTimezoneInstall()
     {
         $field = 'store.timezone';
+
         if ($this->isExcludedField($field)) {
             return null;
         }
@@ -258,6 +264,7 @@ class Install extends BaseComponentValidator
     protected function validateInstallerInstall()
     {
         $field = 'installer';
+
         if ($this->isExcludedField($field)) {
             return null;
         }
@@ -286,11 +293,13 @@ class Install extends BaseComponentValidator
     protected function validateDbNameInstall()
     {
         $field = 'database.name';
+
         if ($this->isExcludedField($field)) {
             return null;
         }
 
         $dbname = $this->getSubmitted($field);
+
         if (empty($dbname)) {
             $this->setErrorRequired($field, $this->translation->text('Database name'));
             return false;
@@ -306,11 +315,13 @@ class Install extends BaseComponentValidator
     protected function validateDbUserInstall()
     {
         $field = 'database.user';
+
         if ($this->isExcludedField($field)) {
             return null;
         }
 
         $dbuser = $this->getSubmitted($field);
+
         if (empty($dbuser)) {
             $this->setErrorRequired($field, $this->translation->text('Database user'));
             return false;
@@ -326,11 +337,13 @@ class Install extends BaseComponentValidator
     protected function validateDbPasswordInstall()
     {
         $field = 'database.password';
+
         if ($this->isExcludedField($field)) {
             return null;
         }
 
         $dbpassword = $this->getSubmitted($field);
+
         if (!isset($dbpassword)) {
             $this->setSubmitted($field, '');
             return null;
@@ -346,11 +359,13 @@ class Install extends BaseComponentValidator
     protected function validateDbHostInstall()
     {
         $field = 'database.host';
+
         if ($this->isExcludedField($field)) {
             return null;
         }
 
         $dbhost = $this->getSubmitted($field);
+
         if (empty($dbhost)) {
             $this->setErrorRequired($field, $this->translation->text('Database host'));
             return false;
@@ -366,11 +381,13 @@ class Install extends BaseComponentValidator
     protected function validateDbTypeInstall()
     {
         $field = 'database.type';
+
         if ($this->isExcludedField($field)) {
             return null;
         }
 
         $dbtype = $this->getSubmitted($field);
+
         if (empty($dbtype)) {
             $this->setErrorRequired($field, $this->translation->text('Database type'));
             return false;
@@ -395,6 +412,7 @@ class Install extends BaseComponentValidator
     protected function validateDbPortInstall()
     {
         $field = 'database.port';
+
         if ($this->isExcludedField($field)) {
             return null;
         }
@@ -426,6 +444,7 @@ class Install extends BaseComponentValidator
         }
 
         $field = 'database.connect';
+
         if ($this->isExcludedField($field)) {
             return null;
         }

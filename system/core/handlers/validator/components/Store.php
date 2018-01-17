@@ -10,7 +10,7 @@
 namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\Module;
-use gplcart\core\handlers\validator\BaseComponent as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as BaseComponentValidator;
 
 /**
  * Provides methods to validate store data
@@ -40,7 +40,7 @@ class Store extends BaseComponentValidator
     }
 
     /**
-     * Performs full store data validation
+     * Performs store data validation
      * @param array $submitted
      * @param array $options
      * @return array|boolean
@@ -55,13 +55,7 @@ class Store extends BaseComponentValidator
         $this->validateDomainStore();
         $this->validateBasepathStore();
         $this->validateName();
-        $this->validateEmailStore();
-        $this->validateMapStore();
-        $this->validateTitleStore();
-        $this->validateMetaTitleStore();
-        $this->validateMetaDescriptionStore();
-        $this->validateTranslationStore();
-        $this->validateThemeStore();
+        $this->validateDataStore();
         $this->validateImagesStore();
         $this->validateDefaultStore();
 
@@ -77,7 +71,7 @@ class Store extends BaseComponentValidator
         $id = $this->getUpdatingId();
 
         if ($id === false) {
-            return null;
+            return null; // Adding a new store
         }
 
         $data = $this->store->get($id);
@@ -88,8 +82,7 @@ class Store extends BaseComponentValidator
         }
 
         $this->setUpdating($data);
-        $default = $this->store->isDefault($data['store_id']);
-        $this->setSubmitted('default', $default);
+        $this->setSubmitted('default', $this->store->isDefault($data['store_id']));
         return true;
     }
 
@@ -106,20 +99,26 @@ class Store extends BaseComponentValidator
         }
 
         $value = $this->getSubmitted($field);
-        $label = $this->translation->text('Domain');
 
         if ($this->isUpdating() && !isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
 
         if ($this->getSubmitted('default')) {
-            $this->unsetSubmitted('domain');
-            return null; // Cannot update domain of default store
+            $this->unsetSubmitted('domain'); // Cannot update domain of default store
+            return null;
+        }
+
+
+        $label = $this->translation->text('Domain');
+
+        if (empty($value)) {
+            $this->setErrorRequired($field, $label);
         }
 
         $updating = $this->getUpdating();
-
-        if (isset($updating['domain']) && ($updating['domain'] === $value)) {
+        if (isset($updating['domain']) && $updating['domain'] === $value) {
             return true;
         }
 
@@ -141,18 +140,14 @@ class Store extends BaseComponentValidator
     {
         $field = 'basepath';
 
-        if ($this->isExcludedField($field)) {
-            return null;
-        }
-
-        if ($this->isError('domain')) {
+        if ($this->isExcludedField($field) || $this->isError('domain')) {
             return null;
         }
 
         $value = $this->getSubmitted($field);
-        $label = $this->translation->text('Base path');
 
         if ($this->isUpdating() && !isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
 
@@ -162,14 +157,15 @@ class Store extends BaseComponentValidator
         }
 
         $updating = $this->getUpdating();
-        $domain = $this->getSubmitted('domain');
 
-        if (isset($updating['basepath']) && $updating['basepath'] === $value && $updating['domain'] === $domain) {
+        if (isset($updating['basepath'])//
+            && $updating['basepath'] === $value//
+            && $updating['domain'] === $this->getSubmitted('domain')) {
             return true;
         }
 
         if (preg_match('/^[a-z0-9-]{0,50}$/', $value) !== 1) {
-            $this->setErrorInvalid($field, $label);
+            $this->setErrorInvalid($field, $this->translation->text('Path'));
             return false;
         }
 
@@ -177,30 +173,87 @@ class Store extends BaseComponentValidator
     }
 
     /**
-     * Validates E-mails
-     * @return boolean|null
+     * Validate "data" field
      */
-    protected function validateEmailStore()
+    protected function validateDataStore()
     {
-        $field = 'data.email';
+        $field = 'data';
 
         if ($this->isExcludedField($field)) {
             return null;
         }
 
+        $data = $this->getSubmitted($field);
+
+        if ($this->isUpdating()) {
+            if (!isset($data)) {
+                $this->unsetSubmitted($field);
+                return null;
+            }
+        } else if (empty($data)) {
+            $data = $this->store->getConfig(null, $this->store->getDefault());
+            // Will be set later
+            unset($data['title'], $data['meta_title']);
+        }
+
+        if (!is_array($data)) {
+            $this->setErrorInvalid($field, $this->translation->text('Settings'));
+            return false;
+        }
+
+        $this->setSubmitted('data', $data);
+
+        $this->validateDataTitleStore();
+        $this->validateDataEmailStore();
+        $this->validateDataMapStore();
+        $this->validateDataMetaTitleStore();
+        $this->validateDataMetaDescriptionStore();
+        $this->validateDataTranslationStore();
+        $this->validateDataThemeStore();
+    }
+
+    /**
+     * Validates a store title
+     * @return boolean|null
+     */
+    protected function validateDataTitleStore()
+    {
+        $field = 'data.title';
+        $value = $this->getSubmitted($field);
+
+        if (empty($value) && !$this->isError('name')) {
+            $this->setSubmitted($field, $this->getSubmitted('name'));
+        }
+
+        $options = $this->options;
+        $this->options += array('parents' => 'data');
+        $result = $this->validateTitle();
+        $this->options = $options;
+
+        return $result;
+    }
+
+    /**
+     * Validates E-mails
+     * @return boolean|null
+     */
+    protected function validateDataEmailStore()
+    {
+        $field = 'data.email';
         $value = $this->getSubmitted($field);
         $label = $this->translation->text('E-mail');
-
-        if ($this->isUpdating() && !isset($value)) {
-            return null;
-        }
 
         if (empty($value)) {
             $this->setErrorRequired($field, $label);
             return false;
         }
 
-        $filtered = array_filter($value, function($email) {
+        if (!is_array($value)) {
+            $this->setErrorInvalid($field, $label);
+            return false;
+        }
+
+        $filtered = array_filter($value, function ($email) {
             return filter_var($email, FILTER_VALIDATE_EMAIL);
         });
 
@@ -216,7 +269,7 @@ class Store extends BaseComponentValidator
      * Validates map coordinates
      * @return boolean|null
      */
-    protected function validateMapStore()
+    protected function validateDataMapStore()
     {
         $field = 'data.map';
         $value = $this->getSubmitted($field);
@@ -226,7 +279,7 @@ class Store extends BaseComponentValidator
             return null;
         }
 
-        if (count($value) != 2) {
+        if (!is_array($value) || count($value) != 2) {
             $this->setErrorInvalid($field, $label);
             return false;
         }
@@ -240,31 +293,16 @@ class Store extends BaseComponentValidator
     }
 
     /**
-     * Validates a store title
+     * Validates "meta_title" field
      * @return boolean|null
      */
-    protected function validateTitleStore()
+    protected function validateDataMetaTitleStore()
     {
-        if (isset($this->options['field']) && $this->options['field'] !== 'data.title') {
-            return null;
-        }
+        $field = 'data.meta_title';
+        $value = $this->getSubmitted($field);
 
-        $options = $this->options;
-        $this->options += array('parents' => 'data');
-        $result = $this->validateTitle();
-        $this->options = $options;
-
-        return $result;
-    }
-
-    /**
-     * Validates a store meta title
-     * @return boolean|null
-     */
-    protected function validateMetaTitleStore()
-    {
-        if (isset($this->options['field']) && $this->options['field'] !== 'data.meta_title') {
-            return null;
+        if (empty($value) && !$this->isError('name')) {
+            $this->setSubmitted($field, $this->getSubmitted('name'));
         }
 
         $options = $this->options;
@@ -276,15 +314,11 @@ class Store extends BaseComponentValidator
     }
 
     /**
-     * Validates a store meta description
+     * Validates "meta_description" field
      * @return boolean|null
      */
-    protected function validateMetaDescriptionStore()
+    protected function validateDataMetaDescriptionStore()
     {
-        if (isset($this->options['field']) && $this->options['field'] !== 'data.meta_description') {
-            return null;
-        }
-
         $options = $this->options;
         $this->options += array('parents' => 'data');
         $result = $this->validateMetaDescription();
@@ -294,21 +328,35 @@ class Store extends BaseComponentValidator
     }
 
     /**
-     * Validates store translatable fields
+     * Validates translatable fields
      * @return boolean|null
      */
-    protected function validateTranslationStore()
+    protected function validateDataTranslationStore()
     {
-        if (isset($this->options['field']) && $this->options['field'] !== 'data.translation') {
-            return null;
-        }
-
         $options = $this->options;
         $this->options += array('parents' => 'data');
         $result = $this->validateTranslation();
         $this->options = $options;
 
         return $result;
+    }
+
+    /**
+     * Validates theme module IDs
+     * @return boolean
+     */
+    protected function validateDataThemeStore()
+    {
+        $field = 'data.theme';
+        $value = $this->getSubmitted($field);
+        $module = $this->module->get($value);
+
+        if (isset($module['type']) && $module['type'] === 'theme' && !empty($module['status'])) {
+            return true;
+        }
+
+        $this->setErrorUnavailable($field, $this->translation->text('Theme'));
+        return false;
     }
 
     /**
@@ -330,10 +378,6 @@ class Store extends BaseComponentValidator
 
             $file = $this->request->file($field);
 
-            if ($this->isUpdating() && empty($file)) {
-                continue;
-            }
-
             if (empty($file)) {
                 continue;
             }
@@ -342,49 +386,14 @@ class Store extends BaseComponentValidator
 
             if ($result !== true) {
                 $error = true;
-                $this->setError($field, (string) $result);
+                $this->setError($field, (string)$result);
                 continue;
             }
 
-            $uploaded = $this->file_transfer->getTransferred(true);
-            $this->setSubmitted("data.$field", $uploaded);
+            $this->setSubmitted("data.$field", $this->file_transfer->getTransferred(true));
         }
 
         return empty($error);
-    }
-
-    /**
-     * Validates theme module IDs
-     * @return boolean
-     */
-    protected function validateThemeStore()
-    {
-        $field = 'data.theme';
-
-        if ($this->isExcludedField($field)) {
-            return null;
-        }
-
-        $value = $this->getSubmitted($field);
-        $label = $this->translation->text('Theme');
-
-        if ($this->isUpdating() && !isset($value)) {
-            return null;
-        }
-
-        if (empty($value)) {
-            $this->setErrorRequired($field, $label);
-            return false;
-        }
-
-        $module = $this->module->get($value);
-
-        if (isset($module['type']) || $module['type'] === 'theme' && !empty($module['status'])) {
-            return true;
-        }
-
-        $this->setErrorUnavailable($field, $label);
-        return false;
     }
 
     /**

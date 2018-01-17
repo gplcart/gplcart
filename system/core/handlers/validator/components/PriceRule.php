@@ -14,7 +14,7 @@ use gplcart\core\models\Price as PriceModel,
     gplcart\core\models\Trigger as TriggerModel,
     gplcart\core\models\Currency as CurrencyModel,
     gplcart\core\models\PriceRule as PriceRuleModel;
-use gplcart\core\handlers\validator\BaseComponent as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as BaseComponentValidator;
 
 /**
  * Provides methods to validate price rule data

@@ -14,7 +14,7 @@ use gplcart\core\models\Page as PageModel,
     gplcart\core\models\Product as ProductModel,
     gplcart\core\models\Collection as CollectionModel,
     gplcart\core\models\CollectionItem as CollectionItemModel;
-use gplcart\core\handlers\validator\BaseComponent as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as BaseComponentValidator;
 
 /**
  * Provides methods to validate collection item data
