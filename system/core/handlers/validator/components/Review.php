@@ -11,12 +11,12 @@ namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\models\Review as ReviewModel,
     gplcart\core\models\Product as ProductModel;
-use gplcart\core\handlers\validator\Component as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate reviews
  */
-class Review extends BaseComponentValidator
+class Review extends ComponentValidator
 {
 
     /**
@@ -62,6 +62,8 @@ class Review extends BaseComponentValidator
         $this->validateEmailReview();
         $this->validateUserId();
 
+        $this->unsetSubmitted('update');
+
         return $this->getResult();
     }
 
@@ -96,7 +98,7 @@ class Review extends BaseComponentValidator
     {
         $field = 'text';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
@@ -104,6 +106,7 @@ class Review extends BaseComponentValidator
         $label = $this->translation->text('Text');
 
         if ($this->isUpdating() && !isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
 
@@ -133,6 +136,7 @@ class Review extends BaseComponentValidator
         $value = $this->getSubmitted($field);
 
         if (!isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
 
@@ -155,7 +159,7 @@ class Review extends BaseComponentValidator
     {
         $field = 'product_id';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
@@ -163,6 +167,7 @@ class Review extends BaseComponentValidator
         $label = $this->translation->text('Product');
 
         if ($this->isUpdating() && !isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
 
@@ -194,11 +199,13 @@ class Review extends BaseComponentValidator
     {
         $field = 'email';
         $value = $this->getSubmitted($field);
-        $label = $this->translation->text('Email');
 
         if (!isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
+
+        $label = $this->translation->text('Email');
 
         if (empty($value)) {
             $this->setErrorRequired($field, $label);

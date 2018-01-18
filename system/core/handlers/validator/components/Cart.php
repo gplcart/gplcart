@@ -13,12 +13,12 @@ use gplcart\core\models\Sku as SkuModel,
     gplcart\core\models\Cart as CartModel,
     gplcart\core\models\Order as OrderModel,
     gplcart\core\models\Product as ProductModel;
-use gplcart\core\handlers\validator\Component as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate cart data
  */
-class Cart extends BaseComponentValidator
+class Cart extends ComponentValidator
 {
 
     /**
@@ -51,8 +51,7 @@ class Cart extends BaseComponentValidator
      * @param SkuModel $sku
      * @param OrderModel $order
      */
-    public function __construct(CartModel $cart, ProductModel $product, SkuModel $sku,
-            OrderModel $order)
+    public function __construct(CartModel $cart, ProductModel $product, SkuModel $sku, OrderModel $order)
     {
         parent::__construct();
 
@@ -83,11 +82,13 @@ class Cart extends BaseComponentValidator
         $this->validateOptionsCart();
         $this->validateLimitCart();
 
+        $this->unsetSubmitted('update');
+
         return $this->getResult();
     }
 
     /**
-     * Validates a cart item to by updated
+     * Validates a cart item to be updated
      * @return boolean
      */
     protected function validateCart()
@@ -117,28 +118,29 @@ class Cart extends BaseComponentValidator
     {
         $field = 'product_id';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
-        
-        $product_id = $this->getSubmitted($field);
+
+        $value = $this->getSubmitted($field);
+
+        if ($this->isUpdating() && !isset($value)) {
+            return null;
+        }
+
         $label = $this->translation->text('Product');
 
-        if ($this->isUpdating() && !isset($product_id)) {
-            return null;
-        }
-
-        if (empty($product_id)) {
+        if (empty($value)) {
             $this->setErrorRequired($field, $label);
             return false;
         }
 
-        if (!is_numeric($product_id)) {
+        if (!is_numeric($value)) {
             $this->setErrorNumeric($field, $label);
             return false;
         }
 
-        $product = $this->product->get($product_id);
+        $product = $this->product->get($value);
 
         if (empty($product['status'])) {
             $this->setErrorUnavailable($field, $label);
@@ -160,20 +162,21 @@ class Cart extends BaseComponentValidator
         }
 
         $field = 'sku';
-        $sku = $this->getSubmitted($field);
-        $label = $this->translation->text('SKU');
-        $store_id = $this->getSubmitted('store_id');
+        $value = $this->getSubmitted($field);
 
-        if (!isset($sku)) {
+        if (!isset($value)) {
             return null;
         }
 
-        if (empty($sku)) {
+        $label = $this->translation->text('SKU');
+
+        if (empty($value)) {
             $this->setErrorRequired($field, $label);
             return false;
         }
 
-        $product = $this->product->getBySku($sku, $store_id);
+        $store_id = $this->getSubmitted('store_id');
+        $product = $this->product->getBySku($value, $store_id);
 
         if (empty($product['product_id'])) {
             $this->setErrorUnavailable($field, $label);
@@ -191,19 +194,20 @@ class Cart extends BaseComponentValidator
     protected function validateOrderCart()
     {
         $field = 'order_id';
-        $order_id = $this->getSubmitted($field);
-        $label = $this->translation->text('Order');
+        $value = $this->getSubmitted($field);
 
-        if (empty($order_id)) {
+        if (empty($value)) {
             return null;
         }
 
-        if (!is_numeric($order_id)) {
+        $label = $this->translation->text('Order');
+
+        if (!is_numeric($value)) {
             $this->setErrorNumeric($field, $label);
             return false;
         }
 
-        $order = $this->order->get($order_id);
+        $order = $this->order->get($value);
 
         if (empty($order['order_id'])) {
             $this->setErrorUnavailable($field, $label);
@@ -221,28 +225,29 @@ class Cart extends BaseComponentValidator
     {
         $field = 'quantity';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
-        $quantity = $this->getSubmitted($field);
+        $value = $this->getSubmitted($field);
+
+        if ($this->isUpdating() && !isset($value)) {
+            return null;
+        }
+
         $label = $this->translation->text('Quantity');
 
-        if ($this->isUpdating() && !isset($quantity)) {
-            return null;
-        }
-
-        if (empty($quantity)) {
+        if (empty($value)) {
             $this->setErrorRequired($field, $label);
             return false;
         }
 
-        if (!is_numeric($quantity)) {
+        if (!is_numeric($value)) {
             $this->setErrorNumeric($field, $label);
             return false;
         }
 
-        if (strlen($quantity) > 2) {
+        if (strlen($value) > 2) {
             $this->setErrorLengthRange($field, $label, 1, 2);
             return false;
         }
@@ -295,8 +300,9 @@ class Cart extends BaseComponentValidator
         $limit_sku = $this->cart->getLimits('sku');
         $limit_item = $this->cart->getLimits('item');
 
-        if (!empty($limit_item) && !isset($existing_quantity['sku'][$sku])//
-                && count($existing_quantity['sku']) >= $limit_item) {
+        if (!empty($limit_item)//
+            && !isset($existing_quantity['sku'][$sku])//
+            && count($existing_quantity['sku']) >= $limit_item) {
 
             $error = $this->translation->text('Please no more than @num items', array('@num' => $limit_item));
             $this->setError('quantity', $error);
@@ -324,7 +330,7 @@ class Cart extends BaseComponentValidator
             return null;
         }
 
-        $options = array_filter((array) $this->getSubmitted('options'));
+        $options = array_filter((array)$this->getSubmitted('options'));
 
         if (empty($options)) {
             $this->setSubmitted('options', array());

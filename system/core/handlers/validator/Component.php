@@ -84,7 +84,7 @@ class Component extends ElementValidator
     {
         $field = 'title';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
@@ -110,7 +110,7 @@ class Component extends ElementValidator
     {
         $field = 'name';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
@@ -391,7 +391,7 @@ class Component extends ElementValidator
     {
         $field = 'store_id';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
@@ -431,7 +431,7 @@ class Component extends ElementValidator
     {
         $field = 'user_id';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
@@ -471,7 +471,7 @@ class Component extends ElementValidator
     {
         $field = 'user_id';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
@@ -515,7 +515,7 @@ class Component extends ElementValidator
     {
         $field = 'email';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 

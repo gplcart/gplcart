@@ -13,12 +13,12 @@ use gplcart\core\models\Zone as ZoneModel,
     gplcart\core\models\City as CityModel,
     gplcart\core\models\State as StateModel,
     gplcart\core\models\Country as CountryModel;
-use gplcart\core\handlers\validator\Component as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate city data
  */
-class City extends BaseComponentValidator
+class City extends ComponentValidator
 {
 
     /**
@@ -51,8 +51,7 @@ class City extends BaseComponentValidator
      * @param CountryModel $country
      * @param ZoneModel $zone
      */
-    public function __construct(CityModel $city, StateModel $state, CountryModel $country,
-            ZoneModel $zone)
+    public function __construct(CityModel $city, StateModel $state, CountryModel $country, ZoneModel $zone)
     {
         parent::__construct();
 
@@ -79,6 +78,8 @@ class City extends BaseComponentValidator
         $this->validateStateCity();
         $this->validateZoneCity();
         $this->validateCountryCity();
+
+        $this->unsetSubmitted('update');
 
         return $this->getResult();
     }
@@ -114,28 +115,29 @@ class City extends BaseComponentValidator
     {
         $field = 'state_id';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
-        $state_id = $this->getSubmitted($field);
+        $value = $this->getSubmitted($field);
+
+        if ($this->isUpdating() && !isset($value)) {
+            return null;
+        }
+
         $label = $this->translation->text('State');
 
-        if ($this->isUpdating() && !isset($state_id)) {
-            return null;
-        }
-
-        if (empty($state_id)) {
+        if (empty($value)) {
             $this->setErrorRequired($field, $label);
             return false;
         }
 
-        if (!is_numeric($state_id)) {
+        if (!is_numeric($value)) {
             $this->setErrorNumeric($field, $label);
             return false;
         }
 
-        $state = $this->state->get($state_id);
+        $state = $this->state->get($value);
 
         if (empty($state['state_id'])) {
             $this->setErrorUnavailable($field, $label);
@@ -152,19 +154,20 @@ class City extends BaseComponentValidator
     protected function validateZoneCity()
     {
         $field = 'zone_id';
-        $zone_id = $this->getSubmitted($field);
-        $label = $this->translation->text('Zone');
+        $value = $this->getSubmitted($field);
 
-        if (empty($zone_id)) {
+        if (empty($value)) {
             return null;
         }
 
-        if (!is_numeric($zone_id)) {
+        $label = $this->translation->text('Zone');
+
+        if (!is_numeric($value)) {
             $this->setErrorNumeric($field, $label);
             return false;
         }
 
-        $zone = $this->zone->get($zone_id);
+        $zone = $this->zone->get($value);
 
         if (empty($zone['zone_id'])) {
             $this->setErrorUnavailable($field, $label);
@@ -182,23 +185,25 @@ class City extends BaseComponentValidator
     {
         $field = 'country';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
-        $code = $this->getSubmitted($field);
+        $value = $this->getSubmitted($field);
+
+        if ($this->isUpdating() && !isset($value)) {
+            $this->unsetSubmitted($field);
+            return null;
+        }
+
         $label = $this->translation->text('Country');
 
-        if ($this->isUpdating() && !isset($code)) {
-            return null;
-        }
-
-        if (empty($code)) {
+        if (empty($value)) {
             $this->setErrorRequired($field, $label);
             return false;
         }
 
-        $country = $this->country->get($code);
+        $country = $this->country->get($value);
 
         if (empty($country['code'])) {
             $this->setErrorUnavailable($field, $label);

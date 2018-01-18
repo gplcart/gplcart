@@ -14,12 +14,12 @@ use gplcart\core\models\Price as PriceModel,
     gplcart\core\models\Trigger as TriggerModel,
     gplcart\core\models\Currency as CurrencyModel,
     gplcart\core\models\PriceRule as PriceRuleModel;
-use gplcart\core\handlers\validator\Component as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate price rule data
  */
-class PriceRule extends BaseComponentValidator
+class PriceRule extends ComponentValidator
 {
 
     /**
@@ -53,7 +53,7 @@ class PriceRule extends BaseComponentValidator
      * @param PriceModel $price
      */
     public function __construct(PriceRuleModel $rule, TriggerModel $trigger,
-            CurrencyModel $currency, PriceModel $price)
+                                CurrencyModel $currency, PriceModel $price)
     {
         parent::__construct();
 
@@ -83,6 +83,8 @@ class PriceRule extends BaseComponentValidator
         $this->validateValueTypePriceRule();
         $this->validateCodePriceRule();
         $this->validateValuePriceRule();
+
+        $this->unsetSubmitted('update');
 
         return $this->getResult();
     }
@@ -118,28 +120,30 @@ class PriceRule extends BaseComponentValidator
     {
         $field = 'trigger_id';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
-        $trigger_id = $this->getSubmitted($field);
+        $value = $this->getSubmitted($field);
+
+        if ($this->isUpdating() && !isset($value)) {
+            $this->unsetSubmitted($field);
+            return null;
+        }
+
         $label = $this->translation->text('Trigger');
 
-        if ($this->isUpdating() && !isset($trigger_id)) {
-            return null;
-        }
-
-        if (empty($trigger_id)) {
+        if (empty($value)) {
             $this->setErrorRequired($field, $label);
             return false;
         }
 
-        if (!is_numeric($trigger_id)) {
+        if (!is_numeric($value)) {
             $this->setErrorNumeric($field, $label);
             return false;
         }
 
-        $trigger = $this->trigger->get($trigger_id);
+        $trigger = $this->trigger->get($value);
 
         if (empty($trigger)) {
             $this->setErrorUnavailable($field, $label);
@@ -156,19 +160,21 @@ class PriceRule extends BaseComponentValidator
     protected function validateUsedPriceRule()
     {
         $field = 'used';
-        $label = $this->translation->text('Times used');
-        $used = $this->getSubmitted($field);
+        $value = $this->getSubmitted($field);
 
-        if (!isset($used)) {
+        if (!isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
 
-        if (!is_numeric($used)) {
+        $label = $this->translation->text('Times used');
+
+        if (!is_numeric($value)) {
             $this->setErrorNumeric($field, $label);
             return false;
         }
 
-        if (strlen($used) > 10) {
+        if (strlen($value) > 10) {
             $this->setErrorLengthRange($field, $label, 0, 10);
             return false;
         }
@@ -184,23 +190,25 @@ class PriceRule extends BaseComponentValidator
     {
         $field = 'currency';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
-        $code = $this->getSubmitted($field);
+        $value = $this->getSubmitted($field);
+
+        if ($this->isUpdating() && !isset($value)) {
+            $this->unsetSubmitted($field);
+            return null;
+        }
+
         $label = $this->translation->text('Currency');
 
-        if ($this->isUpdating() && !isset($code)) {
-            return null;
-        }
-
-        if (empty($code)) {
+        if (empty($value)) {
             $this->setErrorRequired($field, $label);
             return false;
         }
 
-        $currency = $this->currency->get($code);
+        $currency = $this->currency->get($value);
 
         if (empty($currency)) {
             $this->setErrorUnavailable($field, $label);
@@ -218,19 +226,20 @@ class PriceRule extends BaseComponentValidator
     {
         $field = 'value_type';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
-        $type = $this->getSubmitted($field);
+        $value = $this->getSubmitted($field);
 
-        if ($this->isUpdating() && !isset($type)) {
+        if ($this->isUpdating() && !isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
 
         $types = $this->price_rule->getTypes();
 
-        if (empty($types[$type])) {
+        if (empty($types[$value])) {
             $this->setErrorInvalid($field, $this->translation->text('Value type'));
             return false;
         }
@@ -245,36 +254,38 @@ class PriceRule extends BaseComponentValidator
     protected function validateCodePriceRule()
     {
         $field = 'code';
-        $code = $this->getSubmitted($field);
-        $label = $this->translation->text('Code');
+        $value = $this->getSubmitted($field);
 
-        if (empty($code)) {
+        if (empty($value)) {
             return null;
         }
 
         $updating = $this->getUpdating();
 
-        if (isset($updating['code']) && $updating['code'] === $code) {
+        if (isset($updating['code']) && $updating['code'] === $value) {
             return true;
         }
 
-        if (mb_strlen($code) > 255) {
+        $label = $this->translation->text('Code');
+
+        if (mb_strlen($value) > 255) {
             $this->setErrorLengthRange($field, $label, 0, 255);
             return false;
         }
 
-        $rules = $this->price_rule->getList(array('code' => $code));
+        $rules = $this->price_rule->getList(array('code' => $value));
 
         if (empty($rules)) {
             return true;
         }
 
-        foreach ((array) $rules as $rule) {
-            if ($rule['code'] === $code) {
+        foreach ((array)$rules as $rule) {
+            if ($rule['code'] === $value) {
                 $this->setErrorExists($field, $label);
                 return false;
             }
         }
+
         return true;
     }
 
@@ -286,23 +297,19 @@ class PriceRule extends BaseComponentValidator
     {
         $field = 'value';
 
-        if ($this->isExcludedField($field)) {
-            return null;
-        }
-
-        if ($this->isError('value_type')) {
+        if ($this->isExcluded($field) || $this->isError('value_type')) {
             return null;
         }
 
         $value = $this->getSubmitted($field);
-        $label = $this->translation->text('Value');
 
         if ($this->isUpdating() && !isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
 
         if (!isset($value)) {
-            $this->setErrorRequired($field, $label);
+            $this->setErrorRequired($field, $this->translation->text('Value'));
             return false;
         }
 

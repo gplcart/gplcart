@@ -10,12 +10,12 @@
 namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\models\UserRole as UserRoleModel;
-use gplcart\core\handlers\validator\Component as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate user roles
  */
-class UserRole extends BaseComponentValidator
+class UserRole extends ComponentValidator
 {
 
     /**
@@ -51,6 +51,8 @@ class UserRole extends BaseComponentValidator
         $this->validateStatus();
         $this->validateName();
 
+        $this->unsetSubmitted('update');
+
         return $this->getResult();
     }
 
@@ -85,13 +87,14 @@ class UserRole extends BaseComponentValidator
     {
         $field = 'permissions';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
         $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
 

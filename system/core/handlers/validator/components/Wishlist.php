@@ -11,12 +11,12 @@ namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\models\Product as ProductModel,
     gplcart\core\models\Wishlist as WishlistModel;
-use gplcart\core\handlers\validator\Component as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate wishlist data
  */
-class Wishlist extends BaseComponentValidator
+class Wishlist extends ComponentValidator
 {
 
     /**
@@ -59,6 +59,8 @@ class Wishlist extends BaseComponentValidator
         $this->validateUserCartId();
         $this->validateStoreId();
 
+        $this->unsetSubmitted('update');
+
         return $this->getResult();
     }
 
@@ -93,16 +95,17 @@ class Wishlist extends BaseComponentValidator
     {
         $field = 'product_id';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
         $value = $this->getSubmitted($field);
-        $label = $this->translation->text('Product');
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
         }
+
+        $label = $this->translation->text('Product');
 
         if (empty($value)) {
             $this->setErrorRequired($field, $label);

@@ -10,12 +10,12 @@
 namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\models\Language as LanguageModel;
-use gplcart\core\handlers\validator\Component as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate languages
  */
-class Language extends BaseComponentValidator
+class Language extends ComponentValidator
 {
 
     /**
@@ -70,14 +70,14 @@ class Language extends BaseComponentValidator
             return null;
         }
 
-        $language = $this->language->get($id);
+        $data = $this->language->get($id);
 
-        if (empty($language)) {
+        if (empty($data)) {
             $this->setErrorUnavailable('update', $this->translation->text('Language'));
             return false;
         }
 
-        $this->setUpdating($language);
+        $this->setUpdating($data);
         return true;
     }
 
@@ -89,34 +89,36 @@ class Language extends BaseComponentValidator
     {
         $field = 'code';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
-        $code = $this->getSubmitted($field);
+        $value = $this->getSubmitted($field);
+
+        if ($this->isUpdating() && !isset($value)) {
+            $this->unsetSubmitted($field);
+            return null;
+        }
+
         $label = $this->translation->text('Code');
 
-        if ($this->isUpdating() && !isset($code)) {
-            return null;
-        }
-
-        if (empty($code)) {
+        if (empty($value)) {
             $this->setErrorRequired($field, $label);
             return false;
         }
 
-        if (preg_match('/^[A-Za-z\\-]+$/', $code) !== 1) {
+        if (preg_match('/^[A-Za-z\\-]+$/', $value) !== 1) {
             $this->setErrorInvalid($field, $label);
             return false;
         }
 
         $updating = $this->getUpdating();
 
-        if (isset($updating['code']) && $updating['code'] === $code) {
-            return true; // Updating, dont check own code uniqueness
+        if (isset($updating['code']) && $updating['code'] === $value) {
+            return true;
         }
 
-        $language = $this->language->get($code);
+        $language = $this->language->get($value);
 
         if (!empty($language)) {
             $this->setErrorExists($field, $label);
@@ -134,19 +136,19 @@ class Language extends BaseComponentValidator
     {
         $field = 'name';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
-        $name = $this->getSubmitted($field);
-        $label = $this->translation->text('Name');
+        $value = $this->getSubmitted($field);
 
-        if (!isset($name)) {
+        if (!isset($value)) {
+            $this->unsetSubmitted($field);
             return true; // If not set, code will be used instead
         }
 
-        if (mb_strlen($name) > 50) {
-            $this->setErrorLengthRange($field, $label, 0, 50);
+        if (mb_strlen($value) > 50) {
+            $this->setErrorLengthRange($field, $this->translation->text('Name'), 0, 50);
             return false;
         }
 
@@ -161,19 +163,18 @@ class Language extends BaseComponentValidator
     {
         $field = 'native_name';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
-        $name = $this->getSubmitted($field);
-        $label = $this->translation->text('Native name');
+        $value = $this->getSubmitted($field);
 
-        if (!isset($name)) {
+        if (!isset($value)) {
             return true; // If not set, code will be used instead
         }
 
-        if (mb_strlen($name) > 50) {
-            $this->setErrorLengthRange($field, $label, 0, 50);
+        if (mb_strlen($value) > 50) {
+            $this->setErrorLengthRange($field, $this->translation->text('Native name'), 0, 50);
             return false;
         }
 

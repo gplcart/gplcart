@@ -12,12 +12,12 @@ namespace gplcart\core\handlers\validator\components;
 use gplcart\core\models\Zone as ZoneModel,
     gplcart\core\models\State as StateModel,
     gplcart\core\models\Country as CountryModel;
-use gplcart\core\handlers\validator\Component as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate country states data
  */
-class State extends BaseComponentValidator
+class State extends ComponentValidator
 {
 
     /**
@@ -70,6 +70,8 @@ class State extends BaseComponentValidator
         $this->validateCountryState();
         $this->validateZoneState();
 
+        $this->unsetSubmitted('update');
+
         return $this->getResult();
     }
 
@@ -104,16 +106,18 @@ class State extends BaseComponentValidator
     {
         $field = 'country';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
         $value = $this->getSubmitted($field);
-        $label = $this->translation->text('Country');
 
         if ($this->isUpdating() && !isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
+
+        $label = $this->translation->text('Country');
 
         if (empty($value)) {
             $this->setErrorRequired($field, $label);
@@ -138,21 +142,24 @@ class State extends BaseComponentValidator
     {
         $field = 'code';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
         $value = $this->getSubmitted($field);
-        $label = $this->translation->text('Code');
 
         if ($this->isUpdating() && !isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
 
         $updating = $this->getUpdating();
+
         if (isset($updating['code']) && $updating['code'] === $value) {
             return true;
         }
+
+        $label = $this->translation->text('Code');
 
         if (empty($value)) {
             $this->setErrorRequired($field, $label);
@@ -177,11 +184,12 @@ class State extends BaseComponentValidator
     {
         $field = 'zone_id';
         $value = $this->getSubmitted($field);
-        $label = $this->translation->text('Zone');
 
         if (empty($value)) {
             return null;
         }
+
+        $label = $this->translation->text('Zone');
 
         if (!is_numeric($value)) {
             $this->setErrorNumeric($field, $label);

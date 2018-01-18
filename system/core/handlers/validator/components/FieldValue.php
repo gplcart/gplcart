@@ -11,12 +11,12 @@ namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\models\Field as FieldModel,
     gplcart\core\models\FieldValue as FieldValueModel;
-use gplcart\core\handlers\validator\Component as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate field data
  */
-class FieldValue extends BaseComponentValidator
+class FieldValue extends ComponentValidator
 {
 
     /**
@@ -67,6 +67,8 @@ class FieldValue extends BaseComponentValidator
         $this->validateColorFieldValue();
         $this->validateUploadImages('field_value');
 
+        $this->unsetSubmitted('update');
+
         return $this->getResult();
     }
 
@@ -76,13 +78,13 @@ class FieldValue extends BaseComponentValidator
      */
     protected function validateFieldValue()
     {
-        $field_value_id = $this->getUpdatingId();
+        $id = $this->getUpdatingId();
 
-        if ($field_value_id === false) {
+        if ($id === false) {
             return null;
         }
 
-        $data = $this->field_value->get($field_value_id);
+        $data = $this->field_value->get($id);
 
         if (empty($data)) {
             $this->setErrorUnavailable('update', $this->translation->text('Field value'));
@@ -101,28 +103,30 @@ class FieldValue extends BaseComponentValidator
     {
         $field = 'field_id';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
-        $field_id = $this->getSubmitted($field);
+        $value = $this->getSubmitted($field);
+
+        if ($this->isUpdating() && !isset($value)) {
+            $this->unsetSubmitted($field);
+            return null;
+        }
+
         $label = $this->translation->text('Field');
 
-        if ($this->isUpdating() && !isset($field_id)) {
-            return null;
-        }
-
-        if (empty($field_id)) {
+        if (empty($value)) {
             $this->setErrorRequired($field, $label);
             return false;
         }
 
-        if (!is_numeric($field_id)) {
+        if (!is_numeric($value)) {
             $this->setErrorNumeric($field, $label);
             return false;
         }
 
-        $field_data = $this->field->get($field_id);
+        $field_data = $this->field->get($value);
 
         if (empty($field_data['field_id'])) {
             $this->setErrorUnavailable($field, $label);
@@ -141,17 +145,17 @@ class FieldValue extends BaseComponentValidator
     {
         $field = 'color';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
-        $color = $this->getSubmitted($field);
+        $value = $this->getSubmitted($field);
 
-        if (!isset($color) || $color === '') {
+        if (!isset($value) || $value === '') {
             return null;
         }
 
-        if (preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $color) !== 1) {
+        if (preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $value) !== 1) {
             $this->setErrorInvalid($field, $this->translation->text('Color'));
             return false;
         }
@@ -159,7 +163,7 @@ class FieldValue extends BaseComponentValidator
         // HTML5 color field cannot have empty value
         // Default value is #000000
         // Assuming black is empty
-        if ($color === '#000000') {
+        if ($value === '#000000') {
             $this->setSubmitted($field, '');
         }
 

@@ -85,7 +85,7 @@ class Base extends Handler
     }
 
     /**
-     * Whether we update the submitted object
+     * Whether the currently submitted entity is updating
      * @param string $key
      * @return boolean
      */
@@ -148,7 +148,7 @@ class Base extends Handler
             $key = explode('.', $key);
         }
 
-        return array_merge((array) $this->options['parents'], (array) $key);
+        return array_merge((array)$this->options['parents'], (array)$key);
     }
 
     /**
@@ -158,7 +158,7 @@ class Base extends Handler
      */
     protected function getKey($key)
     {
-        return trim(implode('.', (array) $this->getKeyPath($key)), '.');
+        return trim(implode('.', (array)$this->getKeyPath($key)), '.');
     }
 
     /**
@@ -166,7 +166,7 @@ class Base extends Handler
      * @param string $field
      * @return bool
      */
-    protected function isExcludedField($field)
+    protected function isExcluded($field)
     {
         return isset($this->options['field']) && $this->options['field'] !== $this->getKey($field);
     }
@@ -184,7 +184,7 @@ class Base extends Handler
     }
 
     /**
-     * Whether an error(s) exist
+     * Whether an error exists
      * @param string|null $key
      * @return boolean
      */
@@ -199,7 +199,7 @@ class Base extends Handler
     }
 
     /**
-     * Returns an error
+     * Returns one or all errors
      * @param string|null $key
      * @return mixed
      */

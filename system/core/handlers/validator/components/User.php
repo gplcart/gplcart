@@ -10,12 +10,12 @@
 namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\models\UserRole as UserRoleModel;
-use gplcart\core\handlers\validator\Component as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate various user related data
  */
-class User extends BaseComponentValidator
+class User extends ComponentValidator
 {
 
     /**
@@ -54,6 +54,8 @@ class User extends BaseComponentValidator
         $this->validatePasswordOldUser();
         $this->validateStoreId();
         $this->validateRoleUser();
+
+        $this->unsetSubmitted('update');
 
         return $this->getResult();
     }
@@ -130,22 +132,23 @@ class User extends BaseComponentValidator
     protected function validateStatusUser()
     {
         $field = 'user';
-        if ($this->isExcludedField($field)) {
+
+        if ($this->isExcluded($field)) {
             return null;
         }
 
-        $user = $this->getSubmitted($field);
+        $value = $this->getSubmitted($field);
 
-        if (is_numeric($user)) {
-            $user = $this->user->get($user);
+        if (is_numeric($value)) {
+            $value = $this->user->get($value);
         }
 
-        if (empty($user['status']) || empty($user['user_id'])) {
+        if (empty($value['status']) || empty($value['user_id'])) {
             $this->setErrorUnavailable($field, $this->translation->text('User'));
             return false;
         }
 
-        $this->setSubmitted($field, $user);
+        $this->setSubmitted($field, $value);
         return true;
     }
 
@@ -210,7 +213,7 @@ class User extends BaseComponentValidator
     {
         $field = 'password';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
@@ -236,11 +239,7 @@ class User extends BaseComponentValidator
     {
         $field = 'password';
 
-        if ($this->isExcludedField($field)) {
-            return null;
-        }
-
-        if ($this->isError($field)) {
+        if ($this->isExcluded($field) || $this->isError($field)) {
             return null;
         }
 
@@ -257,6 +256,7 @@ class User extends BaseComponentValidator
             $this->setErrorLengthRange($field, $this->translation->text('Password'), $min, $max);
             return false;
         }
+
         return true;
     }
 
@@ -268,7 +268,7 @@ class User extends BaseComponentValidator
     {
         $field = 'password_old';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
@@ -309,11 +309,12 @@ class User extends BaseComponentValidator
     {
         $field = 'role_id';
         $value = $this->getSubmitted($field);
-        $label = $this->translation->text('Role');
 
         if (empty($value)) {
             return null;
         }
+
+        $label = $this->translation->text('Role');
 
         if (!is_numeric($value)) {
             $this->setErrorNumeric($field, $label);

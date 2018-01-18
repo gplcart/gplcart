@@ -10,12 +10,12 @@
 namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\models\Product as ProductModel;
-use gplcart\core\handlers\validator\Component as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate a product bundle data
  */
-class ProductBundle extends BaseComponentValidator
+class ProductBundle extends ComponentValidator
 {
 
     /**
@@ -59,19 +59,19 @@ class ProductBundle extends BaseComponentValidator
     {
         $field = 'product_id';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
-        $product_id = $this->getSubmitted($field);
+        $value = $this->getSubmitted($field);
         $label = $this->translation->text('Product');
 
-        if (!ctype_digit($product_id)) {
-            $this->setErrorInteger($field, $label);
+        if (!is_numeric($value)) {
+            $this->setErrorNumeric($field, $label);
             return false;
         }
 
-        $product = $this->product->get($product_id);
+        $product = $this->product->get($value);
 
         if (empty($product)) {
             $this->setErrorUnavailable($field, $label);
@@ -94,6 +94,11 @@ class ProductBundle extends BaseComponentValidator
 
         if (empty($value)) {
             return null;
+        }
+
+        if (!is_array($value)) {
+            $this->setErrorInvalid($field, $this->translation->text('Product bundle'));
+            return false;
         }
 
         $loaded = array();

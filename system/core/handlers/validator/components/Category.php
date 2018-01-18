@@ -11,12 +11,12 @@ namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\models\Category as CategoryModel,
     gplcart\core\models\CategoryGroup as CategoryGroupModel;
-use gplcart\core\handlers\validator\Component as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate various data related to categories
  */
-class Category extends BaseComponentValidator
+class Category extends ComponentValidator
 {
 
     /**
@@ -69,6 +69,8 @@ class Category extends BaseComponentValidator
         $this->validateAlias();
         $this->validateUploadImages('category');
 
+        $this->unsetSubmitted('update');
+
         return $this->getResult();
     }
 
@@ -103,28 +105,29 @@ class Category extends BaseComponentValidator
     {
         $field = 'category_group_id';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
-        $category_group_id = $this->getSubmitted($field);
+        $value = $this->getSubmitted($field);
+
+        if ($this->isUpdating() && !isset($value)) {
+            return null;
+        }
+
         $label = $this->translation->text('Category group');
 
-        if ($this->isUpdating() && !isset($category_group_id)) {
-            return null;
-        }
-
-        if (empty($category_group_id)) {
+        if (empty($value)) {
             $this->setErrorRequired($field, $label);
             return false;
         }
 
-        if (!is_numeric($category_group_id)) {
+        if (!is_numeric($value)) {
             $this->setErrorNumeric($field, $label);
             return false;
         }
 
-        $category_group = $this->category_group->get($category_group_id);
+        $category_group = $this->category_group->get($value);
 
         if (empty($category_group)) {
             $this->setErrorUnavailable($field, $label);
@@ -141,26 +144,27 @@ class Category extends BaseComponentValidator
     protected function validateParentCategory()
     {
         $field = 'parent_id';
-        $parent_id = $this->getSubmitted($field);
-        $label = $this->translation->text('Parent category');
+        $value = $this->getSubmitted($field);
 
-        if (empty($parent_id)) {
+        if (empty($value)) {
             return null;
         }
 
-        if (!is_numeric($parent_id)) {
+        $label = $this->translation->text('Parent category');
+
+        if (!is_numeric($value)) {
             $this->setErrorNumeric($field, $label);
             return false;
         }
 
         $category = $this->getSubmitted('category');
 
-        if (isset($category['category_id']) && $category['category_id'] == $parent_id) {
+        if (isset($category['category_id']) && $category['category_id'] == $value) {
             $this->setErrorInvalid($field, $label);
             return false;
         }
 
-        $parent_category = $this->category->get($parent_id);
+        $parent_category = $this->category->get($value);
 
         if (empty($parent_category['category_id'])) {
             $this->setErrorUnavailable($field, $label);

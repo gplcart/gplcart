@@ -11,12 +11,12 @@ namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\models\Page as PageModel,
     gplcart\core\models\Category as CategoryModel;
-use gplcart\core\handlers\validator\Component as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate page data
  */
-class Page extends BaseComponentValidator
+class Page extends ComponentValidator
 {
 
     /**
@@ -68,6 +68,8 @@ class Page extends BaseComponentValidator
         $this->validateAlias();
         $this->validateUploadImages('page');
 
+        $this->unsetSubmitted('update');
+
         return $this->getResult();
     }
 
@@ -83,14 +85,14 @@ class Page extends BaseComponentValidator
             return null;
         }
 
-        $page = $this->page->get($id);
+        $data = $this->page->get($id);
 
-        if (empty($page)) {
+        if (empty($data)) {
             $this->setErrorUnavailable('update', $this->translation->text('Page'));
             return false;
         }
 
-        $this->setUpdating($page);
+        $this->setUpdating($data);
         return true;
     }
 
@@ -102,19 +104,19 @@ class Page extends BaseComponentValidator
     {
         $field = 'description';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
-        $description = $this->getSubmitted($field);
-        $label = $this->translation->text('Description');
+        $value = $this->getSubmitted($field);
 
-        if ($this->isUpdating() && !isset($description)) {
+        if ($this->isUpdating() && !isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
 
-        if (empty($description) || mb_strlen($description) > 65535) {
-            $this->setErrorLengthRange($field, $label, 1, 65535);
+        if (empty($value) || mb_strlen($value) > 65535) {
+            $this->setErrorLengthRange($field, $this->translation->text('Description'), 1, 65535);
             return false;
         }
 
@@ -128,19 +130,20 @@ class Page extends BaseComponentValidator
     protected function validateCategoryPage()
     {
         $field = 'category_id';
-        $category_id = $this->getSubmitted($field);
-        $label = $this->translation->text('Category');
+        $value = $this->getSubmitted($field);
 
-        if (empty($category_id)) {
+        if (empty($value)) {
             return null;
         }
 
-        if (!is_numeric($category_id)) {
+        $label = $this->translation->text('Category');
+
+        if (!is_numeric($value)) {
             $this->setErrorNumeric($field, $label);
             return false;
         }
 
-        $category = $this->category->get($category_id);
+        $category = $this->category->get($value);
 
         if (empty($category['category_id'])) {
             $this->setErrorUnavailable($field, $label);

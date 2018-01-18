@@ -12,12 +12,12 @@ namespace gplcart\core\handlers\validator\components;
 use gplcart\core\models\Zone as ZoneModel,
     gplcart\core\models\State as StateModel,
     gplcart\core\models\Country as CountryModel;
-use gplcart\core\handlers\validator\Component as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate various database related data
  */
-class Country extends BaseComponentValidator
+class Country extends ComponentValidator
 {
 
     /**
@@ -72,6 +72,8 @@ class Country extends BaseComponentValidator
         $this->validateZoneCountry();
         $this->validateFormatCountry();
 
+        $this->unsetSubmitted('update');
+
         return $this->getResult();
     }
 
@@ -105,19 +107,20 @@ class Country extends BaseComponentValidator
     protected function validateZoneCountry()
     {
         $field = 'zone_id';
-        $zone_id = $this->getSubmitted($field);
-        $label = $this->translation->text('Zone');
+        $value = $this->getSubmitted($field);
 
-        if (empty($zone_id)) {
+        if (empty($value)) {
             return null;
         }
 
-        if (!is_numeric($zone_id)) {
+        $label = $this->translation->text('Zone');
+
+        if (!is_numeric($value)) {
             $this->setErrorNumeric($field, $label);
             return false;
         }
 
-        $zone = $this->zone->get($zone_id);
+        $zone = $this->zone->get($value);
 
         if (empty($zone['zone_id'])) {
             $this->setErrorUnavailable($field, $label);
@@ -135,19 +138,19 @@ class Country extends BaseComponentValidator
     {
         $field = 'native_name';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
-        $native_name = $this->getSubmitted($field);
-        $label = $this->translation->text('Native name');
+        $value = $this->getSubmitted($field);
 
-        if ($this->isUpdating() && !isset($native_name)) {
+        if ($this->isUpdating() && !isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
 
-        if (empty($native_name) || mb_strlen($native_name) > 255) {
-            $this->setErrorLengthRange($field, $label);
+        if (empty($value) || mb_strlen($value) > 255) {
+            $this->setErrorLengthRange($field, $this->translation->text('Native name'));
             return false;
         }
 
@@ -162,11 +165,13 @@ class Country extends BaseComponentValidator
     {
         $field = 'format';
         $format = $this->getSubmitted($field);
-        $label = $this->translation->text('Format');
 
         if (!isset($format)) {
+            $this->unsetSubmitted($field);
             return null;
         }
+
+        $label = $this->translation->text('Format');
 
         if (!is_array($format)) {
             $this->setErrorInvalid($field, $label);
@@ -181,6 +186,7 @@ class Country extends BaseComponentValidator
         }
 
         foreach ($format as $key => $value) {
+
             if (!is_array($value) || !array_intersect_key($value, $default[$key])) {
                 $this->setErrorInvalid($field, $label);
                 return false;
@@ -205,16 +211,18 @@ class Country extends BaseComponentValidator
     {
         $field = 'code';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
         $value = $this->getSubmitted($field);
-        $label = $this->translation->text('Code');
 
         if ($this->isUpdating() && !isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
+
+        $label = $this->translation->text('Code');
 
         if (empty($value)) {
             $this->setErrorRequired($field, $label);

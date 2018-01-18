@@ -10,12 +10,12 @@
 namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\models\Currency as CurrencyModel;
-use gplcart\core\handlers\validator\Component as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate various currency related data
  */
-class Currency extends BaseComponentValidator
+class Currency extends ComponentValidator
 {
 
     /**
@@ -94,19 +94,19 @@ class Currency extends BaseComponentValidator
     {
         $field = 'symbol';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
-        $symbol = $this->getSubmitted($field);
-        $label = $this->translation->text('Symbol');
+        $value = $this->getSubmitted($field);
 
-        if ($this->isUpdating() && !isset($symbol)) {
+        if ($this->isUpdating() && !isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
 
-        if (empty($symbol) || mb_strlen($symbol) > 10) {
-            $this->setErrorLengthRange($field, $label, 1, 10);
+        if (empty($value) || mb_strlen($value) > 10) {
+            $this->setErrorLengthRange($field, $this->translation->text('Symbol'), 1, 10);
             return false;
         }
 
@@ -121,19 +121,19 @@ class Currency extends BaseComponentValidator
     {
         $field = 'major_unit';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
-        $major_unit = $this->getSubmitted($field);
-        $label = $this->translation->text('Major unit');
+        $value = $this->getSubmitted($field);
 
-        if ($this->isUpdating() && !isset($major_unit)) {
+        if ($this->isUpdating() && !isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
 
-        if (empty($major_unit) || mb_strlen($major_unit) > 50) {
-            $this->setErrorLengthRange($field, $label, 1, 50);
+        if (empty($value) || mb_strlen($value) > 50) {
+            $this->setErrorLengthRange($field, $this->translation->text('Major unit'), 1, 50);
             return false;
         }
 
@@ -148,19 +148,19 @@ class Currency extends BaseComponentValidator
     {
         $field = 'minor_unit';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
-        $minor_unit = $this->getSubmitted($field);
-        $label = $this->translation->text('Minor unit');
+        $value = $this->getSubmitted($field);
 
-        if ($this->isUpdating() && !isset($minor_unit)) {
+        if ($this->isUpdating() && !isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
 
-        if (empty($minor_unit) || mb_strlen($minor_unit) > 50) {
-            $this->setErrorLengthRange($field, $label, 1, 50);
+        if (empty($value) || mb_strlen($value) > 50) {
+            $this->setErrorLengthRange($field, $this->translation->text('Minor unit'), 1, 50);
             return false;
         }
 
@@ -174,19 +174,20 @@ class Currency extends BaseComponentValidator
     protected function validateConvertionRateCurrency()
     {
         $field = 'conversion_rate';
-        $conversion_rate = $this->getSubmitted($field);
-        $label = $this->translation->text('Conversion rate');
+        $value = $this->getSubmitted($field);
 
-        if (!isset($conversion_rate)) {
+        if (!isset($value)) {
             return null;
         }
 
-        if (empty($conversion_rate) || strlen($conversion_rate) > 10) {
+        $label = $this->translation->text('Conversion rate');
+
+        if (empty($value) || strlen($value) > 10) {
             $this->setErrorLengthRange($field, $label, 1, 10);
             return false;
         }
 
-        if (preg_match('/^[0-9]\d*(\.\d+)?$/', $conversion_rate) !== 1) {
+        if (preg_match('/^[0-9]\d*(\.\d+)?$/', $value) !== 1) {
             $this->setErrorInvalid($field, $label);
             return false;
         }
@@ -201,19 +202,21 @@ class Currency extends BaseComponentValidator
     protected function validateRoundingStepCurrency()
     {
         $field = 'rounding_step';
-        $rounding_step = $this->getSubmitted($field);
-        $label = $this->translation->text('Rounding step');
+        $value = $this->getSubmitted($field);
 
-        if (!isset($rounding_step)) {
+        if (!isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
 
-        if (strlen($rounding_step) > 10) {
+        $label = $this->translation->text('Rounding step');
+
+        if (strlen($value) > 10) {
             $this->setErrorLengthRange($field, $label, 1, 10);
             return false;
         }
 
-        if (preg_match('/^[0-9]\d*(\.\d+)?$/', $rounding_step) !== 1) {
+        if (preg_match('/^[0-9]\d*(\.\d+)?$/', $value) !== 1) {
             $this->setErrorInvalid($field, $label);
             return false;
         }
@@ -229,14 +232,14 @@ class Currency extends BaseComponentValidator
     {
         $field = 'decimals';
         $value = $this->getSubmitted($field);
-        $label = $this->translation->text('Decimals');
 
         if (!isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
 
         if (preg_match('/^[0-2]+$/', $value) !== 1) {
-            $this->setErrorInvalid($field, $label);
+            $this->setErrorInvalid($field, $this->translation->text('Decimals'));
             return false;
         }
 
@@ -251,16 +254,18 @@ class Currency extends BaseComponentValidator
     {
         $field = 'numeric_code';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
         $value = $this->getSubmitted($field);
-        $label = $this->translation->text('Numeric code');
 
         if ($this->isUpdating() && !isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
+
+        $label = $this->translation->text('Numeric code');
 
         if (empty($value)) {
             $this->setErrorRequired($field, $label);
@@ -296,16 +301,18 @@ class Currency extends BaseComponentValidator
     {
         $field = 'code';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
         $value = $this->getSubmitted($field);
-        $label = $this->translation->text('Code');
 
         if ($this->isUpdating() && !isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
+
+        $label = $this->translation->text('Code');
 
         if (empty($value)) {
             $this->setErrorRequired($field, $label);

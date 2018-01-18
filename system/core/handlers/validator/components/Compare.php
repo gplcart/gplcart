@@ -10,12 +10,12 @@
 namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\models\Product as ProductModel;
-use gplcart\core\handlers\validator\Component as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate product comparison data
  */
-class Compare extends BaseComponentValidator
+class Compare extends ComponentValidator
 {
 
     /**
@@ -46,6 +46,7 @@ class Compare extends BaseComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateProductCompare();
+
         return $this->getResult();
     }
 
@@ -57,19 +58,19 @@ class Compare extends BaseComponentValidator
     {
         $field = 'product_id';
         $label = $this->translation->text('Product');
-        $product_id = $this->getSubmitted($field);
+        $value = $this->getSubmitted($field);
 
-        if (empty($product_id)) {
+        if (empty($value)) {
             $this->setErrorRequired($field, $label);
             return false;
         }
 
-        if (!is_numeric($product_id)) {
+        if (!is_numeric($value)) {
             $this->setErrorNumeric($field, $label);
             return false;
         }
 
-        $product = $this->product->get($product_id);
+        $product = $this->product->get($value);
 
         if (empty($product['status'])) {
             $this->setErrorUnavailable($field, $label);

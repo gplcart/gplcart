@@ -13,12 +13,12 @@ use gplcart\core\models\City as CityModel,
     gplcart\core\models\State as StateModel,
     gplcart\core\models\Country as CountryModel,
     gplcart\core\models\Address as AddressModel;
-use gplcart\core\handlers\validator\Component as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate address data
  */
-class Address extends BaseComponentValidator
+class Address extends ComponentValidator
 {
 
     /**
@@ -51,8 +51,7 @@ class Address extends BaseComponentValidator
      * @param AddressModel $address
      * @param CityModel $city
      */
-    public function __construct(CountryModel $country, StateModel $state, AddressModel $address,
-            CityModel $city)
+    public function __construct(CountryModel $country, StateModel $state, AddressModel $address, CityModel $city)
     {
         parent::__construct();
 
@@ -75,13 +74,16 @@ class Address extends BaseComponentValidator
 
         $this->validateAddress();
         $this->validateCountryAddress();
+
         $this->validateStateAddress();
         $this->validateCityAddress();
         $this->validateTypeAddress();
-        $this->validateTextFieldsAddress();
+        $this->validateFieldsAddress();
         $this->validateUserIdAddress();
 
         $this->unsetSubmitted('format');
+        $this->unsetSubmitted('update');
+
         return $this->getResult();
     }
 
@@ -116,32 +118,35 @@ class Address extends BaseComponentValidator
     {
         $field = 'user_id';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
+            return null;
+        }
+
+        $value = $this->getSubmitted($field);
+
+        if ($this->isUpdating() && !isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
 
         $label = $this->translation->text('User');
-        $user_id = $this->getSubmitted($field);
 
-        if ($this->isUpdating() && !isset($user_id)) {
-            return null;
-        }
-
-        if (empty($user_id) || mb_strlen($user_id) > 255) {
+        if (empty($value) || mb_strlen($value) > 255) {
             $this->setErrorLengthRange($field, $label);
             return false;
         }
 
-        if (!is_numeric($user_id)) {
+        if (!is_numeric($value)) {
             return true; // Anonymous user
         }
 
-        $user = $this->user->get($user_id);
+        $user = $this->user->get($value);
 
         if (empty($user)) {
             $this->setErrorUnavailable($field, $label);
             return false;
         }
+
         return true;
     }
 
@@ -153,28 +158,34 @@ class Address extends BaseComponentValidator
     {
         $field = 'country';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
+            return null;
+        }
+
+        $value = $this->getSubmitted($field);
+
+        if ($this->isUpdating() && !isset($value)) {
+            $updating = $this->getUpdating();
+            $this->setSubmitted('format', $updating['country_format']);
+            $this->unsetSubmitted($field);
             return null;
         }
 
         $label = $this->translation->text('Country');
-        $code = $this->getSubmitted($field);
 
-        if (!isset($code)) {
-            $format = $this->country->getDefaultFormat();
-            $this->setSubmitted('format', $format);
-            return null;
+        if (empty($value)) {
+            $this->setErrorRequired($field, $label);
+            return false;
         }
 
-        $country = $this->country->get($code);
+        $country = $this->country->get($value);
 
-        if (empty($country['code'])) {
+        if (empty($country['format'])) {
             $this->setErrorUnavailable($field, $label);
             return false;
         }
 
-        $format = $this->country->getFormat($code, true);
-        $this->setSubmitted('format', $format);
+        $this->setSubmitted('format', $country['format']);
         return true;
     }
 
@@ -186,33 +197,34 @@ class Address extends BaseComponentValidator
     {
         $field = 'state_id';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field) || $this->isError('country')) {
             return null;
         }
 
         $format = $this->getSubmitted('format');
-        $state_id = $this->getSubmitted($field);
-        $label = $this->translation->text('State');
+        $value = $this->getSubmitted($field);
 
-        if (!isset($state_id) || empty($format)) {
+        if (!isset($value) || empty($format)) {
             return null;
         }
 
-        if (empty($state_id) && !empty($format['state_id']['required'])) {
+        $label = $this->translation->text('State');
+
+        if (empty($value) && !empty($format['state_id']['required'])) {
             $this->setErrorRequired($field, $label);
             return false;
         }
 
-        if (!is_numeric($state_id)) {
+        if (!is_numeric($value)) {
             $this->setErrorNumeric($field, $label);
             return false;
         }
 
-        if (empty($state_id)) {
+        if (empty($value)) {
             return true;
         }
 
-        $state = $this->state->get($state_id);
+        $state = $this->state->get($value);
 
         if (empty($state['state_id'])) {
             $this->setErrorUnavailable($field, $label);
@@ -230,14 +242,14 @@ class Address extends BaseComponentValidator
     {
         $field = 'city_id';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field) || $this->isError('country')) {
             return null;
         }
 
-        $city_id = $this->getSubmitted($field);
-        $label = $this->translation->text('City');
+        $value = $this->getSubmitted($field);
 
-        if ($this->isUpdating() && !isset($city_id)) {
+        if ($this->isUpdating() && !isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
 
@@ -247,7 +259,9 @@ class Address extends BaseComponentValidator
             return null;
         }
 
-        if (empty($city_id)) {
+        $label = $this->translation->text('City');
+
+        if (empty($value)) {
             if (!empty($format['city_id']['required'])) {
                 $this->setErrorRequired($field, $label);
                 return false;
@@ -256,15 +270,15 @@ class Address extends BaseComponentValidator
         }
 
         // City ID can be either numeric ID or non-numeric human name
-        if (is_numeric($city_id)) {
-            if (!$this->city->get($city_id)) {
+        if (is_numeric($value)) {
+            if (!$this->city->get($value)) {
                 $this->setErrorUnavailable($field, $label);
                 return false;
             }
             return true;
         }
 
-        if (mb_strlen($city_id) > 255) {
+        if (mb_strlen($value) > 255) {
             $this->setErrorLengthRange($field, $label);
             return false;
         }
@@ -278,17 +292,15 @@ class Address extends BaseComponentValidator
         }
 
         $conditions = array(
-            'name' => $city_id,
+            'name' => $value,
             'country' => $country,
             'state_id' => $state_id
         );
 
-        $cities = (array) $this->city->getList($conditions);
-
         // Loop over results to find exact match,
         // because we search "name" using "LIKE" condition
-        foreach ($cities as $city) {
-            if (strcasecmp($city['name'], $city_id) === 0) {
+        foreach ((array)$this->city->getList($conditions) as $city) {
+            if (strcasecmp($city['name'], $value) === 0) {
                 $this->setSubmitted($field, $city['city_id']);
                 return true;
             }
@@ -304,15 +316,14 @@ class Address extends BaseComponentValidator
     protected function validateTypeAddress()
     {
         $field = 'type';
-        $type = $this->getSubmitted($field);
+        $value = $this->getSubmitted($field);
 
-        if (!isset($type)) {
+        if (!isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
 
-        $types = $this->address->getTypes();
-
-        if (!in_array($type, $types)) {
+        if (!in_array($value, $this->address->getTypes())) {
             $this->setErrorUnavailable($field, $this->translation->text('Type'));
             return false;
         }
@@ -321,45 +332,52 @@ class Address extends BaseComponentValidator
     }
 
     /**
-     * Validates address text fields
+     * Validates address fields
      * @return boolean|null
      */
-    protected function validateTextFieldsAddress()
+    protected function validateFieldsAddress()
     {
-        $source_field = 'format';
-        $format = $this->getSubmitted($source_field);
+        $this->validateFieldAddress('address_1');
+        $this->validateFieldAddress('address_2');
+        $this->validateFieldAddress('phone');
+        $this->validateFieldAddress('middle_name');
+        $this->validateFieldAddress('last_name');
+        $this->validateFieldAddress('first_name');
+        $this->validateFieldAddress('postcode');
+        $this->validateFieldAddress('company');
+        $this->validateFieldAddress('fax');
+    }
 
-        if (empty($format) || $this->isError('country')) {
+    /**
+     * Validates an address field associated with the country format
+     * @param string $field
+     * @return bool|null
+     */
+    protected function validateFieldAddress($field)
+    {
+        if ($this->isExcluded($field) || $this->isError('country')) {
             return null;
         }
 
-        $fields = array('address_1', 'address_2', 'phone', 'middle_name',
-            'last_name', 'first_name', 'postcode', 'company', 'fax');
+        $value = $this->getSubmitted($field);
 
-        $errors = 0;
-        foreach ($fields as $field) {
-
-            if (empty($format[$field])) {
-                continue;
-            }
-
-            $submitted_value = $this->getSubmitted($field);
-
-            if ($this->isUpdating() && !isset($submitted_value)) {
-                continue;
-            }
-
-            if (empty($format[$field]['required'])) {
-                continue;
-            }
-
-            if (!isset($submitted_value) || $submitted_value === '' || mb_strlen($submitted_value) > 255) {
-                $errors++;
-                $this->setErrorLengthRange($field, $format[$field]['name']);
-            }
+        if ($this->isUpdating() && !isset($value)) {
+            $this->unsetSubmitted($field);
+            return null;
         }
 
-        return empty($errors);
+        $format = $this->getSubmitted('format');
+
+        if (empty($format[$field]['required'])) {
+            return null;
+        }
+
+        if (!isset($value) || $value === '' || mb_strlen($value) > 255) {
+            $this->setErrorLengthRange($field, $format[$field]['name'], 1, 255);
+            return false;
+        }
+
+        return true;
     }
 
 }

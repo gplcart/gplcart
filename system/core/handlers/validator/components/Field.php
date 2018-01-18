@@ -10,12 +10,12 @@
 namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\models\Field as FieldModel;
-use gplcart\core\handlers\validator\Component as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate field data
  */
-class Field extends BaseComponentValidator
+class Field extends ComponentValidator
 {
 
     /**
@@ -50,7 +50,9 @@ class Field extends BaseComponentValidator
         $this->validateWeight();
         $this->validateTranslation();
         $this->validateTypeField();
-        $this->validateWidgetTypeField();
+        $this->validateWidgetField();
+
+        $this->unsetSubmitted('update');
 
         return $this->getResult();
     }
@@ -84,27 +86,23 @@ class Field extends BaseComponentValidator
      */
     protected function validateTypeField()
     {
-        if ($this->isUpdating()) {
-            return null; // Cannot change type of existing field
-        }
-
         $field = 'type';
 
-        if ($this->isExcludedField($field)) {
-            return null;
+        if ($this->isUpdating() || $this->isExcluded($field)) {
+            return null; // Type will be ignored on update
         }
 
-        $type = $this->getSubmitted($field);
+        $value = $this->getSubmitted($field);
         $label = $this->translation->text('Type');
 
-        if (empty($type)) {
+        if (empty($value)) {
             $this->setErrorRequired($field, $label);
             return false;
         }
 
         $types = $this->field->getTypes();
 
-        if (empty($types[$type])) {
+        if (empty($types[$value])) {
             $this->setErrorUnavailable($field, $label);
             return false;
         }
@@ -116,29 +114,31 @@ class Field extends BaseComponentValidator
      * Validates a field widget type
      * @return boolean|null
      */
-    protected function validateWidgetTypeField()
+    protected function validateWidgetField()
     {
         $field = 'widget';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
-        $type = $this->getSubmitted($field);
+        $value = $this->getSubmitted($field);
+
+        if ($this->isUpdating() && !isset($value)) {
+            $this->unsetSubmitted($field);
+            return null;
+        }
+
         $label = $this->translation->text('Widget');
 
-        if ($this->isUpdating() && !isset($type)) {
-            return null;
-        }
-
-        if (empty($type)) {
+        if (empty($value)) {
             $this->setErrorRequired($field, $label);
             return false;
         }
 
         $types = $this->field->getWidgetTypes();
 
-        if (empty($types[$type])) {
+        if (empty($types[$value])) {
             $this->setErrorUnavailable($field, $label);
             return false;
         }

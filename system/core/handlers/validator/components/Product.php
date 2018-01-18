@@ -14,12 +14,12 @@ use gplcart\core\models\Sku as SkuModel,
     gplcart\core\models\Currency as CurrencyModel,
     gplcart\core\models\Category as CategoryModel,
     gplcart\core\models\ProductClass as ProductClassModel;
-use gplcart\core\handlers\validator\Component as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate a product data
  */
-class Product extends BaseComponentValidator
+class Product extends ComponentValidator
 {
 
     /**
@@ -78,7 +78,7 @@ class Product extends BaseComponentValidator
      * @param CategoryModel $category
      */
     public function __construct(ProductModel $product, ProductClassModel $product_class,
-            SkuModel $sku, CurrencyModel $currency, CategoryModel $category)
+                                SkuModel $sku, CurrencyModel $currency, CategoryModel $category)
     {
         parent::__construct();
 
@@ -125,6 +125,8 @@ class Product extends BaseComponentValidator
         $this->validateAlias();
         $this->validateUploadImages('product');
 
+        $this->unsetSubmitted('update');
+
         return $this->getResult();
     }
 
@@ -157,11 +159,11 @@ class Product extends BaseComponentValidator
      */
     protected function validateSubtractProduct()
     {
-        $subtract = $this->getSubmitted('subtract');
+        $field = 'subtract';
+        $subtract = $this->getSubmitted($field);
 
         if (isset($subtract)) {
-            $subtract = filter_var($subtract, FILTER_VALIDATE_BOOLEAN);
-            $this->setSubmitted('subtract', $subtract);
+            $this->setSubmitted($field, filter_var($subtract, FILTER_VALIDATE_BOOLEAN));
         }
 
         return true;
@@ -175,16 +177,18 @@ class Product extends BaseComponentValidator
     {
         $field = 'currency';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
         $value = $this->getSubmitted($field);
-        $label = $this->translation->text('Currency');
 
         if ($this->isUpdating() && !isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
+
+        $label = $this->translation->text('Currency');
 
         if (empty($value)) {
             $this->setErrorRequired($field, $label);
@@ -278,11 +282,12 @@ class Product extends BaseComponentValidator
     {
         $field = 'price';
         $value = $this->getSubmitted($field);
-        $label = $this->translation->text('Price');
 
         if (!isset($value)) {
             return null;
         }
+
+        $label = $this->translation->text('Price');
 
         if (!is_numeric($value)) {
             $this->setErrorNumeric($field, $label);
@@ -305,11 +310,13 @@ class Product extends BaseComponentValidator
     {
         $field = 'stock';
         $value = $this->getSubmitted($field);
-        $label = $this->translation->text('Stock');
 
         if (!isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
+
+        $label = $this->translation->text('Stock');
 
         if (!is_numeric($value)) {
             $this->setErrorNumeric($field, $label);
@@ -368,11 +375,7 @@ class Product extends BaseComponentValidator
     {
         $field = 'related';
 
-        if ($this->isExcludedField($field)) {
-            return null;
-        }
-
-        if ($this->isError('store_id')) {
+        if ($this->isExcluded($field) || $this->isError('store_id')) {
             return null;
         }
 
@@ -421,11 +424,7 @@ class Product extends BaseComponentValidator
     {
         $field = 'sku';
 
-        if ($this->isExcludedField($field)) {
-            return null;
-        }
-
-        if ($this->isError()) {
+        if ($this->isExcluded($field) || $this->isError()) {
             return null;
         }
 
@@ -486,11 +485,12 @@ class Product extends BaseComponentValidator
     {
         $field = 'product_class_id';
         $value = $this->getSubmitted($field);
-        $label = $this->translation->text('Product class');
 
         if (empty($value)) {
             return null;
         }
+
+        $label = $this->translation->text('Product class');
 
         if (!is_numeric($value)) {
             $this->setErrorNumeric($field, $label);
@@ -574,7 +574,7 @@ class Product extends BaseComponentValidator
 
             foreach ($combination['fields'] as $field_value_id) {
                 if (!isset($this->stock_amount[$field_value_id])) {
-                    $this->stock_amount[$field_value_id] = (int) $combination['stock'];
+                    $this->stock_amount[$field_value_id] = (int)$combination['stock'];
                 }
             }
 

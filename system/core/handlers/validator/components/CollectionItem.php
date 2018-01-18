@@ -14,12 +14,12 @@ use gplcart\core\models\Page as PageModel,
     gplcart\core\models\Product as ProductModel,
     gplcart\core\models\Collection as CollectionModel,
     gplcart\core\models\CollectionItem as CollectionItemModel;
-use gplcart\core\handlers\validator\Component as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate collection item data
  */
-class CollectionItem extends BaseComponentValidator
+class CollectionItem extends ComponentValidator
 {
 
     /**
@@ -52,8 +52,8 @@ class CollectionItem extends BaseComponentValidator
      * @param CollectionModel $collection
      * @param CollectionItemModel $collection_item
      */
-    public function __construct(PageModel $page, ProductModel $product, CollectionModel $collection,
-            CollectionItemModel $collection_item)
+    public function __construct(PageModel $page, ProductModel $product,
+                                CollectionModel $collection, CollectionItemModel $collection_item)
     {
         parent::__construct();
 
@@ -119,7 +119,7 @@ class CollectionItem extends BaseComponentValidator
     {
         $field = 'collection_id';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
@@ -159,7 +159,7 @@ class CollectionItem extends BaseComponentValidator
     {
         $field = 'value';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
@@ -242,7 +242,7 @@ class CollectionItem extends BaseComponentValidator
             return true;
         }
 
-        foreach ((array) $result as $key => $error) {
+        foreach ((array)$result as $key => $error) {
             $this->setError($key, $error);
         }
 

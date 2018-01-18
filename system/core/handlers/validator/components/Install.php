@@ -10,12 +10,12 @@
 namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\models\Install as InstallModel;
-use gplcart\core\handlers\validator\Component as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate installation data
  */
-class Install extends BaseComponentValidator
+class Install extends ComponentValidator
 {
 
     /**
@@ -75,7 +75,7 @@ class Install extends BaseComponentValidator
      */
     protected function validateRequirementsInstall()
     {
-        if ($this->isExcludedField('requirements')) {
+        if ($this->isExcluded('requirements')) {
             return null;
         }
 
@@ -114,7 +114,7 @@ class Install extends BaseComponentValidator
      */
     protected function validateUserEmailInstall()
     {
-        if ($this->isExcludedField('user.email')) {
+        if ($this->isExcluded('user.email')) {
             return null;
         }
 
@@ -128,27 +128,27 @@ class Install extends BaseComponentValidator
 
     /**
      * Validates a user password
-     * @return boolean
+     * @return boolean|null
      */
     protected function validateUserPasswordInstall()
     {
         $field = 'user.password';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
-        $password = $this->getSubmitted($field);
+        $value = $this->getSubmitted($field);
         $label = $this->translation->text('Password');
 
-        if (empty($password)) {
+        if (empty($value)) {
             $this->setErrorRequired($field, $label);
             return false;
         }
 
         list($min, $max) = $this->user->getPasswordLength();
 
-        $length = mb_strlen($password);
+        $length = mb_strlen($value);
 
         if ($length < $min || $length > $max) {
             $this->setErrorLengthRange($field, $label, $min, $max);
@@ -166,13 +166,13 @@ class Install extends BaseComponentValidator
     {
         $field = 'store.host';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
-        $host = $this->getSubmitted($field);
+        $value = $this->getSubmitted($field);
 
-        if (empty($host)) {
+        if (empty($value)) {
             $this->setErrorRequired($field, $this->translation->text('Host'));
             return false;
         }
@@ -188,13 +188,13 @@ class Install extends BaseComponentValidator
     {
         $field = 'store.title';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
-        $title = $this->getSubmitted($field);
+        $value = $this->getSubmitted($field);
 
-        if (empty($title) || mb_strlen($title) > 255) {
+        if (empty($value) || mb_strlen($value) > 255) {
             $this->setErrorLengthRange($field, $this->translation->text('Title'));
             return false;
         }
@@ -210,17 +210,17 @@ class Install extends BaseComponentValidator
     {
         $field = 'store.basepath';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
-        $basepath = $this->getSubmitted($field);
+        $value = $this->getSubmitted($field);
 
-        if (!isset($basepath) || $basepath === '') {
+        if (!isset($value) || $value === '') {
             return true;
         }
 
-        if (preg_match('/^[a-z0-9-\/]{0,50}$/', $basepath) !== 1) {
+        if (preg_match('/^[a-z0-9-\/]{0,50}$/', $value) !== 1) {
             $this->setErrorInvalid($field, $this->translation->text('Base path'));
             return false;
         }
@@ -236,20 +236,20 @@ class Install extends BaseComponentValidator
     {
         $field = 'store.timezone';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
-        $timezone = $this->getSubmitted($field);
+        $value = $this->getSubmitted($field);
 
-        if (empty($timezone)) {
+        if (empty($value)) {
             $this->setSubmitted($field, date_default_timezone_get());
             return true;
         }
 
         $timezones = gplcart_timezones();
 
-        if (empty($timezones[$timezone])) {
+        if (empty($timezones[$value])) {
             $this->setErrorInvalid($field, $this->translation->text('Timezone'));
             return false;
         }
@@ -265,18 +265,18 @@ class Install extends BaseComponentValidator
     {
         $field = 'installer';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
-        $installer_id = $this->getSubmitted($field);
+        $value = $this->getSubmitted($field);
 
-        if (empty($installer_id)) {
+        if (empty($value)) {
             $this->setSubmitted('installer', 'default');
             return null;
         }
 
-        $installer = $this->install->getHandler($installer_id);
+        $installer = $this->install->getHandler($value);
 
         if (empty($installer)) {
             $this->setErrorInvalid('installer', $this->translation->text('Installer'));
@@ -294,13 +294,13 @@ class Install extends BaseComponentValidator
     {
         $field = 'database.name';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
-        $dbname = $this->getSubmitted($field);
+        $value = $this->getSubmitted($field);
 
-        if (empty($dbname)) {
+        if (empty($value)) {
             $this->setErrorRequired($field, $this->translation->text('Database name'));
             return false;
         }
@@ -316,13 +316,13 @@ class Install extends BaseComponentValidator
     {
         $field = 'database.user';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
-        $dbuser = $this->getSubmitted($field);
+        $value = $this->getSubmitted($field);
 
-        if (empty($dbuser)) {
+        if (empty($value)) {
             $this->setErrorRequired($field, $this->translation->text('Database user'));
             return false;
         }
@@ -338,13 +338,13 @@ class Install extends BaseComponentValidator
     {
         $field = 'database.password';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
-        $dbpassword = $this->getSubmitted($field);
+        $value = $this->getSubmitted($field);
 
-        if (!isset($dbpassword)) {
+        if (!isset($value)) {
             $this->setSubmitted($field, '');
             return null;
         }
@@ -360,13 +360,13 @@ class Install extends BaseComponentValidator
     {
         $field = 'database.host';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
-        $dbhost = $this->getSubmitted($field);
+        $value = $this->getSubmitted($field);
 
-        if (empty($dbhost)) {
+        if (empty($value)) {
             $this->setErrorRequired($field, $this->translation->text('Database host'));
             return false;
         }
@@ -382,20 +382,20 @@ class Install extends BaseComponentValidator
     {
         $field = 'database.type';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
-        $dbtype = $this->getSubmitted($field);
+        $value = $this->getSubmitted($field);
 
-        if (empty($dbtype)) {
+        if (empty($value)) {
             $this->setErrorRequired($field, $this->translation->text('Database type'));
             return false;
         }
 
         $drivers = \PDO::getAvailableDrivers();
 
-        if (in_array($dbtype, $drivers)) {
+        if (in_array($value, $drivers)) {
             return true;
         }
 
@@ -413,19 +413,19 @@ class Install extends BaseComponentValidator
     {
         $field = 'database.port';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
+        $value = $this->getSubmitted($field);
         $label = $this->translation->text('Database port');
-        $dbport = $this->getSubmitted($field);
 
-        if (empty($dbport)) {
+        if (empty($value)) {
             $this->setErrorRequired($field, $label);
             return false;
         }
 
-        if (!is_numeric($dbport)) {
+        if (!is_numeric($value)) {
             $this->setErrorNumeric($field, $label);
             return false;
         }
@@ -445,7 +445,7 @@ class Install extends BaseComponentValidator
 
         $field = 'database.connect';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
@@ -460,7 +460,7 @@ class Install extends BaseComponentValidator
             $result = $this->translation->text('Could not connect to database');
         }
 
-        $this->setError($field, (string) $result);
+        $this->setError($field, (string)$result);
         return false;
     }
 

@@ -10,12 +10,12 @@
 namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\Module;
-use gplcart\core\handlers\validator\Component as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate store data
  */
-class Store extends BaseComponentValidator
+class Store extends ComponentValidator
 {
 
     /**
@@ -59,6 +59,8 @@ class Store extends BaseComponentValidator
         $this->validateImagesStore();
         $this->validateDefaultStore();
 
+        $this->unsetSubmitted('update');
+
         return $this->getResult();
     }
 
@@ -94,7 +96,7 @@ class Store extends BaseComponentValidator
     {
         $field = 'domain';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
@@ -140,7 +142,7 @@ class Store extends BaseComponentValidator
     {
         $field = 'basepath';
 
-        if ($this->isExcludedField($field) || $this->isError('domain')) {
+        if ($this->isExcluded($field) || $this->isError('domain')) {
             return null;
         }
 
@@ -179,29 +181,29 @@ class Store extends BaseComponentValidator
     {
         $field = 'data';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
-        $data = $this->getSubmitted($field);
+        $value = $this->getSubmitted($field);
 
         if ($this->isUpdating()) {
-            if (!isset($data)) {
+            if (!isset($value)) {
                 $this->unsetSubmitted($field);
                 return null;
             }
-        } else if (empty($data)) {
-            $data = $this->store->getConfig(null, $this->store->getDefault());
+        } else if (empty($value)) {
+            $value = $this->store->getConfig(null, $this->store->getDefault());
             // Will be set later
-            unset($data['title'], $data['meta_title']);
+            unset($value['title'], $value['meta_title']);
         }
 
-        if (!is_array($data)) {
+        if (!is_array($value)) {
             $this->setErrorInvalid($field, $this->translation->text('Settings'));
             return false;
         }
 
-        $this->setSubmitted('data', $data);
+        $this->setSubmitted('data', $value);
 
         $this->validateDataTitleStore();
         $this->validateDataEmailStore();
@@ -273,11 +275,12 @@ class Store extends BaseComponentValidator
     {
         $field = 'data.map';
         $value = $this->getSubmitted($field);
-        $label = $this->translation->text('Map');
 
         if (empty($value)) {
             return null;
         }
+
+        $label = $this->translation->text('Map');
 
         if (!is_array($value) || count($value) != 2) {
             $this->setErrorInvalid($field, $label);

@@ -12,12 +12,12 @@ namespace gplcart\core\handlers\validator\components;
 use Exception;
 use gplcart\core\models\Trigger as TriggerModel,
     gplcart\core\models\Condition as ConditionModel;
-use gplcart\core\handlers\validator\Component as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate trigger data
  */
-class Trigger extends BaseComponentValidator
+class Trigger extends ComponentValidator
 {
 
     /**
@@ -62,6 +62,8 @@ class Trigger extends BaseComponentValidator
         $this->validateWeight();
         $this->validateConditionsTrigger();
 
+        $this->unsetSubmitted('update');
+
         return $this->getResult();
     }
 
@@ -71,13 +73,13 @@ class Trigger extends BaseComponentValidator
      */
     protected function validateTrigger()
     {
-        $trigger_id = $this->getUpdatingId();
+        $id = $this->getUpdatingId();
 
-        if ($trigger_id === false) {
+        if ($id === false) {
             return null;
         }
 
-        $data = $this->trigger->get($trigger_id);
+        $data = $this->trigger->get($id);
 
         if (empty($data)) {
             $this->setErrorUnavailable('update', $this->translation->text('Trigger'));
@@ -96,13 +98,14 @@ class Trigger extends BaseComponentValidator
     {
         $field = 'data.conditions';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
         $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
 

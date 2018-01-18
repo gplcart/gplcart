@@ -9,12 +9,12 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\handlers\validator\Component as BaseComponentValidator;
+use gplcart\core\handlers\validator\Component as ComponentValidator;
 
 /**
  * Provides methods to validate files to be stored in the database
  */
-class File extends BaseComponentValidator
+class File extends ComponentValidator
 {
 
     /**
@@ -48,6 +48,8 @@ class File extends BaseComponentValidator
         $this->validateTranslation();
         $this->validatePathFile();
 
+        $this->unsetSubmitted('update');
+
         return $this->getResult();
     }
 
@@ -63,14 +65,14 @@ class File extends BaseComponentValidator
             return null;
         }
 
-        $file = $this->file->get($id);
+        $data = $this->file->get($id);
 
-        if (empty($file)) {
+        if (empty($data)) {
             $this->setErrorUnavailable('update', $this->translation->text('File'));
             return false;
         }
 
-        $this->setSubmitted('update', $file);
+        $this->setSubmitted('update', $data);
         return true;
     }
 
@@ -80,10 +82,11 @@ class File extends BaseComponentValidator
      */
     protected function validateTitleFile()
     {
-        $title = $this->getSubmitted('title');
+        $field = 'title';
+        $value = $this->getSubmitted($field);
 
-        if (isset($title) && mb_strlen($title) > 255) {
-            $this->setErrorLengthRange('title', $this->translation->text('Title'), 0, 255);
+        if (isset($value) && mb_strlen($value) > 255) {
+            $this->setErrorLengthRange($field, $this->translation->text('Title'), 0, 255);
             return false;
         }
 
@@ -102,7 +105,7 @@ class File extends BaseComponentValidator
 
         $field = 'file';
 
-        if ($this->isExcludedField($field)) {
+        if ($this->isExcluded($field)) {
             return null;
         }
 
@@ -127,12 +130,11 @@ class File extends BaseComponentValidator
         $result = $this->file_transfer->upload($file, null, self::PATH);
 
         if ($result !== true) {
-            $this->setError($field, (string) $result);
+            $this->setError($field, (string)$result);
             return false;
         }
 
-        $uploaded = $this->file_transfer->getTransferred(true);
-        $this->setSubmitted('path', $uploaded);
+        $this->setSubmitted('path', $this->file_transfer->getTransferred(true));
         return true;
     }
 
