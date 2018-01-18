@@ -61,10 +61,10 @@ class Install extends CliController
         $this->validateRequirementsInstall();
         $this->validateInstallerInstall();
 
-        $this->validateInput('store.title', $this->text('Store title'), 'install', 'GPLCart');
-        $this->validateInput('user.email', $this->text('E-mail'), 'install');
-        $this->validateInput('user.password', $this->text('Password'), 'install');
-        $this->validateInput('store.basepath', $this->text('Installation subdirectory'), 'install', '');
+        $this->validatePrompt('store.title', $this->text('Store title'), 'install', 'GPLCart');
+        $this->validatePrompt('user.email', $this->text('E-mail'), 'install');
+        $this->validatePrompt('user.password', $this->text('Password'), 'install');
+        $this->validatePrompt('store.basepath', $this->text('Installation subdirectory'), 'install', '');
 
         $this->validateInputDbInstall();
         $this->validateInputInstall();
@@ -189,11 +189,11 @@ class Install extends CliController
      */
     protected function validateInputDbInstall()
     {
-        $this->validateInput('database.name', $this->text('Database name'), 'install');
-        $this->validateInput('database.user', $this->text('Database user'), 'install', 'root');
-        $this->validateInput('database.password', $this->text('Database password'), 'install', '');
-        $this->validateInput('database.port', $this->text('Database port'), 'install', '3306');
-        $this->validateInput('database.host', $this->text('Database port'), 'install', 'localhost');
+        $this->validatePrompt('database.name', $this->text('Database name'), 'install');
+        $this->validatePrompt('database.user', $this->text('Database user'), 'install', 'root');
+        $this->validatePrompt('database.password', $this->text('Database password'), 'install', '');
+        $this->validatePrompt('database.port', $this->text('Database port'), 'install', '3306');
+        $this->validatePrompt('database.host', $this->text('Database port'), 'install', 'localhost');
 
         $this->validateInputDbTypeInstall();
     }

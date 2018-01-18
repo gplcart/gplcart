@@ -255,7 +255,7 @@ class CliController
             return $this->submitted;
         }
 
-        return $this->submitted = (array) $data;
+        return $this->submitted = (array)$data;
     }
 
     /**
@@ -297,7 +297,7 @@ class CliController
             return $this->params;
         }
 
-        foreach ((array) $key as $k) {
+        foreach ((array)$key as $k) {
             if (isset($this->params[$k])) {
                 return $this->params[$k];
             }
@@ -312,7 +312,7 @@ class CliController
      */
     public function getArguments()
     {
-        return array_filter($this->params, function($key) {
+        return array_filter($this->params, function ($key) {
             return is_int($key);
         }, ARRAY_FILTER_USE_KEY);
     }
@@ -323,7 +323,7 @@ class CliController
      */
     public function getOptions()
     {
-        return array_filter($this->params, function($key) {
+        return array_filter($this->params, function ($key) {
             return !is_numeric($key);
         }, ARRAY_FILTER_USE_KEY);
     }
@@ -355,7 +355,7 @@ class CliController
      */
     public function isSubmitted($key)
     {
-        return (bool) $this->getSubmitted($key);
+        return (bool)$this->getSubmitted($key);
     }
 
     /**
@@ -388,7 +388,7 @@ class CliController
             return $this->errors;
         }
 
-        return $this->errors = (array) $error;
+        return $this->errors = (array)$error;
     }
 
     /**
@@ -497,24 +497,43 @@ class CliController
     }
 
     /**
-     * Validates a user input
+     * Validates a user input from prompt
      * @param string $field
      * @param string $label
      * @param string $validator
      * @param string|null $default
      */
-    protected function validateInput($field, $label, $validator, $default = null)
+    protected function validatePrompt($field, $label, $validator, $default = null)
     {
         $input = $this->prompt($label, $default);
         if (!$this->isValidInput($input, $field, $validator)) {
             $this->errors();
             // Prompt until correct input
-            $this->validateInput($field, $label, $validator, $default);
+            $this->validatePrompt($field, $label, $validator, $default);
         }
     }
 
     /**
-     * Output help for a certain command or the current command if a help option is presented
+     * Validates a chosen menu option
+     * @param string $field
+     * @param string $label
+     * @param string $validator
+     * @param array $options
+     * @param null|string $default
+     */
+    protected function validateMenu($field, $label, $validator, array $options, $default = null)
+    {
+        $input = $this->menu($options, $default, $label);
+
+        if (!$this->isValidInput($input, $field, $validator)) {
+            $this->errors();
+            // Show menu until correct choose
+            $this->validateMenu($field, $label, $validator, $options, $default);
+        }
+    }
+
+    /**
+     * Output help for a certain command or the current command if a help option is specified
      * @param string|null $command
      */
     public function outputHelp($command = null)
@@ -606,7 +625,7 @@ class CliController
             $this->error($this->text('Invalid language'));
             $this->selectLanguage();
         } else {
-            $this->langcode = (string) $selected;
+            $this->langcode = (string)$selected;
             $this->translation->set($this->langcode, null);
             $this->config->set('cli_langcode', $this->langcode);
         }
