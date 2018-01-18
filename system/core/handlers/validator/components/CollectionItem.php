@@ -242,7 +242,7 @@ class CollectionItem extends ComponentValidator
             return true;
         }
 
-        foreach ((array)$result as $key => $error) {
+        foreach ((array) $result as $key => $error) {
             $this->setError($key, $error);
         }
 

@@ -574,7 +574,7 @@ class Product extends ComponentValidator
 
             foreach ($combination['fields'] as $field_value_id) {
                 if (!isset($this->stock_amount[$field_value_id])) {
-                    $this->stock_amount[$field_value_id] = (int)$combination['stock'];
+                    $this->stock_amount[$field_value_id] = (int) $combination['stock'];
                 }
             }
 

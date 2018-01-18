@@ -279,7 +279,7 @@ class PriceRule extends ComponentValidator
             return true;
         }
 
-        foreach ((array)$rules as $rule) {
+        foreach ((array) $rules as $rule) {
             if ($rule['code'] === $value) {
                 $this->setErrorExists($field, $label);
                 return false;

@@ -330,7 +330,7 @@ class Cart extends ComponentValidator
             return null;
         }
 
-        $options = array_filter((array)$this->getSubmitted('options'));
+        $options = array_filter((array) $this->getSubmitted('options'));
 
         if (empty($options)) {
             $this->setSubmitted('options', array());

@@ -460,7 +460,7 @@ class Install extends ComponentValidator
             $result = $this->translation->text('Could not connect to database');
         }
 
-        $this->setError($field, (string)$result);
+        $this->setError($field, (string) $result);
         return false;
     }
 

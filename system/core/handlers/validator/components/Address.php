@@ -299,7 +299,7 @@ class Address extends ComponentValidator
 
         // Loop over results to find exact match,
         // because we search "name" using "LIKE" condition
-        foreach ((array)$this->city->getList($conditions) as $city) {
+        foreach ((array) $this->city->getList($conditions) as $city) {
             if (strcasecmp($city['name'], $value) === 0) {
                 $this->setSubmitted($field, $city['city_id']);
                 return true;

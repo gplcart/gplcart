@@ -389,7 +389,7 @@ class Store extends ComponentValidator
 
             if ($result !== true) {
                 $error = true;
-                $this->setError($field, (string)$result);
+                $this->setError($field, (string) $result);
                 continue;
             }
 

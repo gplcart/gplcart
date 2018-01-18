@@ -130,7 +130,7 @@ class File extends ComponentValidator
         $result = $this->file_transfer->upload($file, null, self::PATH);
 
         if ($result !== true) {
-            $this->setError($field, (string)$result);
+            $this->setError($field, (string) $result);
             return false;
         }
 
