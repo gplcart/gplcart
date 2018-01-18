@@ -123,8 +123,10 @@ class Country
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('name', 'native_name', 'code', 'status', 'weight');
 
-        if (isset($options['sort']) && in_array($options['sort'], $allowed_sort)//
-                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+        if (isset($options['sort'])
+            && in_array($options['sort'], $allowed_sort)
+            && isset($options['order'])
+            && in_array($options['order'], $allowed_order)) {
             $sql .= " ORDER BY {$options['sort']} {$options['order']}";
         } else {
             $sql .= ' ORDER BY weight ASC';
@@ -207,6 +209,7 @@ class Country
         }
 
         unset($data['code']); // Cannot update primary key
+
         $result = (bool) $this->db->update('country', $data, array('code' => $code));
 
         $this->hook->attach('country.update.after', $code, $data, $result, $this);

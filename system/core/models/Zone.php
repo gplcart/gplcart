@@ -42,7 +42,7 @@ class Zone
 
     /**
      * Loads a zone from the database
-     * @param integer $zone_id
+     * @param int $zone_id
      * @return array
      */
     public function get($zone_id)
@@ -62,7 +62,7 @@ class Zone
     /**
      * Returns an array of zones or counts them
      * @param array $options
-     * @return array|integer
+     * @return array|int
      */
     public function getList(array $options = array())
     {
@@ -96,8 +96,10 @@ class Zone
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('title', 'status');
 
-        if (isset($options['sort']) && in_array($options['sort'], $allowed_sort)//
-                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+        if (isset($options['sort'])
+            && in_array($options['sort'], $allowed_sort)
+            && isset($options['order'])
+            && in_array($options['order'], $allowed_order)) {
             $sql .= " ORDER BY {$options['sort']} {$options['order']}";
         } else {
             $sql .= " ORDER BY title ASC";
@@ -138,7 +140,7 @@ class Zone
 
     /**
      * Updates a zone
-     * @param integer $zone_id
+     * @param int $zone_id
      * @param array $data
      * @return boolean
      */
@@ -158,7 +160,7 @@ class Zone
 
     /**
      * Deletes a zone
-     * @param integer $zone_id
+     * @param int $zone_id
      * @param bool $check
      * @return boolean
      */
@@ -182,14 +184,14 @@ class Zone
 
     /**
      * Whether a zone can be deleted
-     * @param integer $zone_id
+     * @param int $zone_id
      * @return boolean
      */
     public function canDelete($zone_id)
     {
-        $sql = 'SELECT NOT EXISTS (SELECT zone_id FROM country WHERE zone_id=:id)'
-                . ' AND NOT EXISTS (SELECT zone_id FROM state WHERE zone_id=:id)'
-                . ' AND NOT EXISTS (SELECT zone_id FROM city WHERE zone_id=:id)';
+        $sql = 'SELECT NOT EXISTS (SELECT zone_id FROM country WHERE zone_id=:id)
+                AND NOT EXISTS (SELECT zone_id FROM state WHERE zone_id=:id)
+                AND NOT EXISTS (SELECT zone_id FROM city WHERE zone_id=:id)';
 
         return (bool) $this->db->fetchColumn($sql, array('id' => $zone_id));
     }

@@ -97,8 +97,8 @@ class FileTransfer
      * @param SocketHelper $socket
      */
     public function __construct(Hook $hook, Config $config, LanguageModel $language,
-            ValidatorModel $validator, FileModel $file, TranslationModel $translation,
-            SocketHelper $socket)
+                                ValidatorModel $validator, FileModel $file, TranslationModel $translation,
+                                SocketHelper $socket)
     {
         $this->hook = $hook;
         $this->config = $config;

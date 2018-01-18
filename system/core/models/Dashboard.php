@@ -54,13 +54,14 @@ class Dashboard
         $sql = 'SELECT * FROM dashboard';
 
         $conditions = array();
+
         if (isset($options['user_id'])) {
             $sql .= ' WHERE user_id=?';
             $conditions[] = $options['user_id'];
         }
 
-        $result = $this->db->fetch($sql, $conditions, array('unserialize' => 'data'));
-        $result = $this->prepareList($result, $options);
+        $list = $this->db->fetch($sql, $conditions, array('unserialize' => 'data'));
+        $result = $this->prepareList($list, $options);
 
         $this->hook->attach('dashboard.get.user', $result, $this);
         return $result;

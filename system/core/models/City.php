@@ -48,7 +48,7 @@ class City
     public function get($condition)
     {
         if (!is_array($condition)) {
-            $condition = array('city_id' => (int) $condition);
+            $condition = array('city_id' => $condition);
         }
 
         $result = &gplcart_static(gplcart_array_hash(array('city.get' => $condition)));
@@ -85,22 +85,22 @@ class City
             return $result;
         }
 
-        $sql = 'SELECT c.*, s.code AS state_code, s.status AS state_status,'
-                . 'co.name AS country_name, co.status AS country_status';
+        $sql = 'SELECT c.*, s.code AS state_code, s.status AS state_status,
+                co.name AS country_name, co.status AS country_status';
 
         if (!empty($options['count'])) {
             $sql = 'SELECT COUNT(city_id)';
         }
 
-        $sql .= ' FROM city c'
-                . ' LEFT JOIN state s ON(c.state_id = s.state_id)'
-                . ' LEFT JOIN country co ON(co.code = s.country)';
+        $sql .= ' FROM city c
+                  LEFT JOIN state s ON(c.state_id = s.state_id)
+                  LEFT JOIN country co ON(co.code = s.country)';
 
         $conditions = array();
 
         if (isset($options['city_id'])) {
             $sql .= ' WHERE c.city_id = ?';
-            $conditions[] = (int) $options['city_id'];
+            $conditions[] = $options['city_id'];
         } else {
             $sql .= ' WHERE c.city_id IS NOT NULL';
         }
@@ -143,8 +143,10 @@ class City
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('name', 'city_id', 'status');
 
-        if (isset($options['sort']) && in_array($options['sort'], $allowed_sort)//
-                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+        if (isset($options['sort'])
+            && in_array($options['sort'], $allowed_sort)
+            && isset($options['order'])
+            && in_array($options['order'], $allowed_order)) {
             $sql .= " ORDER BY c.{$options['sort']} {$options['order']}";
         } else {
             $sql .= ' ORDER BY c.name ASC';

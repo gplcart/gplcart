@@ -100,7 +100,7 @@ class ProductField
         }
 
         if (!is_array($condition)) {
-            $condition = array('product_field_id' => (int) $condition);
+            $condition = array('product_field_id' => $condition);
         }
 
         $result = (bool) $this->db->delete('product_field', $condition);

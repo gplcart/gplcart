@@ -67,7 +67,7 @@ class UserAction
      * @param SessionHelper $session
      */
     public function __construct(Hook $hook, Config $config, UserModel $user,
-            TranslationModel $translation, MailModel $mail, SessionHelper $session)
+                                TranslationModel $translation, MailModel $mail, SessionHelper $session)
     {
         $this->hook = $hook;
         $this->config = $config;

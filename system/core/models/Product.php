@@ -128,9 +128,9 @@ class Product
      * @param ProductRelationModel $product_relation
      */
     public function __construct(Hook $hook, Config $config, SkuModel $sku, FileModel $file,
-            AliasModel $alias, PriceModel $price, SearchModel $search, PriceRuleModel $pricerule,
-            ProductFieldModel $product_field, TranslationModel $translation,
-            TranslationEntityModel $translation_entity, ProductRelationModel $product_relation)
+                                AliasModel $alias, PriceModel $price, SearchModel $search, PriceRuleModel $pricerule,
+                                ProductFieldModel $product_field, TranslationModel $translation,
+                                TranslationEntityModel $translation_entity, ProductRelationModel $product_relation)
     {
         $this->hook = $hook;
         $this->config = $config;
@@ -305,8 +305,8 @@ class Product
     public function getBySku($sku, $store_id)
     {
         $options = array(
-            'sku' => (string) $sku,
-            'store_id' => (int) $store_id
+            'sku' => $sku,
+            'store_id' => $store_id
         );
 
         return $this->get($options);
@@ -348,8 +348,8 @@ class Product
      */
     public function canDelete($product_id)
     {
-        $sql = 'SELECT NOT EXISTS (SELECT cart_id FROM cart WHERE product_id=:id AND order_id > 0)'
-                . ' AND NOT EXISTS (SELECT product_bundle_id FROM product_bundle WHERE item_product_id=:id)';
+        $sql = 'SELECT NOT EXISTS (SELECT cart_id FROM cart WHERE product_id=:id AND order_id > 0)
+                AND NOT EXISTS (SELECT product_bundle_id FROM product_bundle WHERE item_product_id=:id)';
 
         return (bool) $this->db->fetchColumn($sql, array('id' => $product_id));
     }
@@ -389,110 +389,110 @@ class Product
 
     /**
      * Returns an array of products or counts them
-     * @param array $data
+     * @param array $options
      * @return array|integer
      */
-    public function getList(array $data = array())
+    public function getList(array $options = array())
     {
-        $data += array('language' => $this->translation->getLangcode());
+        $options += array('language' => $this->translation->getLangcode());
 
         $result = null;
-        $this->hook->attach('product.list.before', $data, $result, $this);
+        $this->hook->attach('product.list.before', $options, $result, $this);
 
         if (isset($result)) {
             return $result;
         }
 
-        $sql = 'SELECT p.*,'
-                . 'a.alias,'
-                . 'COALESCE(NULLIF(pt.title, ""), p.title) AS title,'
-                . 'COALESCE(NULLIF(pt.description, ""), p.description) AS description,'
-                . 'COALESCE(NULLIF(pt.meta_title, ""), p.meta_title) AS meta_title,'
-                . 'COALESCE(NULLIF(pt.meta_description, ""), p.meta_description) AS meta_description,'
-                . 'pt.language,'
-                . 'ps.sku, ps.price, ps.stock, ps.file_id,'
-                . 'u.role_id,'
-                . 'GROUP_CONCAT(pb.item_product_id) AS bundle';
+        $sql = 'SELECT p.*,
+                a.alias,
+                COALESCE(NULLIF(pt.title, ""), p.title) AS title,
+                COALESCE(NULLIF(pt.description, ""), p.description) AS description,
+                COALESCE(NULLIF(pt.meta_title, ""), p.meta_title) AS meta_title,
+                COALESCE(NULLIF(pt.meta_description, ""), p.meta_description) AS meta_description,
+                pt.language,
+                ps.sku, ps.price, ps.stock, ps.file_id,
+                u.role_id,
+                GROUP_CONCAT(pb.item_product_id) AS bundle';
 
-        if (!empty($data['count'])) {
+        if (!empty($options['count'])) {
             $sql = 'SELECT COUNT(p.product_id)';
         }
 
-        $sql .= ' FROM product p'
-                . ' LEFT JOIN product_translation pt ON(p.product_id = pt.product_id AND pt.language=?)'
-                . ' LEFT JOIN alias a ON(a.entity=? AND a.entity_id=p.product_id)'
-                . ' LEFT JOIN user u ON(u.user_id=p.user_id)'
-                . ' LEFT JOIN product_sku ps ON(p.product_id = ps.product_id';
+        $sql .= ' FROM product p
+                  LEFT JOIN product_translation pt ON(p.product_id = pt.product_id AND pt.language=?)
+                  LEFT JOIN alias a ON(a.entity=? AND a.entity_id=p.product_id)
+                  LEFT JOIN user u ON(u.user_id=p.user_id)
+                  LEFT JOIN product_sku ps ON(p.product_id = ps.product_id';
 
-        if (!isset($data['sku'])) {
+        if (!isset($options['sku'])) {
             $sql .= ' AND LENGTH(ps.combination_id) = 0';
         }
 
         $sql .= ')';
         $sql .= ' LEFT JOIN product_bundle pb ON(p.product_id = pb.product_id)';
 
-        $conditions = array($data['language'], 'product');
+        $conditions = array($options['language'], 'product');
 
-        if (!empty($data['product_id'])) {
-            settype($data['product_id'], 'array');
-            $placeholders = rtrim(str_repeat('?,', count($data['product_id'])), ',');
+        if (!empty($options['product_id'])) {
+            settype($options['product_id'], 'array');
+            $placeholders = rtrim(str_repeat('?,', count($options['product_id'])), ',');
             $sql .= " WHERE p.product_id IN($placeholders)";
-            $conditions = array_merge($conditions, $data['product_id']);
+            $conditions = array_merge($conditions, $options['product_id']);
         } else {
             $sql .= ' WHERE p.product_id IS NOT NULL';
         }
 
-        if (isset($data['title'])) {
+        if (isset($options['title'])) {
             $sql .= ' AND (p.title LIKE ? OR (pt.title LIKE ? AND pt.language=?))';
-            $conditions[] = "%{$data['title']}%";
-            $conditions[] = "%{$data['title']}%";
-            $conditions[] = $data['language'];
+            $conditions[] = "%{$options['title']}%";
+            $conditions[] = "%{$options['title']}%";
+            $conditions[] = $options['language'];
         }
 
-        if (isset($data['sku'])) {
-            settype($data['sku'], 'array');
-            $placeholders = rtrim(str_repeat('?,', count($data['sku'])), ',');
+        if (isset($options['sku'])) {
+            settype($options['sku'], 'array');
+            $placeholders = rtrim(str_repeat('?,', count($options['sku'])), ',');
             $sql .= " AND ps.sku IN($placeholders)";
-            $conditions = array_merge($conditions, $data['sku']);
+            $conditions = array_merge($conditions, $options['sku']);
         }
 
-        if (isset($data['sku_like'])) {
+        if (isset($options['sku_like'])) {
             $sql .= ' AND ps.sku LIKE ?';
-            $conditions[] = "%{$data['sku_like']}%";
+            $conditions[] = "%{$options['sku_like']}%";
         }
 
-        if (isset($data['price']) && isset($data['currency'])) {
+        if (isset($options['price']) && isset($options['currency'])) {
             $sql .= ' AND ps.price = ?';
-            $conditions[] = $this->price->amount((int) $data['price'], $data['currency']);
+            $conditions[] = $this->price->amount($options['price'], $options['currency']);
         }
 
-        if (isset($data['currency'])) {
+        if (isset($options['currency'])) {
             $sql .= ' AND p.currency = ?';
-            $conditions[] = $data['currency'];
+            $conditions[] = $options['currency'];
         }
 
-        if (isset($data['stock'])) {
+        if (isset($options['stock'])) {
             $sql .= ' AND ps.stock = ?';
-            $conditions[] = (int) $data['stock'];
+            $conditions[] = $options['stock'];
         }
 
-        if (isset($data['category_id'])) {
+        if (isset($options['category_id'])) {
             $sql .= ' AND p.category_id = ?';
-            $conditions[] = (int) $data['category_id'];
+            $conditions[] = $options['category_id'];
         }
 
-        if (isset($data['status'])) {
+        if (isset($options['status'])) {
             $sql .= ' AND p.status = ?';
-            $conditions[] = (int) $data['status'];
+            $conditions[] = (int) $options['status'];
         }
 
-        if (isset($data['store_id'])) {
+        if (isset($options['store_id'])) {
             $sql .= ' AND p.store_id = ?';
-            $conditions[] = (int) $data['store_id'];
+            $conditions[] = $options['store_id'];
         }
 
-        if (empty($data['count'])) {
-            // Additional group by to prevent errors wnen sql_mode=only_full_group_by
+        if (empty($options['count'])) {
+            // Prevent errors wnen sql_mode=only_full_group_by (PHP 7)
             $sql .= ' GROUP BY p.product_id, a.alias, pt.title, ps.sku, ps.price, ps.stock, ps.file_id';
         }
 
@@ -500,29 +500,30 @@ class Product
 
         $allowed_sort = array(
             'title' => 'p.title', 'sku' => 'ps.sku', 'sku_like' => 'ps.sku', 'price' => 'ps.price',
-            'currency' => 'p.currency', 'stock' => 'ps.stock',
-            'status' => 'p.status', 'store_id' => 'p.store_id',
+            'currency' => 'p.currency', 'stock' => 'ps.stock', 'status' => 'p.status', 'store_id' => 'p.store_id',
             'product_id' => 'p.product_id'
         );
 
-        if (isset($data['sort']) && isset($allowed_sort[$data['sort']])//
-                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
-            $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
+        if (isset($options['sort'])
+            && isset($allowed_sort[$options['sort']])
+            && isset($options['order'])
+            && in_array($options['order'], $allowed_order)) {
+            $sql .= " ORDER BY {$allowed_sort[$options['sort']]} {$options['order']}";
         } else {
             $sql .= " ORDER BY p.modified DESC";
         }
 
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        if (!empty($options['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
         }
 
-        if (empty($data['count'])) {
+        if (empty($options['count'])) {
             $result = $this->db->fetchAll($sql, $conditions, array('index' => 'product_id'));
         } else {
             $result = (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $this->hook->attach('product.list.after', $data, $result, $this);
+        $this->hook->attach('product.list.after', $options, $result, $this);
         return $result;
     }
 
@@ -582,10 +583,10 @@ class Product
         $this->db->delete('alias', $conditions2);
         $this->db->delete('search_index', $conditions2);
 
-        $sql = 'DELETE ci'
-                . ' FROM collection_item ci'
-                . ' INNER JOIN collection c ON(ci.collection_id = c.collection_id)'
-                . ' WHERE c.type = ? AND ci.value = ?';
+        $sql = 'DELETE ci
+                FROM collection_item ci
+                INNER JOIN collection c ON(ci.collection_id = c.collection_id)
+                WHERE c.type = ? AND ci.value = ?';
 
         $this->db->run($sql, array('product', $product_id));
     }

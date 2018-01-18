@@ -57,7 +57,7 @@ class Oauth
      * @param UrlHelper $url
      */
     public function __construct(Hook $hook, SocketHelper $socket, SessionHelper $session,
-            UrlHelper $url)
+                                UrlHelper $url)
     {
         $this->url = $url;
         $this->hook = $hook;
@@ -500,6 +500,7 @@ class Oauth
 
         $token = $this->requestToken($provider, $request);
         $this->setToken($token, $provider['id']);
+
         return $token;
     }
 

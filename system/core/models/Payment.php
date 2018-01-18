@@ -42,12 +42,12 @@ class Payment
 
     /**
      * Returns an array of payment methods
-     * @param array $data
+     * @param array $options
      * @return array
      */
-    public function getList(array $data = array())
+    public function getList(array $options = array())
     {
-        $methods = &gplcart_static(gplcart_array_hash(array('payment.methods' => $data)));
+        $methods = &gplcart_static(gplcart_array_hash(array('payment.methods' => $options)));
 
         if (isset($methods)) {
             return $methods;
@@ -65,12 +65,13 @@ class Payment
                 $method['weight'] = 0;
             }
 
-            if (!empty($data['status']) && empty($method['status'])) {
+            if (!empty($options['status']) && empty($method['status'])) {
                 unset($methods[$id]);
                 continue;
             }
 
-            if (!empty($data['module']) && (empty($method['module']) || !in_array($method['module'], (array) $data['module']))) {
+            if (!empty($options['module'])
+                && (empty($method['module']) || !in_array($method['module'], (array) $options['module']))) {
                 unset($methods[$id]);
                 continue;
             }

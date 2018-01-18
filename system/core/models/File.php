@@ -54,7 +54,7 @@ class File
      * @param TranslationEntityModel $translation_entity
      */
     public function __construct(Hook $hook, Config $config, TranslationModel $translation,
-            TranslationEntityModel $translation_entity)
+                                TranslationEntityModel $translation_entity)
     {
         $this->hook = $hook;
         $this->db = $config->getDb();
@@ -137,7 +137,7 @@ class File
         }
 
         if (!is_array($condition)) {
-            $condition = array('file_id' => (int) $condition);
+            $condition = array('file_id' => $condition);
         }
 
         $condition['limit'] = array(0, 1);
@@ -175,8 +175,8 @@ class File
             $sql = 'SELECT COUNT(f.file_id)';
         }
 
-        $sql .= ' FROM file f'
-                . ' LEFT JOIN file_translation ft ON(ft.file_id = f.file_id AND ft.language=?)';
+        $sql .= ' FROM file f
+                  LEFT JOIN file_translation ft ON(ft.file_id = f.file_id AND ft.language=?)';
 
         $conditions = array($options['language']);
 
@@ -198,7 +198,7 @@ class File
 
         if (isset($options['created'])) {
             $sql .= ' AND f.created = ?';
-            $conditions[] = (int) $options['created'];
+            $conditions[] = $options['created'];
         }
 
         if (isset($options['entity'])) {
@@ -229,11 +229,12 @@ class File
         }
 
         $allowed_order = array('asc', 'desc');
-        $allowed_sort = array('title', 'path', 'file_id', 'created',
-            'weight', 'mime_type', 'entity', 'entity_id');
+        $allowed_sort = array('title', 'path', 'file_id', 'created', 'weight', 'mime_type', 'entity', 'entity_id');
 
-        if (isset($options['sort']) && in_array($options['sort'], $allowed_sort)//
-                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+        if (isset($options['sort'])
+            && in_array($options['sort'], $allowed_sort)
+            && isset($options['order'])
+            && in_array($options['order'], $allowed_order)) {
             $sql .= " ORDER BY f.{$options['sort']} {$options['order']}";
         } else {
             $sql .= " ORDER BY f.modified DESC";
@@ -269,7 +270,7 @@ class File
         }
 
         if (!is_array($condition)) {
-            $condition = array('file_id' => (int) $condition);
+            $condition = array('file_id' => $condition);
         }
 
         if ($check && isset($condition['file_id']) && !$this->canDelete($condition['file_id'])) {
@@ -353,8 +354,8 @@ class File
      */
     public function canDelete($file_id)
     {
-        $sql = 'SELECT NOT EXISTS (SELECT file_id FROM field_value WHERE file_id=:id)'
-                . ' AND NOT EXISTS (SELECT file_id FROM product_sku WHERE file_id=:id)';
+        $sql = 'SELECT NOT EXISTS (SELECT file_id FROM field_value WHERE file_id=:id)
+                AND NOT EXISTS (SELECT file_id FROM product_sku WHERE file_id=:id)';
 
         return (bool) $this->db->fetchColumn($sql, array('id' => (int) $file_id));
     }

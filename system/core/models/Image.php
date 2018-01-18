@@ -27,7 +27,7 @@ class Image
 
     /**
      * File model instance
-     * @var \gplcart\core\models\File $file;
+     * @var \gplcart\core\models\File $file ;
      */
     protected $file;
 

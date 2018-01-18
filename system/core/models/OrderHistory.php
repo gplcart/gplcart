@@ -95,37 +95,33 @@ class OrderHistory
 
     /**
      * Returns an array of log records
-     * @param array $data
+     * @param array $options
      * @return array|int
      */
-    public function getList(array $data)
+    public function getList(array $options)
     {
         $sql = 'SELECT ol.*, u.name AS user_name, u.email AS user_email, u.status AS user_status';
 
-        if (!empty($data['count'])) {
+        if (!empty($options['count'])) {
             $sql = 'SELECT COUNT(ol.order_log_id)';
         }
 
-        $sql .= ' FROM order_log ol'
-                . ' LEFT JOIN user u ON(ol.user_id=u.user_id)'
-                . ' WHERE ol.order_id=?';
+        $sql .= ' FROM order_log ol
+                  LEFT JOIN user u ON(ol.user_id=u.user_id)
+                  WHERE ol.order_id=?';
 
-        if (!empty($data['count'])) {
-            return (int) $this->db->fetchColumn($sql, array($data['order_id']));
+        if (!empty($options['count'])) {
+            return (int) $this->db->fetchColumn($sql, array($options['order_id']));
         }
 
         $sql .= ' ORDER BY ol.created DESC';
 
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        if (!empty($options['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
         }
 
-        $options = array(
-            'unserialize' => 'data',
-            'index' => 'order_log_id'
-        );
-
-        $list = $this->db->fetchAll($sql, array($data['order_id']), $options);
+        $fetch_options = array('unserialize' => 'data', 'index' => 'order_log_id');
+        $list = $this->db->fetchAll($sql, array($options['order_id']), $fetch_options);
         $this->hook->attach('order.log.list', $list, $this);
         return (array) $list;
     }

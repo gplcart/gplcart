@@ -87,12 +87,12 @@ class Transaction
 
         if (isset($options['order_id'])) {
             $sql .= ' AND order_id = ?';
-            $conditions[] = (int) $options['order_id'];
+            $conditions[] = $options['order_id'];
         }
 
         if (isset($options['created'])) {
             $sql .= ' AND created = ?';
-            $conditions[] = (int) $options['created'];
+            $conditions[] = $options['created'];
         }
 
         if (isset($options['payment_method'])) {
@@ -108,8 +108,10 @@ class Transaction
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('order_id', 'created', 'payment_method', 'gateway_transaction_id');
 
-        if (isset($options['sort']) && in_array($options['sort'], $allowed_sort)//
-                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+        if (isset($options['sort'])
+            && in_array($options['sort'], $allowed_sort)
+            && isset($options['order'])
+            && in_array($options['order'], $allowed_order)) {
             $sql .= " ORDER BY {$options['sort']} {$options['order']}";
         } else {
             $sql .= ' ORDER BY created DESC';

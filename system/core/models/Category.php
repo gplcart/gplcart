@@ -80,7 +80,7 @@ class Category
      * @param TranslationEntityModel $translation_entity
      */
     public function __construct(Hook $hook, Config $config, AliasModel $alias, FileModel $file,
-            TranslationModel $translation, TranslationEntityModel $translation_entity)
+                                TranslationModel $translation, TranslationEntityModel $translation_entity)
     {
         $this->hook = $hook;
         $this->config = $config;
@@ -107,7 +107,7 @@ class Category
         }
 
         if (!is_array($condition)) {
-            $condition = array('category_id' => (int) $condition);
+            $condition = array('category_id' => $condition);
         }
 
         $condition['limit'] = array(0, 1);
@@ -134,28 +134,28 @@ class Category
             return $result;
         }
 
-        $sql = 'SELECT c.*, a.alias, cg.type, cg.store_id,'
-                . 'ct.language,'
-                . 'COALESCE(NULLIF(ct.title, ""), c.title) AS title,'
-                . 'COALESCE(NULLIF(ct.meta_title, ""), c.meta_title) AS meta_title,'
-                . 'COALESCE(NULLIF(ct.meta_description, ""), c.meta_description) AS meta_description,'
-                . 'COALESCE(NULLIF(ct.description_1, ""), c.description_1) AS description_1,'
-                . 'COALESCE(NULLIF(ct.description_2, ""), c.description_2) AS description_2';
+        $sql = 'SELECT c.*, a.alias, cg.type, cg.store_id,
+                ct.language,
+                COALESCE(NULLIF(ct.title, ""), c.title) AS title,
+                COALESCE(NULLIF(ct.meta_title, ""), c.meta_title) AS meta_title,
+                COALESCE(NULLIF(ct.meta_description, ""), c.meta_description) AS meta_description,
+                COALESCE(NULLIF(ct.description_1, ""), c.description_1) AS description_1,
+                COALESCE(NULLIF(ct.description_2, ""), c.description_2) AS description_2';
 
         if (!empty($options['count'])) {
             $sql = 'SELECT COUNT(c.category_id)';
         }
 
-        $sql .= ' FROM category c'
-                . ' LEFT JOIN alias a ON(a.entity=? AND a.entity_id=c.category_id)'
-                . ' LEFT JOIN category_group cg ON(cg.category_group_id = c.category_group_id)'
-                . ' LEFT JOIN category_translation ct ON(c.category_id = ct.category_id AND ct.language = ?)';
+        $sql .= ' FROM category c
+                  LEFT JOIN alias a ON(a.entity=? AND a.entity_id=c.category_id)
+                  LEFT JOIN category_group cg ON(cg.category_group_id = c.category_group_id)
+                  LEFT JOIN category_translation ct ON(c.category_id = ct.category_id AND ct.language = ?)';
 
         $conditions = array('category', $options['language']);
 
         if (isset($options['category_id'])) {
             $sql .= ' WHERE c.category_id=?';
-            $conditions[] = (int) $options['category_id'];
+            $conditions[] = $options['category_id'];
         } else {
             $sql .= ' WHERE c.category_id IS NOT NULL';
         }
@@ -169,7 +169,7 @@ class Category
 
         if (isset($options['category_group_id'])) {
             $sql .= ' AND c.category_group_id=?';
-            $conditions[] = (int) $options['category_group_id'];
+            $conditions[] = $options['category_group_id'];
         }
 
         if (isset($options['type'])) {
@@ -179,7 +179,7 @@ class Category
 
         if (isset($options['store_id'])) {
             $sql .= ' AND cg.store_id=?';
-            $conditions[] = (int) $options['store_id'];
+            $conditions[] = $options['store_id'];
         }
 
         if (isset($options['status'])) {
@@ -190,8 +190,10 @@ class Category
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('title', 'category_id', 'weight', 'status');
 
-        if (isset($options['sort']) && in_array($options['sort'], $allowed_sort)//
-                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+        if (isset($options['sort'])
+            && in_array($options['sort'], $allowed_sort)
+            && isset($options['order'])
+            && in_array($options['order'], $allowed_order)) {
             $sql .= " ORDER BY c.{$options['sort']} {$options['order']}";
         } else {
             $sql .= " ORDER BY c.weight ASC";
@@ -315,10 +317,10 @@ class Category
      */
     public function canDelete($category_id)
     {
-        $sql = 'SELECT NOT EXISTS (SELECT product_id FROM product WHERE category_id=:id)'
-                . ' AND NOT EXISTS (SELECT product_id FROM product WHERE brand_category_id=:id)'
-                . ' AND NOT EXISTS (SELECT page_id FROM page WHERE category_id=:id)'
-                . ' AND NOT EXISTS (SELECT category_id FROM category WHERE parent_id=:id)';
+        $sql = 'SELECT NOT EXISTS (SELECT product_id FROM product WHERE category_id=:id)
+                AND NOT EXISTS (SELECT product_id FROM product WHERE brand_category_id=:id)
+                AND NOT EXISTS (SELECT page_id FROM page WHERE category_id=:id)
+                AND NOT EXISTS (SELECT category_id FROM category WHERE parent_id=:id)';
 
         return (bool) $this->db->fetchColumn($sql, array('id' => $category_id));
     }
@@ -329,14 +331,10 @@ class Category
      */
     protected function deleteLinked($category_id)
     {
-        $conditions = array('category_id' => $category_id);
-        $conditions2 = array('entity' => 'category', 'entity_id' => $category_id);
-
-        $this->db->delete('category', $conditions);
-        $this->db->delete('category_translation', $conditions);
-
-        $this->db->delete('file', $conditions2);
-        $this->db->delete('alias', $conditions2);
+        $this->db->delete('category', array('category_id' => $category_id));
+        $this->db->delete('category_translation', array('category_id' => $category_id));
+        $this->db->delete('file', array('entity' => 'category', 'entity_id' => $category_id));
+        $this->db->delete('alias', array('entity' => 'category', 'entity_id' => $category_id));
     }
 
     /**

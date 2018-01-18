@@ -70,7 +70,7 @@ class FieldValue
      * @param TranslationEntityModel $translation_entity
      */
     public function __construct(Hook $hook, Config $config, FileModel $file,
-            TranslationModel $translation, TranslationEntityModel $translation_entity)
+                                TranslationModel $translation, TranslationEntityModel $translation_entity)
     {
         $this->hook = $hook;
         $this->config = $config;
@@ -96,7 +96,7 @@ class FieldValue
         }
 
         if (!is_array($condition)) {
-            $condition = array('field_value_id' => (int) $condition);
+            $condition = array('field_value_id' => $condition);
         }
 
         $condition['limit'] = array(0, 1);
@@ -129,15 +129,15 @@ class FieldValue
             $sql = 'SELECT COUNT(fv.field_value_id)';
         }
 
-        $sql .= ' FROM field_value fv'
-                . ' LEFT JOIN file f ON(fv.field_value_id = f.entity_id AND f.entity = ?)'
-                . ' LEFT JOIN field_value_translation fvt ON(fv.field_value_id = fvt.field_value_id AND fvt.language=?)';
+        $sql .= ' FROM field_value fv
+                  LEFT JOIN file f ON(fv.field_value_id = f.entity_id AND f.entity = ?)
+                  LEFT JOIN field_value_translation fvt ON(fv.field_value_id = fvt.field_value_id AND fvt.language=?)';
 
         $conditions = array('field_value', $options['language']);
 
         if (isset($options['field_value_id'])) {
             $sql .= ' WHERE fv.field_value_id = ?';
-            $conditions[] = (int) $options['field_value_id'];
+            $conditions[] = $options['field_value_id'];
         } else {
             $sql .= ' WHERE fv.field_value_id IS NOT NULL';
         }
@@ -160,8 +160,10 @@ class FieldValue
         $allowed_sort = array('title' => 'fv.title', 'weight' => 'fv.weight',
             'color' => 'fv.color', 'image' => 'f.file_id', 'field_value_id' => 'fv.field_value_id');
 
-        if (isset($options['sort']) && isset($allowed_sort[$options['sort']])//
-                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+        if (isset($options['sort'])
+            && isset($allowed_sort[$options['sort']])
+            && isset($options['order'])
+            && in_array($options['order'], $allowed_order)) {
             $sql .= " ORDER BY {$allowed_sort[$options['sort']]} {$options['order']}";
         } else {
             $sql .= ' ORDER BY fv.weight ASC';
@@ -293,10 +295,10 @@ class FieldValue
      */
     protected function canDelete($field_value_id)
     {
-        $sql = 'SELECT c.product_id'
-                . ' FROM product_field pf'
-                . ' LEFT JOIN cart c ON(pf.product_id = c.product_id)'
-                . ' WHERE pf.field_value_id=?';
+        $sql = 'SELECT c.product_id
+                FROM product_field pf
+                LEFT JOIN cart c ON(pf.product_id = c.product_id)
+                WHERE pf.field_value_id=?';
 
         $result = $this->db->fetchColumn($sql, array($field_value_id));
         return empty($result);

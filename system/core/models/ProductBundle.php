@@ -63,22 +63,22 @@ class ProductBundle
 
         $conditions = array();
 
-        $sql = 'SELECT pb.*, p.store_id'
-                . ' FROM product_bundle pb'
-                . ' LEFT JOIN product p ON(pb.product_id = p.product_id)'
-                . ' LEFT JOIN product p2 ON(pb.item_product_id = p2.product_id)';
+        $sql = 'SELECT pb.*, p.store_id
+                FROM product_bundle pb
+                LEFT JOIN product p ON(pb.product_id = p.product_id)
+                LEFT JOIN product p2 ON(pb.item_product_id = p2.product_id)';
 
         if (isset($options['product_bundle_id'])) {
             $sql .= ' WHERE pb.product_bundle_id = ?';
-            $conditions[] = (int) $options['product_bundle_id'];
+            $conditions[] = $options['product_bundle_id'];
         } else {
             $sql .= ' WHERE pb.product_bundle_id IS NOT NULL';
         }
 
         if (isset($options['store_id'])) {
             $sql .= ' AND p.store_id = ? AND p2.store_id = ?';
-            $conditions[] = (int) $options['store_id'];
-            $conditions[] = (int) $options['store_id'];
+            $conditions[] = $options['store_id'];
+            $conditions[] = $options['store_id'];
         }
 
         if (isset($options['status'])) {
@@ -89,7 +89,7 @@ class ProductBundle
 
         if (isset($options['product_id'])) {
             $sql .= ' AND pb.product_id = ?';
-            $conditions[] = (int) $options['product_id'];
+            $conditions[] = $options['product_id'];
         }
 
         if (!empty($options['limit'])) {
@@ -135,7 +135,7 @@ class ProductBundle
         }
 
         if (!is_array($condition)) {
-            $condition = array('product_bundle_id' => (int) $condition);
+            $condition = array('product_bundle_id' => $condition);
         }
 
         $result = (bool) $this->db->delete('product_bundle', $condition);

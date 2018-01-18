@@ -101,10 +101,10 @@ class Wishlist
             $sql = 'SELECT COUNT(w.wishlist_id)';
         }
 
-        $sql .= ' FROM wishlist w'
-                . ' LEFT JOIN user u ON(w.user_id = u.user_id)'
-                . ' LEFT JOIN product p ON(w.product_id = p.product_id)'
-                . ' WHERE w.wishlist_id IS NOT NULL';
+        $sql .= ' FROM wishlist w
+                  LEFT JOIN user u ON(w.user_id = u.user_id)
+                  LEFT JOIN product p ON(w.product_id = p.product_id)
+                  WHERE w.wishlist_id IS NOT NULL';
 
         $conditions = array();
 
@@ -122,7 +122,7 @@ class Wishlist
 
         if (isset($options['store_id'])) {
             $sql .= ' AND w.store_id = ?';
-            $conditions[] = (int) $options['store_id'];
+            $conditions[] = $options['store_id'];
         }
 
         if (isset($options['created'])) {
@@ -138,8 +138,10 @@ class Wishlist
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('product_id', 'user_id', 'created');
 
-        if (isset($options['sort']) && in_array($options['sort'], $allowed_sort)//
-                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+        if (isset($options['sort'])
+            && in_array($options['sort'], $allowed_sort)
+            && isset($options['order'])
+            && in_array($options['order'], $allowed_order)) {
             $sql .= " ORDER BY w.{$options['sort']} {$options['order']}";
         } else {
             $sql .= " ORDER BY w.created DESC";
@@ -197,7 +199,7 @@ class Wishlist
         }
 
         if (!is_array($condition)) {
-            $condition = array('wishlist_id' => (int) $condition);
+            $condition = array('wishlist_id' => $condition);
         }
 
         $result = (bool) $this->db->delete('wishlist', $condition);

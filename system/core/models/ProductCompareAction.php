@@ -51,7 +51,7 @@ class ProductCompareAction
      * @param UrlHelper $url
      */
     public function __construct(Hook $hook, ProductCompareModel $compare,
-            TranslationModel $translation, UrlHelper $url)
+                                TranslationModel $translation, UrlHelper $url)
     {
         $this->url = $url;
         $this->hook = $hook;
@@ -129,7 +129,7 @@ class ProductCompareAction
         $quantity = count($this->compare->getList());
 
         if ($quantity < $this->compare->getLimit()) {
-            $quantity ++;
+            $quantity++;
         }
 
         $message = $this->translation->text('Product has been added to <a href="@url">comparison</a>', array(

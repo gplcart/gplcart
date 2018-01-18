@@ -56,7 +56,7 @@ class TranslationEntity
         }
 
         $table = $this->getTable($options['entity']);
-        $sql = "SELECT * FROM $table WHERE {$options['entity']}_id = ?";
+        $sql = "SELECT * FROM `$table` WHERE {$options['entity']}_id = ?";
 
         $conditions = array($options['entity_id']);
 

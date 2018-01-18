@@ -56,6 +56,7 @@ class Language
 
         $list = $this->getList();
         $result = isset($list[$code]) ? $list[$code] : array();
+
         $this->hook->attach('language.get.after', $code, $result, $this);
         return (array) $result;
     }
@@ -294,6 +295,7 @@ class Language
         }
 
         $result = $string;
+
         if (function_exists('transliterator_transliterate')) {
             $result = transliterator_transliterate('Any-Latin; Latin-ASCII; [\u0100-\u7fff] remove', $string);
         } else if (function_exists('iconv')) {

@@ -9,6 +9,7 @@
 
 namespace gplcart\core\models;
 
+use Exception;
 use gplcart\core\Hook,
     gplcart\core\Config,
     gplcart\core\Handler;
@@ -167,7 +168,7 @@ class PriceRule
 
         if (isset($options['value'])) {
             $sql .= ' AND p.value = ?';
-            $conditions[] = (int) $options['value'];
+            $conditions[] = $options['value'];
         }
 
         if (isset($options['value_type'])) {
@@ -185,25 +186,19 @@ class PriceRule
             $conditions[] = $options['currency'];
         }
 
-        $orders = array('asc', 'desc');
+        $allowed_order = array('asc', 'desc');
 
-        $sorts = array(
-            'price_rule_id' => 'p.price_rule_id',
-            'name' => 'p.name',
-            'code' => 'p.code',
-            'value' => 'p.value',
-            'value_type' => 'p.value_type',
-            'weight' => 'p.weight',
-            'status' => 'p.status',
-            'currency' => 'p.currency',
-            'trigger_id' => 'p.trigger_id',
-            'created' => 'p.created',
-            'modified' => 'p.modified'
+        $allowed_sort = array(
+            'price_rule_id' => 'p.price_rule_id', 'name' => 'p.name', 'code' => 'p.code', 'value' => 'p.value',
+            'value_type' => 'p.value_type', 'weight' => 'p.weight', 'status' => 'p.status', 'currency' => 'p.currency',
+            'trigger_id' => 'p.trigger_id', 'created' => 'p.created', 'modified' => 'p.modified'
         );
 
-        if (isset($options['sort']) && isset($sorts[$options['sort']])//
-                && isset($options['order']) && in_array($options['order'], $orders, true)) {
-            $sql .= " ORDER BY {$sorts[$options['sort']]} {$options['order']}";
+        if (isset($options['sort'])
+            && isset($allowed_sort[$options['sort']])
+            && isset($options['order'])
+            && in_array($options['order'], $allowed_order, true)) {
+            $sql .= " ORDER BY {$allowed_sort[$options['sort']]} {$options['order']}";
         } else {
             $sql .= ' ORDER BY p.weight ASC';
         }
@@ -241,9 +236,9 @@ class PriceRule
      */
     public function codeMatches($price_rule_id, $code)
     {
-        $sql = 'SELECT price_rule_id'
-                . ' FROM price_rule'
-                . ' WHERE code=? AND price_rule_id=? AND status=?';
+        $sql = 'SELECT price_rule_id
+                FROM price_rule
+                WHERE code=? AND price_rule_id=? AND status=?';
 
         return (bool) $this->db->fetchColumn($sql, array($code, $price_rule_id, 1));
     }
@@ -280,7 +275,7 @@ class PriceRule
         try {
             $callback = Handler::get($this->getTypes(), $price_rule['value_type'], 'calculate');
             call_user_func_array($callback, array(&$total, &$components, $price_rule, $data));
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             trigger_error($ex->getMessage());
         }
     }

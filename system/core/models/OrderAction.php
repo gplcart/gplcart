@@ -67,7 +67,7 @@ class OrderAction
      * @param MailModel $mail
      */
     public function __construct(Hook $hook, CartModel $cart, OrderModel $order,
-            PriceRuleModel $price_rule, TranslationModel $translation, MailModel $mail)
+                                PriceRuleModel $price_rule, TranslationModel $translation, MailModel $mail)
     {
         $this->hook = $hook;
         $this->mail = $mail;

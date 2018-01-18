@@ -55,7 +55,7 @@ class Bookmark
         }
 
         if (!is_array($condition)) {
-            $condition = array('bookmark_id' => (int) $condition);
+            $condition = array('bookmark_id' => $condition);
         }
 
         $condition['limit'] = array(0, 1);
@@ -68,13 +68,13 @@ class Bookmark
 
     /**
      * Returns an array of bookmarks or counts them
-     * @param array $data
+     * @param array $options
      * @return array|integer
      */
-    public function getList(array $data = array())
+    public function getList(array $options = array())
     {
         $result = null;
-        $this->hook->attach('bookmark.list.before', $data, $result, $this);
+        $this->hook->attach('bookmark.list.before', $options, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -82,7 +82,7 @@ class Bookmark
 
         $sql = 'SELECT *';
 
-        if (!empty($data['count'])) {
+        if (!empty($options['count'])) {
             $sql = 'SELECT COUNT(bookmark_id)';
         }
 
@@ -90,38 +90,40 @@ class Bookmark
 
         $conditions = array();
 
-        if (isset($data['user_id'])) {
+        if (isset($options['user_id'])) {
             $sql .= ' AND user_id = ?';
-            $conditions[] = $data['user_id'];
+            $conditions[] = $options['user_id'];
         }
 
-        if (isset($data['path'])) {
+        if (isset($options['path'])) {
             $sql .= ' AND path = ?';
-            $conditions[] = $data['path'];
+            $conditions[] = $options['path'];
         }
 
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('created', 'path', 'title', 'user_id');
 
-        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)//
-                && isset($data['order']) && in_array($data['order'], $allowed_order)
+        if (isset($options['sort'])
+            && in_array($options['sort'], $allowed_sort)//
+            && isset($options['order'])
+            && in_array($options['order'], $allowed_order)
         ) {
-            $sql .= " ORDER BY {$data['sort']} {$data['order']}";
+            $sql .= " ORDER BY {$options['sort']} {$options['order']}";
         } else {
             $sql .= ' ORDER BY created DESC';
         }
 
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        if (!empty($options['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
         }
 
-        if (empty($data['count'])) {
+        if (empty($options['count'])) {
             $result = $this->db->fetchAll($sql, $conditions, array('index' => 'path'));
         } else {
             $result = (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $this->hook->attach('bookmark.list.after', $data, $result, $this);
+        $this->hook->attach('bookmark.list.after', $options, $result, $this);
         return $result;
     }
 
@@ -142,6 +144,7 @@ class Bookmark
         $data['created'] = GC_TIME;
         $result = $this->db->insert('bookmark', $data);
         $this->hook->attach('bookmark.add.after', $data, $result, $this);
+
         return (int) $result;
     }
 
@@ -160,11 +163,12 @@ class Bookmark
         }
 
         if (!is_array($condition)) {
-            $condition = array('bookmark_id' => (int) $condition);
+            $condition = array('bookmark_id' => $condition);
         }
 
         $result = (bool) $this->db->delete('bookmark', $condition);
         $this->hook->attach('bookmark.delete.after', $condition, $result, $this);
+
         return (bool) $result;
     }
 
@@ -179,6 +183,7 @@ class Bookmark
         $data += array('path' => $path);
 
         $bookmark = $this->get($data);
+
         return empty($bookmark) ? (bool) $this->add($data) : false;
     }
 

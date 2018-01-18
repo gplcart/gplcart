@@ -233,6 +233,7 @@ class Module
 
         $modules = $this->module->getList();
         $dependent = $this->checkDependentModules($module_id, $modules);
+
         return $dependent === true ? true : $dependent;
     }
 

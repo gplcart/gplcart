@@ -81,8 +81,8 @@ class Cart
      * @param RequestHelper $request
      */
     public function __construct(Hook $hook, Config $config, ProductModel $product,
-            CurrencyModel $currency, UserModel $user, TranslationModel $translation,
-            RequestHelper $request)
+                                CurrencyModel $currency, UserModel $user, TranslationModel $translation,
+                                RequestHelper $request)
     {
         $this->hook = $hook;
         $this->config = $config;
@@ -156,15 +156,17 @@ class Cart
             return $result;
         }
 
-        $result = $this->db->fetch('SELECT * FROM cart WHERE cart_id=?', array($cart_id), array('unserialize' => 'data'));
+        $sql = 'SELECT * FROM cart WHERE cart_id=?';
+        $result = $this->db->fetch($sql, array($cart_id), array('unserialize' => 'data'));
+
         $this->hook->attach('cart.get.after', $cart_id, $result, $this);
         return $result;
     }
 
     /**
      * Deletes a cart record from the database
-     * @param integer|array $condition Either cart_id or an array of conditions
-     * @param bool $check Whether to check if the item can be safely deleted
+     * @param integer|array $condition
+     * @param bool $check
      * @return boolean
      */
     public function delete($condition, $check = true)
@@ -186,6 +188,7 @@ class Cart
 
         $result = (bool) $this->db->delete('cart', $condition);
         gplcart_static_clear();
+
         $this->hook->attach('cart.delete.after', $condition, $check, $result, $this);
         return (bool) $result;
     }
@@ -258,19 +261,19 @@ class Cart
             return $result;
         }
 
-        $sql = 'SELECT c.*, COALESCE(NULLIF(pt.title, ""), p.title) AS title,'
-                . ' p.status AS product_status, p.store_id AS product_store_id,'
-                . ' u.email AS user_email';
+        $sql = 'SELECT c.*, COALESCE(NULLIF(pt.title, ""), p.title) AS title,
+                p.status AS product_status, p.store_id AS product_store_id,
+                u.email AS user_email';
 
         if (!empty($options['count'])) {
             $sql = 'SELECT COUNT(c.cart_id)';
         }
 
-        $sql .= ' FROM cart c'
-                . ' LEFT JOIN product p ON(c.product_id=p.product_id)'
-                . ' LEFT JOIN product_translation pt ON(c.product_id = pt.product_id AND pt.language=?)'
-                . ' LEFT JOIN user u ON(c.user_id = u.user_id)'
-                . ' WHERE cart_id IS NOT NULL';
+        $sql .= ' FROM cart c
+                  LEFT JOIN product p ON(c.product_id=p.product_id)
+                  LEFT JOIN product_translation pt ON(c.product_id = pt.product_id AND pt.language=?)
+                  LEFT JOIN user u ON(c.user_id = u.user_id)
+                  WHERE cart_id IS NOT NULL';
 
         $conditions = array($options['language']);
 
@@ -286,12 +289,12 @@ class Cart
 
         if (isset($options['order_id'])) {
             $sql .= ' AND c.order_id=?';
-            $conditions[] = (int) $options['order_id'];
+            $conditions[] = $options['order_id'];
         }
 
         if (isset($options['store_id'])) {
             $sql .= ' AND c.store_id=?';
-            $conditions[] = (int) $options['store_id'];
+            $conditions[] = $options['store_id'];
         }
 
         if (isset($options['sku'])) {
@@ -306,20 +309,15 @@ class Cart
 
         $allowed_order = array('asc', 'desc');
 
-        $allowed_sort = array(
-            'sku' => 'c.sku',
-            'created' => 'c.created',
-            'modified' => 'c.modified',
-            'user_id' => 'c.user_id',
-            'user_email' => 'u.email',
-            'store_id' => 'c.store_id',
-            'order_id' => 'c.order_id',
-            'quantity' => 'c.quantity',
-            'product_id' => 'c.product_id'
+        $allowed_sort = array('sku' => 'c.sku', 'created' => 'c.created', 'modified' => 'c.modified',
+            'user_id' => 'c.user_id', 'user_email' => 'u.email', 'store_id' => 'c.store_id',
+            'order_id' => 'c.order_id', 'quantity' => 'c.quantity', 'product_id' => 'c.product_id'
         );
 
-        if (isset($options['sort']) && isset($allowed_sort[$options['sort']])//
-                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+        if (isset($options['sort'])
+            && isset($allowed_sort[$options['sort']])
+            && isset($options['order'])
+            && in_array($options['order'], $allowed_order)) {
             $sql .= " ORDER BY {$allowed_sort[$options['sort']]} {$options['order']}";
         } else {
             $sql .= ' ORDER BY c.modified DESC';
@@ -361,6 +359,7 @@ class Cart
         $user_id = '_' . gplcart_string_random(6);
         $lifespan = $this->getCookieLifespan();
         $this->request->setCookie($cookie_name, $user_id, $lifespan);
+
         return $user_id;
     }
 
@@ -459,6 +458,7 @@ class Cart
         }
 
         $product['price'] = $this->currency->convert($product['price'], $product['currency'], $data['currency']);
+
         $calculated = $this->product->calculate($product);
 
         if ($calculated != $product['price']) {

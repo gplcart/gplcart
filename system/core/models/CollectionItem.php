@@ -53,7 +53,7 @@ class CollectionItem
      * @param CollectionModel $collection
      */
     public function __construct(Hook $hook, Config $config, TranslationModel $translation,
-            CollectionModel $collection)
+                                CollectionModel $collection)
     {
         $this->hook = $hook;
         $this->db = $config->getDb();
@@ -103,29 +103,29 @@ class CollectionItem
             return $result;
         }
 
-        $sql = 'SELECT ci.*, c.status AS collection_status, c.store_id,'
-                . 'c.type, COALESCE(NULLIF(ct.title, ""), c.title) AS collection_title';
+        $sql = 'SELECT ci.*, c.status AS collection_status, c.store_id,
+                c.type, COALESCE(NULLIF(ct.title, ""), c.title) AS collection_title';
 
         if (!empty($options['count'])) {
             $sql = 'SELECT COUNT(ci.collection_item_id)';
         }
 
-        $sql .= ' FROM collection_item ci'
-                . ' LEFT JOIN collection c ON(ci.collection_id=c.collection_id)'
-                . ' LEFT JOIN collection_translation ct ON(ct.collection_id = c.collection_id AND ct.language=?)';
+        $sql .= ' FROM collection_item ci
+                  LEFT JOIN collection c ON(ci.collection_id=c.collection_id)
+                  LEFT JOIN collection_translation ct ON(ct.collection_id = c.collection_id AND ct.language=?)';
 
         $conditions = array($options['language']);
 
         if (isset($options['collection_item_id'])) {
             $sql .= ' WHERE ci.collection_item_id = ?';
-            $conditions[] = (int) $options['collection_item_id'];
+            $conditions[] = $options['collection_item_id'];
         } else {
             $sql .= ' WHERE ci.collection_item_id IS NOT NULL';
         }
 
         if (isset($options['value'])) {
             $sql .= ' AND ci.value = ?';
-            $conditions[] = (int) $options['value'];
+            $conditions[] = $options['value'];
         }
 
         if (isset($options['status'])) {
@@ -137,19 +137,21 @@ class CollectionItem
 
         if (isset($options['store_id'])) {
             $sql .= ' AND c.store_id = ?';
-            $conditions[] = (int) $options['store_id'];
+            $conditions[] = $options['store_id'];
         }
 
         if (isset($options['collection_id'])) {
             $sql .= ' AND ci.collection_id = ?';
-            $conditions[] = (int) $options['collection_id'];
+            $conditions[] = $options['collection_id'];
         }
 
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('weight', 'status', 'collection_id');
 
-        if (isset($options['sort']) && in_array($options['sort'], $allowed_sort)//
-                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+        if (isset($options['sort'])
+            && in_array($options['sort'], $allowed_sort)
+            && isset($options['order'])
+            && in_array($options['order'], $allowed_order)) {
             $sql .= " ORDER BY ci.{$options['sort']} {$options['order']}";
         } else {
             $sql .= " ORDER BY ci.weight DESC";
@@ -223,6 +225,7 @@ class CollectionItem
         }
 
         $result = (bool) $this->db->update('collection_item', $data, array('collection_item_id' => $id));
+
         $this->hook->attach('collection.item.update.after', $id, $data, $result, $this);
         return (bool) $result;
     }

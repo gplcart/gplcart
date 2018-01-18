@@ -9,6 +9,7 @@
 
 namespace gplcart\core\models;
 
+use Exception;
 use gplcart\core\Hook,
     gplcart\core\Handler;
 use gplcart\core\models\Translation as TranslationModel;
@@ -80,7 +81,7 @@ class Validator
             $handlers = $this->getHandlers();
             $callback = Handler::get($handlers, $handler_id, 'validate');
             return call_user_func_array($callback, array(&$submitted, $options));
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             return $ex->getMessage();
         }
     }

@@ -80,7 +80,7 @@ class Page
      * @param TranslationEntityModel $translation_entity
      */
     public function __construct(Hook $hook, Config $config, FileModel $file, AliasModel $alias,
-            TranslationModel $translation, TranslationEntityModel $translation_entity)
+                                TranslationModel $translation, TranslationEntityModel $translation_entity)
     {
         $this->hook = $hook;
         $this->config = $config;
@@ -134,14 +134,14 @@ class Page
             return $result;
         }
 
-        $sql = 'SELECT p.*, c.category_group_id,'
-                . 'a.alias,'
-                . 'u.email, u.role_id,'
-                . 'pt.language,'
-                . 'COALESCE(NULLIF(pt.title, ""), p.title) AS title,'
-                . 'COALESCE(NULLIF(pt.description, ""), p.description) AS description,'
-                . 'COALESCE(NULLIF(pt.meta_title, ""), p.meta_title) AS meta_title,'
-                . 'COALESCE(NULLIF(pt.meta_description, ""), p.meta_description) AS meta_description';
+        $sql = 'SELECT p.*, c.category_group_id,
+               a.alias,
+               u.email, u.role_id,
+               pt.language,
+               COALESCE(NULLIF(pt.title, ""), p.title) AS title,
+               COALESCE(NULLIF(pt.description, ""), p.description) AS description,
+               COALESCE(NULLIF(pt.meta_title, ""), p.meta_title) AS meta_title,
+               COALESCE(NULLIF(pt.meta_description, ""), p.meta_description) AS meta_description';
 
         if (!empty($options['count'])) {
             $sql = 'SELECT COUNT(p.page_id)';
@@ -149,11 +149,11 @@ class Page
 
         $conditions = array($options['language'], 'page');
 
-        $sql .= ' FROM page p'
-                . ' LEFT JOIN page_translation pt ON(pt.page_id = p.page_id AND pt.language=?)'
-                . ' LEFT JOIN category c ON(p.category_id = c.category_id)'
-                . ' LEFT JOIN alias a ON(a.entity=? AND a.entity_id=p.page_id)'
-                . ' LEFT JOIN user u ON(p.user_id = u.user_id)';
+        $sql .= ' FROM page p
+                  LEFT JOIN page_translation pt ON(pt.page_id = p.page_id AND pt.language=?)
+                  LEFT JOIN category c ON(p.category_id = c.category_id)
+                  LEFT JOIN alias a ON(a.entity=? AND a.entity_id=p.page_id)
+                  LEFT JOIN user u ON(p.user_id = u.user_id)';
 
         if (!empty($options['page_id'])) {
             settype($options['page_id'], 'array');
@@ -173,17 +173,17 @@ class Page
 
         if (isset($options['store_id'])) {
             $sql .= ' AND p.store_id = ?';
-            $conditions[] = (int) $options['store_id'];
+            $conditions[] = $options['store_id'];
         }
 
         if (isset($options['blog_post'])) {
             $sql .= ' AND p.blog_post = ?';
-            $conditions[] = (int) $options['blog_post'];
+            $conditions[] = $options['blog_post'];
         }
 
         if (isset($options['category_group_id'])) {
             $sql .= ' AND c.category_group_id = ?';
-            $conditions[] = (int) $options['category_group_id'];
+            $conditions[] = $options['category_group_id'];
         }
 
         if (isset($options['status'])) {
@@ -201,8 +201,10 @@ class Page
             'blog_post' => 'p.blog_post', 'page_id' => 'p.page_id', 'status' => 'p.status',
             'created' => 'p.created', 'email' => 'u.email');
 
-        if (isset($options['sort']) && isset($allowed_sort[$options['sort']])//
-                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+        if (isset($options['sort'])
+            && isset($allowed_sort[$options['sort']])
+            && isset($options['order'])
+            && in_array($options['order'], $allowed_order)) {
             $sql .= " ORDER BY {$allowed_sort[$options['sort']]} {$options['order']}";
         } else {
             $sql .= " ORDER BY p.modified DESC";
@@ -309,10 +311,10 @@ class Page
         $this->db->delete('file', array('entity' => 'page', 'entity_id' => $page_id));
         $this->db->delete('alias', array('entity' => 'page', 'entity_id' => $page_id));
 
-        $sql = 'DELETE ci'
-                . ' FROM collection_item ci'
-                . ' INNER JOIN collection c ON(ci.collection_id = c.collection_id)'
-                . ' WHERE c.type = ? AND ci.value = ?';
+        $sql = 'DELETE ci
+                FROM collection_item ci
+                INNER JOIN collection c ON(ci.collection_id = c.collection_id)
+                WHERE c.type = ? AND ci.value = ?';
 
         $this->db->run($sql, array('page', $page_id));
     }

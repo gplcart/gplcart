@@ -67,7 +67,7 @@ class CartAction
      * @param UrlHelper $url
      */
     public function __construct(Hook $hook, Config $config, CartModel $cart,
-            WishlistActionModel $wishlist_action, TranslationModel $translation, UrlHelper $url)
+                                WishlistActionModel $wishlist_action, TranslationModel $translation, UrlHelper $url)
     {
         $this->hook = $hook;
         $this->config = $config;
@@ -235,9 +235,9 @@ class CartAction
     protected function addToWishlist(array $cart)
     {
         $data = array(
-            'store_id' => (int) $cart['store_id'],
-            'user_id' => (string) $cart['user_id'],
-            'product_id' => (int) $cart['product_id']
+            'user_id' => $cart['user_id'],
+            'store_id' => $cart['store_id'],
+            'product_id' => $cart['product_id']
         );
 
         return $this->wishlist_action->add($data);

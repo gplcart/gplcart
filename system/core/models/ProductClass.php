@@ -59,7 +59,7 @@ class ProductClass
      * @param TranslationModel $translation
      */
     public function __construct(Hook $hook, Config $config, FieldModel $field,
-            FieldValueModel $field_value, TranslationModel $translation)
+                                FieldValueModel $field_value, TranslationModel $translation)
     {
         $this->hook = $hook;
         $this->db = $config->getDb();
@@ -128,8 +128,10 @@ class ProductClass
 
         $sql .= ' GROUP BY pc.product_class_id';
 
-        if (isset($options['sort']) && in_array($options['sort'], $allowed_sort)//
-                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+        if (isset($options['sort'])
+            && in_array($options['sort'], $allowed_sort)
+            && isset($options['order'])
+            && in_array($options['order'], $allowed_order)) {
             $sql .= " ORDER BY pc.{$options['sort']} {$options['order']}";
         } else {
             $sql .= ' ORDER BY pc.title ASC';
@@ -322,16 +324,16 @@ class ProductClass
             $sql = 'SELECT COUNT(pcf.product_class_field_id)';
         }
 
-        $sql .= ' FROM product_class_field pcf'
-                . ' LEFT JOIN field f ON(pcf.field_id = f.field_id)'
-                . ' LEFT JOIN field_translation ft ON(pcf.field_id = ft.field_id AND ft.language=?)'
-                . ' WHERE pcf.product_class_field_id IS NOT NULL';
+        $sql .= ' FROM product_class_field pcf
+                  LEFT JOIN field f ON(pcf.field_id = f.field_id)
+                  LEFT JOIN field_translation ft ON(pcf.field_id = ft.field_id AND ft.language=?)
+                  WHERE pcf.product_class_field_id IS NOT NULL';
 
         $conditions = array($options['language']);
 
         if (isset($options['product_class_id'])) {
             $sql .= ' AND pcf.product_class_id=?';
-            $conditions[] = (int) $options['product_class_id'];
+            $conditions[] = $options['product_class_id'];
         }
 
         if (isset($options['type'])) {
@@ -350,18 +352,13 @@ class ProductClass
         }
 
         $allowed_order = array('asc', 'desc');
+        $allowed_sort = array('type' => 'f.type', 'field_id' => 'f.field_id', 'title' => 'f.title',
+            'weight' => 'pcf.weight', 'required' => 'pcf.required', 'multiple' => 'pcf.multiple');
 
-        $allowed_sort = array(
-            'type' => 'f.type',
-            'field_id' => 'f.field_id',
-            'title' => 'f.title',
-            'weight' => 'pcf.weight',
-            'required' => 'pcf.required',
-            'multiple' => 'pcf.multiple'
-        );
-
-        if (isset($options['sort']) && isset($allowed_sort[$options['sort']])//
-                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+        if (isset($options['sort'])
+            && isset($allowed_sort[$options['sort']])
+            && isset($options['order'])
+            && in_array($options['order'], $allowed_order)) {
             $sql .= " ORDER BY {$allowed_sort[$options['sort']]} {$options['order']}";
         } else {
             $sql .= " ORDER BY pcf.weight ASC";

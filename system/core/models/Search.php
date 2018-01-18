@@ -9,6 +9,7 @@
 
 namespace gplcart\core\models;
 
+use Exception;
 use gplcart\core\Hook,
     gplcart\core\Config,
     gplcart\core\Handler;
@@ -81,8 +82,8 @@ class Search
     {
         $values = array(
             'entity' => $entity,
-            'entity_id' => $entity_id,
-            'language' => $language
+            'language' => $language,
+            'entity_id' => $entity_id
         );
 
         return (bool) $this->db->delete('search_index', $values);
@@ -166,7 +167,7 @@ class Search
         try {
             $handlers = $this->getHandlers();
             return Handler::call($handlers, $handler_id, $method, $args);
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             return null;
         }
     }
@@ -224,7 +225,7 @@ class Search
             'handlers' => array(
                 'search' => array('gplcart\\core\\handlers\\search\\Product', 'search'),
                 'index' => array('gplcart\\core\\handlers\\search\\Product', 'index')
-        ));
+            ));
 
         return $handlers;
     }

@@ -99,7 +99,7 @@ class Alias
         }
 
         if (!is_array($condition)) {
-            $condition = array('alias_id' => (int) $condition);
+            $condition = array('alias_id' => $condition);
         }
 
         $condition['limit'] = array(0, 1);
@@ -119,11 +119,12 @@ class Alias
     public function getByEntity($entity, $entity_id)
     {
         $conditions = array(
-            'entity' => (string) $entity,
-            'entity_id' => (int) $entity_id
+            'entity' => $entity,
+            'entity_id' => $entity_id
         );
 
         $alias = $this->get($conditions);
+
         return isset($alias['alias']) ? $alias['alias'] : null;
     }
 
@@ -142,7 +143,7 @@ class Alias
         }
 
         if (!is_array($condition)) {
-            $condition = array('alias_id' => (int) $condition);
+            $condition = array('alias_id' => $condition);
         }
 
         $result = $this->db->delete('alias', $condition);
@@ -152,13 +153,13 @@ class Alias
 
     /**
      * Returns an array of aliases or counts them
-     * @param array $data
+     * @param array $options
      * @return array|integer
      */
-    public function getList(array $data = array())
+    public function getList(array $options = array())
     {
         $result = null;
-        $this->hook->attach('alias.list.before', $data, $result, $this);
+        $this->hook->attach('alias.list.before', $options, $result, $this);
 
         if (isset($result)) {
             return $result;
@@ -166,7 +167,7 @@ class Alias
 
         $sql = 'SELECT *';
 
-        if (!empty($data['count'])) {
+        if (!empty($options['count'])) {
             $sql = 'SELECT COUNT(alias_id)';
         }
 
@@ -174,56 +175,58 @@ class Alias
 
         $conditions = array();
 
-        if (isset($data['alias_id'])) {
+        if (isset($options['alias_id'])) {
             $sql .= ' WHERE alias_id = ?';
-            $conditions[] = (int) $data['alias_id'];
+            $conditions[] = $options['alias_id'];
         } else {
             $sql .= ' WHERE alias_id IS NOT NULL';
         }
 
-        if (isset($data['entity'])) {
+        if (isset($options['entity'])) {
             $sql .= ' AND entity = ?';
-            $conditions[] = $data['entity'];
+            $conditions[] = $options['entity'];
         }
 
-        if (!empty($data['entity_id'])) {
-            settype($data['entity_id'], 'array');
-            $placeholders = rtrim(str_repeat('?,', count($data['entity_id'])), ',');
+        if (!empty($options['entity_id'])) {
+            settype($options['entity_id'], 'array');
+            $placeholders = rtrim(str_repeat('?,', count($options['entity_id'])), ',');
             $sql .= " AND entity_id IN($placeholders)";
-            $conditions = array_merge($conditions, $data['entity_id']);
+            $conditions = array_merge($conditions, $options['entity_id']);
         }
 
-        if (isset($data['alias'])) {
+        if (isset($options['alias'])) {
             $sql .= ' AND alias = ?';
-            $conditions[] = $data['alias'];
+            $conditions[] = $options['alias'];
         }
 
-        if (isset($data['alias_like'])) {
+        if (isset($options['alias_like'])) {
             $sql .= ' AND alias LIKE ?';
-            $conditions[] = "%{$data['alias_like']}%";
+            $conditions[] = "%{$options['alias_like']}%";
         }
 
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('entity_id', 'entity', 'alias', 'alias_id');
 
-        if (isset($data['sort']) && in_array($data['sort'], $allowed_sort)//
-                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
-            $sql .= " ORDER BY {$data['sort']} {$data['order']}";
+        if (isset($options['sort'])
+            && in_array($options['sort'], $allowed_sort)//
+            && isset($options['order'])
+            && in_array($options['order'], $allowed_order)) {
+            $sql .= " ORDER BY {$options['sort']} {$options['order']}";
         } else {
             $sql .= " ORDER BY alias DESC";
         }
 
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        if (!empty($options['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
         }
 
-        if (empty($data['count'])) {
+        if (empty($options['count'])) {
             $result = $this->db->fetchAll($sql, $conditions, array('index' => 'alias_id'));
         } else {
             $result = (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $this->hook->attach('alias.list.after', $data, $result, $this);
+        $this->hook->attach('alias.list.after', $options, $result, $this);
         return $result;
     }
 

@@ -97,11 +97,11 @@ class Review
             $sql = 'SELECT COUNT(r.review_id)';
         }
 
-        $sql .= ' FROM review r'
-                . ' LEFT JOIN user u ON(r.user_id = u.user_id)'
-                . ' LEFT JOIN product p ON(r.product_id = p.product_id)'
-                . ' LEFT JOIN product_translation pt ON(r.product_id = pt.product_id AND pt.language=?)'
-                . ' WHERE r.review_id IS NOT NULL';
+        $sql .= ' FROM review r
+                  LEFT JOIN user u ON(r.user_id = u.user_id)
+                  LEFT JOIN product p ON(r.product_id = p.product_id)
+                  LEFT JOIN product_translation pt ON(r.product_id = pt.product_id AND pt.language=?)
+                  WHERE r.review_id IS NOT NULL';
 
         $conditions = array($options['language']);
 
@@ -119,7 +119,7 @@ class Review
 
         if (isset($options['user_id'])) {
             $sql .= ' AND r.user_id = ?';
-            $conditions[] = (int) $options['user_id'];
+            $conditions[] = $options['user_id'];
         }
 
         if (isset($options['email'])) {
@@ -134,22 +134,12 @@ class Review
 
         if (isset($options['product_id'])) {
             $sql .= ' AND r.product_id = ?';
-            $conditions[] = (int) $options['product_id'];
+            $conditions[] = $options['product_id'];
         }
 
         if (isset($options['status'])) {
             $sql .= ' AND r.status = ?';
-            $conditions[] = (bool) $options['status'];
-        }
-
-        if (isset($options['created'])) {
-            $sql .= ' AND r.created = ?';
-            $conditions[] = (int) $options['created'];
-        }
-
-        if (isset($options['modified'])) {
-            $sql .= ' AND r.modified = ?';
-            $conditions[] = (int) $options['modified'];
+            $conditions[] = (int) $options['status'];
         }
 
         if (isset($options['user_status'])) {
@@ -157,13 +147,25 @@ class Review
             $conditions[] = (int) $options['user_status'];
         }
 
+        if (isset($options['created'])) {
+            $sql .= ' AND r.created = ?';
+            $conditions[] = $options['created'];
+        }
+
+        if (isset($options['modified'])) {
+            $sql .= ' AND r.modified = ?';
+            $conditions[] = $options['modified'];
+        }
+
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('product_id' => 'r.product_id', 'email' => 'u.email',
             'review_id' => 'r.review_id', 'status' => 'r.status', 'created' => 'r.created',
             'text' => 'r.text', 'product_title' => 'p.title');
 
-        if (isset($options['sort']) && isset($allowed_sort[$options['sort']])//
-                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+        if (isset($options['sort'])
+            && isset($allowed_sort[$options['sort']])
+            && isset($options['order'])
+            && in_array($options['order'], $allowed_order)) {
             $sql .= " ORDER BY {$allowed_sort[$options['sort']]} {$options['order']}";
         } else {
             $sql .= " ORDER BY r.modified DESC";

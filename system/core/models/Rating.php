@@ -77,11 +77,11 @@ class Rating
         }
 
         $user_ids = (array) $user_id;
+        $conditions = array_merge($user_ids, array($product_id));
         $placeholders = rtrim(str_repeat('?,', count($user_ids)), ',');
 
         $sql = "SELECT * FROM rating_user WHERE user_id IN($placeholders) AND product_id=?";
 
-        $conditions = array_merge($user_ids, array($product_id));
         $result = $this->db->fetchAll($sql, $conditions, array('index' => 'user_id'));
 
         if (!is_array($user_id) && isset($result[$user_id])) {
@@ -157,9 +157,9 @@ class Rating
             return array();
         }
 
-        $sql = 'INSERT INTO rating'
-                . ' SET rating=:rating, votes=:votes, product_id=:product_id'
-                . ' ON DUPLICATE KEY UPDATE rating=:rating, votes=:votes';
+        $sql = 'INSERT INTO rating
+                SET rating=:rating, votes=:votes, product_id=:product_id
+                ON DUPLICATE KEY UPDATE rating=:rating, votes=:votes';
 
         $params = array(
             'product_id' => $data['product_id'],
@@ -178,16 +178,15 @@ class Rating
      */
     protected function getBayesian(array $data)
     {
-        $sql = "SELECT *,";
-        $sql .= "@total_votes:= (SELECT COUNT(rating_user_id) FROM rating_user) AS total_votes,";
-        $sql .= "@total_items:= (SELECT COUNT(product_id) FROM product WHERE status > 0 AND store_id=:sid) AS total_items,";
-        $sql .= "@avg_num_votes:= (@total_votes / @total_items) AS avg_num_votes,";
-        $sql .= "@avg_rating:= (SELECT AVG(rating) FROM rating_user) AS avg_rating,";
-        $sql .= "@this_num_votes:= (SELECT COUNT(rating_user_id) FROM rating_user WHERE product_id=:pid) AS this_num_votes,";
-        $sql .= "@this_rating:= (SELECT AVG(rating) FROM rating_user WHERE product_id=:pid) AS this_rating,";
-
-        $sql .= "((@avg_num_votes * @avg_rating) + (@this_num_votes * @this_rating) ) / (@avg_num_votes + @this_num_votes) AS bayesian_rating";
-        $sql .= " FROM rating_user";
+        $sql = "SELECT *,
+                @total_votes:= (SELECT COUNT(rating_user_id) FROM rating_user) AS total_votes,
+                @total_items:= (SELECT COUNT(product_id) FROM product WHERE status > 0 AND store_id=:sid) AS total_items,
+                @avg_num_votes:= (@total_votes / @total_items) AS avg_num_votes,
+                @avg_rating:= (SELECT AVG(rating) FROM rating_user) AS avg_rating,
+                @this_num_votes:= (SELECT COUNT(rating_user_id) FROM rating_user WHERE product_id=:pid) AS this_num_votes,
+                @this_rating:= (SELECT AVG(rating) FROM rating_user WHERE product_id=:pid) AS this_rating,
+                ((@avg_num_votes * @avg_rating) + (@this_num_votes * @this_rating) ) / (@avg_num_votes + @this_num_votes) AS bayesian_rating
+                FROM rating_user";
 
         return $this->db->fetch($sql, array('pid' => $data['product_id'], 'sid' => $data['store_id']));
     }

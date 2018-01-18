@@ -54,7 +54,7 @@ class CategoryGroup
      * @param TranslationEntityModel $translation_entity
      */
     public function __construct(Hook $hook, Config $config, TranslationModel $translation,
-            TranslationEntityModel $translation_entity)
+                                TranslationEntityModel $translation_entity)
     {
         $this->hook = $hook;
         $this->db = $config->getDb();
@@ -77,7 +77,7 @@ class CategoryGroup
         }
 
         if (!is_array($condition)) {
-            $condition = array('category_group_id' => (int) $condition);
+            $condition = array('category_group_id' => $condition);
         }
 
         $condition['limit'] = array(0, 1);
@@ -110,15 +110,15 @@ class CategoryGroup
             $sql = 'SELECT COUNT(cg.category_group_id)';
         }
 
-        $sql .= ' FROM category_group cg'
-                . ' LEFT JOIN category_group_translation cgt'
-                . ' ON(cg.category_group_id = cgt.category_group_id AND cgt.language = ?)';
+        $sql .= ' FROM category_group cg
+                  LEFT JOIN category_group_translation cgt
+                  ON(cg.category_group_id = cgt.category_group_id AND cgt.language = ?)';
 
         $conditions = array($options['language']);
 
         if (isset($options['category_group_id'])) {
             $sql .= ' WHERE cg.category_group_id = ?';
-            $conditions[] = (int) $options['category_group_id'];
+            $conditions[] = $options['category_group_id'];
         } else {
             $sql .= ' WHERE cg.category_group_id IS NOT NULL';
         }
@@ -137,14 +137,16 @@ class CategoryGroup
 
         if (isset($options['store_id'])) {
             $sql .= ' AND cg.store_id = ?';
-            $conditions[] = (int) $options['store_id'];
+            $conditions[] = $options['store_id'];
         }
 
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('type', 'store_id', 'title', 'category_group_id');
 
-        if (isset($options['sort']) && in_array($options['sort'], $allowed_sort)//
-                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+        if (isset($options['sort'])
+            && in_array($options['sort'], $allowed_sort)
+            && isset($options['order'])
+            && in_array($options['order'], $allowed_order)) {
             $sql .= " ORDER BY cg.{$options['sort']} {$options['order']}";
         } else {
             $sql .= " ORDER BY cg.title ASC";
@@ -180,6 +182,7 @@ class CategoryGroup
 
         $result = $data['category_group_id'] = $this->db->insert('category_group', $data);
         $this->setTranslations($data, $this->translation_entity, 'category_group', false);
+
         $this->hook->attach('category.group.add.after', $data, $result, $this);
         return (int) $result;
     }

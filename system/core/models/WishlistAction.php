@@ -51,7 +51,7 @@ class WishlistAction
      * @param UrlHelper $url
      */
     public function __construct(Hook $hook, WishlistModel $wishlist, TranslationModel $translation,
-            UrlHelper $url)
+                                UrlHelper $url)
     {
         $this->url = $url;
         $this->hook = $hook;

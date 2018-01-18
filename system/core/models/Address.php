@@ -128,7 +128,7 @@ class Address
     public function get($condition)
     {
         if (!is_array($condition)) {
-            $condition = array('address_id' => (int) $condition);
+            $condition = array('address_id' => $condition);
         }
 
         $result = &gplcart_static(gplcart_array_hash(array('address.get' => $condition)));
@@ -160,123 +160,120 @@ class Address
 
     /**
      * Returns an array of addresses or counts them
-     * @param array $data
+     * @param array $options
      * @return array|integer
      */
-    public function getList(array $data = array())
+    public function getList(array $options = array())
     {
-        $data += array('prepare' => true);
+        $options += array('prepare' => true);
 
         $result = null;
-        $this->hook->attach('address.list.before', $data, $result, $this);
+        $this->hook->attach('address.list.before', $options, $result, $this);
 
         if (isset($result)) {
             return $result;
         }
 
-        $sql = 'SELECT a.*, TRIM(a.first_name || " " || a.middle_name || " " || a.last_name) AS full_name,'
-                . ' u.email AS user_email, u.name AS user_name,'
-                . ' ci.city_id, COALESCE(ci.name, a.city_id) AS city_name, ci.status AS city_status, ci.zone_id AS city_zone_id,'
-                . ' c.name AS country_name, c.template AS country_address_template, c.zone_id AS country_zone_id,'
-                . ' c.native_name AS country_native_name, c.format AS country_format, c.status AS country_status,'
-                . ' s.name AS state_name, s.status AS state_status, s.zone_id AS state_zone_id';
+        $sql = 'SELECT a.*, TRIM(a.first_name || " " || a.middle_name || " " || a.last_name) AS full_name,
+                u.email AS user_email, u.name AS user_name,
+                ci.city_id, COALESCE(ci.name, a.city_id) AS city_name, ci.status AS city_status, ci.zone_id AS city_zone_id,
+                c.name AS country_name, c.zone_id AS country_zone_id,
+                c.native_name AS country_native_name, c.format AS country_format, c.status AS country_status,
+                s.name AS state_name, s.status AS state_status, s.zone_id AS state_zone_id';
 
-        if (!empty($data['count'])) {
+        if (!empty($options['count'])) {
             $sql = 'SELECT COUNT(a.address_id)';
         }
 
-        $sql .= ' FROM address a'
-                . ' LEFT JOIN country c ON(a.country=c.code)'
-                . ' LEFT JOIN state s ON(a.state_id=s.state_id)'
-                . ' LEFT JOIN city ci ON(a.city_id=ci.city_id)'
-                . ' LEFT JOIN user u ON(a.user_id=u.user_id)';
+        $sql .= ' FROM address a
+                  LEFT JOIN country c ON(a.country=c.code)
+                  LEFT JOIN state s ON(a.state_id=s.state_id)
+                  LEFT JOIN city ci ON(a.city_id=ci.city_id)
+                  LEFT JOIN user u ON(a.user_id=u.user_id)';
 
         $conditions = array();
 
-        if (isset($data['address_id'])) {
+        if (isset($options['address_id'])) {
             $sql .= ' WHERE a.address_id = ?';
-            $conditions[] = (int) $data['address_id'];
+            $conditions[] = $options['address_id'];
         } else {
             $sql .= ' WHERE a.address_id IS NOT NULL';
         }
 
-        if (isset($data['user_id'])) {
+        if (isset($options['user_id'])) {
             $sql .= ' AND a.user_id = ?';
-            $conditions[] = $data['user_id'];
+            $conditions[] = $options['user_id'];
         }
 
-        if (isset($data['user_email_like'])) {
+        if (isset($options['user_email_like'])) {
             $sql .= ' AND u.email LIKE ?';
-            $conditions[] = "%{$data['user_email_like']}%";
+            $conditions[] = "%{$options['user_email_like']}%";
         }
 
-        if (isset($data['full_name'])) {
+        if (isset($options['full_name'])) {
             $sql .= ' AND TRIM(a.first_name || " " || a.middle_name || " " || a.last_name) LIKE ?';
-            $conditions[] = "%{$data['full_name']}%";
+            $conditions[] = "%{$options['full_name']}%";
         }
 
-        if (isset($data['address_1'])) {
+        if (isset($options['address_1'])) {
             $sql .= ' AND a.address_1 LIKE ?';
-            $conditions[] = "%{$data['address_1']}%";
+            $conditions[] = "%{$options['address_1']}%";
         }
 
-        if (isset($data['city_id'])) {
+        if (isset($options['city_id'])) {
             $sql .= ' AND a.city_id = ?';
-            $conditions[] = $data['city_id'];
+            $conditions[] = $options['city_id'];
         }
 
-        if (isset($data['city_name'])) {
+        if (isset($options['city_name'])) {
             $sql .= ' AND (ci.name LIKE ? OR a.city_id LIKE ?)';
-            $conditions[] = "%{$data['city_name']}%";
-            $conditions[] = "%{$data['city_name']}%";
+            $conditions[] = "%{$options['city_name']}%";
+            $conditions[] = "%{$options['city_name']}%";
         }
 
-        if (isset($data['phone'])) {
+        if (isset($options['phone'])) {
             $sql .= ' AND a.phone LIKE ?';
-            $conditions[] = "%{$data['phone']}%";
+            $conditions[] = "%{$options['phone']}%";
         }
 
         $allowed_order = array('asc', 'desc');
 
-        $allowed_sort = array(
-            'phone' => 'a.phone',
-            'country' => 'a.country',
-            'city_id' => 'a.city_id',
-            'user_id' => 'a.user_id',
-            'user_email' => 'u.email',
-            'address_1' => 'a.address_1',
+        $allowed_sort = array('phone' => 'a.phone', 'country' => 'a.country', 'city_id' => 'a.city_id',
+            'user_id' => 'a.user_id', 'user_email' => 'u.email', 'address_1' => 'a.address_1',
             'address_id' => 'a.address_id',
             'full_name' => 'TRIM(a.first_name || " " || a.middle_name || " " || a.last_name)'
         );
 
-        if (isset($data['sort']) && isset($allowed_sort[$data['sort']])//
-                && isset($data['order']) && in_array($data['order'], $allowed_order)) {
-            $sql .= " ORDER BY {$allowed_sort[$data['sort']]} {$data['order']}";
+        if (isset($options['sort'])
+            && isset($allowed_sort[$options['sort']])
+            && isset($options['order'])
+            && in_array($options['order'], $allowed_order)) {
+            $sql .= " ORDER BY {$allowed_sort[$options['sort']]} {$options['order']}";
         } else {
             $sql .= ' ORDER BY a.created ASC';
         }
 
-        if (!empty($data['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $data['limit']));
+        if (!empty($options['limit'])) {
+            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
         }
 
-        if (empty($data['count'])) {
+        if (empty($options['count'])) {
 
-            $options = array(
+            $fetch_options = array(
                 'index' => 'address_id',
                 'unserialize' => array('data', 'country_format')
             );
 
-            $result = $this->db->fetchAll($sql, $conditions, $options);
+            $result = $this->db->fetchAll($sql, $conditions, $fetch_options);
 
-            if (!empty($data['prepare'])) {
-                $result = $this->prepareList($result, $data);
+            if (!empty($options['prepare'])) {
+                $result = $this->prepareList($result, $options);
             }
         } else {
             $result = (int) $this->db->fetchColumn($sql, $conditions);
         }
 
-        $this->hook->attach('address.list.after', $data, $result, $this);
+        $this->hook->attach('address.list.after', $options, $result, $this);
         return $result;
     }
 
@@ -311,6 +308,7 @@ class Address
     {
         $default = $this->country->getDefaultFormat();
         $format = gplcart_array_merge($default, $address['country_format']);
+
         gplcart_array_sort($format);
 
         $results = array();
@@ -391,8 +389,8 @@ class Address
      */
     public function canDelete($address_id)
     {
-        $sql = 'SELECT NOT EXISTS (SELECT order_id FROM orders WHERE shipping_address=:id)'
-                . ' AND NOT EXISTS (SELECT order_id FROM orders WHERE payment_address=:id)';
+        $sql = 'SELECT NOT EXISTS (SELECT order_id FROM orders WHERE shipping_address=:id)
+                AND NOT EXISTS (SELECT order_id FROM orders WHERE payment_address=:id)';
 
         return (bool) $this->db->fetchColumn($sql, array('id' => $address_id));
     }

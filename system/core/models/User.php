@@ -71,7 +71,7 @@ class User
      * @param SessionHelper $session
      */
     public function __construct(Hook $hook, Config $config, AddressModel $address,
-            UserRoleModel $role, SessionHelper $session)
+                                UserRoleModel $role, SessionHelper $session)
     {
         $this->hook = $hook;
         $this->config = $config;
@@ -95,7 +95,7 @@ class User
         }
 
         if (!is_array($condition)) {
-            $condition = array('user_id' => (int) $condition);
+            $condition = array('user_id' => $condition);
         }
 
         $result = &gplcart_static(gplcart_array_hash(array('user.get' => $condition)));
@@ -125,7 +125,7 @@ class User
      */
     public function getByEmail($email)
     {
-        return $this->get(array('email' => (string) $email));
+        return $this->get(array('email' => $email));
     }
 
     /**
@@ -142,8 +142,8 @@ class User
             return $result;
         }
 
-        $sql = 'SELECT u.*, r.redirect AS role_redirect, r.status AS role_status,'
-                . 'r.name AS role_name, r.permissions AS role_permissions';
+        $sql = 'SELECT u.*, r.redirect AS role_redirect, r.status AS role_status,
+                r.name AS role_name, r.permissions AS role_permissions';
 
         if (!empty($options['count'])) {
             $sql = 'SELECT COUNT(u.user_id)';
@@ -155,7 +155,7 @@ class User
 
         if (isset($options['user_id'])) {
             $sql .= ' WHERE u.user_id = ?';
-            $conditions[] = (int) $options['user_id'];
+            $conditions[] = $options['user_id'];
         } else {
             $sql .= ' WHERE u.user_id IS NOT NULL';
         }
@@ -177,12 +177,12 @@ class User
 
         if (isset($options['role_id'])) {
             $sql .= ' AND u.role_id = ?';
-            $conditions[] = (int) $options['role_id'];
+            $conditions[] = $options['role_id'];
         }
 
         if (isset($options['store_id'])) {
             $sql .= ' AND u.store_id = ?';
-            $conditions[] = (int) $options['store_id'];
+            $conditions[] = $options['store_id'];
         }
 
         if (isset($options['status'])) {
@@ -193,8 +193,10 @@ class User
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('name', 'email', 'role_id', 'store_id', 'status', 'created', 'user_id');
 
-        if (isset($options['sort']) && in_array($options['sort'], $allowed_sort)//
-                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+        if (isset($options['sort'])
+            && in_array($options['sort'], $allowed_sort)
+            && isset($options['order'])
+            && in_array($options['order'], $allowed_order)) {
             $sql .= " ORDER BY u.{$options['sort']} {$options['order']}";
         } else {
             $sql .= " ORDER BY u.modified DESC";
@@ -321,8 +323,7 @@ class User
             return false;
         }
 
-        $sql = 'SELECT * FROM orders WHERE user_id=?';
-        $result = $this->db->fetchColumn($sql, array($user_id));
+        $result = $this->db->fetchColumn('SELECT * FROM orders WHERE user_id=?', array($user_id));
         return empty($result);
     }
 
@@ -436,8 +437,7 @@ class User
      */
     public function generatePassword()
     {
-        $hash = crypt(gplcart_string_random(), gplcart_string_random());
-        return gplcart_string_encode($hash);
+        return gplcart_string_encode(crypt(gplcart_string_random(), gplcart_string_random()));
     }
 
     /**
@@ -461,20 +461,19 @@ class User
     public function passwordMatches($password, $user)
     {
         if (!is_array($user)) {
-            $user = $this->get((int) $user);
+            $user = $this->get($user);
         }
 
         if (empty($user['hash'])) {
             return false;
         }
 
-        $expected = gplcart_string_hash($password, $user['hash'], 0);
-        return gplcart_string_equals($user['hash'], $expected);
+        return gplcart_string_equals($user['hash'], gplcart_string_hash($password, $user['hash'], 0));
     }
 
     /**
      * Returns reset password lifespan in seconds
-     * @return integer
+     * @return int
      */
     public function getResetPasswordLifespan()
     {
@@ -496,15 +495,13 @@ class User
      */
     protected function deleteLinked($user_id)
     {
-        $conditions = array('user_id' => $user_id);
-
-        $this->db->delete('cart', $conditions);
-        $this->db->delete('review', $conditions);
-        $this->db->delete('history', $conditions);
-        $this->db->delete('address', $conditions);
-        $this->db->delete('wishlist', $conditions);
-        $this->db->delete('rating_user', $conditions);
-        $this->db->delete('dashboard', $conditions);
+        $this->db->delete('cart', array('user_id' => $user_id));
+        $this->db->delete('review', array('user_id' => $user_id));
+        $this->db->delete('history', array('user_id' => $user_id));
+        $this->db->delete('address', array('user_id' => $user_id));
+        $this->db->delete('wishlist', array('user_id' => $user_id));
+        $this->db->delete('rating_user', array('user_id' => $user_id));
+        $this->db->delete('dashboard', array('user_id' => $user_id));
     }
 
     /**

@@ -71,7 +71,7 @@ class Sku
         }
 
         if (!is_array($condition)) {
-            $condition = array('product_sku_id' => (int) $condition);
+            $condition = array('product_sku_id' => $condition);
         }
 
         $condition['limit'] = array(0, 1);
@@ -102,14 +102,13 @@ class Sku
             $sql = 'SELECT COUNT(ps.product_sku_id)';
         }
 
-        $sql .= ' FROM product_sku ps'
-                . ' LEFT JOIN product p ON(ps.product_id = p.product_id)';
+        $sql .= ' FROM product_sku ps LEFT JOIN product p ON(ps.product_id = p.product_id)';
 
         $conditions = array();
 
         if (isset($options['product_sku_id'])) {
             $sql .= ' WHERE ps.product_sku_id = ?';
-            $conditions[] = (int) $options['product_sku_id'];
+            $conditions[] = $options['product_sku_id'];
         } else {
             $sql .= ' WHERE ps.product_sku_id IS NOT NULL';
         }
@@ -121,7 +120,7 @@ class Sku
 
         if (isset($options['store_id'])) {
             $sql .= ' AND p.store_id=?';
-            $conditions[] = (int) $options['store_id'];
+            $conditions[] = $options['store_id'];
         }
 
         if (isset($options['title_sku'])) {
@@ -132,7 +131,7 @@ class Sku
 
         if (isset($options['product_id'])) {
             $sql .= ' AND ps.product_id=?';
-            $conditions[] = (int) $options['product_id'];
+            $conditions[] = $options['product_id'];
         }
 
         if (isset($options['combination_id'])) {

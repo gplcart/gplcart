@@ -54,7 +54,7 @@ class Collection
      * @param TranslationEntityModel $translation_entity
      */
     public function __construct(Hook $hook, Config $config, TranslationModel $translation,
-            TranslationEntityModel $translation_entity)
+                                TranslationEntityModel $translation_entity)
     {
         $this->hook = $hook;
         $this->db = $config->getDb();
@@ -77,7 +77,7 @@ class Collection
         }
 
         if (!is_array($condition)) {
-            $condition = array('collection_id' => (int) $condition);
+            $condition = array('collection_id' => $condition);
         }
 
         $condition['limit'] = array(0, 1);
@@ -110,14 +110,14 @@ class Collection
             $sql = 'SELECT COUNT(c.collection_id)';
         }
 
-        $sql .= ' FROM collection c'
-                . ' LEFT JOIN collection_translation ct ON(ct.collection_id = c.collection_id AND ct.language=?)';
+        $sql .= ' FROM collection c
+                  LEFT JOIN collection_translation ct ON(ct.collection_id = c.collection_id AND ct.language=?)';
 
         $conditions = array($options['language']);
 
         if (isset($options['collection_id'])) {
             $sql .= ' WHERE c.collection_id = ?';
-            $conditions[] = (int) $options['collection_id'];
+            $conditions[] = $options['collection_id'];
         } else {
             $sql .= ' WHERE c.collection_id IS NOT NULL';
         }
@@ -136,7 +136,7 @@ class Collection
 
         if (isset($options['store_id'])) {
             $sql .= ' AND c.store_id = ?';
-            $conditions[] = (int) $options['store_id'];
+            $conditions[] = $options['store_id'];
         }
 
         if (isset($options['type'])) {
@@ -147,8 +147,10 @@ class Collection
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('title', 'status', 'type', 'store_id', 'collection_id');
 
-        if (isset($options['sort']) && in_array($options['sort'], $allowed_sort)//
-                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+        if (isset($options['sort'])
+            && in_array($options['sort'], $allowed_sort)
+            && isset($options['order'])
+            && in_array($options['order'], $allowed_order)) {
             $sql .= " ORDER BY c.{$options['sort']} {$options['order']}";
         }
 
@@ -207,11 +209,20 @@ class Collection
         }
 
         if ($this->db->delete('collection', array('collection_id' => $collection_id))) {
-            $this->db->delete('collection_translation', array('collection_id' => $collection_id));
+            $this->deleteLinked($collection_id);
         }
 
         $this->hook->attach('collection.delete.after', $collection_id, $check, $result, $this);
         return (bool) $result;
+    }
+
+    /**
+     * Delete all database records associated with the collection
+     * @param $collection_id
+     */
+    protected function deleteLinked($collection_id)
+    {
+        $this->db->delete('collection_translation', array('collection_id' => $collection_id));
     }
 
     /**
@@ -241,7 +252,7 @@ class Collection
             return (bool) $result;
         }
 
-        unset($data['type']); // Cannot change item type!
+        unset($data['type']); // Cannot change item type
 
         $updated = $this->db->update('collection', $data, array('collection_id' => $collection_id));
         $data['collection_id'] = $collection_id;

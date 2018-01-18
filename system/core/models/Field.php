@@ -54,7 +54,7 @@ class Field
      * @param TranslationEntityModel $translation_entity
      */
     public function __construct(Hook $hook, Config $config, TranslationModel $translation,
-            TranslationEntityModel $translation_entity)
+                                TranslationEntityModel $translation_entity)
     {
         $this->hook = $hook;
         $this->db = $config->getDb();
@@ -77,7 +77,7 @@ class Field
         }
 
         if (!is_array($condition)) {
-            $condition = array('field_id' => (int) $condition);
+            $condition = array('field_id' => $condition);
         }
 
         $condition['limit'] = array(0, 1);
@@ -110,8 +110,8 @@ class Field
             $sql = 'SELECT COUNT(f.field_id)';
         }
 
-        $sql .= ' FROM field f'
-                . ' LEFT JOIN field_translation ft ON (f.field_id = ft.field_id AND ft.language=?)';
+        $sql .= ' FROM field f
+                  LEFT JOIN field_translation ft ON (f.field_id = ft.field_id AND ft.language=?)';
 
         $conditions = array($options['language']);
 
@@ -144,8 +144,10 @@ class Field
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('title', 'type', 'widget', 'field_id');
 
-        if (isset($options['sort']) && in_array($options['sort'], $allowed_sort)//
-                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+        if (isset($options['sort'])
+            && in_array($options['sort'], $allowed_sort)
+            && isset($options['order'])
+            && in_array($options['order'], $allowed_order)) {
             $sql .= " ORDER BY f.{$options['sort']} {$options['order']}";
         } else {
             $sql .= ' ORDER BY f.weight ASC';
@@ -242,6 +244,8 @@ class Field
             return (bool) $result;
         }
 
+        unset($data['type']);
+
         $updated = $this->db->update('field', $data, array('field_id' => $field_id));
         $data['field_id'] = $field_id;
         $updated += (int) $this->setTranslations($data, $this->translation_entity, 'field');
@@ -301,13 +305,13 @@ class Field
      */
     protected function deleteLinkedFieldValues($field_id)
     {
-        $sql = 'DELETE fvt'
-                . ' FROM field_value_translation AS fvt'
-                . ' WHERE fvt.field_value_id IN (SELECT DISTINCT(fv.field_value_id)'
-                . ' FROM field_value AS fv'
-                . ' INNER JOIN field_value AS fv2'
-                . ' ON (fv.field_value_id = fv2.field_value_id)'
-                . ' WHERE fv.field_id = ?);';
+        $sql = 'DELETE fvt
+                FROM field_value_translation AS fvt
+                WHERE fvt.field_value_id IN (SELECT DISTINCT(fv.field_value_id)
+                FROM field_value AS fv
+                INNER JOIN field_value AS fv2
+                ON (fv.field_value_id = fv2.field_value_id)
+                WHERE fv.field_id = ?);';
 
         return (bool) $this->db->run($sql, array($field_id))->rowCount();
     }

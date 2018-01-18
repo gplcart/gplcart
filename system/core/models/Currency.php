@@ -74,6 +74,7 @@ class Currency
 
         $list = $this->getList();
         $result = empty($list[$code]) ? array() : $list[$code];
+
         $this->hook->attach('currency.get.after', $code, $result, $this);
         return (array) $result;
     }
@@ -188,6 +189,7 @@ class Currency
         }
 
         unset($data['code']);
+
         $data['modified'] = GC_TIME;
 
         if (!empty($data['default'])) {
@@ -207,6 +209,7 @@ class Currency
 
         $saved[$code] = array_intersect_key($data, $default);
         $result = $this->config->set('currencies', $saved);
+
         $this->hook->attach('currency.update.after', $code, $data, $result, $this);
         return (bool) $result;
     }
@@ -236,6 +239,7 @@ class Currency
         unset($currencies[$code]);
 
         $result = $this->config->set('currencies', $currencies);
+
         $this->hook->attach('currency.delete.after', $code, $check, $result, $this);
         return (bool) $result;
     }
@@ -259,9 +263,9 @@ class Currency
             return false;
         }
 
-        $sql = 'SELECT NOT EXISTS (SELECT currency FROM orders WHERE currency=:code)'
-                . ' AND NOT EXISTS (SELECT currency FROM price_rule WHERE currency=:code)'
-                . ' AND NOT EXISTS (SELECT currency FROM product WHERE currency=:code)';
+        $sql = 'SELECT NOT EXISTS (SELECT currency FROM orders WHERE currency=:code)
+                AND NOT EXISTS (SELECT currency FROM price_rule WHERE currency=:code)
+                AND NOT EXISTS (SELECT currency FROM product WHERE currency=:code)';
 
         return (bool) $this->db->fetchColumn($sql, array('code' => $code));
     }

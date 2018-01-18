@@ -57,7 +57,7 @@ class Store
      * @param RequestHelper $request
      */
     public function __construct(Hook $hook, Config $config, ServerHelper $server,
-            RequestHelper $request)
+                                RequestHelper $request)
     {
         $this->hook = $hook;
         $this->config = $config;
@@ -188,8 +188,10 @@ class Store
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('name', 'domain', 'basepath', 'status', 'created', 'modified', 'store_id');
 
-        if (isset($options['sort']) && in_array($options['sort'], $allowed_sort)//
-                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+        if (isset($options['sort'])
+            && in_array($options['sort'], $allowed_sort)
+            && isset($options['order'])
+            && in_array($options['order'], $allowed_order)) {
             $sql .= " ORDER BY {$options['sort']} {$options['order']}";
         } else {
             $sql .= " ORDER BY modified DESC";
@@ -346,12 +348,10 @@ class Store
      */
     protected function deleteLinked($store_id)
     {
-        $conditions = array('store_id' => $store_id);
-
-        $this->db->delete('triggers', $conditions);
-        $this->db->delete('wishlist', $conditions);
-        $this->db->delete('collection', $conditions);
-        $this->db->delete('product_sku', $conditions);
+        $this->db->delete('triggers', array('store_id' => $store_id));
+        $this->db->delete('wishlist', array('store_id' => $store_id));
+        $this->db->delete('collection', array('store_id' => $store_id));
+        $this->db->delete('product_sku', array('store_id' => $store_id));
     }
 
     /**
@@ -365,13 +365,12 @@ class Store
             return false;
         }
 
-        $sql = 'SELECT'
-                . ' NOT EXISTS (SELECT store_id FROM product WHERE store_id=:id)'
-                . ' AND NOT EXISTS (SELECT store_id FROM category_group WHERE store_id=:id)'
-                . ' AND NOT EXISTS (SELECT store_id FROM page WHERE store_id=:id)'
-                . ' AND NOT EXISTS (SELECT store_id FROM orders WHERE store_id=:id)'
-                . ' AND NOT EXISTS (SELECT store_id FROM cart WHERE store_id=:id)'
-                . ' AND NOT EXISTS (SELECT store_id FROM user WHERE store_id=:id)';
+        $sql = 'SELECT NOT EXISTS (SELECT store_id FROM product WHERE store_id=:id)
+                AND NOT EXISTS (SELECT store_id FROM category_group WHERE store_id=:id)
+                AND NOT EXISTS (SELECT store_id FROM page WHERE store_id=:id)
+                AND NOT EXISTS (SELECT store_id FROM orders WHERE store_id=:id)
+                AND NOT EXISTS (SELECT store_id FROM cart WHERE store_id=:id)
+                AND NOT EXISTS (SELECT store_id FROM user WHERE store_id=:id)';
 
         return (bool) $this->db->fetchColumn($sql, array('id' => $store_id));
     }
@@ -409,7 +408,7 @@ class Store
         if (empty($store)) {
             $store = $this->get();
         } elseif (!is_array($store)) {
-            $store = $this->get((string) $store);
+            $store = $this->get($store);
         }
 
         if (empty($store['data'])) {

@@ -158,6 +158,7 @@ class Translation
         }
 
         $directory = dirname($common_file);
+
         if (!file_exists($directory) && !mkdir($directory, 0775, true)) {
             return $this->prepared = false;
         }

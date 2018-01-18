@@ -81,7 +81,7 @@ class Order
      * @param TranslationModel $translation
      */
     public function __construct(Hook $hook, Config $config, UserModel $user, PriceModel $price,
-            PriceRuleModel $pricerule, CartModel $cart, TranslationModel $translation)
+                                PriceRuleModel $pricerule, CartModel $cart, TranslationModel $translation)
     {
         $this->hook = $hook;
         $this->config = $config;
@@ -137,40 +137,39 @@ class Order
             return $result;
         }
 
-        $sql = 'SELECT o.*, u.email AS creator_email, u.name AS creator_name,'
-                . 'uc.name AS customer_name, uc.email AS customer_email,'
-                . 'CONCAT(uc.name, "", uc.email) AS customer,'
-                . 'h.created AS viewed, a.country, a.city_id, a.address_1,'
-                . 'a.address_2, a.phone, a.postcode, a.first_name,'
-                . 'a.middle_name, a.last_name';
+        $sql = 'SELECT o.*, u.email AS creator_email, u.name AS creator_name,
+                uc.name AS customer_name, uc.email AS customer_email,
+                CONCAT(uc.name, "", uc.email) AS customer,
+                h.created AS viewed, a.country, a.city_id, a.address_1,
+                a.address_2, a.phone, a.postcode, a.first_name, a.middle_name, a.last_name';
 
         if (!empty($options['count'])) {
             $sql = 'SELECT COUNT(DISTINCT o.order_id)';
         }
 
-        $sql .= ' FROM orders o'
-                . ' LEFT JOIN user u ON(o.creator=u.user_id)'
-                . ' LEFT JOIN user uc ON(o.user_id=uc.user_id)'
-                . ' LEFT JOIN address a ON(o.shipping_address=a.address_id)'
-                . ' LEFT JOIN history h ON(h.user_id=? AND h.entity=? AND h.entity_id=o.order_id)';
+        $sql .= ' FROM orders o
+                  LEFT JOIN user u ON(o.creator=u.user_id)
+                  LEFT JOIN user uc ON(o.user_id=uc.user_id)
+                  LEFT JOIN address a ON(o.shipping_address=a.address_id)
+                  LEFT JOIN history h ON(h.user_id=? AND h.entity=? AND h.entity_id=o.order_id)';
 
         $conditions = array($options['current_user'], 'order');
 
         if (isset($options['order_id'])) {
             $sql .= ' WHERE o.order_id = ?';
-            $conditions[] = (int) $options['order_id'];
+            $conditions[] = $options['order_id'];
         } else {
             $sql .= ' WHERE o.order_id IS NOT NULL';
         }
 
         if (isset($options['store_id'])) {
             $sql .= ' AND o.store_id = ?';
-            $conditions[] = (int) $options['store_id'];
+            $conditions[] = $options['store_id'];
         }
 
         if (isset($options['total'])) {
             $sql .= ' AND o.total = ?';
-            $conditions[] = (int) $options['total'];
+            $conditions[] = $options['total'];
         }
 
         if (isset($options['currency'])) {
@@ -210,21 +209,15 @@ class Order
         }
 
         $allowed_order = array('asc', 'desc');
-
-        $allowed_sort = array(
-            'order_id' => 'o.order_id',
-            'store_id' => 'o.store_id',
-            'status' => 'o.status',
-            'created' => 'o.created',
-            'total' => 'o.total',
-            'currency' => 'o.currency',
-            'customer' => 'customer',
-            'creator' => 'u.email',
-            'tracking_number' => 'o.tracking_number'
+        $allowed_sort = array('order_id' => 'o.order_id', 'store_id' => 'o.store_id', 'status' => 'o.status',
+            'created' => 'o.created', 'total' => 'o.total', 'currency' => 'o.currency', 'customer' => 'customer',
+            'creator' => 'u.email', 'tracking_number' => 'o.tracking_number'
         );
 
-        if (isset($options['sort']) && isset($allowed_sort[$options['sort']])//
-                && isset($options['order']) && in_array($options['order'], $allowed_order)) {
+        if (isset($options['sort'])
+            && isset($allowed_sort[$options['sort']])
+            && isset($options['order'])
+            && in_array($options['order'], $allowed_order)) {
             $sql .= " ORDER BY {$allowed_sort[$options['sort']]} {$options['order']}";
         } else {
             $sql .= " ORDER BY o.modified DESC";
