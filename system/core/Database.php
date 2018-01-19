@@ -406,36 +406,26 @@ class Database
         }
 
         foreach ($values as $field => &$value) {
-            $this->filterValue($scheme, $values, $field, $value);
+
+            if (!empty($scheme['fields'][$field]['auto_increment'])) {
+                unset($values[$field]);
+                continue;
+            }
+
+            if (is_null($value) && !empty($scheme['fields'][$field]['not_null'])) {
+                unset($values[$field]);
+                continue;
+            }
+
+            if (!empty($scheme['fields'][$field]['serialize'])) {
+                if (!is_array($value)) {
+                    $value = array();
+                }
+                $value = serialize($value);
+            }
         }
 
         return $values;
-    }
-
-    /**
-     * Filters a single item to be saved in the database
-     * @param array $scheme
-     * @param array $values
-     * @param string $field
-     * @param mixed $value
-     */
-    protected function filterValue($scheme, &$values, $field, &$value)
-    {
-        if (!empty($scheme['fields'][$field]['auto_increment'])) {
-            unset($values[$field]);
-        }
-
-        if (strpos($scheme['fields'][$field]['type'], 'int') === 0) {
-            $value = intval($value);
-        }
-
-        if ($scheme['fields'][$field]['type'] === 'float') {
-            $value = floatval($value);
-        }
-
-        if (!empty($scheme['fields'][$field]['serialize']) && is_array($value)) {
-            $value = serialize($value);
-        }
     }
 
     /**
@@ -467,9 +457,7 @@ class Database
     {
         foreach ($tables as $table => $data) {
 
-            $sql = $this->getSqlCreateTable($table, $data);
-
-            if (!$this->query($sql)) {
+            if (!$this->query($this->getSqlCreateTable($table, $data))) {
                 throw new DatabaseException("Failed to import database table $table");
             }
 
