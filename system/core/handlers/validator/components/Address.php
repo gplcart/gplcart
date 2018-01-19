@@ -80,8 +80,8 @@ class Address extends ComponentValidator
         $this->validateTypeAddress();
         $this->validateFieldsAddress();
         $this->validateUserIdAddress();
+        $this->validateData();
 
-        $this->unsetSubmitted('format');
         $this->unsetSubmitted('update');
 
         return $this->getResult();
@@ -157,35 +157,21 @@ class Address extends ComponentValidator
     protected function validateCountryAddress()
     {
         $field = 'country';
-
-        if ($this->isExcluded($field)) {
-            return null;
-        }
-
         $value = $this->getSubmitted($field);
 
-        if ($this->isUpdating() && !isset($value)) {
-            $updating = $this->getUpdating();
-            $this->setSubmitted('format', $updating['country_format']);
+        if (!isset($value)) {
             $this->unsetSubmitted($field);
             return null;
         }
 
+        $country = $this->country->get($value);
         $label = $this->translation->text('Country');
 
-        if (empty($value)) {
-            $this->setErrorRequired($field, $label);
-            return false;
-        }
-
-        $country = $this->country->get($value);
-
-        if (empty($country['format'])) {
+        if (empty($country)) {
             $this->setErrorUnavailable($field, $label);
             return false;
         }
 
-        $this->setSubmitted('format', $country['format']);
         return true;
     }
 
@@ -196,19 +182,15 @@ class Address extends ComponentValidator
     protected function validateStateAddress()
     {
         $field = 'state_id';
-
-        if ($this->isExcluded($field) || $this->isError('country')) {
-            return null;
-        }
-
-        $format = $this->getSubmitted('format');
         $value = $this->getSubmitted($field);
 
-        if (!isset($value) || empty($format)) {
+        if (!isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
 
         $label = $this->translation->text('State');
+        $format = $this->getCountryFormatAddress();
 
         if (empty($value) && !empty($format['state_id']['required'])) {
             $this->setErrorRequired($field, $label);
@@ -226,7 +208,7 @@ class Address extends ComponentValidator
 
         $state = $this->state->get($value);
 
-        if (empty($state['state_id'])) {
+        if (empty($state)) {
             $this->setErrorUnavailable($field, $label);
             return false;
         }
@@ -253,28 +235,24 @@ class Address extends ComponentValidator
             return null;
         }
 
-        $format = $this->getSubmitted('format');
-
-        if (empty($format)) {
-            return null;
-        }
-
         $label = $this->translation->text('City');
+        $format = $this->getCountryFormatAddress();
 
-        if (empty($value)) {
-            if (!empty($format['city_id']['required'])) {
-                $this->setErrorRequired($field, $label);
-                return false;
-            }
-            return true;
+        if (empty($value) && !empty($format['city_id']['required'])) {
+            $this->setErrorRequired($field, $label);
+            return false;
         }
 
         // City ID can be either numeric ID or non-numeric human name
         if (is_numeric($value)) {
-            if (!$this->city->get($value)) {
-                $this->setErrorUnavailable($field, $label);
-                return false;
+            if ($this->city->get($value)) {
+                return true;
             }
+            $this->setErrorUnavailable($field, $label);
+            return false;
+        }
+
+        if (empty($value)) {
             return true;
         }
 
@@ -297,12 +275,10 @@ class Address extends ComponentValidator
             'state_id' => $state_id
         );
 
-        // Loop over results to find exact match,
-        // because we search "name" using "LIKE" condition
         foreach ((array) $this->city->getList($conditions) as $city) {
             if (strcasecmp($city['name'], $value) === 0) {
                 $this->setSubmitted($field, $city['city_id']);
-                return true;
+                break;
             }
         }
 
@@ -366,7 +342,7 @@ class Address extends ComponentValidator
             return null;
         }
 
-        $format = $this->getSubmitted('format');
+        $format = $this->getCountryFormatAddress();
 
         if (empty($format[$field]['required'])) {
             return null;
@@ -378,6 +354,35 @@ class Address extends ComponentValidator
         }
 
         return true;
+    }
+
+    /**
+     * Returns the current country format
+     * @return array
+     */
+    protected function getCountryFormatAddress()
+    {
+        $updating = $this->getUpdating();
+
+        if (isset($updating['country_format'])) {
+            return $updating['country_format'];
+        }
+
+        $field = 'country';
+        $code = $this->getSubmitted($field);
+
+        if (!isset($code)) {
+            return $this->country->getDefaultFormat();
+        }
+
+        $country = $this->country->get($code);
+
+        if (empty($country['format'])) {
+            $this->setErrorUnavailable($field, $this->translation->text('Country'));
+            return array();
+        }
+
+        return $country['format'];
     }
 
 }
