@@ -485,7 +485,7 @@ class CliController
 
     /**
      * Whether the user input passed the field validation
-     * @param string $input
+     * @param mixed $input
      * @param string $field
      * @param string $handler_id
      * @return bool
