@@ -81,6 +81,7 @@ class CollectionItem extends ComponentValidator
         $this->validateCollectionCollectionItem();
         $this->validateValueCollectionItem();
         $this->validateEntityCollectionItem();
+        $this->validateData();
 
         $this->unsetSubmitted('update');
         $this->unsetSubmitted('collection');

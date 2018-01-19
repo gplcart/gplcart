@@ -54,6 +54,7 @@ class User extends ComponentValidator
         $this->validatePasswordOldUser();
         $this->validateStoreId();
         $this->validateRoleUser();
+        $this->validateData();
 
         $this->unsetSubmitted('update');
 

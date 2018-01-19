@@ -81,6 +81,7 @@ class Cart extends ComponentValidator
         $this->validateQuantityCart();
         $this->validateOptionsCart();
         $this->validateLimitCart();
+        $this->validateData();
 
         $this->unsetSubmitted('update');
 
