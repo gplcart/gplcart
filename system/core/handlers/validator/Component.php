@@ -13,7 +13,7 @@ use gplcart\core\Container;
 use gplcart\core\handlers\validator\Element as ElementValidator;
 
 /**
- * Methods to validate components
+ * Methods to validate different components
  */
 class Component extends ElementValidator
 {
@@ -77,6 +77,33 @@ class Component extends ElementValidator
     }
 
     /**
+     * Validates "data" field
+     * @return bool|null
+     */
+    protected function validateData()
+    {
+        $field = 'data';
+
+        if ($this->isExcluded($field)) {
+            return null;
+        }
+
+        $value = $this->getSubmitted($field);
+
+        if (!isset($value)) {
+            $this->unsetSubmitted($field);
+            return null;
+        }
+
+        if (!is_array($value)) {
+            $this->setErrorInvalid($field, $this->translation->text('Data'));
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Validates a title
      * @return boolean|null
      */
@@ -91,6 +118,7 @@ class Component extends ElementValidator
         $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
 
@@ -117,6 +145,7 @@ class Component extends ElementValidator
         $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
 
@@ -137,7 +166,12 @@ class Component extends ElementValidator
         $field = 'meta_title';
         $value = $this->getSubmitted($field);
 
-        if (isset($value) && mb_strlen($value) > 60) {
+        if (!isset($value)) {
+            $this->unsetSubmitted($field);
+            return true;
+        }
+
+        if (mb_strlen($value) > 60) {
             $this->setErrorLengthRange($field, $this->translation->text('Meta title'), 0, 60);
             return false;
         }
@@ -154,7 +188,12 @@ class Component extends ElementValidator
         $field = 'meta_description';
         $value = $this->getSubmitted($field);
 
-        if (isset($value) && mb_strlen($value) > 160) {
+        if (!isset($value)) {
+            $this->unsetSubmitted($field);
+            return true;
+        }
+
+        if (mb_strlen($value) > 160) {
             $this->setErrorLengthRange($field, $this->translation->text('Meta description'), 0, 160);
             return false;
         }
@@ -171,7 +210,12 @@ class Component extends ElementValidator
         $field = 'description';
         $value = $this->getSubmitted($field);
 
-        if (isset($value) && mb_strlen($value) > 65535) {
+        if (!isset($value)) {
+            $this->unsetSubmitted($field);
+            return true;
+        }
+
+        if (mb_strlen($value) > 65535) {
             $this->setErrorLengthRange($field, $this->translation->text('Description'), 0, 65535);
             return false;
         }
@@ -188,7 +232,12 @@ class Component extends ElementValidator
         $field = 'weight';
         $value = $this->getSubmitted($field);
 
-        if (isset($value) && !is_numeric($value)) {
+        if (!isset($value)) {
+            $this->unsetSubmitted($field);
+            return true;
+        }
+
+        if (!is_numeric($value)) {
             $this->setErrorNumeric($field, $this->translation->text('Weight'));
             return false;
         }
@@ -276,9 +325,11 @@ class Component extends ElementValidator
      */
     protected function validateImages()
     {
-        $images = $this->getSubmitted('images');
+        $field = 'images';
+        $images = $this->getSubmitted($field);
 
         if (empty($images) || !is_array($images)) {
+            $this->unsetSubmitted($field);
             return null;
         }
 
@@ -297,9 +348,9 @@ class Component extends ElementValidator
             }
 
             foreach ($image['translation'] as $lang => &$translation) {
-                foreach ($translation as $field => &$value) {
+                foreach ($translation as $key => &$value) {
                     if ($value === '') {
-                        unset($image['translation'][$lang][$field]);
+                        unset($image['translation'][$lang][$key]);
                         continue;
                     }
                     $value = mb_strimwidth($value, 0, 255, '');
@@ -312,7 +363,7 @@ class Component extends ElementValidator
             }
         }
 
-        $this->setSubmitted('images', $images);
+        $this->setSubmitted($field, $images);
         return true;
     }
 
@@ -353,7 +404,8 @@ class Component extends ElementValidator
         $field = 'alias';
         $value = $this->getSubmitted($field);
 
-        if (empty($value)) {
+        if (!isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
 
@@ -371,7 +423,7 @@ class Component extends ElementValidator
 
         $updating = $this->getUpdating();
 
-        if (isset($value) && isset($updating['alias']) && ($updating['alias'] === $value)) {
+        if (isset($updating['alias']) && ($updating['alias'] === $value)) {
             return true; // Do not check own alias on update
         }
 
@@ -398,6 +450,7 @@ class Component extends ElementValidator
         $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
 
@@ -438,6 +491,7 @@ class Component extends ElementValidator
         $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
 
@@ -478,6 +532,7 @@ class Component extends ElementValidator
         $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
 
@@ -522,6 +577,7 @@ class Component extends ElementValidator
         $value = $this->getSubmitted($field);
 
         if ($this->isUpdating() && !isset($value)) {
+            $this->unsetSubmitted($field);
             return null;
         }
 
