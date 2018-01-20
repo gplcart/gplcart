@@ -18,6 +18,7 @@ trait Listing
     /**
      * Limit the list using the limit
      * @param array $list
+     * @param array $limit
      */
     protected function limitList(array &$list, array $limit)
     {

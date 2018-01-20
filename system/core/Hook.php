@@ -9,6 +9,8 @@
 
 namespace gplcart\core;
 
+use Exception;
+
 /**
  * Provides methods to work with system hooks (event system)
  */
@@ -109,7 +111,7 @@ class Hook
     }
 
     /**
-     * Executes a hook
+     * Call all defined functions for the hook
      * @param string $hook
      * @param mixed $a
      * @param mixed $b
@@ -166,7 +168,7 @@ class Hook
             $instance->{$method}($a, $b, $c, $d, $e);
             $this->called[$method][$class] = array($class, $method);
             return array($a, $b, $c, $d, $e);
-        } catch (\Exception $exc) {
+        } catch (Exception $exc) {
             return false;
         }
     }

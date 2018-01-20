@@ -397,7 +397,7 @@ abstract class Controller
     public function setToken($token = null)
     {
         if (isset($token)) {
-            return $this->token = (string) $token;
+            return $this->token = $token;
         }
 
         return $this->token = gplcart_string_encode(crypt(session_id(), $this->config->getKey()));
@@ -1249,7 +1249,6 @@ abstract class Controller
     public function unsetError($key)
     {
         gplcart_array_unset($this->errors, $key);
-
         return $this->errors;
     }
 
@@ -1525,7 +1524,7 @@ abstract class Controller
     protected function controlMaintenanceMode()
     {
         $allowed_path = $this->is_install || $this->is_backend//
-                || in_array($this->path, array('login', 'logout', 'forgot'));
+            || in_array($this->path, array('login', 'logout', 'forgot'));
 
         $this->is_maintenance = empty($this->current_store['status']) && !$allowed_path;
 
@@ -1601,9 +1600,9 @@ abstract class Controller
     {
         if (!empty($this->langcode) && !is_file($this->translation->getContextJsFile())) {
             foreach ($scripts as $key => $script) {
-                if (strpos($key, 'system/modules/') === 0//
-                        && strpos($key, '/vendor/') === false//
-                        && !empty($script['file'])) {
+                if (strpos($key, 'system/modules/') === 0
+                    && strpos($key, '/vendor/') === false
+                    && !empty($script['file'])) {
                     $string = file_get_contents($script['file']);
                     $this->translation->createJsTranslation($string);
                 }
@@ -1807,8 +1806,7 @@ abstract class Controller
     protected function compressAssets(array $assets, $type)
     {
         if ($this->config("compress_$type", 0)) {
-            $directory = GC_DIR_ASSET_COMPILED . "/$type";
-            return $this->asset->compress($assets, $type, $directory);
+            return $this->asset->compress($assets, $type, GC_DIR_ASSET_COMPILED . "/$type");
         }
 
         return $assets;
@@ -2173,7 +2171,6 @@ abstract class Controller
     }
 
     /**
-     *
      * @param array $allowed
      * @param array $query
      */
@@ -2185,15 +2182,14 @@ abstract class Controller
         foreach ($allowed as $filter) {
 
             $this->data["filter_$filter"] = '';
+
             if (isset($this->query[$filter]) && is_string($this->query[$filter])) {
                 $this->data['_filtering'] = true;
                 $this->data["filter_$filter"] = $this->query[$filter];
             }
 
-            $sort = array(
-                'sort' => $filter,
-                'order' => $order == 'desc' ? 'asc' : 'desc') + $query;
-
+            $sort = array('sort' => $filter, 'order' => $order == 'desc' ? 'asc' : 'desc');
+            $sort += $query;
             $this->data["sort_$filter"] = $this->url('', $sort);
         }
     }

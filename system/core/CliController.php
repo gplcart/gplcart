@@ -255,7 +255,7 @@ class CliController
             return $this->submitted;
         }
 
-        return $this->submitted = (array)$data;
+        return $this->submitted = (array) $data;
     }
 
     /**
@@ -297,7 +297,7 @@ class CliController
             return $this->params;
         }
 
-        foreach ((array)$key as $k) {
+        foreach ((array) $key as $k) {
             if (isset($this->params[$k])) {
                 return $this->params[$k];
             }
@@ -355,7 +355,7 @@ class CliController
      */
     public function isSubmitted($key)
     {
-        return (bool)$this->getSubmitted($key);
+        return (bool) $this->getSubmitted($key);
     }
 
     /**
@@ -388,7 +388,7 @@ class CliController
             return $this->errors;
         }
 
-        return $this->errors = (array)$error;
+        return $this->errors = (array) $error;
     }
 
     /**
@@ -456,6 +456,7 @@ class CliController
         }
 
         $mapped = array();
+
         foreach ($params as $key => $value) {
             if (isset($map[$key]) && is_string($map[$key])) {
                 gplcart_array_set($mapped, $map[$key], $value);
@@ -570,6 +571,7 @@ class CliController
     protected function printHelpText(array $command)
     {
         $shown = false;
+
         if (!empty($command['description'])) {
             $shown = true;
             $this->line($this->text($command['description']));
@@ -605,6 +607,7 @@ class CliController
     public function selectLanguage($langcode = null)
     {
         $languages = array();
+
         foreach ($this->language->getList() as $code => $language) {
             if ($code === 'en' || is_file($this->translation->getFile($code))) {
                 $languages[$code] = $language['name'];
@@ -625,7 +628,7 @@ class CliController
             $this->error($this->text('Invalid language'));
             $this->selectLanguage();
         } else {
-            $this->langcode = (string)$selected;
+            $this->langcode = (string) $selected;
             $this->translation->set($this->langcode, null);
             $this->config->set('cli_langcode', $this->langcode);
         }
