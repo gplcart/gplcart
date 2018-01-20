@@ -103,11 +103,16 @@ class UserRole extends ComponentValidator
             return null;
         }
 
-        $permissions = $this->role->getPermissions();
-        $difference = array_diff($value, array_keys($permissions));
+        if (!is_array($value)) {
+            $this->setErrorInvalid($field, $this->translation->text('Permissions'));
+            return false;
+        }
 
-        if (!empty($difference)) {
-            $this->setErrorUnavailable($field, implode(',', $difference));
+        $permissions = $this->role->getPermissions();
+        $invalid = array_diff($value, array_keys($permissions));
+
+        if (!empty($invalid)) {
+            $this->setErrorUnavailable($field, implode(',', $invalid));
             return false;
         }
 
