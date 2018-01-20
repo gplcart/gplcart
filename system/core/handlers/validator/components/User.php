@@ -30,6 +30,7 @@ class User extends ComponentValidator
     public function __construct(UserRoleModel $role)
     {
         parent::__construct();
+
         $this->role = $role;
     }
 
@@ -54,6 +55,7 @@ class User extends ComponentValidator
         $this->validatePasswordOldUser();
         $this->validateStoreId();
         $this->validateRoleUser();
+        $this->validateTimezoneUser();
         $this->validateData();
 
         $this->unsetSubmitted('update');
@@ -168,7 +170,7 @@ class User extends ComponentValidator
 
         $updating = $this->getUpdating();
 
-        if (isset($updating['email']) && ($updating['email'] === $value)) {
+        if (isset($updating['email']) && $updating['email'] === $value) {
             return true;
         }
 
@@ -326,6 +328,35 @@ class User extends ComponentValidator
 
         if (empty($role)) {
             $this->setErrorUnavailable($field, $label);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Validates "timezone" field
+     * @return bool|null
+     */
+    protected function validateTimezoneUser()
+    {
+        $field = 'timezone';
+
+        if ($this->isExcluded($field)) {
+            return null;
+        }
+
+        $value = $this->getSubmitted($field);
+
+        if (!isset($value)) {
+            $this->unsetSubmitted($field);
+            return null;
+        }
+
+        $timezones = gplcart_timezones();
+
+        if (empty($timezones[$value])) {
+            $this->setErrorInvalid($field, $this->translation->text('Timezone'));
             return false;
         }
 
