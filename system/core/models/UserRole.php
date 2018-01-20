@@ -210,7 +210,7 @@ class UserRole
     }
 
     /**
-     * Returns an array of permissions
+     * Returns an array of all defined permissions
      * @return array
      */
     public function getPermissions()
