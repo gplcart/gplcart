@@ -133,7 +133,7 @@ class Install extends CliController
     protected function controlAccessInstall()
     {
         if ($this->config->isInitialized()) {
-            $this->errorExit($this->text('System already installed'));
+            $this->errorAndExit($this->text('System already installed'));
         }
     }
 

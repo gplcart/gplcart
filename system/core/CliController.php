@@ -409,7 +409,7 @@ class CliController
      * Output an error message and stop the script execution
      * @param string $text
      */
-    public function errorExit($text)
+    public function errorAndExit($text)
     {
         $this->error($text)->abort(1);
     }
@@ -556,7 +556,7 @@ class CliController
             $routes = $this->route->getList();
 
             if (empty($routes[$command])) {
-                $this->errorExit($this->text('Unknown command'));
+                $this->errorAndExit($this->text('Unknown command'));
             }
 
             $this->printHelpText($routes[$command]);
