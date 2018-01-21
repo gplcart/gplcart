@@ -9,11 +9,11 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\models\Sku as SkuModel,
-    gplcart\core\models\Cart as CartModel,
-    gplcart\core\models\Order as OrderModel,
-    gplcart\core\models\Product as ProductModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\models\Cart as CartModel;
+use gplcart\core\models\Order as OrderModel;
+use gplcart\core\models\Product as ProductModel;
+use gplcart\core\models\Sku as SkuModel;
 
 /**
  * Provides methods to validate cart data
@@ -232,16 +232,16 @@ class Cart extends ComponentValidator
 
         $value = $this->getSubmitted($field);
 
-        if ($this->isUpdating() && !isset($value)) {
-            return null;
+        if (!isset($value)) {
+
+            if ($this->isUpdating()) {
+                return null;
+            }
+
+            $value = 1;
         }
 
         $label = $this->translation->text('Quantity');
-
-        if (empty($value)) {
-            $this->setErrorRequired($field, $label);
-            return false;
-        }
 
         if (!is_numeric($value)) {
             $this->setErrorNumeric($field, $label);
@@ -262,32 +262,27 @@ class Cart extends ComponentValidator
      */
     protected function validateLimitCart()
     {
-        $admin = $this->getSubmitted('admin');
-        $product = $this->getSubmitted('product');
-        $increment = $this->getSubmitted('increment');
-
-        if (!empty($admin) || empty($product) || $this->isError()) {
+        if ($this->isError()) {
             return null;
         }
 
-        if (!isset($increment)) {
-            $increment = true;
+        $admin = $this->getSubmitted('admin');
+        $product = $this->getSubmitted('product');
+
+        if (!empty($admin) || empty($product)) {
+            return null;
         }
 
         $sku = $this->getSubmitted('sku');
-        $stock = $this->getSubmitted('stock');
         $user_id = $this->getSubmitted('user_id');
         $store_id = $this->getSubmitted('store_id');
         $quantity = $this->getSubmitted('quantity');
-
-        if (!isset($stock)) {
-            $stock = $product['stock'];
-        }
-
-        $conditions = array('user_id' => $user_id, 'store_id' => $store_id);
-        $existing_quantity = $this->cart->getQuantity($conditions);
+        $increment = $this->getSubmitted('increment', true);
+        $stock = $this->getSubmitted('stock', $product['stock']);
 
         $expected_quantity_sku = $quantity;
+        $existing_quantity = $this->cart->getQuantity(array('user_id' => $user_id, 'store_id' => $store_id));
+
         if (!empty($increment) && isset($existing_quantity['sku'][$sku])) {
             $expected_quantity_sku += $existing_quantity['sku'][$sku];
         }
@@ -301,10 +296,7 @@ class Cart extends ComponentValidator
         $limit_sku = $this->cart->getLimits('sku');
         $limit_item = $this->cart->getLimits('item');
 
-        if (!empty($limit_item)//
-            && !isset($existing_quantity['sku'][$sku])//
-            && count($existing_quantity['sku']) >= $limit_item) {
-
+        if (!empty($limit_item) && !isset($existing_quantity['sku'][$sku]) && count($existing_quantity['sku']) >= $limit_item) {
             $error = $this->translation->text('Please no more than @num items', array('@num' => $limit_item));
             $this->setError('quantity', $error);
             return false;

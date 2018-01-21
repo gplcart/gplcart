@@ -48,9 +48,10 @@ class Base extends Handler
     /**
      * Returns a submitted value
      * @param null|string $key
+     * @param mixed $default
      * @return mixed
      */
-    protected function getSubmitted($key = null)
+    protected function getSubmitted($key = null, $default = null)
     {
         if (!isset($key)) {
             return $this->submitted;
@@ -59,7 +60,8 @@ class Base extends Handler
         $path = $this->getKeyPath($key);
 
         if (isset($path)) {
-            return gplcart_array_get($this->submitted, $path);
+            $result = gplcart_array_get($this->submitted, $path);
+            return isset($result) ? $result : $default;
         }
 
         return $this->submitted;
@@ -148,7 +150,7 @@ class Base extends Handler
             $key = explode('.', $key);
         }
 
-        return array_merge((array)$this->options['parents'], (array)$key);
+        return array_merge((array) $this->options['parents'], (array) $key);
     }
 
     /**
@@ -158,7 +160,7 @@ class Base extends Handler
      */
     protected function getKey($key)
     {
-        return trim(implode('.', (array)$this->getKeyPath($key)), '.');
+        return trim(implode('.', (array) $this->getKeyPath($key)), '.');
     }
 
     /**

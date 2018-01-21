@@ -9,21 +9,21 @@
 
 namespace gplcart\core\handlers\dashboard;
 
-use gplcart\core\Handler,
-    gplcart\core\Config;
-use gplcart\core\models\Cart as CartModel,
-    gplcart\core\models\User as UserModel,
-    gplcart\core\models\Order as OrderModel,
-    gplcart\core\models\OrderHistory as OrderHistoryModel,
-    gplcart\core\models\Price as PriceModel,
-    gplcart\core\models\Report as ReportModel,
-    gplcart\core\models\Review as ReviewModel,
-    gplcart\core\models\Product as ProductModel,
-    gplcart\core\models\Translation as TranslationModel,
-    gplcart\core\models\PriceRule as PriceRuleModel,
-    gplcart\core\models\Transaction as TransactionModel;
-use gplcart\core\traits\ItemPrice as ItemPriceTrait,
-    gplcart\core\traits\ItemOrder as ItemOrderTrait;
+use gplcart\core\Config;
+use gplcart\core\Handler;
+use gplcart\core\models\Cart as CartModel;
+use gplcart\core\models\Order as OrderModel;
+use gplcart\core\models\OrderHistory as OrderHistoryModel;
+use gplcart\core\models\Price as PriceModel;
+use gplcart\core\models\PriceRule as PriceRuleModel;
+use gplcart\core\models\Product as ProductModel;
+use gplcart\core\models\Report as ReportModel;
+use gplcart\core\models\Review as ReviewModel;
+use gplcart\core\models\Transaction as TransactionModel;
+use gplcart\core\models\Translation as TranslationModel;
+use gplcart\core\models\User as UserModel;
+use gplcart\core\traits\ItemOrder as ItemOrderTrait;
+use gplcart\core\traits\ItemPrice as ItemPriceTrait;
 
 /**
  * Dashboard handlers
@@ -121,9 +121,9 @@ class Dashboard extends Handler
      * @param PriceRuleModel $pricerule
      */
     public function __construct(Config $config, CartModel $cart, UserModel $user,
-            ProductModel $product, TranslationModel $translation, PriceModel $price,
-            OrderModel $order, OrderHistoryModel $order_history, ReportModel $report,
-            ReviewModel $review, TransactionModel $transaction, PriceRuleModel $pricerule)
+                                ProductModel $product, TranslationModel $translation, PriceModel $price,
+                                OrderModel $order, OrderHistoryModel $order_history, ReportModel $report,
+                                ReviewModel $review, TransactionModel $transaction, PriceRuleModel $pricerule)
     {
         $this->cart = $cart;
         $this->user = $user;
@@ -224,8 +224,8 @@ class Dashboard extends Handler
     public function cart()
     {
         $options = array(
-            'sort' => 'created',
             'order' => 'desc',
+            'sort' => 'created',
             'limit' => array(0, $this->config->get('dashboard_limit', 10)));
 
         return $this->cart->getList($options);
@@ -253,8 +253,8 @@ class Dashboard extends Handler
     public function review()
     {
         $options = array(
-            'sort' => 'created',
             'order' => 'desc',
+            'sort' => 'created',
             'limit' => array(0, $this->config->get('dashboard_limit', 10)));
 
         return $this->review->getList($options);
