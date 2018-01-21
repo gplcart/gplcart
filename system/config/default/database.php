@@ -319,7 +319,7 @@ return array(
             'used' => array('type' => 'integer', 'length' => 10, 'not_null' => true, 'default' => 0),
             'name' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
             'trigger_id' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
-            'code' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
+            'code' => array('type' => 'varchar', 'length' => 255, 'not_null' => true, 'default' => ''),
             'value_type' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
             'currency' => array('type' => 'varchar', 'length' => 4, 'not_null' => true),
             'created' => array('type' => 'integer', 'length' => 10, 'not_null' => true),
