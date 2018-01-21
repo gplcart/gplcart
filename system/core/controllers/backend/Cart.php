@@ -86,7 +86,6 @@ class Cart extends BackendController
     {
         $options = $this->query_filter;
         $options['count'] = true;
-        $options['index'] = 'cart_id';
         $total = (int) $this->cart->getList($options);
 
         $pager = array(
@@ -105,7 +104,6 @@ class Cart extends BackendController
     {
         $conditions = $this->query_filter;
         $conditions['limit'] = $this->data_limit;
-        $conditions['index'] = 'cart_id';
 
         $list = (array) $this->cart->getList($conditions);
         return $this->prepareListCart($list);

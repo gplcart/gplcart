@@ -9,11 +9,11 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Price as PriceModel,
-    gplcart\core\models\Trigger as TriggerModel,
-    gplcart\core\models\Currency as CurrencyModel,
-    gplcart\core\models\PriceRule as PriceRuleModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Currency as CurrencyModel;
+use gplcart\core\models\Price as PriceModel;
+use gplcart\core\models\PriceRule as PriceRuleModel;
+use gplcart\core\models\Trigger as TriggerModel;
 
 /**
  * Handles incoming requests and outputs data related to price rules
@@ -63,8 +63,7 @@ class PriceRule extends BackendController
      * @param PriceModel $price
      * @param TriggerModel $trigger
      */
-    public function __construct(PriceRuleModel $rule, CurrencyModel $currency, PriceModel $price,
-            TriggerModel $trigger)
+    public function __construct(PriceRuleModel $rule, CurrencyModel $currency, PriceModel $price, TriggerModel $trigger)
     {
         parent::__construct();
 
@@ -114,8 +113,8 @@ class PriceRule extends BackendController
      */
     protected function setFilterListPriceRule()
     {
-        $allowed = array('name', 'code', 'value',
-            'value_type', 'weight', 'status', 'store_id', 'trigger_name');
+        $allowed = array('name', 'code', 'value', 'price_rule_id',
+            'value_type', 'weight', 'status', 'store_id', 'trigger_id');
 
         $this->setFilter($allowed);
     }
@@ -216,7 +215,15 @@ class PriceRule extends BackendController
      */
     protected function getTriggersPriceRule()
     {
-        return $this->trigger->getList(array('status' => 1));
+        $list = $this->trigger->getList();
+
+        foreach ($list as &$item) {
+            if (empty($item['status'])) {
+                $item['name'] .= ' (' . $this->lower($this->text('Disabled')) . ')';
+            }
+        }
+
+        return $list;
     }
 
     /**

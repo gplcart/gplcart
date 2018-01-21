@@ -10,12 +10,12 @@
 namespace gplcart\core\controllers\frontend;
 
 use gplcart\core\Controller as BaseController;
-use gplcart\core\traits\Item as ItemTrait,
-    gplcart\core\traits\Cart as CartTrait,
-    gplcart\core\traits\Widget as WidgetTrait,
-    gplcart\core\traits\Wishlist as WishlistTrait,
-    gplcart\core\traits\ItemPrice as ItemPriceTrait,
-    gplcart\core\traits\ProductCompare as ProductCompareTrait;
+use gplcart\core\traits\Cart as CartTrait;
+use gplcart\core\traits\Item as ItemTrait;
+use gplcart\core\traits\ItemPrice as ItemPriceTrait;
+use gplcart\core\traits\ProductCompare as ProductCompareTrait;
+use gplcart\core\traits\Widget as WidgetTrait;
+use gplcart\core\traits\Wishlist as WishlistTrait;
 
 /**
  * Parent controller that contents front-end specific methods
