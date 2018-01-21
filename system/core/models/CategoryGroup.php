@@ -9,10 +9,10 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Hook,
-    gplcart\core\Config;
-use gplcart\core\models\Translation as TranslationModel,
-    gplcart\core\models\TranslationEntity as TranslationEntityModel;
+use gplcart\core\Config;
+use gplcart\core\Hook;
+use gplcart\core\models\Translation as TranslationModel;
+use gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\traits\Translation as TranslationTrait;
 
 /**

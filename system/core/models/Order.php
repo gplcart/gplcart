@@ -9,13 +9,13 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Hook,
-    gplcart\core\Config;
-use gplcart\core\models\Cart as CartModel,
-    gplcart\core\models\User as UserModel,
-    gplcart\core\models\Price as PriceModel,
-    gplcart\core\models\PriceRule as PriceRuleModel,
-    gplcart\core\models\Translation as TranslationModel;
+use gplcart\core\Config;
+use gplcart\core\Hook;
+use gplcart\core\models\Cart as CartModel;
+use gplcart\core\models\Price as PriceModel;
+use gplcart\core\models\PriceRule as PriceRuleModel;
+use gplcart\core\models\Translation as TranslationModel;
+use gplcart\core\models\User as UserModel;
 
 /**
  * Manages basic behaviors and data related to store orders
@@ -554,7 +554,7 @@ class Order
     protected function setCart(array &$order)
     {
         if (isset($order['order_id'])) {
-            $order['cart'] = $this->cart->getList(array('order_id' => $order['order_id']));
+            $order['cart'] = $this->cart->getList(array('order_id' => $order['order_id'], 'index' => 'sku'));
         }
     }
 

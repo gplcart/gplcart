@@ -9,13 +9,13 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Hook,
-    gplcart\core\Config;
-use gplcart\core\models\User as UserModel,
-    gplcart\core\models\Product as ProductModel,
-    gplcart\core\models\Currency as CurrencyModel,
-    gplcart\core\models\Translation as TranslationModel;
+use gplcart\core\Config;
 use gplcart\core\helpers\Request as RequestHelper;
+use gplcart\core\Hook;
+use gplcart\core\models\Currency as CurrencyModel;
+use gplcart\core\models\Product as ProductModel;
+use gplcart\core\models\Translation as TranslationModel;
+use gplcart\core\models\User as UserModel;
 
 /**
  * Manages basic behaviors and data related to shopping carts
@@ -227,10 +227,10 @@ class Cart
 
         $total = $quantity = 0;
 
-        foreach ((array) $items as $sku => $item) {
+        foreach ((array) $items as $item) {
             $prepared = $this->prepareItem($item, $result);
             if (!empty($prepared)) {
-                $result['items'][$sku] = $prepared;
+                $result['items'][$item['sku']] = $prepared;
                 $total += (int) $prepared['total'];
                 $quantity += (int) $prepared['quantity'];
             }
@@ -251,7 +251,7 @@ class Cart
     public function getList(array $options = array())
     {
         $options += array(
-            'index' => 'sku',
+            'index' => 'cart_id',
             'language' => $this->translation->getLangcode());
 
         $result = null;
