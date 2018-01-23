@@ -10,7 +10,6 @@ return array(
     array(
         'category_id' => 1,
         'weight' => -9,
-        'user_id' => 1,
         'status' => 1,
         'category_group_id' => 1,
         'parent_id' => 0,
@@ -23,7 +22,6 @@ return array(
     array(
         'category_id' => 2,
         'weight' => 9,
-        'user_id' => 2,
         'status' => 0,
         'category_group_id' => 2,
         'parent_id' => 1,
