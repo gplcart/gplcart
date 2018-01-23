@@ -63,7 +63,6 @@ return array(
         'fields' => array(
             'category_id' => array('type' => 'integer', 'length' => 10, 'auto_increment' => true, 'primary' => true),
             'weight' => array('type' => 'integer', 'length' => 2, 'not_null' => true, 'default' => 0),
-            'user_id' => array('type' => 'integer', 'length' => 10, 'not_null' => true),
             'status' => array('type' => 'integer', 'length' => 1, 'not_null' => true, 'default' => 0),
             'category_group_id' => array('type' => 'integer', 'length' => 10, 'not_null' => true),
             'parent_id' => array('type' => 'integer', 'length' => 10, 'not_null' => true, 'default' => 0),
