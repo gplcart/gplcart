@@ -9,8 +9,8 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\models\CategoryGroup as CategoryGroupModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\models\CategoryGroup as CategoryGroupModel;
 
 /**
  * Provides methods to validate category groups
@@ -86,21 +86,24 @@ class CategoryGroup extends ComponentValidator
     {
         $field = 'type';
 
-        if ($this->isExcluded($field)) {
-            return null;
-        }
-
-        if ($this->isError('store_id')) {
+        if ($this->isExcluded($field) || $this->isError('store_id')) {
             return null;
         }
 
         $type = $this->getSubmitted($field);
-        $label = $this->translation->text('Type');
-        $store_id = $this->getSubmitted('store_id');
 
         if ($this->isUpdating() && !isset($type)) {
             return null;
         }
+
+        $store_id = $this->getSubmitted('store_id');
+
+        if (!isset($store_id)) {
+            $this->setErrorRequired($field, $this->translation->text('Store'));
+            return false;
+        }
+
+        $label = $this->translation->text('Type');
 
         if (empty($type)) {
             $this->setErrorRequired($field, $label);
@@ -115,10 +118,8 @@ class CategoryGroup extends ComponentValidator
         }
 
         $updating = $this->getUpdating();
-        $arguments = array('type' => $type, 'store_id' => $store_id);
-        $list = $this->category_group->getList($arguments);
+        $list = $this->category_group->getList(array('type' => $type, 'store_id' => $store_id));
 
-        // Remove own ID when updating the group
         if (isset($updating['category_group_id'])) {
             unset($list[$updating['category_group_id']]);
         }
