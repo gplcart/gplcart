@@ -293,7 +293,7 @@ function gplcart_backtrace($print = false)
     }
 
     if ($print) {
-        echo implode("\n", $result);
+        echo implode(PHP_EOL, $result);
     }
 
     return $result;
@@ -320,7 +320,7 @@ function gplcart_instance($class)
  */
 function gplcart_instance_model($name)
 {
-    return gplcart_instance("gplcart\\core\\models\\$name");
+    return gplcart_instance("gplcart\\core\\models\\" . str_replace('_', '', $name));
 }
 
 /**
