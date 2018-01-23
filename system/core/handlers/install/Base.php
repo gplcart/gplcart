@@ -390,6 +390,7 @@ class Base
     protected function finish()
     {
         $this->session->delete('install');
+        $this->config->set('cli_status', 0);
 
         return array(
             'redirect' => 'login',
@@ -442,7 +443,9 @@ class Base
      */
     protected function getPageModel()
     {
-        return Container::get('gplcart\\core\\models\\Page');
+        /** @var \gplcart\core\models\Page $object */
+        $object = Container::get('gplcart\\core\\models\\Page');
+        return $object;
     }
 
     /**
@@ -451,7 +454,9 @@ class Base
      */
     protected function getLanguageModel()
     {
-        return Container::get('gplcart\\core\\models\\Language');
+        /** @var \gplcart\core\models\Language $object */
+        $object = Container::get('gplcart\\core\\models\\Language');
+        return $object;
     }
 
     /**
@@ -460,7 +465,9 @@ class Base
      */
     protected function getUserModel()
     {
-        return Container::get('gplcart\\core\\models\\User');
+        /** @var \gplcart\core\models\User $object */
+        $object = Container::get('gplcart\\core\\models\\User');
+        return $object;
     }
 
     /**
@@ -469,7 +476,9 @@ class Base
      */
     protected function getStoreModel()
     {
-        return Container::get('gplcart\\core\\models\\Store');
+        /** @var \gplcart\core\models\Store $object */
+        $object = Container::get('gplcart\\core\\models\\Store');
+        return $object;
     }
 
     /**
@@ -478,7 +487,9 @@ class Base
      */
     protected function getCountryModel()
     {
-        return Container::get('gplcart\\core\\models\\Country');
+        /** @var \gplcart\core\models\Country $object */
+        $object = Container::get('gplcart\\core\\models\\Country');
+        return $object;
     }
 
 }
