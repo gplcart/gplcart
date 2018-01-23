@@ -11,9 +11,7 @@ return array(
         'title' => /* @text */'Product',
         'entity' => 'product',
         'handlers' => array(
-            /* {@see \gplcart\core\models\Product::getList()} */
             'list' => array('gplcart\\core\\models\\Product', 'getList'),
-            /* {@see \gplcart\core\handlers\validator\components\CollectionItem::validateProductCollectionItem()} */
             'validate' => array('gplcart\\core\\handlers\\validator\\components\\CollectionItem', 'validateProductCollectionItem'),
         ),
         'template' => array(
