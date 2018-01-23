@@ -84,18 +84,6 @@ class AliasTest extends UnitTest
     }
 
     /**
-     * @covers gplcart\core\models\Alias::getIdKeys
-     */
-    public function testGetIdKeys()
-    {
-        $result = $this->object->getEntities();
-
-        $this->assertCount(count($this->fixture_data), $result);
-        $this->assertContains('page', $result);
-        $this->assertContains('product', $result);
-    }
-
-    /**
      * @covers gplcart\core\models\Alias::exists
      */
     public function testExists()
