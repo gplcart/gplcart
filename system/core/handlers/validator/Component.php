@@ -234,11 +234,23 @@ class Component extends ElementValidator
 
         if (!isset($value)) {
             $this->unsetSubmitted($field);
-            return true;
+            return null;
         }
 
+        if (empty($value)) {
+            $value = 0;
+            $this->setSubmitted($field, $value);
+        }
+
+        $label = $this->translation->text('Weight');
+
         if (!is_numeric($value)) {
-            $this->setErrorNumeric($field, $this->translation->text('Weight'));
+            $this->setErrorNumeric($field, $label);
+            return false;
+        }
+
+        if (strlen($value) > 2) {
+            $this->setErrorLengthRange($field, $label, 1, 2);
             return false;
         }
 
@@ -404,7 +416,7 @@ class Component extends ElementValidator
         $field = 'alias';
         $value = $this->getSubmitted($field);
 
-        if (!isset($value)) {
+        if (empty($value)) {
             $this->unsetSubmitted($field);
             return null;
         }
@@ -423,7 +435,7 @@ class Component extends ElementValidator
 
         $updating = $this->getUpdating();
 
-        if (isset($updating['alias']) && ($updating['alias'] === $value)) {
+        if (isset($updating['alias']) && $updating['alias'] === $value) {
             return true; // Do not check own alias on update
         }
 
