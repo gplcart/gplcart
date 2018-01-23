@@ -187,6 +187,12 @@ define('GC_FILE_CONFIG_LANGUAGE', GC_DIR_CONFIG . '/language.php');
 define('GC_FILE_CONFIG_COUNTRY', GC_DIR_CONFIG . '/country.php');
 
 /**
+ * Configuration file containing URL alias handlers
+ * @var string
+ */
+define('GC_FILE_CONFIG_ALIAS', GC_DIR_CONFIG . '/alias.php');
+
+/**
  * Configuration file containing currency ISO data
  * @var string
  */
