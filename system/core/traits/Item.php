@@ -545,7 +545,17 @@ trait Item
     public function setItemAlias(array &$item, $entity, $alias_model)
     {
         if (isset($item[$entity . '_id'])) {
-            $item['alias'] = $alias_model->getByEntity($entity, $item[$entity . '_id']);
+
+            $conditions = array(
+                'entity' => $entity,
+                'entity_id' => $item[$entity . '_id']
+            );
+
+            $alias = $alias_model->get($conditions);
+
+            if (isset($alias['alias'])) {
+                $item['alias'] = $alias['alias'];
+            }
         }
     }
 

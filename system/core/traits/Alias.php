@@ -37,6 +37,10 @@ trait Alias
             $data['alias'] = $alias_model->generateEntity($entity, $data);
         }
 
+        if (empty($data['alias'])) {
+            return null;
+        }
+
         $alias = array(
             'alias' => $data['alias'],
             'entity' => $entity,
