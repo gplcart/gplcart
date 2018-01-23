@@ -82,8 +82,8 @@ class Route
      * @param RequestHelper $request
      * @param ResponseHelper $response
      */
-    public function __construct(Config $config, Hook $hook, UrlHelper $url, RequestHelper $request,
-                                ResponseHelper $response)
+    public function __construct(Config $config, Hook $hook, UrlHelper $url,
+                                RequestHelper $request, ResponseHelper $response)
     {
         $this->url = $url;
         $this->hook = $hook;
@@ -275,7 +275,7 @@ class Route
         try {
             $route = $this->set($route, $arguments);
             $callback = Handler::get($route, null, 'controller');
-            if (!$callback[0] instanceof \gplcart\core\Controller) {
+            if (!$callback[0] instanceof Controller) {
                 throw new RouteException('Controller must be instance of \gplcart\core\Controller');
             }
             call_user_func_array($callback, $route['arguments']);
