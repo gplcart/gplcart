@@ -9,16 +9,17 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Hook,
-    gplcart\core\Config;
-use gplcart\core\models\Field as FieldModel,
-    gplcart\core\models\FieldValue as FieldValueModel,
-    gplcart\core\models\Translation as TranslationModel;
+use gplcart\core\Config;
+use gplcart\core\Hook;
+use gplcart\core\interfaces\Crud as CrudInterface;
+use gplcart\core\models\Field as FieldModel;
+use gplcart\core\models\FieldValue as FieldValueModel;
+use gplcart\core\models\Translation as TranslationModel;
 
 /**
  * Manages basic behaviors and data related to product classes
  */
-class ProductClass
+class ProductClass implements CrudInterface
 {
 
     /**

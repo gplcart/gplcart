@@ -9,16 +9,17 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Hook,
-    gplcart\core\Config;
-use gplcart\core\models\Address as AddressModel,
-    gplcart\core\models\UserRole as UserRoleModel;
+use gplcart\core\Config;
 use gplcart\core\helpers\Session as SessionHelper;
+use gplcart\core\Hook;
+use gplcart\core\interfaces\Crud as CrudInterface;
+use gplcart\core\models\Address as AddressModel;
+use gplcart\core\models\UserRole as UserRoleModel;
 
 /**
  * Manages basic behaviors and data related to users
  */
-class User
+class User implements CrudInterface
 {
 
     /**

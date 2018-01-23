@@ -9,18 +9,19 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Hook,
-    gplcart\core\Config;
-use gplcart\core\models\File as FileModel,
-    gplcart\core\models\Translation as TranslationModel,
-    gplcart\core\models\TranslationEntity as TranslationEntityModel;
-use gplcart\core\traits\Image as ImageTrait,
-    gplcart\core\traits\Translation as TranslationTrait;
+use gplcart\core\Config;
+use gplcart\core\Hook;
+use gplcart\core\interfaces\Crud as CrudInterface;
+use gplcart\core\models\File as FileModel;
+use gplcart\core\models\Translation as TranslationModel;
+use gplcart\core\models\TranslationEntity as TranslationEntityModel;
+use gplcart\core\traits\Image as ImageTrait;
+use gplcart\core\traits\Translation as TranslationTrait;
 
 /**
  * Manages basic behaviors and data related to field values
  */
-class FieldValue
+class FieldValue implements CrudInterface
 {
 
     use ImageTrait,

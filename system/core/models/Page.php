@@ -9,20 +9,21 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Hook,
-    gplcart\core\Config;
-use gplcart\core\models\File as FileModel,
-    gplcart\core\models\Alias as AliasModel,
-    gplcart\core\models\Translation as TranslationModel,
-    gplcart\core\models\TranslationEntity as TranslationEntityModel;
-use gplcart\core\traits\Image as ImageTrait,
-    gplcart\core\traits\Alias as AliasTrait,
-    gplcart\core\traits\Translation as TranslationTrait;
+use gplcart\core\Config;
+use gplcart\core\Hook;
+use gplcart\core\interfaces\Crud as CrudInterface;
+use gplcart\core\models\Alias as AliasModel;
+use gplcart\core\models\File as FileModel;
+use gplcart\core\models\Translation as TranslationModel;
+use gplcart\core\models\TranslationEntity as TranslationEntityModel;
+use gplcart\core\traits\Alias as AliasTrait;
+use gplcart\core\traits\Image as ImageTrait;
+use gplcart\core\traits\Translation as TranslationTrait;
 
 /**
  * Manages basic behaviors and data related to pages
  */
-class Page
+class Page implements CrudInterface
 {
 
     use ImageTrait,

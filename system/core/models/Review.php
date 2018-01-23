@@ -9,14 +9,15 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Hook,
-    gplcart\core\Config;
+use gplcart\core\Config;
+use gplcart\core\Hook;
+use gplcart\core\interfaces\Crud as CrudInterface;
 use gplcart\core\models\Translation as TranslationModel;
 
 /**
  * Manages basic behaviors and data related to the review system
  */
-class Review
+class Review implements CrudInterface
 {
 
     /**

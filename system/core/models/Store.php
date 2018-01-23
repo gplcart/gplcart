@@ -9,15 +9,16 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Hook,
-    gplcart\core\Config;
-use gplcart\core\helpers\Server as ServerHelper,
-    gplcart\core\helpers\Request as RequestHelper;
+use gplcart\core\Config;
+use gplcart\core\helpers\Request as RequestHelper;
+use gplcart\core\helpers\Server as ServerHelper;
+use gplcart\core\Hook;
+use gplcart\core\interfaces\Crud as CrudInterface;
 
 /**
  * Manages basic behaviors and data related to stores
  */
-class Store
+class Store implements CrudInterface
 {
 
     /**

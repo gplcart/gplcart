@@ -11,6 +11,7 @@ namespace gplcart\core\models;
 
 use gplcart\core\Config;
 use gplcart\core\Hook;
+use gplcart\core\interfaces\Crud as CrudInterface;
 use gplcart\core\models\Cart as CartModel;
 use gplcart\core\models\Price as PriceModel;
 use gplcart\core\models\PriceRule as PriceRuleModel;
@@ -20,7 +21,7 @@ use gplcart\core\models\User as UserModel;
 /**
  * Manages basic behaviors and data related to store orders
  */
-class Order
+class Order implements CrudInterface
 {
 
     /**

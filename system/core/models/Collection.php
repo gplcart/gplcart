@@ -11,6 +11,7 @@ namespace gplcart\core\models;
 
 use gplcart\core\Config;
 use gplcart\core\Hook;
+use gplcart\core\interfaces\Crud as CrudInterface;
 use gplcart\core\models\Translation as TranslationModel;
 use gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\traits\Translation as TranslationTrait;
@@ -18,7 +19,7 @@ use gplcart\core\traits\Translation as TranslationTrait;
 /**
  * Manages basic behaviors and data related to collections
  */
-class Collection
+class Collection implements CrudInterface
 {
 
     use TranslationTrait;

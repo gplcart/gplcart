@@ -9,26 +9,27 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Hook,
-    gplcart\core\Config;
-use gplcart\core\models\Sku as SkuModel,
-    gplcart\core\models\File as FileModel,
-    gplcart\core\models\Alias as AliasModel,
-    gplcart\core\models\Price as PriceModel,
-    gplcart\core\models\Search as SearchModel,
-    gplcart\core\models\PriceRule as PriceRuleModel,
-    gplcart\core\models\ProductField as ProductFieldModel,
-    gplcart\core\models\Translation as TranslationModel,
-    gplcart\core\models\ProductRelation as ProductRelationModel,
-    gplcart\core\models\TranslationEntity as TranslationEntityModel;
-use gplcart\core\traits\Image as ImageTrait,
-    gplcart\core\traits\Alias as AliasTrait,
-    gplcart\core\traits\Translation as TranslationTrait;
+use gplcart\core\Config;
+use gplcart\core\Hook;
+use gplcart\core\interfaces\Crud as CrudInterface;
+use gplcart\core\models\Alias as AliasModel;
+use gplcart\core\models\File as FileModel;
+use gplcart\core\models\Price as PriceModel;
+use gplcart\core\models\PriceRule as PriceRuleModel;
+use gplcart\core\models\ProductField as ProductFieldModel;
+use gplcart\core\models\ProductRelation as ProductRelationModel;
+use gplcart\core\models\Search as SearchModel;
+use gplcart\core\models\Sku as SkuModel;
+use gplcart\core\models\Translation as TranslationModel;
+use gplcart\core\models\TranslationEntity as TranslationEntityModel;
+use gplcart\core\traits\Alias as AliasTrait;
+use gplcart\core\traits\Image as ImageTrait;
+use gplcart\core\traits\Translation as TranslationTrait;
 
 /**
  * Manages basic behaviors and data related to products
  */
-class Product
+class Product implements CrudInterface
 {
 
     use ImageTrait,

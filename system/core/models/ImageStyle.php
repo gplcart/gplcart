@@ -10,14 +10,15 @@
 namespace gplcart\core\models;
 
 use Exception;
-use gplcart\core\Hook,
-    gplcart\core\Config,
-    gplcart\core\Handler;
+use gplcart\core\Config;
+use gplcart\core\Handler;
+use gplcart\core\Hook;
+use gplcart\core\interfaces\Crud as CrudInterface;
 
 /**
  * Manages basic behaviors and data related to image styles
  */
-class ImageStyle
+class ImageStyle implements CrudInterface
 {
 
     /**

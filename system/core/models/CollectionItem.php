@@ -10,16 +10,17 @@
 namespace gplcart\core\models;
 
 use Exception;
-use gplcart\core\Hook,
-    gplcart\core\Config,
-    gplcart\core\Handler;
-use gplcart\core\models\Collection as CollectionModel,
-    gplcart\core\models\Translation as TranslationModel;
+use gplcart\core\Config;
+use gplcart\core\Handler;
+use gplcart\core\Hook;
+use gplcart\core\interfaces\Crud as CrudInterface;
+use gplcart\core\models\Collection as CollectionModel;
+use gplcart\core\models\Translation as TranslationModel;
 
 /**
  * Manages basic behaviors and data related to collection items
  */
-class CollectionItem
+class CollectionItem implements CrudInterface
 {
 
     /**
@@ -52,8 +53,7 @@ class CollectionItem
      * @param TranslationModel $translation
      * @param CollectionModel $collection
      */
-    public function __construct(Hook $hook, Config $config, TranslationModel $translation,
-                                CollectionModel $collection)
+    public function __construct(Hook $hook, Config $config, TranslationModel $translation, CollectionModel $collection)
     {
         $this->hook = $hook;
         $this->db = $config->getDb();

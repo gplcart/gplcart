@@ -12,6 +12,7 @@ namespace gplcart\core\models;
 use gplcart\core\Config;
 use gplcart\core\helpers\Request as RequestHelper;
 use gplcart\core\Hook;
+use gplcart\core\interfaces\Crud as CrudInterface;
 use gplcart\core\models\Currency as CurrencyModel;
 use gplcart\core\models\Product as ProductModel;
 use gplcart\core\models\Translation as TranslationModel;
@@ -20,7 +21,7 @@ use gplcart\core\models\User as UserModel;
 /**
  * Manages basic behaviors and data related to shopping carts
  */
-class Cart
+class Cart implements CrudInterface
 {
 
     /**
@@ -356,11 +357,9 @@ class Cart
             return $cookie_user_id;
         }
 
-        $user_id = '_' . gplcart_string_random(6);
-        $lifespan = $this->getCookieLifespan();
-        $this->request->setCookie($cookie_name, $user_id, $lifespan);
-
-        return $user_id;
+        $generated_user_id = '_' . gplcart_string_random(6);
+        $this->request->setCookie($cookie_name, $generated_user_id, $this->getCookieLifespan());
+        return $generated_user_id;
     }
 
     /**

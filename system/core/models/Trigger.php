@@ -9,14 +9,15 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Hook,
-    gplcart\core\Config;
+use gplcart\core\Config;
+use gplcart\core\Hook;
+use gplcart\core\interfaces\Crud as CrudInterface;
 use gplcart\core\models\Condition as ConditionModel;
 
 /**
  * Manages basic behaviors and data related to triggers
  */
-class Trigger
+class Trigger implements CrudInterface
 {
 
     /**

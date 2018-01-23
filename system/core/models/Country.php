@@ -9,13 +9,14 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Hook,
-    gplcart\core\Config;
+use gplcart\core\Config;
+use gplcart\core\Hook;
+use gplcart\core\interfaces\Crud as CrudInterface;
 
 /**
  * Manages basic behaviors and data related to countries
  */
-class Country
+class Country implements CrudInterface
 {
 
     /**

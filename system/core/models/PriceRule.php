@@ -13,12 +13,13 @@ use Exception;
 use gplcart\core\Config;
 use gplcart\core\Handler;
 use gplcart\core\Hook;
+use gplcart\core\interfaces\Crud as CrudInterface;
 use gplcart\core\models\Trigger as TriggerModel;
 
 /**
  * Manages basic behaviors and data related to price rules
  */
-class PriceRule
+class PriceRule implements CrudInterface
 {
 
     /**
