@@ -9,6 +9,7 @@
 
 namespace gplcart\core;
 
+use Exception;
 use gplcart\core\exceptions\Route as RouteException;
 use gplcart\core\helpers\Cli as CliHelper;
 use gplcart\core\helpers\Server as ServerHelper;
@@ -206,7 +207,7 @@ class CliRoute
     {
         try {
             $callback = Handler::get($this->route, null, 'controller');
-            if (!$callback[0] instanceof \gplcart\core\CliController) {
+            if (!$callback[0] instanceof CliController) {
                 throw new RouteException('Controller must be instance of \gplcart\core\CliController');
             }
             call_user_func_array($callback, array());
