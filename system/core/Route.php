@@ -10,10 +10,10 @@
 namespace gplcart\core;
 
 use Exception;
-use gplcart\core\helpers\Url as UrlHelper,
-    gplcart\core\helpers\Request as RequestHelper,
-    gplcart\core\helpers\Response as ResponseHelper;
 use gplcart\core\exceptions\Route as RouteException;
+use gplcart\core\helpers\Request as RequestHelper;
+use gplcart\core\helpers\Response as ResponseHelper;
+use gplcart\core\helpers\Url as UrlHelper;
 
 /**
  * Routes incoming requests
@@ -83,7 +83,7 @@ class Route
      * @param ResponseHelper $response
      */
     public function __construct(Config $config, Hook $hook, UrlHelper $url, RequestHelper $request,
-            ResponseHelper $response)
+                                ResponseHelper $response)
     {
         $this->url = $url;
         $this->hook = $hook;
@@ -149,8 +149,8 @@ class Route
 
             $found = !empty($languages[$segments[0]]['status']) || $segments[0] === 'en';
             $this->langcode = $found ? $segments[0] : $default;
-            $is_default = ($this->langcode === $default);
 
+            $is_default = ($this->langcode === $default);
             $suffix = $is_default ? '' : $this->langcode;
 
             $this->request->setLangcode($suffix);

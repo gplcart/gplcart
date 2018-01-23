@@ -10,8 +10,8 @@
 namespace gplcart\core\models;
 
 use Exception;
-use gplcart\core\Hook;
 use gplcart\core\helpers\Convertor as ConvertorHelper;
+use gplcart\core\Hook;
 
 /**
  * Manages basic behaviors and data related to order dimensions

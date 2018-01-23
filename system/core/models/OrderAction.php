@@ -10,11 +10,11 @@
 namespace gplcart\core\models;
 
 use gplcart\core\Hook;
-use gplcart\core\models\Mail as MailModel,
-    gplcart\core\models\Cart as CartModel,
-    gplcart\core\models\Order as OrderModel,
-    gplcart\core\models\PriceRule as PriceRuleModel,
-    gplcart\core\models\Translation as TranslationModel;
+use gplcart\core\models\Cart as CartModel;
+use gplcart\core\models\Mail as MailModel;
+use gplcart\core\models\Order as OrderModel;
+use gplcart\core\models\PriceRule as PriceRuleModel;
+use gplcart\core\models\Translation as TranslationModel;
 
 /**
  * Manages basic behaviors and data related to order actions

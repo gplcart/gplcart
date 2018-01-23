@@ -9,12 +9,12 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Hook,
-    gplcart\core\Config;
+use gplcart\core\Config;
 use gplcart\core\helpers\Url as UrlHelper;
-use gplcart\core\models\Cart as CartModel,
-    gplcart\core\models\Translation as TranslationModel,
-    gplcart\core\models\WishlistAction as WishlistActionModel;
+use gplcart\core\Hook;
+use gplcart\core\models\Cart as CartModel;
+use gplcart\core\models\Translation as TranslationModel;
+use gplcart\core\models\WishlistAction as WishlistActionModel;
 
 /**
  * Manages basic behaviors and data related to shopping cart actions

@@ -9,10 +9,10 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Hook;
 use gplcart\core\helpers\Url as UrlHelper;
-use gplcart\core\models\Wishlist as WishlistModel,
-    gplcart\core\models\Translation as TranslationModel;
+use gplcart\core\Hook;
+use gplcart\core\models\Translation as TranslationModel;
+use gplcart\core\models\Wishlist as WishlistModel;
 
 /**
  * Manages basic behaviors and data related to wishlist actions

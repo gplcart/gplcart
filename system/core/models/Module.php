@@ -10,10 +10,10 @@
 namespace gplcart\core\models;
 
 use DirectoryIterator;
-use gplcart\core\Hook,
-    gplcart\core\Module as ModuleCore;
-use gplcart\core\traits\Dependency as DependencyTrait;
+use gplcart\core\Hook;
 use gplcart\core\models\Translation as TranslationModel;
+use gplcart\core\Module as ModuleCore;
+use gplcart\core\traits\Dependency as DependencyTrait;
 
 /**
  * Manages basic behaviors and data related to modules

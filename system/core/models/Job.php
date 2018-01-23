@@ -10,10 +10,10 @@
 namespace gplcart\core\models;
 
 use Exception;
-use gplcart\core\Hook,
-    gplcart\core\Handler;
-use gplcart\core\helpers\Url as UrlHelper,
-    gplcart\core\helpers\Session as SessionHelper;
+use gplcart\core\Handler;
+use gplcart\core\helpers\Session as SessionHelper;
+use gplcart\core\helpers\Url as UrlHelper;
+use gplcart\core\Hook;
 use gplcart\core\models\Translation as TranslationModel;
 
 /**
@@ -58,7 +58,7 @@ class Job
      * @param UrlHelper $url
      */
     public function __construct(Hook $hook, TranslationModel $translation, SessionHelper $session,
-            UrlHelper $url)
+                                UrlHelper $url)
     {
         $this->url = $url;
         $this->hook = $hook;
@@ -235,7 +235,7 @@ class Job
             call_user_func_array($callback, array(&$job));
         } catch (Exception $ex) {
             $job['status'] = false;
-            $job['errors'] ++;
+            $job['errors']++;
         }
     }
 

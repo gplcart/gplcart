@@ -10,9 +10,9 @@
 namespace gplcart\core\models;
 
 use Exception;
-use gplcart\core\Hook,
-    gplcart\core\Config,
-    gplcart\core\Handler;
+use gplcart\core\Config;
+use gplcart\core\Handler;
+use gplcart\core\Hook;
 use gplcart\core\models\Translation as TranslationModel;
 
 /**

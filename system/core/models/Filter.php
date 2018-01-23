@@ -9,9 +9,9 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Hook,
-    gplcart\core\Config;
+use gplcart\core\Config;
 use gplcart\core\helpers\Filter as FilterHelper;
+use gplcart\core\Hook;
 
 /**
  * Manages basic behaviors and data related to HTML filters

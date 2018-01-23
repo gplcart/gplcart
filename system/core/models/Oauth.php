@@ -9,16 +9,16 @@
 
 namespace gplcart\core\models;
 
-use Exception,
-    OutOfRangeException,
-    OutOfBoundsException,
-    UnexpectedValueException,
-    gplcart\core\exceptions\Dependency as DependencyException;
-use gplcart\core\Hook,
-    gplcart\core\Handler;
-use gplcart\core\helpers\Url as UrlHelper,
-    gplcart\core\helpers\Session as SessionHelper,
-    gplcart\core\helpers\Socket as SocketHelper;
+use Exception;
+use gplcart\core\exceptions\Dependency as DependencyException;
+use gplcart\core\Handler;
+use gplcart\core\helpers\Session as SessionHelper;
+use gplcart\core\helpers\Socket as SocketHelper;
+use gplcart\core\helpers\Url as UrlHelper;
+use gplcart\core\Hook;
+use OutOfBoundsException;
+use OutOfRangeException;
+use UnexpectedValueException;
 
 /**
  * Manages basic behaviors and data related to Oauth 2.0 functionality

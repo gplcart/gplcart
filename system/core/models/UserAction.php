@@ -9,12 +9,12 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Hook,
-    gplcart\core\Config;
-use gplcart\core\models\Mail as MailModel,
-    gplcart\core\models\User as UserModel,
-    gplcart\core\models\Translation as TranslationModel;
+use gplcart\core\Config;
 use gplcart\core\helpers\Session as SessionHelper;
+use gplcart\core\Hook;
+use gplcart\core\models\Mail as MailModel;
+use gplcart\core\models\Translation as TranslationModel;
+use gplcart\core\models\User as UserModel;
 
 /**
  * Manages basic behaviors and data related to user actions

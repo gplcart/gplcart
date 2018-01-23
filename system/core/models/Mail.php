@@ -10,8 +10,8 @@
 namespace gplcart\core\models;
 
 use Exception;
-use gplcart\core\Hook,
-    gplcart\core\Handler;
+use gplcart\core\Handler;
+use gplcart\core\Hook;
 
 /**
  * Manages basic behaviors and data related to sending e-mails

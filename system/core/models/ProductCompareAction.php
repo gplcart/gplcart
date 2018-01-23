@@ -9,10 +9,10 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Hook;
 use gplcart\core\helpers\Url as UrlHelper;
-use gplcart\core\models\Translation as TranslationModel,
-    gplcart\core\models\ProductCompare as ProductCompareModel;
+use gplcart\core\Hook;
+use gplcart\core\models\ProductCompare as ProductCompareModel;
+use gplcart\core\models\Translation as TranslationModel;
 
 /**
  * Manages basic behaviors and data related to product comparison

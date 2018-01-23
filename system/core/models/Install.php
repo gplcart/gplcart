@@ -10,11 +10,11 @@
 namespace gplcart\core\models;
 
 use Exception;
-use gplcart\core\Hook,
-    gplcart\core\Handler,
-    gplcart\core\Database,
-    gplcart\core\Module as ModuleCore;
+use gplcart\core\Database;
+use gplcart\core\Handler;
+use gplcart\core\Hook;
 use gplcart\core\models\Translation as TranslationModel;
+use gplcart\core\Module as ModuleCore;
 
 /**
  * Manages basic behaviors and data related to system installation

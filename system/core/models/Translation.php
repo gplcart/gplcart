@@ -9,8 +9,8 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Hook,
-    gplcart\core\Module as ModuleCore;
+use gplcart\core\Hook;
+use gplcart\core\Module as ModuleCore;
 
 /**
  * Manages basic behaviors and data related to UI translations
