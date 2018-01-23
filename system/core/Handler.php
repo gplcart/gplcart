@@ -9,11 +9,11 @@
 
 namespace gplcart\core;
 
-use Exception,
-    OutOfRangeException,
-    BadMethodCallException,
-    InvalidArgumentException;
+use BadMethodCallException;
+use Exception;
 use gplcart\core\exceptions\Handler as HandlerException;
+use InvalidArgumentException;
+use OutOfRangeException;
 
 /**
  * Provides methods to retrieve and execute handlers

@@ -9,8 +9,8 @@
 
 namespace gplcart\core;
 
-use InvalidArgumentException;
 use gplcart\core\exceptions\Access as AccessException;
+use InvalidArgumentException;
 
 /**
  * Base parent CLI controller

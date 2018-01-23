@@ -112,10 +112,10 @@ class Config
     protected function setLogger()
     {
         $this->logger->setDb($this->db)
-                ->printError($this->get('error_print', false))
-                ->logBacktrace($this->get('error_log_backtrace', true))
-                ->printBacktrace($this->get('error_print_backtrace', false))
-                ->errorToException($this->get('error_to_exception', false));
+            ->printError($this->get('error_print', false))
+            ->logBacktrace($this->get('error_log_backtrace', true))
+            ->printBacktrace($this->get('error_print_backtrace', false))
+            ->errorToException($this->get('error_to_exception', false));
     }
 
     /**

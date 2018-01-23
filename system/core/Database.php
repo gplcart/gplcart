@@ -9,10 +9,10 @@
 
 namespace gplcart\core;
 
-use PDO;
-use Exception,
-    OutOfRangeException;
+use Exception;
 use gplcart\core\exceptions\Database as DatabaseException;
+use OutOfRangeException;
+use PDO;
 
 /**
  * Provides methods to work with the database

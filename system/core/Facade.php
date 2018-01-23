@@ -9,8 +9,8 @@
 
 namespace gplcart\core;
 
-use gplcart\core\helpers\Url as UrlHelper,
-    gplcart\core\helpers\Session as SessionHelper;
+use gplcart\core\helpers\Session as SessionHelper;
+use gplcart\core\helpers\Url as UrlHelper;
 
 /**
  * An intermediary class that provides methods to route incoming requests and setup the system
@@ -63,7 +63,7 @@ class Facade
      * @param UrlHelper $url
      */
     public function __construct(Config $config, Hook $hook, CliRoute $cli, Route $route,
-            SessionHelper $session, UrlHelper $url)
+                                SessionHelper $session, UrlHelper $url)
     {
         $this->url = $url;
         $this->cli = $cli;

@@ -9,9 +9,9 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\models\Page as PageModel,
-    gplcart\core\models\Category as CategoryModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\models\Category as CategoryModel;
+use gplcart\core\models\Page as PageModel;
 
 /**
  * Provides methods to validate page data

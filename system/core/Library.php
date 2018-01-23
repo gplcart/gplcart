@@ -256,7 +256,7 @@ class Library
                 return preg_replace('/^[\D\\s]+/', '', $version[1]);
             }
 
-            $library['version_source']['lines'] --;
+            $library['version_source']['lines']--;
         }
 
         fclose($handle);

@@ -9,11 +9,11 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Alias as AliasModel,
-    gplcart\core\models\Category as CategoryModel,
-    gplcart\core\models\CategoryGroup as CategoryGroupModel,
-    gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Alias as AliasModel;
+use gplcart\core\models\Category as CategoryModel;
+use gplcart\core\models\CategoryGroup as CategoryGroupModel;
+use gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\traits\Category as CategoryTrait;
 
 /**
@@ -73,7 +73,7 @@ class Category extends BackendController
      * @param TranslationEntityModel $translation_entity
      */
     public function __construct(CategoryModel $category, AliasModel $alias,
-            CategoryGroupModel $category_group, TranslationEntityModel $translation_entity)
+                                CategoryGroupModel $category_group, TranslationEntityModel $translation_entity)
     {
         parent::__construct();
 
@@ -283,8 +283,8 @@ class Category extends BackendController
     protected function canDeleteCategory()
     {
         return isset($this->data_category['category_id'])//
-                && $this->category->canDelete($this->data_category['category_id'])//
-                && $this->access('category_delete');
+            && $this->category->canDelete($this->data_category['category_id'])//
+            && $this->access('category_delete');
     }
 
     /**
@@ -364,12 +364,7 @@ class Category extends BackendController
         $this->setSubmitted('update', $this->data_category);
         $this->setSubmitted('category_group_id', $this->data_category_group['category_group_id']);
 
-        if (empty($this->data_category['category_id'])) {
-            $this->setSubmitted('user_id', $this->uid);
-        }
-
         $this->validateComponent('category');
-
         return !$this->hasErrors();
     }
 

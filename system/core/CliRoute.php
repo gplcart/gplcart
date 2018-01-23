@@ -9,9 +9,9 @@
 
 namespace gplcart\core;
 
-use gplcart\core\helpers\Cli as CliHelper,
-    gplcart\core\helpers\Server as ServerHelper;
 use gplcart\core\exceptions\Route as RouteException;
+use gplcart\core\helpers\Cli as CliHelper;
+use gplcart\core\helpers\Server as ServerHelper;
 
 /**
  * Routes CLI commands

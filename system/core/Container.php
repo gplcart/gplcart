@@ -9,8 +9,8 @@
 
 namespace gplcart\core;
 
-use ReflectionClass,
-    ReflectionException;
+use ReflectionClass;
+use ReflectionException;
 
 /**
  * Dependency injection container

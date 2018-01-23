@@ -9,8 +9,8 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Alias as AliasModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Alias as AliasModel;
 
 /**
  * Handles incoming requests and outputs data related to the URL aliases
@@ -56,8 +56,8 @@ class Alias extends BackendController
         $this->setFilterListAlias();
         $this->setPagerListAlias();
 
-        $this->setData('entities', $this->alias->getEntities());
         $this->setData('aliases', $this->getListAlias());
+        $this->setData('handlers', $this->alias->getHandlers());
         $this->outputListAlias();
     }
 
