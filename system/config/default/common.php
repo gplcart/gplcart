@@ -29,8 +29,6 @@ $config = array();
 # $config['cart_preview_limit']                   = 5; // Max number of cart items to display in cart preview
 # $config['cart_sku_limit']                       = 10; // Max number of cart items per SKU that customer may have
 # $config['cart_item_limit']                      = 20; // Max total number of cart items that customer may have
-# $config['category_alias_pattern']               = '%t.html'; // Pattern to generate category alias
-# $config['category_alias_placeholder']           = array('%t' => 'title'); // Replacement rule to generate category alias
 # $config['category_image_dirname']               = 'category'; // Default folder for uploaded category images
 # $config['cron_interval']                        = 24*60*60; // Interval between cron executions, in seconds
 # $config['cron_key']                             = ''; // Cron secret key
@@ -60,11 +58,7 @@ $config = array();
 # $config['order_log_limit']                      = 5; // Max order log records to display for admin
 # $config['order_size_unit']                      = 'mm'; // Default order size unit
 # $config['order_weight_unit']                    = 'g'; // Default order weight unit
-# $config['page_alias_pattern']                   = '%t.html'; // Pattern to generate page alias
-# $config['page_alias_placeholder']               = array('%t' => 'title'); // Replacement rule to generate page alias
 # $config['page_image_dirname']                   = 'page'; // Default folder for uploaded page images
-# $config['product_alias_pattern']                = '%t.html'; // Pattern to generate product alias
-# $config['product_alias_placeholder']            = array('%t' => 'title'); // Replacement rule to generate product alias
 # $config['product_compare_cookie_lifespan']      = 30*24*60*60; // Max number of seconds to keeps products to compare in cookie
 # $config['product_compare_limit']                = 10; // Max number of products to compare
 # $config['product_height']                       = 0; // Default product height (dimension)
