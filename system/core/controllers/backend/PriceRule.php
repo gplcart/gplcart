@@ -215,7 +215,7 @@ class PriceRule extends BackendController
      */
     protected function getTriggersPriceRule()
     {
-        $list = $this->trigger->getList();
+        $list = (array) $this->trigger->getList();
 
         foreach ($list as &$item) {
             if (empty($item['status'])) {
