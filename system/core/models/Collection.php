@@ -209,7 +209,9 @@ class Collection implements CrudInterface
             return false;
         }
 
-        if ($this->db->delete('collection', array('collection_id' => $collection_id))) {
+        $result = $this->db->delete('collection', array('collection_id' => $collection_id));
+
+        if ($result) {
             $this->deleteLinked($collection_id);
         }
 
