@@ -9,10 +9,12 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Hook,
-    gplcart\core\Route,
-    gplcart\core\Config;
+use Exception;
+use gplcart\core\Config;
+use gplcart\core\Handler;
+use gplcart\core\Hook;
 use gplcart\core\models\Language as LanguageModel;
+use gplcart\core\Route;
 
 /**
  * Manages basic behaviors and data related to URL aliases
@@ -103,29 +105,12 @@ class Alias
         }
 
         $condition['limit'] = array(0, 1);
+
         $list = (array) $this->getList($condition);
         $result = empty($list) ? array() : reset($list);
 
         $this->hook->attach('alias.get.after', $condition, $result, $this);
         return (array) $result;
-    }
-
-    /**
-     * Returns an alias for the entity
-     * @param string $entity
-     * @param int $entity_id
-     * @return null|string
-     */
-    public function getByEntity($entity, $entity_id)
-    {
-        $conditions = array(
-            'entity' => $entity,
-            'entity_id' => $entity_id
-        );
-
-        $alias = $this->get($conditions);
-
-        return isset($alias['alias']) ? $alias['alias'] : null;
     }
 
     /**
@@ -208,7 +193,7 @@ class Alias
         $allowed_sort = array('entity_id', 'entity', 'alias', 'alias_id');
 
         if (isset($options['sort'])
-            && in_array($options['sort'], $allowed_sort)//
+            && in_array($options['sort'], $allowed_sort)
             && isset($options['order'])
             && in_array($options['order'], $allowed_order)) {
             $sql .= " ORDER BY {$options['sort']} {$options['order']}";
@@ -231,16 +216,7 @@ class Alias
     }
 
     /**
-     * Returns a array of entities
-     * @return array
-     */
-    public function getEntities()
-    {
-        return $this->db->fetchColumnAll('SELECT entity FROM alias GROUP BY entity');
-    }
-
-    /**
-     * Creates an alias using an array of data
+     * Generate a URL alias using a pattern and an array of data
      * @param string $pattern
      * @param array $options
      * @return string
@@ -277,34 +253,36 @@ class Alias
 
     /**
      * Generates an alias for an entity
-     * @param string $entity_name
+     * @param string $entity
      * @param array $data
-     * @return string
+     * @return string|null
      */
-    public function generateEntity($entity_name, array $data)
+    public function generateEntity($entity, array $data)
     {
-        $data += array('placeholders' => $this->getEntityPatternPlaceholders($entity_name));
-        return $this->generate($this->getEntityPattern($entity_name), $data);
+        $handlers = $this->getHandlers();
+
+        if (isset($handlers[$entity]['mapping']) && isset($handlers[$entity]['pattern'])) {
+            $data += array('placeholders' => $handlers[$entity]['mapping']);
+            return $this->generate($handlers[$entity]['pattern'], $data);
+        }
+
+        return null;
     }
 
     /**
-     * Returns default entity alias pattern
-     * @param string $entity_name
-     * @return string
-     */
-    public function getEntityPattern($entity_name)
-    {
-        return $this->config->get("{$entity_name}_alias_pattern", '%t.html');
-    }
-
-    /**
-     * Returns default entity alias placeholders
-     * @param string $entity_name
+     * Returns an array of entity data
+     * @param string $entity
+     * @param int $entity_id
      * @return array
      */
-    public function getEntityPatternPlaceholders($entity_name)
+    public function loadEntity($entity, $entity_id)
     {
-        return $this->config->get("{$entity_name}_alias_placeholder", array('%t' => 'title'));
+        try {
+            $handlers = $this->getHandlers();
+            return Handler::call($handlers, $entity, 'data', array($entity_id));
+        } catch (Exception $ex) {
+            return array();
+        }
     }
 
     /**
@@ -345,6 +323,35 @@ class Alias
         }
 
         return (bool) $this->get(array('alias' => $path));
+    }
+
+    /**
+     * Returns an array of alias handlers
+     * @return array
+     */
+    public function getHandlers()
+    {
+        $handlers = &gplcart_static('alias.handlers');
+
+        if (isset($handlers)) {
+            return $handlers;
+        }
+
+        $handlers = gplcart_config_get(GC_FILE_CONFIG_ALIAS);
+
+        $this->hook->attach('alias.handlers', $handlers);
+        return $handlers;
+    }
+
+    /**
+     * Whether the entity is supported for creating URL aliases
+     * @param string $entity
+     * @return bool
+     */
+    public function isSupportedEntity($entity)
+    {
+        $handlers = $this->getHandlers();
+        return !empty($handlers[$entity]);
     }
 
 }
