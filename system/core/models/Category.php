@@ -304,9 +304,12 @@ class Category implements CrudInterface
             return false;
         }
 
-        $this->deleteLinked($category_id);
+        $result = $this->db->delete('category', array('category_id' => $category_id));
 
-        $result = true;
+        if ($result) {
+            $this->deleteLinked($category_id);
+        }
+
         $this->hook->attach('category.delete.after', $category_id, $check, $result, $this);
         return (bool) $result;
     }
@@ -332,7 +335,6 @@ class Category implements CrudInterface
      */
     protected function deleteLinked($category_id)
     {
-        $this->db->delete('category', array('category_id' => $category_id));
         $this->db->delete('category_translation', array('category_id' => $category_id));
         $this->db->delete('file', array('entity' => 'category', 'entity_id' => $category_id));
         $this->db->delete('alias', array('entity' => 'category', 'entity_id' => $category_id));
