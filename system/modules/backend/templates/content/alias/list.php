@@ -64,7 +64,7 @@
           <th>
             <select name="entity" class="form-control">
               <option value=""><?php echo $this->text('Any'); ?></option>
-              <?php foreach ($entities as $entity) { ?>
+              <?php foreach (array_keys($handlers) as $entity) { ?>
               <option value="<?php echo $this->e($entity); ?>"<?php echo $filter_entity == $entity ? ' selected' : '' ?>>
                 <?php echo $this->text(ucfirst($entity)); ?>
               </option>
