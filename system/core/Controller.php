@@ -1618,7 +1618,7 @@ abstract class Controller
     protected function prepareOutput(&$templates, array &$options)
     {
         if (!empty($this->http_status)) {
-            $title = (string) $this->response->getStatuses($this->http_status);
+            $title = (string) $this->response->getStatus($this->http_status);
             $this->setTitle($title, false);
             $templates = "common/status/{$this->http_status}";
             $options['headers'] = $this->http_status;

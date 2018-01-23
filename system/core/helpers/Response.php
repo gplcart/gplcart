@@ -46,7 +46,7 @@ class Response
     public function addHeader($name, $value = null)
     {
         if (is_numeric($name)) {
-            $status = $this->getStatuses($name);
+            $status = $this->getStatus($name);
             if (!empty($status)) {
                 $this->headers[] = "{$_SERVER['SERVER_PROTOCOL']} $name $status";
             }
@@ -75,11 +75,11 @@ class Response
     }
 
     /**
-     * Returns an array of standard HTTP statuses
+     * Returns a single status message or an array of HTTP statuses keyed by code
      * @param null|int $status
      * @return array|string
      */
-    public function getStatuses($status = null)
+    public function getStatus($status = null)
     {
         $statuses = array(
             100 => 'Continue',
@@ -139,8 +139,8 @@ class Response
     public function outputHtml($html, $options = array())
     {
         $this->addHeader('Content-Type', 'text/html; charset=utf-8')
-                ->addOptionalHeaders($options)
-                ->sendHeaders();
+            ->addOptionalHeaders($options)
+            ->sendHeaders();
 
         echo $html;
         exit;
@@ -154,8 +154,8 @@ class Response
     public function outputJson($data, $options = array())
     {
         $this->addHeader('Content-Type', 'application/json')
-                ->addOptionalHeaders($options)
-                ->sendHeaders();
+            ->addOptionalHeaders($options)
+            ->sendHeaders();
 
         echo gplcart_json_encode($data);
         exit;
@@ -183,14 +183,14 @@ class Response
         $size = $readfile ? filesize($file) : strlen($file);
 
         $this->addHeader('Expires', 0)
-                ->addHeader('Pragma', 'public')
-                ->addHeader('Content-Length', $size)
-                ->addHeader('Cache-Control', 'must-revalidate')
-                ->addHeader('Content-Description', 'File Transfer')
-                ->addHeader('Content-Type', 'application/octet-stream')
-                ->addHeader('Content-Disposition', 'attachment; filename=' . $filename)
-                ->addOptionalHeaders($options)
-                ->sendHeaders();
+            ->addHeader('Pragma', 'public')
+            ->addHeader('Content-Length', $size)
+            ->addHeader('Cache-Control', 'must-revalidate')
+            ->addHeader('Content-Description', 'File Transfer')
+            ->addHeader('Content-Type', 'application/octet-stream')
+            ->addHeader('Content-Disposition', 'attachment; filename=' . $filename)
+            ->addOptionalHeaders($options)
+            ->sendHeaders();
 
         if ($readfile) {
             readfile($file);
@@ -202,49 +202,50 @@ class Response
     }
 
     /**
-     * Output 403 error page
-     * @param bool $message
+     * Output an HTTP status and abort script execution
+     * @param int $code
+     * @param null|string $message
      */
-    public function outputError403($message = true)
+    public function outputStatus($code, $message = null)
     {
-        $this->addHeader(403)->sendHeaders();
+        $this->addHeader($code)->sendHeaders();
 
-        if ($message) {
-            echo $this->getError403();
+        if (isset($message)) {
+            echo $message;
         }
 
         exit;
+    }
+
+    /**
+     * Output 403 error page
+     * @param bool $show_message
+     */
+    public function outputError403($show_message = true)
+    {
+        $message = $show_message ? $this->getError403() : null;
+        $this->outputStatus(403, $message);
     }
 
     /**
      * Output 404 error page
-     * @param boolean $message
+     * @param bool $show_message
      */
-    public function outputError404($message = true)
+    public function outputError404($show_message = true)
     {
-        $this->addHeader(404)->sendHeaders();
-
-        if ($message) {
-            echo $this->getError404();
-        }
-
-        exit;
+        $message = $show_message ? $this->getError404() : null;
+        $this->outputStatus(404, $message);
     }
 
     /**
      * Output 500 error page
-     * @param bool $message
+     * @param bool $show_message
      * @param string $error
      */
-    public function outputError500($message = true, $error = '')
+    public function outputError500($show_message = true, $error = '')
     {
-        $this->addHeader(500)->sendHeaders();
-
-        if ($message) {
-            echo $this->getError500($error);
-        }
-
-        exit;
+        $message = $show_message ? $this->getError500($error) : null;
+        $this->outputStatus(500, $message);
     }
 
     /**
