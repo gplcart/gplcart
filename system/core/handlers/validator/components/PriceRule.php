@@ -10,11 +10,11 @@
 namespace gplcart\core\handlers\validator\components;
 
 use Exception;
-use gplcart\core\models\Price as PriceModel,
-    gplcart\core\models\Trigger as TriggerModel,
-    gplcart\core\models\Currency as CurrencyModel,
-    gplcart\core\models\PriceRule as PriceRuleModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\models\Currency as CurrencyModel;
+use gplcart\core\models\Price as PriceModel;
+use gplcart\core\models\PriceRule as PriceRuleModel;
+use gplcart\core\models\Trigger as TriggerModel;
 
 /**
  * Provides methods to validate price rule data
@@ -77,6 +77,7 @@ class PriceRule extends ComponentValidator
         $this->validatePriceRule();
         $this->validateName();
         $this->validateWeight();
+        $this->validateStatus();
         $this->validateUsedPriceRule();
         $this->validateTriggerPriceRule();
         $this->validateCurrencyPriceRule();
