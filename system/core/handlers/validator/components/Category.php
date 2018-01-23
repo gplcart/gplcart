@@ -9,9 +9,9 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\models\Category as CategoryModel,
-    gplcart\core\models\CategoryGroup as CategoryGroupModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\models\Category as CategoryModel;
+use gplcart\core\models\CategoryGroup as CategoryGroupModel;
 
 /**
  * Provides methods to validate various data related to categories
@@ -64,7 +64,6 @@ class Category extends ComponentValidator
         $this->validateGroupCategory();
         $this->validateParentCategory();
         $this->validateTranslation();
-        $this->validateUserId();
         $this->validateImages();
         $this->validateAlias();
         $this->validateUploadImages('category');
