@@ -10,7 +10,7 @@
 ?>
 <form method="post" id="edit-collection-item" class="form-horizontal">
   <input type="hidden" name="token" value="<?php echo $_token; ?>">
-  <input type="hidden" name="collection_item[value]" value="<?php echo isset($collection_item['value']) ? $collection_item['value'] : ''; ?>">
+  <input type="hidden" name="collection_item[entity_id]" value="<?php echo isset($collection_item['entity_id']) ? $collection_item['entity_id'] : ''; ?>">
   <div class="form-group">
     <label class="col-md-2 control-label">
       <?php echo $this->text('Status'); ?>
@@ -29,14 +29,14 @@
       </div>
     </div>
   </div>
-  <div class="form-group required<?php echo $this->error('value', ' has-error'); ?>">
+  <div class="form-group required<?php echo $this->error('entity_id', ' has-error'); ?>">
     <label class="col-md-2 control-label">
       <?php echo $this->e($handler['title']); ?>
     </label>
     <div class="col-md-4">
       <input name="collection_item[title]" class="form-control" value="<?php echo isset($collection_item['title']) ? $collection_item['title'] : ''; ?>">
       <div class="help-block">
-        <?php echo $this->error('value'); ?>
+        <?php echo $this->error('entity_id'); ?>
         <div class="text-muted">
           <?php echo $this->text('Start to type in the field an entity title to get suggestions or enter a numeric entity ID'); ?>
           <?php if($this->access('file_add') && $this->access('file_upload')) { ?>

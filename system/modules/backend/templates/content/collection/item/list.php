@@ -54,6 +54,7 @@
           <th><?php echo $this->text('Title'); ?></th>
           <th><?php echo $this->text('Status'); ?></th>
           <th><?php echo $this->text('Entity status'); ?></th>
+          <th><?php echo $this->text('Entity ID'); ?></th>
           <th><?php echo $this->text('Weight'); ?></th>
           <th></th>
         </tr>
@@ -79,6 +80,9 @@
             <?php } else { ?>
             <i class="fa fa-check-square-o"></i>
             <?php } ?>
+          </td>
+          <td class="middle">
+            <?php echo $this->e($item['collection_item']['entity_id']); ?>
           </td>
           <td class="middle">
             <?php echo $this->e($item['collection_item']['weight']); ?>
