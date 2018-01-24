@@ -144,7 +144,7 @@ return array(
         'fields' => array(
             'collection_item_id' => array('type' => 'integer', 'length' => 10, 'auto_increment' => true, 'primary' => true),
             'collection_id' => array('type' => 'integer', 'length' => 10, 'not_null' => true),
-            'value' => array('type' => 'integer', 'length' => 10, 'not_null' => true),
+            'entity_id' => array('type' => 'integer', 'length' => 10, 'not_null' => true),
             'weight' => array('type' => 'integer', 'length' => 2, 'not_null' => true, 'default' => 0),
             'status' => array('type' => 'integer', 'length' => 1, 'not_null' => true, 'default' => 0),
             'data' => array('type' => 'blob', 'not_null' => true, 'serialize' => true),
