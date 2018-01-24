@@ -183,7 +183,6 @@ class Bookmark
         $data += array('path' => $path);
 
         $bookmark = $this->get($data);
-
         return empty($bookmark) ? (bool) $this->add($data) : false;
     }
 
