@@ -9,20 +9,15 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\models\Field as FieldModel,
-    gplcart\core\models\FieldValue as FieldValueModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\models\Field as FieldModel;
+use gplcart\core\models\FieldValue as FieldValueModel;
 
 /**
  * Provides methods to validate field data
  */
 class FieldValue extends ComponentValidator
 {
-
-    /**
-     * Path for uploaded field value files that is relative to main file directory
-     */
-    const UPLOAD_PATH = 'image/upload/field_value';
 
     /**
      * Field model instance
@@ -66,8 +61,10 @@ class FieldValue extends ComponentValidator
         $this->validateFieldFieldValue();
         $this->validateColorFieldValue();
         $this->validateUploadImages('field_value');
+        $this->validateFileIdFieldValue();
 
         $this->unsetSubmitted('update');
+        $this->unsetSubmitted('field');
 
         return $this->getResult();
     }
@@ -128,7 +125,7 @@ class FieldValue extends ComponentValidator
 
         $field_data = $this->field->get($value);
 
-        if (empty($field_data['field_id'])) {
+        if (empty($field_data)) {
             $this->setErrorUnavailable($field, $label);
             return false;
         }
@@ -165,6 +162,46 @@ class FieldValue extends ComponentValidator
         // Assuming black is empty
         if ($value === '#000000') {
             $this->setSubmitted($field, '');
+        }
+
+        return true;
+    }
+
+    /**
+     * Validates file ID
+     * @return bool|null
+     */
+    protected function validateFileIdFieldValue()
+    {
+        $field = 'file_id';
+
+        if ($this->isExcluded($field)) {
+            return null;
+        }
+
+        $value = $this->getSubmitted($field);
+
+        if (!isset($value)) {
+            $this->unsetSubmitted($field);
+            return null;
+        }
+
+        $label = $this->translation->text('File');
+
+        if (!is_numeric($value)) {
+            $this->setErrorInteger($field, $label);
+            return false;
+        }
+
+        if (empty($value)) {
+            return null;
+        }
+
+        $file = $this->file->get($value);
+
+        if (empty($file)) {
+            $this->setErrorUnavailable($field, $label);
+            return false;
         }
 
         return true;
