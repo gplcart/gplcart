@@ -24,8 +24,7 @@ use gplcart\core\traits\Translation as TranslationTrait;
 class FieldValue implements CrudInterface
 {
 
-    use ImageTrait,
-        TranslationTrait;
+    use ImageTrait, TranslationTrait;
 
     /**
      * Database class instance
