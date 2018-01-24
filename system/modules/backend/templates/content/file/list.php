@@ -51,6 +51,11 @@
             </a>
           </th>
           <th>
+            <a href="<?php echo $sort_file_type; ?>">
+              <?php echo $this->text('Type'); ?> <i class="fa fa-sort"></i>
+            </a>
+          </th>
+          <th>
             <a href="<?php echo $sort_mime_type; ?>">
               <?php echo $this->text('MIME type'); ?> <i class="fa fa-sort"></i>
             </a>
@@ -80,9 +85,18 @@
         <tr class="filters active hidden-no-js">
           <th></th>
           <th></th>
-          <th><input class="form-control" name="title" value="<?php echo $filter_title; ?>" placeholder="<?php echo $this->text('Any'); ?>"></th>
-          <th><input class="form-control" name="mime_type_like" value="<?php echo $filter_mime_type_like; ?>" placeholder="<?php echo $this->text('Any'); ?>"></th>
-          <th><input class="form-control" name="path" value="<?php echo $filter_path; ?>" placeholder="<?php echo $this->text('Any'); ?>"></th>
+          <th>
+            <input class="form-control" name="title" value="<?php echo $filter_title; ?>" placeholder="<?php echo $this->text('Any'); ?>">
+          </th>
+          <th>
+            <input class="form-control" name="file_type" value="<?php echo $filter_file_type; ?>" placeholder="<?php echo $this->text('Any'); ?>">
+          </th>
+          <th>
+            <input class="form-control" name="mime_type_like" value="<?php echo $filter_mime_type_like; ?>" placeholder="<?php echo $this->text('Any'); ?>">
+          </th>
+          <th>
+            <input class="form-control" name="path" value="<?php echo $filter_path; ?>" placeholder="<?php echo $this->text('Any'); ?>">
+          </th>
           <th>
             <select name="entity" class="form-control">
               <option value=""><?php echo $this->text('Any'); ?></option>
@@ -108,7 +122,7 @@
       <tbody>
         <?php if ($_filtering && empty($files)) { ?>
         <tr>
-          <td colspan="8">
+          <td colspan="9">
             <?php echo $this->text('No results'); ?>
             <a href="<?php echo $this->url($_path); ?>" class="clear-filter"><?php echo $this->text('Reset'); ?></a>
           </td>
@@ -119,6 +133,7 @@
           <td class="middle"><input type="checkbox" class="select-all" name="action[items][]" value="<?php echo $id; ?>"<?php echo $access_actions ? '' : ' disabled'; ?>></td>
           <td class="middle"><?php echo $id; ?></td>
           <td class="middle"><?php echo $this->e($this->truncate($file['title'], 30)); ?></td>
+          <td class="middle"><?php echo $this->e($this->truncate($file['file_type'])); ?></td>
           <td class="middle"><?php echo $this->e($this->truncate($file['mime_type'])); ?></td>
           <td class="middle">
             <?php if (!empty($file['url'])) { ?>

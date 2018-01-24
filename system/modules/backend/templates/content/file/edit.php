@@ -57,7 +57,7 @@
     <?php } ?>
   </div>
   <?php } ?>
-  <div class="form-group<?php echo empty($file['file_id']) ? ' required' : ''; ?><?php echo $this->error('file', ' has-error'); ?>">
+  <div class="form-group<?php echo empty($file['file_id']) ? ' required' : ''; ?><?php echo $this->error('path', ' has-error'); ?>">
     <label class="col-md-2 control-label">
       <?php echo $this->text('File'); ?>
     </label>
@@ -65,7 +65,7 @@
       <?php if (empty($file['file_id'])) { ?>
       <input type="file" name="file" class="form-control">
       <div class="help-block">
-        <?php echo $this->error('file'); ?>
+        <?php echo $this->error('path'); ?>
         <div class="text-muted"><?php echo $this->text('Supported extensions: %list', array('%list' => implode(',', $extensions))); ?></div>
       </div>
       <?php } else { ?>
