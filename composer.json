@@ -1,39 +1,44 @@
 {
-    "name": "gplcart/gplcart",
-    "type": "project",
-    "description": "GPLCart",
-    "keywords": ["gplcart", "ecommerce", "shopping cart", "opensource shopping cart"],
-    "homepage": "http://www.gplcart.com",
-    "license": "GPL-3.0-or-later",
-    "authors": [
-        {
-            "name": "Iurii Makukh",
-            "email": "gplcart.software@gmail.com",
-            "role": "lead"
-        }
-    ],
-    "support": {
-        "issues": "https://github.com/gplcart/gplcart/issues"
-    },
-    "require": {
-        "php": ">=5.4.0",
-        "ext-gd": "*",
-        "ext-mbstring": "*",
-        "ext-pdo": "*",
-        "ext-fileinfo": "*",
-        "ext-openssl": "*",
-        "ext-spl": "*"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^5.7",
-        "phpunit/dbunit": "^2.0"
-    },
-    "autoload": {
-        "psr-4": {
-            "gplcart\\core\\": "system/core/",
-            "gplcart\\tests\\unit\\": "tests/unit/"
-        }
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+  "name": "gplcart/gplcart",
+  "type": "project",
+  "description": "GPLCart",
+  "keywords": [
+    "gplcart",
+    "ecommerce",
+    "shopping cart",
+    "opensource shopping cart"
+  ],
+  "homepage": "http://www.gplcart.com",
+  "license": "GPL-3.0-or-later",
+  "authors": [
+    {
+      "name": "Iurii Makukh",
+      "email": "gplcart.software@gmail.com",
+      "role": "lead"
+    }
+  ],
+  "support": {
+    "issues": "https://github.com/gplcart/gplcart/issues"
+  },
+  "require": {
+    "php": ">=5.4.0",
+    "ext-gd": "*",
+    "ext-mbstring": "*",
+    "ext-pdo": "*",
+    "ext-fileinfo": "*",
+    "ext-openssl": "*",
+    "ext-spl": "*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^5.7",
+    "phpunit/dbunit": "^2.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "gplcart\\core\\": "system/core/",
+      "gplcart\\tests\\unit\\": "tests/unit/"
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }
