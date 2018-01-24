@@ -9,9 +9,9 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\File as FileModel,
-    gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\File as FileModel;
+use gplcart\core\models\TranslationEntity as TranslationEntityModel;
 
 /**
  * Handles incoming requests and outputs data related to files
@@ -79,7 +79,7 @@ class File extends BackendController
      */
     protected function setFilterListFile()
     {
-        $filter = array('title', 'mime_type', 'file_id',
+        $filter = array('title', 'mime_type', 'mime_type_like', 'file_id',
             'created', 'path', 'entity', 'entity_id');
 
         $this->setFilter($filter);
@@ -239,8 +239,8 @@ class File extends BackendController
     protected function canDeleteFile()
     {
         return isset($this->data_file['file_id'])//
-                && $this->access('file_delete')//
-                && $this->file->canDelete($this->data_file['file_id']);
+            && $this->access('file_delete')//
+            && $this->file->canDelete($this->data_file['file_id']);
     }
 
     /**
