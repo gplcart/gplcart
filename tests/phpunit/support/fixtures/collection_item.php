@@ -10,7 +10,7 @@ return array(
     array(
         'collection_item_id' => 1,
         'collection_id' => 1,
-        'value' => 1,
+        'entity_id' => 1,
         'weight' => -9,
         'status' => 0,
         'data' => serialize(array('test' => 1)),
@@ -18,7 +18,7 @@ return array(
     array(
         'collection_item_id' => 2,
         'collection_id' => 2,
-        'value' => 2,
+        'entity_id' => 2,
         'weight' => 9,
         'status' => 1,
         'data' => serialize(array('test' => 2)),
