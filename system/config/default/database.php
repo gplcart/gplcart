@@ -179,7 +179,6 @@ return array(
             'field_value_id' => array('type' => 'integer', 'length' => 10, 'auto_increment' => true, 'primary' => true),
             'field_id' => array('type' => 'integer', 'length' => 10, 'not_null' => true),
             'weight' => array('type' => 'integer', 'length' => 2, 'not_null' => true, 'default' => 0),
-            'file_id' => array('type' => 'integer', 'length' => 10, 'not_null' => true, 'default' => 0),
             'color' => array('type' => 'varchar', 'length' => 10, 'not_null' => true, 'default' => ''),
             'title' => array('type' => 'varchar', 'length' => 255, 'not_null' => true),
         )
