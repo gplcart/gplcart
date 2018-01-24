@@ -13,12 +13,11 @@ use Exception;
 use gplcart\core\Config;
 use gplcart\core\Handler;
 use gplcart\core\Hook;
-use gplcart\core\interfaces\Crud as CrudInterface;
 
 /**
  * Manages basic behaviors and data related to image styles
  */
-class ImageStyle implements CrudInterface
+class ImageStyle
 {
 
     /**
