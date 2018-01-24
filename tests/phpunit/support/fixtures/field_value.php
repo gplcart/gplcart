@@ -11,7 +11,6 @@ return array(
         'field_value_id' => 1,
         'field_id' => 1,
         'weight' => -9,
-        'file_id' => 1,
         'color' => '#cccccc',
         'title' => 'Field value title 1'
     ),
@@ -19,7 +18,6 @@ return array(
         'field_value_id' => 2,
         'field_id' => 2,
         'weight' => 9,
-        'file_id' => 2,
         'color' => '#000000',
         'title' => 'Field value title 2'
     )
