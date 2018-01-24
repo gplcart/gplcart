@@ -10,11 +10,11 @@
 namespace gplcart\core\handlers\validator\components;
 
 use Exception;
-use gplcart\core\models\Page as PageModel,
-    gplcart\core\models\Product as ProductModel,
-    gplcart\core\models\Collection as CollectionModel,
-    gplcart\core\models\CollectionItem as CollectionItemModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\models\Collection as CollectionModel;
+use gplcart\core\models\CollectionItem as CollectionItemModel;
+use gplcart\core\models\Page as PageModel;
+use gplcart\core\models\Product as ProductModel;
 
 /**
  * Provides methods to validate collection item data
@@ -79,7 +79,7 @@ class CollectionItem extends ComponentValidator
         $this->validateWeight();
         $this->validateUrlCollectionItem();
         $this->validateCollectionCollectionItem();
-        $this->validateValueCollectionItem();
+        $this->validateEntityIdCollectionItem();
         $this->validateEntityCollectionItem();
         $this->validateData();
 
@@ -113,97 +113,6 @@ class CollectionItem extends ComponentValidator
     }
 
     /**
-     * Validates the collection data
-     * @return boolean
-     */
-    protected function validateCollectionCollectionItem()
-    {
-        $field = 'collection_id';
-
-        if ($this->isExcluded($field)) {
-            return null;
-        }
-
-        $collection_id = $this->getSubmitted($field);
-        $label = $this->translation->text('Collection ID');
-
-        if ($this->isUpdating() && !isset($collection_id)) {
-            return null;
-        }
-
-        if (empty($collection_id)) {
-            $this->setErrorRequired($field, $label);
-            return false;
-        }
-
-        if (!is_numeric($collection_id)) {
-            $this->setErrorNumeric($field, $label);
-            return false;
-        }
-
-        $collection = $this->collection->get($collection_id);
-
-        if (empty($collection['collection_id'])) {
-            $this->setErrorUnavailable($field, $label);
-            return false;
-        }
-
-        $this->setSubmitted('collection', $collection);
-        return true;
-    }
-
-    /**
-     * Validates submitted collection item value
-     * @return boolean|null
-     */
-    protected function validateValueCollectionItem()
-    {
-        $field = 'value';
-
-        if ($this->isExcluded($field)) {
-            return null;
-        }
-
-        $value = $this->getSubmitted($field);
-        $title = $this->getSubmitted('title');
-        $label = $this->translation->text('Value');
-
-        if ($this->isUpdating() && !isset($value)) {
-            return null;
-        }
-
-        if (ctype_digit($title)) {
-            $value = $title;
-        }
-
-        if (empty($value) || !ctype_digit($value)) {
-            $this->setErrorInvalid($field, $label);
-            return false;
-        }
-
-        $update = $this->getUpdating();
-
-        if (isset($update['collection_item_id']) && $update['value'] == $value) {
-            return null;
-        }
-
-        $conditions = array(
-            'type' => $this->getSubmitted('collection.type'),
-            'collection_id' => $this->getSubmitted('collection.collection_id')
-        );
-
-        $existing = $this->collection_item->getItems($conditions);
-
-        if (isset($existing[$value])) {
-            $this->setErrorExists($field, $label);
-            return false;
-        }
-
-        $this->setSubmitted('value', $value);
-        return true;
-    }
-
-    /**
      * Validates collection item URL
      * @return boolean
      */
@@ -220,6 +129,99 @@ class CollectionItem extends ComponentValidator
     }
 
     /**
+     * Validates the collection data
+     * @return boolean
+     */
+    protected function validateCollectionCollectionItem()
+    {
+        $field = 'collection_id';
+
+        if ($this->isExcluded($field)) {
+            return null;
+        }
+
+        $collection_id = $this->getSubmitted($field);
+
+        if ($this->isUpdating() && !isset($collection_id)) {
+            return null;
+        }
+
+        $label = $this->translation->text('Collection');
+
+        if (empty($collection_id)) {
+            $this->setErrorRequired($field, $label);
+            return false;
+        }
+
+        if (!is_numeric($collection_id)) {
+            $this->setErrorNumeric($field, $label);
+            return false;
+        }
+
+        $collection = $this->collection->get($collection_id);
+
+        if (empty($collection)) {
+            $this->setErrorUnavailable($field, $label);
+            return false;
+        }
+
+        $this->setSubmitted('collection', $collection);
+        return true;
+    }
+
+    /**
+     * Validates submitted collection item entity ID
+     * @return boolean|null
+     */
+    protected function validateEntityIdCollectionItem()
+    {
+        $field = 'entity_id';
+
+        if ($this->isExcluded($field)) {
+            return null;
+        }
+
+        $value = $this->getSubmitted($field);
+        $title = $this->getSubmitted('title');
+
+        if ($this->isUpdating() && !isset($value)) {
+            return null;
+        }
+
+        if (is_numeric($title)) {
+            $value = $title;
+        }
+
+        $label = $this->translation->text('Entity');
+
+        if (empty($value) || !is_numeric($value)) {
+            $this->setErrorInvalid($field, $label);
+            return false;
+        }
+
+        $update = $this->getUpdating();
+
+        if (isset($update['collection_item_id']) && $update[$field] == $value) {
+            return null;
+        }
+
+        $conditions = array(
+            'type' => $this->getSubmitted('collection.type'),
+            'collection_id' => $this->getSubmitted('collection.collection_id')
+        );
+
+        $existing = $this->collection_item->getItems($conditions);
+
+        if (isset($existing[$value])) {
+            $this->setErrorExists($field, $label);
+            return false;
+        }
+
+        $this->setSubmitted($field, $value);
+        return true;
+    }
+
+    /**
      * Validates collection item entities
      * @return boolean|null
      */
@@ -229,12 +231,30 @@ class CollectionItem extends ComponentValidator
             return null;
         }
 
-        $value = $this->getSubmitted('value');
+        $entity_id = $this->getSubmitted('entity_id');
         $collection = $this->getSubmitted('collection');
+        $collection_id = $this->getSubmitted('collection_id');
+
+        if (empty($collection)) {
+
+            if (!isset($collection_id)) {
+                $updating = $this->getUpdating();
+                if (isset($updating['collection_id'])) {
+                    $collection_id = $updating['collection_id'];
+                }
+            }
+
+            $collection = $this->collection->get($collection_id);
+        }
+
+        if (empty($collection['type'])) {
+            $this->setErrorUnavailable('collection_id', $this->translation->text('Collection'));
+            return false;
+        }
 
         try {
             $handlers = $this->collection->getHandlers();
-            $result = static::call($handlers, $collection['type'], 'validate', array($value));
+            $result = static::call($handlers, $collection['type'], 'validate', array($entity_id));
         } catch (Exception $ex) {
             $result = $ex->getMessage();
         }
@@ -243,10 +263,7 @@ class CollectionItem extends ComponentValidator
             return true;
         }
 
-        foreach ((array) $result as $key => $error) {
-            $this->setError($key, $error);
-        }
-
+        $this->setError('entity_id', implode('<br>', (array) $result));
         return false;
     }
 
