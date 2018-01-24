@@ -80,7 +80,7 @@ class File extends BackendController
     protected function setFilterListFile()
     {
         $filter = array('title', 'mime_type', 'mime_type_like', 'file_id',
-            'created', 'path', 'entity', 'entity_id');
+            'created', 'path', 'entity', 'entity_id', 'file_type');
 
         $this->setFilter($filter);
     }
@@ -215,6 +215,7 @@ class File extends BackendController
 
         $this->setData('file', $this->data_file);
         $this->setData('can_delete', $this->canDeleteFile());
+
         $this->setData('extensions', $this->file->supportedExtensions(true));
         $this->setData('languages', $this->language->getList(array('in_database' => true)));
 
@@ -238,8 +239,8 @@ class File extends BackendController
      */
     protected function canDeleteFile()
     {
-        return isset($this->data_file['file_id'])//
-            && $this->access('file_delete')//
+        return isset($this->data_file['file_id'])
+            && $this->access('file_delete')
             && $this->file->canDelete($this->data_file['file_id']);
     }
 
