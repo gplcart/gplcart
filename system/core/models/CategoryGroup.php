@@ -83,6 +83,7 @@ class CategoryGroup implements CrudInterface
 
         $condition['limit'] = array(0, 1);
         $list = (array) $this->getList($condition);
+
         $result = empty($list) ? array() : reset($list);
 
         $this->hook->attach('category.group.get.after', $condition, $result, $this);
@@ -182,6 +183,7 @@ class CategoryGroup implements CrudInterface
         }
 
         $result = $data['category_group_id'] = $this->db->insert('category_group', $data);
+
         $this->setTranslations($data, $this->translation_entity, 'category_group', false);
 
         $this->hook->attach('category.group.add.after', $data, $result, $this);
@@ -207,12 +209,23 @@ class CategoryGroup implements CrudInterface
             return false;
         }
 
-        $this->db->delete('category_group', array('category_group_id' => $category_group_id));
-        $this->db->delete('category_group_translation', array('category_group_id' => $category_group_id));
+        $result = $this->db->delete('category_group', array('category_group_id' => $category_group_id));
 
-        $result = true;
+        if ($result) {
+            $this->deleteLinked($category_group_id);
+        }
+
         $this->hook->attach('category.group.delete.after', $category_group_id, $check, $result, $this);
         return (bool) $result;
+    }
+
+    /**
+     * Delete all database records related to the category group ID
+     * @param int $category_group_id
+     */
+    protected function deleteLinked($category_group_id)
+    {
+        $this->db->delete('category_group_translation', array('category_group_id' => $category_group_id));
     }
 
     /**
