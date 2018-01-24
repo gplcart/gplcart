@@ -82,7 +82,7 @@ class File implements CrudInterface
         }
 
         if (empty($data['file_type'])) {
-            $data['file_type'] = strtok($data['mime_type'], '/');
+            $data['file_type'] = strtolower(strtok($data['mime_type'], '/'));
         }
 
         if (empty($data['title'])) {
@@ -236,7 +236,7 @@ class File implements CrudInterface
 
         $allowed_order = array('asc', 'desc');
         $allowed_sort = array('title', 'path', 'file_id', 'created',
-            'weight', 'mime_type', 'entity', 'entity_id');
+            'weight', 'mime_type', 'entity', 'entity_id', 'file_type');
 
         if (isset($options['sort'])
             && in_array($options['sort'], $allowed_sort)
@@ -361,9 +361,7 @@ class File implements CrudInterface
      */
     public function canDelete($file_id)
     {
-        $sql = 'SELECT NOT EXISTS (SELECT file_id FROM field_value WHERE file_id=:id)
-                AND NOT EXISTS (SELECT file_id FROM product_sku WHERE file_id=:id)';
-
+        $sql = 'SELECT NOT EXISTS (SELECT file_id FROM product_sku WHERE file_id=:id)';
         return (bool) $this->db->fetchColumn($sql, array('id' => (int) $file_id));
     }
 
