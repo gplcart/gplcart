@@ -9,8 +9,8 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\models\Field as FieldModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\models\Field as FieldModel;
 
 /**
  * Provides methods to validate field data
@@ -88,12 +88,22 @@ class Field extends ComponentValidator
     {
         $field = 'type';
 
-        if ($this->isUpdating() || $this->isExcluded($field)) {
-            return null; // Type will be ignored on update
+        if ($this->isExcluded($field)) {
+            return null;
         }
 
         $value = $this->getSubmitted($field);
         $label = $this->translation->text('Type');
+
+        if ($this->isUpdating()) {
+
+            if (isset($value)) {
+                $this->setErrorInvalid($field, $label); // Cannot update field typeS
+                return false;
+            }
+
+            return null;
+        }
 
         if (empty($value)) {
             $this->setErrorRequired($field, $label);
