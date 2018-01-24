@@ -191,7 +191,7 @@ class Field implements CrudInterface
 
     /**
      * Deletes a field
-     * @param integer $field_id
+     * @param int $field_id
      * @param bool $check
      * @return boolean
      */
@@ -312,7 +312,7 @@ class Field implements CrudInterface
                 FROM field_value AS fv
                 INNER JOIN field_value AS fv2
                 ON (fv.field_value_id = fv2.field_value_id)
-                WHERE fv.field_id = ?);';
+                WHERE fv.field_id = ?)';
 
         return (bool) $this->db->run($sql, array($field_id))->rowCount();
     }
