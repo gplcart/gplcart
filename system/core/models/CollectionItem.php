@@ -123,9 +123,9 @@ class CollectionItem implements CrudInterface
             $sql .= ' WHERE ci.collection_item_id IS NOT NULL';
         }
 
-        if (isset($options['value'])) {
-            $sql .= ' AND ci.value = ?';
-            $conditions[] = $options['value'];
+        if (isset($options['entity_id'])) {
+            $sql .= ' AND ci.entity_id = ?';
+            $conditions[] = $options['entity_id'];
         }
 
         if (isset($options['status'])) {
@@ -192,20 +192,24 @@ class CollectionItem implements CrudInterface
 
     /**
      * Deletes a collection item
-     * @param integer $id
+     * @param int|array $condition
      * @return boolean
      */
-    public function delete($id)
+    public function delete($condition)
     {
         $result = null;
-        $this->hook->attach('collection.item.delete.before', $id, $result, $this);
+        $this->hook->attach('collection.item.delete.before', $condition, $result, $this);
 
         if (isset($result)) {
             return (bool) $result;
         }
 
-        $result = (bool) $this->db->delete('collection_item', array('collection_item_id' => $id));
-        $this->hook->attach('collection.item.delete.after', $id, $result, $this);
+        if (!is_array($condition)) {
+            $condition = array('collection_item_id' => $condition);
+        }
+
+        $result = (bool) $this->db->delete('collection_item', $condition);
+        $this->hook->attach('collection.item.delete.after', $condition, $result, $this);
         return (bool) $result;
     }
 
@@ -225,7 +229,6 @@ class CollectionItem implements CrudInterface
         }
 
         $result = (bool) $this->db->update('collection_item', $data, array('collection_item_id' => $id));
-
         $this->hook->attach('collection.item.update.after', $id, $data, $result, $this);
         return (bool) $result;
     }
@@ -248,7 +251,7 @@ class CollectionItem implements CrudInterface
         $items = array();
         foreach ((array) $list as $item) {
             $handler_id = $item['type'];
-            $items[$item['value']] = $item;
+            $items[$item['entity_id']] = $item;
         }
 
         $handlers = $this->collection->getHandlers();
