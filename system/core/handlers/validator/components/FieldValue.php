@@ -61,7 +61,6 @@ class FieldValue extends ComponentValidator
         $this->validateFieldFieldValue();
         $this->validateColorFieldValue();
         $this->validateUploadImages('field_value');
-        $this->validateFileIdFieldValue();
 
         $this->unsetSubmitted('update');
         $this->unsetSubmitted('field');
@@ -162,46 +161,6 @@ class FieldValue extends ComponentValidator
         // Assuming black is empty
         if ($value === '#000000') {
             $this->setSubmitted($field, '');
-        }
-
-        return true;
-    }
-
-    /**
-     * Validates file ID
-     * @return bool|null
-     */
-    protected function validateFileIdFieldValue()
-    {
-        $field = 'file_id';
-
-        if ($this->isExcluded($field)) {
-            return null;
-        }
-
-        $value = $this->getSubmitted($field);
-
-        if (!isset($value)) {
-            $this->unsetSubmitted($field);
-            return null;
-        }
-
-        $label = $this->translation->text('File');
-
-        if (!is_numeric($value)) {
-            $this->setErrorInteger($field, $label);
-            return false;
-        }
-
-        if (empty($value)) {
-            return null;
-        }
-
-        $file = $this->file->get($value);
-
-        if (empty($file)) {
-            $this->setErrorUnavailable($field, $label);
-            return false;
         }
 
         return true;
