@@ -18,11 +18,6 @@ class File extends ComponentValidator
 {
 
     /**
-     * Default path for uploaded files
-     */
-    const PATH = 'image/upload/common';
-
-    /**
      * Constructor
      */
     public function __construct()
@@ -46,7 +41,12 @@ class File extends ComponentValidator
         $this->validateDescription();
         $this->validateWeight();
         $this->validateTranslation();
+        $this->validateUploadFile();
         $this->validatePathFile();
+        $this->validateEntityFile();
+        $this->validateEntityIdFile();
+        $this->validateFileTypeFile();
+        $this->validateMimeTypeFile();
 
         $this->unsetSubmitted('update');
 
@@ -94,47 +94,185 @@ class File extends ComponentValidator
     }
 
     /**
-     * Validates a path of existing file or uploads a file
+     * Validates a file path
      * @return boolean|null
      */
     protected function validatePathFile()
     {
-        if ($this->isUpdating() || $this->isError()) {
+        $field = 'path';
+        $value = $this->getSubmitted($field);
+
+        if ($this->isExcluded($field) || $this->isError()) {
             return null;
         }
 
-        $field = 'file';
+        if (!isset($value) && $this->isUpdating()) {
+            return null;
+        }
+
+        $label = $this->translation->text('File');
+
+        if (empty($value)) {
+            $this->setErrorRequired($field, $label);
+            return false;
+        }
+
+        if (!is_readable(gplcart_file_absolute($value))) {
+            $this->setErrorUnavailable($field, $label);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Validates file upload
+     * @return bool|null
+     */
+    protected function validateUploadFile()
+    {
+        $file = $this->request->file('file');
+
+        if (empty($file)) {
+            return null;
+        }
+
+        $result = $this->file_transfer->upload($file, null, 'image/upload/common');
+
+        if ($result !== true) {
+            $this->setError('path', (string) $result);
+            return false;
+        }
+
+        $this->setSubmitted('path', $this->file_transfer->getTransferred(true));
+        return true;
+    }
+
+    /**
+     * Validates entity name
+     * @return bool|null
+     */
+    protected function validateEntityFile()
+    {
+        $field = 'entity';
 
         if ($this->isExcluded($field)) {
             return null;
         }
 
-        $path = $this->getSubmitted('path');
-        $label = $this->translation->text('File');
+        $value = $this->getSubmitted($field);
 
-        if (isset($path)) {
-            if (is_readable(gplcart_file_absolute($path))) {
-                return true;
-            }
-            $this->setErrorUnavailable($field, $label);
+        if (!isset($value)) {
+            $this->unsetSubmitted($field);
+            return null;
+        }
+
+        $label = $this->translation->text('Entity');
+
+        if (empty($value) || strlen($value) > 255) {
+            $this->setErrorLengthRange($field, $label, 1, 255);
             return false;
         }
 
-        $file = $this->request->file('file');
-
-        if (empty($file)) {
-            $this->setErrorRequired($field, $label);
+        if (preg_match('/[^a-z_]+/', $value) === 1) {
+            $this->setErrorInvalid($field, $label);
             return false;
         }
 
-        $result = $this->file_transfer->upload($file, null, self::PATH);
+        return true;
+    }
 
-        if ($result !== true) {
-            $this->setError($field, (string) $result);
+    /** Validates entity ID
+     * @return bool|null
+     */
+    protected function validateEntityIdFile()
+    {
+        $field = 'entity_id';
+
+        if ($this->isExcluded($field)) {
+            return null;
+        }
+
+        $value = $this->getSubmitted($field);
+
+        if (!isset($value)) {
+            $this->unsetSubmitted($field);
+            return null;
+        }
+
+        $label = $this->translation->text('Entity ID');
+
+        if (!is_numeric($value)) {
+            $this->setErrorInteger($field, $label);
             return false;
         }
 
-        $this->setSubmitted('path', $this->file_transfer->getTransferred(true));
+        if (strlen($value) > 10) {
+            $this->setErrorLengthRange($field, $label, 0, 10);
+            return false;
+        }
+
+        return true;
+    }
+
+    /** Validates file type
+     * @return bool|null
+     */
+    protected function validateFileTypeFile()
+    {
+        $field = 'file_type';
+
+        if ($this->isExcluded($field)) {
+            return null;
+        }
+
+        $value = $this->getSubmitted($field);
+
+        if (!isset($value)) {
+            $this->unsetSubmitted($field);
+            return null;
+        }
+
+        $label = $this->translation->text('Type');
+
+        if (empty($value) || strlen($value) > 255) {
+            $this->setErrorLengthRange($field, $label, 1, 255);
+            return false;
+        }
+
+        if (preg_match('/[^a-z_]+/', $value) === 1) {
+            $this->setErrorInvalid($field, $label);
+            return false;
+        }
+
+        return true;
+    }
+
+    /** Validates file MIME type
+     * @return bool|null
+     */
+    protected function validateMimeTypeFile()
+    {
+        $field = 'mime_type';
+
+        if ($this->isExcluded($field)) {
+            return null;
+        }
+
+        $value = $this->getSubmitted($field);
+
+        if (!isset($value)) {
+            $this->unsetSubmitted($field);
+            return null;
+        }
+
+        $label = $this->translation->text('MIME type');
+
+        if (empty($value) || strlen($value) > 255) {
+            $this->setErrorLengthRange($field, $label, 1, 255);
+            return false;
+        }
+
         return true;
     }
 
