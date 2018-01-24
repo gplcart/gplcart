@@ -9,11 +9,11 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\File as FileModel,
-    gplcart\core\models\Field as FieldModel,
-    gplcart\core\models\FieldValue as FieldValueModel,
-    gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Field as FieldModel;
+use gplcart\core\models\FieldValue as FieldValueModel;
+use gplcart\core\models\File as FileModel;
+use gplcart\core\models\TranslationEntity as TranslationEntityModel;
 
 /**
  * Handles incoming requests and outputs data related to field values
@@ -70,7 +70,7 @@ class FieldValue extends BackendController
      * @param TranslationEntityModel $translation_entity
      */
     public function __construct(FieldModel $field, FieldValueModel $field_value, FileModel $file,
-            TranslationEntityModel $translation_entity)
+                                TranslationEntityModel $translation_entity)
     {
         parent::__construct();
 
