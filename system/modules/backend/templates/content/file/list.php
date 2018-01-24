@@ -81,7 +81,7 @@
           <th></th>
           <th></th>
           <th><input class="form-control" name="title" value="<?php echo $filter_title; ?>" placeholder="<?php echo $this->text('Any'); ?>"></th>
-          <th><input class="form-control" name="mime_type" value="<?php echo $filter_mime_type; ?>" placeholder="<?php echo $this->text('Any'); ?>"></th>
+          <th><input class="form-control" name="mime_type_like" value="<?php echo $filter_mime_type_like; ?>" placeholder="<?php echo $this->text('Any'); ?>"></th>
           <th><input class="form-control" name="path" value="<?php echo $filter_path; ?>" placeholder="<?php echo $this->text('Any'); ?>"></th>
           <th>
             <select name="entity" class="form-control">
