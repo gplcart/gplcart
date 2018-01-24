@@ -219,18 +219,24 @@ class File implements CrudInterface
             $conditions[] = "%{$options['path']}%";
         }
 
-        if (isset($options['mime_type'])) {
-            $sql .= ' AND f.mime_type LIKE ?';
-            $conditions[] = "%{$options['mime_type']}%";
-        }
-
         if (isset($options['file_type'])) {
             $sql .= ' AND f.file_type = ?';
             $conditions[] = $options['file_type'];
         }
 
+        if (isset($options['mime_type'])) {
+            $sql .= ' AND f.mime_type = ?';
+            $conditions[] = $options['mime_type'];
+        }
+
+        if (isset($options['mime_type_like'])) {
+            $sql .= ' AND f.mime_type LIKE ?';
+            $conditions[] = "%{$options['mime_type_like']}%";
+        }
+
         $allowed_order = array('asc', 'desc');
-        $allowed_sort = array('title', 'path', 'file_id', 'created', 'weight', 'mime_type', 'entity', 'entity_id');
+        $allowed_sort = array('title', 'path', 'file_id', 'created',
+            'weight', 'mime_type', 'entity', 'entity_id');
 
         if (isset($options['sort'])
             && in_array($options['sort'], $allowed_sort)
