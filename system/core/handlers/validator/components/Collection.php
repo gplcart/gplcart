@@ -9,8 +9,8 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\models\Collection as CollectionModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\models\Collection as CollectionModel;
 
 /**
  * Provides methods to validate collection data
@@ -45,7 +45,7 @@ class Collection extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateCollection();
-        $this->validateStatus();
+        $this->validateBool('status');
         $this->validateTitle();
         $this->validateDescription();
         $this->validateTranslation();

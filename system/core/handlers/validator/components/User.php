@@ -9,8 +9,8 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\models\UserRole as UserRoleModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\models\UserRole as UserRoleModel;
 
 /**
  * Provides methods to validate various user related data
@@ -46,7 +46,7 @@ class User extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateUser();
-        $this->validateStatus();
+        $this->validateBool('status');
         $this->validateName();
         $this->validateEmail();
         $this->validateEmailUniqueUser();

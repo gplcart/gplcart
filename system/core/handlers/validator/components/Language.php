@@ -9,8 +9,8 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\models\Language as LanguageModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\models\Language as LanguageModel;
 
 /**
  * Provides methods to validate languages
@@ -47,8 +47,8 @@ class Language extends ComponentValidator
 
         $this->validateLanguage();
         $this->validateWeight();
-        $this->validateStatus();
-        $this->validateDefault();
+        $this->validateBool('status');
+        $this->validateBool('default');
         $this->validateNameLanguage();
         $this->validateNativeNameLanguage();
         $this->validateCodeLanguage();

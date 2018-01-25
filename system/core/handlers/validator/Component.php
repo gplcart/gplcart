@@ -258,28 +258,12 @@ class Component extends ElementValidator
     }
 
     /**
-     * Sets "Status" field to an integer value
-     * @return boolean
+     * Convert different values into boolean
+     * @param mixed $field
+     * @return bool
      */
-    protected function validateStatus()
+    protected function validateBool($field)
     {
-        $field = 'status';
-        $value = $this->getSubmitted($field);
-
-        if (isset($value)) {
-            $this->setSubmitted($field, (int) filter_var($value, FILTER_VALIDATE_BOOLEAN));
-        }
-
-        return true;
-    }
-
-    /**
-     * Sets "Default" field to an integer value
-     * @return boolean
-     */
-    protected function validateDefault()
-    {
-        $field = 'default';
         $value = $this->getSubmitted($field);
 
         if (isset($value)) {
@@ -490,9 +474,10 @@ class Component extends ElementValidator
 
     /**
      * Validates a user ID
+     * @param bool $required
      * @return boolean|null
      */
-    protected function validateUserId()
+    protected function validateUserId($required = true)
     {
         $field = 'user_id';
 
@@ -510,8 +495,14 @@ class Component extends ElementValidator
         $label = $this->translation->text('User');
 
         if (empty($value)) {
-            $this->setErrorRequired($field, $label);
-            return false;
+
+            if ($required) {
+                $this->setErrorRequired($field, $label);
+                return false;
+            }
+
+            $value = 0;
+            $this->setSubmitted($field, $value);
         }
 
         if (!is_numeric($value)) {
@@ -519,9 +510,7 @@ class Component extends ElementValidator
             return false;
         }
 
-        $user = $this->user->get($value);
-
-        if (empty($user)) {
+        if (!empty($value) && !$this->user->get($value)) {
             $this->setErrorUnavailable($field, $label);
             return false;
         }

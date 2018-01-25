@@ -9,10 +9,10 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\models\Zone as ZoneModel,
-    gplcart\core\models\State as StateModel,
-    gplcart\core\models\Country as CountryModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\models\Country as CountryModel;
+use gplcart\core\models\State as StateModel;
+use gplcart\core\models\Zone as ZoneModel;
 
 /**
  * Provides methods to validate various database related data
@@ -65,7 +65,7 @@ class Country extends ComponentValidator
 
         $this->validateCountry();
         $this->validateWeight();
-        $this->validateStatus();
+        $this->validateBool('status');
         $this->validateCodeCountry();
         $this->validateName();
         $this->validateNativeNameCountry();

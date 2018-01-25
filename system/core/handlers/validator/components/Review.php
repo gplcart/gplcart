@@ -9,9 +9,9 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\models\Review as ReviewModel,
-    gplcart\core\models\Product as ProductModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\models\Product as ProductModel;
+use gplcart\core\models\Review as ReviewModel;
 
 /**
  * Provides methods to validate reviews
@@ -55,7 +55,7 @@ class Review extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateReview();
-        $this->validateStatus();
+        $this->validateBool('status');
         $this->validateTextReview();
         $this->validateCreatedReview();
         $this->validateProductReview();

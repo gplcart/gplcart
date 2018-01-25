@@ -9,8 +9,8 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\Module;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\Module;
 
 /**
  * Provides methods to validate store data
@@ -51,7 +51,7 @@ class Store extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateStore();
-        $this->validateStatus();
+        $this->validateBool('status');
         $this->validateDomainStore();
         $this->validateBasepathStore();
         $this->validateName();

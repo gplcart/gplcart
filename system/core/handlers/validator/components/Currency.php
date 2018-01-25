@@ -9,8 +9,8 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\models\Currency as CurrencyModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\models\Currency as CurrencyModel;
 
 /**
  * Provides methods to validate various currency related data
@@ -46,8 +46,8 @@ class Currency extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateCurrency();
-        $this->validateDefault();
-        $this->validateStatus();
+        $this->validateBool('default');
+        $this->validateBool('status');
         $this->validateCodeCurrency();
         $this->validateName();
         $this->validateNumericCodeCurrency();

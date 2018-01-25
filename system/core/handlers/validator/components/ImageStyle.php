@@ -10,8 +10,8 @@
 namespace gplcart\core\handlers\validator\components;
 
 use Exception;
-use gplcart\core\models\ImageStyle as ImageStyleModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\models\ImageStyle as ImageStyleModel;
 
 /**
  * Provides methods to validate image style data
@@ -48,7 +48,7 @@ class ImageStyle extends ComponentValidator
 
         $this->validateImageStyle();
         $this->validateName();
-        $this->validateStatus();
+        $this->validateBool('status');
         $this->validateActionsImageStyle();
 
         $this->unsetSubmitted('update');

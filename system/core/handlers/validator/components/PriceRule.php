@@ -77,7 +77,7 @@ class PriceRule extends ComponentValidator
         $this->validatePriceRule();
         $this->validateName();
         $this->validateWeight();
-        $this->validateStatus();
+        $this->validateBool('status');
         $this->validateUsedPriceRule();
         $this->validateTriggerPriceRule();
         $this->validateCurrencyPriceRule();

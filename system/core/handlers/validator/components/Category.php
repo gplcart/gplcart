@@ -56,7 +56,7 @@ class Category extends ComponentValidator
 
         $this->validateCategory();
         $this->validateWeight();
-        $this->validateStatus();
+        $this->validateBool('status');
         $this->validateTitle();
         $this->validateMetaTitle();
         $this->validateMetaDescription();

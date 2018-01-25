@@ -55,7 +55,8 @@ class Page extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validatePage();
-        $this->validateStatus();
+        $this->validateBool('status');
+        $this->validateBool('blog_post');
         $this->validateTitle();
         $this->validateDescriptionPage();
         $this->validateMetaTitle();
@@ -63,7 +64,7 @@ class Page extends ComponentValidator
         $this->validateTranslation();
         $this->validateStoreId();
         $this->validateCategoryPage();
-        $this->validateUserId();
+        $this->validateUserId(false);
         $this->validateImages();
         $this->validateAlias();
         $this->validateUploadImages('page');

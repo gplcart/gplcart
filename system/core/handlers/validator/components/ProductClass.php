@@ -9,8 +9,8 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\models\ProductClass as ProductClassModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\models\ProductClass as ProductClassModel;
 
 /**
  * Provides methods to validate a product class data
@@ -46,7 +46,7 @@ class ProductClass extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateProductClass();
-        $this->validateStatus();
+        $this->validateBool('status');
         $this->validateTitle();
 
         $this->unsetSubmitted('update');

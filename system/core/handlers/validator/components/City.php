@@ -9,11 +9,11 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\models\Zone as ZoneModel,
-    gplcart\core\models\City as CityModel,
-    gplcart\core\models\State as StateModel,
-    gplcart\core\models\Country as CountryModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\models\City as CityModel;
+use gplcart\core\models\Country as CountryModel;
+use gplcart\core\models\State as StateModel;
+use gplcart\core\models\Zone as ZoneModel;
 
 /**
  * Provides methods to validate city data
@@ -73,7 +73,7 @@ class City extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateCity();
-        $this->validateStatus();
+        $this->validateBool('status');
         $this->validateName();
         $this->validateStateCity();
         $this->validateZoneCity();

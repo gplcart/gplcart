@@ -9,9 +9,9 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\models\Rating as RatingModel,
-    gplcart\core\models\Product as ProductModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\models\Product as ProductModel;
+use gplcart\core\models\Rating as RatingModel;
 
 /**
  * Provides methods to validate product rating data

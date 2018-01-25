@@ -9,12 +9,12 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\models\Sku as SkuModel,
-    gplcart\core\models\Product as ProductModel,
-    gplcart\core\models\Currency as CurrencyModel,
-    gplcart\core\models\Category as CategoryModel,
-    gplcart\core\models\ProductClass as ProductClassModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\models\Category as CategoryModel;
+use gplcart\core\models\Currency as CurrencyModel;
+use gplcart\core\models\Product as ProductModel;
+use gplcart\core\models\ProductClass as ProductClassModel;
+use gplcart\core\models\Sku as SkuModel;
 
 /**
  * Provides methods to validate a product data
@@ -102,7 +102,7 @@ class Product extends ComponentValidator
 
         $this->validateProduct();
         $this->validateSubtractProduct();
-        $this->validateStatus();
+        $this->validateBool('status');
         $this->validateCurrencyProduct();
         $this->validateCategoryProduct();
         $this->validateUnitProduct();
@@ -115,7 +115,7 @@ class Product extends ComponentValidator
         $this->validateTranslation();
         $this->validateImages();
         $this->validateStoreId();
-        $this->validateUserId();
+        $this->validateUserId(false);
         $this->validateDimensionProduct();
         $this->validateRelatedProduct();
         $this->validateClassProduct();

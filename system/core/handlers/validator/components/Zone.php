@@ -9,8 +9,8 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\models\Zone as ZoneModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\models\Zone as ZoneModel;
 
 /**
  * Provides methods to validate geo zones
@@ -46,7 +46,7 @@ class Zone extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateZone();
-        $this->validateStatus();
+        $this->validateBool('status');
         $this->validateTitle();
 
         $this->unsetSubmitted('update');

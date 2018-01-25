@@ -75,7 +75,7 @@ class CollectionItem extends ComponentValidator
         $this->submitted = &$submitted;
 
         $this->validateCollectionItem();
-        $this->validateStatus();
+        $this->validateBool('status');
         $this->validateWeight();
         $this->validateUrlCollectionItem();
         $this->validateCollectionCollectionItem();
