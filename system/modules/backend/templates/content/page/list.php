@@ -163,7 +163,11 @@
             <?php } ?>
           </td>
           <td class="middle">
+            <?php if (empty($page['email'])) { ?>
+            <span class="text-danger"><?php echo $this->text('Unknown'); ?></span>
+            <?php } else { ?>
             <?php echo $this->e($page['email']); ?>
+            <?php } ?> 
           </td>
           <td class="middle">
             <?php if (empty($page['status'])) { ?>
