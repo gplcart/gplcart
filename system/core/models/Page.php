@@ -177,9 +177,19 @@ class Page implements CrudInterface
             $conditions[] = $options['store_id'];
         }
 
+        if (isset($options['user_id'])) {
+            $sql .= ' AND p.user_id = ?';
+            $conditions[] = $options['user_id'];
+        }
+
         if (isset($options['blog_post'])) {
             $sql .= ' AND p.blog_post = ?';
-            $conditions[] = $options['blog_post'];
+            $conditions[] = (int) $options['blog_post'];
+        }
+
+        if (isset($options['category_id'])) {
+            $sql .= ' AND p.category_id = ?';
+            $conditions[] = $options['category_id'];
         }
 
         if (isset($options['category_group_id'])) {
@@ -315,7 +325,7 @@ class Page implements CrudInterface
         $sql = 'DELETE ci
                 FROM collection_item ci
                 INNER JOIN collection c ON(ci.collection_id = c.collection_id)
-                WHERE c.type = ? AND ci.value = ?';
+                WHERE c.type = ? AND ci.entity_id = ?';
 
         $this->db->run($sql, array('page', $page_id));
     }
