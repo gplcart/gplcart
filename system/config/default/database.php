@@ -284,7 +284,7 @@ return array(
         'fields' => array(
             'page_id' => array('type' => 'integer', 'length' => 10, 'auto_increment' => true, 'primary' => true),
             'related_page_id' => array('type' => 'integer', 'length' => 10, 'not_null' => true, 'default' => 0), // Reserved
-            'user_id' => array('type' => 'integer', 'length' => 10, 'not_null' => true),
+            'user_id' => array('type' => 'integer', 'length' => 10, 'not_null' => true, 'default' => 0),
             'status' => array('type' => 'integer', 'length' => 1, 'not_null' => true, 'default' => 0),
             'store_id' => array('type' => 'integer', 'length' => 10, 'not_null' => true, 'default' => 0),
             'category_id' => array('type' => 'integer', 'length' => 10, 'not_null' => true, 'default' => 0),
@@ -334,7 +334,7 @@ return array(
             'modified' => array('type' => 'integer', 'length' => 10, 'not_null' => true, 'default' => 0),
             'store_id' => array('type' => 'integer', 'length' => 10, 'not_null' => true, 'default' => 0),
             'brand_category_id' => array('type' => 'integer', 'length' => 10, 'not_null' => true, 'default' => 0),
-            'user_id' => array('type' => 'integer', 'length' => 10, 'not_null' => true),
+            'user_id' => array('type' => 'integer', 'length' => 10, 'not_null' => true, 'default' => 0),
             'category_id' => array('type' => 'integer', 'length' => 10, 'not_null' => true, 'default' => 0),
             'length' => array('type' => 'float', 'not_null' => true, 'default' => 0),
             'width' => array('type' => 'float', 'not_null' => true, 'default' => 0),
