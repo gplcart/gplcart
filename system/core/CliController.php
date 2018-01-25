@@ -507,6 +507,7 @@ class CliController
     protected function validatePrompt($field, $label, $validator, $default = null)
     {
         $input = $this->prompt($label, $default);
+
         if (!$this->isValidInput($input, $field, $validator)) {
             $this->errors();
             // Prompt until correct input
