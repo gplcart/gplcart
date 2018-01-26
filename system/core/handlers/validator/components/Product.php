@@ -114,7 +114,7 @@ class Product extends ComponentValidator
         $this->validateMetaDescription();
         $this->validateTranslation();
         $this->validateImages();
-        $this->validateStoreId();
+        $this->validateStoreId(false);
         $this->validateUserId(false);
         $this->validateDimensionProduct();
         $this->validateRelatedProduct();
@@ -194,6 +194,8 @@ class Product extends ComponentValidator
             $this->setErrorRequired($field, $label);
             return false;
         }
+
+        $this->setSubmitted($field, $value);
 
         $currency = $this->currency->get($value);
 
@@ -448,7 +450,7 @@ class Product extends ComponentValidator
 
         $updating = $this->getUpdating();
 
-        if (isset($updating['sku']) && ($updating['sku'] === $value)) {
+        if (isset($updating['sku']) && $updating['sku'] === $value) {
             return true;
         }
 
