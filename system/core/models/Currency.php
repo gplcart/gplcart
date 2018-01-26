@@ -71,8 +71,6 @@ class Currency implements CrudInterface
             return (array) $result;
         }
 
-        $code = strtoupper($code);
-
         $list = $this->getList();
         $result = empty($list[$code]) ? array() : $list[$code];
 
@@ -182,7 +180,6 @@ class Currency implements CrudInterface
             return (bool) $result;
         }
 
-        $code = strtoupper($code);
         $existing = $this->getList();
 
         if (empty($existing[$code])) {
@@ -229,8 +226,6 @@ class Currency implements CrudInterface
         if (isset($result)) {
             return (bool) $result;
         }
-
-        $code = strtoupper($code);
 
         if ($check && !$this->canDelete($code)) {
             return false;
