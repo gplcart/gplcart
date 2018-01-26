@@ -13,6 +13,7 @@ return array(
         'numeric_code' => '840',
         'minor_unit' => /* @text */'Cent',
         'major_unit' => /* @text */'Dollar',
+        'template' => '%symbol%price'
     ),
     'AED' => array(
         'symbol' => 'د.إ',
@@ -20,6 +21,7 @@ return array(
         'numeric_code' => '784',
         'minor_unit' => /* @text */'Fils',
         'major_unit' => /* @text */'Dirham',
+        'template' => '%code%price'
     ),
     'AFN' => array(
         'symbol' => 'Af',
@@ -56,6 +58,7 @@ return array(
         'numeric_code' => '036',
         'minor_unit' => /* @text */'Cent',
         'major_unit' => /* @text */'Dollar',
+        'template' => '%symbol%price'
     ),
     'AWG' => array(
         'symbol' => 'Afl.',
@@ -99,6 +102,7 @@ return array(
         'numeric_code' => '975',
         'minor_unit' => /* @text */'Stotinka',
         'major_unit' => /* @text */'Lev',
+        'template' => '%price %symbol'
     ),
     'BHD' => array(
         'symbol' => 'BD',
@@ -145,6 +149,7 @@ return array(
         'decimal_separator' => ',',
         'minor_unit' => /* @text */'Centavo',
         'major_unit' => /* @text */'Reais',
+        'template' => '%symbol%price'
     ),
     'BSD' => array(
         'symbol' => 'BS$',
@@ -174,6 +179,7 @@ return array(
         'decimals' => 0,
         'thousands_separator' => ' ',
         'major_unit' => /* @text */'Ruble',
+        'template' => '%price %symbol'
     ),
     'BZD' => array(
         'symbol' => 'BZ$',
@@ -220,6 +226,7 @@ return array(
         'thousands_separator' => '',
         'minor_unit' => /* @text */'Fen',
         'major_unit' => /* @text */'Yuan',
+        'template' => '%symbol%price'
     ),
     'COP' => array(
         'symbol' => '$',
@@ -230,6 +237,7 @@ return array(
         'decimal_separator' => ',',
         'minor_unit' => /* @text */'Centavo',
         'major_unit' => /* @text */'Peso',
+        'template' => '%symbol%price'
     ),
     'CRC' => array(
         'symbol' => '¢',
@@ -261,6 +269,7 @@ return array(
         'decimal_separator' => ',',
         'minor_unit' => /* @text */'Haléř',
         'major_unit' => /* @text */'Koruna',
+        'template' => '%price %symbol'
     ),
     'DJF' => array(
         'symbol' => 'Fdj',
@@ -278,6 +287,7 @@ return array(
         'decimal_separator' => ',',
         'minor_unit' => /* @text */'Øre',
         'major_unit' => /* @text */'Kroner',
+        'template' => '%price %symbol'
     ),
     'DOP' => array(
         'symbol' => 'RD$',
@@ -331,6 +341,7 @@ return array(
         'numeric_code' => '978',
         'minor_unit' => /* @text */'Cent',
         'major_unit' => /* @text */'Euro',
+        'template' => '%price %symbol'
     ),
     'FJD' => array(
         'symbol' => 'FJ$',
@@ -402,6 +413,7 @@ return array(
         'numeric_code' => '344',
         'minor_unit' => /* @text */'Cent',
         'major_unit' => /* @text */'Dollar',
+        'template' => '%symbol%price'
     ),
     'HNL' => array(
         'symbol' => 'HNL',
@@ -432,6 +444,7 @@ return array(
         'thousands_separator' => ' ',
         'decimals' => 0,
         'major_unit' => /* @text */'Forint',
+        'template' => '%price %symbol'
     ),
     'IDR' => array(
         'symbol' => 'Rp',
@@ -447,6 +460,7 @@ return array(
         'numeric_code' => '376',
         'minor_unit' => /* @text */'Agora',
         'major_unit' => /* @text */'New Shekels',
+        'template' => '%symbol%price'
     ),
     'INR' => array(
         'symbol' => 'Rs',
@@ -462,6 +476,7 @@ return array(
         'numeric_code' => '364',
         'minor_unit' => /* @text */'Rial',
         'major_unit' => /* @text */'Toman',
+        'template' => '%price %symbol'
     ),
     'ISK' => array(
         'symbol' => 'Ikr',
@@ -478,6 +493,7 @@ return array(
         'numeric_code' => '388',
         'minor_unit' => /* @text */'Cent',
         'major_unit' => /* @text */'Dollar',
+        'template' => '%symbol%price'
     ),
     'JOD' => array(
         'symbol' => 'JD',
@@ -494,6 +510,7 @@ return array(
         'numeric_code' => '392',
         'minor_unit' => /* @text */'Sen',
         'major_unit' => /* @text */'Yen',
+        'template' => '%symbol%price'
     ),
     'KES' => array(
         'symbol' => 'Ksh',
@@ -509,6 +526,7 @@ return array(
         'thousands_separator' => '',
         'major_unit' => /* @text */'Som',
         'minor_unit' => /* @text */'Tyiyn',
+        'template' => '%price %symbol'
     ),
     'KMF' => array(
         'symbol' => 'CF',
@@ -549,6 +567,7 @@ return array(
         'decimal_separator' => ',',
         'minor_unit' => /* @text */'Tiyn',
         'major_unit' => /* @text */'Tenge',
+        'template' => '%price %symbol'
     ),
     'LAK' => array(
         'symbol' => '₭N',
@@ -615,6 +634,7 @@ return array(
         'numeric_code' => '504',
         'minor_unit' => /* @text */'Santimat',
         'major_unit' => /* @text */'Dirhams',
+        'template' => '%price %symbol'
     ),
     'MDL' => array(
         'symbol' => 'MDL',
@@ -622,6 +642,7 @@ return array(
         'numeric_code' => '498',
         'minor_unit' => /* @text */'Bani',
         'major_unit' => /* @text */'Lei',
+        'template' => '%price %symbol'
     ),
     'MKD' => array(
         'symbol' => 'ден',
@@ -629,6 +650,7 @@ return array(
         'numeric_code' => '807',
         'minor_unit' => /* @text */'Deni',
         'major_unit' => /* @text */'Denari',
+        'template' => '%price %symbol'
     ),
     'MMK' => array(
         'symbol' => 'MMK',
@@ -681,6 +703,7 @@ return array(
         'numeric_code' => '484',
         'minor_unit' => /* @text */'Centavo',
         'major_unit' => /* @text */'Peso',
+        'template' => '%symbol%price'
     ),
     'MYR' => array(
         'symbol' => 'RM',
@@ -688,6 +711,7 @@ return array(
         'numeric_code' => '458',
         'minor_unit' => /* @text */'Sen',
         'major_unit' => /* @text */'Ringgits',
+        'template' => '%symbol%price'
     ),
     'MZN' => array(
         'symbol' => 'MTn',
@@ -738,6 +762,7 @@ return array(
         'numeric_code' => '554',
         'minor_unit' => /* @text */'Cent',
         'major_unit' => /* @text */'Dollar',
+        'template' => '%symbol%price'
     ),
     'PAB' => array(
         'symbol' => 'B/.',
@@ -752,6 +777,7 @@ return array(
         'numeric_code' => '604',
         'minor_unit' => /* @text */'Céntimo',
         'major_unit' => /* @text */'Nuevos Sole',
+        'template' => '%symbol%price'
     ),
     'PGK' => array(
         'symbol' => 'PGK',
@@ -783,6 +809,7 @@ return array(
         'numeric_code' => '985',
         'minor_unit' => /* @text */'Grosz',
         'major_unit' => /* @text */'Złotych',
+        'template' => '%price %symbol'
     ),
     'PYG' => array(
         'symbol' => '₲',
@@ -812,20 +839,21 @@ return array(
         'major_unit' => /* @text */'Leu',
     ),
     'RSD' => array(
-        'symbol' => 'din.',
+        'symbol' => 'din',
         'name' => /* @text */'Serbian Dinar',
         'decimals' => 0,
         'minor_unit' => /* @text */'Para',
         'major_unit' => /* @text */'Dinars',
     ),
     'RUB' => array(
-        'symbol' => 'руб.',
+        'symbol' => 'руб',
         'name' => /* @text */'Russian Ruble',
         'thousands_separator' => ' ',
         'decimal_separator' => ',',
         'numeric_code' => '643',
         'minor_unit' => /* @text */'Kopek',
         'major_unit' => /* @text */'Ruble',
+        'template' => '%price %symbol'
     ),
     'SAR' => array(
         'symbol' => 'SR',
@@ -863,6 +891,7 @@ return array(
         'decimal_separator' => ',',
         'minor_unit' => /* @text */'Öre',
         'major_unit' => /* @text */'Kronor',
+        'template' => '%price %symbol'
     ),
     'SGD' => array(
         'symbol' => 'S$',
@@ -953,6 +982,7 @@ return array(
         'decimal_separator' => ',',
         'minor_unit' => /* @text */'Kurus',
         'major_unit' => /* @text */'Lira',
+        'template' => '%price %symbol'
     ),
     'TTD' => array(
         'symbol' => 'TT$',
@@ -977,13 +1007,14 @@ return array(
         'major_unit' => /* @text */'Shilling',
     ),
     'UAH' => array(
-        'symbol' => 'грн.',
+        'symbol' => 'грн',
         'name' => /* @text */'Ukrainian Hryvnia',
         'numeric_code' => '980',
         'thousands_separator' => '',
         'decimal_separator' => '.',
         'minor_unit' => /* @text */'Kopiyka',
         'major_unit' => /* @text */'Hryvnia',
+        'template' => '%price %symbol'
     ),
     'UGX' => array(
         'symbol' => 'USh',
@@ -1014,6 +1045,7 @@ return array(
         'numeric_code' => '704',
         'minor_unit' => /* @text */'Hà',
         'major_unit' => /* @text */'Dong',
+        'template' => '%price %symbol'
     ),
     'VUV' => array(
         'symbol' => 'VT',
@@ -1074,6 +1106,7 @@ return array(
         'numeric_code' => '710',
         'minor_unit' => /* @text */'Cent',
         'major_unit' => /* @text */'Rand',
+        'template' => '%symbol%price'
     ),
     'ZMK' => array(
         'symbol' => 'ZK',
