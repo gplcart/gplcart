@@ -58,10 +58,12 @@ class Jwt
     /**
      * Sets leeway time
      * @param int $time
+     * @return $this
      */
     public function setLeeway($time)
     {
         $this->leeway = $time;
+        return $this;
     }
 
     /**
@@ -110,7 +112,7 @@ class Jwt
      */
     public function decode($jwt, $key, array $allowed_algs = array())
     {
-        if (empty($this->timestamp)) {
+        if (!isset($this->timestamp)) {
             $this->timestamp = time();
         }
 
