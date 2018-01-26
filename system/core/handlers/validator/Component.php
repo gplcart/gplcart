@@ -433,9 +433,10 @@ class Component extends ElementValidator
 
     /**
      * Validates the store ID field
+     * @param boolean $required
      * @return boolean|null
      */
-    protected function validateStoreId()
+    protected function validateStoreId($required = true)
     {
         $field = 'store_id';
 
@@ -453,8 +454,14 @@ class Component extends ElementValidator
         $label = $this->translation->text('Store');
 
         if (empty($value)) {
-            $this->setErrorRequired($field, $label);
-            return false;
+
+            if ($required) {
+                $this->setErrorRequired($field, $label);
+                return false;
+            }
+
+            $value = 0;
+            $this->setSubmitted($field, $value);
         }
 
         if (!is_numeric($value)) {
@@ -464,7 +471,7 @@ class Component extends ElementValidator
 
         $store = $this->store->get($value);
 
-        if (empty($store)) {
+        if (!empty($value) && empty($store)) {
             $this->setErrorUnavailable($field, $label);
             return false;
         }
