@@ -104,7 +104,10 @@ class CliController
         $this->setInstanceProperties();
         $this->setRouteProperties();
         $this->setLanguage();
+
         $this->controlAccess();
+        $this->controlOptions();
+        $this->controlArguments();
 
         $this->hook->attach('construct.cli.controller', $this);
         $this->outputHelp();
@@ -126,6 +129,40 @@ class CliController
     {
         if (!$this->config->get('cli_status', 1)) {
             throw new AccessException('CLI access is disabled!');
+        }
+    }
+
+    /**
+     * Controls supported command options
+     */
+    protected function controlOptions()
+    {
+        $allowed = array();
+
+        if (!empty($this->current_route['options'])) {
+            foreach (array_keys($this->current_route['options']) as $options) {
+                foreach (explode(',', $options) as $option) {
+                    $allowed[trim(trim($option, '-'))] = true;
+                }
+            }
+        }
+
+        $submitted = $this->getOptions();
+        if (!empty($submitted) && !array_intersect_key($submitted, $allowed)) {
+            $this->errorAndExit($this->text('Unsupported options'));
+        }
+    }
+
+    /**
+     * Controls supported command arguments
+     */
+    protected function controlArguments()
+    {
+        if (!empty($this->current_route['arguments'])) {
+            $submitted = $this->getArguments();
+            if (!empty($submitted) && !array_intersect_key($submitted, $this->current_route['arguments'])) {
+                $this->errorAndExit($this->text('Unsupported arguments'));
+            }
         }
     }
 
