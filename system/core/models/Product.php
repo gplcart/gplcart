@@ -32,9 +32,7 @@ use gplcart\core\traits\Translation as TranslationTrait;
 class Product implements CrudInterface
 {
 
-    use ImageTrait,
-        AliasTrait,
-        TranslationTrait;
+    use ImageTrait, AliasTrait, TranslationTrait;
 
     /**
      * Database class instance
@@ -229,16 +227,16 @@ class Product implements CrudInterface
     /**
      * Deletes and/or adds related products
      * @param array $data
-     * @param boolean $update
+     * @param boolean $delete_old
      * @return boolean
      */
-    public function setRelated(array $data, $update = true)
+    public function setRelated(array $data, $delete_old = true)
     {
         if (empty($data['form']) && empty($data['related'])) {
             return false;
         }
 
-        if ($update) {
+        if ($delete_old) {
             $this->product_relation->delete($data['product_id']);
         }
 
@@ -265,7 +263,7 @@ class Product implements CrudInterface
 
     /**
      * Loads a product from the database
-     * @param array|int
+     * @param array|int $condition
      * @return array
      */
     public function get($condition)
@@ -482,6 +480,11 @@ class Product implements CrudInterface
             $conditions[] = $options['category_id'];
         }
 
+        if (isset($options['brand_category_id'])) {
+            $sql .= ' AND p.brand_category_id = ?';
+            $conditions[] = $options['brand_category_id'];
+        }
+
         if (isset($options['status'])) {
             $sql .= ' AND p.status = ?';
             $conditions[] = (int) $options['status'];
@@ -490,6 +493,16 @@ class Product implements CrudInterface
         if (isset($options['store_id'])) {
             $sql .= ' AND p.store_id = ?';
             $conditions[] = $options['store_id'];
+        }
+
+        if (isset($options['user_id'])) {
+            $sql .= ' AND p.user_id = ?';
+            $conditions[] = $options['user_id'];
+        }
+
+        if (isset($options['product_class_id'])) {
+            $sql .= ' AND p.product_class_id = ?';
+            $conditions[] = $options['product_class_id'];
         }
 
         if (empty($options['count'])) {
@@ -587,13 +600,13 @@ class Product implements CrudInterface
         $sql = 'DELETE ci
                 FROM collection_item ci
                 INNER JOIN collection c ON(ci.collection_id = c.collection_id)
-                WHERE c.type = ? AND ci.value = ?';
+                WHERE c.type = ? AND ci.entity_id = ?';
 
         $this->db->run($sql, array('product', $product_id));
     }
 
     /**
-     * Converts a price to minor units
+     * Converts a price value to minor units
      * @param array $data
      */
     protected function setPrice(array &$data)
@@ -663,16 +676,16 @@ class Product implements CrudInterface
     /**
      * Deletes and/or adds a new base SKU
      * @param array $data
-     * @param boolean $update
+     * @param boolean $delete_old
      * @return bool
      */
-    protected function setSku(array &$data, $update = true)
+    protected function setSku(array &$data, $delete_old = true)
     {
         if (empty($data['form']) && empty($data['sku'])) {
             return false;
         }
 
-        if ($update) {
+        if ($delete_old) {
             $this->sku->delete($data['product_id'], array('base' => true));
             return (bool) $this->sku->add($data);
         }
@@ -687,16 +700,16 @@ class Product implements CrudInterface
     /**
      * Deletes and/or adds product combinations
      * @param array $data
-     * @param boolean $update
+     * @param boolean $delete_old
      * @return boolean
      */
-    protected function setSkuCombinations(array $data, $update = true)
+    protected function setSkuCombinations(array $data, $delete_old = true)
     {
         if (empty($data['form']) && empty($data['combination'])) {
             return false;
         }
 
-        if ($update) {
+        if ($delete_old) {
             $this->sku->delete($data['product_id'], array('combinations' => true));
         }
 
@@ -760,16 +773,16 @@ class Product implements CrudInterface
     /**
      * Deletes and/or adds product option fields
      * @param array $data
-     * @param boolean $update
+     * @param boolean $delete_old
      * @return boolean
      */
-    protected function setOptions(array $data, $update = true)
+    protected function setOptions(array $data, $delete_old = true)
     {
         if (empty($data['form']) && empty($data['combination'])) {
             return false;
         }
 
-        if ($update) {
+        if ($delete_old) {
             $this->product_field->delete(array('type' => 'option', 'product_id' => $data['product_id']));
         }
 
@@ -779,16 +792,16 @@ class Product implements CrudInterface
     /**
      * Deletes and/or adds product attribute fields
      * @param array $data
-     * @param boolean $update
+     * @param boolean $delete_old
      * @return boolean
      */
-    protected function setAttributes(array $data, $update = true)
+    protected function setAttributes(array $data, $delete_old = true)
     {
         if (empty($data['form']) && empty($data['field']['attribute'])) {
             return false;
         }
 
-        if ($update) {
+        if ($delete_old) {
             $this->product_field->delete(array('type' => 'attribute', 'product_id' => $data['product_id']));
         }
 
