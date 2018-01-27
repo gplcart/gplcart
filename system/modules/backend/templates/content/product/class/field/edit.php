@@ -11,16 +11,16 @@
 <?php if (!empty($fields)) { ?>
 <form method="post" class="form-horizontal">
   <input type="hidden" name="token" value="<?php echo $_token; ?>">
-  <div class="form-group required<?php echo $this->error('values', ' has-error'); ?>">
-    <label class="col-md-2 control-label"><?php echo $this->text('Field'); ?></label>
+  <div class="form-group required<?php echo $this->error('field_id', ' has-error'); ?>">
+    <label class="col-md-2 control-label"><?php echo $this->text('Fields'); ?></label>
     <div class="col-md-4">
-      <select class="form-control" name="field[values][]" multiple>
+      <select class="form-control" name="product_class[field_id][]" multiple>
         <?php foreach ($fields as $field_id => $field_title) { ?>
         <option value="<?php echo $field_id; ?>"><?php echo $this->e($field_title); ?></option>
         <?php } ?>
       </select>
       <div class="help-block">
-        <?php echo $this->error('values'); ?>
+        <?php echo $this->error('field_id'); ?>
         <div class="text-muted">
           <?php echo $this->text('Assign one or more fields to the product class.'); ?>
           <?php if ($this->access('field_add')) { ?>

@@ -25,8 +25,13 @@
       <thead>
         <tr>
           <th>
-            <a href="<?php echo $sort_field_id; ?>">
+            <a href="<?php echo $sort_product_class_field_id; ?>">
               <?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i>
+            </a>
+          </th>
+          <th>
+            <a href="<?php echo $sort_field_id; ?>">
+              <?php echo $this->text('Field ID'); ?> <i class="fa fa-sort"></i>
             </a>
           </th>
           <th>
@@ -59,23 +64,26 @@
         </tr>
       </thead>
       <tbody>
-        <?php foreach ($fields as $field_id => $field) { ?>
+        <?php foreach ($fields as $id => $field) { ?>
         <tr>
           <td class="middle">
-            <?php echo $this->e($field_id); ?>
+            <?php echo $this->e($id); ?>
+          </td>
+          <td class="middle">
+            <?php echo $this->e($field['field_id']); ?>
           </td>
           <td class="middle">
             <?php echo $this->e($field['title']); ?>
-            <input type="hidden" name="fields[<?php echo $field_id; ?>][weight]" value="<?php echo $field['weight']; ?>">
+            <input type="hidden" name="fields[<?php echo $id; ?>][weight]" value="<?php echo $field['weight']; ?>">
           </td>
           <td class="middle">
             <?php echo empty($field_types[$field['type']]) ? $this->text('Unknown') : $this->e($field_types[$field['type']]); ?>
           </td>
           <td class="middle">
-            <input type="checkbox" name="fields[<?php echo $field_id; ?>][required]" value="1"<?php echo $field['required'] ? ' checked' : ''; ?>>
+            <input type="checkbox" name="fields[<?php echo $id; ?>][required]" value="1"<?php echo $field['required'] ? ' checked' : ''; ?>>
           </td>
           <td class="middle">
-            <input type="checkbox" name="fields[<?php echo $field_id; ?>][multiple]" value="1"<?php echo $field['multiple'] ? ' checked' : ''; ?>>
+            <input type="checkbox" name="fields[<?php echo $id; ?>][multiple]" value="1"<?php echo $field['multiple'] ? ' checked' : ''; ?>>
           </td>
           <td class="middle">
             <?php if($draggable) { ?>
@@ -84,27 +92,27 @@
             <span class="weight"><?php echo $this->e($field['weight']); ?></span>
           </td>
           <td class="middle">
-            <input type="checkbox" name="fields[<?php echo $field_id; ?>][remove]" value="1">
+            <input type="checkbox" name="fields[<?php echo $id; ?>][remove]" value="1">
           </td>
           <td class="middle">
             <ul class="list-inline">
               <?php if ($this->access('field_edit')) { ?>
               <li>
-                <a href="<?php echo $this->url("admin/content/field/edit/$field_id", array('target' => $this->path())); ?>">
+                <a href="<?php echo $this->url("admin/content/field/edit/{$field['field_id']}", array('target' => $this->path())); ?>">
                   <?php echo $this->lower($this->text('Edit')); ?>
                 </a>
               </li>
               <?php } ?>
               <?php if ($this->access('field_value')) { ?>
               <li>
-                <a href="<?php echo $this->url("admin/content/field/value/$field_id"); ?>">
+                <a href="<?php echo $this->url("admin/content/field/value/{$field['field_id']}"); ?>">
                   <?php echo $this->lower($this->text('Values')); ?>
                 </a>
               </li>
               <?php } ?>
               <?php if ($this->access('field_value_add')) { ?>
               <li>
-                <a href="<?php echo $this->url("admin/content/field/value/$field_id/add", array('target' => $this->path())); ?>">
+                <a href="<?php echo $this->url("admin/content/field/value/{$field['field_id']}/add", array('target' => $this->path())); ?>">
                   <?php echo $this->lower($this->text('Add value')); ?>
                 </a>
               </li>
