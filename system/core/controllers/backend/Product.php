@@ -506,7 +506,7 @@ class Product extends BackendController
 
         $data = array(
             'product' => $this->getData('product'),
-            'fields' => $this->product_class->getFieldData($product_class_id)
+            'fields' => $this->product_class->getFields($product_class_id)
         );
 
         $options = $this->render('content/product/options', $data);

@@ -341,7 +341,7 @@ trait Item
             return null;
         }
 
-        $fields = $pcmodel->getFieldData($item['product_class_id']);
+        $fields = $pcmodel->getFields($item['product_class_id']);
 
         foreach ($item['field'][$type] as $field_id => $field_values) {
             foreach ($field_values as $field_value_id) {

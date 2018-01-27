@@ -506,7 +506,7 @@ class Product extends ComponentValidator
             return false;
         }
 
-        $fields = $this->product_class->getFieldData($value);
+        $fields = $this->product_class->getFields($value);
         $this->setSubmitted('product_fields', $fields);
         return true;
     }

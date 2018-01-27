@@ -14,6 +14,7 @@ use gplcart\core\Hook;
 use gplcart\core\interfaces\Crud as CrudInterface;
 use gplcart\core\models\Field as FieldModel;
 use gplcart\core\models\FieldValue as FieldValueModel;
+use gplcart\core\models\ProductClassField as ProductClassFieldModel;
 use gplcart\core\models\Translation as TranslationModel;
 
 /**
@@ -47,6 +48,12 @@ class ProductClass implements CrudInterface
     protected $field_value;
 
     /**
+     * Product class field model instance
+     * @var \gplcart\core\models\ProductClassField $product_class_field
+     */
+    protected $product_class_field;
+
+    /**
      * Translation UI model instance
      * @var \gplcart\core\models\Translation $translation
      */
@@ -55,12 +62,13 @@ class ProductClass implements CrudInterface
     /**
      * @param Hook $hook
      * @param Config $config
-     * @param FieldModel $field
-     * @param FieldValueModel $field_value
-     * @param TranslationModel $translation
+     * @param Field $field
+     * @param FieldValue $field_value
+     * @param ProductClassField $product_class_field
+     * @param Translation $translation
      */
-    public function __construct(Hook $hook, Config $config, FieldModel $field,
-                                FieldValueModel $field_value, TranslationModel $translation)
+    public function __construct(Hook $hook, Config $config, FieldModel $field, FieldValueModel $field_value,
+                                ProductClassFieldModel $product_class_field, TranslationModel $translation)
     {
         $this->hook = $hook;
         $this->db = $config->getDb();
@@ -68,6 +76,7 @@ class ProductClass implements CrudInterface
         $this->field = $field;
         $this->field_value = $field_value;
         $this->translation = $translation;
+        $this->product_class_field = $product_class_field;
     }
 
     /**
@@ -243,52 +252,13 @@ class ProductClass implements CrudInterface
     }
 
     /**
-     * Adds a field to the product class
-     * @param array $data
-     * @return integer
-     */
-    public function addField(array $data)
-    {
-        $result = null;
-        $this->hook->attach('product.class.add.field.before', $data, $result, $this);
-
-        if (isset($result)) {
-            return (int) $result;
-        }
-
-        $result = $this->db->insert('product_class_field', $data);
-        $this->hook->attach('product.class.add.field.after', $data, $result, $this);
-        return (int) $result;
-    }
-
-    /**
-     * Deletes product class fields
-     * @param integer $product_class_id
-     * @return boolean
-     */
-    public function deleteField($product_class_id)
-    {
-        $result = null;
-        $this->hook->attach('product.class.delete.field.before', $product_class_id, $result, $this);
-
-        if (isset($result)) {
-            return (bool) $result;
-        }
-
-        $conditions = array('product_class_id' => $product_class_id);
-        $result = (bool) $this->db->delete('product_class_field', $conditions);
-        $this->hook->attach('product.class.delete.field.after', $product_class_id, $result, $this);
-        return (bool) $result;
-    }
-
-    /**
      * Returns an array of fields for a given product class
      * @param integer $product_class_id
      * @return array
      */
-    public function getFieldData($product_class_id)
+    public function getFields($product_class_id)
     {
-        $result = &gplcart_static("product.class.field.data.$product_class_id");
+        $result = &gplcart_static("product.class.fields.$product_class_id");
 
         if (isset($result)) {
             return $result;
@@ -297,82 +267,18 @@ class ProductClass implements CrudInterface
         $result = array();
         $fields = $this->field->getList();
 
-        foreach ((array) $this->getFields(array('product_class_id' => $product_class_id)) as $field) {
-            if (isset($fields[$field['field_id']])) {
-                $options = array('field_id' => $field['field_id']);
+        $ops = array(
+            'product_class_id' => $product_class_id
+        );
+
+        foreach ((array) $this->product_class_field->getList($ops) as $product_class_field) {
+            if (isset($fields[$product_class_field['field_id']])) {
+                $options = array('field_id' => $product_class_field['field_id']);
                 $data = array('values' => $this->field_value->getList($options));
-                $data += $fields[$field['field_id']];
-                $data += $field;
-                $result[$fields[$field['field_id']]['type']][$field['field_id']] = $data;
+                $data += $fields[$product_class_field['field_id']];
+                $data += $product_class_field;
+                $result[$fields[$product_class_field['field_id']]['type']][$product_class_field['field_id']] = $data;
             }
-        }
-
-        return $result;
-    }
-
-    /**
-     * Loads an array of product class fields or counts them
-     * @param array $options
-     * @return array|int
-     */
-    public function getFields(array $options = array())
-    {
-        $options += array('language' => $this->translation->getLangcode());
-
-        if (empty($options['count'])) {
-            $sql = 'SELECT pcf.*, COALESCE(NULLIF(ft.title, ""), f.title) AS title, f.type AS type';
-        } else {
-            $sql = 'SELECT COUNT(pcf.product_class_field_id)';
-        }
-
-        $sql .= ' FROM product_class_field pcf
-                  LEFT JOIN field f ON(pcf.field_id = f.field_id)
-                  LEFT JOIN field_translation ft ON(pcf.field_id = ft.field_id AND ft.language=?)
-                  WHERE pcf.product_class_field_id IS NOT NULL';
-
-        $conditions = array($options['language']);
-
-        if (isset($options['product_class_id'])) {
-            $sql .= ' AND pcf.product_class_id=?';
-            $conditions[] = $options['product_class_id'];
-        }
-
-        if (isset($options['type'])) {
-            $sql .= ' AND f.type=?';
-            $conditions[] = $options['type'];
-        }
-
-        if (isset($options['required'])) {
-            $sql .= ' AND pcf.required=?';
-            $conditions[] = (int) $options['required'];
-        }
-
-        if (isset($options['multiple'])) {
-            $sql .= ' AND pcf.multiple=?';
-            $conditions[] = (int) $options['multiple'];
-        }
-
-        $allowed_order = array('asc', 'desc');
-        $allowed_sort = array('type' => 'f.type', 'field_id' => 'f.field_id', 'title' => 'f.title',
-            'weight' => 'pcf.weight', 'required' => 'pcf.required', 'multiple' => 'pcf.multiple');
-
-        if (isset($options['sort'])
-            && isset($allowed_sort[$options['sort']])
-            && isset($options['order'])
-            && in_array($options['order'], $allowed_order)) {
-            $sql .= " ORDER BY {$allowed_sort[$options['sort']]} {$options['order']}";
-        } else {
-            $sql .= " ORDER BY pcf.weight ASC";
-        }
-
-        if (!empty($options['limit'])) {
-            $sql .= ' LIMIT ' . implode(',', array_map('intval', $options['limit']));
-        }
-
-        if (empty($options['count'])) {
-            $result = $this->db->fetchAll($sql, $conditions, array('index' => 'field_id'));
-        } else {
-            $result = $this->db->fetchColumn($sql, $conditions);
         }
 
         return $result;
