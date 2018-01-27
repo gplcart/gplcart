@@ -261,13 +261,13 @@ return array(
     'admin/content/product-class/field/(\d+)' => array(
         'access' => 'product_class_edit',
         'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\backend\\ProductClass', 'fieldsProductClass')
+            'controller' => array('gplcart\\core\\controllers\\backend\\ProductClassField', 'listProductClassField')
         )
     ),
     'admin/content/product-class/field/(\d+)/add' => array(
         'access' => 'product_class_edit',
         'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\backend\\ProductClass', 'editFieldProductClass')
+            'controller' => array('gplcart\\core\\controllers\\backend\\ProductClassField', 'editProductClassField')
         )
     ),
     'admin/content/collection' => array(

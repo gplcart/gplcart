@@ -9,21 +9,14 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Field as FieldModel,
-    gplcart\core\models\ProductClass as ProductClassModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\ProductClass as ProductClassModel;
 
 /**
  * Handles incoming requests and outputs data related to product classes
  */
 class ProductClass extends BackendController
 {
-
-    /**
-     * Field model instance
-     * @var \gplcart\core\models\Field $field
-     */
-    protected $field;
 
     /**
      * Product model instance
@@ -45,13 +38,11 @@ class ProductClass extends BackendController
 
     /**
      * @param ProductClassModel $product_class
-     * @param FieldModel $field
      */
-    public function __construct(ProductClassModel $product_class, FieldModel $field)
+    public function __construct(ProductClassModel $product_class)
     {
         parent::__construct();
 
-        $this->field = $field;
         $this->product_class = $product_class;
     }
 
@@ -168,7 +159,7 @@ class ProductClass extends BackendController
     }
 
     /**
-     * Displays the edit product class page
+     * Route callback for the edit product class page
      * @param null|integer $product_class_id
      */
     public function editProductClass($product_class_id = null)
@@ -177,7 +168,7 @@ class ProductClass extends BackendController
         $this->setTitleEditProductClass();
         $this->setBreadcrumbEditProductClass();
 
-        $this->setData('can_delete', $this->canDelete());
+        $this->setData('can_delete', $this->canDeleteProductClass());
         $this->setData('product_class', $this->data_product_class);
 
         $this->submitEditProductClass();
@@ -188,11 +179,11 @@ class ProductClass extends BackendController
      * Whether a product class can be deleted
      * @return bool
      */
-    protected function canDelete()
+    protected function canDeleteProductClass()
     {
-        return isset($this->data_product_class['product_class_id'])//
-                && $this->access('product_class_delete')//
-                && $this->product_class->canDelete($this->data_product_class['product_class_id']);
+        return isset($this->data_product_class['product_class_id'])
+            && $this->access('product_class_delete')
+            && $this->product_class->canDelete($this->data_product_class['product_class_id']);
     }
 
     /**
@@ -214,7 +205,7 @@ class ProductClass extends BackendController
      */
     protected function submitEditProductClass()
     {
-        if ($this->isPosted('delete') && $this->canDelete()) {
+        if ($this->isPosted('delete') && $this->canDeleteProductClass()) {
             $this->deleteProductClass();
         } else if ($this->isPosted('save') && $this->validateEditProductClass()) {
             if (isset($this->data_product_class['product_class_id'])) {
@@ -322,245 +313,6 @@ class ProductClass extends BackendController
     protected function outputEditProductClass()
     {
         $this->output('content/product/class/edit');
-    }
-
-    /**
-     * Displays the field overview page
-     * @param integer $product_class_id
-     */
-    public function fieldsProductClass($product_class_id)
-    {
-        $this->setProductClass($product_class_id);
-        $this->setTitleFieldsProductClass();
-        $this->setBreadcrumbFieldsProductClass();
-        $this->setFilterFieldsProductClass();
-
-        $this->setData('field_types', $this->field->getTypes());
-        $this->setData('fields', $this->getFieldsProductClass());
-        $this->setData('product_class', $this->data_product_class);
-
-        $this->submitFieldsProductClass();
-        $this->outputFieldsProductClass();
-    }
-
-    /**
-     * Sets filter on the product class fields overview page
-     */
-    protected function setFilterFieldsProductClass()
-    {
-        $allowed = array('title', 'required', 'multiple', 'type', 'weight', 'field_id');
-        $this->setFilter($allowed);
-    }
-
-    /**
-     * Returns an array of fields for the given product class
-     * @param boolean $unique
-     * @return array
-     */
-    protected function getFieldsProductClass($unique = false)
-    {
-        $conditions = $this->query_filter;
-        $conditions['limit'] = $this->data_limit;
-        $conditions['product_class_id'] = $this->data_product_class['product_class_id'];
-
-        $fields = (array) $this->product_class->getFields($conditions);
-        return $unique ? $this->prepareFieldsProductClass($fields) : $fields;
-    }
-
-    /**
-     * Prepares an array of product class fields
-     * @param array $fields
-     * @return array
-     */
-    protected function prepareFieldsProductClass(array $fields)
-    {
-        $types = $this->field->getTypes();
-
-        $unique = array();
-        foreach ((array) $this->field->getList() as $field) {
-            if (empty($fields[$field['field_id']])) {
-                $type = empty($types[$field['type']]) ? $this->text('Unknown') : $types[$field['type']];
-                $unique[$field['field_id']] = "{$field['title']} ($type)";
-            }
-        }
-
-        return $unique;
-    }
-
-    /**
-     * Handles the submitted product class fields
-     */
-    protected function submitFieldsProductClass()
-    {
-        if ($this->isPosted('save')) {
-            $this->updateFieldsProductClass();
-        }
-    }
-
-    /**
-     * Updates product class fields
-     */
-    protected function updateFieldsProductClass()
-    {
-        $this->controlAccess('product_class_edit');
-
-        $this->product_class->deleteField($this->data_product_class['product_class_id']);
-
-        foreach ($this->setSubmitted('fields') as $field_id => $field) {
-
-            if (!empty($field['remove'])) {
-                continue;
-            }
-
-            $field['field_id'] = $field_id;
-            $field['required'] = !empty($field['required']);
-            $field['multiple'] = !empty($field['multiple']);
-            $field['product_class_id'] = $this->data_product_class['product_class_id'];
-
-            $this->product_class->addField($field);
-        }
-
-        $this->redirect('', $this->text('Product class has been updated'), 'success');
-    }
-
-    /**
-     * Sets titles on the field overview page
-     */
-    protected function setTitleFieldsProductClass()
-    {
-        $text = $this->text('Fields of %name', array('%name' => $this->data_product_class['title']));
-        $this->setTitle($text);
-    }
-
-    /**
-     * Sets breadcrumbs on the field overview page
-     */
-    protected function setBreadcrumbFieldsProductClass()
-    {
-        $breadcrumbs = array();
-
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')
-        );
-
-        $breadcrumbs[] = array(
-            'text' => $this->text('Product classes'),
-            'url' => $this->url('admin/content/product-class')
-        );
-
-        $this->setBreadcrumbs($breadcrumbs);
-    }
-
-    /**
-     * Render and output the field overview page
-     */
-    protected function outputFieldsProductClass()
-    {
-        $this->output('content/product/class/fields');
-    }
-
-    /**
-     * Displays the add field page
-     * @param integer $product_class_id
-     */
-    public function editFieldProductClass($product_class_id)
-    {
-        $this->setProductClass($product_class_id);
-        $this->setTitleEditFieldProductClass();
-        $this->setBreadcrumbEditFieldProductClass();
-
-        $this->setData('product_class', $this->data_product_class);
-        $this->setData('fields', $this->getFieldsProductClass(true));
-
-        $this->submitEditFieldProductClass();
-        $this->outputEditFieldProductClass();
-    }
-
-    /**
-     * Adds fields to the product class
-     */
-    protected function submitEditFieldProductClass()
-    {
-        if ($this->isPosted('save') && $this->validateEditFieldProductClass()) {
-            $this->addFieldProductClass();
-        }
-    }
-
-    /**
-     * Validates an array of submitted fields
-     * @return bool
-     */
-    protected function validateEditFieldProductClass()
-    {
-        $this->setSubmitted('field');
-        $this->validateElement('values', 'required');
-
-        return !$this->hasErrors(false);
-    }
-
-    /**
-     * Adds fields to the product class
-     */
-    protected function addFieldProductClass()
-    {
-        $this->controlAccess('product_class_edit');
-
-        foreach (array_values($this->getSubmitted('values')) as $field_id) {
-
-            $field = array(
-                'field_id' => $field_id,
-                'product_class_id' => $this->data_product_class['product_class_id']
-            );
-
-            $this->product_class->addField($field);
-        }
-
-        $message = $this->text('Product class has been updated');
-        $url = "admin/content/product-class/field/{$this->data_product_class['product_class_id']}";
-        $this->redirect($url, $message, 'success');
-    }
-
-    /**
-     * Sets titles on the add field page
-     */
-    protected function setTitleEditFieldProductClass()
-    {
-        $text = $this->text('Add field to %name', array('%name' => $this->data_product_class['title']));
-        $this->setTitle($text);
-    }
-
-    /**
-     * Sets breadcrumbs on the add field page
-     */
-    protected function setBreadcrumbEditFieldProductClass()
-    {
-        $breadcrumbs = array();
-
-        $breadcrumbs[] = array(
-            'url' => $this->url('admin'),
-            'text' => $this->text('Dashboard')
-        );
-
-        $breadcrumbs[] = array(
-            'text' => $this->text('Product classes'),
-            'url' => $this->url('admin/content/product-class')
-        );
-
-        $breadcrumbs[] = array(
-            'text' => $this->text('Fields of %name', array('%name' => $this->data_product_class['title'])),
-            'url' => $this->url("admin/content/product-class/field/{$this->data_product_class['product_class_id']}")
-        );
-
-        $this->setBreadcrumbs($breadcrumbs);
-    }
-
-    /**
-     * Render and output the add field page
-     */
-    protected function outputEditFieldProductClass()
-    {
-        $this->output('content/product/class/edit_field');
     }
 
 }
