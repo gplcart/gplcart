@@ -65,7 +65,6 @@ class ProductClassField extends ComponentValidator
 
         $this->validateProductClassField();
         $this->validateProductClassProductClassField();
-
         $this->validateWeight();
         $this->validateBool('required');
         $this->validateBool('multiple');
@@ -166,11 +165,19 @@ class ProductClassField extends ComponentValidator
             return false;
         }
 
-        $options = array(
-            'index' => 'field_id',
-            'product_class_id' => (int) $this->getSubmitted('product_class_id'));
+        $updating = $this->getUpdating();
+        $product_class_id = $this->getSubmitted('product_class_id');
 
-        $existing = $this->product_class_field->getList($options);
+        if (!isset($product_class_id) && isset($updating['product_class_id'])) {
+            $product_class_id = $updating['product_class_id'];
+        }
+
+        if (empty($product_class_id)) {
+            $this->setErrorUnavailable($field, $this->translation->text('Unknown product class ID'));
+        }
+
+        $existing = $this->product_class_field->getList(array('index' => 'field_id',
+            'product_class_id' => $product_class_id));
 
         $processed = array();
         foreach ((array) $value as $field_id) {
