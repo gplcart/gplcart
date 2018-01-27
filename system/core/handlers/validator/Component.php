@@ -260,16 +260,18 @@ class Component extends ElementValidator
     /**
      * Convert different values into boolean
      * @param mixed $field
-     * @return bool
+     * @return bool|null
      */
     protected function validateBool($field)
     {
         $value = $this->getSubmitted($field);
 
-        if (isset($value)) {
-            $this->setSubmitted($field, (int) filter_var($value, FILTER_VALIDATE_BOOLEAN));
+        if (!isset($value)) {
+            $this->unsetSubmitted($field);
+            return null;
         }
 
+        $this->setSubmitted($field, (int) filter_var($value, FILTER_VALIDATE_BOOLEAN));
         return true;
     }
 
