@@ -129,6 +129,11 @@ return array(
             'validate' => array('gplcart\\core\\handlers\\validator\\components\\ProductClass', 'productClass')
         )
     ),
+    'product_class_field' => array(
+        'handlers' => array(
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\ProductClassField', 'productClassField')
+        )
+    ),
     'product_bundle' => array(
         'handlers' => array(
             'validate' => array('gplcart\\core\\handlers\\validator\\components\\ProductBundle', 'productBundle')
