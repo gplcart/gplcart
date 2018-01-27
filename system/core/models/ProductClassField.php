@@ -205,7 +205,7 @@ class ProductClassField implements CrudInterface
         if (empty($options['count'])) {
             $result = $this->db->fetchAll($sql, $conditions, array('index' => $options['index']));
         } else {
-            $result = $this->db->fetchColumn($sql, $conditions);
+            $result = (int) $this->db->fetchColumn($sql, $conditions);
         }
 
         return $result;
