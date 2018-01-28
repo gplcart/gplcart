@@ -9,18 +9,18 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\State as StateModel,
-    gplcart\core\models\Order as OrderModel,
-    gplcart\core\models\Address as AddressModel,
-    gplcart\core\models\Country as CountryModel,
-    gplcart\core\models\Payment as PaymentModel,
-    gplcart\core\models\Shipping as ShippingModel,
-    gplcart\core\models\CartAction as CartActionModel,
-    gplcart\core\models\UserAction as UserActionModel,
-    gplcart\core\models\OrderAction as OrderActionModel,
-    gplcart\core\models\OrderHistory as OrderHistoryModel,
-    gplcart\core\models\OrderDimension as OrderDimensionModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
+use gplcart\core\models\Address as AddressModel;
+use gplcart\core\models\CartAction as CartActionModel;
+use gplcart\core\models\Country as CountryModel;
+use gplcart\core\models\Order as OrderModel;
+use gplcart\core\models\OrderAction as OrderActionModel;
+use gplcart\core\models\OrderDimension as OrderDimensionModel;
+use gplcart\core\models\OrderHistory as OrderHistoryModel;
+use gplcart\core\models\Payment as PaymentModel;
+use gplcart\core\models\Shipping as ShippingModel;
+use gplcart\core\models\State as StateModel;
+use gplcart\core\models\UserAction as UserActionModel;
 use gplcart\core\traits\Checkout as CheckoutTrait;
 
 /**
@@ -188,10 +188,19 @@ class Checkout extends FrontendController
      * @param PaymentModel $payment
      * @param CartActionModel $cart_action
      */
-    public function __construct(CountryModel $country, StateModel $state, AddressModel $address,
-            OrderModel $order, OrderActionModel $order_action, OrderHistoryModel $order_history,
-            UserActionModel $user_action, OrderDimensionModel $order_dimension,
-            ShippingModel $shipping, PaymentModel $payment, CartActionModel $cart_action)
+    public function __construct(
+        CountryModel $country,
+        StateModel $state,
+        AddressModel $address,
+        OrderModel $order,
+        OrderActionModel $order_action,
+        OrderHistoryModel $order_history,
+        UserActionModel $user_action,
+        OrderDimensionModel $order_dimension,
+        ShippingModel $shipping,
+        PaymentModel $payment,
+        CartActionModel $cart_action
+    )
     {
         parent::__construct();
 
@@ -243,10 +252,13 @@ class Checkout extends FrontendController
     protected function setAdminModeCheckout($mode)
     {
         $this->admin = null;
+
         if ($this->access('order_add')) {
+
             if ($mode === 'add') {
                 $this->admin = 'add';
             }
+
             if ($mode === 'clone' && $this->access('order_edit')) {
                 $this->admin = 'clone';
             }
@@ -456,7 +468,7 @@ class Checkout extends FrontendController
     }
 
     /**
-     * Prepares the form data before passing to templates
+     * Prepares the form data before passing to the templates
      */
     protected function setFormDataAfterCheckout()
     {
@@ -547,9 +559,8 @@ class Checkout extends FrontendController
     {
         $this->data_form["request_{$type}_methods"] = false;
 
-        if (!empty($this->data_form["get_{$type}_methods"])//
-                || (!empty($this->data_form['order'][$type])//
-                && !empty($this->data_form["has_dynamic_{$type}_methods"]))) {
+        if (!empty($this->data_form["get_{$type}_methods"])
+            || (!empty($this->data_form['order'][$type]) && !empty($this->data_form["has_dynamic_{$type}_methods"]))) {
             $this->data_form["show_{$type}_methods"] = true;
             $this->data_form["request_{$type}_methods"] = true;
         }
@@ -560,9 +571,12 @@ class Checkout extends FrontendController
      */
     protected function setFormDataDimensionsCheckout()
     {
-        $this->data_form['order']['volume'] = $this->order_dimension->getVolume($this->data_form['order'], $this->data_form['cart']);
-        $this->data_form['order']['weight'] = $this->order_dimension->getWeight($this->data_form['order'], $this->data_form['cart']);
-        $this->data_form['order']['data']['packages'] = $this->order_dimension->getPackages($this->data_form['order'], $this->data_form['cart']);
+        $cart = $this->data_form['cart'];
+        $order = $this->data_form['order'];
+
+        $this->data_form['order']['volume'] = $this->order_dimension->getVolume($order, $cart);
+        $this->data_form['order']['weight'] = $this->order_dimension->getWeight($order, $cart);
+        $this->data_form['order']['data']['packages'] = $this->order_dimension->getPackages($order, $cart);
     }
 
     /**
@@ -701,11 +715,11 @@ class Checkout extends FrontendController
             $result = $this->cart_action->login($result['user'], $this->data_cart);
         }
 
-        if (empty($result['user'])) {
-            $this->setError('login', $result['message']);
-        } else {
+        if (!empty($result['user'])) {
             $this->redirect($result['redirect'], $result['message'], $result['severity']);
         }
+
+        $this->setError('login', $result['message']);
     }
 
     /**
@@ -737,7 +751,6 @@ class Checkout extends FrontendController
     protected function submitCartCheckout()
     {
         $this->submitCartItemsCheckout();
-
         $this->deleteCartCheckout();
         $this->updateCartCheckout();
     }
@@ -754,6 +767,7 @@ class Checkout extends FrontendController
         }
 
         $errors = array();
+
         foreach ($items as $sku => $item) {
             $errors += $this->validateCartItemCheckout($sku, $item);
             if (empty($errors)) {
@@ -846,7 +860,9 @@ class Checkout extends FrontendController
         }
 
         $errors = array();
+
         foreach (array('payment', 'shipping') as $type) {
+
             $address_errors = $this->validateAddressCheckout($type);
 
             if (!empty($address_errors)) {
