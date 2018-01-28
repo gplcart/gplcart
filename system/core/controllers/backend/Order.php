@@ -9,15 +9,15 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Order as OrderModel,
-    gplcart\core\models\OrderAction as OrderActionModel,
-    gplcart\core\models\OrderHistory as OrderHistoryModel,
-    gplcart\core\models\Price as PriceModel,
-    gplcart\core\models\Address as AddressModel,
-    gplcart\core\models\Payment as PaymentModel,
-    gplcart\core\models\Shipping as ShippingModel,
-    gplcart\core\models\PriceRule as PriceRuleModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Address as AddressModel;
+use gplcart\core\models\Order as OrderModel;
+use gplcart\core\models\OrderAction as OrderActionModel;
+use gplcart\core\models\OrderHistory as OrderHistoryModel;
+use gplcart\core\models\Payment as PaymentModel;
+use gplcart\core\models\Price as PriceModel;
+use gplcart\core\models\PriceRule as PriceRuleModel;
+use gplcart\core\models\Shipping as ShippingModel;
 use gplcart\core\traits\ItemOrder as ItemOrderTrait;
 
 /**
@@ -48,7 +48,7 @@ class Order extends BackendController
      * @var \gplcart\core\models\Order $order
      */
     protected $order;
-    
+
     /**
      * Order action model instance
      * @var \gplcart\core\models\OrderAction $order_action
@@ -102,7 +102,7 @@ class Order extends BackendController
      * @var array
      */
     protected $data_order = array();
-    
+
     /**
      * @param OrderModel $order
      * @param OrderActionModel $order_action
@@ -114,8 +114,8 @@ class Order extends BackendController
      * @param ShippingModel $shipping
      */
     public function __construct(OrderModel $order, OrderActionModel $order_action,
-            OrderHistoryModel $order_history, AddressModel $address, PriceModel $price,
-            PriceRuleModel $pricerule, PaymentModel $payment, ShippingModel $shipping)
+                                OrderHistoryModel $order_history, AddressModel $address, PriceModel $price,
+                                PriceRuleModel $pricerule, PaymentModel $payment, ShippingModel $shipping)
     {
         parent::__construct();
 
@@ -287,16 +287,20 @@ class Order extends BackendController
      */
     protected function createTempCartOrder()
     {
-        if (!$this->cart->delete(array('user_id' => $this->uid))) {
-            return false;
-        }
+        // Purge cart of the current user
+        // It will be populated with the items from the cloning order
+        $this->cart->delete(array('user_id' => $this->uid));
 
         $added = $count = 0;
+
+        // Populate admin's cart
         foreach ($this->data_order['cart'] as $item) {
+
             $count++;
             unset($item['cart_id']);
             $item['user_id'] = $this->uid;
             $item['order_id'] = 0;
+
             if ($this->cart->add($item)) {
                 $added++;
             }
@@ -307,6 +311,7 @@ class Order extends BackendController
 
     /**
      * Returns a total log records found for the order
+     * Used for pager
      * @return integer
      */
     protected function getTotalLogOrder()
@@ -404,13 +409,17 @@ class Order extends BackendController
         $this->setItemOrderShippingName($order, $this->shipping);
 
         $order['user'] = array();
+
         if (is_numeric($order['user_id'])) {
             $order['user'] = $this->user->get($order['user_id']);
         }
 
-        $options = array('count' => true, 'user_id' => $order['user_id']);
-        $order['user']['total_orders'] = (int) $this->order->getList($options);
+        $options = array(
+            'count' => true,
+            'user_id' => $order['user_id']
+        );
 
+        $order['user']['total_orders'] = (int) $this->order->getList($options);
         $order['customer'] = $this->text('Anonymous');
         $order['creator_formatted'] = $this->text('Customer');
 
@@ -467,8 +476,7 @@ class Order extends BackendController
      */
     protected function setDataPanelCommentIndexOrder()
     {
-        $data = array('order' => $this->data_order);
-        $this->setData('pane_comment', $this->render('sale/order/panes/comment', $data));
+        $this->setData('pane_comment', $this->render('sale/order/panes/comment', array('order' => $this->data_order)));
     }
 
     /**
@@ -476,8 +484,7 @@ class Order extends BackendController
      */
     protected function setDataPanelCustomerIndexOrder()
     {
-        $data = array('order' => $this->data_order);
-        $this->setData('pane_customer', $this->render('sale/order/panes/customer', $data));
+        $this->setData('pane_customer', $this->render('sale/order/panes/customer', array('order' => $this->data_order)));
     }
 
     /**
@@ -485,15 +492,17 @@ class Order extends BackendController
      */
     protected function setDataPanelComponentsIndexOrder()
     {
-        $this->setItemOrderCartComponent($this->data_order, $this->price);
-        $this->setItemOrderPriceRuleComponent($this->data_order, $this->price, $this->pricerule);
-        $this->setItemOrderPaymentComponent($this->data_order, $this->price, $this->payment, $this->order);
-        $this->setItemOrderShippingComponent($this->data_order, $this->price, $this->shipping, $this->order);
+        if (!empty($this->data_order['data']['components'])) {
 
-        ksort($this->data_order['data']['components']);
+            $this->setItemOrderCartComponent($this->data_order, $this->price);
+            $this->setItemOrderPriceRuleComponent($this->data_order, $this->price, $this->pricerule);
+            $this->setItemOrderPaymentComponent($this->data_order, $this->price, $this->payment, $this->order);
+            $this->setItemOrderShippingComponent($this->data_order, $this->price, $this->shipping, $this->order);
 
-        $data = array('components' => $this->data_order['data']['components'], 'order' => $this->data_order);
-        $this->setData('pane_components', $this->render('sale/order/panes/components', $data));
+            ksort($this->data_order['data']['components']);
+        }
+
+        $this->setData('pane_components', $this->render('sale/order/panes/components', array('order' => $this->data_order)));
     }
 
     /**
@@ -501,8 +510,7 @@ class Order extends BackendController
      */
     protected function setDataPanelShippingAddressIndexOrder()
     {
-        $data = array('order' => $this->data_order);
-        $html = $this->render('sale/order/panes/shipping_address', $data);
+        $html = $this->render('sale/order/panes/shipping_address', array('order' => $this->data_order));
         $this->setData('pane_shipping_address', $html);
     }
 
@@ -511,8 +519,7 @@ class Order extends BackendController
      */
     protected function setDataPanelPaymentAddressIndexOrder()
     {
-        $data = array('order' => $this->data_order);
-        $html = $this->render('sale/order/panes/payment_address', $data);
+        $html = $this->render('sale/order/panes/payment_address', array('order' => $this->data_order));
         $this->setData('pane_payment_address', $html);
     }
 
