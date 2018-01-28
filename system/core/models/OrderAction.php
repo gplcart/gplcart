@@ -122,7 +122,6 @@ class OrderAction
             return (array) $result;
         }
 
-        $this->prepareComponents($data);
         $data['order_id'] = $this->order->add($data);
 
         if (empty($data['order_id'])) {
@@ -273,19 +272,6 @@ class OrderAction
                 if (isset($rule['code']) && $rule['code'] !== '') {
                     $this->price_rule->setUsed($rule['price_rule_id']);
                 }
-            }
-        }
-    }
-
-    /**
-     * Prepares order components
-     * @param array $order
-     */
-    protected function prepareComponents(array &$order)
-    {
-        if (!empty($order['cart']['items'])) {
-            foreach ($order['cart']['items'] as $sku => $item) {
-                $order['data']['components']['cart']['items'][$sku]['price'] = $item['total'];
             }
         }
     }
