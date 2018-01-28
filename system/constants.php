@@ -187,6 +187,12 @@ define('GC_FILE_CONFIG_LANGUAGE', GC_DIR_CONFIG . '/language.php');
 define('GC_FILE_CONFIG_COUNTRY', GC_DIR_CONFIG . '/country.php');
 
 /**
+ * Configuration file containing data for converting measurement units
+ * @var string
+ */
+define('GC_FILE_CONFIG_UNIT', GC_DIR_CONFIG . '/unit.php');
+
+/**
  * Configuration file containing URL alias handlers
  * @var string
  */

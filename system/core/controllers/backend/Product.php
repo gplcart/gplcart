@@ -9,15 +9,16 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Alias as AliasModel,
-    gplcart\core\models\Price as PriceModel,
-    gplcart\core\models\Product as ProductModel,
-    gplcart\core\models\Category as CategoryModel,
-    gplcart\core\models\Currency as CurrencyModel,
-    gplcart\core\models\ProductClass as ProductClassModel,
-    gplcart\core\models\CategoryGroup as CategoryGroupModel,
-    gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Alias as AliasModel;
+use gplcart\core\models\Category as CategoryModel;
+use gplcart\core\models\CategoryGroup as CategoryGroupModel;
+use gplcart\core\models\Convertor as ConvertorModel;
+use gplcart\core\models\Currency as CurrencyModel;
+use gplcart\core\models\Price as PriceModel;
+use gplcart\core\models\Product as ProductModel;
+use gplcart\core\models\ProductClass as ProductClassModel;
+use gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\traits\Category as CategoryTrait;
 
 /**
@@ -77,6 +78,12 @@ class Product extends BackendController
     protected $alias;
 
     /**
+     * Convertor model class instance
+     * @var \gplcart\core\models\Convertor $convertor
+     */
+    protected $convertor;
+
+    /**
      * Pager limit
      * @var array
      */
@@ -96,11 +103,13 @@ class Product extends BackendController
      * @param PriceModel $price
      * @param CurrencyModel $currency
      * @param AliasModel $alias
+     * @param ConvertorModel $convertor
      * @param TranslationEntityModel $translation_entity
      */
     public function __construct(ProductModel $product, ProductClassModel $product_class,
-            CategoryModel $category, CategoryGroupModel $category_group, PriceModel $price,
-            CurrencyModel $currency, AliasModel $alias, TranslationEntityModel $translation_entity)
+                                CategoryModel $category, CategoryGroupModel $category_group, PriceModel $price,
+                                CurrencyModel $currency, AliasModel $alias, ConvertorModel $convertor,
+                                TranslationEntityModel $translation_entity)
     {
         parent::__construct();
 
@@ -109,6 +118,7 @@ class Product extends BackendController
         $this->product = $product;
         $this->category = $category;
         $this->currency = $currency;
+        $this->convertor = $convertor;
         $this->product_class = $product_class;
         $this->category_group = $category_group;
         $this->translation_entity = $translation_entity;
@@ -258,8 +268,8 @@ class Product extends BackendController
         $this->setBreadcrumbEditProduct();
 
         $this->setData('product', $this->data_product);
-        $this->setData('size_units', $this->product->getSizeUnits());
-        $this->setData('weight_units', $this->product->getWeightUnits());
+        $this->setData('size_units', $this->convertor->getUnitNames('size'));
+        $this->setData('weight_units', $this->convertor->getUnitNames('weight'));
         $this->setData('default_currency', $this->currency->getDefault());
         $this->setData('subtract_default', $this->config->get('product_subtract', 0));
         $this->setData('classes', $this->product_class->getList(array('status' => 1)));

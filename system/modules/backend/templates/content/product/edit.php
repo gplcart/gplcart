@@ -347,7 +347,7 @@
         <?php $selected_size_unit = isset($product['size_unit']) ? $product['size_unit'] : $this->config('product_size_unit', 'mm'); ?>
         <select name="product[size_unit]" class="form-control">
           <?php foreach ($size_units as $unit => $name) { ?>
-          <option value="<?php echo $this->e($unit); ?>"<?php echo ($selected_size_unit == $unit) ? ' selected' : ''; ?>><?php echo $this->e($name); ?></option>
+          <option value="<?php echo $this->e($unit); ?>"<?php echo ($selected_size_unit == $unit) ? ' selected' : ''; ?>><?php echo $this->text($name); ?></option>
           <?php } ?>
         </select>
         <div class="help-block">
@@ -376,7 +376,7 @@
         <?php $selected_weight_unit = isset($product['weight_unit']) ? $product['weight_unit'] : $this->config('product_weight_unit', 'g'); ?>
         <select name="product[weight_unit]" class="form-control">
           <?php foreach ($weight_units as $unit => $name) { ?>
-          <option value="<?php echo $this->e($unit); ?>"<?php echo ($selected_weight_unit == $unit) ? ' selected' : ''; ?>><?php echo $this->e($name); ?></option>
+          <option value="<?php echo $this->e($unit); ?>"<?php echo ($selected_weight_unit == $unit) ? ' selected' : ''; ?>><?php echo $this->text($name); ?></option>
           <?php } ?>
         </select>
         <div class="help-block">

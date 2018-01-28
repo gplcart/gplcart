@@ -11,6 +11,7 @@ namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\handlers\validator\Component as ComponentValidator;
 use gplcart\core\models\Category as CategoryModel;
+use gplcart\core\models\Convertor as ConvertorModel;
 use gplcart\core\models\Currency as CurrencyModel;
 use gplcart\core\models\Product as ProductModel;
 use gplcart\core\models\ProductClass as ProductClassModel;
@@ -21,24 +22,6 @@ use gplcart\core\models\Sku as SkuModel;
  */
 class Product extends ComponentValidator
 {
-
-    /**
-     * An array of combination stock levels to be summed up
-     * @var array
-     */
-    protected $stock_amount = array();
-
-    /**
-     * An array of processed option combinations
-     * @var array
-     */
-    protected $processed_combinations = array();
-
-    /**
-     * An array of processed SKUs
-     * @var array
-     */
-    protected $processed_skus = array();
 
     /**
      * Product model instance
@@ -71,14 +54,40 @@ class Product extends ComponentValidator
     protected $currency;
 
     /**
+     * Convertor model class instance
+     * @var \gplcart\core\models\Convertor $convertor
+     */
+    protected $convertor;
+
+    /**
+     * An array of combination stock levels to be summed up
+     * @var array
+     */
+    protected $stock_amount = array();
+
+    /**
+     * An array of processed option combinations
+     * @var array
+     */
+    protected $processed_combinations = array();
+
+    /**
+     * An array of processed SKUs
+     * @var array
+     */
+    protected $processed_skus = array();
+
+    /**
      * @param ProductModel $product
      * @param ProductClassModel $product_class
      * @param SkuModel $sku
      * @param CurrencyModel $currency
      * @param CategoryModel $category
+     * @param ConvertorModel $convertor
      */
     public function __construct(ProductModel $product, ProductClassModel $product_class,
-                                SkuModel $sku, CurrencyModel $currency, CategoryModel $category)
+                                SkuModel $sku, CurrencyModel $currency, CategoryModel $category,
+                                ConvertorModel $convertor)
     {
         parent::__construct();
 
@@ -86,6 +95,7 @@ class Product extends ComponentValidator
         $this->product = $product;
         $this->currency = $currency;
         $this->category = $category;
+        $this->convertor = $convertor;
         $this->product_class = $product_class;
     }
 
@@ -255,8 +265,8 @@ class Product extends ComponentValidator
     protected function validateUnitProduct()
     {
         $allowed = array(
-            'size_unit' => $this->product->getSizeUnits(),
-            'weight_unit' => $this->product->getWeightUnits()
+            'size_unit' => $this->convertor->getUnitNames('size'),
+            'weight_unit' => $this->convertor->getUnitNames('weight')
         );
 
         $fields = array(
@@ -265,6 +275,7 @@ class Product extends ComponentValidator
         );
 
         $errors = 0;
+
         foreach ($fields as $field => $label) {
             $value = $this->getSubmitted($field);
             if (isset($value) && !isset($allowed[$field][$value])) {

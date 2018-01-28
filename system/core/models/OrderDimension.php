@@ -10,8 +10,8 @@
 namespace gplcart\core\models;
 
 use Exception;
-use gplcart\core\helpers\Convertor as ConvertorHelper;
 use gplcart\core\Hook;
+use gplcart\core\models\Convertor as ConvertorModel;
 
 /**
  * Manages basic behaviors and data related to order dimensions
@@ -26,16 +26,16 @@ class OrderDimension
     protected $hook;
 
     /**
-     * Convertor class instance
-     * @var \gplcart\core\helpers\Convertor $convertor
+     * Convertor model class instance
+     * @var \gplcart\core\models\Convertor $convertor
      */
     protected $convertor;
 
     /**
      * @param Hook $hook
-     * @param ConvertorHelper $convertor
+     * @param Convertor $convertor
      */
-    public function __construct(Hook $hook, ConvertorHelper $convertor)
+    public function __construct(Hook $hook, ConvertorModel $convertor)
     {
         $this->hook = $hook;
         $this->convertor = $convertor;
