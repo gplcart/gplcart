@@ -31,7 +31,7 @@ interface Crud
     /**
      * Adds an entity
      * @param array $data
-     * @return int
+     * @return int|bool
      */
     public function add(array $data);
 
