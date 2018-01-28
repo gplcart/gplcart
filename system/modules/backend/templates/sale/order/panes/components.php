@@ -15,8 +15,10 @@
         <div class="col-md-12">
           <table class="table table-condensed">
             <tbody>
-              <?php foreach($components as $component) { ?>
+              <?php if(!empty($order['data']['components'])) { ?>
+              <?php foreach($order['data']['components'] as $component) { ?>
               <?php echo $component['rendered']; ?>
+              <?php } ?>
               <?php } ?>
               <tr>
                 <td><b><?php echo $this->text('Grand total'); ?></b></td>
