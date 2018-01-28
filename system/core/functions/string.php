@@ -36,11 +36,12 @@ function gplcart_string_hash($string, $salt = '', $iterations = 10)
 function gplcart_string_random($size = 32)
 {
     $bytes = '';
+
     if (function_exists('random_bytes')) {
         $bytes = random_bytes($size);
     } else if (function_exists('openssl_random_pseudo_bytes')) {
         $bytes = openssl_random_pseudo_bytes($size);
-    } else if (function_exists('mcrypt_create_iv')) {
+    } else if (function_exists('mcrypt_create_iv') && version_compare(PHP_VERSION, '7.1.0', '<')) {
         $bytes = mcrypt_create_iv($size, MCRYPT_DEV_URANDOM);
     }
 
