@@ -9,13 +9,13 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\models\Order as OrderModel,
-    gplcart\core\models\Payment as PaymentModel,
-    gplcart\core\models\Address as AddressModel,
-    gplcart\core\models\Currency as CurrencyModel,
-    gplcart\core\models\Shipping as ShippingModel,
-    gplcart\core\models\Transaction as TransactionModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\models\Address as AddressModel;
+use gplcart\core\models\Currency as CurrencyModel;
+use gplcart\core\models\Order as OrderModel;
+use gplcart\core\models\Payment as PaymentModel;
+use gplcart\core\models\Shipping as ShippingModel;
+use gplcart\core\models\Transaction as TransactionModel;
 
 /**
  * Provides methods to validate orders to be stored in the database
@@ -101,6 +101,7 @@ class Order extends ComponentValidator
         $this->validateUserCartId();
         $this->validateCreatorOrder();
         $this->validateTotalOrder();
+        $this->validateData();
         $this->validateComponentPricesOrder();
         $this->validateCurrencyOrder();
         $this->validateCommentOrder();
@@ -286,6 +287,11 @@ class Order extends ComponentValidator
 
         $value = $this->getSubmitted($field);
 
+        if (!isset($value) && $this->isUpdating()) {
+            $this->unsetSubmitted($field);
+            return null;
+        }
+
         if (empty($value) && !$this->isError('shipping_address')) {
             $value = $this->getSubmitted('shipping_address');
         }
@@ -321,6 +327,11 @@ class Order extends ComponentValidator
     {
         $field = 'creator';
         $value = $this->getSubmitted($field);
+
+        if (!isset($value) && $this->isUpdating()) {
+            $this->unsetSubmitted($field);
+            return null;
+        }
 
         if (empty($value)) {
             return null;
@@ -388,6 +399,11 @@ class Order extends ComponentValidator
 
         $label = $this->translation->text('Price');
 
+        if (!is_array($components)) {
+            $this->setErrorInvalid($field, $label);
+            return false;
+        }
+
         foreach ($components as $id => $component) {
 
             if (!is_numeric($component['price'])) {
@@ -417,10 +433,16 @@ class Order extends ComponentValidator
             return null;
         }
 
+        $label = $this->translation->text('Currency');
+
+        if (empty($value)) {
+            $this->setErrorRequired($field, $label);
+        }
+
         $currency = $this->currency->get($value);
 
         if (empty($currency)) {
-            $this->setErrorUnavailable($field, $this->translation->text('Currency'));
+            $this->setErrorUnavailable($field, $label);
             return false;
         }
 
@@ -463,6 +485,10 @@ class Order extends ComponentValidator
         if (!is_numeric($value)) {
             $this->setErrorNumeric($field, $label);
             return false;
+        }
+
+        if (empty($value)) {
+            return true;
         }
 
         $transaction = $this->transaction->get($value);
