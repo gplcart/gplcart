@@ -188,6 +188,26 @@ class Order implements CrudInterface
             $conditions[] = $options['status'];
         }
 
+        if (isset($options['payment'])) {
+            $sql .= ' AND o.payment = ?';
+            $conditions[] = $options['payment'];
+        }
+
+        if (isset($options['shipping'])) {
+            $sql .= ' AND o.shipping = ?';
+            $conditions[] = $options['shipping'];
+        }
+
+        if (isset($options['payment_address'])) {
+            $sql .= ' AND o.payment_address = ?';
+            $conditions[] = $options['payment_address'];
+        }
+
+        if (isset($options['shipping_address'])) {
+            $sql .= ' AND o.shipping_address = ?';
+            $conditions[] = $options['shipping_address'];
+        }
+
         if (isset($options['creator'])) {
             $sql .= ' AND u.email LIKE ?';
             $conditions[] = "%{$options['creator']}%";
