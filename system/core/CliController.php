@@ -149,7 +149,7 @@ class CliController
 
         $submitted = $this->getOptions();
         if (!empty($submitted) && !array_intersect_key($submitted, $allowed)) {
-            $this->errorAndExit($this->text('Unsupported options'));
+            $this->errorAndExit($this->text('Unsupported command options'));
         }
     }
 
@@ -161,7 +161,7 @@ class CliController
         if (!empty($this->current_route['arguments'])) {
             $submitted = $this->getArguments();
             if (!empty($submitted) && !array_intersect_key($submitted, $this->current_route['arguments'])) {
-                $this->errorAndExit($this->text('Unsupported arguments'));
+                $this->errorAndExit($this->text('Unsupported command arguments'));
             }
         }
     }
