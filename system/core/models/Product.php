@@ -303,12 +303,7 @@ class Product implements CrudInterface
      */
     public function getBySku($sku, $store_id)
     {
-        $options = array(
-            'sku' => $sku,
-            'store_id' => $store_id
-        );
-
-        return $this->get($options);
+        return $this->get(array('sku' => $sku, 'store_id' => $store_id));
     }
 
     /**
@@ -542,33 +537,6 @@ class Product implements CrudInterface
     }
 
     /**
-     * Returns an array of weight measurement units
-     * @return array
-     */
-    public function getWeightUnits()
-    {
-        return array(
-            'g' => $this->translation->text('Gram'),
-            'kg' => $this->translation->text('Kilogram'),
-            'lb' => $this->translation->text('Pound'),
-            'oz' => $this->translation->text('Ounce'),
-        );
-    }
-
-    /**
-     * Returns an array of size measurement units
-     * @return array
-     */
-    public function getSizeUnits()
-    {
-        return array(
-            'in' => $this->translation->text('Inch'),
-            'mm' => $this->translation->text('Millimeter'),
-            'cm' => $this->translation->text('Centimetre')
-        );
-    }
-
-    /**
      * Delete all database records associated with the product ID
      * @param int $product_id
      */
@@ -576,7 +544,6 @@ class Product implements CrudInterface
     {
         $conditions = array('product_id' => $product_id);
         $conditions2 = array('entity' => 'product', 'entity_id' => $product_id);
-        $conditions3 = array('item_product_id' => $product_id);
 
         $this->db->delete('cart', $conditions);
         $this->db->delete('review', $conditions);
@@ -590,7 +557,7 @@ class Product implements CrudInterface
         $this->db->delete('product_view', $conditions);
 
         $this->db->delete('product_related', $conditions);
-        $this->db->delete('product_related', $conditions3);
+        $this->db->delete('product_related', array('item_product_id' => $product_id));
         $this->db->delete('product_bundle', $conditions);
 
         $this->db->delete('file', $conditions2);
