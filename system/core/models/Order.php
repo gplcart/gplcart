@@ -272,9 +272,11 @@ class Order implements CrudInterface
             return (int) $result;
         }
 
-        unset($order['order_id']); // In case we're cloning the order
+        unset($order['order_id']); // In case the order is cloning
         $order['created'] = $order['modified'] = GC_TIME;
         $order += array('status' => $this->getDefaultStatus());
+
+        $this->prepareComponents($order);
 
         $result = $this->db->insert('orders', $order);
         $this->hook->attach('order.add.after', $order, $result, $this);
@@ -341,7 +343,16 @@ class Order implements CrudInterface
             return $statuses;
         }
 
-        $statuses = $this->getDefaultStatuses();
+        $statuses = array(
+            'pending' => $this->translation->text('Pending'),
+            'canceled' => $this->translation->text('Canceled'),
+            'delivered' => $this->translation->text('Delivered'),
+            'completed' => $this->translation->text('Completed'),
+            'processing' => $this->translation->text('Processing'),
+            'dispatched' => $this->translation->text('Dispatched'),
+            'pending_payment' => $this->translation->text('Awaiting payment')
+        );
+
         $this->hook->attach('order.statuses', $statuses, $this);
         return $statuses;
     }
@@ -537,6 +548,7 @@ class Order implements CrudInterface
         );
 
         $code = null;
+
         if (isset($data['order']['data']['pricerule_code'])) {
             $code = $data['order']['data']['pricerule_code'];
         }
@@ -580,25 +592,6 @@ class Order implements CrudInterface
     }
 
     /**
-     * Returns an array of default order statuses
-     * @return array
-     */
-    protected function getDefaultStatuses()
-    {
-        $statuses = array(
-            'pending' => $this->translation->text('Pending'),
-            'canceled' => $this->translation->text('Canceled'),
-            'delivered' => $this->translation->text('Delivered'),
-            'completed' => $this->translation->text('Completed'),
-            'processing' => $this->translation->text('Processing'),
-            'dispatched' => $this->translation->text('Dispatched'),
-            'pending_payment' => $this->translation->text('Awaiting payment')
-        );
-
-        return $statuses;
-    }
-
-    /**
      * Prepares order components
      * @param array $order
      */
@@ -606,7 +599,8 @@ class Order implements CrudInterface
     {
         if (!empty($order['cart']['items'])) {
             foreach ($order['cart']['items'] as $sku => $item) {
-                $order['data']['components']['cart']['items'][$sku]['price'] = $item['total'];
+                $price = isset($item['total']) ? $item['total'] : null;
+                $order['data']['components']['cart']['items'][$sku]['price'] = $price;
             }
         }
     }
