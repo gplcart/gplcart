@@ -142,35 +142,6 @@ trait Widget
     }
 
     /**
-     * Returns render widget with buttons from Oauth providers
-     * @param \gplcart\core\models\Oauth $oauth_model
-     * @param array $options
-     * @return string
-     */
-    public function getWidgetOauthButtons($oauth_model, array $options = array())
-    {
-        $options += array(
-            'status' => true,
-            'type' => 'login'
-        );
-
-        $providers = $oauth_model->getProviders($options);
-
-        $buttons = array();
-        foreach ($providers as $provider_id => $provider) {
-            if (!empty($provider['template']['button'])) {
-                $url = $oauth_model->url($provider);
-                $buttons[$provider_id]['url'] = $url;
-                $buttons[$provider_id]['provider'] = $provider;
-                $data = array('provider' => $provider, 'url' => $url);
-                $buttons[$provider_id]['rendered'] = $this->render($provider['template']['button'], $data);
-            }
-        }
-
-        return $this->render('common/oauth', array('buttons' => $buttons));
-    }
-
-    /**
      * Returns rendered product picker widget
      * @param array $options
      * @return string

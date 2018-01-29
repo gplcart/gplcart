@@ -9,9 +9,8 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\Oauth as OauthModel,
-    gplcart\core\models\UserAction as UserActionModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
+use gplcart\core\models\UserAction as UserActionModel;
 
 /**
  * Handles incoming requests and outputs data related to logging in users
@@ -20,26 +19,18 @@ class UserLogin extends FrontendController
 {
 
     /**
-     * Oauth model instance
-     * @var \gplcart\core\models\Oauth $oauth
-     */
-    protected $oauth;
-
-    /**
      * User access model instance
      * @var \gplcart\core\models\UserAction $user_action
      */
     protected $user_action;
 
     /**
-     * @param OauthModel $oauth
      * @param UserActionModel $user_action
      */
-    public function __construct(OauthModel $oauth, UserActionModel $user_action)
+    public function __construct(UserActionModel $user_action)
     {
         parent::__construct();
 
-        $this->oauth = $oauth;
         $this->user_action = $user_action;
     }
 
@@ -52,8 +43,6 @@ class UserLogin extends FrontendController
 
         $this->setTitleEditUserLogin();
         $this->setBreadcrumbEditUserLogin();
-
-        $this->setData('oauth_buttons', $this->getWidgetOauthButtons($this->oauth));
 
         $this->submitUserLogin();
         $this->outputEditUserLogin();

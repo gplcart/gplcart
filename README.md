@@ -60,7 +60,6 @@ In one line: `composer create-project gplcart/gplcart test --stability dev --no-
 - Product comparison
 - Wishlists even for anonymous
 - Address books
-- OAuth 2.0 support
 - No stupid cart pages, just one checkout page
 - True one page checkout with graceful degradation when JS is disabled
 - Product classes
