@@ -68,12 +68,16 @@ class Session
      * Set a session data
      * @param string|array $key
      * @param mixed $value
+     * @return bool
      */
     public function set($key, $value = null)
     {
         if (!GC_CLI && isset($_SESSION)) {
             gplcart_array_set($_SESSION, $key, $value);
+            return true;
         }
+
+        return false;
     }
 
     /**
