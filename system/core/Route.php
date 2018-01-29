@@ -13,7 +13,6 @@ use Exception;
 use gplcart\core\exceptions\Route as RouteException;
 use gplcart\core\helpers\Request as RequestHelper;
 use gplcart\core\helpers\Response as ResponseHelper;
-use gplcart\core\helpers\Server as ServerHelper;
 use gplcart\core\helpers\Url as UrlHelper;
 
 /**
@@ -39,12 +38,6 @@ class Route
      * @var \gplcart\core\helpers\Response $response
      */
     protected $response;
-
-    /**
-     * Server class instance
-     * @var \gplcart\core\helpers\Server $server
-     */
-    protected $server;
 
     /**
      * Hook class instance
@@ -87,16 +80,14 @@ class Route
      * @param Hook $hook
      * @param UrlHelper $url
      * @param RequestHelper $request
-     * @param ServerHelper $server
      * @param ResponseHelper $response
      */
     public function __construct(Config $config, Hook $hook, UrlHelper $url,
-                                RequestHelper $request, ServerHelper $server, ResponseHelper $response)
+                                RequestHelper $request, ResponseHelper $response)
     {
         $this->url = $url;
         $this->hook = $hook;
         $this->config = $config;
-        $this->server = $server;
         $this->request = $request;
         $this->response = $response;
     }
@@ -107,6 +98,7 @@ class Route
     public function init()
     {
         $this->setLangcode();
+
         $this->path = $this->url->path();
         $this->db = $this->config->getDb();
     }
@@ -284,10 +276,6 @@ class Route
         try {
 
             $route = $this->set($route, $arguments);
-
-            if (isset($route['method']) && !in_array($this->server->requestMethod(), (array) $route['method'])) {
-                $this->response->outputStatus(405);
-            }
 
             $callback = Handler::get($route, null, 'controller');
 
