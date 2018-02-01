@@ -233,6 +233,10 @@ class Translation
      */
     public function text($string, array $arguments = array())
     {
+        if (!isset($this->context) || !$this->prepared) {
+            return $this->formatString($string, $arguments);
+        }
+
         if (empty($this->langcode) || $this->langcode === 'en') {
             return $this->formatString($string, $arguments);
         }
