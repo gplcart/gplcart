@@ -70,7 +70,7 @@ function gplcart_setup_php()
  */
 function gplcart_setup_autoload()
 {
-    spl_autoload_register(function($namespace) {
+    spl_autoload_register(function ($namespace) {
 
         $path = substr(str_replace('\\', '/', $namespace), 8);
 
@@ -103,4 +103,13 @@ function gplcart_setup_vendor()
     if (is_file($lock) && is_file($autoload)) {
         include_once $autoload;
     }
+}
+
+/**
+ * Setup internal encoding
+ */
+function gplcart_setup_encoding()
+{
+    mb_language('uni');
+    mb_internal_encoding('UTF-8');
 }
