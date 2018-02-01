@@ -332,3 +332,16 @@ function gplcart_instance_helper($name)
 {
     return gplcart_instance("gplcart\\core\\helpers\\$name");
 }
+
+/**
+ * Returns a translated string
+ * @param string $text
+ * @param array $arguments
+ * @return string
+ */
+function gplcart_text($text, array $arguments = array())
+{
+    /* @var $translation \gplcart\core\models\Translation */
+    $translation = gplcart_instance_model('Translation');
+    return $translation->text($text, $arguments);
+}
