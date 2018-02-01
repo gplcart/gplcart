@@ -96,9 +96,15 @@ class FileTransfer
      * @param TranslationModel $translation
      * @param SocketHelper $socket
      */
-    public function __construct(Hook $hook, Config $config, LanguageModel $language,
-                                ValidatorModel $validator, FileModel $file, TranslationModel $translation,
-                                SocketHelper $socket)
+    public function __construct(
+        Hook $hook,
+        Config $config,
+        LanguageModel $language,
+        ValidatorModel $validator,
+        FileModel $file,
+        TranslationModel $translation,
+        SocketHelper $socket
+    )
     {
         $this->hook = $hook;
         $this->config = $config;
@@ -272,7 +278,8 @@ class FileTransfer
 
         if (!file_exists($directory) && !mkdir($directory, 0775, true)) {
             unlink($temp);
-            throw new UnexpectedValueException($this->translation->text('Unable to create @name', array('@name' => $directory)));
+            throw new UnexpectedValueException($this->translation->text('Unable to create @name', array(
+                '@name' => $directory)));
         }
 
         $destination = "$directory/$filename";
@@ -367,7 +374,11 @@ class FileTransfer
         }
 
         if (isset($this->handler['filesize']) && filesize($file) > $this->handler['filesize']) {
-            throw new ValidationException($this->translation->text('File size exceeds %num bytes', array('%num' => $this->handler['filesize'])));
+
+            $message = $this->translation->text('File size exceeds %num bytes', array(
+                '%num' => $this->handler['filesize']));
+
+            throw new ValidationException($message);
         }
 
         $result = $this->validator->run($this->handler['validator'], $file, $this->handler);
