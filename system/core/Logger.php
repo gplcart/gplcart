@@ -77,7 +77,7 @@ class Logger
 
     /**
      * Enable / disable error backtrace logging
-     * @param type $value
+     * @param bool $value
      * @return $this
      */
     public function logBacktrace($value = true)
