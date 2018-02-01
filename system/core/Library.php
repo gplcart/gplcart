@@ -243,7 +243,7 @@ class Library
     {
         $library['version_source'] += array(
             'pattern' => '',
-            'lines' => 20,
+            'lines' => 100,
             'cols' => 200,
         );
 
@@ -252,8 +252,10 @@ class Library
         while ($library['version_source']['lines'] && $line = fgets($handle, $library['version_source']['cols'])) {
             $version = array();
             if (preg_match($library['version_source']['pattern'], $line, $version)) {
-                fclose($handle);
-                return preg_replace('/^[\D\\s]+/', '', $version[1]);
+                if (count($version) == 2 && isset($version[1])) {
+                    fclose($handle);
+                    return preg_replace('/^[\D\\s]+/', '', $version[1]);
+                }
             }
 
             $library['version_source']['lines']--;
