@@ -43,15 +43,17 @@ class Url
      * @param array $options
      * @param boolean $full
      * @param boolean $nolangcode
+     * @return null
      */
     final public function redirect($url = '', $options = array(), $full = false, $nolangcode = false)
     {
-        if (isset($url)) {
+        if (!isset($url)) {
+            return null;
+        }
 
-            if (!empty($url) && ($full || $this->isAbsolute($url))) {
-                header("Location: $url");
-                exit;
-            }
+        if (!empty($url) && ($full || $this->isAbsolute($url))) {
+            $url = filter_var($url, FILTER_SANITIZE_URL);
+        } else {
 
             $target = $this->request->get('target', '', 'string');
 
@@ -61,9 +63,11 @@ class Url
                 $options = is_array($parsed) ? $parsed : array();
             }
 
-            header('Location: ' . $this->get($url, $options, false, $nolangcode));
-            exit;
+            $url = $this->get($url, $options, false, $nolangcode);
         }
+
+        header("Location: $url");
+        exit;
     }
 
     /**
@@ -72,7 +76,7 @@ class Url
      * @param array $options
      * @param boolean $absolute
      * @param boolean $nolangcode
-     * @return string
+     * @return string|false
      */
     public function get($path = '', $options = array(), $absolute = false, $nolangcode = false)
     {
@@ -90,11 +94,14 @@ class Url
         }
 
         $url = strtok($url, '?');
+
         if ($absolute && !$pass_absolute) {
             $url = $this->server->httpScheme() . $this->server->httpHost() . $url;
         }
 
-        return empty($options) ? $url : "$url?" . http_build_query($options);
+        $url = empty($options) ? $url : "$url?" . http_build_query($options);
+
+        return filter_var($url, FILTER_SANITIZE_URL);
     }
 
     /**
@@ -102,7 +109,7 @@ class Url
      * @param string $code
      * @param string $path
      * @param array $options
-     * @return string
+     * @return string|false
      */
     public function language($code, $path = '', $options = array())
     {
@@ -114,8 +121,11 @@ class Url
         }
 
         array_unshift($segments, $code);
+
         $url = $this->request->base(true) . trim(implode('/', $segments), '/');
-        return empty($options) ? $url : "$url?" . http_build_query($options);
+        $url = empty($options) ? $url : "$url?" . http_build_query($options);
+
+        return filter_var($url, FILTER_SANITIZE_URL);
     }
 
     /**
@@ -258,6 +268,7 @@ class Url
         }
 
         $query = is_file($file) ? array('v' => filemtime($file)) : array();
+
         return $this->get($url, $query, false, true);
     }
 
