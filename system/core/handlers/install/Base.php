@@ -109,12 +109,12 @@ class Base
         $config .= 'return $config;';
         $config .= PHP_EOL;
 
-        if (file_put_contents(GC_FILE_CONFIG_COMPILED, $config) !== false) {
-            chmod(GC_FILE_CONFIG_COMPILED, 0444);
-            return true;
+        if (file_put_contents(GC_FILE_CONFIG_COMPILED, $config) === false) {
+            return $this->translation->text('Failed to create config.php');
         }
 
-        return $this->translation->text('Failed to create config.php');
+        chmod(GC_FILE_CONFIG_COMPILED, 0444);
+        return true;
     }
 
     /**
@@ -311,10 +311,11 @@ class Base
 
         try {
             $this->db->import($this->db->getScheme());
-            return true;
         } catch (Exception $ex) {
             return $ex->getMessage();
         }
+
+        return true;
     }
 
     /**
@@ -326,7 +327,7 @@ class Base
 
         foreach ((array) $this->getCountryModel()->getIso() as $code => $country) {
             $placeholders[] = '(?,?,?,?,?)';
-            $native_name = isset($country['native_name']) ? $country['native_name'] : $country['name'];
+            $native_name = empty($country['native_name']) ? $country['name'] : $country['native_name'];
             $rows = array_merge($rows, array(0, $country['name'], $code, $native_name, serialize(array())));
         }
 
