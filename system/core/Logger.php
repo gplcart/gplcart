@@ -285,28 +285,53 @@ class Logger
      */
     public function getFormattedError(array $error, $header = '')
     {
-        $output = "<table style='background:#f2dede;color:#a94442;width:100%;'>";
+        $output = "<table style='background:#fcf8e3;
+                                 color:#8a6d3b;
+                                 width:100%;
+                                 margin-bottom:10px;
+                                 border: 1px solid #faebcc;
+                                 border-collapse: collapse;'>";
 
         if (!empty($header)) {
-            $output .= "<tr><td colspan='2'><h1 style='padding:0;margin:0;'>$header</h3></td></tr>\n";
+            $output .= "<tr>
+                          <td colspan='2'><h1 style='padding:0;margin:0;'>$header</h3></td>
+                        </tr>\n";
         }
 
-        $output .= "<tr><td>Message </td><td>{$error['message']}</td></tr>\n";
+        $output .= "<tr>
+                      <td style='background-color: #faebcc;'>Message </td>
+                      <td style='border-bottom: 1px solid #faebcc;'>{$error['message']}</td>
+                    </tr>\n";
 
         if (isset($error['code'])) {
-            $output .= "<tr><td>Code </td><td>{$error['code']}</td></tr>\n";
+            $output .= "<tr>
+                          <td style='background-color: #faebcc;'>Code </td>
+                          <td style='border-bottom: 1px solid #faebcc;'>{$error['code']}</td>
+                       </tr>\n";
         }
 
         if (isset($error['type'])) {
-            $output .= "<tr><td>Type </td><td>{$error['type']}</td></tr>\n";
+            $output .= "<tr>
+                          <td style='background-color: #faebcc;'>Type </td>
+                          <td style='border-bottom: 1px solid #faebcc;'>{$error['type']}</td>
+                        </tr>\n";
         }
 
-        $output .= "<tr><td>File </td><td>{$error['file']}</td></tr>\n";
-        $output .= "<tr><td>Line </td><td>{$error['line']}</td></tr>\n";
+        $output .= "<tr>
+                      <td style='background-color: #faebcc;'>File </td>
+                      <td style='border-bottom: 1px solid #faebcc;'>{$error['file']}</td>
+                    </tr>
+                    <tr>
+                      <td style='background-color: #faebcc;'>Line </td>
+                      <td style='border-bottom: 1px solid #faebcc;'>{$error['line']}</td>
+                    </tr>\n";
 
         if ($this->print_backtrace && !empty($error['backtrace'])) {
             $error['backtrace'] = implode("<br>\n", $error['backtrace']);
-            $output .= "<tr><td>Backtrace </td><td>{$error['backtrace']}</td></tr>\n";
+            $output .= "<tr>
+                          <td style='background-color: #faebcc;'>Backtrace </td>
+                          <td style='border-bottom: 1px solid #faebcc;'>{$error['backtrace']}</td>
+                        </tr>\n";
         }
 
         $output .= '</table>';
