@@ -745,7 +745,7 @@ abstract class Controller
      */
     public function date($timestamp = null, $full = true)
     {
-        if (empty($timestamp)) {
+        if (!isset($timestamp)) {
             $timestamp = GC_TIME;
         }
 
