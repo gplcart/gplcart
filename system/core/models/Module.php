@@ -9,6 +9,7 @@
 
 namespace gplcart\core\models;
 
+use Exception;
 use DirectoryIterator;
 use gplcart\core\Hook;
 use gplcart\core\models\Translation as TranslationModel;
@@ -169,10 +170,10 @@ class Module
             return $this->translation->text('Modules that are installers cannot be enabled');
         }
 
-        $instance = $this->module->getInstance($module_id);
-
-        if (!is_object($instance)) {
-            return $this->translation->text('Failed to instantiate main module class');
+        try {
+            $this->module->getInstance($module_id); // Test module class
+        } catch (Exception $ex) {
+            return $ex->getMessage();
         }
 
         return $this->checkRequirements($module_id);
@@ -197,10 +198,10 @@ class Module
             return $this->translation->text('Modules that are installers cannot be installed when system is set up');
         }
 
-        $instance = $this->module->getInstance($module_id);
-
-        if (!is_object($instance)) {
-            return $this->translation->text('Failed to instantiate main module class');
+        try {
+            $this->module->getInstance($module_id); // Test module
+        } catch (Exception $ex) {
+            return $ex->getMessage();
         }
 
         return $this->checkRequirements($module_id);

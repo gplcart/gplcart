@@ -10,6 +10,7 @@
 namespace gplcart\core;
 
 use Exception;
+use InvalidArgumentException;
 
 /**
  * Parent class for modules
@@ -248,18 +249,24 @@ class Module
         }
 
         if (isset($installed[$module_id])) {
+
             $info['installed'] = true;
+
             if (empty($installed[$module_id]['settings'])) {
                 unset($installed[$module_id]['settings']);
             }
+
             $info = array_replace($info, $installed[$module_id]);
         }
 
         if (!empty($info['status'])) {
-            $instance = $this->getInstance($module_id);
-            if (is_object($instance)) {
+
+            try {
+                $instance = $this->getInstance($module_id);
                 $info['hooks'] = $this->getHooks($instance);
                 $info['class'] = get_class($instance);
+            } catch (Exception $exc) {
+                return $info;
             }
         }
 
@@ -341,19 +348,16 @@ class Module
     /**
      * Returns the module class instance
      * @param string $module_id
-     * @return null|object
+     * @return object
+     * @throws InvalidArgumentException
      */
     public function getInstance($module_id)
     {
-        $namespace = $this->getClass($module_id);
-
         try {
-            $instance = Container::get($namespace);
+            return Container::get($this->getClass($module_id));
         } catch (Exception $exc) {
-            return null;
+            throw new InvalidArgumentException("Failed to instantiate module $module_id: " . $exc->getMessage());
         }
-
-        return $instance;
     }
 
     /**
