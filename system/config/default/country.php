@@ -7,254 +7,767 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 return array(
-    'AF' => array('name' => /* @text */'Afghanistan'),
-    'AX' => array('name' => /* @text */'Aland Islands'),
-    'AL' => array('name' => /* @text */'Albania'),
-    'DZ' => array('name' => /* @text */'Algeria'),
-    'AS' => array('name' => /* @text */'American Samoa'),
-    'AD' => array('name' => /* @text */'Andorra'),
-    'AO' => array('name' => /* @text */'Angola'),
-    'AI' => array('name' => /* @text */'Anguilla'),
-    'AQ' => array('name' => /* @text */'Antarctica'),
-    'AG' => array('name' => /* @text */'Antigua and Barbuda'),
-    'AR' => array('name' => /* @text */'Argentina'),
-    'AM' => array('name' => /* @text */'Armenia'),
-    'AW' => array('name' => /* @text */'Aruba'),
-    'AU' => array('name' => /* @text */'Australia'),
-    'AT' => array('name' => /* @text */'Austria'),
-    'AZ' => array('name' => /* @text */'Azerbaijan'),
-    'BS' => array('name' => /* @text */'Bahamas'),
-    'BH' => array('name' => /* @text */'Bahrain'),
-    'BD' => array('name' => /* @text */'Bangladesh'),
-    'BB' => array('name' => /* @text */'Barbados'),
-    'BY' => array('name' => /* @text */'Belarus'),
-    'BE' => array('name' => /* @text */'Belgium'),
-    'BZ' => array('name' => /* @text */'Belize'),
-    'BJ' => array('name' => /* @text */'Benin'),
-    'BM' => array('name' => /* @text */'Bermuda'),
-    'BT' => array('name' => /* @text */'Bhutan'),
-    'BO' => array('name' => /* @text */'Bolivia'),
-    'BQ' => array('name' => /* @text */'Bonaire, Saint Eustatius and Saba'),
-    'BA' => array('name' => /* @text */'Bosnia and Herzegovina'),
-    'BW' => array('name' => /* @text */'Botswana'),
-    'BV' => array('name' => /* @text */'Bouvet Island'),
-    'BR' => array('name' => /* @text */'Brazil'),
-    'IO' => array('name' => /* @text */'British Indian Ocean Territory'),
-    'VG' => array('name' => /* @text */'British Virgin Islands'),
-    'BN' => array('name' => /* @text */'Brunei'),
-    'BG' => array('name' => /* @text */'Bulgaria'),
-    'BF' => array('name' => /* @text */'Burkina Faso'),
-    'BI' => array('name' => /* @text */'Burundi'),
-    'KH' => array('name' => /* @text */'Cambodia'),
-    'CM' => array('name' => /* @text */'Cameroon'),
-    'CA' => array('name' => /* @text */'Canada'),
-    'CV' => array('name' => /* @text */'Cape Verde'),
-    'KY' => array('name' => /* @text */'Cayman Islands'),
-    'CF' => array('name' => /* @text */'Central African Republic'),
-    'TD' => array('name' => /* @text */'Chad'),
-    'CL' => array('name' => /* @text */'Chile'),
-    'CN' => array('name' => /* @text */'China'),
-    'CX' => array('name' => /* @text */'Christmas Island'),
-    'CC' => array('name' => /* @text */'Cocos Islands'),
-    'CO' => array('name' => /* @text */'Colombia'),
-    'KM' => array('name' => /* @text */'Comoros'),
-    'CK' => array('name' => /* @text */'Cook Islands'),
-    'CR' => array('name' => /* @text */'Costa Rica'),
-    'HR' => array('name' => /* @text */'Croatia'),
-    'CU' => array('name' => /* @text */'Cuba'),
-    'CW' => array('name' => /* @text */'Curacao'),
-    'CY' => array('name' => /* @text */'Cyprus'),
-    'CZ' => array('name' => /* @text */'Czech Republic'),
-    'CD' => array('name' => /* @text */'Democratic Republic of the Congo'),
-    'DK' => array('name' => /* @text */'Denmark'),
-    'DJ' => array('name' => /* @text */'Djibouti'),
-    'DM' => array('name' => /* @text */'Dominica'),
-    'DO' => array('name' => /* @text */'Dominican Republic'),
-    'TL' => array('name' => /* @text */'East Timor'),
-    'EC' => array('name' => /* @text */'Ecuador'),
-    'EG' => array('name' => /* @text */'Egypt'),
-    'SV' => array('name' => /* @text */'El Salvador'),
-    'GQ' => array('name' => /* @text */'Equatorial Guinea'),
-    'ER' => array('name' => /* @text */'Eritrea'),
-    'EE' => array('name' => /* @text */'Estonia'),
-    'ET' => array('name' => /* @text */'Ethiopia'),
-    'FK' => array('name' => /* @text */'Falkland Islands'),
-    'FO' => array('name' => /* @text */'Faroe Islands'),
-    'FJ' => array('name' => /* @text */'Fiji'),
-    'FI' => array('name' => /* @text */'Finland'),
-    'FR' => array('name' => /* @text */'France'),
-    'GF' => array('name' => /* @text */'French Guiana'),
-    'PF' => array('name' => /* @text */'French Polynesia'),
-    'TF' => array('name' => /* @text */'French Southern Territories'),
-    'GA' => array('name' => /* @text */'Gabon'),
-    'GM' => array('name' => /* @text */'Gambia'),
-    'GE' => array('name' => /* @text */'Georgia'),
-    'DE' => array('name' => /* @text */'Germany'),
-    'GH' => array('name' => /* @text */'Ghana'),
-    'GI' => array('name' => /* @text */'Gibraltar'),
-    'GR' => array('name' => /* @text */'Greece'),
-    'GL' => array('name' => /* @text */'Greenland'),
-    'GD' => array('name' => /* @text */'Grenada'),
-    'GP' => array('name' => /* @text */'Guadeloupe'),
-    'GU' => array('name' => /* @text */'Guam'),
-    'GT' => array('name' => /* @text */'Guatemala'),
-    'GG' => array('name' => /* @text */'Guernsey'),
-    'GN' => array('name' => /* @text */'Guinea'),
-    'GW' => array('name' => /* @text */'Guinea-Bissau'),
-    'GY' => array('name' => /* @text */'Guyana'),
-    'HT' => array('name' => /* @text */'Haiti'),
-    'HM' => array('name' => /* @text */'Heard Island and McDonald Islands'),
-    'HN' => array('name' => /* @text */'Honduras'),
-    'HK' => array('name' => /* @text */'Hong Kong'),
-    'HU' => array('name' => /* @text */'Hungary'),
-    'IS' => array('name' => /* @text */'Iceland'),
-    'IN' => array('name' => /* @text */'India'),
-    'ID' => array('name' => /* @text */'Indonesia'),
-    'IR' => array('name' => /* @text */'Iran'),
-    'IQ' => array('name' => /* @text */'Iraq'),
-    'IE' => array('name' => /* @text */'Ireland'),
-    'IM' => array('name' => /* @text */'Isle of Man'),
-    'IL' => array('name' => /* @text */'Israel'),
-    'IT' => array('name' => /* @text */'Italy'),
-    'CI' => array('name' => /* @text */'Ivory Coast'),
-    'JM' => array('name' => /* @text */'Jamaica'),
-    'JP' => array('name' => /* @text */'Japan'),
-    'JE' => array('name' => /* @text */'Jersey'),
-    'JO' => array('name' => /* @text */'Jordan'),
-    'KZ' => array('name' => /* @text */'Kazakhstan'),
-    'KE' => array('name' => /* @text */'Kenya'),
-    'KI' => array('name' => /* @text */'Kiribati'),
-    'XK' => array('name' => /* @text */'Kosovo'),
-    'KW' => array('name' => /* @text */'Kuwait'),
-    'KG' => array('name' => /* @text */'Kyrgyzstan'),
-    'LA' => array('name' => /* @text */'Laos'),
-    'LV' => array('name' => /* @text */'Latvia'),
-    'LB' => array('name' => /* @text */'Lebanon'),
-    'LS' => array('name' => /* @text */'Lesotho'),
-    'LR' => array('name' => /* @text */'Liberia'),
-    'LY' => array('name' => /* @text */'Libya'),
-    'LI' => array('name' => /* @text */'Liechtenstein'),
-    'LT' => array('name' => /* @text */'Lithuania'),
-    'LU' => array('name' => /* @text */'Luxembourg'),
-    'MO' => array('name' => /* @text */'Macao'),
-    'MK' => array('name' => /* @text */'Macedonia'),
-    'MG' => array('name' => /* @text */'Madagascar'),
-    'MW' => array('name' => /* @text */'Malawi'),
-    'MY' => array('name' => /* @text */'Malaysia'),
-    'MV' => array('name' => /* @text */'Maldives'),
-    'ML' => array('name' => /* @text */'Mali'),
-    'MT' => array('name' => /* @text */'Malta'),
-    'MH' => array('name' => /* @text */'Marshall Islands'),
-    'MQ' => array('name' => /* @text */'Martinique'),
-    'MR' => array('name' => /* @text */'Mauritania'),
-    'MU' => array('name' => /* @text */'Mauritius'),
-    'YT' => array('name' => /* @text */'Mayotte'),
-    'MX' => array('name' => /* @text */'Mexico'),
-    'FM' => array('name' => /* @text */'Micronesia'),
-    'MD' => array('name' => /* @text */'Moldova'),
-    'MC' => array('name' => /* @text */'Monaco'),
-    'MN' => array('name' => /* @text */'Mongolia'),
-    'ME' => array('name' => /* @text */'Montenegro'),
-    'MS' => array('name' => /* @text */'Montserrat'),
-    'MA' => array('name' => /* @text */'Morocco'),
-    'MZ' => array('name' => /* @text */'Mozambique'),
-    'MM' => array('name' => /* @text */'Myanmar'),
-    'NA' => array('name' => /* @text */'Namibia'),
-    'NR' => array('name' => /* @text */'Nauru'),
-    'NP' => array('name' => /* @text */'Nepal'),
-    'NL' => array('name' => /* @text */'Netherlands'),
-    'NC' => array('name' => /* @text */'New Caledonia'),
-    'NZ' => array('name' => /* @text */'New Zealand'),
-    'NI' => array('name' => /* @text */'Nicaragua'),
-    'NE' => array('name' => /* @text */'Niger'),
-    'NG' => array('name' => /* @text */'Nigeria'),
-    'NU' => array('name' => /* @text */'Niue'),
-    'NF' => array('name' => /* @text */'Norfolk Island'),
-    'KP' => array('name' => /* @text */'North Korea'),
-    'MP' => array('name' => /* @text */'Northern Mariana Islands'),
-    'NO' => array('name' => /* @text */'Norway'),
-    'OM' => array('name' => /* @text */'Oman'),
-    'PK' => array('name' => /* @text */'Pakistan'),
-    'PW' => array('name' => /* @text */'Palau'),
-    'PS' => array('name' => /* @text */'Palestinian Territory'),
-    'PA' => array('name' => /* @text */'Panama'),
-    'PG' => array('name' => /* @text */'Papua New Guinea'),
-    'PY' => array('name' => /* @text */'Paraguay'),
-    'PE' => array('name' => /* @text */'Peru'),
-    'PH' => array('name' => /* @text */'Philippines'),
-    'PN' => array('name' => /* @text */'Pitcairn'),
-    'PL' => array('name' => /* @text */'Poland'),
-    'PT' => array('name' => /* @text */'Portugal'),
-    'PR' => array('name' => /* @text */'Puerto Rico'),
-    'QA' => array('name' => /* @text */'Qatar'),
-    'CG' => array('name' => /* @text */'Republic of the Congo'),
-    'RE' => array('name' => /* @text */'Reunion'),
-    'RO' => array('name' => /* @text */'Romania'),
-    'RU' => array('name' => /* @text */'Russia'),
-    'RW' => array('name' => /* @text */'Rwanda'),
-    'BL' => array('name' => /* @text */'Saint Barthelemy'),
-    'SH' => array('name' => /* @text */'Saint Helena'),
-    'KN' => array('name' => /* @text */'Saint Kitts and Nevis'),
-    'LC' => array('name' => /* @text */'Saint Lucia'),
-    'MF' => array('name' => /* @text */'Saint Martin'),
-    'PM' => array('name' => /* @text */'Saint Pierre and Miquelon'),
-    'VC' => array('name' => /* @text */'Saint Vincent and the Grenadines'),
-    'WS' => array('name' => /* @text */'Samoa'),
-    'SM' => array('name' => /* @text */'San Marino'),
-    'ST' => array('name' => /* @text */'Sao Tome and Principe'),
-    'SA' => array('name' => /* @text */'Saudi Arabia'),
-    'SN' => array('name' => /* @text */'Senegal'),
-    'RS' => array('name' => /* @text */'Serbia'),
-    'SC' => array('name' => /* @text */'Seychelles'),
-    'SL' => array('name' => /* @text */'Sierra Leone'),
-    'SG' => array('name' => /* @text */'Singapore'),
-    'SX' => array('name' => /* @text */'Sint Maarten'),
-    'SK' => array('name' => /* @text */'Slovakia'),
-    'SI' => array('name' => /* @text */'Slovenia'),
-    'SB' => array('name' => /* @text */'Solomon Islands'),
-    'SO' => array('name' => /* @text */'Somalia'),
-    'ZA' => array('name' => /* @text */'South Africa'),
-    'GS' => array('name' => /* @text */'South Georgia and the South Sandwich Islands'),
-    'KR' => array('name' => /* @text */'South Korea'),
-    'SS' => array('name' => /* @text */'South Sudan'),
-    'ES' => array('name' => /* @text */'Spain'),
-    'LK' => array('name' => /* @text */'Sri Lanka'),
-    'SD' => array('name' => /* @text */'Sudan'),
-    'SR' => array('name' => /* @text */'Suriname'),
-    'SJ' => array('name' => /* @text */'Svalbard and Jan Mayen'),
-    'SZ' => array('name' => /* @text */'Swaziland'),
-    'SE' => array('name' => /* @text */'Sweden'),
-    'CH' => array('name' => /* @text */'Switzerland'),
-    'SY' => array('name' => /* @text */'Syria'),
-    'TW' => array('name' => /* @text */'Taiwan'),
-    'TJ' => array('name' => /* @text */'Tajikistan'),
-    'TZ' => array('name' => /* @text */'Tanzania'),
-    'TH' => array('name' => /* @text */'Thailand'),
-    'TG' => array('name' => /* @text */'Togo'),
-    'TK' => array('name' => /* @text */'Tokelau'),
-    'TO' => array('name' => /* @text */'Tonga'),
-    'TT' => array('name' => /* @text */'Trinidad and Tobago'),
-    'TN' => array('name' => /* @text */'Tunisia'),
-    'TR' => array('name' => /* @text */'Turkey'),
-    'TM' => array('name' => /* @text */'Turkmenistan'),
-    'TC' => array('name' => /* @text */'Turks and Caicos Islands'),
-    'TV' => array('name' => /* @text */'Tuvalu'),
-    'VI' => array('name' => /* @text */'U.S. Virgin Islands'),
-    'UG' => array('name' => /* @text */'Uganda'),
-    'UA' => array('name' => /* @text */'Ukraine'),
-    'AE' => array('name' => /* @text */'United Arab Emirates'),
-    'GB' => array('name' => /* @text */'United Kingdom'),
-    'US' => array('name' => /* @text */'United States'),
-    'UM' => array('name' => /* @text */'United States Minor Outlying Islands'),
-    'UY' => array('name' => /* @text */'Uruguay'),
-    'UZ' => array('name' => /* @text */'Uzbekistan'),
-    'VU' => array('name' => /* @text */'Vanuatu'),
-    'VA' => array('name' => /* @text */'Vatican'),
-    'VE' => array('name' => /* @text */'Venezuela'),
-    'VN' => array('name' => /* @text */'Vietnam'),
-    'WF' => array('name' => /* @text */'Wallis and Futuna'),
-    'EH' => array('name' => /* @text */'Western Sahara'),
-    'YE' => array('name' => /* @text */'Yemen'),
-    'ZM' => array('name' => /* @text */'Zambia'),
-    'ZW' => array('name' => /* @text */'Zimbabwe')
+    'AF' => array(
+        'native_name' => 'افغانستان',
+        'name' => 'Afghanistan' // @text
+    ),
+    'AX' => array(
+        'native_name' => 'Åland Ahvenanmaa',
+        'name' => 'Aland Islands' // @text
+    ),
+    'AL' => array(
+        'native_name' => 'Shqipëria',
+        'name' => 'Albania' // @text
+    ),
+    'DZ' => array(
+        'native_name' => 'الجزائر',
+        'name' => 'Algeria' // @text
+    ),
+    'AS' => array(
+        'name' => 'American Samoa' // @text
+    ),
+    'AD' => array(
+        'name' => 'Andorra' // @text
+    ),
+    'AO' => array(
+        'name' => 'Angola' // @text
+    ),
+    'AI' => array(
+        'name' => 'Anguilla' // @text
+    ),
+    'AG' => array(
+        'name' => 'Antigua and Barbuda' // @text
+    ),
+    'AR' => array(
+        'name' => 'Argentina' // @text
+    ),
+    'AM' => array(
+        'native_name' => 'Հայաստան',
+        'name' => 'Armenia' // @text
+    ),
+    'AW' => array(
+        'name' => 'Aruba' // @text
+    ),
+    'AU' => array(
+        'name' => 'Australia' // @text
+    ),
+    'AT' => array(
+        'native_name' => 'Österreich',
+        'name' => 'Austria' // @text
+    ),
+    'AZ' => array(
+        'native_name' => 'Azərbaycan',
+        'name' => 'Azerbaijan' // @text
+    ),
+    'BS' => array(
+        'name' => 'Bahamas' // @text
+    ),
+    'BH' => array(
+        'native_name' => 'البحرين',
+        'name' => 'Bahrain' // @text
+    ),
+    'BD' => array(
+        'native_name' => 'বাংলাদেশ',
+        'name' => 'Bangladesh' // @text
+    ),
+    'BB' => array(
+        'name' => 'Barbados' // @text
+    ),
+    'BY' => array(
+        'native_name' => 'Беларусь',
+        'name' => 'Belarus' // @text
+    ),
+    'BE' => array(
+        'native_name' => 'Belgien',
+        'name' => 'Belgium' // @text
+    ),
+    'BZ' => array(
+        'name' => 'Belize' // @text
+    ),
+    'BJ' => array(
+        'name' => 'Benin' // @text
+    ),
+    'BM' => array(
+        'name' => 'Bermuda' // @text
+    ),
+    'BT' => array(
+        'native_name' => 'འབྲུག་ཡུལ',
+        'name' => 'Bhutan' // @text
+    ),
+    'BO' => array(
+        'native_name' => 'Volívia',
+        'name' => 'Bolivia' // @text
+    ),
+    'BA' => array(
+        'native_name' => 'Босна и Херцеговина',
+        'name' => 'Bosnia and Herzegovina' // @text
+    ),
+    'BW' => array(
+        'name' => 'Botswana' // @text
+    ),
+    'BR' => array(
+        'native_name' => 'Brasil',
+        'name' => 'Brazil' // @text
+    ),
+    'IO' => array(
+        'name' => 'British Indian Ocean Territory' // @text
+    ),
+    'VG' => array(
+        'name' => 'British Virgin Islands' // @text
+    ),
+    'BN' => array(
+        'native_name' => 'بروني',
+        'name' => 'Brunei' // @text
+    ),
+    'BG' => array(
+        'native_name' => 'България',
+        'name' => 'Bulgaria' // @text
+    ),
+    'BF' => array(
+        'name' => 'Burkina Faso' // @text
+    ),
+    'BI' => array(
+        'name' => 'Burundi' // @text
+    ),
+    'KH' => array(
+        'native_name' => 'កម្ពុជា',
+        'name' => 'Cambodia' // @text
+    ),
+    'CM' => array(
+        'name' => 'Cameroon' // @text
+    ),
+    'CA' => array(
+        'name' => 'Canada' // @text
+    ),
+    'CV' => array(
+        'native_name' => 'Cabo Verde',
+        'name' => 'Cape Verde' // @text
+    ),
+    'KY' => array(
+        'name' => 'Cayman Islands' // @text
+    ),
+    'CF' => array(
+        'native_name' => 'Ködörösêse tî Bêafrîka',
+        'name' => 'Central African Republic' // @text
+    ),
+    'TD' => array(
+        'native_name' => 'تشاد',
+        'name' => 'Chad' // @text
+    ),
+    'CL' => array(
+        'name' => 'Chile' // @text
+    ),
+    'CN' => array(
+        'native_name' => '中国',
+        'name' => 'China' // @text
+    ),
+    'CX' => array(
+        'name' => 'Christmas Island' // @text
+    ),
+    'CC' => array(
+        'name' => 'Cocos Islands' // @text
+    ),
+    'CO' => array(
+        'name' => 'Colombia' // @text
+    ),
+    'KM' => array(
+        'native_name' => 'جزر القمر',
+        'name' => 'Comoros' // @text
+    ),
+    'CK' => array(
+        'name' => 'Cook Islands' // @text
+    ),
+    'CR' => array(
+        'name' => 'Costa Rica' // @text
+    ),
+    'HR' => array(
+        'native_name' => 'Hrvatska',
+        'name' => 'Croatia' // @text
+    ),
+    'CU' => array(
+        'name' => 'Cuba' // @text
+    ),
+    'CW' => array(
+        'native_name' => 'Curaçao',
+        'name' => 'Curacao' // @text
+    ),
+    'CY' => array(
+        'native_name' => 'Κύπρος',
+        'name' => 'Cyprus' // @text
+    ),
+    'CZ' => array(
+        'native_name' => 'Česká republika',
+        'name' => 'Czech Republic' // @text
+    ),
+    'CD' => array(
+        'native_name' => 'République du Congo',
+        'name' => 'Democratic Republic of the Congo' // @text
+    ),
+    'DK' => array(
+        'name' => 'Denmark' // @text
+    ),
+    'DJ' => array(
+        'native_name' => 'جيبوتي',
+        'name' => 'Djibouti' // @text
+    ),
+    'DM' => array(
+        'name' => 'Dominica' // @text
+    ),
+    'DO' => array(
+        'native_name' => 'República Dominicana',
+        'name' => 'Dominican Republic' // @text
+    ),
+    'TL' => array(
+        'native_name' => 'Timor Lorosa\'e',
+        'name' => 'East Timor' // @text
+    ),
+    'EC' => array(
+        'name' => 'Ecuador' // @text
+    ),
+    'EG' => array(
+        'native_name' => 'مصر',
+        'name' => 'Egypt' // @text
+    ),
+    'SV' => array(
+        'name' => 'El Salvador' // @text
+    ),
+    'GQ' => array(
+        'native_name' => 'Guinea Ecuatorial',
+        'name' => 'Equatorial Guinea' // @text
+    ),
+    'ER' => array(
+        'native_name' => 'ኤርትራ',
+        'name' => 'Eritrea' // @text
+    ),
+    'EE' => array(
+        'native_name' => 'Eesti',
+        'name' => 'Estonia' // @text
+    ),
+    'ET' => array(
+        'native_name' => 'ኢትዮጵያ',
+        'name' => 'Ethiopia' // @text
+    ),
+    'FK' => array(
+        'name' => 'Falkland Islands' // @text
+    ),
+    'FO' => array(
+        'native_name' => 'Færøerne',
+        'name' => 'Faroe Islands' // @text
+    ),
+    'FJ' => array(
+        'native_name' => 'फ़िजी',
+        'name' => 'Fiji' // @text
+    ),
+    'FI' => array(
+        'native_name' => 'Suomi',
+        'name' => 'Finland' // @text
+    ),
+    'FR' => array(
+        'name' => 'France' // @text
+    ),
+    'GF' => array(
+        'native_name' => 'Guyane',
+        'name' => 'French Guiana' // @text
+    ),
+    'PF' => array(
+        'native_name' => 'Polynésie française',
+        'name' => 'French Polynesia' // @text
+    ),
+    'GA' => array(
+        'native_name' => 'République gabonaise',
+        'name' => 'Gabon' // @text
+    ),
+    'GM' => array(
+        'name' => 'Gambia' // @text
+    ),
+    'GE' => array(
+        'native_name' => 'საქართველო',
+        'name' => 'Georgia' // @text
+    ),
+    'DE' => array(
+        'native_name' => 'Deutschland',
+        'name' => 'Germany' // @text
+    ),
+    'GH' => array(
+        'name' => 'Ghana' // @text
+    ),
+    'GI' => array(
+        'name' => 'Gibraltar' // @text
+    ),
+    'GR' => array(
+        'native_name' => 'Ελλάδα',
+        'name' => 'Greece' // @text
+    ),
+    'GL' => array(
+        'native_name' => 'Grønland',
+        'name' => 'Greenland' // @text
+    ),
+    'GD' => array(
+        'name' => 'Grenada' // @text
+    ),
+    'GP' => array(
+        'name' => 'Guadeloupe' // @text
+    ),
+    'GU' => array(
+        'native_name' => 'Guåhån',
+        'name' => 'Guam' // @text
+    ),
+    'GT' => array(
+        'name' => 'Guatemala' // @text
+    ),
+    'GG' => array(
+        'name' => 'Guernsey' // @text
+    ),
+    'GN' => array(
+        'native_name' => 'Gine',
+        'name' => 'Guinea' // @text
+    ),
+    'GW' => array(
+        'native_name' => 'Guiné-Bissau',
+        'name' => 'Guinea-Bissau' // @text
+    ),
+    'GY' => array(
+        'name' => 'Guyana' // @text
+    ),
+    'HT' => array(
+        'native_name' => 'Ayiti',
+        'name' => 'Haiti' // @text
+    ),
+    'HN' => array(
+        'name' => 'Honduras' // @text
+    ),
+    'HK' => array(
+        'native_name' => '香港',
+        'name' => 'Hong Kong' // @text
+    ),
+    'HU' => array(
+        'native_name' => 'Magyarország',
+        'name' => 'Hungary' // @text
+    ),
+    'IS' => array(
+        'name' => 'Iceland' // @text
+    ),
+    'IN' => array(
+        'native_name' => 'ভাৰত',
+        'name' => 'India' // @text
+    ),
+    'ID' => array(
+        'name' => 'Indonesia' // @text
+    ),
+    'IR' => array(
+        'native_name' => 'ایران',
+        'name' => 'Iran' // @text
+    ),
+    'IQ' => array(
+        'native_name' => 'العراق',
+        'name' => 'Iraq' // @text
+    ),
+    'IE' => array(
+        'name' => 'Ireland' // @text
+    ),
+    'IM' => array(
+        'native_name' => 'Ellan Vannin',
+        'name' => 'Isle of Man' // @text
+    ),
+    'IL' => array(
+        'native_name' => 'ישראל',
+        'name' => 'Israel' // @text
+    ),
+    'IT' => array(
+        'native_name' => 'Italia',
+        'name' => 'Italy' // @text
+    ),
+    'JM' => array(
+        'name' => 'Jamaica' // @text
+    ),
+    'JP' => array(
+        'native_name' => '日本',
+        'name' => 'Japan' // @text
+    ),
+    'JE' => array(
+        'native_name' => 'Jèrri',
+        'name' => 'Jersey' // @text
+    ),
+    'JO' => array(
+        'native_name' => 'الأردن',
+        'name' => 'Jordan' // @text
+    ),
+    'KZ' => array(
+        'native_name' => 'Qazaqstan',
+        'name' => 'Kazakhstan' // @text
+    ),
+    'KE' => array(
+        'name' => 'Kenya' // @text
+    ),
+    'KI' => array(
+        'name' => 'Kiribati' // @text
+    ),
+    'XK' => array(
+        'native_name' => 'Косово',
+        'name' => 'Kosovo' // @text
+    ),
+    'KW' => array(
+        'native_name' => 'دولة الكويت',
+        'name' => 'Kuwait' // @text
+    ),
+    'KG' => array(
+        'native_name' => 'Кыргызстан',
+        'name' => 'Kyrgyzstan' // @text
+    ),
+    'LA' => array(
+        'native_name' => 'ປະເທດລາວ',
+        'name' => 'Laos' // @text
+    ),
+    'LV' => array(
+        'native_name' => 'Latvija',
+        'name' => 'Latvia' // @text
+    ),
+    'LB' => array(
+        'native_name' => 'لبنان',
+        'name' => 'Lebanon' // @text
+    ),
+    'LS' => array(
+        'name' => 'Lesotho' // @text
+    ),
+    'LR' => array(
+        'name' => 'Liberia' // @text
+    ),
+    'LY' => array(
+        'name' => 'Libya' // @text
+    ),
+    'LI' => array(
+        'name' => 'Liechtenstein' // @text
+    ),
+    'LT' => array(
+        'native_name' => 'Lietuva',
+        'name' => 'Lithuania' // @text
+    ),
+    'LU' => array(
+        'native_name' => 'Lëtzebuerg',
+        'name' => 'Luxembourg' // @text
+    ),
+    'MO' => array(
+        'name' => 'Macao' // @text
+    ),
+    'MK' => array(
+        'native_name' => 'Македонија',
+        'name' => 'Macedonia' // @text
+    ),
+    'MG' => array(
+        'name' => 'Madagascar' // @text
+    ),
+    'MW' => array(
+        'name' => 'Malawi' // @text
+    ),
+    'MY' => array(
+        'name' => 'Malaysia' // @text
+    ),
+    'MV' => array(
+        'native_name' => 'ދިވެހިރާއްޖެ',
+        'name' => 'Maldives' // @text
+    ),
+    'ML' => array(
+        'name' => 'Mali' // @text
+    ),
+    'MT' => array(
+        'name' => 'Malta' // @text
+    ),
+    'MH' => array(
+        'native_name' => 'Aorōkin M̧ajeļ',
+        'name' => 'Marshall Islands' // @text
+    ),
+    'MQ' => array(
+        'native_name' => '',
+        'name' => 'Martinique' // @text
+    ),
+    'MR' => array(
+        'name' => 'Mauritania' // @text
+    ),
+    'MU' => array(
+        'native_name' => 'Moris',
+        'name' => 'Mauritius' // @text
+    ),
+    'YT' => array(
+        'name' => 'Mayotte' // @text
+    ),
+    'MX' => array(
+        'name' => 'Mexico' // @text
+    ),
+    'MD' => array(
+        'name' => 'Moldova' // @text
+    ),
+    'MC' => array(
+        'name' => 'Monaco' // @text
+    ),
+    'MN' => array(
+        'native_name' => 'Монгол Улс',
+        'name' => 'Mongolia' // @text
+    ),
+    'ME' => array(
+        'native_name' => 'Црна Гора',
+        'name' => 'Montenegro' // @text
+    ),
+    'MS' => array(
+        'name' => 'Montserrat' // @text
+    ),
+    'MA' => array(
+        'native_name' => 'المغرب',
+        'name' => 'Morocco' // @text
+    ),
+    'MZ' => array(
+        'native_name' => 'Moçambique',
+        'name' => 'Mozambique' // @text
+    ),
+    'MM' => array(
+        'native_name' => 'Myanma',
+        'name' => 'Myanmar' // @text
+    ),
+    'NA' => array(
+        'name' => 'Namibia' // @text
+    ),
+    'NR' => array(
+        'name' => 'Nauru' // @text
+    ),
+    'NP' => array(
+        'native_name' => 'नेपाल',
+        'name' => 'Nepal' // @text
+    ),
+    'NL' => array(
+        'native_name' => 'Nederlân',
+        'name' => 'Netherlands' // @text
+    ),
+    'NC' => array(
+        'native_name' => 'Nouvelle-Calédonie',
+        'name' => 'New Caledonia' // @text
+    ),
+    'NZ' => array(
+        'name' => 'New Zealand' // @text
+    ),
+    'NI' => array(
+        'name' => 'Nicaragua' // @text
+    ),
+    'NE' => array(
+        'name' => 'Niger' // @text
+    ),
+    'NG' => array(
+        'name' => 'Nigeria' // @text
+    ),
+    'NU' => array(
+        'name' => 'Niue' // @text
+    ),
+    'NF' => array(
+        'name' => 'Norfolk Island' // @text
+    ),
+    'KP' => array(
+        'name' => 'North Korea' // @text
+    ),
+    'NO' => array(
+        'native_name' => 'Norge',
+        'name' => 'Norway' // @text
+    ),
+    'OM' => array(
+        'native_name' => 'عُمان',
+        'name' => 'Oman' // @text
+    ),
+    'PK' => array(
+        'native_name' => 'پاکستان‬',
+        'name' => 'Pakistan' // @text
+    ),
+    'PW' => array(
+        'native_name' => 'Belau',
+        'name' => 'Palau' // @text
+    ),
+    'PS' => array(
+        'native_name' => 'فلسطين',
+        'name' => 'Palestinian Territory' // @text
+    ),
+    'PA' => array(
+        'name' => 'Panama' // @text
+    ),
+    'PG' => array(
+        'name' => 'Papua New Guinea' // @text
+    ),
+    'PY' => array(
+        'name' => 'Paraguay' // @text
+    ),
+    'PE' => array(
+        'name' => 'Peru' // @text
+    ),
+    'PH' => array(
+        'native_name' => 'Pilipinas',
+        'name' => 'Philippines' // @text
+    ),
+    'PN' => array(
+        'name' => 'Pitcairn' // @text
+    ),
+    'PL' => array(
+        'native_name' => 'Polska',
+        'name' => 'Poland' // @text
+    ),
+    'PT' => array(
+        'name' => 'Portugal' // @text
+    ),
+    'PR' => array(
+        'name' => 'Puerto Rico' // @text
+    ),
+    'QA' => array(
+        'native_name' => 'قطر',
+        'name' => 'Qatar' // @text
+    ),
+    'CG' => array(
+        'native_name' => 'République du Congo',
+        'name' => 'Republic of the Congo' // @text
+    ),
+    'RE' => array(
+        'name' => 'Reunion' // @text
+    ),
+    'RO' => array(
+        'native_name' => 'România',
+        'name' => 'Romania' // @text
+    ),
+    'RU' => array(
+        'native_name' => 'Россия',
+        'name' => 'Russia' // @text
+    ),
+    'RW' => array(
+        'name' => 'Rwanda' // @text
+    ),
+    'SA' => array(
+        'native_name' => 'المملكة العربية السعودية',
+        'name' => 'Saudi Arabia' // @text
+    ),
+    'SN' => array(
+        'name' => 'Senegal' // @text
+    ),
+    'RS' => array(
+        'native_name' => 'Србија',
+        'name' => 'Serbia' // @text
+    ),
+    'SC' => array(
+        'name' => 'Seychelles' // @text
+    ),
+    'SL' => array(
+        'name' => 'Sierra Leone' // @text
+    ),
+    'SG' => array(
+        'name' => 'Singapore' // @text
+    ),
+    'SK' => array(
+        'native_name' => 'Slovensko',
+        'name' => 'Slovakia' // @text
+    ),
+    'SI' => array(
+        'native_name' => 'Slovenija',
+        'name' => 'Slovenia' // @text
+    ),
+    'ZA' => array(
+        'name' => 'South Africa' // @text
+    ),
+    'KR' => array(
+        'name' => 'South Korea' // @text
+    ),
+    'ES' => array(
+        'native_name' => 'España',
+        'name' => 'Spain' // @text
+    ),
+    'LK' => array(
+        'native_name' => 'ශ්‍රී ලංකාව',
+        'name' => 'Sri Lanka' // @text
+    ),
+    'SD' => array(
+        'native_name' => 'السودان',
+        'name' => 'Sudan' // @text
+    ),
+    'SE' => array(
+        'name' => 'Sweden' // @text
+    ),
+    'CH' => array(
+        'native_name' => 'Schweiz',
+        'name' => 'Switzerland' // @text
+    ),
+    'SY' => array(
+        'native_name' => 'سورية',
+        'name' => 'Syria' // @text
+    ),
+    'TW' => array(
+        'native_name' => '中華民國',
+        'name' => 'Taiwan' // @text
+    ),
+    'TJ' => array(
+        'native_name' => 'Тоҷикистон',
+        'name' => 'Tajikistan' // @text
+    ),
+    'TZ' => array(
+        'name' => 'Tanzania' // @text
+    ),
+    'TH' => array(
+        'native_name' => 'เมืองไทย',
+        'name' => 'Thailand' // @text
+    ),
+    'TG' => array(
+        'name' => 'Togo' // @text
+    ),
+    'TK' => array(
+        'name' => 'Tokelau' // @text
+    ),
+    'TO' => array(
+        'name' => 'Tonga' // @text
+    ),
+    'TN' => array(
+        'native_name' => 'تونس',
+        'name' => 'Tunisia' // @text
+    ),
+    'TR' => array(
+        'native_name' => 'Türkiye',
+        'name' => 'Turkey' // @text
+    ),
+    'TM' => array(
+        'native_name' => 'Türkmenistan',
+        'name' => 'Turkmenistan' // @text
+    ),
+    'TV' => array(
+        'name' => 'Tuvalu' // @text
+    ),
+    'UG' => array(
+        'name' => 'Uganda' // @text
+    ),
+    'UA' => array(
+        'native_name' => 'Україна',
+        'name' => 'Ukraine' // @text
+    ),
+    'AE' => array(
+        'native_name' => 'الإمارات العربيّة المتّحدة',
+        'name' => 'United Arab Emirates' // @text
+    ),
+    'GB' => array(
+        'name' => 'United Kingdom' // @text
+    ),
+    'US' => array(
+        'name' => 'United States' // @text
+    ),
+    'UY' => array(
+        'native_name' => 'República Oriental del Uruguay',
+        'name' => 'Uruguay' // @text
+    ),
+    'UZ' => array(
+        'native_name' => 'Ўзбекистон',
+        'name' => 'Uzbekistan' // @text
+    ),
+    'VE' => array(
+        'name' => 'Venezuela' // @text
+    ),
+    'VN' => array(
+        'native_name' => 'Việt Nam',
+        'name' => 'Vietnam' // @text
+    ),
+    'YE' => array(
+        'native_name' => 'اليمن',
+        'name' => 'Yemen' // @text
+    ),
+    'ZM' => array(
+        'name' => 'Zambia' // @text
+    ),
+    'ZW' => array(
+        'name' => 'Zimbabwe' // @text
+    )
 );
