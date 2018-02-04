@@ -94,8 +94,28 @@ class Asset
     public function getNextWeight($type, $pos)
     {
         $step = 20;
-        $count = $this->getLastWeight($type, $pos);
+        $count = $this->count($type, $pos);
         return $count * $step + $step;
+    }
+
+    /**
+     * Returns the max weight of added assets
+     * @param string $type
+     * @param string $pos
+     * @return int|null
+     */
+    public function getMaxWeight($type, $pos)
+    {
+        if (empty($this->assets[$type][$pos])) {
+            return null;
+        }
+
+        $weights = array();
+        foreach ($this->assets[$type][$pos] as $asset) {
+            $weights[] = $asset['weight'];
+        }
+
+        return max($weights);
     }
 
     /**
@@ -104,7 +124,7 @@ class Asset
      * @param string $pos Either "top" or "bottom"
      * @return integer
      */
-    public function getLastWeight($type, $pos)
+    public function count($type, $pos)
     {
         return empty($this->assets[$type][$pos]) ? 0 : count($this->assets[$type][$pos]);
     }
