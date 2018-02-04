@@ -487,7 +487,19 @@ class Module
             return false;
         }
 
-        return !in_array($id, array('core', 'gplcart', 'module'));
+        $reserved = array(
+            'core',
+            'gplcart',
+            'module',
+            // Hooks in 3-d party modules usually defined as "module.MODULEID.something"
+            // To prevent possible conflicts with core hooks in the same name space also reserve these names:
+            'enable',
+            'disable',
+            'install',
+            'uninstall'
+        );
+
+        return !in_array($id, $reserved);
     }
 
     /**
