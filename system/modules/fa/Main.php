@@ -38,8 +38,8 @@ class Main
     public function hookLibraryList(array &$libraries)
     {
         $libraries['font_awesome'] = array(
-            'name' => /* @text */'Font Awesome',
-            'description' => /* @text */'The iconic font and CSS toolkit',
+            'name' => 'Font Awesome', // @text
+            'description' => 'The iconic font and CSS toolkit', // @text
             'type' => 'asset',
             'module' => 'fa',
             'url' => 'https://github.com/FortAwesome/Font-Awesome',

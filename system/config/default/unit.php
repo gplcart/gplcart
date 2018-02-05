@@ -11,132 +11,132 @@ return array(
         'base' => 'm',
         'conversion' => 1,
         'type' => 'size',
-        'name' => /* @text */'Meter'
+        'name' => 'Meter' // @text
     ),
     'dm' => array(
         'base' => 'm',
         'conversion' => 0.1,
         'type' => 'size',
-        'name' => /* @text */'Decimeter'
+        'name' => 'Decimeter' // @text
     ),
     'cm' => array(
         'base' => 'm',
         'conversion' => 0.01,
         'type' => 'size',
-        'name' => /* @text */'Centimeter'
+        'name' => 'Centimeter' // @text
     ),
     'mm' => array(
         'base' => 'm',
         'conversion' => 0.001,
         'type' => 'size',
-        'name' => /* @text */'Milimeter'
+        'name' => 'Milimeter' // @text
     ),
     'in' => array(
         'base' => 'm',
         'conversion' => 0.0254,
         'type' => 'size',
-        'name' => /* @text */'Inch'
+        'name' => 'Inch' // @text
     ),
     'm2' => array(
         'base' => 'm2',
         'conversion' => 1,
         'type' => 'volume',
-        'name' => /* @text */'Meter square'
+        'name' => 'Meter square' // @text
     ),
     'cm2' => array(
         'base' => 'm2',
         'conversion' => 0.0001,
         'type' => 'volume',
-        'name' => /* @text */'Centimeter square'
+        'name' => 'Centimeter square' // @text
     ),
     'mm2' => array(
         'base' => 'm2',
         'conversion' => 0.000001,
         'type' => 'volume',
-        'name' => /* @text */'Milimeter square'
+        'name' => 'Milimeter square' // @text
     ),
     'l' => array(
         'base' => 'l',
         'conversion' => 1,
         'type' => 'volume',
-        'name' => /* @text */'Litre'
+        'name' => 'Litre' // @text
     ),
     'ml' => array(
         'base' => 'l',
         'conversion' => 0.001,
         'type' => 'volume',
-        'name' => /* @text */'Mililitre'
+        'name' => 'Mililitre' // @text
     ),
     'm3' => array(
         'base' => 'l',
         'conversion' => 1,
         'type' => 'volume',
-        'name' => /* @text */'Meter cubed'
+        'name' => 'Meter cubed' // @text
     ),
     'cm3' => array(
         'base' => 'm3',
         'conversion' => 0.000001,
         'type' => 'volume',
-        'name' => /* @text */'Centimeter cubed'
+        'name' => 'Centimeter cubed' // @text
     ),
     'mm3' => array(
         'base' => 'm3',
         'conversion' => 0.000000001,
         'type' => 'volume',
-        'name' => /* @text */'Milimeter cubed'
+        'name' => 'Milimeter cubed' // @text
     ),
     'in3' => array(
         'base' => 'm3',
         'conversion' => 0.000016387,
         'type' => 'volume',
-        'name' => /* @text */'Inch cubed'
+        'name' => 'Inch cubed' // @text
     ),
     'pt' => array(
         'base' => 'l',
         'conversion' => 0.56826125,
         'type' => 'volume',
-        'name' => /* @text */'Pint'
+        'name' => 'Pint' // @text
     ),
     'gal' => array(
         'base' => 'l',
         'conversion' => 4.405,
         'type' => 'volume',
-        'name' => /* @text */'Gallon'
+        'name' => 'Gallon' // @text
     ),
     'kg' => array(
         'base' => 'kg',
         'conversion' => 1,
         'type' => 'weight',
-        'name' => /* @text */'Kilogram'
+        'name' => 'Kilogram' // @text
     ),
     'g' => array(
         'base' => 'kg',
         'conversion' => 0.001,
         'type' => 'weight',
-        'name' => /* @text */'Gram'
+        'name' => 'Gram' // @text
     ),
     'mg' => array(
         'base' => 'kg',
         'conversion' => 0.000001,
         'type' => 'weight',
-        'name' => /* @text */'Miligram'
+        'name' => 'Miligram' // @text
     ),
     'lb' => array(
         'base' => 'kg',
         'conversion' => 0.453592,
         'type' => 'weight',
-        'name' => /* @text */'Pound'
+        'name' => 'Pound' // @text
     ),
     'oz' => array(
         'base' => 'kg',
         'conversion' => 0.0283495,
         'type' => 'weight',
-        'name' => /* @text */'Ounce'
+        'name' => 'Ounce' // @text
     ),
     't' => array(
         'base' => 'kg',
         'conversion' => 1000,
         'type' => 'weight',
-        'name' => /* @text */'Tonne'
+        'name' => 'Tonne' // @text
     )
 );

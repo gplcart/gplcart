@@ -699,8 +699,7 @@ return array(
     ),
     'MXN' => array(
         'symbol' => '$',
-        'name' => /* @text */
-            'Mexican Peso',
+        'name' => 'Mexican Peso', // @text
         'numeric_code' => '484',
         'minor_unit' => 'Centavo', // @text
         'major_unit' => 'Peso', // @text

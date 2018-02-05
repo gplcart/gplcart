@@ -11,51 +11,51 @@ return array(
         'gd' => array(
             'status' => extension_loaded('gd'),
             'severity' => 'danger',
-            'message' => /* @text */'GD extension installed',
+            'message' => 'GD extension installed', // @text
         ),
         'pdo' => array(
             'status' => extension_loaded('pdo'),
             'severity' => 'danger',
-            'message' => /* @text */'PDO extension installed'
+            'message' => 'PDO extension installed' // @text
         ),
         'spl' => array(
             'status' => extension_loaded('spl'),
             'severity' => 'danger',
-            'message' => /* @text */'SPL extension installed'
+            'message' => 'SPL extension installed' // @text
         ),
         'fileinfo' => array(
             'status' => extension_loaded('fileinfo'),
             'severity' => 'danger',
-            'message' => /* @text */'FileInfo extension installed'
+            'message' => 'FileInfo extension installed' // @text
         ),
         'ctype' => array(
             'status' => extension_loaded('ctype'),
             'severity' => 'danger',
-            'message' => /* @text */'Ctype extension installed'
+            'message' => 'Ctype extension installed' // @text
         ),
         'json' => array(
             'status' => function_exists('json_decode'),
             'severity' => 'danger',
-            'message' => /* @text */'JSON extension installed'
+            'message' => 'JSON extension installed' // @text
         ),
     ),
     'php' => array(
         'allow_url_fopen' => array(
             'status' => !ini_get('allow_url_fopen'),
             'severity' => 'warning',
-            'message' => /* @text */'Directive "allow_url_fopen" is disabled'
+            'message' => 'Directive "allow_url_fopen" is disabled' // @text
         )
     ),
     'files' => array(
         'system_directory' => array(
             'status' => is_writable(GC_DIR_CONFIG_COMPILED),
             'severity' => 'danger',
-            'message' => /* @text */'Directory "/system/config/compiled" exists and writable'
+            'message' => 'Directory "/system/config/compiled" exists and writable' // @text
         ),
         'cache_directory' => array(
             'status' => is_writable(GC_DIR_CACHE),
             'severity' => 'danger',
-            'message' => /* @text */'Directory "/cache" exists and writable'
+            'message' => 'Directory "/cache" exists and writable' // @text
         )
     )
 );

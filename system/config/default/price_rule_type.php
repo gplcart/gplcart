@@ -8,24 +8,24 @@
  */
 return array(
     'percent' => array(
-        'title' => /* @text */'Percent',
-        'description' => 'Add a percent value to the original amount. To subtract use negative values',
+        'title' => 'Percent', // @text
+        'description' => 'Add a percent value to the original amount. To subtract use negative values', // @text
         'handlers' => array(
             'calculate' => array('gplcart\\core\\handlers\\price_rule\\Type', 'percent'),
             'validate' => array('gplcart\\core\\handlers\\validator\\components\\PriceRule', 'validateValuePercentPriceRule')
         ),
     ),
     'fixed' => array(
-        'title' => /* @text */'Fixed',
-        'description' => 'Add a fixed value to the original amount. To subtract use negative values',
+        'title' => 'Fixed', // @text
+        'description' => 'Add a fixed value to the original amount. To subtract use negative values', // @text
         'handlers' => array(
             'calculate' => array('gplcart\\core\\handlers\\price_rule\\Type', 'fixed'),
             'validate' => array('gplcart\\core\\handlers\\validator\\components\\PriceRule', 'validateValueFixedPriceRule')
         ),
     ),
     'final' => array(
-        'title' => /* @text */'Final',
-        'description' => 'Replace an original amount with the price rule value',
+        'title' => 'Final', // @text
+        'description' => 'Replace an original amount with the price rule value', // @text
         'handlers' => array(
             'calculate' => array('gplcart\\core\\handlers\\price_rule\\Type', 'finalAmount'),
             'validate' => array('gplcart\\core\\handlers\\validator\\components\\PriceRule', 'validateValueFinalPriceRule')

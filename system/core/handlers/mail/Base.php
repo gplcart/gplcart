@@ -69,7 +69,7 @@ class Base
      */
     protected function getSignature(array $options)
     {
-        $signature = /* @text */"\r\n\r\n-------------------------------------\r\n@owner\r\n@address\r\n@phone\r\n@fax\r\n@store_email\r\n@map";
+        $signature = "\r\n\r\n-------------------------------------\r\n@owner\r\n@address\r\n@phone\r\n@fax\r\n@store_email\r\n@map"; // @text
 
         $replacements = array();
         $replacements['@owner'] = empty($options['owner']) ? '' : $options['owner'];

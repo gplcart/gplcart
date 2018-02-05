@@ -38,8 +38,8 @@ class Main
     public function hookLibraryList(array &$libraries)
     {
         $libraries['html5shiv'] = array(
-            'name' => /* @text */'HTML5 Shiv',
-            'description' => /* @text */'The HTML5 Shiv enables use of HTML5 sectioning elements in legacy Internet Explorer and provides basic HTML5 styling for Internet Explorer 6-9, Safari 4.x (and iPhone 3.x), and Firefox 3.x.',
+            'name' => 'HTML5 Shiv', // @text
+            'description' => 'The HTML5 Shiv enables use of HTML5 sectioning elements in legacy Internet Explorer and provides basic HTML5 styling for Internet Explorer 6-9, Safari 4.x (and iPhone 3.x), and Firefox 3.x.', // @text
             'type' => 'asset',
             'module' => 'bootstrap',
             'url' => 'https://github.com/aFarkas/html5shiv',
@@ -53,8 +53,8 @@ class Main
             )
         );
         $libraries['respond'] = array(
-            'name' => /* @text */'Respond',
-            'description' => /* @text */'A fast & lightweight polyfill for min/max-width CSS3 Media Queries (for IE 6-8, and more)',
+            'name' => 'Respond', // @text
+            'description' => 'A fast & lightweight polyfill for min/max-width CSS3 Media Queries (for IE 6-8, and more)', // @text
             'type' => 'asset',
             'module' => 'bootstrap',
             'url' => 'https://github.com/scottjehl/Respond',
@@ -69,8 +69,8 @@ class Main
         );
 
         $libraries['bootstrap'] = array(
-            'name' => /* @text */'Bootstrap',
-            'description' => /* @text */'HTML, CSS, and JavaScript framework for developing responsive, mobile first layouts',
+            'name' => 'Bootstrap', // @text
+            'description' => 'HTML, CSS, and JavaScript framework for developing responsive, mobile first layouts', // @text
             'type' => 'asset',
             'module' => 'bootstrap',
             'url' => 'https://github.com/twbs/bootstrap',
