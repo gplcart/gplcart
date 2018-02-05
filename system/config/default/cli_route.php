@@ -10,14 +10,14 @@
 return array(
     'help' => array(
         'alias' => 'h',
-        'description' => /* @text */'Displays all available commands',
+        'description' => 'Displays all available commands', // @text
         'usage' => array(
             'php gplcart help -h',
             'php gplcart (help | h)',
             'php gplcart (help | h) <command>'
         ),
         'options' => array(
-            '-h' => /* @text */'Show command help'
+            '-h' => 'Show command help' // @text
         ),
         'handlers' => array(
             'controller' => array('gplcart\\core\\controllers\\cli\\Help', 'help')
@@ -25,14 +25,14 @@ return array(
     ),
     'lang' => array(
         'alias' => 'l',
-        'description' => /* @text */'Set UI language',
+        'description' => 'Set UI language', // @text
         'usage' => array(
             'php gplcart lang -h',
             'php gplcart (lang | l)',
             'php gplcart (lang | l) <code>'
         ),
         'options' => array(
-            '-h' => /* @text */'Show command help'
+            '-h' => 'Show command help' // @text
         ),
         'handlers' => array(
             'controller' => array('gplcart\\core\\controllers\\cli\\Language', 'language')
@@ -40,7 +40,7 @@ return array(
     ),
     'install' => array(
         'alias' => 'i',
-        'description' => /* @text */'Performs full system installation',
+        'description' => 'Performs full system installation', // @text
         'usage' => array(
             'php gplcart -h',
             'php gplcart (install | i)',
@@ -48,21 +48,21 @@ return array(
         ),
         'options' => array(
             // Required
-            '--email' => /* @text */'Admin e-mail',
-            '--pass' => /* @text */'Admin password',
-            '--db-name' => /* @text */'Database name',
+            '--email' => 'Admin e-mail', // @text
+            '--pass' => 'Admin password', // @text
+            '--db-name' => 'Database name', // @text
             // Optional
-            '--db-pass' => /* @text */'Database password',
-            '--db-user' => /* @text */'Database user [default: root]',
-            '--db-host' => /* @text */'Database host [default: localhost]',
-            '--db-type' => /* @text */'Database type [default: mysql]',
-            '--db-port' => /* @text */'Database port [default: 3306]',
-            '--title' => /* @text */'Store name [default: GPL Cart]',
-            '--basepath' => /* @text */'Installation subfolder name',
-            '--timezone' => /* @text */'Store timezone',
-            '--host' => /* @text */'Domain name',
-            '--installer' => /* @text */'ID of installer module that manages the installation',
-            '-h' => /* @text */'Show command help',
+            '--db-pass' => 'Database password', // @text
+            '--db-user' => 'Database user' . ' [default: root]', // @text
+            '--db-host' => 'Database host' . ' [default: localhost]', // @text
+            '--db-type' => 'Database type' . ' [default: mysql]', // @text
+            '--db-port' => 'Database port' . ' [default: 3306]', // @text
+            '--title' => 'Store name' . ' [default: GPL Cart]', // @text
+            '--basepath' => 'Installation subfolder name', // @text
+            '--timezone' => 'Store timezone', // @text
+            '--host' => 'Domain name', // @text
+            '--installer' => 'ID of installer module that manages the installation', // @text
+            '-h' => 'Show command help', // @text
         ),
         'handlers' => array(
             'controller' => array('gplcart\\core\\controllers\\cli\\Install', 'install')

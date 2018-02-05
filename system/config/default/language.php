@@ -7,185 +7,626 @@
  * @license https://www.gnu.org/licenses/gpl.html GNU/GPLv3
  */
 return array(
-    'aa' => array('name' => /* @text */'Afar'),
-    'ab' => array('name' => /* @text */'Abkhazian', 'native_name' => 'аҧсуа бызшәа'),
-    'ae' => array('name' => /* @text */'Avestan'),
-    'af' => array('name' => /* @text */'Afrikaans'),
-    'ak' => array('name' => /* @text */'Akan'),
-    'am' => array('name' => /* @text */'Amharic', 'native_name' => 'አማርኛ'),
-    'ar' => array('name' => /* @text */'Arabic', 'native_name' => 'العربية', 'rtl' => true),
-    'as' => array('name' => /* @text */'Assamese'),
-    'ast' => array('name' => /* @text */'Asturian'),
-    'av' => array('name' => /* @text */'Avar'),
-    'ay' => array('name' => /* @text */'Aymara'),
-    'az' => array('name' => /* @text */'Azerbaijani', 'native_name' => 'azərbaycan'),
-    'ba' => array('name' => /* @text */'Bashkir'),
-    'be' => array('name' => /* @text */'Belarusian', 'native_name' => 'Беларуская'),
-    'bg' => array('name' => /* @text */'Bulgarian', 'native_name' => 'Български'),
-    'bh' => array('name' => /* @text */'Bihari'),
-    'bi' => array('name' => /* @text */'Bislama'),
-    'bm' => array('name' => /* @text */'Bambara', 'native_name' => 'Bamanankan'),
-    'bn' => array('name' => /* @text */'Bengali'),
-    'bo' => array('name' => /* @text */'Tibetan'),
-    'br' => array('name' => /* @text */'Breton'),
-    'bs' => array('name' => /* @text */'Bosnian', 'native_name' => 'Bosanski'),
-    'ca' => array('name' => /* @text */'Catalan', 'native_name' => 'Català'),
-    'ce' => array('name' => /* @text */'Chechen'),
-    'ch' => array('name' => /* @text */'Chamorro'),
-    'co' => array('name' => /* @text */'Corsican'),
-    'cr' => array('name' => /* @text */'Cree'),
-    'cs' => array('name' => /* @text */'Czech', 'native_name' => 'Čeština'),
-    'cu' => array('name' => /* @text */'Old Slavonic'),
-    'cv' => array('name' => /* @text */'Chuvash'),
-    'cy' => array('name' => /* @text */'Welsh', 'native_name' => 'Cymraeg'),
-    'da' => array('name' => /* @text */'Danish', 'native_name' => 'Dansk'),
-    'de' => array('name' => /* @text */'German', 'native_name' => 'Deutsch'),
-    'dv' => array('name' => /* @text */'Maldivian'),
-    'dz' => array('name' => /* @text */'Bhutani'),
-    'ee' => array('name' => /* @text */'Ewe', 'native_name' => 'Ɛʋɛ'),
-    'el' => array('name' => /* @text */'Greek', 'native_name' => 'Ελληνικά'),
-    'en' => array('name' => /* @text */'English'),
-    'eo' => array('name' => /* @text */'Esperanto'),
-    'es' => array('name' => /* @text */'Spanish', 'native_name' => 'Español'),
-    'et' => array('name' => /* @text */'Estonian', 'native_name' => 'Eesti'),
-    'eu' => array('name' => /* @text */'Basque', 'native_name' => 'Euskera'),
-    'fa' => array('name' => /* @text */'Persian', 'native_name' => 'فارسی', 'rtl' => true),
-    'ff' => array('name' => /* @text */'Fulah', 'native_name' => 'Fulfulde'),
-    'fi' => array('name' => /* @text */'Finnish', 'native_name' => 'Suomi'),
-    'fil' => array('name' => /* @text */'Filipino'),
-    'fj' => array('name' => /* @text */'Fiji'),
-    'fo' => array('name' => /* @text */'Faeroese'),
-    'fr' => array('name' => /* @text */'French', 'native_name' => 'Français'),
-    'fy' => array('name' => /* @text */'Frisian', 'native_name' => 'Frysk'),
-    'ga' => array('name' => /* @text */'Irish', 'native_name' => 'Gaeilge'),
-    'gd' => array('name' => /* @text */'Scots Gaelic'),
-    'gl' => array('name' => /* @text */'Galician', 'native_name' => 'Galego'),
-    'gn' => array('name' => /* @text */'Guarani'),
-    'gu' => array('name' => /* @text */'Gujarati'),
-    'gv' => array('name' => /* @text */'Manx'),
-    'ha' => array('name' => /* @text */'Hausa'),
-    'he' => array('name' => /* @text */'Hebrew', 'native_name' => 'עברית', 'rtl' => true),
-    'hi' => array('name' => /* @text */'Hindi', 'native_name' => 'हिन्दी'),
-    'ho' => array('name' => /* @text */'Hiri Motu'),
-    'hr' => array('name' => /* @text */'Croatian', 'native_name' => 'Hrvatski'),
-    'ht' => array('name' => /* @text */'Haitian Creole'),
-    'hu' => array('name' => /* @text */'Hungarian', 'native_name' => 'Magyar'),
-    'hy' => array('name' => /* @text */'Armenian', 'native_name' => 'Հայերեն'),
-    'hz' => array('name' => /* @text */'Herero'),
-    'ia' => array('name' => /* @text */'Interlingua'),
-    'id' => array('name' => /* @text */'Indonesian', 'native_name' => 'Bahasa Indonesia'),
-    'ie' => array('name' => /* @text */'Interlingue'),
-    'ig' => array('name' => /* @text */'Igbo'),
-    'ik' => array('name' => /* @text */'Inupiak'),
-    'is' => array('name' => /* @text */'Icelandic', 'native_name' => 'Íslenska'),
-    'it' => array('name' => /* @text */'Italian', 'native_name' => 'Italiano'),
-    'iu' => array('name' => /* @text */'Inuktitut'),
-    'ja' => array('name' => /* @text */'Japanese', 'native_name' => '日本語'),
-    'jv' => array('name' => /* @text */'Javanese'),
-    'ka' => array('name' => /* @text */'Georgian'),
-    'kg' => array('name' => /* @text */'Kongo'),
-    'ki' => array('name' => /* @text */'Kikuyu'),
-    'kj' => array('name' => /* @text */'Kwanyama'),
-    'kk' => array('name' => /* @text */'Kazakh', 'native_name' => 'Қазақ'),
-    'kl' => array('name' => /* @text */'Greenlandic'),
-    'km' => array('name' => /* @text */'Cambodian'),
-    'kn' => array('name' => /* @text */'Kannada', 'native_name' => 'ಕನ್ನಡ'),
-    'ko' => array('name' => /* @text */'Korean', 'native_name' => '한국어'),
-    'kr' => array('name' => /* @text */'Kanuri'),
-    'ks' => array('name' => /* @text */'Kashmiri'),
-    'ku' => array('name' => /* @text */'Kurdish', 'native_name' => 'Kurdî'),
-    'kv' => array('name' => /* @text */'Komi'),
-    'kw' => array('name' => /* @text */'Cornish'),
-    'ky' => array('name' => /* @text */'Kyrgyz', 'native_name' => 'Кыргызча'),
-    'la' => array('name' => /* @text */'Latin', 'native_name' => 'Latina'),
-    'lb' => array('name' => /* @text */'Luxembourgish'),
-    'lg' => array('name' => /* @text */'Luganda'),
-    'ln' => array('name' => /* @text */'Lingala'),
-    'lo' => array('name' => /* @text */'Laothian'),
-    'lt' => array('name' => /* @text */'Lithuanian', 'native_name' => 'Lietuvių'),
-    'lv' => array('name' => /* @text */'Latvian', 'native_name' => 'Latviešu'),
-    'mg' => array('name' => /* @text */'Malagasy'),
-    'mh' => array('name' => /* @text */'Marshallese'),
-    'mi' => array('name' => /* @text */'Māori'),
-    'mk' => array('name' => /* @text */'Macedonian', 'native_name' => 'Македонски'),
-    'ml' => array('name' => /* @text */'Malayalam', 'native_name' => 'മലയാളം'),
-    'mn' => array('name' => /* @text */'Mongolian'),
-    'mo' => array('name' => /* @text */'Moldavian'),
-    'mr' => array('name' => /* @text */'Marathi'),
-    'ms' => array('name' => /* @text */'Malay', 'native_name' => 'Bahasa Melayu'),
-    'mt' => array('name' => /* @text */'Maltese', 'native_name' => 'Malti'),
-    'my' => array('name' => /* @text */'Burmese'),
-    'na' => array('name' => /* @text */'Nauru'),
-    'nd' => array('name' => /* @text */'North Ndebele'),
-    'ne' => array('name' => /* @text */'Nepali'),
-    'ng' => array('name' => /* @text */'Ndonga'),
-    'nl' => array('name' => /* @text */'Dutch', 'native_name' => 'Nederlands'),
-    'nb' => array('name' => /* @text */'Norwegian Bokmål', 'native_name' => 'Bokmål'),
-    'nn' => array('name' => /* @text */'Norwegian Nynorsk', 'native_name' => 'Nynorsk'),
-    'nr' => array('name' => /* @text */'South Ndebele'),
-    'nv' => array('name' => /* @text */'Navajo'),
-    'ny' => array('name' => /* @text */'Chichewa'),
-    'oc' => array('name' => /* @text */'Occitan'),
-    'om' => array('name' => /* @text */'Oromo'),
-    'or' => array('name' => /* @text */'Oriya'),
-    'os' => array('name' => /* @text */'Ossetian'),
-    'pa' => array('name' => /* @text */'Punjabi'),
-    'pi' => array('name' => /* @text */'Pali'),
-    'pl' => array('name' => /* @text */'Polish', 'native_name' => 'Polski'),
-    'ps' => array('name' => /* @text */'Pashto', 'native_name' => 'پښتو', 'rtl' => true),
-    'pt' => array('name' => /* @text */'Portuguese'),
-    'qu' => array('name' => /* @text */'Quechua'),
-    'rm' => array('name' => /* @text */'Rhaeto-Romance'),
-    'rn' => array('name' => /* @text */'Kirundi'),
-    'ro' => array('name' => /* @text */'Romanian', 'native_name' => 'Română'),
-    'ru' => array('name' => /* @text */'Russian', 'native_name' => 'Русский'),
-    'rw' => array('name' => /* @text */'Kinyarwanda'),
-    'sa' => array('name' => /* @text */'Sanskrit'),
-    'sc' => array('name' => /* @text */'Sardinian'),
-    'sco' => array('name' => /* @text */'Scots'),
-    'sd' => array('name' => /* @text */'Sindhi'),
-    'se' => array('name' => /* @text */'Northern Sami'),
-    'sg' => array('name' => /* @text */'Sango'),
-    'sh' => array('name' => /* @text */'Serbo-Croatian'),
-    'si' => array('name' => /* @text */'Sinhala', 'native_name' => 'සිංහල'),
-    'sk' => array('name' => /* @text */'Slovak', 'native_name' => 'Slovenčina'),
-    'sl' => array('name' => /* @text */'Slovenian', 'native_name' => 'Slovenščina'),
-    'sm' => array('name' => /* @text */'Samoan'),
-    'sn' => array('name' => /* @text */'Shona'),
-    'so' => array('name' => /* @text */'Somali'),
-    'sq' => array('name' => /* @text */'Albanian', 'native_name' => 'Shqip'),
-    'sr' => array('name' => /* @text */'Serbian', 'native_name' => 'Српски'),
-    'ss' => array('name' => /* @text */'Siswati'),
-    'st' => array('name' => /* @text */'Sesotho'),
-    'su' => array('name' => /* @text */'Sudanese'),
-    'sv' => array('name' => /* @text */'Swedish', 'native_name' => 'Svenska'),
-    'sw' => array('name' => /* @text */'Swahili', 'native_name' => 'Kiswahili'),
-    'ta' => array('name' => /* @text */'Tamil', 'native_name' => 'தமிழ்'),
-    'te' => array('name' => /* @text */'Telugu', 'native_name' => 'తెలుగు'),
-    'tg' => array('name' => /* @text */'Tajik'),
-    'th' => array('name' => /* @text */'Thai', 'native_name' => 'ภาษาไทย'),
-    'ti' => array('name' => /* @text */'Tigrinya'),
-    'tk' => array('name' => /* @text */'Turkmen'),
-    'tl' => array('name' => /* @text */'Tagalog'),
-    'tn' => array('name' => /* @text */'Setswana'),
-    'to' => array('name' => /* @text */'Tonga'),
-    'tr' => array('name' => /* @text */'Turkish', 'native_name' => 'Türkçe'),
-    'ts' => array('name' => /* @text */'Tsonga'),
-    'tt' => array('name' => /* @text */'Tatar', 'native_name' => 'Tatarça'),
-    'tw' => array('name' => /* @text */'Twi'),
-    'ty' => array('name' => /* @text */'Tahitian'),
-    'ug' => array('name' => /* @text */'Uyghur'),
-    'uk' => array('name' => /* @text */'Ukrainian', 'native_name' => 'Українська'),
-    'ur' => array('name' => /* @text */'Urdu', 'native_name' => 'اردو', 'rtl' => true),
-    'uz' => array('name' => /* @text */'Uzbek', 'native_name' => "o'zbek"),
-    've' => array('name' => /* @text */'Venda'),
-    'vi' => array('name' => /* @text */'Vietnamese', 'native_name' => 'Tiếng Việt'),
-    'wo' => array('name' => /* @text */'Wolof'),
-    'xh' => array('name' => /* @text */'Xhosa', 'native_name' => 'isiXhosa'),
-    'yi' => array('name' => /* @text */'Yiddish'),
-    'yo' => array('name' => /* @text */'Yoruba', 'native_name' => 'Yorùbá'),
-    'za' => array('name' => /* @text */'Zhuang'),
-    'zh-hans' => array('name' => /* @text */'Chinese, Simplified', 'native_name' => '简体中文'),
-    'zh-hant' => array('name' => /* @text */'Chinese, Traditional', 'native_name' => '繁體中文'),
-    'zu' => array('name' => /* @text */'Zulu', 'native_name' => 'isiZulu'),
+    'aa' => array(
+        'name' => 'Afar' // @text
+    ),
+    'ab' => array(
+        'name' => 'Abkhazian', // @text
+        'native_name' => 'аҧсуа бызшәа'
+    ),
+    'ae' => array(
+        'name' => 'Avestan' // @text
+    ),
+    'af' => array(
+        'name' => 'Afrikaans' // @text
+    ),
+    'ak' => array(
+        'name' => 'Akan' // @text
+    ),
+    'am' => array(
+        'name' => 'Amharic', // @text
+        'native_name' => 'አማርኛ'
+    ),
+    'ar' => array(
+        'name' => 'Arabic', // @text
+        'native_name' => 'العربية',
+        'rtl' => true
+    ),
+    'as' => array(
+        'name' => 'Assamese' // @text
+    ),
+    'ast' => array(
+        'name' => 'Asturian' // @text
+    ),
+    'av' => array(
+        'name' => 'Avar' // @text
+    ),
+    'ay' => array(
+        'name' => 'Aymara' // @text
+    ),
+    'az' => array(
+        'name' => 'Azerbaijani', // @text
+        'native_name' => 'azərbaycan'
+    ),
+    'ba' => array(
+        'name' => 'Bashkir' // @text
+    ),
+    'be' => array(
+        'name' => 'Belarusian', // @text
+        'native_name' => 'Беларуская'
+    ),
+    'bg' => array(
+        'name' => 'Bulgarian', // @text
+        'native_name' => 'Български'
+    ),
+    'bh' => array(
+        'name' => 'Bihari' // @text
+    ),
+    'bi' => array(
+        'name' => 'Bislama' // @text
+    ),
+    'bm' => array(
+        'name' => 'Bambara', // @text
+        'native_name' => 'Bamanankan'
+    ),
+    'bn' => array(
+        'name' => 'Bengali' // @text
+    ),
+    'bo' => array(
+        'name' => 'Tibetan' // @text
+    ),
+    'br' => array(
+        'name' => 'Breton' // @text
+    ),
+    'bs' => array(
+        'name' => 'Bosnian', // @text
+        'native_name' => 'Bosanski'
+    ),
+    'ca' => array(
+        'name' => 'Catalan', // @text
+        'native_name' => 'Català'
+    ),
+    'ce' => array(
+        'name' => 'Chechen' // @text
+    ),
+    'ch' => array(
+        'name' => 'Chamorro' // @text
+    ),
+    'co' => array(
+        'name' => 'Corsican' // @text
+    ),
+    'cr' => array(
+        'name' => 'Cree' // @text
+    ),
+    'cs' => array(
+        'name' => 'Czech', // @text
+        'native_name' => 'Čeština'
+    ),
+    'cu' => array(
+        'name' => 'Old Slavonic' // @text
+    ),
+    'cv' => array(
+        'name' => 'Chuvash' // @text
+    ),
+    'cy' => array(
+        'name' => 'Welsh', // @text
+        'native_name' => 'Cymraeg'
+    ),
+    'da' => array(
+        'name' => 'Danish', // @text
+        'native_name' => 'Dansk'
+    ),
+    'de' => array(
+        'name' => 'German', // @text
+        'native_name' => 'Deutsch'
+    ),
+    'dv' => array(
+        'name' => 'Maldivian' // @text
+    ),
+    'dz' => array(
+        'name' => 'Bhutani' // @text
+    ),
+    'ee' => array(
+        'name' => 'Ewe', // @text
+        'native_name' => 'Ɛʋɛ'
+    ),
+    'el' => array(
+        'name' => 'Greek', // @text
+        'native_name' => 'Ελληνικά'
+    ),
+    'en' => array(
+        'name' => 'English' // @text
+    ),
+    'eo' => array(
+        'name' => 'Esperanto' // @text
+    ),
+    'es' => array(
+        'name' => 'Spanish', // @text
+        'native_name' => 'Español'
+    ),
+    'et' => array(
+        'name' => 'Estonian', // @text
+        'native_name' => 'Eesti'
+    ),
+    'eu' => array(
+        'name' => 'Basque', // @text
+        'native_name' => 'Euskera'
+    ),
+    'fa' => array(
+        'name' => 'Persian', // @text
+        'native_name' => 'فارسی',
+        'rtl' => true
+    ),
+    'ff' => array(
+        'name' => 'Fulah', // @text
+        'native_name' => 'Fulfulde'
+    ),
+    'fi' => array(
+        'name' => 'Finnish', // @text
+        'native_name' => 'Suomi'
+    ),
+    'fil' => array(
+        'name' => 'Filipino' // @text
+    ),
+    'fj' => array(
+        'name' => 'Fiji' // @text
+    ),
+    'fo' => array(
+        'name' => 'Faeroese' // @text
+    ),
+    'fr' => array(
+        'name' => 'French', // @text
+        'native_name' => 'Français'
+    ),
+    'fy' => array(
+        'name' => 'Frisian', // @text
+        'native_name' => 'Frysk'
+    ),
+    'ga' => array(
+        'name' => 'Irish', // @text
+        'native_name' => 'Gaeilge'
+    ),
+    'gd' => array(
+        'name' => 'Scots Gaelic' // @text
+    ),
+    'gl' => array(
+        'name' => 'Galician', // @text
+        'native_name' => 'Galego'
+    ),
+    'gn' => array(
+        'name' => 'Guarani' // @text
+    ),
+    'gu' => array(
+        'name' => 'Gujarati' // @text
+    ),
+    'gv' => array(
+        'name' => 'Manx' // @text
+    ),
+    'ha' => array(
+        'name' => 'Hausa' // @text
+    ),
+    'he' => array(
+        'name' => 'Hebrew', // @text
+        'native_name' => 'עברית',
+        'rtl' => true
+    ),
+    'hi' => array(
+        'name' => 'Hindi', // @text
+        'native_name' => 'हिन्दी'
+    ),
+    'ho' => array(
+        'name' => 'Hiri Motu' // @text
+    ),
+    'hr' => array(
+        'name' => 'Croatian', // @text
+        'native_name' => 'Hrvatski'
+    ),
+    'ht' => array(
+        'name' => 'Haitian Creole' // @text
+    ),
+    'hu' => array(
+        'name' => 'Hungarian', // @text
+        'native_name' => 'Magyar'
+    ),
+    'hy' => array(
+        'name' => 'Armenian', // @text
+        'native_name' => 'Հայերեն'
+    ),
+    'hz' => array(
+        'name' => 'Herero' // @text
+    ),
+    'ia' => array(
+        'name' => 'Interlingua' // @text
+    ),
+    'id' => array(
+        'name' => 'Indonesian', // @text
+        'native_name' => 'Bahasa Indonesia'
+    ),
+    'ie' => array(
+        'name' => 'Interlingue' // @text
+    ),
+    'ig' => array(
+        'name' => 'Igbo' // @text
+    ),
+    'ik' => array(
+        'name' => 'Inupiak' // @text
+    ),
+    'is' => array(
+        'name' => 'Icelandic', // @text
+        'native_name' => 'Íslenska'
+    ),
+    'it' => array(
+        'name' => 'Italian', // @text
+        'native_name' => 'Italiano'
+    ),
+    'iu' => array(
+        'name' => 'Inuktitut' // @text
+    ),
+    'ja' => array(
+        'name' => 'Japanese', // @text
+        'native_name' => '日本語'
+    ),
+    'jv' => array(
+        'name' => 'Javanese' // @text
+    ),
+    'ka' => array(
+        'name' => 'Georgian' // @text
+    ),
+    'kg' => array(
+        'name' => 'Kongo' // @text
+    ),
+    'ki' => array(
+        'name' => 'Kikuyu' // @text
+    ),
+    'kj' => array(
+        'name' => 'Kwanyama' // @text
+    ),
+    'kk' => array(
+        'name' => 'Kazakh', // @text
+        'native_name' => 'Қазақ'
+    ),
+    'kl' => array(
+        'name' => 'Greenlandic' // @text
+    ),
+    'km' => array(
+        'name' => 'Cambodian' // @text
+    ),
+    'kn' => array(
+        'name' => 'Kannada', // @text
+        'native_name' => 'ಕನ್ನಡ'
+    ),
+    'ko' => array(
+        'name' => 'Korean', // @text
+        'native_name' => '한국어'
+    ),
+    'kr' => array(
+        'name' => 'Kanuri' // @text
+    ),
+    'ks' => array(
+        'name' => 'Kashmiri' // @text
+    ),
+    'ku' => array(
+        'name' => 'Kurdish', // @text
+        'native_name' => 'Kurdî'
+    ),
+    'kv' => array(
+        'name' => 'Komi' // @text
+    ),
+    'kw' => array(
+        'name' => 'Cornish' // @text
+    ),
+    'ky' => array(
+        'name' => 'Kyrgyz',
+        'native_name' => 'Кыргызча'
+    ),
+    'la' => array(
+        'name' => 'Latin', // @text
+        'native_name' => 'Latina'
+    ),
+    'lb' => array(
+        'name' => 'Luxembourgish' // @text
+    ),
+    'lg' => array(
+        'name' => 'Luganda' // @text
+    ),
+    'ln' => array(
+        'name' => 'Lingala' // @text
+    ),
+    'lo' => array(
+        'name' => 'Laothian' // @text
+    ),
+    'lt' => array(
+        'name' => 'Lithuanian', // @text
+        'native_name' => 'Lietuvių'
+    ),
+    'lv' => array(
+        'name' => 'Latvian', // @text
+        'native_name' => 'Latviešu'
+    ),
+    'mg' => array(
+        'name' => 'Malagasy' // @text
+    ),
+    'mh' => array(
+        'name' => 'Marshallese' // @text
+    ),
+    'mi' => array(
+        'name' => 'Māori' // @text
+    ),
+    'mk' => array(
+        'name' => 'Macedonian', // @text
+        'native_name' => 'Македонски'
+    ),
+    'ml' => array(
+        'name' => 'Malayalam', // @text
+        'native_name' => 'മലയാളം'
+    ),
+    'mn' => array(
+        'name' => 'Mongolian' // @text
+    ),
+    'mo' => array(
+        'name' => 'Moldavian' // @text
+    ),
+    'mr' => array(
+        'name' => 'Marathi' // @text
+    ),
+    'ms' => array(
+        'name' => 'Malay', // @text
+        'native_name' => 'Bahasa Melayu'
+    ),
+    'mt' => array(
+        'name' => 'Maltese', // @text
+        'native_name' => 'Malti'
+    ),
+    'my' => array(
+        'name' => 'Burmese' // @text
+    ),
+    'na' => array(
+        'name' => 'Nauru' // @text
+    ),
+    'nd' => array(
+        'name' => 'North Ndebele' // @text
+    ),
+    'ne' => array(
+        'name' => 'Nepali' // @text
+    ),
+    'ng' => array(
+        'name' => 'Ndonga' // @text
+    ),
+    'nl' => array(
+        'name' => 'Dutch', // @text
+        'native_name' => 'Nederlands'
+    ),
+    'nb' => array(
+        'name' => 'Norwegian Bokmål', // @text
+        'native_name' => 'Bokmål'
+    ),
+    'nn' => array(
+        'name' => 'Norwegian Nynorsk', // @text
+        'native_name' => 'Nynorsk'
+    ),
+    'nr' => array(
+        'name' => 'South Ndebele' // @text
+    ),
+    'nv' => array(
+        'name' => 'Navajo' // @text
+    ),
+    'ny' => array(
+        'name' => 'Chichewa' // @text
+    ),
+    'oc' => array(
+        'name' => 'Occitan' // @text
+    ),
+    'om' => array(
+        'name' => 'Oromo' // @text
+    ),
+    'or' => array(
+        'name' => 'Oriya' // @text
+    ),
+    'os' => array(
+        'name' => 'Ossetian' // @text
+    ),
+    'pa' => array(
+        'name' => 'Punjabi' // @text
+    ),
+    'pi' => array(
+        'name' => 'Pali' // @text
+    ),
+    'pl' => array(
+        'name' => 'Polish', // @text
+        'native_name' => 'Polski'
+    ),
+    'ps' => array(
+        'name' => 'Pashto', // @text
+        'native_name' => 'پښتو',
+        'rtl' => true
+    ),
+    'pt' => array(
+        'name' => 'Portuguese' // @text
+    ),
+    'qu' => array(
+        'name' => 'Quechua' // @text
+    ),
+    'rm' => array(
+        'name' => 'Rhaeto-Romance' // @text
+    ),
+    'rn' => array(
+        'name' => 'Kirundi' // @text
+    ),
+    'ro' => array(
+        'name' => 'Romanian', // @text
+        'native_name' => 'Română'
+    ),
+    'ru' => array(
+        'name' => 'Russian', // @text
+        'native_name' => 'Русский'
+    ),
+    'rw' => array(
+        'name' => 'Kinyarwanda' // @text
+    ),
+    'sa' => array(
+        'name' => 'Sanskrit' // @text
+    ),
+    'sc' => array(
+        'name' => 'Sardinian' // @text
+    ),
+    'sco' => array(
+        'name' => 'Scots' // @text
+    ),
+    'sd' => array(
+        'name' => 'Sindhi' // @text
+    ),
+    'se' => array(
+        'name' => 'Northern Sami' // @text
+    ),
+    'sg' => array(
+        'name' => 'Sango' // @text
+    ),
+    'sh' => array(
+        'name' => 'Serbo-Croatian' // @text
+    ),
+    'si' => array(
+        'name' => 'Sinhala', // @text
+        'native_name' => 'සිංහල'
+    ),
+    'sk' => array(
+        'name' => 'Slovak', // @text
+        'native_name' => 'Slovenčina'
+    ),
+    'sl' => array(
+        'name' => 'Slovenian', // @text
+        'native_name' => 'Slovenščina'
+    ),
+    'sm' => array(
+        'name' => 'Samoan' // @text
+    ),
+    'sn' => array(
+        'name' => 'Shona' // @text
+    ),
+    'so' => array(
+        'name' => 'Somali' // @text
+    ),
+    'sq' => array(
+        'name' => 'Albanian', // @text
+        'native_name' => 'Shqip'
+    ),
+    'sr' => array(
+        'name' => 'Serbian', // @text
+        'native_name' => 'Српски'
+    ),
+    'ss' => array(
+        'name' => 'Siswati' // @text
+    ),
+    'st' => array(
+        'name' => 'Sesotho' // @text
+    ),
+    'su' => array(
+        'name' => 'Sudanese' // @text
+    ),
+    'sv' => array(
+        'name' => 'Swedish', // @text
+        'native_name' => 'Svenska'
+    ),
+    'sw' => array(
+        'name' => 'Swahili', // @text
+        'native_name' => 'Kiswahili'
+    ),
+    'ta' => array(
+        'name' => 'Tamil', // @text
+        'native_name' => 'தமிழ்'
+    ),
+    'te' => array(
+        'name' => 'Telugu', // @text
+        'native_name' => 'తెలుగు'
+    ),
+    'tg' => array(
+        'name' => 'Tajik' // @text
+    ),
+    'th' => array(
+        'name' => 'Thai', // @text
+        'native_name' => 'ภาษาไทย'
+    ),
+    'ti' => array(
+        'name' => 'Tigrinya' // @text
+    ),
+    'tk' => array(
+        'name' => 'Turkmen' // @text
+    ),
+    'tl' => array(
+        'name' => 'Tagalog' // @text
+    ),
+    'tn' => array(
+        'name' => 'Setswana' // @text
+    ),
+    'to' => array(
+        'name' => 'Tonga' // @text
+    ),
+    'tr' => array(
+        'name' => 'Turkish', // @text
+        'native_name' => 'Türkçe'
+    ),
+    'ts' => array(
+        'name' => 'Tsonga' // @text
+    ),
+    'tt' => array(
+        'name' => 'Tatar', // @text
+        'native_name' => 'Tatarça'
+    ),
+    'tw' => array(
+        'name' => 'Twi' // @text
+    ),
+    'ty' => array(
+        'name' => 'Tahitian' // @text
+    ),
+    'ug' => array(
+        'name' => 'Uyghur' // @text
+    ),
+    'uk' => array(
+        'name' => 'Ukrainian', // @text
+        'native_name' => 'Українська'
+    ),
+    'ur' => array(
+        'name' => 'Urdu', // @text
+        'native_name' => 'اردو',
+        'rtl' => true
+    ),
+    'uz' => array(
+        'name' => 'Uzbek', // @text
+        'native_name' => "o'zbek"
+    ),
+    've' => array(
+        'name' => 'Venda' // @text
+    ),
+    'vi' => array(
+        'name' => 'Vietnamese', // @text
+        'native_name' => 'Tiếng Việt'
+    ),
+    'wo' => array(
+        'name' => 'Wolof' // @text
+    ),
+    'xh' => array(
+        'name' => 'Xhosa', // @text
+        'native_name' => 'isiXhosa'
+    ),
+    'yi' => array(
+        'name' => 'Yiddish' // @text
+    ),
+    'yo' => array(
+        'name' => 'Yoruba', // @text
+        'native_name' => 'Yorùbá'
+    ),
+    'za' => array(
+        'name' => 'Zhuang' // @text
+    ),
+    'zh-hans' => array(
+        'name' => 'Chinese, Simplified', // @text
+        'native_name' => '简体中文'
+    ),
+    'zh-hant' => array(
+        'name' => 'Chinese, Traditional', // @text
+        'native_name' => '繁體中文'
+    ),
+    'zu' => array(
+        'name' => 'Zulu', // @text
+        'native_name' => 'isiZulu'
+    ),
 );

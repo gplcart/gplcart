@@ -8,73 +8,73 @@
  */
 return array(
     'country' => array(
-        'name' => /* @text */'Country',
+        'name' => 'Country', // @text
         'required' => 0,
         'weight' => 0,
         'status' => 1
     ),
     'state_id' => array(
-        'name' => /* @text */'State',
+        'name' => 'State', // @text
         'required' => 0,
         'weight' => 1,
         'status' => 1
     ),
     'city_id' => array(
-        'name' => /* @text */'City',
+        'name' => 'City', // @text
         'required' => 1,
         'weight' => 2,
         'status' => 1
     ),
     'address_1' => array(
-        'name' => /* @text */'Address',
+        'name' => 'Address', // @text
         'required' => 1,
         'weight' => 3,
         'status' => 1
     ),
     'address_2' => array(
-        'name' => /* @text */'Additional address',
+        'name' => 'Additional address', // @text
         'required' => 0,
         'weight' => 4,
         'status' => 0
     ),
     'phone' => array(
-        'name' => /* @text */'Phone',
+        'name' => 'Phone', // @text
         'required' => 1,
         'weight' => 5,
         'status' => 1
     ),
     'postcode' => array(
-        'name' => /* @text */'Post code/ZIP',
+        'name' => 'Post code/ZIP', // @text
         'required' => 1,
         'weight' => 6,
         'status' => 1
     ),
     'first_name' => array(
-        'name' => /* @text */'First name',
+        'name' => 'First name', // @text
         'required' => 1,
         'weight' => 7,
         'status' => 1
     ),
     'middle_name' => array(
-        'name' => /* @text */'Middle name',
+        'name' => 'Middle name', // @text
         'required' => 0,
         'weight' => 8,
         'status' => 0
     ),
     'last_name' => array(
-        'name' => /* @text */'Last name',
+        'name' => 'Last name', // @text
         'required' => 1,
         'weight' => 9,
         'status' => 1
     ),
     'company' => array(
-        'name' => /* @text */'Company',
+        'name' => 'Company', // @text
         'required' => 0,
         'weight' => 10,
         'status' => 0
     ),
     'fax' => array(
-        'name' => /* @text */'Fax',
+        'name' => 'Fax', // @text
         'required' => 0,
         'weight' => 11,
         'status' => 0

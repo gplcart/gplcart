@@ -8,7 +8,7 @@
  */
 return array(
     'order' => array(
-        'title' => /* @text */'Recent orders',
+        'title' => 'Recent orders', // @text
         'status' => true,
         'weight' => 0,
         'template' => 'dashboard/panels/orders',
@@ -17,7 +17,7 @@ return array(
         )
     ),
     'cart' => array(
-        'title' => /* @text */'Recent cart items',
+        'title' => 'Recent cart items', // @text
         'status' => true,
         'weight' => 1,
         'template' => 'dashboard/panels/cart',
@@ -26,7 +26,7 @@ return array(
         )
     ),
     'transaction' => array(
-        'title' => /* @text */'Recent transactions',
+        'title' => 'Recent transactions', // @text
         'status' => true,
         'weight' => 2,
         'template' => 'dashboard/panels/transactions',
@@ -35,7 +35,7 @@ return array(
         )
     ),
     'pricerule' => array(
-        'title' => /* @text */'Active price rules',
+        'title' => 'Active price rules', // @text
         'status' => true,
         'weight' => 3,
         'template' => 'dashboard/panels/pricerules',
@@ -44,7 +44,7 @@ return array(
         )
     ),
     'summary' => array(
-        'title' => /* @text */'Summary',
+        'title' => 'Summary', // @text
         'status' => true,
         'weight' => 4,
         'template' => 'dashboard/panels/summary',
@@ -53,7 +53,7 @@ return array(
         )
     ),
     'review' => array(
-        'title' => /* @text */'Recent reviews',
+        'title' => 'Recent reviews', // @text
         'status' => true,
         'weight' => 5,
         'template' => 'dashboard/panels/reviews',
@@ -62,7 +62,7 @@ return array(
         )
     ),
     'user' => array(
-        'title' => /* @text */'Recent users',
+        'title' => 'Recent users', // @text
         'status' => true,
         'weight' => 6,
         'template' => 'dashboard/panels/users',
@@ -71,7 +71,7 @@ return array(
         )
     ),
     'event' => array(
-        'title' => /* @text */'Recent events',
+        'title' => 'Recent events', // @text
         'status' => true,
         'weight' => 7,
         'template' => 'dashboard/panels/events',
