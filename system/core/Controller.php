@@ -1657,34 +1657,40 @@ abstract class Controller
      */
     protected function renderOutput($templates)
     {
-        if (!is_array($templates)) {
-            $templates = array('region_content' => (string) $templates);
-        }
+        $html = '';
 
-        $templates = array_merge($this->templates, $templates);
-        $layout = $templates['layout'];
-        unset($templates['layout']);
+        if (!$this->isInternalRoute()) {
 
-        $body = $data = $this->data;
-        foreach ($templates as $id => $template) {
-            if (strpos($id, 'region_') === 0) {
-                $body[$id] = $this->renderRegion($id, $template);
+            if (!is_array($templates)) {
+                $templates = array('region_content' => (string) $templates);
             }
+
+            $templates = array_merge($this->templates, $templates);
+
+            $layout = $templates['layout'];
+            unset($templates['layout']);
+
+            $body = $data = $this->data;
+            foreach ($templates as $id => $template) {
+                if (strpos($id, 'region_') === 0) {
+                    $body[$id] = $this->renderRegion($id, $template);
+                }
+            }
+
+            $data['_head'] = $data['_body'] = '';
+
+            if (!empty($templates['head'])) {
+                $data['_head'] = $this->render($templates['head'], $this->data);
+            }
+
+            if (!empty($templates['body'])) {
+                $data['_body'] = $this->render($templates['body'], $body);
+            }
+
+            $html = $this->render($layout, $data, false);
         }
 
-        $data['_head'] = $data['_body'] = '';
-
-        if (!empty($templates['head'])) {
-            $data['_head'] = $this->render($templates['head'], $this->data);
-        }
-
-        if (!empty($templates['body'])) {
-            $data['_body'] = $this->render($templates['body'], $body);
-        }
-
-        $html = $this->render($layout, $data, false);
         $this->hook->attach('template.output', $html, $this);
-
         return $html;
     }
 
