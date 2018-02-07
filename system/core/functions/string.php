@@ -175,6 +175,7 @@ function gplcart_string_encode($string)
 function gplcart_string_decode($string)
 {
     $remainder = strlen($string) % 4;
+
     if ($remainder) {
         $padlen = 4 - $remainder;
         $string .= str_repeat('=', $padlen);

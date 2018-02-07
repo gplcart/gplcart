@@ -23,12 +23,7 @@ use gplcart\core\traits\Wishlist as WishlistTrait;
 class Controller extends BaseController
 {
 
-    use ItemTrait,
-        CartTrait,
-        WidgetTrait,
-        WishlistTrait,
-        ItemPriceTrait,
-        ProductCompareTrait;
+    use ItemTrait, CartTrait, WidgetTrait, WishlistTrait, ItemPriceTrait, ProductCompareTrait;
 
     /**
      * Trigger model instance
