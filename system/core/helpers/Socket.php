@@ -9,9 +9,9 @@
 
 namespace gplcart\core\helpers;
 
-use OutOfBoundsException,
-    InvalidArgumentException,
-    UnexpectedValueException;
+use InvalidArgumentException;
+use OutOfBoundsException;
+use UnexpectedValueException;
 
 /**
  * Provides wrappers for PHP's stream socket client
@@ -175,7 +175,7 @@ class Socket
      */
     public function setContext($context, array $options = array())
     {
-        if (isset($context) && !is_resource($context)) {
+        if (!isset($context)) {
             $context = stream_context_create((array) $context, $options);
         }
 
@@ -216,7 +216,7 @@ class Socket
      */
     public function setHeaders(array $headers)
     {
-        $this->headers = array_merge($this->headers, $headers);
+        $this->headers = $headers;
         return $this;
     }
 
@@ -240,7 +240,7 @@ class Socket
     public function setUri($uri)
     {
         if (!is_array($uri)) {
-            $uri = parse_url((string) $uri);
+            $uri = parse_url($uri);
         }
 
         $this->uri = $uri;
@@ -300,6 +300,8 @@ class Socket
      */
     public function exec()
     {
+        $this->response = '';
+
         $errno = $errstr = null;
 
         if (isset($this->context)) {
@@ -314,7 +316,6 @@ class Socket
 
         fwrite($this->stream, $this->getRequestBody());
 
-        $this->response = '';
         while (!feof($this->stream)) {
             $this->response .= fgets($this->stream, 1024);
         }
@@ -331,6 +332,10 @@ class Socket
      */
     protected function getRequestBody()
     {
+        if (is_array($this->data)) {
+            $this->data = http_build_query($this->data);
+        }
+
         $this->prepareHeaders();
 
         $path = isset($this->uri['path']) ? $this->uri['path'] : '/';
@@ -345,10 +350,6 @@ class Socket
             $body .= "$name: " . trim($value) . "\r\n";
         }
 
-        if (is_array($this->data)) {
-            $this->data = http_build_query($this->data);
-        }
-
         $body .= "\r\n{$this->data}";
         return $body;
     }
@@ -359,7 +360,9 @@ class Socket
     protected function prepareHeaders()
     {
         if (!isset($this->headers['Content-Length'])) {
+
             $content_length = strlen($this->data);
+
             if ($content_length > 0 || $this->method === 'POST' || $this->method === 'PUT') {
                 $this->headers['Content-Length'] = $content_length;
             }
@@ -404,26 +407,30 @@ class Socket
     public function request($url, array $options = array())
     {
         $options += array(
-            'headers' => array(),
-            'method' => 'GET',
             'data' => null,
             'timeout' => 30,
             'context' => null,
+            'method' => 'GET',
+            'headers' => array()
         );
+
+        if ($options['method'] === 'POST' && empty($options['headers'])) {
+            $options['headers'] = array('Content-Type' => 'application/x-www-form-urlencoded');
+        }
 
         if (!empty($options['query'])) {
             $url = strtok($url, '?') . '?' . http_build_query($options['query']);
         }
 
         return $this->setUri($url)
-                        ->setHeaders($options['headers'])
-                        ->setMethod($options['method'])
-                        ->setData($options['data'])
-                        ->setTimeOut($options['timeout'])
-                        ->setContext($options['context'])
-                        ->setSocket()
-                        ->exec()
-                        ->getFormattedResponse();
+            ->setHeaders($options['headers'])
+            ->setMethod($options['method'])
+            ->setData($options['data'])
+            ->setTimeOut($options['timeout'])
+            ->setContext($options['context'])
+            ->setSocket()
+            ->exec()
+            ->getFormattedResponse();
     }
 
 }
