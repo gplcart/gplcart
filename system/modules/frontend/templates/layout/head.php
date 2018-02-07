@@ -10,8 +10,10 @@
  */
 ?>
 <head>
+  <?php if(!empty($_meta_tags)) { ?>
   <?php foreach ($_meta_tags as $tag) { ?>
   <meta<?php echo $this->attributes($tag); ?>>
+  <?php } ?>
   <?php } ?>
   <title>
     <?php if(!empty($_store_title)) { ?>
@@ -25,9 +27,12 @@
   <?php if(!empty($_store_favicon)) { ?>
   <link rel="icon" href="<?php echo $this->e($_store_favicon); ?>">
   <?php } ?>
+  <?php if(!empty($_css)) { ?>
   <?php foreach ($_css as $css) { ?>
   <link href="<?php echo $this->url($css['asset'], array('v' => $css['version']), false, true); ?>" rel="stylesheet">
   <?php } ?>
+  <?php } ?>
+  <?php if(!empty($_js_top)) { ?>
   <?php foreach ($_js_top as $js) { ?>
   <?php if (!empty($js['text'])) { ?>
   <?php if (!empty($js['asset'])) { ?>
@@ -46,6 +51,7 @@
     <![endif]-->
   <?php } else { ?>
   <script src="<?php echo $this->url($js['asset'], array('v' => $js['version']), false, true); ?>"></script>
+  <?php } ?>
   <?php } ?>
   <?php } ?>
   <?php } ?>
