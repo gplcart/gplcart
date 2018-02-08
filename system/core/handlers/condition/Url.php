@@ -9,9 +9,9 @@
 
 namespace gplcart\core\handlers\condition;
 
-use gplcart\core\Route;
-use gplcart\core\helpers\Url as UrlHelper;
 use gplcart\core\handlers\condition\Base as BaseHandler;
+use gplcart\core\helpers\Url as UrlHelper;
+use gplcart\core\Route;
 
 /**
  * Provides methods to check URL conditions
@@ -70,6 +70,7 @@ class Url extends BaseHandler
         $path = $this->url->path();
 
         $found = false;
+
         foreach ((array) $condition['value'] as $pattern) {
             if (gplcart_path_match($path, $pattern)) {
                 $found = true;

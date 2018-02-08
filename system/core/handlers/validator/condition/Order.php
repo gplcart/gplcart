@@ -9,9 +9,9 @@
 
 namespace gplcart\core\handlers\validator\condition;
 
-use gplcart\core\models\Payment as PaymentModel,
-    gplcart\core\models\Shipping as ShippingModel,
-    gplcart\core\models\Translation as TranslationModel;
+use gplcart\core\models\Payment as PaymentModel;
+use gplcart\core\models\Shipping as ShippingModel;
+use gplcart\core\models\Translation as TranslationModel;
 
 /**
  * Contains methods to validate various order conditions
@@ -61,8 +61,8 @@ class Order
         });
 
         if (count($values) != count($existing)) {
-            $vars = array('@name' => $this->translation->text('Shipping'));
-            return $this->translation->text('@name is unavailable', $vars);
+            return $this->translation->text('@name is unavailable', array(
+                '@name' => $this->translation->text('Shipping')));
         }
 
         return true;
@@ -80,8 +80,8 @@ class Order
         });
 
         if (count($values) != count($existing)) {
-            $vars = array('@name' => $this->translation->text('Payment'));
-            return $this->translation->text('@name is unavailable', $vars);
+            return $this->translation->text('@name is unavailable', array(
+                '@name' => $this->translation->text('Payment')));
         }
 
         return true;

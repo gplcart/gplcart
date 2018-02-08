@@ -103,12 +103,13 @@ class Review extends ComponentValidator
         }
 
         $value = $this->getSubmitted($field);
-        $label = $this->translation->text('Text');
 
         if ($this->isUpdating() && !isset($value)) {
             $this->unsetSubmitted($field);
             return null;
         }
+
+        $label = $this->translation->text('Text');
 
         if (empty($value)) {
             $this->setErrorRequired($field, $label);
@@ -164,12 +165,13 @@ class Review extends ComponentValidator
         }
 
         $value = $this->getSubmitted($field);
-        $label = $this->translation->text('Product');
 
         if ($this->isUpdating() && !isset($value)) {
             $this->unsetSubmitted($field);
             return null;
         }
+
+        $label = $this->translation->text('Product');
 
         if (empty($value)) {
             $this->setErrorRequired($field, $label);

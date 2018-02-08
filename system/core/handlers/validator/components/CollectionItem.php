@@ -52,8 +52,8 @@ class CollectionItem extends ComponentValidator
      * @param CollectionModel $collection
      * @param CollectionItemModel $collection_item
      */
-    public function __construct(PageModel $page, ProductModel $product,
-                                CollectionModel $collection, CollectionItemModel $collection_item)
+    public function __construct(PageModel $page, ProductModel $product, CollectionModel $collection,
+                                CollectionItemModel $collection_item)
     {
         parent::__construct();
 
@@ -182,11 +182,12 @@ class CollectionItem extends ComponentValidator
         }
 
         $value = $this->getSubmitted($field);
-        $title = $this->getSubmitted('title');
 
         if ($this->isUpdating() && !isset($value)) {
             return null;
         }
+
+        $title = $this->getSubmitted('title');
 
         if (is_numeric($title)) {
             $value = $title;
@@ -231,7 +232,6 @@ class CollectionItem extends ComponentValidator
             return null;
         }
 
-        $entity_id = $this->getSubmitted('entity_id');
         $collection = $this->getSubmitted('collection');
         $collection_id = $this->getSubmitted('collection_id');
 
@@ -253,6 +253,7 @@ class CollectionItem extends ComponentValidator
         }
 
         try {
+            $entity_id = $this->getSubmitted('entity_id');
             $handlers = $this->collection->getHandlers();
             $result = static::call($handlers, $collection['type'], 'validate', array($entity_id));
         } catch (Exception $ex) {
@@ -277,8 +278,7 @@ class CollectionItem extends ComponentValidator
         $page = $this->page->get($page_id);
 
         if (empty($page['status'])) {
-            $vars = array('@name' => $this->translation->text('Page'));
-            return $this->translation->text('@name is unavailable', $vars);
+            return $this->translation->text('@name is unavailable', array('@name' => $this->translation->text('Page')));
         }
 
         return true;
@@ -294,8 +294,8 @@ class CollectionItem extends ComponentValidator
         $product = $this->product->get($product_id);
 
         if (empty($product['status'])) {
-            $vars = array('@name' => $this->translation->text('Product'));
-            return $this->translation->text('@name is unavailable', $vars);
+            return $this->translation->text('@name is unavailable', array(
+                '@name' => $this->translation->text('Product')));
         }
 
         return true;
@@ -311,7 +311,8 @@ class CollectionItem extends ComponentValidator
         $file = $this->file->get($file_id);
 
         if (empty($file)) {
-            return $this->translation->text('@name is unavailable', array('@name' => $this->translation->text('File')));
+            return $this->translation->text('@name is unavailable', array(
+                '@name' => $this->translation->text('File')));
         }
 
         return true;

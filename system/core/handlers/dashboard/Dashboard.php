@@ -31,8 +31,7 @@ use gplcart\core\traits\ItemPrice as ItemPriceTrait;
 class Dashboard extends Handler
 {
 
-    use ItemPriceTrait,
-        ItemOrderTrait;
+    use ItemPriceTrait, ItemOrderTrait;
 
     /**
      * Config class instance

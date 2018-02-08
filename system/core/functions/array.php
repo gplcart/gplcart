@@ -172,7 +172,7 @@ function gplcart_array_split(array $list, $p)
     $mark = 0;
     $partition = array();
 
-    for ($px = 0; $px < $p; $px ++) {
+    for ($px = 0; $px < $p; $px++) {
         $incr = ($px < $partrem) ? $partlen + 1 : $partlen;
         $partition[$px] = array_slice($list, $mark, $incr);
         $mark += $incr;

@@ -9,9 +9,9 @@
 
 namespace gplcart\core\handlers\condition;
 
-use gplcart\core\models\Price as PriceModel,
-    gplcart\core\models\Currency as CurrencyModel;
 use gplcart\core\handlers\condition\Base as BaseHandler;
+use gplcart\core\models\Currency as CurrencyModel;
+use gplcart\core\models\Price as PriceModel;
 
 /**
  * Provides methods to check cart conditions

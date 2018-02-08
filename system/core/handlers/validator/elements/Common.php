@@ -110,6 +110,7 @@ class Common extends BaseElementValidator
         list($min, $max) = $options['arguments'] + array(1, 255);
 
         $length = mb_strlen($value);
+
         if ($min <= $length && $length <= $max) {
             return true;
         }

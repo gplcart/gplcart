@@ -9,8 +9,8 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\models\Install as InstallModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\models\Install as InstallModel;
 
 /**
  * Provides methods to validate installation data
@@ -399,8 +399,9 @@ class Install extends ComponentValidator
             return true;
         }
 
-        $vars = array('@list' => implode(',', $drivers));
-        $error = $this->translation->text('Unsupported database driver. Available drivers: @list', $vars);
+        $error = $this->translation->text('Unsupported database driver. Available drivers: @list', array(
+            '@list' => implode(',', $drivers)));
+
         $this->setError($field, $error);
         return false;
     }

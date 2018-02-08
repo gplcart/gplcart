@@ -444,9 +444,9 @@ class Base
      */
     protected function getPageModel()
     {
-        /** @var \gplcart\core\models\Page $object */
-        $object = Container::get('gplcart\\core\\models\\Page');
-        return $object;
+        /** @var \gplcart\core\models\Page $instance */
+        $instance = Container::get('gplcart\\core\\models\\Page');
+        return $instance;
     }
 
     /**
@@ -455,9 +455,9 @@ class Base
      */
     protected function getLanguageModel()
     {
-        /** @var \gplcart\core\models\Language $object */
-        $object = Container::get('gplcart\\core\\models\\Language');
-        return $object;
+        /** @var \gplcart\core\models\Language $instance */
+        $instance = Container::get('gplcart\\core\\models\\Language');
+        return $instance;
     }
 
     /**
@@ -466,9 +466,9 @@ class Base
      */
     protected function getUserModel()
     {
-        /** @var \gplcart\core\models\User $object */
-        $object = Container::get('gplcart\\core\\models\\User');
-        return $object;
+        /** @var \gplcart\core\models\User $instance */
+        $instance = Container::get('gplcart\\core\\models\\User');
+        return $instance;
     }
 
     /**
@@ -477,9 +477,9 @@ class Base
      */
     protected function getStoreModel()
     {
-        /** @var \gplcart\core\models\Store $object */
-        $object = Container::get('gplcart\\core\\models\\Store');
-        return $object;
+        /** @var \gplcart\core\models\Store $instance */
+        $instance = Container::get('gplcart\\core\\models\\Store');
+        return $instance;
     }
 
     /**
@@ -488,9 +488,9 @@ class Base
      */
     protected function getCountryModel()
     {
-        /** @var \gplcart\core\models\Country $object */
-        $object = Container::get('gplcart\\core\\models\\Country');
-        return $object;
+        /** @var \gplcart\core\models\Country $instance */
+        $instance = Container::get('gplcart\\core\\models\\Country');
+        return $instance;
     }
 
 }

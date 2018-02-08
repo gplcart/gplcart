@@ -125,6 +125,7 @@ class Trigger extends ComponentValidator
         $operators = array_map('htmlspecialchars', array_keys($this->condition->getOperators()));
 
         $errors = $modified = array();
+
         foreach ($value as $line => $condition) {
 
             $line++;

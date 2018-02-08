@@ -9,8 +9,8 @@
 
 namespace gplcart\core\handlers\price_rule;
 
-use gplcart\core\models\Price as PriceModel,
-    gplcart\core\models\Currency as CurrencyModel;
+use gplcart\core\models\Currency as CurrencyModel;
+use gplcart\core\models\Price as PriceModel;
 
 /**
  * Contains callback methods to modify prices depending on the price rule type

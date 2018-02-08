@@ -279,7 +279,7 @@ class Currency extends ComponentValidator
 
         $updating = $this->getUpdating();
 
-        if (isset($updating['numeric_code']) && ($updating['numeric_code'] == $value)) {
+        if (isset($updating['numeric_code']) && $updating['numeric_code'] == $value) {
             return true;
         }
 

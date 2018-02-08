@@ -170,10 +170,10 @@ class Product extends ComponentValidator
     protected function validateSubtractProduct()
     {
         $field = 'subtract';
-        $subtract = $this->getSubmitted($field);
+        $value = $this->getSubmitted($field);
 
-        if (isset($subtract)) {
-            $this->setSubmitted($field, filter_var($subtract, FILTER_VALIDATE_BOOLEAN));
+        if (isset($value)) {
+            $this->setSubmitted($field, filter_var($value, FILTER_VALIDATE_BOOLEAN));
         }
 
         return true;
@@ -229,6 +229,7 @@ class Product extends ComponentValidator
         );
 
         $errors = 0;
+
         foreach ($fields as $field => $label) {
 
             $value = $this->getSubmitted($field);
@@ -277,7 +278,9 @@ class Product extends ComponentValidator
         $errors = 0;
 
         foreach ($fields as $field => $label) {
+
             $value = $this->getSubmitted($field);
+
             if (isset($value) && !isset($allowed[$field][$value])) {
                 $errors++;
                 $this->setErrorUnavailable($field, $label);
@@ -393,14 +396,16 @@ class Product extends ComponentValidator
         }
 
         $value = $this->getSubmitted($field);
-        $store_id = $this->getSubmitted('store_id');
 
         if (empty($value)) {
             $this->setSubmitted($field, array());
             return null;
         }
 
+        $store_id = $this->getSubmitted('store_id');
+
         $product_ids = array();
+
         foreach (array_unique($value) as $product_id) {
 
             $product = $this->product->get($product_id);
@@ -466,6 +471,7 @@ class Product extends ComponentValidator
         }
 
         $product_id = null;
+
         if (isset($updating['product_id'])) {
             $product_id = $updating['product_id'];
         }
@@ -528,14 +534,16 @@ class Product extends ComponentValidator
      */
     protected function validateAttributeProduct()
     {
-        $attributes = $this->getSubmitted('field.attribute');
         $fields = $this->getSubmitted('product_fields.attribute');
 
         if (empty($fields)) {
             return null;
         }
 
+        $attributes = $this->getSubmitted('field.attribute');
+
         $errors = 0;
+
         foreach ($fields as $field_id => $field) {
             if (!empty($field['required']) && empty($attributes[$field_id])) {
                 $this->setErrorRequired("attribute.$field_id", $field['title']);
@@ -559,6 +567,7 @@ class Product extends ComponentValidator
         }
 
         $index = 1;
+
         foreach ($combinations as &$combination) {
 
             $combination['status'] = !empty($combination['status']);
@@ -619,6 +628,7 @@ class Product extends ComponentValidator
         }
 
         $errors = 0;
+
         foreach ($options as $field_id => $field) {
             if (!empty($field['required']) && !isset($combination['fields'][$field_id])) {
                 $this->setErrorRequired("combination.$index.fields.$field_id", $field['title']);
@@ -648,11 +658,10 @@ class Product extends ComponentValidator
         $updating = $this->getUpdating();
 
         $product_id = null;
+
         if (isset($updating['product_id'])) {
             $product_id = $updating['product_id'];
         }
-
-        $store_id = $this->getSubmitted('store_id');
 
         if (mb_strlen($combination['sku']) > 255) {
             $this->setErrorLengthRange("combination.$index.sku", $this->translation->text('SKU'), 0, 255);
@@ -665,6 +674,7 @@ class Product extends ComponentValidator
             return false;
         }
 
+        $store_id = $this->getSubmitted('store_id');
         $existing = $this->sku->get(array('sku' => $combination['sku'], 'store_id' => $store_id));
 
         if (isset($product_id) && isset($existing['product_id']) && $existing['product_id'] == $product_id) {

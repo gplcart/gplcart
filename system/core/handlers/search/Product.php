@@ -10,8 +10,8 @@
 namespace gplcart\core\handlers\search;
 
 use gplcart\core\Config;
-use gplcart\core\models\Search as SearchModel,
-    gplcart\core\models\Product as ProductModel;
+use gplcart\core\models\Product as ProductModel;
+use gplcart\core\models\Search as SearchModel;
 
 class Product
 {
@@ -84,11 +84,11 @@ class Product
 
         $conditions = array($query, $data['language'], 'und', 'product');
 
-        $sql .= ' FROM search_index si'
-                . ' LEFT JOIN product p ON(p.product_id = si.entity_id)'
-                . ' WHERE MATCH(si.text) AGAINST (? IN BOOLEAN MODE)'
-                . ' AND (si.language=? OR si.language=?)'
-                . ' AND si.entity=? AND p.product_id IS NOT NULL';
+        $sql .= ' FROM search_index si
+                  LEFT JOIN product p ON(p.product_id = si.entity_id)
+                  WHERE MATCH(si.text) AGAINST (? IN BOOLEAN MODE)
+                  AND (si.language=? OR si.language=?)
+                  AND si.entity=? AND p.product_id IS NOT NULL';
 
         if (isset($data['status'])) {
             $sql .= ' AND p.status=?';

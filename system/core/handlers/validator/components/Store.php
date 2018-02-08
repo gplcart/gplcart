@@ -19,11 +19,6 @@ class Store extends ComponentValidator
 {
 
     /**
-     * File upload path
-     */
-    const UPLOAD_PATH = 'image/upload/store';
-
-    /**
      * Module class instance
      * @var \gplcart\core\Module $module
      */
@@ -112,7 +107,6 @@ class Store extends ComponentValidator
             return null;
         }
 
-
         $label = $this->translation->text('Domain');
 
         if (empty($value)) {
@@ -160,8 +154,8 @@ class Store extends ComponentValidator
 
         $updating = $this->getUpdating();
 
-        if (isset($updating['basepath'])//
-            && $updating['basepath'] === $value//
+        if (isset($updating['basepath'])
+            && $updating['basepath'] === $value
             && $updating['domain'] === $this->getSubmitted('domain')) {
             return true;
         }
@@ -373,6 +367,7 @@ class Store extends ComponentValidator
         }
 
         $error = false;
+
         foreach (array('logo', 'favicon') as $field) {
 
             if ($this->getSubmitted("delete_$field")) {
@@ -385,7 +380,7 @@ class Store extends ComponentValidator
                 continue;
             }
 
-            $result = $this->file_transfer->upload($file, null, self::UPLOAD_PATH);
+            $result = $this->file_transfer->upload($file, null, 'image/upload/store');
 
             if ($result !== true) {
                 $error = true;

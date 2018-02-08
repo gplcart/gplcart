@@ -9,8 +9,8 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\models\Product as ProductModel;
 use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\models\Product as ProductModel;
 
 /**
  * Provides methods to validate a product bundle data
@@ -90,7 +90,6 @@ class ProductBundle extends ComponentValidator
     {
         $field = 'bundle';
         $value = $this->getSubmitted($field);
-        $main_product = $this->getSubmitted('product');
 
         if (empty($value)) {
             return null;
@@ -100,6 +99,8 @@ class ProductBundle extends ComponentValidator
             $this->setErrorInvalid($field, $this->translation->text('Product bundle'));
             return false;
         }
+
+        $main_product = $this->getSubmitted('product');
 
         $loaded = array();
 

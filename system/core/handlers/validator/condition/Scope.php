@@ -77,15 +77,15 @@ class Scope
         }
 
         if (count($values) != 1) {
-            $vars = array('@field' => $this->translation->text('Condition'));
-            return $this->translation->text('@field has invalid value', $vars);
+            return $this->translation->text('@field has invalid value', array(
+                '@field' => $this->translation->text('Condition')));
         }
 
         $scope = filter_var(reset($values), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
 
         if (!isset($scope)) {
-            $vars = array('@field' => $this->translation->text('Condition'));
-            return $this->translation->text('@field has invalid value', $vars);
+            return $this->translation->text('@field has invalid value', array(
+                '@field' => $this->translation->text('Condition')));
         }
 
         return true;

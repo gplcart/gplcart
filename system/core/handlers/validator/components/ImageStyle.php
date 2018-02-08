@@ -92,12 +92,13 @@ class ImageStyle extends ComponentValidator
         }
 
         $actions = $this->getSubmitted($field);
-        $label = $this->translation->text('Actions');
 
         if ($this->isUpdating() && !isset($actions)) {
             $this->unsetSubmitted($field);
             return null;
         }
+
+        $label = $this->translation->text('Actions');
 
         if (empty($actions)) {
             $this->setErrorRequired($field, $label);

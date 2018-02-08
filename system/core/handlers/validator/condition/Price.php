@@ -9,8 +9,8 @@
 
 namespace gplcart\core\handlers\validator\condition;
 
-use gplcart\core\models\Currency as CurrencyModel,
-    gplcart\core\models\Translation as TranslationModel;
+use gplcart\core\models\Currency as CurrencyModel;
+use gplcart\core\models\Translation as TranslationModel;
 
 /**
  * Contains methods to validate price conditions
@@ -48,25 +48,26 @@ class Price
     public function price(array $values)
     {
         if (count($values) != 1) {
-            $vars = array('@field' => $this->translation->text('Condition'));
-            return $this->translation->text('@field has invalid value', $vars);
+            return $this->translation->text('@field has invalid value', array(
+                '@field' => $this->translation->text('Condition')));
         }
 
         $components = array_map('trim', explode('|', reset($values)));
 
         if (count($components) > 2) {
-            $vars = array('@field' => $this->translation->text('Condition'));
-            return $this->translation->text('@field has invalid value', $vars);
+            return $this->translation->text('@field has invalid value', array(
+                '@field' => $this->translation->text('Condition')));
         }
 
         if (!is_numeric($components[0])) {
-            $vars = array('@field' => $this->translation->text('Price'));
-            return $this->translation->text('@field must be numeric', $vars);
+            return $this->translation->text('@field must be numeric', array(
+                '@field' => $this->translation->text('Price')));
         }
 
         if (strlen($components[0]) > 8) {
-            $vars = array('@max' => 8, '@field' => $this->translation->text('Price'));
-            return $this->translation->text('@field must not be longer than @max characters', $vars);
+            return $this->translation->text('@field must not be longer than @max characters', array(
+                '@max' => 8,
+                '@field' => $this->translation->text('Price')));
         }
 
         if (empty($components[1])) {
@@ -76,8 +77,8 @@ class Price
         $currency = $this->currency->get($components[1]);
 
         if (empty($currency)) {
-            $vars = array('@name' => $this->translation->text('Currency'));
-            return $this->translation->text('@name is unavailable', $vars);
+            return $this->translation->text('@name is unavailable', array(
+                '@name' => $this->translation->text('Currency')));
         }
 
         return true;

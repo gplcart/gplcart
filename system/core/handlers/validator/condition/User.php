@@ -9,9 +9,9 @@
 
 namespace gplcart\core\handlers\validator\condition;
 
-use gplcart\core\models\User as UserModel,
-    gplcart\core\models\UserRole as UserRoleModel,
-    gplcart\core\models\Translation as TranslationModel;
+use gplcart\core\models\Translation as TranslationModel;
+use gplcart\core\models\User as UserModel;
+use gplcart\core\models\UserRole as UserRoleModel;
 
 class User
 {
@@ -57,8 +57,8 @@ class User
         $ids = array_filter($values, 'ctype_digit');
 
         if ($count != count($ids)) {
-            $vars = array('@field' => $this->translation->text('Condition'));
-            return $this->translation->text('@field has invalid value', $vars);
+            return $this->translation->text('@field has invalid value', array(
+                '@field' => $this->translation->text('Condition')));
         }
 
         $existing = array_filter($values, function ($user_id) {
@@ -70,8 +70,8 @@ class User
         });
 
         if ($count != count($existing)) {
-            $vars = array('@name' => $this->translation->text('User'));
-            return $this->translation->text('@name is unavailable', $vars);
+            return $this->translation->text('@name is unavailable', array(
+                '@name' => $this->translation->text('User')));
         }
 
         return true;
@@ -88,21 +88,23 @@ class User
         $ids = array_filter($values, 'ctype_digit');
 
         if ($count != count($ids)) {
-            $vars = array('@field' => $this->translation->text('Condition'));
-            return $this->translation->text('@field has invalid value', $vars);
+            return $this->translation->text('@field has invalid value', array(
+                '@field' => $this->translation->text('Condition')));
         }
 
         $exists = array_filter($values, function ($role_id) {
+
             if ($role_id == 0) {
                 return true;
             }
+
             $role = $this->role->get($role_id);
             return isset($role['role_id']);
         });
 
         if ($count != count($exists)) {
-            $vars = array('@name' => $this->translation->text('Role'));
-            return $this->translation->text('@name is unavailable', $vars);
+            return $this->translation->text('@name is unavailable', array(
+                '@name' => $this->translation->text('Role')));
         }
 
         return true;

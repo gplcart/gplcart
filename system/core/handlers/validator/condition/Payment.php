@@ -9,10 +9,10 @@
 
 namespace gplcart\core\handlers\validator\condition;
 
-use gplcart\core\models\Zone as ZoneModel,
-    gplcart\core\models\State as StateModel,
-    gplcart\core\models\Country as CountryModel,
-    gplcart\core\models\Translation as TranslationModel;
+use gplcart\core\models\Country as CountryModel;
+use gplcart\core\models\State as StateModel;
+use gplcart\core\models\Translation as TranslationModel;
+use gplcart\core\models\Zone as ZoneModel;
 
 /**
  * Contains methods to validate payment address conditions
@@ -72,8 +72,8 @@ class Payment
         });
 
         if (count($values) != count($existing)) {
-            $vars = array('@name' => $this->translation->text('Country'));
-            return $this->translation->text('@name is unavailable', $vars);
+            return $this->translation->text('@name is unavailable', array(
+                '@name' => $this->translation->text('Country')));
         }
 
         return true;
@@ -90,8 +90,8 @@ class Payment
         $ids = array_filter($values, 'is_numeric');
 
         if ($count != count($ids)) {
-            $vars = array('@field' => $this->translation->text('Condition'));
-            return $this->translation->text('@field has invalid value', $vars);
+            return $this->translation->text('@field has invalid value', array(
+                '@field' => $this->translation->text('Condition')));
         }
 
         $existing = array_filter($values, function ($state_id) {
@@ -100,8 +100,8 @@ class Payment
         });
 
         if ($count != count($existing)) {
-            $vars = array('@name' => $this->translation->text('State'));
-            return $this->translation->text('@name is unavailable', $vars);
+            return $this->translation->text('@name is unavailable', array(
+                '@name' => $this->translation->text('State')));
         }
 
         return true;
@@ -122,8 +122,8 @@ class Payment
         $zone = $this->zone->get(reset($values));
 
         if (empty($zone)) {
-            $vars = array('@name' => $this->translation->text('Condition'));
-            return $this->translation->text('@name is unavailable', $vars);
+            return $this->translation->text('@name is unavailable', array(
+                '@name' => $this->translation->text('Condition')));
         }
 
         return true;

@@ -176,10 +176,13 @@ class ProductClassField extends ComponentValidator
             $this->setErrorUnavailable($field, $this->translation->text('Unknown product class ID'));
         }
 
-        $existing = $this->product_class_field->getList(array('index' => 'field_id',
-            'product_class_id' => $product_class_id));
+        $existing = $this->product_class_field->getList(array(
+                'index' => 'field_id',
+                'product_class_id' => $product_class_id)
+        );
 
         $processed = array();
+
         foreach ((array) $value as $field_id) {
 
             if (empty($field_id) || !is_numeric($field_id)) {

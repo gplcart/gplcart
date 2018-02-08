@@ -9,9 +9,9 @@
 
 namespace gplcart\core\handlers\mail;
 
-use gplcart\core\models\Price as PriceModel,
-    gplcart\core\models\Order as OrderModel;
 use gplcart\core\handlers\mail\Base as BaseHandler;
+use gplcart\core\models\Order as OrderModel;
+use gplcart\core\models\Price as PriceModel;
 
 /**
  * Mail handlers related to orders

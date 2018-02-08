@@ -9,8 +9,8 @@
 
 namespace gplcart\core\handlers\validator\condition;
 
-use gplcart\core\Route;
 use gplcart\core\models\Translation as TranslationModel;
+use gplcart\core\Route;
 
 /**
  * Contains methods to validate URL trigger conditions
@@ -56,8 +56,8 @@ class Url
 
         foreach ($values as $pattern) {
             if (empty($existing[$pattern])) {
-                $vars = array('@name' => $this->translation->text('Condition'));
-                return $this->translation->text('@name is unavailable', $vars);
+                return $this->translation->text('@name is unavailable', array(
+                    '@name' => $this->translation->text('Condition')));
             }
         }
 
@@ -78,8 +78,8 @@ class Url
 
         foreach ($values as $pattern) {
             if (!gplcart_string_is_regexp($pattern)) {
-                $vars = array('@field' => $this->translation->text('Condition'));
-                return $this->translation->text('@field has invalid value', $vars);
+                return $this->translation->text('@field has invalid value', array(
+                    '@field' => $this->translation->text('Condition')));
             }
         }
 
