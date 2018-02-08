@@ -12,9 +12,9 @@ namespace gplcart\core\models;
 use Exception;
 use gplcart\core\Config;
 use gplcart\core\exceptions\Validation as ValidationException;
-use gplcart\core\helpers\Socket as SocketHelper;
 use gplcart\core\Hook;
 use gplcart\core\models\File as FileModel;
+use gplcart\core\models\Http as HttpModel;
 use gplcart\core\models\Language as LanguageModel;
 use gplcart\core\models\Translation as TranslationModel;
 use gplcart\core\models\Validator as ValidatorModel;
@@ -64,10 +64,10 @@ class FileTransfer
     protected $validator;
 
     /**
-     * Socket client class instance
-     * @var \gplcart\core\helpers\Socket $socket
+     * Http model instance
+     * @var \gplcart\core\models\Http $http
      */
-    protected $socket;
+    protected $http;
 
     /**
      * Transfer file destination
@@ -94,15 +94,15 @@ class FileTransfer
      * @param ValidatorModel $validator
      * @param FileModel $file
      * @param TranslationModel $translation
-     * @param SocketHelper $socket
+     * @param HttpModel $http
      */
     public function __construct(Hook $hook, Config $config, LanguageModel $language, ValidatorModel $validator,
-                                FileModel $file, TranslationModel $translation, SocketHelper $socket
+                                FileModel $file, TranslationModel $translation, HttpModel $http
     )
     {
         $this->hook = $hook;
         $this->config = $config;
-        $this->socket = $socket;
+        $this->http = $http;
         $this->file = $file;
         $this->language = $language;
         $this->validator = $validator;
@@ -239,7 +239,7 @@ class FileTransfer
             throw new UnexpectedValueException($this->translation->text('File handle is not a valid resource'));
         }
 
-        $response = $this->socket->request($url);
+        $response = $this->http->request($url);
         fwrite($fh, $response['data']);
         fclose($fh);
 
