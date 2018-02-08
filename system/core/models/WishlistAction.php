@@ -135,7 +135,8 @@ class WishlistAction
             'severity' => 'success',
             'quantity' => count($existing),
             'wishlist_id' => $data['wishlist_id'],
-            'message' => $this->translation->text('Product has been added to your <a href="@url">wishlist</a>', array('@url' => $href)));
+            'message' => $this->translation->text('Product has been added to your <a href="@url">wishlist</a>', array(
+                '@url' => $href)));
     }
 
     /**

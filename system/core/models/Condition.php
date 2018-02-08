@@ -77,6 +77,7 @@ class Condition
         }
 
         $result = true;
+
         foreach ($trigger['data']['conditions'] as $condition) {
             if ($this->callHandler($condition, $data) !== true) {
                 $result = false;

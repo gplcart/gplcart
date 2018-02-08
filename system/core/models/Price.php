@@ -70,6 +70,7 @@ class Price
     public function formatTemplate($amount, array $data)
     {
         $placeholders = array();
+
         foreach (array_keys($data) as $key) {
             $placeholders["%$key"] = $key;
         }

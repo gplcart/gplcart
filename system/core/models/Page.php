@@ -26,9 +26,7 @@ use gplcart\core\traits\Translation as TranslationTrait;
 class Page implements CrudInterface
 {
 
-    use ImageTrait,
-        AliasTrait,
-        TranslationTrait;
+    use ImageTrait, AliasTrait, TranslationTrait;
 
     /**
      * Database class instance

@@ -169,12 +169,8 @@ class Dashboard
      */
     public function callHandler($handler_id, $method = 'data', array $arguments = array())
     {
-        try {
-            $handlers = $this->getHandlers();
-            return Handler::call($handlers, $handler_id, $method, $arguments);
-        } catch (Exception $ex) {
-            return null;
-        }
+        $handlers = $this->getHandlers();
+        return Handler::call($handlers, $handler_id, $method, $arguments);
     }
 
     /**
@@ -200,7 +196,11 @@ class Dashboard
                 continue;
             }
 
-            $handler['data'] = (array) $this->callHandler($handler_id);
+            try {
+                $handler['data'] = (array) $this->callHandler($handler_id);
+            } catch (Exception $ex) {
+                $handler['data'] = array();
+            }
         }
 
         gplcart_array_sort($result['data']);

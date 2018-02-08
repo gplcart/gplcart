@@ -9,8 +9,8 @@
 
 namespace gplcart\core\models;
 
-use Exception;
 use DirectoryIterator;
+use Exception;
 use gplcart\core\Hook;
 use gplcart\core\models\Translation as TranslationModel;
 use gplcart\core\Module as ModuleCore;

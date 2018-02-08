@@ -96,20 +96,13 @@ class FileTransfer
      * @param TranslationModel $translation
      * @param SocketHelper $socket
      */
-    public function __construct(
-        Hook $hook,
-        Config $config,
-        LanguageModel $language,
-        ValidatorModel $validator,
-        FileModel $file,
-        TranslationModel $translation,
-        SocketHelper $socket
+    public function __construct(Hook $hook, Config $config, LanguageModel $language, ValidatorModel $validator,
+                                FileModel $file, TranslationModel $translation, SocketHelper $socket
     )
     {
         $this->hook = $hook;
         $this->config = $config;
         $this->socket = $socket;
-
         $this->file = $file;
         $this->language = $language;
         $this->validator = $validator;
@@ -175,7 +168,9 @@ class FileTransfer
         }
 
         foreach ($files as $key => $file) {
+
             $result = $this->upload($file, $handler, $path);
+
             if ($result === true) {
                 $return['transferred'][$key] = $this->getTransferred(true);
             } else {
@@ -292,8 +287,9 @@ class FileTransfer
         unlink($temp);
 
         if (!$copied) {
-            $vars = array('@source' => $temp, '@destination' => $destination);
-            throw new UnexpectedValueException($this->translation->text('Unable to move @source to @destination', $vars));
+            throw new UnexpectedValueException($this->translation->text('Unable to move @source to @destination', array(
+                '@source' => $temp,
+                '@destination' => $destination)));
         }
 
         chmod($destination, 0644);
@@ -374,11 +370,8 @@ class FileTransfer
         }
 
         if (isset($this->handler['filesize']) && filesize($file) > $this->handler['filesize']) {
-
-            $message = $this->translation->text('File size exceeds %num bytes', array(
-                '%num' => $this->handler['filesize']));
-
-            throw new ValidationException($message);
+            throw new ValidationException($this->translation->text('File size exceeds %num bytes', array(
+                '%num' => $this->handler['filesize'])));
         }
 
         $result = $this->validator->run($this->handler['validator'], $file, $this->handler);

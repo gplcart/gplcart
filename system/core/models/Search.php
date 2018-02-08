@@ -148,11 +148,11 @@ class Search
 
         $filtered = $this->filterStopwords($query, $options['language']);
 
-        if (!empty($filtered)) {
-            return $this->callHandler($handler_id, 'search', array($filtered, $options, $this));
+        if (empty($filtered)) {
+            return null;
         }
 
-        return array();
+        return $this->callHandler($handler_id, 'search', array($filtered, $options, $this));
     }
 
     /**

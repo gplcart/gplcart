@@ -273,10 +273,13 @@ class ProductClass implements CrudInterface
 
         foreach ((array) $this->product_class_field->getList($ops) as $product_class_field) {
             if (isset($fields[$product_class_field['field_id']])) {
-                $options = array('field_id' => $product_class_field['field_id']);
-                $data = array('values' => $this->field_value->getList($options));
+
+                $data = array('values' => $this->field_value->getList(array(
+                    'field_id' => $product_class_field['field_id'])));
+
                 $data += $fields[$product_class_field['field_id']];
                 $data += $product_class_field;
+
                 $result[$fields[$product_class_field['field_id']]['type']][$product_class_field['field_id']] = $data;
             }
         }

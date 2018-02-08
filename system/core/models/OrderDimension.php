@@ -139,10 +139,11 @@ class OrderDimension
         try {
             $converted = $this->convertor->convert($volume, $product_cubic, $order_cubic);
             $total += (float) ($converted * $item['quantity']);
-            return null;
         } catch (Exception $ex) {
             return null;
         }
+
+        return null;
     }
 
     /**
@@ -164,10 +165,11 @@ class OrderDimension
         try {
             $converted = $this->convertor->convert($product['weight'], $product['weight_unit'], $order['weight_unit']);
             $total += (float) ($converted * $item['quantity']);
-            return null;
         } catch (Exception $ex) {
             return null;
         }
+
+        return null;
     }
 
 }

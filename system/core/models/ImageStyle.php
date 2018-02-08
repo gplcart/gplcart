@@ -281,7 +281,9 @@ class ImageStyle
     {
         $applied = 0;
         foreach ($actions as $action_id => $data) {
+
             $handler = $this->getActionHandler($action_id);
+
             if (!empty($handler)) {
                 $applied += (int) $this->applyAction($source, $target, $handler, $data);
             }

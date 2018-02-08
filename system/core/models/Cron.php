@@ -10,11 +10,11 @@
 namespace gplcart\core\models;
 
 use Exception;
-use gplcart\core\Hook,
-    gplcart\core\Logger,
-    gplcart\core\Config;
-use gplcart\core\models\Report as ReportModel,
-    gplcart\core\models\History as HistoryModel;
+use gplcart\core\Config;
+use gplcart\core\Hook;
+use gplcart\core\Logger;
+use gplcart\core\models\History as HistoryModel;
+use gplcart\core\models\Report as ReportModel;
 
 /**
  * Manages basic behaviors and data related to scheduled tasks

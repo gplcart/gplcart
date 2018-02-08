@@ -104,7 +104,7 @@ class Bookmark
         $allowed_sort = array('created', 'path', 'title', 'user_id');
 
         if (isset($options['sort'])
-            && in_array($options['sort'], $allowed_sort)//
+            && in_array($options['sort'], $allowed_sort)
             && isset($options['order'])
             && in_array($options['order'], $allowed_order)
         ) {
