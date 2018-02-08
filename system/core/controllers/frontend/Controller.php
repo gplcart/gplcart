@@ -191,10 +191,12 @@ class Controller extends BaseController
     protected function setFrontendProperties()
     {
         if (!$this->isInstall()) {
+
             if (!$this->isInternalRoute()) {
                 $this->triggered = $this->getTriggered();
                 $this->data_categories = $this->getCategories();
             }
+
             $this->current_currency = $this->currency->getCode();
         }
     }

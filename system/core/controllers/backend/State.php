@@ -9,10 +9,10 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Zone as ZoneModel,
-    gplcart\core\models\State as StateModel,
-    gplcart\core\models\Country as CountryModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Country as CountryModel;
+use gplcart\core\models\State as StateModel;
+use gplcart\core\models\Zone as ZoneModel;
 
 /**
  * Handles incoming requests and outputs data related to country states
@@ -133,6 +133,7 @@ class State extends BackendController
         list($selected, $action, $value) = $this->getPostedAction();
 
         $deleted = $updated = 0;
+
         foreach ($selected as $id) {
 
             if ($action === 'status' && $this->access('state_edit')) {
@@ -259,9 +260,9 @@ class State extends BackendController
      */
     protected function canDeleteState()
     {
-        return isset($this->data_state['state_id'])//
-                && $this->state->canDelete($this->data_state['state_id'])//
-                && $this->access('state_delete');
+        return isset($this->data_state['state_id'])
+            && $this->state->canDelete($this->data_state['state_id'])
+            && $this->access('state_delete');
     }
 
     /**

@@ -9,8 +9,8 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Report as ReportModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Report as ReportModel;
 
 /**
  * Handles incoming requests and outputs data related to system events

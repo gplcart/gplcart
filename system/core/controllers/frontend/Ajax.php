@@ -9,12 +9,12 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\Sku as SkuModel,
-    gplcart\core\models\City as CityModel,
-    gplcart\core\models\Collection as CollectionModel,
-    gplcart\core\models\CategoryGroup as CategoryGroupModel,
-    gplcart\core\models\CollectionItem as CollectionItemModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
+use gplcart\core\models\CategoryGroup as CategoryGroupModel;
+use gplcart\core\models\City as CityModel;
+use gplcart\core\models\Collection as CollectionModel;
+use gplcart\core\models\CollectionItem as CollectionItemModel;
+use gplcart\core\models\Sku as SkuModel;
 use gplcart\core\traits\Category as CategoryTrait;
 
 /**
@@ -63,7 +63,7 @@ class Ajax extends FrontendController
      * @param CategoryGroupModel $category_group
      */
     public function __construct(SkuModel $sku, CityModel $city, CollectionModel $collection,
-            CollectionItemModel $collection_item, CategoryGroupModel $category_group)
+                                CollectionItemModel $collection_item, CategoryGroupModel $category_group)
     {
         parent::__construct();
 
@@ -128,6 +128,7 @@ class Ajax extends FrontendController
         $products = (array) $this->sku->getList($params);
 
         $product_ids = array();
+
         foreach ($products as $product) {
             $product_ids[] = $product['product_id'];
         }

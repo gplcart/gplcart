@@ -32,8 +32,7 @@ trait Item
 
     /**
      * @see \gplcart\core\Controller::path()
-     * @param null $pattern
-     * @return
+     * @param null|string $pattern
      */
     abstract public function path($pattern = null);
 
@@ -41,7 +40,6 @@ trait Item
      * @see \gplcart\core\Controller::config()
      * @param null $key
      * @param null $default
-     * @return
      */
     abstract public function config($key = null, $default = null);
 
@@ -49,7 +47,6 @@ trait Item
      * @see \gplcart\core\Controller::configTheme()
      * @param null $key
      * @param null $default
-     * @return
      */
     abstract public function configTheme($key = null, $default = null);
 
@@ -58,7 +55,6 @@ trait Item
      * @param null $key
      * @param null $default
      * @param string $type
-     * @return
      */
     abstract public function getQuery($key = null, $default = null, $type = 'string');
 
@@ -68,7 +64,6 @@ trait Item
      * @param array $data
      * @param bool $merge
      * @param string $default
-     * @return
      */
     abstract public function render($file, $data = array(), $merge = true, $default = '');
 
@@ -78,7 +73,6 @@ trait Item
      * @param array $query
      * @param bool $abs
      * @param bool $exclude
-     * @return
      */
     abstract public function url($path = '', array $query = array(), $abs = false, $exclude = false);
 

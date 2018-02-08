@@ -188,19 +188,10 @@ class Checkout extends FrontendController
      * @param PaymentModel $payment
      * @param CartActionModel $cart_action
      */
-    public function __construct(
-        CountryModel $country,
-        StateModel $state,
-        AddressModel $address,
-        OrderModel $order,
-        OrderActionModel $order_action,
-        OrderHistoryModel $order_history,
-        UserActionModel $user_action,
-        OrderDimensionModel $order_dimension,
-        ShippingModel $shipping,
-        PaymentModel $payment,
-        CartActionModel $cart_action
-    )
+    public function __construct(CountryModel $country, StateModel $state, AddressModel $address,
+                                OrderModel $order, OrderActionModel $order_action, OrderHistoryModel $order_history,
+                                UserActionModel $user_action, OrderDimensionModel $order_dimension,
+                                ShippingModel $shipping, PaymentModel $payment, CartActionModel $cart_action)
     {
         parent::__construct();
 

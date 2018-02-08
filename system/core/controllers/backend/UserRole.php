@@ -9,8 +9,8 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\UserRole as UserRoleModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\UserRole as UserRoleModel;
 
 /**
  * Handles incoming requests and outputs data related to user roles
@@ -257,6 +257,7 @@ class UserRole extends BackendController
         list($selected, $action, $value) = $this->getPostedAction();
 
         $deleted = $updated = 0;
+
         foreach ($selected as $role_id) {
 
             if ($action === 'status' && $this->access('user_role_edit')) {

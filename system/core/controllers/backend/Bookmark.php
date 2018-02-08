@@ -9,8 +9,8 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Bookmark as BookmarkModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Bookmark as BookmarkModel;
 
 /**
  * Handles incoming requests and outputs data related to bookmarks

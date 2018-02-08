@@ -9,9 +9,9 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\Review as ReviewModel,
-    gplcart\core\models\Rating as RatingModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
+use gplcart\core\models\Rating as RatingModel;
+use gplcart\core\models\Review as ReviewModel;
 
 /**
  * Handles incoming requests and outputs data related to reviews
@@ -64,7 +64,6 @@ class Review extends FrontendController
     {
         $this->setProductReview($product_id);
         $this->setReview($review_id);
-
         $this->setTitleEditReview();
         $this->setBreadcrumbEditReview();
 
@@ -101,7 +100,7 @@ class Review extends FrontendController
     protected function setProductReview($product_id)
     {
         $product = $this->product->get($product_id);
-        
+
         if (empty($product['status']) || $product['store_id'] != $this->store_id) {
             $this->outputHttpStatus(404);
         }

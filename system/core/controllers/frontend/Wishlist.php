@@ -79,6 +79,7 @@ class Wishlist extends FrontendController
         }
 
         $ids = array();
+
         foreach ((array) $list as $result) {
             $ids[] = $result['product_id'];
         }

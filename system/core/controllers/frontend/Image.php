@@ -9,8 +9,8 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\ImageStyle as ImageStyleModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
+use gplcart\core\models\ImageStyle as ImageStyleModel;
 
 /**
  * Handles incoming requests and outputs data related to image cache
@@ -111,10 +111,11 @@ class Image extends FrontendController
     protected function tryOutputImage()
     {
         if (is_file($this->data_cached_file)) {
+
             $this->response->addHeader('Last-Modified', gmdate('D, d M Y H:i:s T', filemtime($this->data_cached_file)))
-                    ->addHeader('Content-Length', filesize($this->data_cached_file))
-                    ->addHeader('Content-type', mime_content_type($this->data_cached_file))
-                    ->sendHeaders();
+                ->addHeader('Content-Length', filesize($this->data_cached_file))
+                ->addHeader('Content-type', mime_content_type($this->data_cached_file))
+                ->sendHeaders();
 
             readfile($this->data_cached_file);
             exit;

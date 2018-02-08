@@ -9,8 +9,8 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\Page as PageModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
+use gplcart\core\models\Page as PageModel;
 
 /**
  * Handles incoming requests and outputs data related to blogs

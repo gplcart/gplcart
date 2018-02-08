@@ -178,6 +178,7 @@ class Product extends BackendController
         list($selected, $action, $value) = $this->getPostedAction();
 
         $deleted = $updated = 0;
+
         foreach ($selected as $id) {
 
             if ($action === 'status' && $this->access('product_edit')) {
@@ -368,11 +369,14 @@ class Product extends BackendController
         }
 
         foreach ($product['combination'] as &$combination) {
+
             $combination['path'] = $combination['thumb'] = '';
+
             if (!empty($product['images'][$combination['file_id']])) {
                 $combination['path'] = $product['images'][$combination['file_id']]['path'];
                 $this->setItemThumb($combination, $this->image);
             }
+
             $combination['price'] = $this->price->decimal($combination['price'], $product['currency']);
         }
 

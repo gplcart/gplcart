@@ -9,9 +9,9 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Collection as CollectionModel,
-    gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Collection as CollectionModel;
+use gplcart\core\models\TranslationEntity as TranslationEntityModel;
 
 /**
  * Handles incoming requests and outputs data related to collections
@@ -47,8 +47,7 @@ class Collection extends BackendController
      * @param CollectionModel $collection
      * @param TranslationEntityModel $translation_entity
      */
-    public function __construct(CollectionModel $collection,
-            TranslationEntityModel $translation_entity)
+    public function __construct(CollectionModel $collection, TranslationEntityModel $translation_entity)
     {
         parent::__construct();
 
@@ -108,6 +107,7 @@ class Collection extends BackendController
         list($selected, $action, $value) = $this->getPostedAction();
 
         $deleted = $updated = 0;
+
         foreach ($selected as $id) {
 
             if ($action === 'status' && $this->access('collection_edit')) {
@@ -227,9 +227,9 @@ class Collection extends BackendController
      */
     protected function canDeleteCollection()
     {
-        return isset($this->data_collection['collection_id'])//
-                && $this->access('collection_delete')//
-                && $this->collection->canDelete($this->data_collection['collection_id']);
+        return isset($this->data_collection['collection_id'])
+            && $this->access('collection_delete')
+            && $this->collection->canDelete($this->data_collection['collection_id']);
     }
 
     /**
@@ -239,7 +239,9 @@ class Collection extends BackendController
     protected function setCollection($collection_id)
     {
         if (is_numeric($collection_id)) {
+
             $collection = $this->collection->get($collection_id);
+
             if (empty($collection)) {
                 $this->outputHttpStatus(404);
             }

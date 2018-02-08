@@ -9,10 +9,10 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Price as PriceModel,
-    gplcart\core\models\Review as ReviewModel,
-    gplcart\core\models\Product as ProductModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Price as PriceModel;
+use gplcart\core\models\Product as ProductModel;
+use gplcart\core\models\Review as ReviewModel;
 
 /**
  * Handles incoming requests and outputs data related to user reviews
@@ -100,6 +100,7 @@ class Review extends BackendController
         list($selected, $action, $value) = $this->getPostedAction();
 
         $updated = $deleted = 0;
+
         foreach ($selected as $id) {
 
             if ($action === 'status' && $this->access('review_edit')) {
@@ -306,6 +307,7 @@ class Review extends BackendController
         $product_id = $this->getData('review.product_id');
 
         $products = array();
+
         if (!empty($product_id)) {
 
             $product = $this->product->get($product_id);

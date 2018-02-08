@@ -11,6 +11,7 @@ return array(
         'pattern' => '%t.html',
         'mapping' => array('%t' => 'title'),
         'handlers' => array(
+            /** @uses \gplcart\core\models\Page::get() */
             'data' => array('gplcart\\core\\models\\Page', 'get')
         )
     ),
@@ -18,6 +19,7 @@ return array(
         'pattern' => '%t.html',
         'mapping' => array('%t' => 'title'),
         'handlers' => array(
+            /** @uses \gplcart\core\models\Product::get() */
             'data' => array('gplcart\\core\\models\\Product', 'get')
         )
     ),
@@ -25,6 +27,7 @@ return array(
         'pattern' => '%t.html',
         'mapping' => array('%t' => 'title'),
         'handlers' => array(
+            /** @uses \gplcart\core\models\Category::get() */
             'data' => array('gplcart\\core\\models\\Category', 'get')
         )
     )

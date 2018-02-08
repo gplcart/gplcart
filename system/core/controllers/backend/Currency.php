@@ -9,9 +9,9 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\traits\Listing as ListingTrait;
-use gplcart\core\models\Currency as CurrencyModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Currency as CurrencyModel;
+use gplcart\core\traits\Listing as ListingTrait;
 
 /**
  * Handles incoming requests and outputs data related to currency
@@ -204,8 +204,9 @@ class Currency extends BackendController
      */
     protected function canDeleteCurrency()
     {
-        return isset($this->data_currency['code']) && $this->access('currency_delete')//
-                && !$this->isPosted() && $this->currency->canDelete($this->data_currency['code']);
+        return isset($this->data_currency['code'])
+            && $this->access('currency_delete')
+            && !$this->isPosted() && $this->currency->canDelete($this->data_currency['code']);
     }
 
     /**

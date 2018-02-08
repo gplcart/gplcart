@@ -9,8 +9,8 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\Search as SearchModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
+use gplcart\core\models\Search as SearchModel;
 
 /**
  * Handles incoming requests and outputs data related to search functionality
@@ -58,15 +58,11 @@ class Search extends FrontendController
     public function listSearch()
     {
         $this->setTermSearch();
-
         $this->setTitleListSearch();
         $this->setBreadcrumbListSearch();
-
         $this->setFilterQueryListSearch();
         $this->setPagerListSearch();
-
         $this->setResultsSearch();
-
         $this->setDataNavbarListSearch();
         $this->setDataProductsListSearch();
 

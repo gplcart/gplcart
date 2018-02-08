@@ -9,12 +9,12 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Page as PageModel,
-    gplcart\core\models\Alias as AliasModel,
-    gplcart\core\models\Category as CategoryModel,
-    gplcart\core\models\CategoryGroup as CategoryGroupModel,
-    gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Alias as AliasModel;
+use gplcart\core\models\Category as CategoryModel;
+use gplcart\core\models\CategoryGroup as CategoryGroupModel;
+use gplcart\core\models\Page as PageModel;
+use gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\traits\Category as CategoryTrait;
 
 /**
@@ -75,8 +75,8 @@ class Page extends BackendController
      * @param TranslationEntityModel $translation_entity
      */
     public function __construct(PageModel $page, CategoryModel $category,
-            CategoryGroupModel $category_group, AliasModel $alias,
-            TranslationEntityModel $translation_entity)
+                                CategoryGroupModel $category_group, AliasModel $alias,
+                                TranslationEntityModel $translation_entity)
     {
         parent::__construct();
 
@@ -122,6 +122,7 @@ class Page extends BackendController
         list($selected, $action, $value) = $this->getPostedAction();
 
         $deleted = $updated = 0;
+
         foreach ($selected as $page_id) {
 
             if ($action == 'status' && $this->access('page_edit')) {

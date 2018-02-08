@@ -9,9 +9,9 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\traits\Listing as ListingTrait;
-use gplcart\core\models\ImageStyle as ImageStyleModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\ImageStyle as ImageStyleModel;
+use gplcart\core\traits\Listing as ListingTrait;
 
 /**
  * Handles incoming requests and outputs data related to images
@@ -211,9 +211,9 @@ class ImageStyle extends BackendController
      */
     public function canDeleteImageStyle()
     {
-        return isset($this->data_imagestyle['imagestyle_id'])//
-                && $this->access('image_style_delete')//
-                && $this->image_style->canDelete($this->data_imagestyle['imagestyle_id']);
+        return isset($this->data_imagestyle['imagestyle_id'])
+            && $this->access('image_style_delete')
+            && $this->image_style->canDelete($this->data_imagestyle['imagestyle_id']);
     }
 
     /**

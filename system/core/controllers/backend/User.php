@@ -9,8 +9,8 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\UserRole as UserRoleModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\UserRole as UserRoleModel;
 
 /**
  * Handles incoming requests and outputs data related to users
@@ -99,6 +99,7 @@ class User extends BackendController
         list($selected, $action, $value) = $this->getPostedAction();
 
         $deleted = $updated = 0;
+
         foreach ($selected as $uid) {
 
             if ($this->isSuperadmin($uid)) {
@@ -214,9 +215,9 @@ class User extends BackendController
      */
     protected function canDeleteUser()
     {
-        return isset($this->data_user['user_id'])//
-                && $this->access('user_delete')//
-                && $this->user->canDelete($this->data_user['user_id']);
+        return isset($this->data_user['user_id'])
+            && $this->access('user_delete')
+            && $this->user->canDelete($this->data_user['user_id']);
     }
 
     /**
@@ -225,8 +226,7 @@ class User extends BackendController
      */
     protected function isSuperadminUser()
     {
-        return isset($this->data_user['user_id'])//
-                && $this->isSuperadmin($this->data_user['user_id']);
+        return isset($this->data_user['user_id']) && $this->isSuperadmin($this->data_user['user_id']);
     }
 
     /**

@@ -9,9 +9,9 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Trigger as TriggerModel,
-    gplcart\core\models\Condition as ConditionModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Condition as ConditionModel;
+use gplcart\core\models\Trigger as TriggerModel;
 
 /**
  * Handles incoming requests and outputs data related to triggers
@@ -178,6 +178,7 @@ class Trigger extends BackendController
         $this->setTrigger($trigger_id);
         $this->setTitleEditTrigger();
         $this->setBreadcrumbEditTrigger();
+
         $this->setData('trigger', $this->data_trigger);
         $this->setData('can_delete', $this->canDeleteTrigger());
         $this->setData('conditions', $this->condition->getHandlers());

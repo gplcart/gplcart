@@ -9,12 +9,12 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\Order as OrderModel,
-    gplcart\core\models\Payment as PaymentModel,
-    gplcart\core\models\Address as AddressModel,
-    gplcart\core\models\Shipping as ShippingModel,
-    gplcart\core\models\PriceRule as PriceRuleModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
+use gplcart\core\models\Address as AddressModel;
+use gplcart\core\models\Order as OrderModel;
+use gplcart\core\models\Payment as PaymentModel;
+use gplcart\core\models\PriceRule as PriceRuleModel;
+use gplcart\core\models\Shipping as ShippingModel;
 use gplcart\core\traits\ItemOrder as ItemOrderTrait;
 
 /**
@@ -75,7 +75,7 @@ class AccountOrder extends FrontendController
      * @param ShippingModel $shipping
      */
     public function __construct(AddressModel $address, OrderModel $order,
-            PriceRuleModel $price_rule, PaymentModel $payment, ShippingModel $shipping)
+                                PriceRuleModel $price_rule, PaymentModel $payment, ShippingModel $shipping)
     {
         parent::__construct();
 
@@ -96,7 +96,6 @@ class AccountOrder extends FrontendController
     {
         $this->setUserAccountOrder($user_id);
         $this->setOrderAccountOrder($order_id);
-
         $this->setTitleAccountOrder();
         $this->setBreadcrumbAccountOrder();
 

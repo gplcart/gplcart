@@ -9,10 +9,10 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\Order as OrderModel,
-    gplcart\core\models\Payment as PaymentModel,
-    gplcart\core\models\Shipping as ShippingModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
+use gplcart\core\models\Order as OrderModel;
+use gplcart\core\models\Payment as PaymentModel;
+use gplcart\core\models\Shipping as ShippingModel;
 use gplcart\core\traits\Checkout as CheckoutTrait;
 
 /**

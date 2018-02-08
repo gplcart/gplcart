@@ -293,6 +293,7 @@ class File extends BackendController
     protected function deleteFile()
     {
         $this->controlAccess('file_delete');
+
         $result = $this->file->deleteAll($this->data_file['file_id']);
 
         if (array_sum($result) == 2) {

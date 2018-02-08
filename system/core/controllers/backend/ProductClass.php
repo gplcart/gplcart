@@ -95,6 +95,7 @@ class ProductClass extends BackendController
         list($selected, $action, $value) = $this->getPostedAction();
 
         $updated = $deleted = 0;
+
         foreach ($selected as $id) {
 
             if ($action === 'status' && $this->access('product_class_edit')) {

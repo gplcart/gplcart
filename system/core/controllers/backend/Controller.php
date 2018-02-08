@@ -10,10 +10,10 @@
 namespace gplcart\core\controllers\backend;
 
 use gplcart\core\Controller as BaseController;
-use gplcart\core\traits\Job as JobTrait,
-    gplcart\core\traits\Item as ItemTrait,
-    gplcart\core\traits\Widget as WidgetTrait,
-    gplcart\core\traits\ItemPrice as ItemPriceTrait;
+use gplcart\core\traits\Item as ItemTrait;
+use gplcart\core\traits\ItemPrice as ItemPriceTrait;
+use gplcart\core\traits\Job as JobTrait;
+use gplcart\core\traits\Widget as WidgetTrait;
 
 /**
  * Contents methods related to admin backend
@@ -21,10 +21,7 @@ use gplcart\core\traits\Job as JobTrait,
 class Controller extends BaseController
 {
 
-    use JobTrait,
-        ItemTrait,
-        WidgetTrait,
-        ItemPriceTrait;
+    use JobTrait, ItemTrait, WidgetTrait, ItemPriceTrait;
 
     /**
      * Job model instance

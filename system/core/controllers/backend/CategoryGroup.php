@@ -9,9 +9,9 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\CategoryGroup as CategoryGroupModel,
-    gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\CategoryGroup as CategoryGroupModel;
+use gplcart\core\models\TranslationEntity as TranslationEntityModel;
 
 /**
  * Handles incoming requests and outputs data related to category groups
@@ -48,7 +48,7 @@ class CategoryGroup extends BackendController
      * @param TranslationEntityModel $translation_entity
      */
     public function __construct(CategoryGroupModel $category_group,
-            TranslationEntityModel $translation_entity)
+                                TranslationEntityModel $translation_entity)
     {
         parent::__construct();
 
@@ -164,9 +164,9 @@ class CategoryGroup extends BackendController
      */
     protected function canDeleteCategoryGroup()
     {
-        return isset($this->data_category_group['category_group_id'])//
-                && $this->category_group->canDelete($this->data_category_group['category_group_id'])//
-                && $this->access('category_group_delete');
+        return isset($this->data_category_group['category_group_id'])
+            && $this->category_group->canDelete($this->data_category_group['category_group_id'])
+            && $this->access('category_group_delete');
     }
 
     /**
@@ -176,7 +176,9 @@ class CategoryGroup extends BackendController
     protected function setCategoryGroup($category_group_id)
     {
         if (is_numeric($category_group_id)) {
+
             $category_group = $this->category_group->get($category_group_id);
+
             if (empty($category_group)) {
                 $this->outputHttpStatus(404);
             }

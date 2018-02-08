@@ -584,7 +584,8 @@ class Order extends BackendController
             if ($action === 'status' && $this->access('order_edit')) {
                 $updated = (bool) $this->order->update($id, array('status' => $value));
                 if ($updated && $this->setNotificationUpdateOrder($id) == static::NOTIFICATION_ERROR) {
-                    $failed_notifications[] = $this->text('<a href="@url">@text</a>', array('@url' => $this->url("admin/sale/order/$id"), '@text' => $id));
+                    $failed_notifications[] = $this->text('<a href="@url">@text</a>', array(
+                        '@url' => $this->url("admin/sale/order/$id"), '@text' => $id));
                 }
                 $updated++;
             }

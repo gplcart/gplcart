@@ -9,9 +9,9 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\traits\Listing as ListingTrait;
-use gplcart\core\models\UserRole as UserRoleModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\UserRole as UserRoleModel;
+use gplcart\core\traits\Listing as ListingTrait;
 
 /**
  * Handles incoming requests and outputs data related to system routes
@@ -97,8 +97,8 @@ class ReportRoute extends BackendController
     protected function getListReportRoute($count = false)
     {
         $list = $this->prepareListReportRoute($this->route->getList());
-
         $allowed = $this->getAllowedFiltersReportRoute();
+
         $this->filterList($list, $allowed, $this->query_filter);
         $this->sortList($list, $allowed, $this->query_filter, array('pattern' => 'asc'));
 
@@ -155,9 +155,13 @@ class ReportRoute extends BackendController
      */
     protected function getPermissionsReportRole()
     {
-        return array(
+        $permissions = array(
             '_public' => 'Public',
-            '_superadmin' => 'Superadmin') + $this->role->getPermissions();
+            '_superadmin' => 'Superadmin'
+        );
+
+        $permissions += $this->role->getPermissions();
+        return $permissions;
     }
 
     /**

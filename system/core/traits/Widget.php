@@ -18,7 +18,6 @@ trait Widget
     /**
      * @see \gplcart\core\Controller::access()
      * @param $permission
-     * @return
      */
     abstract public function access($permission);
 
@@ -26,7 +25,6 @@ trait Widget
      * @see \gplcart\core\Controller::config()
      * @param null $key
      * @param null $default
-     * @return
      */
     abstract public function config($key = null, $default = null);
 
@@ -34,7 +32,6 @@ trait Widget
      * @see \gplcart\core\Controller::text()
      * @param string $string
      * @param array $arguments
-     * @return
      */
     abstract public function text($string, array $arguments = array());
 
@@ -44,7 +41,6 @@ trait Widget
      * @param array $data
      * @param bool $merge
      * @param string $default
-     * @return
      */
     abstract public function render($file, $data = array(), $merge = true, $default = '');
 
@@ -54,7 +50,6 @@ trait Widget
      * @param array $query
      * @param bool $abs
      * @param bool $exclude
-     * @return
      */
     abstract public function url($path = '', array $query = array(), $abs = false, $exclude = false);
 

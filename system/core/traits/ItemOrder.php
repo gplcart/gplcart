@@ -49,6 +49,7 @@ trait ItemOrder
     public function setItemOrderAddress(&$order, $address_model)
     {
         $order['address'] = array();
+
         foreach (array('shipping', 'payment') as $type) {
             $address = $address_model->get($order["{$type}_address"]);
             if (!empty($address)) {

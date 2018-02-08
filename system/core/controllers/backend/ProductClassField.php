@@ -252,9 +252,8 @@ class ProductClassField extends BackendController
     protected function addProductClassField()
     {
         $this->controlAccess('product_class_edit');
-        $fields = (array) $this->getSubmitted('field_id', array());
 
-        foreach ($fields as $field_id) {
+        foreach ((array) $this->getSubmitted('field_id', array()) as $field_id) {
 
             $field = array(
                 'field_id' => $field_id,
@@ -273,9 +272,7 @@ class ProductClassField extends BackendController
      */
     protected function setTitleEditProductClassField()
     {
-        $text = $this->text('Add field to %name', array(
-            '%name' => $this->data_product_class['title']));
-
+        $text = $this->text('Add field to %name', array('%name' => $this->data_product_class['title']));
         $this->setTitle($text);
     }
 

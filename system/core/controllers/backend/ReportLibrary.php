@@ -9,8 +9,8 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\traits\Listing as ListingTrait;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\traits\Listing as ListingTrait;
 
 /**
  * Handles incoming requests and outputs data related to libraries

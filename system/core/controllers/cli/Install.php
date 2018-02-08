@@ -9,9 +9,9 @@
 
 namespace gplcart\core\controllers\cli;
 
-use PDO;
 use gplcart\core\CliController;
 use gplcart\core\models\Install as InstallModel;
+use PDO;
 
 /**
  * Handles CLI commands related to system installation

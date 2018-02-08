@@ -9,9 +9,9 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Zone as ZoneModel,
-    gplcart\core\models\Country as CountryModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Country as CountryModel;
+use gplcart\core\models\Zone as ZoneModel;
 
 /**
  * Handles incoming requests and outputs data related to countries
@@ -61,10 +61,8 @@ class Country extends BackendController
     public function listCountry()
     {
         $this->actionListCountry();
-
         $this->setTitleListCountry();
         $this->setBreadcrumbListCountry();
-
         $this->setFilterListCountry();
         $this->setPagerlListCountry();
 
@@ -88,6 +86,7 @@ class Country extends BackendController
         list($selected, $action, $value) = $this->getPostedAction();
 
         $updated = $deleted = 0;
+
         foreach ($selected as $code) {
 
             if ($action === 'status' && $this->access('country_edit')) {
@@ -193,9 +192,9 @@ class Country extends BackendController
      */
     protected function canDeleteCountry()
     {
-        return isset($this->data_country['code'])//
-                && $this->access('country_delete')//
-                && $this->country->canDelete($this->data_country['code']);
+        return isset($this->data_country['code'])
+            && $this->access('country_delete')
+            && $this->country->canDelete($this->data_country['code']);
     }
 
     /**

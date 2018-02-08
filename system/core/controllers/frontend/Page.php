@@ -9,8 +9,8 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\Page as PageModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
+use gplcart\core\models\Page as PageModel;
 
 /**
  * Handles incoming requests and outputs data related to pages
@@ -47,10 +47,8 @@ class Page extends FrontendController
     public function indexPage($page_id)
     {
         $this->setPage($page_id);
-
         $this->setTitleIndexPage();
         $this->setBreadcrumbIndexPage();
-
         $this->setHtmlFilterIndexPage();
         $this->setMetaIndexPage();
 
@@ -115,7 +113,10 @@ class Page extends FrontendController
      */
     protected function setDataImagesIndexPage()
     {
-        $options = array('imagestyle' => $this->configTheme('image_style_page', 5));
+        $options = array(
+            'imagestyle' => $this->configTheme('image_style_page', 5)
+        );
+
         $this->setItemThumb($this->data_page, $this->image, $options);
         $this->setData('images', $this->render('page/images', array('page' => $this->data_page)));
     }

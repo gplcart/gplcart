@@ -25,7 +25,6 @@ trait Job
      * @param $key
      * @param $data
      * @param null $weight
-     * @return
      */
     abstract public function setJsSettings($key, $data, $weight = null);
 
@@ -33,7 +32,6 @@ trait Job
      * @see \gplcart\core\Controller::outputJson()
      * @param $data
      * @param array $options
-     * @return
      */
     abstract public function outputJson($data, array $options = array());
 
@@ -42,7 +40,6 @@ trait Job
      * @param null $key
      * @param null $default
      * @param string $type
-     * @return
      */
     abstract public function getQuery($key = null, $default = null, $type = 'string');
 
@@ -52,7 +49,6 @@ trait Job
      * @param array $data
      * @param bool $merge
      * @param string $default
-     * @return
      */
     abstract public function render($file, $data = array(), $merge = true, $default = '');
 

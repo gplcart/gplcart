@@ -9,8 +9,8 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Dashboard as DashboardModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Dashboard as DashboardModel;
 
 /**
  * Handles incoming requests and outputs data related to admin dashboard

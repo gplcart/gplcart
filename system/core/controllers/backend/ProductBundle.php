@@ -9,10 +9,10 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Price as PriceModel,
-    gplcart\core\models\Product as ProductModel,
-    gplcart\core\models\ProductBundle as ProductBundleModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Price as PriceModel;
+use gplcart\core\models\Product as ProductModel;
+use gplcart\core\models\ProductBundle as ProductBundleModel;
 
 /**
  * Handles incoming requests and outputs data related to product classes
@@ -56,7 +56,7 @@ class ProductBundle extends BackendController
      * @param ProductBundleModel $product_bundle
      */
     public function __construct(PriceModel $price, ProductModel $product,
-            ProductBundleModel $product_bundle)
+                                ProductBundleModel $product_bundle)
     {
         parent::__construct();
 

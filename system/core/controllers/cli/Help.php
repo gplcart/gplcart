@@ -41,6 +41,7 @@ class Help extends CliController
     protected function outputCommandListHelp()
     {
         $routes = $this->route->getList();
+
         ksort($routes);
 
         $rows = array(

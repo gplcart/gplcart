@@ -9,11 +9,11 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Zone as ZoneModel,
-    gplcart\core\models\City as CityModel,
-    gplcart\core\models\State as StateModel,
-    gplcart\core\models\Country as CountryModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\City as CityModel;
+use gplcart\core\models\Country as CountryModel;
+use gplcart\core\models\State as StateModel;
+use gplcart\core\models\Zone as ZoneModel;
 
 /**
  * Handles incoming requests and outputs data related to cities
@@ -76,7 +76,7 @@ class City extends BackendController
      * @param ZoneModel $zone
      */
     public function __construct(CountryModel $country, StateModel $state, CityModel $city,
-            ZoneModel $zone)
+                                ZoneModel $zone)
     {
         parent::__construct();
 
@@ -152,6 +152,7 @@ class City extends BackendController
         list($selected, $action, $value) = $this->getPostedAction();
 
         $deleted = $updated = 0;
+
         foreach ($selected as $id) {
 
             if ($action === 'status' && $this->access('city_edit')) {
@@ -277,9 +278,9 @@ class City extends BackendController
      */
     protected function canDeleteCity()
     {
-        return isset($this->data_city['city_id'])//
-                && $this->access('city_delete')//
-                && $this->city->canDelete($this->data_city['city_id']);
+        return isset($this->data_city['city_id'])
+            && $this->access('city_delete')
+            && $this->city->canDelete($this->data_city['city_id']);
     }
 
     /**

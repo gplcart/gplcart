@@ -9,8 +9,8 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Zone as ZoneModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Zone as ZoneModel;
 
 /**
  * Handles incoming requests and outputs data related to geo zones
@@ -95,6 +95,7 @@ class Zone extends BackendController
         list($selected, $action, $value) = $this->getPostedAction();
 
         $updated = $deleted = 0;
+
         foreach ($selected as $id) {
 
             if ($action === 'status' && $this->access('zone_edit')) {
@@ -181,9 +182,9 @@ class Zone extends BackendController
      */
     protected function canDeleteZone()
     {
-        return isset($this->data_zone['zone_id'])//
-                && $this->zone->canDelete($this->data_zone['zone_id'])//
-                && $this->access('zone_delete');
+        return isset($this->data_zone['zone_id'])
+            && $this->zone->canDelete($this->data_zone['zone_id'])
+            && $this->access('zone_delete');
     }
 
     /**

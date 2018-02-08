@@ -9,8 +9,8 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Address as AddressModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Address as AddressModel;
 
 /**
  * Handles incoming requests and outputs data related to user addresses
@@ -43,8 +43,6 @@ class Address extends BackendController
     /**
      * Page callback
      * Displays the address overview page
-     * @see \gplcart\core\Route
-     * @see /system/config/default/route.php
      */
     public function listAddress()
     {
@@ -64,8 +62,8 @@ class Address extends BackendController
      */
     protected function setFilterListAddress()
     {
-        $allowed = array('city_id', 'address_id', 'address_1', 'phone',
-            'user_id', 'user_email', 'user_email_like', 'full_name', 'postcode', 'city_name');
+        $allowed = array('city_id', 'address_id', 'address_1',
+            'phone', 'user_id', 'user_email', 'user_email_like', 'full_name', 'postcode', 'city_name');
 
         $this->setFilter($allowed);
     }
@@ -78,6 +76,7 @@ class Address extends BackendController
         list($selected, $action) = $this->getPostedAction();
 
         $deleted = 0;
+
         foreach ($selected as $id) {
             if ($action === 'delete' && $this->access('address_delete')) {
                 $deleted += (int) $this->address->delete($id);

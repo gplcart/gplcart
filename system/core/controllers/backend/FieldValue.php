@@ -302,7 +302,9 @@ class FieldValue extends BackendController
     protected function setFieldValue($field_value_id)
     {
         if (is_numeric($field_value_id)) {
+
             $field_value = $this->field_value->get($field_value_id);
+
             if (empty($field_value)) {
                 $this->outputHttpStatus(404);
             }

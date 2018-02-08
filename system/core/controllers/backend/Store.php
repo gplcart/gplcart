@@ -9,9 +9,9 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Country as CountryModel,
-    gplcart\core\models\Collection as CollectionModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Collection as CollectionModel;
+use gplcart\core\models\Country as CountryModel;
 
 /**
  * Handles incoming requests and outputs data related to multi-store functionality
@@ -109,6 +109,7 @@ class Store extends BackendController
         list($selected, $action, $value) = $this->getPostedAction();
 
         $updated = $deleted = 0;
+
         foreach ($selected as $id) {
 
             if ($action === 'status' && $this->access('store_edit')) {
@@ -212,10 +213,10 @@ class Store extends BackendController
      */
     protected function canDeleteStore()
     {
-        return isset($this->data_store['store_id'])//
-                && $this->store->canDelete($this->data_store['store_id'])//
-                && $this->access('store_delete')//
-                && !$this->isDefaultStore();
+        return isset($this->data_store['store_id'])
+            && $this->store->canDelete($this->data_store['store_id'])
+            && $this->access('store_delete')
+            && !$this->isDefaultStore();
     }
 
     /**
@@ -224,7 +225,8 @@ class Store extends BackendController
      */
     protected function isDefaultStore()
     {
-        return isset($this->data_store['store_id']) && $this->store->isDefault($this->data_store['store_id']);
+        return isset($this->data_store['store_id'])
+            && $this->store->isDefault($this->data_store['store_id']);
     }
 
     /**

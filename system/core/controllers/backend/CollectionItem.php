@@ -9,9 +9,9 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Collection as CollectionModel,
-    gplcart\core\models\CollectionItem as CollectionItemModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Collection as CollectionModel;
+use gplcart\core\models\CollectionItem as CollectionItemModel;
 
 /**
  * Handles incoming requests and outputs data related to collection items
@@ -127,7 +127,9 @@ class CollectionItem extends BackendController
     protected function setCollectionCollectionItem($collection_item_id)
     {
         if (is_numeric($collection_item_id)) {
+
             $collection_item = $this->collection_item->get($collection_item_id);
+
             if (empty($collection_item)) {
                 $this->outputHttpStatus(404);
             }
@@ -143,8 +145,7 @@ class CollectionItem extends BackendController
      */
     protected function prepareCollectionItem(array $collection_item)
     {
-        $conditions = array(
-            'collection_item_id' => $collection_item['collection_item_id']);
+        $conditions = array('collection_item_id' => $collection_item['collection_item_id']);
 
         $item = $this->collection_item->getItem($conditions);
         $collection_item['title'] = isset($item['title']) ? $item['title'] : '';
@@ -159,6 +160,7 @@ class CollectionItem extends BackendController
         list($selected, $action, $value) = $this->getPostedAction();
 
         $deleted = $updated = 0;
+
         foreach ($selected as $id) {
 
             if ($action === 'status' && $this->access('collection_item_edit')) {

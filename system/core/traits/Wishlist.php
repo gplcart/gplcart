@@ -33,14 +33,12 @@ trait Wishlist
     /**
      * @see \gplcart\core\Controller::isPosted()
      * @param null $key
-     * @return
      */
     abstract public function isPosted($key = null);
 
     /**
      * @see \gplcart\core\Controller::filterSubmitted()
      * @param array $allowed
-     * @return
      */
     abstract public function filterSubmitted(array $allowed);
 
@@ -48,7 +46,6 @@ trait Wishlist
      * @see \gplcart\core\Controller::getSubmitted()
      * @param null $key
      * @param null $default
-     * @return
      */
     abstract public function getSubmitted($key = null, $default = null);
 
@@ -56,7 +53,6 @@ trait Wishlist
      * @see \gplcart\core\Controller::outputJson()
      * @param $data
      * @param array $options
-     * @return
      */
     abstract public function outputJson($data, array $options = array());
 
@@ -65,7 +61,6 @@ trait Wishlist
      * @param null $key
      * @param null $value
      * @param bool $filter
-     * @return
      */
     abstract public function setSubmitted($key = null, $value = null, $filter = true);
 
@@ -73,7 +68,6 @@ trait Wishlist
      * @see \gplcart\core\Controller::validateComponent()
      * @param $handler_id
      * @param array $options
-     * @return
      */
     abstract public function validateComponent($handler_id, array $options = array());
 
@@ -82,7 +76,6 @@ trait Wishlist
      * @param $format
      * @param array $arguments
      * @param string $glue
-     * @return
      */
     abstract public function format($format, array $arguments = array(), $glue = '<br>');
 
@@ -91,7 +84,6 @@ trait Wishlist
      * @param null $key
      * @param null $return_error
      * @param string $return_no_error
-     * @return
      */
     abstract public function error($key = null, $return_error = null, $return_no_error = '');
 
@@ -101,7 +93,6 @@ trait Wishlist
      * @param string $message
      * @param string $severity
      * @param bool $exclude
-     * @return
      */
     abstract public function redirect($url = '', $message = '', $severity = 'info', $exclude = false);
 

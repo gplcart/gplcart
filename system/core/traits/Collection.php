@@ -24,7 +24,6 @@ trait Collection
      * @see \gplcart\core\controllers\frontend\Controller::prepareEntityItems()
      * @param $items
      * @param array $options
-     * @return
      */
     abstract protected function prepareEntityItems($items, $options = array());
 

@@ -9,8 +9,8 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\traits\Listing as ListingTrait;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\traits\Listing as ListingTrait;
 
 /**
  * Handles incoming requests and outputs data related to languages
@@ -65,8 +65,9 @@ class Language extends BackendController
      */
     protected function canDeleteLanguage()
     {
-        return isset($this->data_language['code']) && $this->access('language_delete')//
-                && $this->language->canDelete($this->data_language['code']);
+        return isset($this->data_language['code'])
+            && $this->access('language_delete')
+            && $this->language->canDelete($this->data_language['code']);
     }
 
     /**

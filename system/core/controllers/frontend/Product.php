@@ -9,12 +9,12 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\Sku as SkuModel,
-    gplcart\core\models\Review as ReviewModel,
-    gplcart\core\models\Rating as RatingModel,
-    gplcart\core\models\ProductView as ProductViewModel,
-    gplcart\core\models\ProductClass as ProductClassModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
+use gplcart\core\models\ProductClass as ProductClassModel;
+use gplcart\core\models\ProductView as ProductViewModel;
+use gplcart\core\models\Rating as RatingModel;
+use gplcart\core\models\Review as ReviewModel;
+use gplcart\core\models\Sku as SkuModel;
 
 /**
  * Handles incoming requests and outputs data related to products
@@ -66,7 +66,7 @@ class Product extends FrontendController
      * @param RatingModel $rating
      */
     public function __construct(ProductClassModel $product_class, ProductViewModel $product_view,
-            SkuModel $sku, ReviewModel $review, RatingModel $rating)
+                                SkuModel $sku, ReviewModel $review, RatingModel $rating)
     {
         parent::__construct();
 
@@ -88,7 +88,6 @@ class Product extends FrontendController
         $this->setMetaIndexProduct();
         $this->setTitleIndexProduct();
         $this->setBreadcrumbIndexProduct();
-
         $this->setHtmlFilterIndexProduct();
 
         $this->setData('product', $this->data_product);
@@ -554,6 +553,7 @@ class Product extends FrontendController
         $items = $this->product_view->set($this->data_product['product_id'], $this->cart_uid);
 
         $product_ids = array();
+
         foreach ((array) $items as $id => $item) {
             if ($item['product_id'] != $this->data_product['product_id']) {
                 $product_ids[$id] = $item['product_id'];
@@ -567,7 +567,7 @@ class Product extends FrontendController
         $products = $this->getProducts(array('product_id' => $product_ids));
 
         // Retain original order
-        uksort($products, function($key1, $key2) use ($product_ids) {
+        uksort($products, function ($key1, $key2) use ($product_ids) {
             return (array_search($key1, $product_ids) < array_search($key2, $product_ids));
         });
 

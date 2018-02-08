@@ -9,11 +9,11 @@
 
 namespace gplcart\core\controllers\backend;
 
+use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\helpers\Graph as GraphHelper;
 use gplcart\core\models\Module as ModuleModel;
-use gplcart\core\traits\Listing as ListingTrait,
-    gplcart\core\traits\Dependency as DependencyTrait;
-use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\traits\Dependency as DependencyTrait;
+use gplcart\core\traits\Listing as ListingTrait;
 
 /**
  * Handles incoming requests and outputs data related to modules
@@ -21,8 +21,7 @@ use gplcart\core\controllers\backend\Controller as BackendController;
 class Module extends BackendController
 {
 
-    use ListingTrait,
-        DependencyTrait;
+    use ListingTrait, DependencyTrait;
 
     /**
      * Module model instance
@@ -231,6 +230,7 @@ class Module extends BackendController
     protected function getTypesModule()
     {
         $types = array();
+
         foreach ($this->module->getList() as $module) {
             $types[$module['type']] = $this->text(ucfirst($module['type']));
         }

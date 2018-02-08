@@ -9,9 +9,9 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\traits\Listing as ListingTrait;
-use gplcart\core\models\Shipping as ShippingModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Shipping as ShippingModel;
+use gplcart\core\traits\Listing as ListingTrait;
 
 /**
  * Handles incoming requests and outputs data related to shipping methods
@@ -97,8 +97,8 @@ class ReportShipping extends BackendController
     protected function getListReportShipping($count = false)
     {
         $list = $this->shipping->getList();
-
         $allowed = $this->getAllowedFiltersReportShipping();
+
         $this->filterList($list, $allowed, $this->query_filter);
         $this->sortList($list, $allowed, $this->query_filter, array('id' => 'asc'));
 

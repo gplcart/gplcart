@@ -127,6 +127,7 @@ class PriceRule extends BackendController
         list($selected, $action, $value) = $this->getPostedAction();
 
         $deleted = $updated = 0;
+
         foreach ($selected as $rule_id) {
 
             if ($action === 'status' && $this->access('price_rule_edit')) {

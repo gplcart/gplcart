@@ -9,9 +9,9 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\ProductClass as ProductClassModel,
-    gplcart\core\models\ProductField as ProductFieldModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
+use gplcart\core\models\ProductClass as ProductClassModel;
+use gplcart\core\models\ProductField as ProductFieldModel;
 
 /**
  * Handles incoming requests and outputs data related to product comparison
@@ -110,6 +110,7 @@ class Compare extends FrontendController
     protected function reindexProductsCompare(array $products)
     {
         $prepared = array();
+
         foreach ($products as $product_id => $product) {
             $prepared[$product['product_class_id']][$product_id] = $product;
         }

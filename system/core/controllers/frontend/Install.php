@@ -9,8 +9,8 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\Install as InstallModel;
 use gplcart\core\Controller as BaseController;
+use gplcart\core\models\Install as InstallModel;
 
 /**
  * Handles incoming requests and outputs data related to installation process
@@ -47,9 +47,7 @@ class Install extends BaseController
     public function editInstall()
     {
         $this->controlAccessInstall();
-
         $this->translation->set($this->install_language, null);
-
         $this->setTitleEditInstall();
 
         $requirements = $this->getRequirementsInstall();
@@ -76,6 +74,7 @@ class Install extends BaseController
     protected function getLanguagesInstall()
     {
         $languages = array();
+
         foreach ($this->language->getList() as $code => $language) {
             if ($code === 'en' || is_file($this->translation->getFile($code))) {
                 $languages[$code] = $language;

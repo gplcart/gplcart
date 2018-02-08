@@ -9,9 +9,9 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Payment as PaymentModel,
-    gplcart\core\models\Transaction as TransactionModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Payment as PaymentModel;
+use gplcart\core\models\Transaction as TransactionModel;
 
 /**
  * Handles incoming requests and outputs data related to order transactions
@@ -103,6 +103,7 @@ class Transaction extends BackendController
         list($selected, $action) = $this->getPostedAction();
 
         $deleted = 0;
+
         foreach ($selected as $id) {
 
             if ($action === 'delete' && $this->access('transaction_delete')) {

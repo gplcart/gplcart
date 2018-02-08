@@ -9,8 +9,8 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\Address as AddressModel;
 use gplcart\core\controllers\frontend\Controller as FrontendController;
+use gplcart\core\models\Address as AddressModel;
 
 /**
  * Handles incoming requests and outputs data related to customer addresses

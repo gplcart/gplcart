@@ -9,9 +9,9 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\models\Field as FieldModel,
-    gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\models\Field as FieldModel;
+use gplcart\core\models\TranslationEntity as TranslationEntityModel;
 
 /**
  * Handles incoming requests and outputs data related to product fields
@@ -90,6 +90,7 @@ class Field extends BackendController
         list($selected, $action) = $this->getPostedAction();
 
         $deleted = 0;
+
         foreach ($selected as $field_id) {
             if ($action === 'delete' && $this->access('field_delete')) {
                 $deleted += (int) $this->field->delete($field_id);
@@ -216,9 +217,9 @@ class Field extends BackendController
      */
     protected function canDeleteField()
     {
-        return isset($this->data_field['field_id'])//
-                && $this->field->canDelete($this->data_field['field_id'])//
-                && $this->access('field_delete');
+        return isset($this->data_field['field_id'])
+            && $this->field->canDelete($this->data_field['field_id'])
+            && $this->access('field_delete');
     }
 
     /**
@@ -228,7 +229,9 @@ class Field extends BackendController
     protected function setField($field_id)
     {
         if (is_numeric($field_id)) {
+
             $field = $this->field->get($field_id);
+
             if (empty($field)) {
                 $this->outputHttpStatus(404);
             }

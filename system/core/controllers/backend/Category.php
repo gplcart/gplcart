@@ -150,6 +150,7 @@ class Category extends BackendController
         list($selected, $action, $value) = $this->getPostedAction();
 
         $updated = $deleted = 0;
+
         foreach ($selected as $category_id) {
 
             if ($action === 'status' && $this->access('category_edit')) {
@@ -224,8 +225,8 @@ class Category extends BackendController
      */
     protected function setTitleListCategory()
     {
-        $vars = array('%name' => $this->data_category_group['title']);
-        $this->setTitle($this->text('Categories of group %name', $vars));
+        $this->setTitle($this->text('Categories of group %name', array(
+            '%name' => $this->data_category_group['title'])));
     }
 
     /**
@@ -282,8 +283,8 @@ class Category extends BackendController
      */
     protected function canDeleteCategory()
     {
-        return isset($this->data_category['category_id'])//
-            && $this->category->canDelete($this->data_category['category_id'])//
+        return isset($this->data_category['category_id'])
+            && $this->category->canDelete($this->data_category['category_id'])
             && $this->access('category_delete');
     }
 
@@ -294,7 +295,9 @@ class Category extends BackendController
     protected function setCategory($category_id)
     {
         if (is_numeric($category_id)) {
+
             $category = $this->category->get($category_id);
+
             if (empty($category)) {
                 $this->outputHttpStatus(404);
             }
@@ -365,6 +368,7 @@ class Category extends BackendController
         $this->setSubmitted('category_group_id', $this->data_category_group['category_group_id']);
 
         $this->validateComponent('category');
+
         return !$this->hasErrors();
     }
 
@@ -466,12 +470,13 @@ class Category extends BackendController
         } else {
 
             $parent_category_id = $this->getQuery('parent_id');
-            $vars = array('%name' => $this->data_category_group['title']);
 
             $parent_category = array();
             if (!empty($parent_category_id)) {
                 $parent_category = $this->category->get($parent_category_id);
             }
+
+            $vars = array('%name' => $this->data_category_group['title']);
 
             if (isset($parent_category['title'])) {
                 $vars['%category'] = $parent_category['title'];

@@ -43,8 +43,6 @@ class Alias extends BackendController
     /**
      * Page callback
      * Displays the alias overview page
-     * @see \gplcart\core\Route
-     * @see /system/config/default/route.php
      */
     public function listAlias()
     {
@@ -78,6 +76,7 @@ class Alias extends BackendController
         list($selected, $action) = $this->getPostedAction();
 
         $deleted = 0;
+
         foreach ($selected as $id) {
             if ($action === 'delete' && $this->access('alias_delete')) {
                 $deleted += (int) $this->alias->delete($id);
@@ -115,6 +114,7 @@ class Alias extends BackendController
     {
         $conditions = $this->query_filter;
         $conditions['limit'] = $this->data_limit;
+
         return (array) $this->alias->getList($conditions);
     }
 
