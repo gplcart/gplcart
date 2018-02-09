@@ -121,7 +121,7 @@
           <ul class="list-inline">
             <?php if (isset($info['status'])) { ?>
             <?php if ($info['status']) { ?>
-            <?php if ($this->access('module_disable') && empty($info['lock'])) { ?>
+            <?php if ($this->access('module_disable') && empty($info['lock']) && empty($info['required_by'])) { ?>
             <li>
               <a href="<?php echo $this->url(false, array('action' => 'disable', 'module_id' => $module_id, 'token' => $_token)); ?>">
                 <span class="text-danger"><?php echo $this->lower($this->text('Disable')); ?></span>
