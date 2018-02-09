@@ -962,6 +962,15 @@ abstract class Controller
     }
 
     /**
+     * Whether the current user is logged in
+     * @return bool
+     */
+    public function isLoggedIn()
+    {
+        return !empty($this->uid);
+    }
+
+    /**
      * Renders a template
      * @param string $file
      * @param array $data
