@@ -10,10 +10,8 @@
 namespace gplcart\core;
 
 use BadMethodCallException;
-use Exception;
-use gplcart\core\exceptions\Handler as HandlerException;
-use InvalidArgumentException;
 use OutOfRangeException;
+use UnexpectedValueException;
 
 /**
  * Provides methods to retrieve and execute handlers
@@ -28,16 +26,11 @@ class Handler
      * @param string $method
      * @param array $arguments
      * @return mixed
-     * @throws HandlerException
      */
     public static function call($handlers, $handler_id, $method, $arguments = array())
     {
-        try {
-            $callback = static::get($handlers, $handler_id, $method);
-            return call_user_func_array($callback, $arguments);
-        } catch (Exception $ex) {
-            throw new HandlerException($ex->getMessage());
-        }
+        $callback = static::get($handlers, $handler_id, $method);
+        return call_user_func_array($callback, $arguments);
     }
 
     /**
@@ -47,7 +40,7 @@ class Handler
      * @param string $name
      * @return object|array
      * @throws BadMethodCallException
-     * @throws InvalidArgumentException
+     * @throws UnexpectedValueException
      */
     public static function get($handlers, $handler_id, $name)
     {
@@ -67,7 +60,7 @@ class Handler
             return $callable;
         }
 
-        throw new InvalidArgumentException('Unexpected handler format');
+        throw new UnexpectedValueException('Unexpected handler format');
     }
 
     /**

@@ -11,7 +11,7 @@ namespace gplcart\core;
 
 use Exception;
 use gplcart\core\exceptions\Database as DatabaseException;
-use OutOfRangeException;
+use OutOfBoundsException;
 use PDO;
 
 /**
@@ -364,7 +364,7 @@ class Database
      * Returns an array of database scheme
      * @param string|null $table
      * @return array
-     * @throws OutOfRangeException
+     * @throws OutOfBoundsException
      */
     public function getScheme($table = null)
     {
@@ -373,7 +373,7 @@ class Database
 
         if (isset($table)) {
             if (empty($scheme[$table]['fields'])) {
-                throw new OutOfRangeException("Database table $table either does not exist or has invalid structure");
+                throw new OutOfBoundsException("Database table $table either does not exist or has invalid structure");
             }
             return $scheme[$table];
         }

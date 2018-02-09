@@ -62,6 +62,7 @@ class ProductRelation
         }
 
         $result = array();
+
         if (isset($options['product_id'])) {
 
             $sql = 'SELECT item_product_id FROM product_related WHERE product_id=?';

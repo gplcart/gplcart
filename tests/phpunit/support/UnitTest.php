@@ -9,17 +9,16 @@
 
 namespace gplcart\tests\phpunit\support;
 
-use PDO;
-use ReflectionClass,
-    ReflectionMethod;
-use PHPUnit_Extensions_Database_TestCase,
-    PHPUnit_Extensions_Database_DataSet_CompositeDataSet;
-use gplcart\tests\phpunit\support\Tool as ToolHelper;
-use gplcart\tests\phpunit\support\File as FileHelper;
-use gplcart\tests\phpunit\support\ArrayDataSet as ArrayDataSetHelper;
 use gplcart\core\Database as SystemDatabase;
-use InvalidArgumentException,
-    gplcart\core\exceptions\Dependency as DependencyException;
+use gplcart\tests\phpunit\support\ArrayDataSet as ArrayDataSetHelper;
+use gplcart\tests\phpunit\support\File as FileHelper;
+use gplcart\tests\phpunit\support\Tool as ToolHelper;
+use PDO;
+use PHPUnit_Extensions_Database_DataSet_CompositeDataSet;
+use PHPUnit_Extensions_Database_TestCase;
+use ReflectionClass;
+use ReflectionMethod;
+use RuntimeException;
 
 /**
  * A TestCase extension that provides extra functionality for testing GPLCart
@@ -85,12 +84,12 @@ class UnitTest extends PHPUnit_Extensions_Database_TestCase
      * @param string $class
      * @param array $mock_config
      * @return object
-     * @throws DependencyException
+     * @throws RuntimeException
      */
     protected function getInstance($class, array $mock_config = array())
     {
         if (!class_exists($class)) {
-            throw new DependencyException("Class $class does not exist");
+            throw new RuntimeException("Class $class does not exist");
         }
 
         $reflection = new ReflectionClass($class);
@@ -142,6 +141,7 @@ class UnitTest extends PHPUnit_Extensions_Database_TestCase
         );
 
         $method_names = array();
+
         /* @var $method \ReflectionMethod */
         foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
             $method_name = $method->getName();
@@ -211,7 +211,7 @@ class UnitTest extends PHPUnit_Extensions_Database_TestCase
 
     /**
      * Returns the test dataset
-     * @return PHPUnit_Extensions_Database_DataSet_IDataSet
+     * @return \PHPUnit_Extensions_Database_DataSet_IDataSet
      */
     protected function getDataSet()
     {
@@ -227,8 +227,7 @@ class UnitTest extends PHPUnit_Extensions_Database_TestCase
     /**
      * Creates a dataset object from the fixture
      * @param string $fixture
-     * @return \PHPUnit_Extensions_Database_DataSet_XmlDataSet
-     * @throws \InvalidArgumentException
+     * @return ArrayDataSet
      */
     protected function createFixtureDataSet($fixture)
     {
@@ -239,7 +238,7 @@ class UnitTest extends PHPUnit_Extensions_Database_TestCase
      * Returns an array of fixture data
      * @param string $fixture
      * @return array
-     * @throws InvalidArgumentException
+     * @throws RuntimeException
      */
     protected function getFixtureData($fixture)
     {
@@ -252,7 +251,7 @@ class UnitTest extends PHPUnit_Extensions_Database_TestCase
         $file = $this->getFixtureDirectory() . "/$fixture.php";
 
         if (!is_file($file)) {
-            throw new InvalidArgumentException("File '$file' not found for fixture '$fixture'");
+            throw new RuntimeException("File '$file' not found for fixture '$fixture'");
         }
 
         $fixtures[$fixture] = require $file;

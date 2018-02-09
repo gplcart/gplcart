@@ -9,7 +9,7 @@
 
 namespace gplcart\core;
 
-use InvalidArgumentException;
+use OutOfBoundsException;
 
 /**
  * Base controller class
@@ -368,7 +368,7 @@ abstract class Controller
      * Returns a property
      * @param string $name
      * @return mixed
-     * @throws InvalidArgumentException
+     * @throws OutOfBoundsException
      */
     public function getProperty($name)
     {
@@ -376,7 +376,7 @@ abstract class Controller
             return $this->{$name};
         }
 
-        throw new InvalidArgumentException("Property $name does not exist");
+        throw new OutOfBoundsException("Property $name does not exist");
     }
 
     /**

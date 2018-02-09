@@ -238,7 +238,7 @@ class Compressor
 
         // Strip all comment blocks, but keep double/single quoted strings.
         $contents = preg_replace(
-                "<($double_quot|$single_quot)|$comment>Ss", "$1", $contents
+            "<($double_quot|$single_quot)|$comment>Ss", "$1", $contents
         );
 
         // Remove certain whitespace.
@@ -256,10 +256,10 @@ class Compressor
                 # - Colon: Retain :pseudo-selectors.
                 | ([\(:])\s+
                 >xS',
-                // Only one of the three capturing groups will match, so its reference
-                // will contain the wanted value and the references for the
-                // two non-matching groups will be replaced with empty strings.
-                '$1$2$3', $contents
+            // Only one of the three capturing groups will match, so its reference
+            // will contain the wanted value and the references for the
+            // two non-matching groups will be replaced with empty strings.
+            '$1$2$3', $contents
         );
 
         // End the file with a new line.

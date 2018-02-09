@@ -10,7 +10,7 @@
 namespace gplcart\core;
 
 use Exception;
-use InvalidArgumentException;
+use RuntimeException;
 
 /**
  * Parent class for modules
@@ -349,14 +349,14 @@ class Module
      * Returns the module class instance
      * @param string $module_id
      * @return object
-     * @throws InvalidArgumentException
+     * @throws RuntimeException
      */
     public function getInstance($module_id)
     {
         try {
             return Container::get($this->getClass($module_id));
         } catch (Exception $exc) {
-            throw new InvalidArgumentException("Failed to instantiate module $module_id: " . $exc->getMessage());
+            throw new RuntimeException("Failed to instantiate module $module_id: " . $exc->getMessage());
         }
     }
 

@@ -11,7 +11,7 @@ namespace gplcart\core\models;
 
 use gplcart\core\Config;
 use gplcart\core\Hook;
-use OutOfRangeException;
+use OutOfBoundsException;
 
 /**
  * Manages basic behaviors and data related to entity translations
@@ -134,14 +134,14 @@ class TranslationEntity
      * Returns a database table name for the entity
      * @param string $entity
      * @return string
-     * @throws OutOfRangeException
+     * @throws OutOfBoundsException
      */
     public function getTable($entity)
     {
         $tables = $this->getTables();
 
         if (empty($tables[$entity])) {
-            throw new OutOfRangeException("Entity $entity is not supported for translations");
+            throw new OutOfBoundsException("Entity $entity is not supported for translations");
         }
 
         return $tables[$entity];

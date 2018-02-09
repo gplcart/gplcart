@@ -11,13 +11,11 @@ namespace gplcart\core\models;
 
 use DirectoryIterator;
 use Exception;
-use gplcart\core\exceptions\Dependency as DependencyException;
 use gplcart\core\Hook;
 use gplcart\core\models\Translation as TranslationModel;
 use gplcart\core\Module as ModuleCore;
 use gplcart\core\traits\Dependency as DependencyTrait;
-use InvalidArgumentException;
-use OutOfRangeException;
+use OutOfBoundsException;
 use UnexpectedValueException;
 
 /**
@@ -179,21 +177,21 @@ class Module
      * Whether a given module can be enabled
      * @param string $module_id
      * @return mixed
-     * @throws InvalidArgumentException
+     * @throws UnexpectedValueException
      */
     public function canEnable($module_id)
     {
         if ($this->module->isEnabled($module_id)) {
-            throw new InvalidArgumentException($this->translation->text('Module already installed and enabled'));
+            throw new UnexpectedValueException($this->translation->text('Module already installed and enabled'));
         }
 
         if ($this->module->isLocked($module_id)) {
-            throw new InvalidArgumentException($this->translation->text('Module is locked in code'));
+            throw new UnexpectedValueException($this->translation->text('Module is locked in code'));
         }
 
         if ($this->module->isInstaller($module_id)) {
             $error = $this->translation->text('Modules that are installers cannot be installed/enabled when system is set up');
-            throw new InvalidArgumentException($error);
+            throw new UnexpectedValueException($error);
         }
 
         $this->module->getInstance($module_id); // Test module class
@@ -204,21 +202,21 @@ class Module
      * Whether a given module can be installed (and enabled)
      * @param string $module_id
      * @return mixed
-     * @throws InvalidArgumentException
+     * @throws UnexpectedValueException
      */
     public function canInstall($module_id)
     {
         if ($this->module->isInstalled($module_id)) {
-            throw new InvalidArgumentException($this->translation->text('Module already installed'));
+            throw new UnexpectedValueException($this->translation->text('Module already installed'));
         }
 
         if ($this->module->isLocked($module_id)) {
-            throw new InvalidArgumentException($this->translation->text('Module is locked in code'));
+            throw new UnexpectedValueException($this->translation->text('Module is locked in code'));
         }
 
         if ($this->module->isInstaller($module_id)) {
             $error = $this->translation->text('Modules that are installers cannot be installed/enabled when system is set up');
-            throw new InvalidArgumentException($error);
+            throw new UnexpectedValueException($error);
         }
 
         $this->module->getInstance($module_id); // Test module class
@@ -239,17 +237,17 @@ class Module
      * Whether a given module can be un-installed
      * @param string $module_id
      * @return bool
-     * @throws InvalidArgumentException
+     * @throws UnexpectedValueException
      */
     public function canUninstall($module_id)
     {
         if ($this->module->isActiveTheme($module_id)) {
             $error = $this->translation->text('Modules that are active themes cannot be disabled/uninstalled');
-            throw new InvalidArgumentException($error);
+            throw new UnexpectedValueException($error);
         }
 
         if ($this->module->isLocked($module_id)) {
-            throw new InvalidArgumentException($this->translation->text('Module is locked in code'));
+            throw new UnexpectedValueException($this->translation->text('Module is locked in code'));
         }
 
         return $this->checkDependentModules($module_id, $this->module->getList());
@@ -259,7 +257,7 @@ class Module
      * Checks all requirements for the module
      * @param string $module_id
      * @return bool
-     * @throws InvalidArgumentException
+     * @throws UnexpectedValueException
      */
     public function checkRequirements($module_id)
     {
@@ -270,7 +268,7 @@ class Module
 
         if ($this->module->isInstaller($module_id)) {
             $error = $this->translation->text('Modules that are installers cannot be installed/enabled when system is set up');
-            throw new InvalidArgumentException($error);
+            throw new UnexpectedValueException($error);
         }
 
         $this->checkDependenciesExtensions($module);
@@ -282,7 +280,7 @@ class Module
      * Check if all required extensions (if any) are loaded
      * @param array $module
      * @return bool
-     * @throws DependencyException
+     * @throws UnexpectedValueException
      */
     public function checkDependenciesExtensions(array $module)
     {
@@ -298,7 +296,7 @@ class Module
 
             if (!empty($missing)) {
                 $error = $this->translation->text("Missing PHP extensions: @list", array('@list' => implode(',', $missing)));
-                throw new DependencyException($error);
+                throw new UnexpectedValueException($error);
             }
         }
 
@@ -309,7 +307,6 @@ class Module
      * Checks PHP version compatibility for the module ID
      * @param array $module
      * @return boolean
-     * @throws DependencyException
      * @throws UnexpectedValueException
      */
     public function checkPhpVersion(array $module)
@@ -326,7 +323,7 @@ class Module
 
             if (!version_compare(PHP_VERSION, $number, $operator)) {
                 $error = $this->translation->text('Requires incompatible version of @name', array('@name' => 'PHP'));
-                throw new DependencyException($error);
+                throw new UnexpectedValueException($error);
             }
         }
 
@@ -337,12 +334,12 @@ class Module
      * Checks a module ID
      * @param string $module_id
      * @return boolean
-     * @throws InvalidArgumentException
+     * @throws UnexpectedValueException
      */
     public function checkModuleId($module_id)
     {
         if (!$this->module->isValidId($module_id)) {
-            throw new InvalidArgumentException($this->translation->text('Invalid module ID'));
+            throw new UnexpectedValueException($this->translation->text('Invalid module ID'));
         }
 
         return true;
@@ -352,17 +349,17 @@ class Module
      * Checks core version requirements
      * @param array $module
      * @return boolean
-     * @throws OutOfRangeException
-     * @throws DependencyException
+     * @throws OutOfBoundsException
+     * @throws UnexpectedValueException
      */
     public function checkCore(array $module)
     {
         if (!isset($module['core'])) {
-            throw new OutOfRangeException($this->translation->text('Missing core version'));
+            throw new OutOfBoundsException($this->translation->text('Missing core version'));
         }
 
         if (version_compare(gplcart_version(), $module['core']) < 0) {
-            throw new DependencyException($this->translation->text('Module incompatible with the current system core version'));
+            throw new UnexpectedValueException($this->translation->text('Module incompatible with the current system core version'));
         }
 
         return true;
@@ -373,7 +370,7 @@ class Module
      * @param string $module_id
      * @param array $modules
      * @return bool
-     * @throws DependencyException
+     * @throws UnexpectedValueException
      */
     public function checkDependentModules($module_id, array $modules)
     {
@@ -398,7 +395,7 @@ class Module
             return true;
         }
 
-        throw new DependencyException($this->translation->text('Required by') . ': ' . implode(', ', $required_by));
+        throw new UnexpectedValueException($this->translation->text('Required by') . ': ' . implode(', ', $required_by));
     }
 
     /**
@@ -442,7 +439,7 @@ class Module
      * Checks module dependencies
      * @param string $module_id
      * @return boolean
-     * @throws DependencyException
+     * @throws UnexpectedValueException
      */
     protected function checkDependenciesModule($module_id)
     {
@@ -459,7 +456,7 @@ class Module
             $messages[] = $this->translation->text($text, $arguments);
         }
 
-        throw new DependencyException(implode('<br>', $messages));
+        throw new UnexpectedValueException(implode('<br>', $messages));
     }
 
     /**

@@ -9,8 +9,8 @@
 
 namespace gplcart\core;
 
-use gplcart\core\exceptions\Access as AccessException;
-use InvalidArgumentException;
+use RuntimeException;
+use OutOfBoundsException;
 
 /**
  * Base parent CLI controller
@@ -123,12 +123,12 @@ class CliController
 
     /**
      * Control access to the route
-     * @throws AccessException
+     * @throws RuntimeException
      */
     protected function controlAccess()
     {
         if (!$this->config->get('cli_status', 1)) {
-            throw new AccessException('CLI access is disabled!');
+            throw new RuntimeException('CLI access is disabled!');
         }
     }
 
@@ -186,7 +186,7 @@ class CliController
      * Returns a property
      * @param string $name
      * @return mixed
-     * @throws InvalidArgumentException
+     * @throws OutOfBoundsException
      */
     public function getProperty($name)
     {
@@ -194,7 +194,7 @@ class CliController
             return $this->{$name};
         }
 
-        throw new InvalidArgumentException("Property $name does not exist");
+        throw new OutOfBoundsException("Property $name does not exist");
     }
 
     /**

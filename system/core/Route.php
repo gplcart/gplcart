@@ -10,10 +10,12 @@
 namespace gplcart\core;
 
 use Exception;
-use gplcart\core\exceptions\Route as RouteException;
 use gplcart\core\helpers\Request as RequestHelper;
 use gplcart\core\helpers\Response as ResponseHelper;
 use gplcart\core\helpers\Url as UrlHelper;
+use LogicException;
+use OutOfBoundsException;
+use UnexpectedValueException;
 
 /**
  * Routes incoming requests
@@ -210,7 +212,6 @@ class Route
 
     /**
      * Find an appropriate controller for the URL
-     * @throws RouteException
      */
     public function processRoute()
     {
@@ -252,7 +253,9 @@ class Route
         }
 
         if (!isset($alias)) {
+
             $arguments = array();
+
             if (gplcart_path_match($path, $pattern, $arguments)) {
                 $conditions = array(strtok($pattern, '/'), reset($arguments));
                 $sql = 'SELECT alias FROM alias WHERE entity=? AND entity_id=?';
@@ -269,28 +272,22 @@ class Route
      * Call a controller for the route
      * @param string|array $route
      * @param array $arguments
-     * @throws RouteException
+     * @throws LogicException
+     * @throws UnexpectedValueException
      */
     public function callController($route, array $arguments = array())
     {
-        try {
+        $route = $this->set($route, $arguments);
+        $callback = Handler::get($route, null, 'controller');
 
-            $route = $this->set($route, $arguments);
-
-            $callback = Handler::get($route, null, 'controller');
-
-            if (!$callback[0] instanceof Controller) {
-                throw new RouteException('Controller must be instance of \gplcart\core\Controller');
-            }
-
-            call_user_func_array($callback, $route['arguments']);
-
-        } catch (Exception $ex) {
-            throw new RouteException($ex->getMessage());
+        if (!$callback[0] instanceof Controller) {
+            throw new UnexpectedValueException('Controller must be instance of \gplcart\core\Controller');
         }
 
+        call_user_func_array($callback, $route['arguments']);
+
         // We should never get here as the page callback must abort the script execution
-        throw new RouteException('An error occurred while processing the route');
+        throw new LogicException('An error occurred while processing the route');
     }
 
     /**
@@ -301,12 +298,8 @@ class Route
      */
     public function callAliasController($pattern, $path, $alias)
     {
-        try {
-            $route = $this->set($pattern, array($pattern, $path, $alias));
-            Handler::call($route, null, 'alias', $route['arguments']);
-        } catch (Exception $ex) {
-            throw new RouteException($ex->getMessage());
-        }
+        $route = $this->set($pattern, array($pattern, $path, $alias));
+        Handler::call($route, null, 'alias', $route['arguments']);
     }
 
     /**
@@ -314,6 +307,7 @@ class Route
      * @param array|string $route
      * @param array $arguments
      * @return array
+     * @throws OutOfBoundsException
      */
     public function set($route, array $arguments = array())
     {
@@ -323,7 +317,7 @@ class Route
             $list = $this->getList();
 
             if (empty($list[$pattern])) {
-                throw new RouteException("Unknown route pattern $pattern");
+                throw new OutOfBoundsException("Unknown route pattern $pattern");
             }
 
             $route = $list[$pattern];

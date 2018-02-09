@@ -9,10 +9,12 @@
 
 namespace gplcart\core;
 
-use Exception;
-use gplcart\core\exceptions\Route as RouteException;
 use gplcart\core\helpers\Cli as CliHelper;
 use gplcart\core\helpers\Server as ServerHelper;
+use LogicException;
+use OutOfBoundsException;
+use OverflowException;
+use UnexpectedValueException;
 
 /**
  * Routes CLI commands
@@ -118,7 +120,6 @@ class CliRoute
     /**
      * Returns an array of CLI routes
      * @return array
-     * @throws RouteException
      */
     public function getList()
     {
@@ -138,7 +139,7 @@ class CliRoute
     /**
      * Sets an array of commands keyed by their aliases
      * @param array $routes
-     * @throws RouteException
+     * @throws OverflowException
      */
     protected function setAliases(array $routes)
     {
@@ -149,7 +150,7 @@ class CliRoute
             }
 
             if (isset($this->aliases[$route['alias']])) {
-                throw new RouteException("Command alias '{$route['alias']}' is not unique");
+                throw new OverflowException("Command alias '{$route['alias']}' is not unique");
             }
 
             $this->aliases[$route['alias']] = $command;
@@ -158,19 +159,20 @@ class CliRoute
 
     /**
      * Processes the current CLI command
+     * @throws LogicException
      */
     public function process()
     {
         $this->set();
         $this->callController();
-        throw new RouteException('The command was completed incorrectly');
+        throw new LogicException('The command was completed incorrectly');
     }
 
     /**
      * Sets the current route
      * @param array|null $route
      * @return array|null
-     * @throws RouteException
+     * @throws OutOfBoundsException
      */
     public function set($route = null)
     {
@@ -189,7 +191,7 @@ class CliRoute
             }
 
             if (empty($routes[$command])) {
-                throw new RouteException('Unknown command');
+                throw new OutOfBoundsException('Unknown command');
             }
 
             $route = $routes[$command];
@@ -202,18 +204,17 @@ class CliRoute
 
     /**
      * Call a route controller
+     * @throws UnexpectedValueException
      */
     protected function callController()
     {
-        try {
-            $callback = Handler::get($this->route, null, 'controller');
-            if (!$callback[0] instanceof CliController) {
-                throw new RouteException('Controller must be instance of \gplcart\core\CliController');
-            }
-            call_user_func_array($callback, array());
-        } catch (Exception $ex) {
-            throw new RouteException($ex->getMessage());
+        $callback = Handler::get($this->route, null, 'controller');
+
+        if (!$callback[0] instanceof CliController) {
+            throw new UnexpectedValueException('Controller must be instance of \gplcart\core\CliController');
         }
+
+        call_user_func_array($callback, array());
     }
 
 }

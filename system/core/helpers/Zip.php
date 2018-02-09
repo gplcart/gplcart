@@ -9,8 +9,7 @@
 
 namespace gplcart\core\helpers;
 
-use UnexpectedValueException;
-use gplcart\core\exceptions\Dependency as DependencyException;
+use RuntimeException;
 
 /**
  * Contains methods to work with zipped files
@@ -25,12 +24,13 @@ class Zip
     protected $zip;
 
     /**
-     * @throws DependencyException
+     * Constructor
+     * @throws RuntimeException
      */
     public function __construct()
     {
         if (!class_exists('ZipArchive')) {
-            throw new DependencyException('Class ZipArchive does not exist');
+            throw new RuntimeException('Class ZipArchive does not exist');
         }
 
         $this->zip = new \ZipArchive;
@@ -40,7 +40,7 @@ class Zip
      * Sets a file path
      * @param string $path
      * @param bool $create
-     * @throws UnexpectedValueException
+     * @throws RuntimeException
      * @return $this
      */
     public function set($path, $create = false)
@@ -49,7 +49,7 @@ class Zip
         $flag = $create ? $zip::CREATE : null;
 
         if ($this->zip->open($path, $flag) !== true) {
-            throw new UnexpectedValueException("Failed to open ZIP file $path");
+            throw new RuntimeException("Failed to open ZIP file $path");
         }
 
         return $this;
@@ -86,7 +86,7 @@ class Zip
         foreach ($files as $file) {
 
             if (is_dir($file)) {
-                $added ++;
+                $added++;
                 continue;
             }
 

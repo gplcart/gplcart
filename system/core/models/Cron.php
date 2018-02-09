@@ -59,8 +59,7 @@ class Cron
      * @param ReportModel $report
      * @param HistoryModel $history
      */
-    public function __construct(Logger $logger, Hook $hook, Config $config, ReportModel $report,
-                                HistoryModel $history)
+    public function __construct(Logger $logger, Hook $hook, Config $config, ReportModel $report, HistoryModel $history)
     {
         $this->hook = $hook;
         $this->config = $config;

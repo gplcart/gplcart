@@ -116,11 +116,14 @@ class Graph
         $component_weights = array();
 
         foreach ($this->state['last_visit_order'] as $vertex) {
+
             $component = $this->graph[$vertex]['component'];
+
             if (!isset($component_weights[$component])) {
                 $component_weights[$component] = 0;
             }
-            $this->graph[$vertex]['weight'] = $component_weights[$component] --;
+
+            $this->graph[$vertex]['weight'] = $component_weights[$component]--;
         }
     }
 

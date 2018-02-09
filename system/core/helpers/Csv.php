@@ -185,6 +185,7 @@ class Csv
 
         $parsed = 0;
         for ($this->rewind($start); $this->valid(); $this->next()) {
+
             $line = trim($this->current(), "\r\n");
 
             if (empty($line)) {

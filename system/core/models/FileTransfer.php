@@ -18,7 +18,7 @@ use gplcart\core\models\Http as HttpModel;
 use gplcart\core\models\Language as LanguageModel;
 use gplcart\core\models\Translation as TranslationModel;
 use gplcart\core\models\Validator as ValidatorModel;
-use OutOfRangeException;
+use OutOfBoundsException;
 use UnexpectedValueException;
 
 /**
@@ -356,17 +356,17 @@ class FileTransfer
      * @param string $file
      * @param string|null $extension
      * @return bool
-     * @throws OutOfRangeException
+     * @throws OutOfBoundsException
      * @throws ValidationException
      */
     protected function validateHandler($file, $extension = null)
     {
         if (empty($this->handler['validator'])) {
-            throw new OutOfRangeException($this->translation->text('Unknown handler'));
+            throw new OutOfBoundsException($this->translation->text('Unknown handler'));
         }
 
         if (!empty($this->handler['extensions']) && isset($extension) && !in_array($extension, $this->handler['extensions'])) {
-            throw new OutOfRangeException($this->translation->text('Unsupported file extension'));
+            throw new ValidationException($this->translation->text('Unsupported file extension'));
         }
 
         if (isset($this->handler['filesize']) && filesize($file) > $this->handler['filesize']) {
@@ -406,12 +406,12 @@ class FileTransfer
      * Find and set handler by a file extension
      * @param string $extension
      * @return array
-     * @throws OutOfRangeException
+     * @throws ValidationException
      */
     protected function setHandlerByExtension($extension)
     {
         if (!in_array($extension, $this->file->supportedExtensions())) {
-            throw new OutOfRangeException($this->translation->text('Unsupported file extension'));
+            throw new ValidationException($this->translation->text('Unsupported file extension'));
         }
 
         return $this->handler = $this->file->getHandler(".$extension");

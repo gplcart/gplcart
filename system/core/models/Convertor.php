@@ -11,7 +11,7 @@ namespace gplcart\core\models;
 
 use gplcart\core\Hook;
 use InvalidArgumentException;
-use OutOfRangeException;
+use OutOfBoundsException;
 
 /**
  * Contains methods to convert measurement units
@@ -67,7 +67,7 @@ class Convertor
      * @param number $value
      * @param string $unit
      * @return $this
-     * @throws OutOfRangeException
+     * @throws OutOfBoundsException
      */
     public function from($value, $unit)
     {
@@ -76,11 +76,11 @@ class Convertor
         $key = strtolower($unit);
 
         if (empty($this->units[$key]['base'])) {
-            throw new OutOfRangeException('Unit does not exist');
+            throw new OutOfBoundsException('Unit does not exist');
         }
 
         if (!isset($this->units[$key]['conversion'])) {
-            throw new OutOfRangeException("Conversion is not set for unit $unit");
+            throw new OutOfBoundsException("Conversion is not set for unit $unit");
         }
 
         $this->base_unit = $this->units[$key]['base'];
@@ -94,7 +94,7 @@ class Convertor
      * @param null|integer $decimals
      * @param bool $round
      * @return mixed
-     * @throws OutOfRangeException
+     * @throws OutOfBoundsException
      * @throws InvalidArgumentException
      */
     public function to($unit, $decimals = null, $round = true)
@@ -110,7 +110,7 @@ class Convertor
         $key = strtolower($unit);
 
         if (empty($this->units[$key]['base'])) {
-            throw new OutOfRangeException('Unit does not exist');
+            throw new OutOfBoundsException('Unit does not exist');
         }
 
         if (!isset($this->base_unit)) {
@@ -171,12 +171,12 @@ class Convertor
      * List all available conversion units for given unit
      * @param string $unit
      * @return array
-     * @throws OutOfRangeException
+     * @throws OutOfBoundsException
      */
     public function getConversions($unit)
     {
         if (!isset($this->units[$unit]['base'])) {
-            throw new OutOfRangeException('Unit is not set');
+            throw new OutOfBoundsException('Unit is not set');
         }
 
         $units = array();
