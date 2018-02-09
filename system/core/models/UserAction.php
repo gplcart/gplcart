@@ -93,7 +93,7 @@ class UserAction
             return (array) $result;
         }
 
-        if (empty($data['email']) || empty($data['password'])) {
+        if (empty($data['email'])) {
             return $this->getResultErrorLogin();
         }
 
@@ -103,7 +103,7 @@ class UserAction
             return $this->getResultErrorLogin();
         }
 
-        if ($check_password && !$this->user->passwordMatches($data['password'], $user)) {
+        if ($check_password && (!isset($data['password']) || !$this->user->passwordMatches($data['password'], $user))) {
             return $this->getResultErrorLogin();
         }
 
@@ -112,6 +112,7 @@ class UserAction
 
         $result = $this->getResultLogin($user);
         $this->hook->attach('user.login.after', $data, $check_password, $result, $this);
+
         return (array) $result;
     }
 
