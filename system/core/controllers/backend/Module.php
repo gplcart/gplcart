@@ -149,16 +149,8 @@ class Module extends BackendController
             $this->redirect('', $this->text('Module has been updated'), 'success');
         }
 
-        if (is_string($result)) {
-            $message = $result ? $result : $this->text('Operation unavailable');
-            $this->redirect('', $message, 'danger');
-        }
-
-        foreach ((array) $result as $error) {
-            $this->setMessage((string) $error, 'danger', true);
-        }
-
-        $this->redirect();
+        $message = $result ? $result : $this->text('Operation unavailable');
+        $this->redirect('', $message, 'danger');
     }
 
     /**
