@@ -387,11 +387,12 @@ class Translation
     {
         $handle = fopen($file, 'r');
 
-        if ($handle === false) {
+        if (!is_resource($handle)) {
             return array();
         }
 
         $content = array();
+
         while (($data = fgetcsv($handle)) !== false) {
             $content[] = $data;
         }
@@ -411,6 +412,7 @@ class Translation
         if ($this->prepared && !isset($this->written[$file][$string]) && !empty($this->context)) {
 
             $data = array($string);
+
             if (isset($translations[$string][0]) && $translations[$string][0] !== '') {
                 $data = $translations[$string];
                 array_unshift($data, $string);
@@ -428,11 +430,11 @@ class Translation
      */
     public function parseJs($content)
     {
-        $matches = array();
+        $matches = $results = array();
+
         $pattern = '~[^\w]Gplcart\s*\.\s*text\s*\(\s*((?:(?:\'(?:\\\\\'|[^\'])*\'|"(?:\\\\"|[^"])*")(?:\s*\+\s*)?)+)\s*[,\)]~s';
         preg_match_all($pattern, $content, $matches);
 
-        $results = array();
         foreach ($matches[1] as $strings) {
             foreach ((array) $strings as $string) {
                 $results[] = implode('', preg_split('~(?<!\\\\)[\'"]\s*\+\s*[\'"]~s', substr($string, 1, -1)));
@@ -458,6 +460,7 @@ class Translation
 
         $file = $this->getContextJsFile($langcode);
         $translations = $this->loadTranslation($this->getCommonFile($langcode));
+
         foreach ($extracted as $string) {
             $this->addTranslation($string, $translations, $file);
         }
