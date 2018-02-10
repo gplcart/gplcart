@@ -90,7 +90,6 @@ class Base
 
     /**
      * Create the configuration file using data from a default file
-     * @return boolean|string
      * @throws UnexpectedValueException
      */
     protected function createConfig()
@@ -114,7 +113,6 @@ class Base
         }
 
         chmod(GC_FILE_CONFIG_COMPILED, 0444);
-        return true;
     }
 
     /**
