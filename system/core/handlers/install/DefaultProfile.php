@@ -9,6 +9,7 @@
 
 namespace gplcart\core\handlers\install;
 
+use Exception;
 use gplcart\core\handlers\install\Base as BaseInstall;
 
 /**
@@ -36,14 +37,17 @@ class DefaultProfile extends BaseInstall
         $this->db = $db;
         $this->data = $data;
 
-        $this->start();
-        $result = $this->process();
-
-        if ($result !== true) {
-            return $result;
+        try {
+            $this->start();
+            $this->process();
+            return $this->finish();
+        } catch (Exception $ex) {
+            return array(
+                'redirect' => '',
+                'severity' => 'warning',
+                'message' => $ex->getMessage()
+            );
         }
-
-        return $this->finish();
     }
 
 }

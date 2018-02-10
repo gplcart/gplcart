@@ -9,8 +9,8 @@
 
 namespace gplcart\core\handlers\install;
 
-use Exception;
 use gplcart\core\Container;
+use UnexpectedValueException;
 
 /**
  * Base installer handlers class
@@ -90,8 +90,8 @@ class Base
 
     /**
      * Create the configuration file using data from a default file
-     * and adds database details set during the installation process
      * @return boolean|string
+     * @throws UnexpectedValueException
      */
     protected function createConfig()
     {
@@ -100,8 +100,8 @@ class Base
         $config = file_get_contents(GC_FILE_CONFIG);
 
         if (empty($config)) {
-            $vars = array('@path' => GC_FILE_CONFIG);
-            return $this->translation->text('Failed to read the source config @path', $vars);
+            $error = $this->translation->text('Failed to read the source config @path', array('@path' => GC_FILE_CONFIG));
+            throw new UnexpectedValueException($error);
         }
 
         $config .= '$config[\'database\'] = ' . var_export($this->data['database'], true) . ';';
@@ -110,7 +110,7 @@ class Base
         $config .= PHP_EOL;
 
         if (file_put_contents(GC_FILE_CONFIG_COMPILED, $config) === false) {
-            return $this->translation->text('Failed to create config.php');
+            throw new UnexpectedValueException($this->translation->text('Failed to create config.php'));
         }
 
         chmod(GC_FILE_CONFIG_COMPILED, 0444);
@@ -209,26 +209,18 @@ class Base
 
     /**
      * Create default content for the site
-     * @return boolean|string
      */
     protected function createContent()
     {
         $this->setCliMessage('Creating content...');
 
         $this->initConfig();
-
-        try {
-            $this->createDbConfig();
-            $this->createStore();
-            $this->createSuperadmin();
-            $this->createCountries();
-            $this->createLanguages();
-            $this->createPages();
-        } catch (Exception $ex) {
-            return $ex->getMessage();
-        }
-
-        return true;
+        $this->createDbConfig();
+        $this->createStore();
+        $this->createSuperadmin();
+        $this->createCountries();
+        $this->createLanguages();
+        $this->createPages();
     }
 
     /**
@@ -303,19 +295,11 @@ class Base
 
     /**
      * Create default database structure
-     * @return bool|string
      */
     protected function createDb()
     {
         $this->setCliMessage('Creating database tables...');
-
-        try {
-            $this->db->import($this->db->getScheme());
-        } catch (Exception $ex) {
-            return $ex->getMessage();
-        }
-
-        return true;
+        $this->db->import($this->db->getScheme());
     }
 
     /**
@@ -350,38 +334,12 @@ class Base
 
     /**
      * Process installation
-     * @return boolean|array
      */
     protected function process()
     {
-        $result = array(
-            'message' => '',
-            'redirect' => '',
-            'severity' => 'warning'
-        );
-
-        $result_db = $this->createDb();
-
-        if ($result_db !== true) {
-            $result['message'] = $result_db;
-            return $result;
-        }
-
-        $result_config = $this->createConfig();
-
-        if ($result_config !== true) {
-            $result['message'] = $result_config;
-            return $result;
-        }
-
-        $result_store = $this->createContent();
-
-        if ($result_store !== true) {
-            $result['message'] = $result_store;
-            return $result;
-        }
-
-        return true;
+        $this->createDb();
+        $this->createConfig();
+        $this->createContent();
     }
 
     /**
