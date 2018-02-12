@@ -186,4 +186,17 @@ class Server
         return $this->get('HTTPS', 'off') !== 'off';
     }
 
+    /**
+     * Returns an HTTP header
+     * @param string $name
+     * @param mixed $default
+     * @param bool $sanitize
+     * @return mixed
+     */
+    public function header($name, $default = null, $sanitize = true)
+    {
+        $key = 'HTTP_' . strtoupper(str_replace('-', '_', $name));
+        return $this->get($key, $default, $sanitize);
+    }
+
 }
