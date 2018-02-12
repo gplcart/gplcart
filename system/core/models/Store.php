@@ -112,7 +112,7 @@ class Store implements CrudInterface
         $list = (array) $this->getList($conditions);
         $result = empty($list) ? array() : reset($list);
 
-        if (!empty($result)) {
+        if (isset($result['data'])) {
             $result['data'] += $this->getDefaultData();
         }
 

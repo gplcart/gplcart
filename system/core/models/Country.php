@@ -60,9 +60,10 @@ class Country implements CrudInterface
             return $result;
         }
 
-        $result = $this->db->fetch('SELECT * FROM country WHERE code=?', array($code), array('unserialize' => 'format'));
+        $sql = 'SELECT * FROM country WHERE code=?';
+        $result = $this->db->fetch($sql, array($code), array('unserialize' => 'format'));
 
-        if (!empty($result)) {
+        if (isset($result['format'])) {
             $default_format = $this->getDefaultFormat();
             $result['format'] = gplcart_array_merge($default_format, $result['format']);
             gplcart_array_sort($result['format']);

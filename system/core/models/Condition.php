@@ -77,12 +77,16 @@ class Condition
         }
 
         $result = true;
+        $this->processed = array();
 
         foreach ($trigger['data']['conditions'] as $condition) {
+
             if ($this->callHandler($condition, $data) !== true) {
                 $result = false;
                 break;
             }
+
+            $this->processed[] = $condition['id'];
         }
 
         $this->hook->attach('condition.met.after', $trigger, $data, $result, $this);
@@ -93,18 +97,16 @@ class Condition
      * Call a condition handler
      * @param array $condition
      * @param array $data
-     * @return boolean
+     * @return bool
      */
     protected function callHandler(array $condition, array $data)
     {
         try {
             $handlers = $this->getHandlers();
-            $result = Handler::call($handlers, $condition['id'], 'process', array($condition, $data, $this));
+            return Handler::call($handlers, $condition['id'], 'process', array($condition, $data, $this));
         } catch (Exception $ex) {
             return false;
         }
-
-        return $this->processed[$condition['id']] = $result;
     }
 
     /**

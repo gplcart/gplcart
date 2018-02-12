@@ -82,8 +82,8 @@ class Cart implements CrudInterface
      * @param RequestHelper $request
      */
     public function __construct(Hook $hook, Config $config, ProductModel $product,
-                                CurrencyModel $currency, UserModel $user, TranslationModel $translation,
-                                RequestHelper $request)
+                                CurrencyModel $currency, UserModel $user,
+                                TranslationModel $translation, RequestHelper $request)
     {
         $this->hook = $hook;
         $this->config = $config;

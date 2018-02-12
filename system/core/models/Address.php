@@ -73,6 +73,7 @@ class Address implements CrudInterface
 
         $data['created'] = GC_TIME;
         $result = $this->db->insert('address', $data);
+
         $this->hook->attach('address.add.after', $data, $result, $this);
         return (int) $result;
     }
@@ -148,7 +149,7 @@ class Address implements CrudInterface
         $condition['prepare'] = false;
         $condition['limit'] = array(0, 1);
 
-        $list = $this->getList($condition);
+        $list = (array) $this->getList($condition);
         $result = empty($list) ? array() : reset($list);
 
         if (isset($result['country_format'])) {
