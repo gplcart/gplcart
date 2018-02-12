@@ -9,13 +9,12 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\models\Zone as ZoneModel;
 
 /**
  * Handles incoming requests and outputs data related to geo zones
  */
-class Zone extends BackendController
+class Zone extends Controller
 {
 
     /**
@@ -52,7 +51,6 @@ class Zone extends BackendController
     public function listZone()
     {
         $this->actionListZone();
-
         $this->setTitleListZone();
         $this->setBreadcrumbListZone();
         $this->setFilterListZone();
@@ -193,8 +191,12 @@ class Zone extends BackendController
      */
     protected function setZone($zone_id)
     {
+        $this->data_zone = array();
+
         if (is_numeric($zone_id)) {
+
             $this->data_zone = $this->zone->get($zone_id);
+
             if (empty($this->data_zone)) {
                 $this->outputHttpStatus(404);
             }

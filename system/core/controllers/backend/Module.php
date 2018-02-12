@@ -9,7 +9,6 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\helpers\Graph as GraphHelper;
 use gplcart\core\models\Module as ModuleModel;
 use gplcart\core\traits\Dependency as DependencyTrait;
@@ -18,7 +17,7 @@ use gplcart\core\traits\Listing as ListingTrait;
 /**
  * Handles incoming requests and outputs data related to modules
  */
-class Module extends BackendController
+class Module extends Controller
 {
 
     use ListingTrait, DependencyTrait;
@@ -184,35 +183,42 @@ class Module extends BackendController
      */
     protected function getListModule($count = false)
     {
-        $modules = $this->module->getList();
-        $this->checkDependenciesListModule($modules);
+        $list = $this->module->getList();
 
-        foreach ($modules as &$module) {
-            // Add key to sort and filter by dependencies
-            $module['has_dependencies'] = !empty($module['requires']) || !empty($module['required_by']);
-        }
+        $this->checkDependenciesListModule($list);
+        $this->prepareListModule($list);
 
         $allowed = $this->getAllowedFiltersModule();
-        $this->filterList($modules, $allowed, $this->query_filter);
-        $this->sortList($modules, $allowed, $this->query_filter, array('id' => 'asc'));
-
+        $this->filterList($list, $allowed, $this->query_filter);
+        $this->sortList($list, $allowed, $this->query_filter, array('id' => 'asc'));
 
         if ($count) {
-            return count($modules);
+            return count($list);
         }
 
-        $this->limitList($modules, $this->data_limit);
-        return $modules;
+        $this->limitList($list, $this->data_limit);
+        return $list;
+    }
+
+    /**
+     * Prepare an array of modules
+     * @param array $list
+     */
+    protected function prepareListModule(array &$list)
+    {
+        foreach ($list as &$item) {
+            $item['has_dependencies'] = !empty($item['requires']) || !empty($item['required_by']);
+        }
     }
 
     /**
      * Validates module dependencies
-     * @param array $modules
+     * @param array $list
      */
-    protected function checkDependenciesListModule(array &$modules)
+    protected function checkDependenciesListModule(array &$list)
     {
-        $this->validateDependencies($modules);
-        $modules = $this->graph->build($modules);
+        $this->validateDependencies($list);
+        $list = $this->graph->build($list);
     }
 
     /**

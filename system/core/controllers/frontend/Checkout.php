@@ -9,7 +9,6 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\controllers\frontend\Controller as FrontendController;
 use gplcart\core\models\Address as AddressModel;
 use gplcart\core\models\CartAction as CartActionModel;
 use gplcart\core\models\Country as CountryModel;
@@ -26,7 +25,7 @@ use gplcart\core\traits\Checkout as CheckoutTrait;
 /**
  * Handles incoming requests and outputs data related to checkout process
  */
-class Checkout extends FrontendController
+class Checkout extends Controller
 {
 
     use CheckoutTrait;
@@ -262,6 +261,8 @@ class Checkout extends FrontendController
      */
     protected function setUserCheckout($user_id)
     {
+        $this->data_user = array();
+
         if (!is_numeric($user_id)) {
             $this->outputHttpStatus(403);
         }
@@ -299,25 +300,31 @@ class Checkout extends FrontendController
     /**
      * Load and set an order from the database
      * @param integer $order_id
-     * @return array
      */
     protected function setOrderCheckout($order_id)
     {
-        $order = $this->order->get($order_id);
+        $this->data_order = $this->order->get($order_id);
 
-        if (empty($order)) {
+        if (empty($this->data_order)) {
             $this->outputHttpStatus(404);
         }
 
-        $this->setItemTotalFormatted($order, $this->price);
-        $this->setItemTotalFormattedNumber($order, $this->price);
+        $this->prepareOrder($this->data_order);
 
         $this->order_id = $order_id;
-        $this->order_user_id = $order['user_id'];
-        $this->order_store_id = $order['store_id'];
-        $this->data_user = $this->user->get($order['user_id']);
+        $this->order_user_id = $this->data_order['user_id'];
+        $this->order_store_id = $this->data_order['store_id'];
+        $this->data_user = $this->user->get($this->data_order['user_id']);
+    }
 
-        return $this->data_order = $order;
+    /**
+     * Prepare an array of order data
+     * @param array $order
+     */
+    protected function prepareOrder(array &$order)
+    {
+        $this->setItemTotalFormatted($order, $this->price);
+        $this->setItemTotalFormattedNumber($order, $this->price);
     }
 
     /**
@@ -381,6 +388,8 @@ class Checkout extends FrontendController
      */
     protected function setFormDataBeforeCheckout()
     {
+        $this->data_form = array();
+
         $default_order = $this->getDefaultOrder();
         $order = gplcart_array_merge($default_order, $this->data_order);
 
@@ -427,8 +436,9 @@ class Checkout extends FrontendController
      */
     protected function getPaymentMethodsCheckout()
     {
-        $methods = $this->payment->getList(array('status' => true));
-        return $this->prepareMethodsCheckout($methods);
+        $list = $this->payment->getList(array('status' => true));
+        $this->prepareMethodsCheckout($list);
+        return $list;
     }
 
     /**
@@ -437,25 +447,23 @@ class Checkout extends FrontendController
      */
     protected function getShippingMethodsCheckout()
     {
-        $methods = $this->shipping->getList(array('status' => true));
-        return $this->prepareMethodsCheckout($methods);
+        $list = $this->shipping->getList(array('status' => true));
+        $this->prepareMethodsCheckout($list);
+        return $list;
     }
 
     /**
      * Prepare payment and shipping methods
-     * @param array $methods
-     * @return array
+     * @param array $list
      */
-    protected function prepareMethodsCheckout(array $methods)
+    protected function prepareMethodsCheckout(array &$list)
     {
-        foreach ($methods as &$method) {
-            if (isset($method['module']) && isset($method['image'])) {
-                $path = GC_DIR_MODULE . "/{$method['module']}/{$method['image']}";
-                $method['image'] = $this->url(gplcart_path_relative($path));
+        foreach ($list as &$item) {
+            if (isset($item['module']) && isset($item['image'])) {
+                $path = GC_DIR_MODULE . "/{$item['module']}/{$item['image']}";
+                $item['image'] = $this->url(gplcart_path_relative($path));
             }
         }
-
-        return $methods;
     }
 
     /**
@@ -508,6 +516,7 @@ class Checkout extends FrontendController
     protected function setFormDataAddressCheckout()
     {
         $countries = array();
+
         foreach ((array) $this->country->getList(array('status' => true)) as $code => $country) {
             $countries[$code] = $country['native_name'];
         }
@@ -921,8 +930,10 @@ class Checkout extends FrontendController
         $submitted = $this->getSubmitted("address.$type");
 
         if ($this->{"show_{$type}_address_form"} && !empty($submitted)) {
+
             $address_id = $this->address->add($submitted);
             $this->setSubmitted("{$type}_address", $address_id);
+
             foreach ($this->address->getExceeded($this->order_user_id) as $address) {
                 $this->address->delete($address['address_id']);
             }

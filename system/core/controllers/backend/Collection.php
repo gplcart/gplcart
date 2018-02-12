@@ -9,14 +9,13 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\models\Collection as CollectionModel;
 use gplcart\core\models\TranslationEntity as TranslationEntityModel;
 
 /**
  * Handles incoming requests and outputs data related to collections
  */
-class Collection extends BackendController
+class Collection extends Controller
 {
 
     /**
@@ -61,7 +60,6 @@ class Collection extends BackendController
     public function listCollection()
     {
         $this->actionListCollection();
-
         $this->setTitleListCollection();
         $this->setBreadcrumbListCollection();
         $this->setFilterListCollection();
@@ -238,27 +236,27 @@ class Collection extends BackendController
      */
     protected function setCollection($collection_id)
     {
+        $this->data_collection = array();
+
         if (is_numeric($collection_id)) {
 
-            $collection = $this->collection->get($collection_id);
+            $this->data_collection = $this->collection->get($collection_id);
 
-            if (empty($collection)) {
+            if (empty($this->data_collection)) {
                 $this->outputHttpStatus(404);
             }
 
-            $this->data_collection = $this->prepareCollection($collection);
+            $this->prepareCollection($this->data_collection);
         }
     }
 
     /**
      * Prepare an array of collection data
      * @param array $collection
-     * @return array
      */
-    protected function prepareCollection(array $collection)
+    protected function prepareCollection(array &$collection)
     {
         $this->setItemTranslation($collection, 'collection', $this->translation_entity);
-        return $collection;
     }
 
     /**

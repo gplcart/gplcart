@@ -9,14 +9,13 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\models\Field as FieldModel;
 use gplcart\core\models\TranslationEntity as TranslationEntityModel;
 
 /**
  * Handles incoming requests and outputs data related to product fields
  */
-class Field extends BackendController
+class Field extends Controller
 {
 
     /**
@@ -228,27 +227,27 @@ class Field extends BackendController
      */
     protected function setField($field_id)
     {
+        $this->data_field = array();
+
         if (is_numeric($field_id)) {
 
-            $field = $this->field->get($field_id);
+            $this->data_field = $this->field->get($field_id);
 
-            if (empty($field)) {
+            if (empty($this->data_field)) {
                 $this->outputHttpStatus(404);
             }
 
-            $this->data_field = $this->prepareField($field);
+            $this->prepareField($this->data_field);
         }
     }
 
     /**
      * Prepare an array of field data
      * @param array $field
-     * @return array
      */
-    protected function prepareField(array $field)
+    protected function prepareField(array &$field)
     {
         $this->setItemTranslation($field, 'field', $this->translation_entity);
-        return $field;
     }
 
     /**

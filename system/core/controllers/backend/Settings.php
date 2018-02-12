@@ -9,12 +9,10 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
-
 /**
  * Handles incoming requests and outputs data related to common store settings
  */
-class Settings extends BackendController
+class Settings extends Controller
 {
 
     /**
@@ -87,6 +85,7 @@ class Settings extends BackendController
     protected function validateEditSettings()
     {
         $this->setSubmitted('settings');
+
         if (!$this->getSubmitted('cron_key')) {
             $this->setSubmitted('cron_key', gplcart_string_random());
         }

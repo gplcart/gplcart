@@ -9,13 +9,12 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\models\UserRole as UserRoleModel;
 
 /**
  * Handles incoming requests and outputs data related to user roles
  */
-class UserRole extends BackendController
+class UserRole extends Controller
 {
 
     /**
@@ -80,8 +79,12 @@ class UserRole extends BackendController
      */
     protected function setUserRole($role_id)
     {
+        $this->data_role = array();
+
         if (is_numeric($role_id)) {
+
             $this->data_role = $this->role->get($role_id);
+
             if (empty($this->data_role)) {
                 $this->outputHttpStatus(404);
             }
@@ -213,7 +216,6 @@ class UserRole extends BackendController
     public function listUserRole()
     {
         $this->actionListUserRole();
-
         $this->setTitleListUserRole();
         $this->setBreadcrumbListUserRole();
         $this->setFilterListUserRole();
@@ -289,16 +291,16 @@ class UserRole extends BackendController
         $conditions = $this->query_filter;
         $conditions['limit'] = $this->data_limit;
 
-        $roles = (array) $this->role->getList($conditions);
-        return $this->prepareListUserRole($roles);
+        $list = (array) $this->role->getList($conditions);
+        $this->prepareListUserRole($list);
+        return $list;
     }
 
     /**
      * Prepare an array of user roles
      * @param array $roles
-     * @return array
      */
-    protected function prepareListUserRole(array $roles)
+    protected function prepareListUserRole(array &$roles)
     {
         $permissions = $this->getPermissionsUserRole();
 
@@ -308,8 +310,6 @@ class UserRole extends BackendController
                 $role['permissions_list'] = array_chunk($list, 20);
             }
         }
-
-        return $roles;
     }
 
     /**

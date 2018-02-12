@@ -9,13 +9,12 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\traits\Listing as ListingTrait;
 
 /**
  * Handles incoming requests and outputs data related to libraries
  */
-class ReportLibrary extends BackendController
+class ReportLibrary extends Controller
 {
 
     use ListingTrait;
@@ -90,24 +89,32 @@ class ReportLibrary extends BackendController
      */
     protected function getListReportLibrary($count = false)
     {
-        $libraries = $this->library->getList();
-
-        foreach ($libraries as &$library) {
-            // Add key to sort and filter by dependencies
-            $library['status'] = empty($library['errors']);
-            $library['has_dependencies'] = !empty($library['requires']) || !empty($library['required_by']);
-        }
+        $list = $this->library->getList();
+        $this->prepareListLibrary($list);
 
         $allowed = $this->getAllowedFiltersReportLibrary();
-        $this->filterList($libraries, $allowed, $this->query_filter);
-        $this->sortList($libraries, $allowed, $this->query_filter, array('name' => 'desc'));
+
+        $this->filterList($list, $allowed, $this->query_filter);
+        $this->sortList($list, $allowed, $this->query_filter, array('name' => 'desc'));
 
         if ($count) {
-            return count($libraries);
+            return count($list);
         }
 
-        $this->limitList($libraries, $this->data_limit);
-        return $libraries;
+        $this->limitList($list, $this->data_limit);
+        return $list;
+    }
+
+    /**
+     * Prepare an array of libraries
+     * @param array $list
+     */
+    protected function prepareListLibrary(array &$list)
+    {
+        foreach ($list as &$item) {
+            $item['status'] = empty($item['errors']);
+            $item['has_dependencies'] = !empty($item['requires']) || !empty($item['required_by']);
+        }
     }
 
     /**

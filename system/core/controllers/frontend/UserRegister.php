@@ -9,13 +9,12 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\controllers\frontend\Controller as FrontendController;
 use gplcart\core\models\UserAction as UserActionModel;
 
 /**
  * Handles incoming requests and outputs data related to user account creation
  */
-class UserRegister extends FrontendController
+class UserRegister extends Controller
 {
 
     /**
@@ -40,13 +39,11 @@ class UserRegister extends FrontendController
     public function editUserRegister()
     {
         $this->controlAccessUserRegister();
-
         $this->setTitleEditUserRegister();
         $this->setBreadcrumbEditUserRegister();
 
         $this->submitUserRegister();
         $this->setData('password_limit', $this->user->getPasswordLength());
-
         $this->outputEditUserRegister();
     }
 

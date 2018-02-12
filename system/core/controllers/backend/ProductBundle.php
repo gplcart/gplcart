@@ -9,7 +9,6 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\models\Price as PriceModel;
 use gplcart\core\models\Product as ProductModel;
 use gplcart\core\models\ProductBundle as ProductBundleModel;
@@ -17,7 +16,7 @@ use gplcart\core\models\ProductBundle as ProductBundleModel;
 /**
  * Handles incoming requests and outputs data related to product classes
  */
-class ProductBundle extends BackendController
+class ProductBundle extends Controller
 {
 
     /**
@@ -55,8 +54,7 @@ class ProductBundle extends BackendController
      * @param ProductModel $product
      * @param ProductBundleModel $product_bundle
      */
-    public function __construct(PriceModel $price, ProductModel $product,
-                                ProductBundleModel $product_bundle)
+    public function __construct(PriceModel $price, ProductModel $product, ProductBundleModel $product_bundle)
     {
         parent::__construct();
 
@@ -85,28 +83,25 @@ class ProductBundle extends BackendController
     /**
      * Sets the product data
      * @param integer $product_id
-     * @return array
      */
     protected function setProductProductBundle($product_id)
     {
-        $product = $this->product->get($product_id);
+        $this->data_product = $this->product->get($product_id);
 
-        if (empty($product)) {
+        if (empty($this->data_product)) {
             $this->outputHttpStatus(404);
         }
 
-        return $this->data_product = $this->prepareProductBundle($product);
+        $this->prepareProductBundle($this->data_product);
     }
 
     /**
      * Prepare an array of product data
      * @param array $product
-     * @return array
      */
-    protected function prepareProductBundle(array $product)
+    protected function prepareProductBundle(array &$product)
     {
         $product['bundle'] = $this->product_bundle->getItems($product['product_id']);
-        return $product;
     }
 
     /**
@@ -117,6 +112,7 @@ class ProductBundle extends BackendController
         $product_ids = $this->getData('product.bundle', array());
 
         $products = array();
+
         if (!empty($product_ids)) {
             $products = (array) $this->product->getList(array('product_id' => $product_ids));
         }

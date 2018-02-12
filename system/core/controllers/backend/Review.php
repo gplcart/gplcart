@@ -9,7 +9,6 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\models\Price as PriceModel;
 use gplcart\core\models\Product as ProductModel;
 use gplcart\core\models\Review as ReviewModel;
@@ -17,7 +16,7 @@ use gplcart\core\models\Review as ReviewModel;
 /**
  * Handles incoming requests and outputs data related to user reviews
  */
-class Review extends BackendController
+class Review extends Controller
 {
 
     /**
@@ -206,8 +205,12 @@ class Review extends BackendController
      */
     protected function setReview($review_id)
     {
+        $this->data_review = array();
+
         if (is_numeric($review_id)) {
+
             $this->data_review = $this->review->get($review_id);
+
             if (empty($this->data_review)) {
                 $this->outputHttpStatus(404);
             }

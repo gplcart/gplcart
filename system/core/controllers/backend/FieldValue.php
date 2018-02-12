@@ -9,7 +9,6 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\models\Field as FieldModel;
 use gplcart\core\models\FieldValue as FieldValueModel;
 use gplcart\core\models\File as FileModel;
@@ -18,7 +17,7 @@ use gplcart\core\models\TranslationEntity as TranslationEntityModel;
 /**
  * Handles incoming requests and outputs data related to field values
  */
-class FieldValue extends BackendController
+class FieldValue extends Controller
 {
 
     /**
@@ -170,22 +169,20 @@ class FieldValue extends BackendController
         $conditions['limit'] = $this->data_limit;
         $conditions['field_id'] = $this->data_field['field_id'];
 
-        $values = (array) $this->field_value->getList($conditions);
-        return $this->prepareFieldValues($values);
+        $list = (array) $this->field_value->getList($conditions);
+        $this->prepareListFieldValue($list);
+        return $list;
     }
 
     /**
      * Prepare an array of field values
-     * @param array $values
-     * @return array
+     * @param array $list
      */
-    protected function prepareFieldValues(array $values)
+    protected function prepareListFieldValue(array &$list)
     {
-        foreach ($values as &$value) {
-            $this->setItemThumb($value, $this->image, array('placeholder' => false));
+        foreach ($list as &$item) {
+            $this->setItemThumb($item, $this->image, array('placeholder' => false));
         }
-
-        return $values;
     }
 
     /**
@@ -301,24 +298,25 @@ class FieldValue extends BackendController
      */
     protected function setFieldValue($field_value_id)
     {
+        $this->data_field_value = array();
+
         if (is_numeric($field_value_id)) {
 
-            $field_value = $this->field_value->get($field_value_id);
+            $this->data_field_value = $this->field_value->get($field_value_id);
 
-            if (empty($field_value)) {
+            if (empty($this->data_field_value)) {
                 $this->outputHttpStatus(404);
             }
 
-            $this->data_field_value = $this->prepareFieldValue($field_value);
+            $this->prepareFieldValue($this->data_field_value);
         }
     }
 
     /**
      * Prepare an array of field value data
      * @param array $field_value
-     * @return array
      */
-    protected function prepareFieldValue(array $field_value)
+    protected function prepareFieldValue(array &$field_value)
     {
         $this->setItemImages($field_value, 'field_value', $this->image);
         $this->setItemTranslation($field_value, 'field_value', $this->translation_entity);
@@ -328,8 +326,6 @@ class FieldValue extends BackendController
                 $this->setItemTranslation($file, 'file', $this->translation_entity);
             }
         }
-
-        return $field_value;
     }
 
     /**

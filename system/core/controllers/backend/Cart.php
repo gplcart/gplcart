@@ -9,12 +9,10 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
-
 /**
  * Handles incoming requests and outputs data related to user shopping carts
  */
-class Cart extends BackendController
+class Cart extends Controller
 {
 
     /**
@@ -106,21 +104,19 @@ class Cart extends BackendController
         $conditions['limit'] = $this->data_limit;
 
         $list = (array) $this->cart->getList($conditions);
-        return $this->prepareListCart($list);
+        $this->prepareListCart($list);
+        return $list;
     }
 
     /**
      * Prepare an array of cart items
      * @param array $items
-     * @return array
      */
-    protected function prepareListCart(array $items)
+    protected function prepareListCart(array &$items)
     {
         foreach ($items as &$item) {
             $this->setItemUrlEntity($item, $this->store, 'product');
         }
-
-        return $items;
     }
 
     /**

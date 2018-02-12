@@ -9,7 +9,6 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\models\Alias as AliasModel;
 use gplcart\core\models\Category as CategoryModel;
 use gplcart\core\models\CategoryGroup as CategoryGroupModel;
@@ -19,7 +18,7 @@ use gplcart\core\traits\Category as CategoryTrait;
 /**
  * Handles incoming requests and outputs data related to categories
  */
-class Category extends BackendController
+class Category extends Controller
 {
 
     use CategoryTrait;
@@ -72,8 +71,8 @@ class Category extends BackendController
      * @param CategoryGroupModel $category_group
      * @param TranslationEntityModel $translation_entity
      */
-    public function __construct(CategoryModel $category, AliasModel $alias,
-                                CategoryGroupModel $category_group, TranslationEntityModel $translation_entity)
+    public function __construct(CategoryModel $category, AliasModel $alias, CategoryGroupModel $category_group,
+                                TranslationEntityModel $translation_entity)
     {
         parent::__construct();
 
@@ -181,23 +180,22 @@ class Category extends BackendController
     {
         $conditions = $this->query_filter;
         $conditions['category_group_id'] = $this->data_category_group['category_group_id'];
+        $list = $this->category->getTree($conditions);
 
-        return $this->prepareListCategory($this->category->getTree($conditions));
+        $this->prepareListCategory($list);
+        return $list;
     }
 
     /**
      * Adds extra data to an array of categories
      * @param array $categories
-     * @return array
      */
-    protected function prepareListCategory(array $categories)
+    protected function prepareListCategory(array &$categories)
     {
         foreach ($categories as &$category) {
             $this->setItemIndentation($category, '— ');
             $this->setItemUrlEntity($category, $this->store, 'category');
         }
-
-        return $categories;
     }
 
     /**
@@ -294,24 +292,25 @@ class Category extends BackendController
      */
     protected function setCategory($category_id)
     {
+        $this->data_category = array();
+
         if (is_numeric($category_id)) {
 
-            $category = $this->category->get($category_id);
+            $this->data_category = $this->category->get($category_id);
 
-            if (empty($category)) {
+            if (empty($this->data_category)) {
                 $this->outputHttpStatus(404);
             }
 
-            $this->data_category = $this->prepareCategory($category);
+            $this->prepareCategory($this->data_category);
         }
     }
 
     /**
      * Prepares an array of category data
      * @param array $category
-     * @return array
      */
-    protected function prepareCategory(array $category)
+    protected function prepareCategory(array &$category)
     {
         $this->setItemAlias($category, 'category', $this->alias);
         $this->setItemImages($category, 'category', $this->image);
@@ -322,8 +321,6 @@ class Category extends BackendController
                 $this->setItemTranslation($file, 'file', $this->translation_entity);
             }
         }
-
-        return $category;
     }
 
     /**

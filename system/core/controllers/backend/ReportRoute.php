@@ -9,14 +9,13 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\models\UserRole as UserRoleModel;
 use gplcart\core\traits\Listing as ListingTrait;
 
 /**
  * Handles incoming requests and outputs data related to system routes
  */
-class ReportRoute extends BackendController
+class ReportRoute extends Controller
 {
 
     use ListingTrait;
@@ -55,6 +54,7 @@ class ReportRoute extends BackendController
 
         $this->setData('routes', (array) $this->getListReportRoute());
         $this->setData('permissions', $this->getPermissionsReportRole());
+
         $this->outputListReportRoute();
     }
 
@@ -96,7 +96,8 @@ class ReportRoute extends BackendController
      */
     protected function getListReportRoute($count = false)
     {
-        $list = $this->prepareListReportRoute($this->route->getList());
+        $list = $this->route->getList();
+        $this->prepareListReportRoute($list);
         $allowed = $this->getAllowedFiltersReportRoute();
 
         $this->filterList($list, $allowed, $this->query_filter);
@@ -113,9 +114,8 @@ class ReportRoute extends BackendController
     /**
      * Prepares an array of routes
      * @param array $routes
-     * @return array
      */
-    protected function prepareListReportRoute(array $routes)
+    protected function prepareListReportRoute(array &$routes)
     {
         $permissions = $this->getPermissionsReportRole();
 
@@ -130,6 +130,7 @@ class ReportRoute extends BackendController
             }
 
             $access_names = array();
+
             if (isset($permissions[$route['access']])) {
                 $access_names[$route['access']] = $this->text($permissions[$route['access']]);
             } else {
@@ -145,8 +146,6 @@ class ReportRoute extends BackendController
             $route['access'] = implode('', array_keys($access_names));
             $route['status'] = !isset($route['status']) || !empty($route['status']);
         }
-
-        return $routes;
     }
 
     /**

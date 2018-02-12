@@ -9,14 +9,13 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\controllers\frontend\Controller as FrontendController;
 use gplcart\core\models\Rating as RatingModel;
 use gplcart\core\models\Review as ReviewModel;
 
 /**
  * Handles incoming requests and outputs data related to reviews
  */
-class Review extends FrontendController
+class Review extends Controller
 {
 
     /**
@@ -67,30 +66,13 @@ class Review extends FrontendController
         $this->setTitleEditReview();
         $this->setBreadcrumbEditReview();
 
-        $this->controlAccessEditReview();
-
         $this->setData('review', $this->data_review);
         $this->setData('product', $this->data_product);
         $this->setData('can_delete', $this->canDeleteReview());
 
         $this->submitEditReview();
         $this->setDataRatingEditReview();
-
         $this->outputEditReview();
-    }
-
-    /**
-     * Controls access to the edit review page
-     */
-    protected function controlAccessEditReview()
-    {
-        if (!$this->config('review_enabled', 1) || empty($this->uid)) {
-            $this->outputHttpStatus(403);
-        }
-
-        if (isset($this->data_review['review_id']) && !$this->config('review_editable', 1)) {
-            $this->outputHttpStatus(403);
-        }
     }
 
     /**
@@ -99,13 +81,13 @@ class Review extends FrontendController
      */
     protected function setProductReview($product_id)
     {
-        $product = $this->product->get($product_id);
+        $this->data_product = $this->product->get($product_id);
 
-        if (empty($product['status']) || $product['store_id'] != $this->store_id) {
+        if (empty($this->data_product['status']) || $this->data_product['store_id'] != $this->store_id) {
             $this->outputHttpStatus(404);
         }
 
-        $this->data_product = $this->prepareProductReview($product);
+        $this->prepareProductReview($this->data_product);
     }
 
     /**
@@ -232,10 +214,13 @@ class Review extends FrontendController
         $submitted = $this->getSubmitted();
 
         if ($this->review->update($this->data_review['review_id'], $submitted)) {
+
             $message = $this->text('Review has been updated');
+
             if (empty($submitted['status'])) {
                 $message = $this->text('Review has been updated and will be published after approval');
             }
+
             $this->redirect("product/{$this->data_product['product_id']}", $message, 'success');
         }
 
@@ -283,9 +268,7 @@ class Review extends FrontendController
             $this->redirect("product/{$this->data_product['product_id']}", $message, 'warning');
         }
 
-        $deleted = $this->review->delete($this->data_review['review_id']);
-
-        if ($deleted) {
+        if ($this->review->delete($this->data_review['review_id'])) {
             $message = $this->text('Review has been deleted');
             $this->redirect("product/{$this->data_product['product_id']}", $message, 'success');
         }
@@ -297,47 +280,59 @@ class Review extends FrontendController
      */
     protected function setReview($review_id)
     {
+        $this->data_review = array();
+
         if (is_numeric($review_id)) {
 
-            $review = $this->review->get($review_id);
+            $this->data_review = $this->review->get($review_id);
 
-            if (empty($review)) {
+            if (empty($this->data_review)) {
                 $this->outputHttpStatus(404);
             }
+        }
 
-            if ($review['user_id'] != $this->uid) {
-                $this->outputHttpStatus(403);
-            }
+        $this->controlAccessEditReview();
+        $this->prepareReview($this->data_review);
+    }
 
-            $this->data_review = $this->prepareReview($review);
+    /**
+     * Controls access to the edit review page
+     */
+    protected function controlAccessEditReview()
+    {
+        if (!$this->config('review_enabled', 1) || empty($this->uid)) {
+            $this->outputHttpStatus(403);
+        }
+
+        if (!$this->config('review_editable', 1)) {
+            $this->outputHttpStatus(403);
+        }
+
+        if (isset($this->data_review['review_id']) && $this->data_review['user_id'] != $this->uid) {
+            $this->outputHttpStatus(403);
         }
     }
 
     /**
      * Prepares an array of review data
      * @param array $review
-     * @return array
      */
-    protected function prepareReview(array $review)
+    protected function prepareReview(array &$review)
     {
         $rating = $this->rating->getByUser($this->data_product['product_id'], $this->uid);
         $review['rating'] = isset($rating['rating']) ? $rating['rating'] : 0;
-        return $review;
     }
 
     /**
      * Prepares an array of product data
      * @param array $product
-     * @return array
      */
-    protected function prepareProductReview(array $product)
+    protected function prepareProductReview(array &$product)
     {
         $this->setItemImages($product, 'product', $this->image);
         $this->setItemThumbProduct($product, $this->image);
         $this->setItemPriceCalculated($product, $this->product);
         $this->setItemPriceFormatted($product, $this->price, $this->current_currency);
-
-        return $product;
     }
 
 }

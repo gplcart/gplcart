@@ -9,13 +9,12 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\traits\Listing as ListingTrait;
 
 /**
  * Handles incoming requests and outputs data related to languages
  */
-class Language extends BackendController
+class Language extends Controller
 {
 
     use ListingTrait;
@@ -76,8 +75,12 @@ class Language extends BackendController
      */
     protected function setLanguage($code)
     {
+        $this->data_language = array();
+
         if (!empty($code)) {
+
             $this->data_language = $this->language->get($code);
+
             if (empty($this->data_language)) {
                 $this->outputHttpStatus(404);
             }
@@ -254,22 +257,30 @@ class Language extends BackendController
      */
     protected function getListLanguage($count = false)
     {
-        $languages = $this->language->getList();
-
-        foreach ($languages as $code => &$language) {
-            $language['file_exists'] = is_file($this->translation->getFile($code));
-        }
+        $list = $this->language->getList();
 
         $allowed = $this->getAllowedFiltersLanguage();
-        $this->filterList($languages, $allowed, $this->query_filter);
-        $this->sortList($languages, $allowed, $this->query_filter, array('code' => 'asc'));
+        $this->filterList($list, $allowed, $this->query_filter);
+        $this->sortList($list, $allowed, $this->query_filter, array('code' => 'asc'));
 
         if ($count) {
-            return count($languages);
+            return count($list);
         }
 
-        $this->limitList($languages, $this->data_limit);
-        return $languages;
+        $this->limitList($list, $this->data_limit);
+        $this->prepareListLanguage($list);
+        return $list;
+    }
+
+    /**
+     * Prepare an array of languages
+     * @param array $list
+     */
+    protected function prepareListLanguage(array &$list)
+    {
+        foreach ($list as $id => &$item) {
+            $item['file_exists'] = is_file($this->translation->getFile($id));
+        }
     }
 
     /**

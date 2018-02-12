@@ -9,13 +9,12 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\controllers\frontend\Controller as FrontendController;
 use gplcart\core\models\Search as SearchModel;
 
 /**
  * Handles incoming requests and outputs data related to search functionality
  */
-class Search extends FrontendController
+class Search extends Controller
 {
 
     /**
@@ -185,11 +184,12 @@ class Search extends FrontendController
         );
 
         $options += $this->query_filter;
-        $results = $this->search->search('product', $this->data_term, $options);
 
-        if (!empty($results)) {
+        $this->data_results = $this->search->search('product', $this->data_term, $options);
+
+        if (!empty($this->data_results)) {
             $options['placeholder'] = true;
-            $this->data_results = $this->prepareEntityItems($results, $options);
+            $this->prepareEntityItems($this->data_results, $options);
         }
     }
 

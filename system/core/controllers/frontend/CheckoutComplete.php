@@ -9,7 +9,6 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\controllers\frontend\Controller as FrontendController;
 use gplcart\core\models\Order as OrderModel;
 use gplcart\core\models\Payment as PaymentModel;
 use gplcart\core\models\Shipping as ShippingModel;
@@ -18,7 +17,7 @@ use gplcart\core\traits\Checkout as CheckoutTrait;
 /**
  * Handles incoming requests and outputs data related to checkout complete page
  */
-class CheckoutComplete extends FrontendController
+class CheckoutComplete extends Controller
 {
 
     use CheckoutTrait;
@@ -70,7 +69,6 @@ class CheckoutComplete extends FrontendController
     {
         $this->setOrderCheckoutComplete($order_id);
         $this->controlAccessCheckoutComplete();
-
         $this->setTitleCheckoutComplete();
         $this->setBreadcrumbCheckoutComplete();
 
@@ -97,29 +95,26 @@ class CheckoutComplete extends FrontendController
     /**
      * Load and set an order from the database
      * @param integer $order_id
-     * @return array
      */
     protected function setOrderCheckoutComplete($order_id)
     {
-        $order = $this->order->get($order_id);
+        $this->data_order = $this->order->get($order_id);
 
-        if (empty($order)) {
+        if (empty($this->data_order)) {
             $this->outputHttpStatus(404);
         }
 
-        return $this->data_order = $this->prepareOrderCheckoutComplete($order);
+        $this->prepareOrderCheckoutComplete($this->data_order);
     }
 
     /**
      * Prepare the order data
      * @param array $order
-     * @return array
      */
-    protected function prepareOrderCheckoutComplete(array $order)
+    protected function prepareOrderCheckoutComplete(array &$order)
     {
         $this->setItemTotalFormatted($order, $this->price);
         $this->setItemTotalFormattedNumber($order, $this->price);
-        return $order;
     }
 
     /**
@@ -127,7 +122,7 @@ class CheckoutComplete extends FrontendController
      */
     protected function controlAccessCheckoutComplete()
     {
-        if ($this->data_order['user_id'] !== $this->cart_uid) {
+        if (empty($this->data_order['user_id']) || $this->data_order['user_id'] !== $this->cart_uid) {
             $this->outputHttpStatus(403);
         }
 

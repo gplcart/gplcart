@@ -9,7 +9,6 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\controllers\frontend\Controller as FrontendController;
 use gplcart\core\models\Address as AddressModel;
 use gplcart\core\models\Order as OrderModel;
 use gplcart\core\models\Payment as PaymentModel;
@@ -19,7 +18,7 @@ use gplcart\core\traits\ItemOrder as ItemOrderTrait;
 /**
  * Handles incoming requests and outputs data related to user accounts
  */
-class Account extends FrontendController
+class Account extends Controller
 {
 
     use ItemOrderTrait;
@@ -146,27 +145,25 @@ class Account extends FrontendController
         $conditions['limit'] = $this->data_limit;
         $conditions['user_id'] = $this->data_user['user_id'];
 
-        $orders = (array) $this->order->getList($conditions);
-        return $this->prepareListOrderAccount($orders);
+        $list = (array) $this->order->getList($conditions);
+        $this->prepareListOrderAccount($list);
+        return $list;
     }
 
     /**
      * Prepare an array of orders
-     * @param array $orders
-     * @return array
+     * @param array $list
      */
-    protected function prepareListOrderAccount(array $orders)
+    protected function prepareListOrderAccount(array &$list)
     {
-        foreach ($orders as &$order) {
-            $this->setItemTotalFormatted($order, $this->price);
-            $this->setItemOrderAddress($order, $this->address);
-            $this->setItemOrderStoreName($order, $this->store);
-            $this->setItemOrderStatusName($order, $this->order);
-            $this->setItemOrderPaymentName($order, $this->payment);
-            $this->setItemOrderShippingName($order, $this->shipping);
+        foreach ($list as &$item) {
+            $this->setItemTotalFormatted($item, $this->price);
+            $this->setItemOrderAddress($item, $this->address);
+            $this->setItemOrderStoreName($item, $this->store);
+            $this->setItemOrderStatusName($item, $this->order);
+            $this->setItemOrderPaymentName($item, $this->payment);
+            $this->setItemOrderShippingName($item, $this->shipping);
         }
-
-        return $orders;
     }
 
     /**

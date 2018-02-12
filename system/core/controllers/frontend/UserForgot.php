@@ -9,13 +9,12 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\controllers\frontend\Controller as FrontendController;
 use gplcart\core\models\UserAction as UserActionModel;
 
 /**
  * Handles incoming requests and outputs data related to resetting user passwords
  */
-class UserForgot extends FrontendController
+class UserForgot extends Controller
 {
 
     /**
@@ -70,25 +69,18 @@ class UserForgot extends FrontendController
 
     /**
      * Returns a user from the current reset password URL
-     * @return array
      */
     protected function setUserForgot()
     {
         $token = $this->getQuery('key');
         $user_id = $this->getQuery('user_id');
 
-        if (empty($token) || !is_numeric($user_id)) {
-            return array();
+        $this->data_user = array();
+
+        if (!empty($token) && is_numeric($user_id)) {
+            $this->data_user = $this->user->get($user_id);
+            $this->controlTokenUserForgot($this->data_user, $token);
         }
-
-        $user = $this->user->get($user_id);
-
-        if (empty($user['status'])) {
-            return array();
-        }
-
-        $this->controlTokenUserForgot($user, $token);
-        return $this->data_user = $user;
     }
 
     /**
@@ -96,18 +88,22 @@ class UserForgot extends FrontendController
      * @param array $user
      * @param string $token
      */
-    protected function controlTokenUserForgot(array $user, $token)
+    protected function controlTokenUserForgot($user, $token)
     {
-        if (empty($user['data']['reset_password']['token'])) {
-            $this->redirect('forgot');
-        }
+        if (!empty($user['status'])) {
 
-        if (!gplcart_string_equals($user['data']['reset_password']['token'], $token)) {
-            $this->outputHttpStatus(403);
-        }
+            if (empty($user['data']['reset_password']['token'])) {
+                $this->redirect('forgot');
+            }
 
-        if (empty($user['data']['reset_password']['expires']) || $user['data']['reset_password']['expires'] < GC_TIME) {
-            $this->redirect('forgot');
+            if (!gplcart_string_equals($user['data']['reset_password']['token'], $token)) {
+                $this->outputHttpStatus(403);
+            }
+
+            if (empty($user['data']['reset_password']['expires'])
+                || $user['data']['reset_password']['expires'] < GC_TIME) {
+                $this->redirect('forgot');
+            }
         }
     }
 
@@ -117,7 +113,9 @@ class UserForgot extends FrontendController
     protected function submitUserForgot()
     {
         if ($this->isPosted('reset')) {
+
             $this->controlSpam();
+
             if ($this->validateUserForgot()) {
                 $this->resetPasswordUser();
             }

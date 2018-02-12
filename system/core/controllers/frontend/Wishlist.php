@@ -9,12 +9,10 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\controllers\frontend\Controller as FrontendController;
-
 /**
  * Handles incoming requests and outputs data related to user wishlists
  */
-class Wishlist extends FrontendController
+class Wishlist extends Controller
 {
 
     /**
@@ -33,7 +31,6 @@ class Wishlist extends FrontendController
         $this->setTitleIndexWishlist();
         $this->setBreadcrumbIndexWishlist();
         $this->setDataIndexWishlist();
-
         $this->outputIndexWishlist();
     }
 
@@ -99,9 +96,7 @@ class Wishlist extends FrontendController
      */
     protected function setDataIndexWishlist()
     {
-        $data = array(
-            'products' => $this->getProductsWishlist());
-
+        $data = array('products' => $this->getProductsWishlist());
         $this->setData('products', $this->render('product/list', $data));
     }
 

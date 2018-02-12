@@ -9,14 +9,13 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\models\Country as CountryModel;
 use gplcart\core\models\Zone as ZoneModel;
 
 /**
  * Handles incoming requests and outputs data related to countries
  */
-class Country extends BackendController
+class Country extends Controller
 {
 
     /**
@@ -212,6 +211,8 @@ class Country extends BackendController
      */
     protected function setCountry($country_code)
     {
+        $this->data_country = array();
+
         if (!empty($country_code)) {
             $this->data_country = $this->country->get($country_code);
             if (empty($this->data_country)) {

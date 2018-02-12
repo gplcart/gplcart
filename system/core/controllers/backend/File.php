@@ -9,14 +9,13 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\models\File as FileModel;
 use gplcart\core\models\TranslationEntity as TranslationEntityModel;
 
 /**
  * Handles incoming requests and outputs data related to files
  */
-class File extends BackendController
+class File extends Controller
 {
 
     /**
@@ -148,26 +147,24 @@ class File extends BackendController
         $conditions = $this->query_filter;
         $conditions['limit'] = $this->data_limit;
 
-        $files = (array) $this->file->getList($conditions);
-        return $this->prepareListFile($files);
+        $list = (array) $this->file->getList($conditions);
+        $this->prepareListFile($list);
+        return $list;
     }
 
     /**
      * Prepare an array of files
-     * @param array $files
-     * @return array
+     * @param array $list
      */
-    protected function prepareListFile(array $files)
+    protected function prepareListFile(array &$list)
     {
-        foreach ($files as &$file) {
-            $path = strval(str_replace("\0", "", $file['path']));
-            $file['url'] = '';
+        foreach ($list as &$item) {
+            $path = strval(str_replace("\0", "", $item['path']));
+            $item['url'] = '';
             if ($path && file_exists(GC_DIR_FILE . '/' . $path)) {
-                $file['url'] = $this->url->file($file['path']);
+                $item['url'] = $this->url->file($item['path']);
             }
         }
-
-        return $files;
     }
 
     /**
@@ -250,25 +247,27 @@ class File extends BackendController
      */
     protected function setFile($file_id)
     {
+        $this->data_file = array();
+
         if (is_numeric($file_id)) {
-            $file = $this->file->get($file_id);
-            if (empty($file)) {
+
+            $this->data_file = $this->file->get($file_id);
+
+            if (empty($this->data_file)) {
                 $this->outputHttpStatus(404);
             }
 
-            $this->data_file = $this->prepareFile($file);
+            $this->prepareFile($this->data_file);
         }
     }
 
     /**
      * Prepare an array of file data
      * @param array $file
-     * @return array
      */
-    protected function prepareFile(array $file)
+    protected function prepareFile(array &$file)
     {
         $this->setItemTranslation($file, 'file', $this->translation_entity);
-        return $file;
     }
 
     /**

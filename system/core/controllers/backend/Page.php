@@ -9,7 +9,6 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\models\Alias as AliasModel;
 use gplcart\core\models\Category as CategoryModel;
 use gplcart\core\models\CategoryGroup as CategoryGroupModel;
@@ -20,7 +19,7 @@ use gplcart\core\traits\Category as CategoryTrait;
 /**
  * Handles incoming requests and outputs data related to pages
  */
-class Page extends BackendController
+class Page extends Controller
 {
 
     use CategoryTrait;
@@ -172,21 +171,19 @@ class Page extends BackendController
         $conditions['limit'] = $this->data_limit;
 
         $list = (array) $this->page->getList($conditions);
-        return $this->prepareListPage($list);
+        $this->prepareListPage($list);
+        return $list;
     }
 
     /**
      * Prepare an array of pages
-     * @param array $items
-     * @return array
+     * @param array $list
      */
-    protected function prepareListPage(array $items)
+    protected function prepareListPage(array &$list)
     {
-        foreach ($items as &$item) {
+        foreach ($list as &$item) {
             $this->setItemUrlEntity($item, $this->store, 'page');
         }
-
-        return $items;
     }
 
     /**
@@ -244,21 +241,25 @@ class Page extends BackendController
      */
     protected function setPage($page_id)
     {
+        $this->data_page = array();
+
         if (is_numeric($page_id)) {
-            $page = $this->page->get($page_id);
-            if (empty($page)) {
+
+            $this->data_page = $this->page->get($page_id);
+
+            if (empty($this->data_page)) {
                 $this->outputHttpStatus(404);
             }
-            $this->data_page = $this->preparePage($page);
+
+            $this->preparePage($this->data_page);
         }
     }
 
     /**
      * Prepares an array of page data
      * @param array $page
-     * @return array
      */
-    protected function preparePage(array $page)
+    protected function preparePage(array &$page)
     {
         $user = $this->user->get($page['user_id']);
 
@@ -273,7 +274,6 @@ class Page extends BackendController
         }
 
         $page['author'] = isset($user['email']) ? $user['email'] : $this->text('Unknown');
-        return $page;
     }
 
     /**

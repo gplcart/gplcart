@@ -9,13 +9,12 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\controllers\frontend\Controller as FrontendController;
 use gplcart\core\models\UserAction as UserActionModel;
 
 /**
  * Handles incoming requests and outputs data related to logging in users
  */
-class UserLogin extends FrontendController
+class UserLogin extends Controller
 {
 
     /**
@@ -40,7 +39,6 @@ class UserLogin extends FrontendController
     public function editUserLogin()
     {
         $this->controlAccessUserLogin();
-
         $this->setTitleEditUserLogin();
         $this->setBreadcrumbEditUserLogin();
 

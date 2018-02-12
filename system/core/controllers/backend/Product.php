@@ -9,7 +9,6 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\models\Alias as AliasModel;
 use gplcart\core\models\Category as CategoryModel;
 use gplcart\core\models\CategoryGroup as CategoryGroupModel;
@@ -24,7 +23,7 @@ use gplcart\core\traits\Category as CategoryTrait;
 /**
  * Handles incoming requests and outputs data related to products
  */
-class Product extends BackendController
+class Product extends Controller
 {
 
     use CategoryTrait;
@@ -210,23 +209,21 @@ class Product extends BackendController
         $conditions = $this->query_filter;
         $conditions['limit'] = $this->data_limit;
 
-        $products = (array) $this->product->getList($conditions);
-        return $this->prepareListProduct($products);
+        $list = (array) $this->product->getList($conditions);
+        $this->prepareListProduct($list);
+        return $list;
     }
 
     /**
      * Prepare an array of products
-     * @param array $products
-     * @return array
+     * @param array $list
      */
-    protected function prepareListProduct(array $products)
+    protected function prepareListProduct(array &$list)
     {
-        foreach ($products as &$product) {
-            $this->setItemPriceFormatted($product, $this->price);
-            $this->setItemUrlEntity($product, $this->store, 'product');
+        foreach ($list as &$item) {
+            $this->setItemPriceFormatted($item, $this->price);
+            $this->setItemUrlEntity($item, $this->store, 'product');
         }
-
-        return $products;
     }
 
     /**
@@ -318,22 +315,25 @@ class Product extends BackendController
      */
     protected function setProduct($product_id)
     {
+        $this->data_product = array();
+
         if (is_numeric($product_id)) {
-            $product = $this->product->get($product_id);
-            if (empty($product)) {
+
+            $this->data_product = $this->product->get($product_id);
+
+            if (empty($this->data_product)) {
                 $this->outputHttpStatus(404);
             }
 
-            $this->data_product = $this->prepareProduct($product);
+            $this->prepareProduct($this->data_product);
         }
     }
 
     /**
      * Prepare an array of product data
      * @param array $product
-     * @return array
      */
-    protected function prepareProduct(array $product)
+    protected function prepareProduct(array &$product)
     {
         $options = array(
             'store_id' => $product['store_id'],
@@ -353,34 +353,27 @@ class Product extends BackendController
                 $this->setItemTranslation($file, 'file', $this->translation_entity);
             }
         }
-
-        return $product;
     }
 
     /**
      * Sets product SKU combinations data
      * @param array $product
-     * @return null
      */
     protected function setSkuCombinationProduct(array &$product)
     {
-        if (empty($product['combination'])) {
-            return null;
-        }
+        if (!empty($product['combination'])) {
+            foreach ($product['combination'] as &$combination) {
 
-        foreach ($product['combination'] as &$combination) {
+                $combination['path'] = $combination['thumb'] = '';
 
-            $combination['path'] = $combination['thumb'] = '';
+                if (!empty($product['images'][$combination['file_id']])) {
+                    $combination['path'] = $product['images'][$combination['file_id']]['path'];
+                    $this->setItemThumb($combination, $this->image);
+                }
 
-            if (!empty($product['images'][$combination['file_id']])) {
-                $combination['path'] = $product['images'][$combination['file_id']]['path'];
-                $this->setItemThumb($combination, $this->image);
+                $combination['price'] = $this->price->decimal($combination['price'], $product['currency']);
             }
-
-            $combination['price'] = $this->price->decimal($combination['price'], $product['currency']);
         }
-
-        return null;
     }
 
     /**

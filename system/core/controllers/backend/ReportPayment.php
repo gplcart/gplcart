@@ -9,14 +9,13 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\models\Payment as PaymentModel;
 use gplcart\core\traits\Listing as ListingTrait;
 
 /**
  * Handles incoming requests and outputs data related to payment methods
  */
-class ReportPayment extends BackendController
+class ReportPayment extends Controller
 {
 
     use ListingTrait;

@@ -9,13 +9,12 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\models\Alias as AliasModel;
 
 /**
  * Handles incoming requests and outputs data related to the URL aliases
  */
-class Alias extends BackendController
+class Alias extends Controller
 {
 
     /**
@@ -47,10 +46,8 @@ class Alias extends BackendController
     public function listAlias()
     {
         $this->actionListAlias();
-
         $this->setTitleListAlias();
         $this->setBreadcrumbListAlias();
-
         $this->setFilterListAlias();
         $this->setPagerListAlias();
 

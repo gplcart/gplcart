@@ -9,7 +9,6 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\models\Field as FieldModel;
 use gplcart\core\models\ProductClass as ProductClassModel;
 use gplcart\core\models\ProductClassField as ProductClassFieldModel;
@@ -17,7 +16,7 @@ use gplcart\core\models\ProductClassField as ProductClassFieldModel;
 /**
  * Handles incoming requests and outputs data related to product class fields
  */
-class ProductClassField extends BackendController
+class ProductClassField extends Controller
 {
 
     /**
@@ -49,8 +48,8 @@ class ProductClassField extends BackendController
      * @param ProductClassFieldModel $product_class_field
      * @param FieldModel $field
      */
-    public function __construct(ProductClassModel $product_class,
-                                ProductClassFieldModel $product_class_field, FieldModel $field)
+    public function __construct(ProductClassModel $product_class, ProductClassFieldModel $product_class_field,
+                                FieldModel $field)
     {
         parent::__construct();
 
@@ -65,8 +64,12 @@ class ProductClassField extends BackendController
      */
     protected function setProductClassProductClassField($product_class_id)
     {
+        $this->data_product_class = array();
+
         if (is_numeric($product_class_id)) {
+
             $this->data_product_class = $this->product_class->get($product_class_id);
+
             if (empty($this->data_product_class)) {
                 $this->outputHttpStatus(404);
             }
@@ -112,6 +115,7 @@ class ProductClassField extends BackendController
     {
         $conditions += $this->query_filter;
         $conditions['product_class_id'] = $this->data_product_class['product_class_id'];
+
         return (array) $this->product_class_field->getList($conditions);
     }
 
@@ -125,6 +129,7 @@ class ProductClassField extends BackendController
         $fields = $this->getListProductClassField(array('index' => 'field_id'));
 
         $unique = array();
+
         foreach ((array) $this->field->getList() as $field) {
             if (empty($fields[$field['field_id']])) {
                 $type = empty($types[$field['type']]) ? $this->text('Unknown') : $types[$field['type']];

@@ -9,13 +9,12 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\controllers\frontend\Controller as FrontendController;
 use gplcart\core\models\Page as PageModel;
 
 /**
  * Handles incoming requests and outputs data related to pages
  */
-class Page extends FrontendController
+class Page extends Controller
 {
 
     /**
@@ -64,32 +63,37 @@ class Page extends FrontendController
      */
     protected function setPage($page_id)
     {
-        $page = $this->page->get($page_id);
+        $this->data_page = $this->page->get($page_id);
 
-        if (empty($page)) {
+        if (empty($this->data_page)) {
             $this->outputHttpStatus(404);
         }
 
-        if (empty($page['status']) && !$this->access('page')) {
+        $this->controlAccessPage();
+        $this->preparePage($this->data_page);
+    }
+
+    /**
+     * Controls access to the page
+     */
+    protected function controlAccessPage()
+    {
+        if (empty($this->data_page['status']) && !$this->access('page')) {
             $this->outputHttpStatus(403);
         }
 
-        if ($page['store_id'] != $this->store_id) {
+        if ($this->data_page['store_id'] != $this->store_id) {
             $this->outputHttpStatus(404);
         }
-
-        $this->data_page = $this->preparePage($page);
     }
 
     /**
      * Prepare an array of page data
      * @param array $page
-     * @return array
      */
-    protected function preparePage(array $page)
+    protected function preparePage(array &$page)
     {
         $this->setItemImages($page, 'page', $this->image);
-        return $page;
     }
 
     /**

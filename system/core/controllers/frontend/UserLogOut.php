@@ -9,13 +9,12 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\controllers\frontend\Controller as FrontendController;
 use gplcart\core\models\UserAction as UserActionModel;
 
 /**
  * Handles incoming requests and outputs data related to logging out users
  */
-class UserLogOut extends FrontendController
+class UserLogOut extends Controller
 {
 
     /**

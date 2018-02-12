@@ -9,14 +9,13 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\controllers\frontend\Controller as FrontendController;
 use gplcart\core\models\CollectionItem as CollectionItemModel;
 use gplcart\core\traits\Collection as CollectionTrait;
 
 /**
  * Handles incoming requests and outputs data related to front page
  */
-class Front extends FrontendController
+class Front extends Controller
 {
 
     use CollectionTrait;
@@ -43,7 +42,6 @@ class Front extends FrontendController
     public function indexFront()
     {
         $this->setTitleIndexFront();
-
         $this->setDataCollectionFront('page');
         $this->setDataCollectionFront('file');
         $this->setDataCollectionFront('product');

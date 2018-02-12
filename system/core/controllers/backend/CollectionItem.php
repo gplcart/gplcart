@@ -9,14 +9,13 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\models\Collection as CollectionModel;
 use gplcart\core\models\CollectionItem as CollectionItemModel;
 
 /**
  * Handles incoming requests and outputs data related to collection items
  */
-class CollectionItem extends BackendController
+class CollectionItem extends Controller
 {
 
     /**
@@ -126,30 +125,30 @@ class CollectionItem extends BackendController
      */
     protected function setCollectionCollectionItem($collection_item_id)
     {
+        $this->data_collection_item = array();
+
         if (is_numeric($collection_item_id)) {
 
-            $collection_item = $this->collection_item->get($collection_item_id);
+            $this->data_collection_item = $this->collection_item->get($collection_item_id);
 
-            if (empty($collection_item)) {
+            if (empty($this->data_collection_item)) {
                 $this->outputHttpStatus(404);
             }
 
-            $this->data_collection_item = $this->prepareCollectionItem($collection_item);
+            $this->prepareCollectionItem($this->data_collection_item);
         }
     }
 
     /**
      * Prepare an array of collection item data
      * @param array $collection_item
-     * @return array
      */
-    protected function prepareCollectionItem(array $collection_item)
+    protected function prepareCollectionItem(array &$collection_item)
     {
-        $conditions = array('collection_item_id' => $collection_item['collection_item_id']);
+        $item = $this->collection_item->getItem(array(
+            'collection_item_id' => $collection_item['collection_item_id']));
 
-        $item = $this->collection_item->getItem($conditions);
         $collection_item['title'] = isset($item['title']) ? $item['title'] : '';
-        return $collection_item;
     }
 
     /**

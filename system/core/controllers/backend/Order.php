@@ -9,7 +9,6 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\models\Address as AddressModel;
 use gplcart\core\models\Order as OrderModel;
 use gplcart\core\models\OrderAction as OrderActionModel;
@@ -23,7 +22,7 @@ use gplcart\core\traits\ItemOrder as ItemOrderTrait;
 /**
  * Handles incoming requests and outputs data related to order management
  */
-class Order extends BackendController
+class Order extends Controller
 {
 
     use ItemOrderTrait;
@@ -381,23 +380,24 @@ class Order extends BackendController
      */
     protected function setOrder($order_id)
     {
+        $this->data_order = array();
+
         if (is_numeric($order_id)) {
 
-            $order = $this->order->get($order_id);
+            $this->data_order = $this->order->get($order_id);
 
-            if (empty($order)) {
+            if (empty($this->data_order)) {
                 $this->outputHttpStatus(404);
             }
 
-            $this->order_history->setViewed($order);
-            $this->data_order = $this->prepareOrder($order);
+            $this->order_history->setViewed($this->data_order);
+            $this->prepareOrder($this->data_order);
         }
     }
 
     /**
      * Prepare an array of order data
      * @param array $order
-     * @return array
      */
     protected function prepareOrder(array &$order)
     {
@@ -423,18 +423,15 @@ class Order extends BackendController
         $order['customer'] = $this->text('Anonymous');
         $order['creator_formatted'] = $this->text('Customer');
 
-        if (empty($order['creator'])) {
-            return $order;
+        if (!empty($order['creator'])) {
+
+            $order['creator_formatted'] = $this->text('Unknown');
+            $user = $this->user->get($order['creator']);
+
+            if (isset($user['user_id'])) {
+                $order['creator_formatted'] = "{$user['name']} ({$user['email']})";
+            }
         }
-
-        $order['creator_formatted'] = $this->text('Unknown');
-        $user = $this->user->get($order['creator']);
-
-        if (isset($user['user_id'])) {
-            $order['creator_formatted'] = "{$user['name']} ({$user['email']})";
-        }
-
-        return $order;
     }
 
     /**
@@ -650,23 +647,21 @@ class Order extends BackendController
         $conditions = $this->query_filter;
         $conditions['limit'] = $this->data_limit;
 
-        $orders = (array) $this->order->getList($conditions);
-        return $this->prepareListOrder($orders);
+        $list = (array) $this->order->getList($conditions);
+        $this->prepareListOrder($list);
+        return $list;
     }
 
     /**
      * Prepare an array of orders
-     * @param array $orders
-     * @return array
+     * @param array $list
      */
-    protected function prepareListOrder(array $orders)
+    protected function prepareListOrder(array &$list)
     {
-        foreach ($orders as &$order) {
-            $this->setItemOrderNew($order, $this->order_history);
-            $this->setItemTotalFormatted($order, $this->price);
+        foreach ($list as &$item) {
+            $this->setItemOrderNew($item, $this->order_history);
+            $this->setItemTotalFormatted($item, $this->price);
         }
-
-        return $orders;
     }
 
 }

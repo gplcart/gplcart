@@ -9,13 +9,12 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\models\Report as ReportModel;
 
 /**
  * Handles incoming requests and outputs data related to system events
  */
-class ReportEvent extends BackendController
+class ReportEvent extends Controller
 {
 
     /**
@@ -123,38 +122,37 @@ class ReportEvent extends BackendController
         $conditions = $this->query_filter;
         $conditions['limit'] = $this->data_limit;
 
-        $records = (array) $this->report->getList($conditions);
-        return $this->prepareListReportEvent($records);
+        $list = (array) $this->report->getList($conditions);
+        $this->prepareListReportEvent($list);
+        return $list;
     }
 
     /**
      * Prepare an array of system events
-     * @param array $records
-     * @return array
+     * @param array $list
      */
-    protected function prepareListReportEvent(array $records)
+    protected function prepareListReportEvent(array &$list)
     {
-        foreach ($records as &$record) {
+        foreach ($list as &$item) {
 
             $variables = array();
-            if (!empty($record['data']['variables'])) {
-                $variables = $record['data']['variables'];
+
+            if (!empty($item['data']['variables'])) {
+                $variables = $item['data']['variables'];
             }
 
-            $record['created'] = $this->date($record['created']);
+            $item['created'] = $this->date($item['created']);
 
-            $type = "event_{$record['type']}";
-            $record['type'] = $this->text($type);
+            $type = "event_{$item['type']}";
+            $item['type'] = $this->text($type);
 
-            if (!empty($record['translatable'])) {
-                $record['text'] = $this->text($record['text'], $variables);
+            if (!empty($item['translatable'])) {
+                $item['text'] = $this->text($item['text'], $variables);
             }
 
-            $record['summary'] = $this->truncate($record['text']);
-            $record['severity_text'] = $this->text($record['severity']);
+            $item['summary'] = $this->truncate($item['text']);
+            $item['severity_text'] = $this->text($item['severity']);
         }
-
-        return $records;
     }
 
     /**

@@ -9,14 +9,13 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\models\ImageStyle as ImageStyleModel;
 use gplcart\core\traits\Listing as ListingTrait;
 
 /**
  * Handles incoming requests and outputs data related to images
  */
-class ImageStyle extends BackendController
+class ImageStyle extends Controller
 {
 
     use ListingTrait;
@@ -37,7 +36,7 @@ class ImageStyle extends BackendController
      * An array of image style data
      * @var array
      */
-    protected $data_imagestyle = array('actions' => array());
+    protected $data_imagestyle = array();
 
     /**
      * @param ImageStyleModel $image_style
@@ -114,21 +113,19 @@ class ImageStyle extends BackendController
         }
 
         $this->limitList($list, $this->data_limit);
-        return $this->prepareListImageStyle($list);
+        $this->prepareListImageStyle($list);
+        return $list;
     }
 
     /**
      * Prepare an array of image styles
-     * @param array $imagestyles
-     * @return array
+     * @param array $list
      */
-    protected function prepareListImageStyle(array $imagestyles)
+    protected function prepareListImageStyle(array &$list)
     {
-        foreach ($imagestyles as $imagestyle_id => &$imagestyle) {
-            $imagestyle['directory_exists'] = is_dir($this->image_style->getDirectory($imagestyle_id));
+        foreach ($list as $id => &$item) {
+            $item['directory_exists'] = is_dir($this->image_style->getDirectory($id));
         }
-
-        return $imagestyles;
     }
 
     /**
@@ -140,9 +137,11 @@ class ImageStyle extends BackendController
         $style_id = $this->getQuery('clear');
 
         if (!empty($style_id)) {
+
             if ($this->image_style->clearCache($style_id)) {
                 $this->redirect('', $this->text('Cache has been deleted'), 'success');
             }
+
             $this->redirect('', $this->text('Cache has not been deleted'), 'warning');
         }
     }
@@ -222,11 +221,28 @@ class ImageStyle extends BackendController
      */
     protected function setImageStyle($style_id)
     {
+        $this->data_imagestyle = array();
+
         if (is_numeric($style_id)) {
+
             $this->data_imagestyle = $this->image_style->get($style_id);
+
             if (empty($this->data_imagestyle)) {
                 $this->outputHttpStatus(404);
             }
+        }
+
+        $this->prepareImageStyle($this->data_imagestyle);
+    }
+
+    /**
+     * Prepare an array of image style data
+     * @param array $image_style
+     */
+    protected function prepareImageStyle(array &$image_style)
+    {
+        if (!isset($image_style['actions'])) {
+            $image_style['actions'] = array();
         }
     }
 
@@ -332,7 +348,7 @@ class ImageStyle extends BackendController
             $modified[] = $action;
         }
 
-        $this->setData('imagestyle.actions', implode("\n", $modified));
+        $this->setData('imagestyle.actions', implode(PHP_EOL, $modified));
     }
 
     /**

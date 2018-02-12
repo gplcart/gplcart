@@ -9,13 +9,12 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\controllers\frontend\Controller as FrontendController;
 use gplcart\core\models\Cron as CronModel;
 
 /**
  * Handles incoming requests and outputs data related to CRON jobs
  */
-class Cron extends FrontendController
+class Cron extends Controller
 {
 
     /**

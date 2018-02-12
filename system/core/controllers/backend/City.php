@@ -9,7 +9,6 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\models\City as CityModel;
 use gplcart\core\models\Country as CountryModel;
 use gplcart\core\models\State as StateModel;
@@ -18,7 +17,7 @@ use gplcart\core\models\Zone as ZoneModel;
 /**
  * Handles incoming requests and outputs data related to cities
  */
-class City extends BackendController
+class City extends Controller
 {
 
     /**
@@ -75,8 +74,7 @@ class City extends BackendController
      * @param CityModel $city
      * @param ZoneModel $zone
      */
-    public function __construct(CountryModel $country, StateModel $state, CityModel $city,
-                                ZoneModel $zone)
+    public function __construct(CountryModel $country, StateModel $state, CityModel $city, ZoneModel $zone)
     {
         parent::__construct();
 
@@ -298,6 +296,8 @@ class City extends BackendController
      */
     protected function setCity($city_id)
     {
+        $this->data_city = array();
+
         if (is_numeric($city_id)) {
             $this->data_city = $this->city->get($city_id);
             if (empty($this->data_city)) {

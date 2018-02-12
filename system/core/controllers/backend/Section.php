@@ -9,12 +9,10 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
-
 /**
  * Handles incoming requests and outputs data related to admin sections
  */
-class Section extends BackendController
+class Section extends Controller
 {
 
     /**

@@ -9,14 +9,13 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\models\Collection as CollectionModel;
 use gplcart\core\models\Country as CountryModel;
 
 /**
  * Handles incoming requests and outputs data related to multi-store functionality
  */
-class Store extends BackendController
+class Store extends Controller
 {
 
     /**
@@ -61,7 +60,6 @@ class Store extends BackendController
     public function listStore()
     {
         $this->actionListStore();
-
         $this->setTitleListStore();
         $this->setBreadcrumbListStore();
         $this->setFilterListStore();
@@ -225,23 +223,37 @@ class Store extends BackendController
      */
     protected function isDefaultStore()
     {
-        return isset($this->data_store['store_id'])
-            && $this->store->isDefault($this->data_store['store_id']);
+        return isset($this->data_store['store_id']) && $this->store->isDefault($this->data_store['store_id']);
     }
 
     /**
      * Sets a store data
-     * @param mixed $store_id
+     * @param int|null $store_id
      */
     protected function setStore($store_id)
     {
-        $this->data_store = array('data' => $this->store->getDefaultData());
+        $this->data_store = array();
 
         if (is_numeric($store_id)) {
+
             $this->data_store = $this->store->get($store_id);
+
             if (empty($this->data_store)) {
                 $this->outputHttpStatus(404);
             }
+        }
+
+        $this->prepareStore($this->data_store);
+    }
+
+    /**
+     * Prepare an array of store data
+     * @param array $store
+     */
+    protected function prepareStore(array &$store)
+    {
+        if (!isset($store['data'])) {
+            $store['data'] = $this->store->getDefaultData();
         }
     }
 
@@ -366,14 +378,18 @@ class Store extends BackendController
     protected function setDataEditStore()
     {
         foreach (array('logo', 'favicon') as $field) {
+
             $value = $this->getData("store.data.$field");
+
             if (!empty($value)) {
                 $this->setData("store.{$field}_thumb", $this->image($value));
             }
         }
 
         foreach (array('email', 'phone', 'fax', 'map') as $field) {
+
             $value = $this->getData("store.data.$field");
+
             if (isset($value)) {
                 $this->setData("store.data.$field", implode("\n", (array) $value));
             }

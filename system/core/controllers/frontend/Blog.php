@@ -9,13 +9,12 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\controllers\frontend\Controller as FrontendController;
 use gplcart\core\models\Page as PageModel;
 
 /**
  * Handles incoming requests and outputs data related to blogs
  */
-class Blog extends FrontendController
+class Blog extends Controller
 {
 
     /**
@@ -54,7 +53,6 @@ class Blog extends FrontendController
     {
         $this->setTitleListBlog();
         $this->setBreadcrumbListBlog();
-
         $this->setTotalListBlog();
         $this->setPagerListBlog();
 
@@ -91,29 +89,27 @@ class Blog extends FrontendController
         $conditions['limit'] = $this->data_limit;
         $conditions['store_id'] = $this->store_id;
 
-        $pages = (array) $this->page->getList($conditions);
-        return $this->preparePagesBlog($pages);
+        $list = (array) $this->page->getList($conditions);
+        $this->preparePagesBlog($list);
+        return $list;
     }
 
     /**
      * Prepare an array of pages
-     * @param array $pages
-     * @return array
+     * @param array $list
      */
-    protected function preparePagesBlog(array $pages)
+    protected function preparePagesBlog(array &$list)
     {
-        foreach ($pages as &$page) {
+        foreach ($list as &$item) {
 
-            list($teaser, $body) = $this->explodeText($page['description']);
+            list($teaser, $body) = $this->explodeText($item['description']);
 
             if ($body !== '') {
-                $page['teaser'] = strip_tags($teaser);
+                $item['teaser'] = strip_tags($teaser);
             }
 
-            $this->setItemEntityUrl($page, array('entity' => 'page'));
+            $this->setItemEntityUrl($item, array('entity' => 'page'));
         }
-
-        return $pages;
     }
 
     /**

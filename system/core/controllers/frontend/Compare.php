@@ -9,14 +9,13 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\controllers\frontend\Controller as FrontendController;
 use gplcart\core\models\ProductClass as ProductClassModel;
 use gplcart\core\models\ProductField as ProductFieldModel;
 
 /**
  * Handles incoming requests and outputs data related to product comparison
  */
-class Compare extends FrontendController
+class Compare extends Controller
 {
 
     /**
@@ -56,7 +55,6 @@ class Compare extends FrontendController
     public function selectCompare()
     {
         $this->controlProductsCompare();
-
         $this->setTitleSelectCompare();
         $this->setBreadcrumbSelectCompare();
 
@@ -156,7 +154,6 @@ class Compare extends FrontendController
     {
         $this->setProductCompare($ids);
         $this->controlAccessCompareCompare();
-
         $this->setTitleCompareCompare();
         $this->setBreadcrumbCompareCompare();
 
@@ -173,8 +170,8 @@ class Compare extends FrontendController
     protected function setProductCompare($string)
     {
         $ids = array_filter(array_map('trim', explode(',', $string)), 'ctype_digit');
-        $products = $this->getProductsCompare($ids);
-        $this->data_products = $this->prepareProductsCompare($products);
+        $this->data_products = $this->getProductsCompare($ids);
+        $this->prepareProductsCompare($this->data_products);
     }
 
     /**
@@ -208,16 +205,13 @@ class Compare extends FrontendController
     /**
      * Prepare an array of products to be compared
      * @param array $products
-     * @return array
      */
-    protected function prepareProductsCompare(array $products)
+    protected function prepareProductsCompare(array &$products)
     {
         foreach ($products as $product_id => &$product) {
             $product['field'] = $this->product_field->getList($product_id);
             $this->setItemProductFields($product, $this->image, $this->product_class);
         }
-
-        return $products;
     }
 
     /**
@@ -228,6 +222,7 @@ class Compare extends FrontendController
     protected function getFieldsCompare(array $products)
     {
         $labels = array();
+
         foreach ($products as $product) {
             if (!empty($product['field_value_labels'])) {
                 foreach ($product['field_value_labels'] as $type => $fields) {

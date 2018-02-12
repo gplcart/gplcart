@@ -9,13 +9,12 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\models\Help as HelpModel;
 
 /**
  * Handles incoming requests and outputs data related to help information
  */
-class Help extends BackendController
+class Help extends Controller
 {
 
     /**

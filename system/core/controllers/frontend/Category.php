@@ -9,12 +9,10 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\controllers\frontend\Controller as FrontendController;
-
 /**
  * Handles incoming requests and outputs data related to product catalog and categories
  */
-class Category extends FrontendController
+class Category extends Controller
 {
 
     /**
@@ -248,17 +246,17 @@ class Category extends FrontendController
 
     /**
      * Sets an array of products for the category
-     * @return array
      */
     protected function setListProductCategory()
     {
-        $options = array('placeholder' => true) + $this->query_filter;
+        $options = $this->query_filter;
+        $options['placeholder'] = true;
 
         $conditions = array(
                 'limit' => $this->data_limit,
                 'category_id' => $this->data_category['category_id']) + $this->query_filter;
 
-        return $this->data_products = $this->getProducts($conditions, $options);
+        $this->data_products = $this->getProducts($conditions, $options);
     }
 
     /**
@@ -275,18 +273,16 @@ class Category extends FrontendController
 
     /**
      * Sets an array of children categories for the given category
-     * @return array
      */
     protected function setChildrenCategory()
     {
-        $children = array();
+        $this->data_children = array();
+
         foreach ($this->data_categories as $item) {
             if (in_array($this->data_category['category_id'], $item['parents'])) {
-                $children[] = $item;
+                $this->data_children[] = $item;
             }
         }
-
-        return $this->data_children = $children;
     }
 
     /**
@@ -324,24 +320,22 @@ class Category extends FrontendController
             'store_id' => $this->store_id
         );
 
-        $category = $this->category->get($options);
+        $this->data_category = $this->category->get($options);
 
-        if (empty($category['status'])) {
+        if (empty($this->data_category['status'])) {
             $this->outputHttpStatus(404);
         }
 
-        $this->data_category = $this->prepareCategory($category);
+        $this->prepareCategory($this->data_category);
     }
 
     /**
      * Prepare an array of category data
      * @param array $category
-     * @return array
      */
-    protected function prepareCategory(array $category)
+    protected function prepareCategory(array &$category)
     {
         $this->setItemImages($category, 'category', $this->image);
-        return $category;
     }
 
 }

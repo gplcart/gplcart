@@ -9,7 +9,6 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\controllers\frontend\Controller as FrontendController;
 use gplcart\core\models\ProductClass as ProductClassModel;
 use gplcart\core\models\ProductView as ProductViewModel;
 use gplcart\core\models\Rating as RatingModel;
@@ -19,7 +18,7 @@ use gplcart\core\models\Sku as SkuModel;
 /**
  * Handles incoming requests and outputs data related to products
  */
-class Product extends FrontendController
+class Product extends Controller
 {
 
     /**
@@ -84,7 +83,6 @@ class Product extends FrontendController
     public function indexProduct($product_id)
     {
         $this->setProduct($product_id);
-
         $this->setMetaIndexProduct();
         $this->setTitleIndexProduct();
         $this->setBreadcrumbIndexProduct();
@@ -114,6 +112,7 @@ class Product extends FrontendController
     protected function setDataSummaryIndexProduct()
     {
         $summary = '';
+
         if (!empty($this->data_product['description'])) {
             $exploded = $this->explodeText($this->data_product['description']);
             $summary = strip_tags($exploded[0]);
@@ -294,36 +293,34 @@ class Product extends FrontendController
     /**
      * Prepare an array of reviews
      * @param array $reviews
-     * @return array
      */
-    protected function prepareReviewsProduct(array $reviews)
+    protected function prepareReviewsProduct(array &$reviews)
     {
-        if (empty($reviews)) {
-            return array();
-        }
+        if (!empty($reviews)) {
 
-        $users = array();
-        foreach ($reviews as $review) {
-            $users[] = $review['user_id'];
-        }
-
-        $ratings = null;
-        if (!empty($users)) {
-            $ratings = $this->rating->getByUser($this->data_product['product_id'], $users);
-        }
-
-        foreach ($reviews as &$review) {
-
-            $rating = array('rating' => 0);
-            if (isset($ratings[$review['user_id']]['rating'])) {
-                $rating['rating'] = $ratings[$review['user_id']]['rating'];
+            $users = array();
+            foreach ($reviews as $review) {
+                $users[] = $review['user_id'];
             }
 
-            $review['rating'] = $rating['rating'];
-            $review['rating_formatted'] = $this->render('common/rating/static', array('rating' => $rating));
-        }
+            $ratings = null;
 
-        return $reviews;
+            if (!empty($users)) {
+                $ratings = $this->rating->getByUser($this->data_product['product_id'], $users);
+            }
+
+            foreach ($reviews as &$review) {
+
+                $rating = array('rating' => 0);
+
+                if (isset($ratings[$review['user_id']]['rating'])) {
+                    $rating['rating'] = $ratings[$review['user_id']]['rating'];
+                }
+
+                $review['rating'] = $rating['rating'];
+                $review['rating_formatted'] = $this->render('common/rating/static', array('rating' => $rating));
+            }
+        }
     }
 
     /**
@@ -343,8 +340,9 @@ class Product extends FrontendController
         );
 
         $options += $this->query;
-        $reviews = (array) $this->review->getList($options);
-        return $this->prepareReviewsProduct($reviews);
+        $list = (array) $this->review->getList($options);
+        $this->prepareReviewsProduct($list);
+        return $list;
     }
 
     /**
@@ -437,29 +435,36 @@ class Product extends FrontendController
      */
     protected function setProduct($product_id)
     {
-        $product = $this->product->get($product_id);
+        $this->data_product = $this->product->get($product_id);
 
-        if (empty($product)) {
+        if (empty($this->data_product)) {
             $this->outputHttpStatus(404);
         }
 
-        if ($product['store_id'] != $this->store_id) {
-            $this->outputHttpStatus(404);
+        $this->controlAccessProduct();
+        $this->prepareProduct($this->data_product);
+    }
+
+    /**
+     * Controls access to the product
+     */
+    protected function controlAccessProduct()
+    {
+
+        if (empty($this->data_product['store_id']) || $this->data_product['store_id'] != $this->store_id) {
+            $this->outputHttpStatus(403);
         }
 
-        if (empty($product['status']) && !$this->access('product')) {
-            $this->outputHttpStatus(404);
+        if (empty($this->data_product['status']) && !$this->access('product')) {
+            $this->outputHttpStatus(403);
         }
-
-        $this->data_product = $this->prepareProduct($product);
     }
 
     /**
      * Prepare an array of product data
      * @param array $product
-     * @return array
      */
-    protected function prepareProduct(array $product)
+    protected function prepareProduct(array &$product)
     {
         $selected = $this->getSelectedCombinationProduct($product);
         $this->unshiftSelectedImageProduct($selected, $product);
@@ -477,7 +482,6 @@ class Product extends FrontendController
         $product['total_reviews'] = $this->getTotalReviewsProduct($product);
 
         $this->setItemProductFields($product, $this->image, $this->product_class);
-        return $product;
     }
 
     /**
@@ -488,13 +492,13 @@ class Product extends FrontendController
     protected function getSelectedCombinationProduct(array $product)
     {
         $field_value_ids = array();
+
         if (!empty($product['default_field_values'])) {
             $field_value_ids = $product['default_field_values'];
         }
 
         $selected = $this->sku->selectCombination($product, $field_value_ids);
         $selected += $product;
-
         return $selected;
     }
 
@@ -537,11 +541,13 @@ class Product extends FrontendController
         $product_ids = (array) $this->product->getRelated($options);
 
         $products = array();
+
         if (!empty($product_ids)) {
             $products = (array) $this->product->getList(array('product_id' => $product_ids));
         }
 
-        return $this->prepareEntityItems($products, array('entity' => 'product'));
+        $this->prepareEntityItems($products, array('entity' => 'product'));
+        return $products;
     }
 
     /**

@@ -9,14 +9,13 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\models\Condition as ConditionModel;
 use gplcart\core\models\Trigger as TriggerModel;
 
 /**
  * Handles incoming requests and outputs data related to triggers
  */
-class Trigger extends BackendController
+class Trigger extends Controller
 {
 
     /**
@@ -61,7 +60,6 @@ class Trigger extends BackendController
     public function listTrigger()
     {
         $this->actionListTrigger();
-
         $this->setTitleListTrigger();
         $this->setBreadcrumbListTrigger();
         $this->setFilterListTrigger();
@@ -205,8 +203,12 @@ class Trigger extends BackendController
      */
     protected function setTrigger($trigger_id)
     {
+        $this->data_trigger = array();
+
         if (is_numeric($trigger_id)) {
+
             $this->data_trigger = $this->trigger->get($trigger_id);
+
             if (empty($this->data_trigger)) {
                 $this->outputHttpStatus(404);
             }
@@ -303,6 +305,7 @@ class Trigger extends BackendController
         }
 
         $modified = array();
+
         foreach ($conditions as $condition) {
             $modified[] = is_string($condition) ? $condition : $condition['original'];
         }

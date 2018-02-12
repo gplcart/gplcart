@@ -238,27 +238,26 @@ class Controller extends BaseController
             'store_id' => $this->store_id
         );
 
-        return $this->prepareCart($this->cart->getContent($conditions));
+        $cart = $this->cart->getContent($conditions);
+        $this->prepareCart($cart);
+        return $cart;
     }
 
     /**
      * Prepares an array of cart items
      * @param array $cart
-     * @return array
      */
-    protected function prepareCart(array $cart)
+    protected function prepareCart(array &$cart)
     {
-        if (empty($cart['items'])) {
-            return array();
-        }
+        if (!empty($cart['items'])) {
 
-        foreach ($cart['items'] as &$item) {
-            $item['currency'] = $cart['currency'];
-            $this->prepareCartItem($item);
-        }
+            foreach ($cart['items'] as &$item) {
+                $item['currency'] = $cart['currency'];
+                $this->prepareCartItem($item);
+            }
 
-        $this->setItemTotalFormatted($cart, $this->price);
-        return $cart;
+            $this->setItemTotalFormatted($cart, $this->price);
+        }
     }
 
     /**
@@ -312,7 +311,9 @@ class Controller extends BaseController
             'entity' => 'category',
             'imagestyle' => $this->configTheme('image_style_category_child', 3));
 
-        return $this->prepareEntityItems($this->category->getTree($conditions), $options);
+        $categories = $this->category->getTree($conditions);
+        $this->prepareEntityItems($categories, $options);
+        return $categories;
     }
 
     /**
@@ -333,37 +334,35 @@ class Controller extends BaseController
         }
 
         $options += array('entity' => 'product');
-        return $this->prepareEntityItems((array) $this->product->getList($conditions), $options);
+        $products = (array) $this->product->getList($conditions);
+        $this->prepareEntityItems($products, $options);
+        return $products;
     }
 
     /**
      * Prepare an array of entity items like pages, products etc
      * @param array $items
      * @param array $options
-     * @return array
      */
-    protected function prepareEntityItems($items, $options = array())
+    protected function prepareEntityItems(array &$items, $options = array())
     {
-        if (empty($items) || empty($options['entity'])) {
-            return array();
+        if (!empty($items) && isset($options['entity'])) {
+
+            if (!isset($options['view']) || !in_array($options['view'], array('list', 'grid'))) {
+                $options['view'] = 'grid';
+            }
+
+            $options += array(
+                'entity' => $options['entity'],
+                'entity_id' => array_keys($items),
+                'template_item' => "{$options['entity']}/item/{$options['view']}",
+                'imagestyle' => $this->configTheme("image_style_{$options['entity']}_{$options['view']}", 3)
+            );
+
+            foreach ($items as &$item) {
+                $this->prepareEntityItem($item, $options);
+            }
         }
-
-        if (!isset($options['view']) || !in_array($options['view'], array('list', 'grid'))) {
-            $options['view'] = 'grid';
-        }
-
-        $options += array(
-            'entity' => $options['entity'],
-            'entity_id' => array_keys($items),
-            'template_item' => "{$options['entity']}/item/{$options['view']}",
-            'imagestyle' => $this->configTheme("image_style_{$options['entity']}_{$options['view']}", 3)
-        );
-
-        foreach ($items as &$item) {
-            $this->prepareEntityItem($item, $options);
-        }
-
-        return $items;
     }
 
     /**

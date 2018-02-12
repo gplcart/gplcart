@@ -9,7 +9,6 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\controllers\frontend\Controller as FrontendController;
 use gplcart\core\models\CategoryGroup as CategoryGroupModel;
 use gplcart\core\models\City as CityModel;
 use gplcart\core\models\Collection as CollectionModel;
@@ -20,7 +19,7 @@ use gplcart\core\traits\Category as CategoryTrait;
 /**
  * Handles incoming requests and outputs data related to AJAX requests
  */
-class Ajax extends FrontendController
+class Ajax extends Controller
 {
 
     use CategoryTrait;

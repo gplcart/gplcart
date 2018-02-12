@@ -9,7 +9,6 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\models\Country as CountryModel;
 use gplcart\core\models\State as StateModel;
 use gplcart\core\models\Zone as ZoneModel;
@@ -17,7 +16,7 @@ use gplcart\core\models\Zone as ZoneModel;
 /**
  * Handles incoming requests and outputs data related to country states
  */
-class State extends BackendController
+class State extends Controller
 {
 
     /**
@@ -117,8 +116,12 @@ class State extends BackendController
      */
     protected function setState($state_id)
     {
+        $this->data_state = array();
+
         if (is_numeric($state_id)) {
+
             $this->data_state = $this->state->get($state_id);
+
             if (empty($this->data_state)) {
                 $this->outputHttpStatus(404);
             }

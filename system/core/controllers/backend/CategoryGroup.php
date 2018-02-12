@@ -9,14 +9,13 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\models\CategoryGroup as CategoryGroupModel;
 use gplcart\core\models\TranslationEntity as TranslationEntityModel;
 
 /**
  * Handles incoming requests and outputs data related to category groups
  */
-class CategoryGroup extends BackendController
+class CategoryGroup extends Controller
 {
 
     /**
@@ -47,8 +46,7 @@ class CategoryGroup extends BackendController
      * @param CategoryGroupModel $category_group
      * @param TranslationEntityModel $translation_entity
      */
-    public function __construct(CategoryGroupModel $category_group,
-                                TranslationEntityModel $translation_entity)
+    public function __construct(CategoryGroupModel $category_group, TranslationEntityModel $translation_entity)
     {
         parent::__construct();
 
@@ -175,27 +173,27 @@ class CategoryGroup extends BackendController
      */
     protected function setCategoryGroup($category_group_id)
     {
+        $this->data_category_group = array();
+
         if (is_numeric($category_group_id)) {
 
-            $category_group = $this->category_group->get($category_group_id);
+            $this->data_category_group = $this->category_group->get($category_group_id);
 
-            if (empty($category_group)) {
+            if (empty($this->data_category_group)) {
                 $this->outputHttpStatus(404);
             }
 
-            $this->data_category_group = $this->prepareCategoryGroup($category_group);
+            $this->prepareCategoryGroup($this->data_category_group);
         }
     }
 
     /**
      * Prepare an array of category group data
      * @param array $category_group
-     * @return array
      */
-    protected function prepareCategoryGroup(array $category_group)
+    protected function prepareCategoryGroup(array &$category_group)
     {
         $this->setItemTranslation($category_group, 'category_group', $this->translation_entity);
-        return $category_group;
     }
 
     /**

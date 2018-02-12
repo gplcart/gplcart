@@ -9,13 +9,12 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\models\UserRole as UserRoleModel;
 
 /**
  * Handles incoming requests and outputs data related to users
  */
-class User extends BackendController
+class User extends Controller
 {
 
     /**
@@ -51,7 +50,6 @@ class User extends BackendController
     public function listUser()
     {
         $this->actionListUser();
-
         $this->setTitleListUser();
         $this->setBreadcrumbListUser();
         $this->setFilterListUser();
@@ -135,27 +133,27 @@ class User extends BackendController
         $conditions = $this->query_filter;
         $conditions['limit'] = $this->data_limit;
 
-        $users = (array) $this->user->getList($conditions);
-        return $this->prepareListUser($users);
+        $list = (array) $this->user->getList($conditions);
+        $this->prepareListUser($list);
+        return $list;
     }
 
     /**
      * Prepare an array of users
-     * @param array $users
-     * @return array
+     * @param array $list
      */
-    protected function prepareListUser(array $users)
+    protected function prepareListUser(array &$list)
     {
         $stores = $this->store->getList();
 
-        foreach ($users as &$user) {
-            $user['url'] = '';
-            if (isset($stores[$user['store_id']])) {
-                $user['url'] = $this->store->getUrl($stores[$user['store_id']]) . "/account/{$user['user_id']}";
+        foreach ($list as &$item) {
+
+            $item['url'] = '';
+
+            if (isset($stores[$item['store_id']])) {
+                $item['url'] = $this->store->getUrl($stores[$item['store_id']]) . "/account/{$item['user_id']}";
             }
         }
-
-        return $users;
     }
 
     /**
@@ -235,8 +233,12 @@ class User extends BackendController
      */
     protected function setUser($user_id)
     {
+        $this->data_user = array();
+
         if (is_numeric($user_id)) {
+
             $this->data_user = $this->user->get($user_id);
+
             if (empty($this->data_user)) {
                 $this->outputHttpStatus(404);
             }

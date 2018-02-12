@@ -9,14 +9,13 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\models\Currency as CurrencyModel;
 use gplcart\core\traits\Listing as ListingTrait;
 
 /**
  * Handles incoming requests and outputs data related to currency
  */
-class Currency extends BackendController
+class Currency extends Controller
 {
 
     use ListingTrait;
@@ -215,6 +214,8 @@ class Currency extends BackendController
      */
     protected function setCurrency($code)
     {
+        $this->data_currency = array();
+
         if (!empty($code)) {
             $this->data_currency = $this->currency->get($code);
             if (empty($this->data_currency)) {

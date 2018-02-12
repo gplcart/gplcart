@@ -9,7 +9,6 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\models\Currency as CurrencyModel;
 use gplcart\core\models\Price as PriceModel;
 use gplcart\core\models\PriceRule as PriceRuleModel;
@@ -18,7 +17,7 @@ use gplcart\core\models\Trigger as TriggerModel;
 /**
  * Handles incoming requests and outputs data related to price rules
  */
-class PriceRule extends BackendController
+class PriceRule extends Controller
 {
 
     /**
@@ -242,6 +241,8 @@ class PriceRule extends BackendController
      */
     protected function setPriceRule($rule_id)
     {
+        $this->data_rule = array();
+
         if (is_numeric($rule_id)) {
             $this->data_rule = $this->price_rule->get($rule_id);
             if (empty($this->data_rule)) {

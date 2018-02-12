@@ -9,7 +9,6 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\controllers\frontend\Controller as FrontendController;
 use gplcart\core\models\Address as AddressModel;
 use gplcart\core\models\Order as OrderModel;
 use gplcart\core\models\Payment as PaymentModel;
@@ -20,7 +19,7 @@ use gplcart\core\traits\ItemOrder as ItemOrderTrait;
 /**
  * Handles incoming requests and outputs data related to customer orders
  */
-class AccountOrder extends FrontendController
+class AccountOrder extends Controller
 {
 
     use ItemOrderTrait;
@@ -151,14 +150,13 @@ class AccountOrder extends FrontendController
      */
     protected function setOrderAccountOrder($order_id)
     {
-        $order = $this->order->get($order_id);
+        $this->data_order = $this->order->get($order_id);
 
-        if (empty($order)) {
+        if (empty($this->data_order)) {
             $this->outputHttpStatus(404);
         }
 
-        $this->prepareOrderAccountOrder($order);
-        $this->data_order = $order;
+        $this->prepareOrderAccountOrder($this->data_order);
     }
 
     /**

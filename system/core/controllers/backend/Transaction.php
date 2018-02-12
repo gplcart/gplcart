@@ -9,14 +9,13 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\models\Payment as PaymentModel;
 use gplcart\core\models\Transaction as TransactionModel;
 
 /**
  * Handles incoming requests and outputs data related to order transactions
  */
-class Transaction extends BackendController
+class Transaction extends Controller
 {
 
     /**
@@ -55,7 +54,6 @@ class Transaction extends BackendController
     public function listTransaction()
     {
         $this->actionListTransaction();
-
         $this->setTitleListTransaction();
         $this->setBreadcrumbListTransaction();
         $this->setFilterListTransaction();

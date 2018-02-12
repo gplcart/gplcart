@@ -9,13 +9,12 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\models\Address as AddressModel;
 
 /**
  * Handles incoming requests and outputs data related to user addresses
  */
-class Address extends BackendController
+class Address extends Controller
 {
 
     /**
@@ -116,21 +115,19 @@ class Address extends BackendController
         $conditions['limit'] = $this->data_limit;
         $addresses = (array) $this->address->getList($conditions);
 
-        return $this->prepareListAddress($addresses);
+        $this->prepareListAddress($addresses);
+        return $addresses;
     }
 
     /**
      * Prepares an array of addresses
      * @param array $addresses
-     * @return array
      */
-    protected function prepareListAddress(array $addresses)
+    protected function prepareListAddress(array &$addresses)
     {
         foreach ($addresses as &$address) {
             $address['translated'] = $this->address->getTranslated($address, true);
         }
-
-        return $addresses;
     }
 
     /**

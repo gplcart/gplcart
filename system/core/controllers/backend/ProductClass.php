@@ -9,13 +9,12 @@
 
 namespace gplcart\core\controllers\backend;
 
-use gplcart\core\controllers\backend\Controller as BackendController;
 use gplcart\core\models\ProductClass as ProductClassModel;
 
 /**
  * Handles incoming requests and outputs data related to product classes
  */
-class ProductClass extends BackendController
+class ProductClass extends Controller
 {
 
     /**
@@ -52,7 +51,6 @@ class ProductClass extends BackendController
     public function listProductClass()
     {
         $this->actionListProductClass();
-
         $this->setTitleListProductClass();
         $this->setBreadcrumbListProductClass();
         $this->setFilterListProductClass();
@@ -193,8 +191,12 @@ class ProductClass extends BackendController
      */
     protected function setProductClass($product_class_id)
     {
+        $this->data_product_class = array();
+
         if (is_numeric($product_class_id)) {
+
             $this->data_product_class = $this->product_class->get($product_class_id);
+
             if (empty($this->data_product_class)) {
                 $this->outputHttpStatus(404);
             }
