@@ -25,7 +25,7 @@ trait Collection
      * @param $items
      * @param array $options
      */
-    abstract protected function prepareEntityItems($items, $options = array());
+    abstract protected function prepareEntityItems(array &$items, $options = array());
 
     /**
      * Returns an array of collection items
@@ -43,18 +43,19 @@ trait Collection
 
         $items = $model->getItems($conditions);
 
-        if (empty($items)) {
-            return array();
+        if (!empty($items)) {
+
+            $item = reset($items);
+
+            $options += array(
+                'entity' => $item['collection_item']['type'],
+                'template_item' => $item['collection_handler']['template']['item']
+            );
+
+            $this->prepareEntityItems($items, $options);
         }
 
-        $item = reset($items);
-
-        $options += array(
-            'entity' => $item['collection_item']['type'],
-            'template_item' => $item['collection_handler']['template']['item']
-        );
-
-        return $this->prepareEntityItems($items, $options);
+        return $items;
     }
 
 }
