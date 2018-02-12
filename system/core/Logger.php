@@ -224,9 +224,11 @@ class Logger
         $print = $this->print_error || !$this->isDb();
 
         if (in_array($code, $this->getFatalErrorTypes())) {
+
             if ($print) {
                 return false; // Let it fall through to the standard PHP error handler
             }
+
             $this->log('php_shutdown', $error, 'danger', false);
             return true;
         }
@@ -294,7 +296,7 @@ class Logger
 
         if (!empty($header)) {
             $output .= "<tr>
-                          <td colspan='2'><h1 style='padding:0;margin:0;'>$header</h3></td>
+                          <td colspan='2' style='border-bottom: 1px solid #faebcc;'><b>$header</b></td>
                         </tr>\n";
         }
 
