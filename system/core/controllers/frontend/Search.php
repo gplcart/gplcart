@@ -188,6 +188,9 @@ class Search extends Controller
         $this->data_results = $this->search->search('product', $this->data_term, $options);
 
         if (!empty($this->data_results)) {
+
+            settype($this->data_results, 'array');
+
             $options['placeholder'] = true;
             $this->prepareEntityItems($this->data_results, $options);
         }
