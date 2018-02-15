@@ -15,6 +15,7 @@ return array(
     'bookmark_delete' => 'Bookmark: delete', // @text
     'cart' => 'Cart items: access', // @text
     'cart_delete' => 'Cart items: delete', // @text
+    'cli' => 'CLI: access', // @text
     'dashboard' => 'Dashboard: access', // @text
     'dashboard_edit' => 'Dashboard: edit', // @text
     'product' => 'Product: access', // @text
