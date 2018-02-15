@@ -9,8 +9,7 @@
 
 namespace gplcart\core;
 
-use RuntimeException;
-use OutOfBoundsException;
+use InvalidArgumentException;
 
 /**
  * Base parent CLI controller
@@ -41,6 +40,12 @@ class CliController
      * @var \gplcart\core\models\Language $language
      */
     protected $language;
+
+    /**
+     * User model instance
+     * @var \gplcart\core\models\User $user
+     */
+    protected $user;
 
     /**
      * Config class instance
@@ -97,6 +102,18 @@ class CliController
     protected $current_route = array();
 
     /**
+     * The current user
+     * @var array
+     */
+    protected $current_user;
+
+    /**
+     * The current user ID
+     * @var null|int
+     */
+    protected $uid = null;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -104,8 +121,9 @@ class CliController
         $this->setInstanceProperties();
         $this->setRouteProperties();
         $this->setLanguage();
+        $this->setUser();
 
-        $this->controlAccess();
+        $this->controlRouteAccess();
         $this->controlOptions();
         $this->controlArguments();
 
@@ -122,13 +140,72 @@ class CliController
     }
 
     /**
-     * Control access to the route
-     * @throws RuntimeException
+     * Sets class instance properties
      */
-    protected function controlAccess()
+    protected function setInstanceProperties()
     {
-        if (!$this->config->get('cli_status', 1)) {
-            throw new RuntimeException('CLI access is disabled!');
+        $this->hook = $this->getInstance('gplcart\\core\\Hook');
+        $this->config = $this->getInstance('gplcart\\core\\Config');
+        $this->route = $this->getInstance('gplcart\\core\\CliRoute');
+        $this->cli = $this->getInstance('gplcart\\core\\helpers\Cli');
+        $this->user = $this->getInstance('gplcart\\core\\models\\User');
+        $this->language = $this->getInstance('gplcart\\core\\models\\Language');
+        $this->validator = $this->getInstance('gplcart\\core\\models\\Validator');
+        $this->translation = $this->getInstance('gplcart\\core\\models\\Translation');
+    }
+
+    /**
+     * Sets the current language
+     * @param null|string $code
+     * @return $this
+     */
+    public function setLanguage($code = null)
+    {
+        if (!isset($code)) {
+            $code = $this->config->get('cli_langcode', '');
+        }
+
+        $this->langcode = $code;
+        $this->translation->set($code, null);
+
+        return $this;
+    }
+
+    /**
+     * Sets the current user from the command using -u option
+     */
+    protected function setUser()
+    {
+        $this->uid = $this->getParam('u', null);
+
+        if (isset($this->uid)) {
+
+            $this->current_user = $this->user->get($this->uid);
+
+            if (empty($this->current_user['status'])) {
+                $this->errorAndExit($this->text('No access'));
+            }
+        }
+    }
+
+    /**
+     * Sets route properties
+     */
+    protected function setRouteProperties()
+    {
+        $this->current_route = $this->route->get();
+        $this->command = $this->current_route['command'];
+        $this->params = gplcart_array_trim($this->current_route['params'], true);
+    }
+
+    /**
+     * Control access to the route
+     * @param string $permission
+     */
+    protected function controlAccess($permission)
+    {
+        if (isset($this->uid) && !$this->user->access($permission, $this->uid)) {
+            $this->errorAndExit($this->text('No access'));
         }
     }
 
@@ -167,26 +244,35 @@ class CliController
     }
 
     /**
-     * Sets the current language
-     * @param null|string $code
-     * @return $this
+     * Controls access to the current route
      */
-    public function setLanguage($code = null)
+    protected function controlRouteAccess()
     {
-        if (!isset($code)) {
-            $code = $this->config->get('cli_langcode', '');
+        if (!$this->config->get('cli_status', true)) {
+            $this->errorAndExit($this->text('No access'));
         }
 
-        $this->langcode = $code;
-        $this->translation->set($code, null);
-        return $this;
+        $this->controlAccess('cli');
+
+        if (isset($this->current_route['access'])) {
+            $this->controlAccess($this->current_route['access']);
+        }
+    }
+
+    /**
+     * Returns the current user ID
+     * @return array
+     */
+    public function getUser()
+    {
+        return $this->current_user;
     }
 
     /**
      * Returns a property
      * @param string $name
      * @return mixed
-     * @throws OutOfBoundsException
+     * @throws InvalidArgumentException
      */
     public function getProperty($name)
     {
@@ -194,17 +280,19 @@ class CliController
             return $this->{$name};
         }
 
-        throw new OutOfBoundsException("Property $name does not exist");
+        throw new InvalidArgumentException("Property $name does not exist");
     }
 
     /**
      * Set a property
      * @param string $property
      * @param object $value
+     * @return $this
      */
     public function setProperty($property, $value)
     {
         $this->{$property} = $value;
+        return $this;
     }
 
     /**
@@ -215,30 +303,6 @@ class CliController
     public function getInstance($class)
     {
         return Container::get($class);
-    }
-
-    /**
-     * Sets class instance properties
-     */
-    protected function setInstanceProperties()
-    {
-        $this->hook = $this->getInstance('gplcart\\core\\Hook');
-        $this->config = $this->getInstance('gplcart\\core\\Config');
-        $this->route = $this->getInstance('gplcart\\core\\CliRoute');
-        $this->cli = $this->getInstance('gplcart\\core\\helpers\Cli');
-        $this->language = $this->getInstance('gplcart\\core\\models\\Language');
-        $this->validator = $this->getInstance('gplcart\\core\\models\\Validator');
-        $this->translation = $this->getInstance('gplcart\\core\\models\\Translation');
-    }
-
-    /**
-     * Sets route properties
-     */
-    protected function setRouteProperties()
-    {
-        $this->current_route = $this->route->get();
-        $this->command = $this->current_route['command'];
-        $this->params = gplcart_array_trim($this->current_route['params'], true);
     }
 
     /**
