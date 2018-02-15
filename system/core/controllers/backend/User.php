@@ -41,6 +41,7 @@ class User extends Controller
     public function __construct(UserRoleModel $role)
     {
         parent::__construct();
+
         $this->role = $role;
     }
 

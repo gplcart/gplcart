@@ -52,8 +52,7 @@ class PriceRule extends ComponentValidator
      * @param CurrencyModel $currency
      * @param PriceModel $price
      */
-    public function __construct(PriceRuleModel $rule, TriggerModel $trigger,
-                                CurrencyModel $currency, PriceModel $price)
+    public function __construct(PriceRuleModel $rule, TriggerModel $trigger, CurrencyModel $currency, PriceModel $price)
     {
         parent::__construct();
 
