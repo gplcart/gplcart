@@ -226,6 +226,7 @@ class Config
         }
 
         $conditions = array();
+
         $sql = 'SELECT * FROM settings';
 
         if (isset($name)) {

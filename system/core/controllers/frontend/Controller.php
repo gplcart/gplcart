@@ -124,6 +124,7 @@ class Controller extends BaseController
         }
 
         $this->hook->attach('construct.controller.frontend', $this);
+
         $this->controlHttpStatus();
     }
 

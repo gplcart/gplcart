@@ -383,7 +383,7 @@ class Logger
      */
     protected function isDb()
     {
-        return $this->db instanceof \gplcart\core\Database && $this->db->isInitialized();
+        return $this->db instanceof Database && $this->db->isInitialized();
     }
 
 }

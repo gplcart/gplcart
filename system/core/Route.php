@@ -10,9 +10,9 @@
 namespace gplcart\core;
 
 use Exception;
-use gplcart\core\helpers\Request as RequestHelper;
-use gplcart\core\helpers\Response as ResponseHelper;
-use gplcart\core\helpers\Url as UrlHelper;
+use gplcart\core\helpers\Request;
+use gplcart\core\helpers\Response;
+use gplcart\core\helpers\Url;
 use LogicException;
 use OutOfBoundsException;
 use UnexpectedValueException;
@@ -80,12 +80,11 @@ class Route
     /**
      * @param Config $config
      * @param Hook $hook
-     * @param UrlHelper $url
-     * @param RequestHelper $request
-     * @param ResponseHelper $response
+     * @param Url $url
+     * @param Request $request
+     * @param Response $response
      */
-    public function __construct(Config $config, Hook $hook, UrlHelper $url,
-                                RequestHelper $request, ResponseHelper $response)
+    public function __construct(Config $config, Hook $hook, Url $url, Request $request, Response $response)
     {
         $this->url = $url;
         $this->hook = $hook;
