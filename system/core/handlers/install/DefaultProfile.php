@@ -17,15 +17,6 @@ use gplcart\core\handlers\install\Base as BaseInstall;
  */
 class DefaultProfile extends BaseInstall
 {
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
     /**
      * Performs full system installation
      * @param array $data

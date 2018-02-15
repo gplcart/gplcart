@@ -16,15 +16,6 @@ use gplcart\core\handlers\validator\Component as ComponentValidator;
  */
 class File extends ComponentValidator
 {
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
     /**
      * Performs full file data validation
      * @param array $submitted

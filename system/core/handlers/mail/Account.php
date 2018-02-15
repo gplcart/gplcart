@@ -16,15 +16,6 @@ use gplcart\core\handlers\mail\Base as BaseHandler;
  */
 class Account extends BaseHandler
 {
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
     /**
      * Sent to an admin when a user has been registered
      * @param array $user
