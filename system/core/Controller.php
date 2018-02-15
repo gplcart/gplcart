@@ -9,7 +9,7 @@
 
 namespace gplcart\core;
 
-use OutOfBoundsException;
+use InvalidArgumentException;
 
 /**
  * Base controller class
@@ -368,7 +368,7 @@ abstract class Controller
      * Returns a property
      * @param string $name
      * @return mixed
-     * @throws OutOfBoundsException
+     * @throws InvalidArgumentException
      */
     public function getProperty($name)
     {
@@ -376,7 +376,7 @@ abstract class Controller
             return $this->{$name};
         }
 
-        throw new OutOfBoundsException("Property $name does not exist");
+        throw new InvalidArgumentException("Property $name does not exist");
     }
 
     /**
@@ -493,8 +493,10 @@ abstract class Controller
     protected function setUserProperties()
     {
         if (!$this->isInstall()) {
+
             $this->cart_uid = $this->cart->getUid();
             $this->uid = $this->user->getId();
+
             if (!empty($this->uid)) {
                 $this->current_user = $this->user->get($this->uid);
             }
@@ -1459,8 +1461,12 @@ abstract class Controller
      */
     protected function controlCsrf()
     {
-        if ($this->isPosted() && (!isset($this->current_route['token']) || !empty($this->current_route['token']))) {
+        if ($this->isPosted()
+            && !$this->isInternalRoute()
+            && (!isset($this->current_route['token']) || !empty($this->current_route['token']))) {
+
             $token = $this->request->post('token', '', false, 'string');
+
             if (!gplcart_string_equals($token, $this->token)) {
                 $this->response->outputError403();
             }
@@ -1474,6 +1480,7 @@ abstract class Controller
     protected function controlToken($key = null)
     {
         $control = isset($key) ? isset($this->query[$key]) : !empty($this->query);
+
         if ($control && (empty($this->query['token']) || !gplcart_string_equals($this->token, $this->query['token']))) {
             $this->response->outputError403();
         }
