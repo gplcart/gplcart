@@ -9,8 +9,8 @@
 
 namespace gplcart\core;
 
-use gplcart\core\helpers\Cli as CliHelper;
-use gplcart\core\helpers\Server as ServerHelper;
+use gplcart\core\helpers\Cli;
+use gplcart\core\helpers\Server;
 use LogicException;
 use OutOfBoundsException;
 use OverflowException;
@@ -60,10 +60,10 @@ class CliRoute
 
     /**
      * @param Hook $hook
-     * @param CliHelper $cli
-     * @param ServerHelper $server
+     * @param Cli $cli
+     * @param Server $server
      */
-    public function __construct(Hook $hook, CliHelper $cli, ServerHelper $server)
+    public function __construct(Hook $hook, Cli $cli, Server $server)
     {
         $this->cli = $cli;
         $this->hook = $hook;
@@ -104,7 +104,7 @@ class CliRoute
     /**
      * Set CLI params (both options and arguments)
      * @param array|null $params
-     * @return array
+     * @return $this
      */
     public function setParams($params = null)
     {
@@ -114,7 +114,7 @@ class CliRoute
             $this->params = $this->cli->parseParams($this->server->cliArgs());
         }
 
-        return $this->params;
+        return $this;
     }
 
     /**
@@ -159,11 +159,12 @@ class CliRoute
 
     /**
      * Processes the current CLI command
+     * @param null|array
      * @throws LogicException
      */
-    public function process()
+    public function process($route = null)
     {
-        $this->set();
+        $this->set($route);
         $this->callController();
         throw new LogicException('The command was completed incorrectly');
     }
@@ -171,7 +172,7 @@ class CliRoute
     /**
      * Sets the current route
      * @param array|null $route
-     * @return array|null
+     * @return $this
      * @throws OutOfBoundsException
      */
     public function set($route = null)
@@ -199,22 +200,28 @@ class CliRoute
             $route['params'] = $this->params;
         }
 
-        return $this->route = (array) $route;
+        $this->route = (array) $route;
+        return $this;
     }
 
     /**
      * Call a route controller
+     * @param null|array
      * @throws UnexpectedValueException
      */
-    protected function callController()
+    public function callController($route = null)
     {
-        $callback = Handler::get($this->route, null, 'controller');
+        if (!isset($route)) {
+            $route = $this->route;
+        }
+
+        $callback = Handler::get($route, null, 'controller');
 
         if (!$callback[0] instanceof CliController) {
             throw new UnexpectedValueException('Controller must be instance of \gplcart\core\CliController');
         }
 
-        call_user_func_array($callback, array());
+        call_user_func($callback);
     }
 
 }
