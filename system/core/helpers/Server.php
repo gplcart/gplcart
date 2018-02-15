@@ -191,12 +191,44 @@ class Server
      * @param string $name
      * @param mixed $default
      * @param bool $sanitize
-     * @return mixed
+     * @return string
      */
     public function header($name, $default = null, $sanitize = true)
     {
-        $key = 'HTTP_' . strtoupper(str_replace('-', '_', $name));
-        return $this->get($key, $default, $sanitize);
+        $headers = $this->headers();
+
+        $name = ucfirst(strtolower($name));
+
+        if (array_key_exists($name, $headers)) {
+            return $sanitize ? filter_var($headers[$name], FILTER_SANITIZE_STRING) : $headers[$name];
+        }
+
+        return $default;
+    }
+
+    /**
+     * Returns an array of HTTP headers
+     * $_SERVER is not entirely complete (e.g doesn't contain Authorization header)
+     * so first it tries to use getallheaders() function which works only on Apache server
+     * @return array
+     */
+    public function headers()
+    {
+        if (function_exists('getallheaders')) {
+            $headers = getallheaders();
+            return empty($headers) ? array() : $headers;
+        }
+
+        $headers = array();
+
+        foreach ($_SERVER as $name => $value) {
+            if (substr($name, 0, 5) == 'HTTP_') {
+                $key = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))));
+                $headers[$key] = $value;
+            }
+        }
+
+        return $headers;
     }
 
 }
