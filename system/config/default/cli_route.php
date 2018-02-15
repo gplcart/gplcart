@@ -12,9 +12,9 @@ return array(
         'alias' => 'h',
         'description' => 'Displays all available commands', // @text
         'usage' => array(
-            'php gplcart help -h',
-            'php gplcart (help | h)',
-            'php gplcart (help | h) <command>'
+            'gplcart (help | h) -h',
+            'gplcart (help | h)',
+            'gplcart (help | h) <command>'
         ),
         'options' => array(
             '-h' => 'Show command help' // @text
@@ -23,28 +23,13 @@ return array(
             'controller' => array('gplcart\\core\\controllers\\cli\\Help', 'help')
         )
     ),
-    'lang' => array(
-        'alias' => 'l',
-        'description' => 'Set UI language', // @text
-        'usage' => array(
-            'php gplcart lang -h',
-            'php gplcart (lang | l)',
-            'php gplcart (lang | l) <code>'
-        ),
-        'options' => array(
-            '-h' => 'Show command help' // @text
-        ),
-        'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\cli\\Language', 'language')
-        )
-    ),
     'install' => array(
         'alias' => 'i',
         'description' => 'Performs full system installation', // @text
         'usage' => array(
-            'php gplcart -h',
-            'php gplcart (install | i)',
-            'php gplcart (install | i) (--email=<e-mail> --pass=<password> --db-name=<name>) [options]'
+            'gplcart (install | i) -h',
+            'gplcart (install | i)',
+            'gplcart (install | i) (--email=<e-mail> --pass=<password> --db-name=<name>) [options]'
         ),
         'options' => array(
             // Required
@@ -53,11 +38,11 @@ return array(
             '--db-name' => 'Database name', // @text
             // Optional
             '--db-pass' => 'Database password', // @text
-            '--db-user' => 'Database user' . ' [default: root]', // @text
-            '--db-host' => 'Database host' . ' [default: localhost]', // @text
-            '--db-type' => 'Database type' . ' [default: mysql]', // @text
-            '--db-port' => 'Database port' . ' [default: 3306]', // @text
-            '--title' => 'Store name' . ' [default: GPL Cart]', // @text
+            '--db-user' => 'Database user [default: root]' . ' ', // @text
+            '--db-host' => 'Database host [default: localhost]', // @text
+            '--db-type' => 'Database type [default: mysql]', // @text
+            '--db-port' => 'Database port [default: 3306]', // @text
+            '--title' => 'Store name [default: GPL Cart]', // @text
             '--basepath' => 'Installation subfolder name', // @text
             '--timezone' => 'Store timezone', // @text
             '--host' => 'Domain name', // @text
