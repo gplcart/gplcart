@@ -372,7 +372,7 @@ class User implements CrudInterface
             return true;
         }
 
-        if ($permission === '_superadmin') {
+        if ($permission === GC_PERM_SUPERADMIN) {
             return false;
         }
 

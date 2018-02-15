@@ -317,3 +317,13 @@ define('GC_FILE_CONFIG_COMPILED_MODULE', GC_DIR_CONFIG_COMPILED . '/module.php')
  * @var string
  */
 define('GC_FILE_CONFIG_COMPILED_OVERRIDE', GC_DIR_CONFIG_COMPILED . '/override.php');
+
+/**
+ * Permission ID for superadmin (user #1) access
+ */
+define('GC_PERM_SUPERADMIN', '_superadmin');
+
+/**
+ * Permission ID for public access
+ */
+define('GC_PERM_PUBLIC', '_public');

@@ -126,7 +126,7 @@ class ReportRoute extends Controller
             }
 
             if (!isset($route['access'])) {
-                $route['access'] = '_public';
+                $route['access'] = GC_PERM_PUBLIC;
             }
 
             $access_names = array();
@@ -134,11 +134,11 @@ class ReportRoute extends Controller
             if (isset($permissions[$route['access']])) {
                 $access_names[$route['access']] = $this->text($permissions[$route['access']]);
             } else {
-                $access_names[''] = $this->text($permissions['_public']);
+                $access_names[''] = $this->text($permissions[GC_PERM_PUBLIC]);
             }
 
-            if ($route['access'] === '_superadmin') {
-                $access_names = array('_superadmin' => $this->text($permissions['_superadmin']));
+            if ($route['access'] === GC_PERM_SUPERADMIN) {
+                $access_names = array(GC_PERM_SUPERADMIN => $this->text($permissions[GC_PERM_SUPERADMIN]));
             }
 
             $route['pattern'] = $pattern;
@@ -155,8 +155,8 @@ class ReportRoute extends Controller
     protected function getPermissionsReportRole()
     {
         $permissions = array(
-            '_public' => 'Public',
-            '_superadmin' => 'Superadmin'
+            GC_PERM_PUBLIC => 'Public',
+            GC_PERM_SUPERADMIN => 'Superadmin'
         );
 
         $permissions += $this->role->getPermissions();

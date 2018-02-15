@@ -615,7 +615,7 @@ return array(
         )
     ),
     'admin/settings/common' => array(
-        'access' => '_superadmin',
+        'access' => GC_PERM_SUPERADMIN,
         'menu' => array(
             'admin' => 'Common' // @text
         ),
