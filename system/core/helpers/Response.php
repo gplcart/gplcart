@@ -148,7 +148,7 @@ class Response
 
     /**
      * Output JSON string
-     * @param array $data
+     * @param mixed $data
      * @param array $options
      */
     public function outputJson($data, $options = array())
