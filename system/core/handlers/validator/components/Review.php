@@ -9,14 +9,14 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\Component;
 use gplcart\core\models\Product as ProductModel;
 use gplcart\core\models\Review as ReviewModel;
 
 /**
  * Provides methods to validate reviews
  */
-class Review extends ComponentValidator
+class Review extends Component
 {
 
     /**

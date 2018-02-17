@@ -10,14 +10,14 @@
 namespace gplcart\core\handlers\validator\components;
 
 use Exception;
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\Component;
 use gplcart\core\models\Condition as ConditionModel;
 use gplcart\core\models\Trigger as TriggerModel;
 
 /**
  * Provides methods to validate trigger data
  */
-class Trigger extends ComponentValidator
+class Trigger extends Component
 {
 
     /**

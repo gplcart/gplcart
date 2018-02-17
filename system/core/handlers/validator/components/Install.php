@@ -9,13 +9,13 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\Component;
 use gplcart\core\models\Install as InstallModel;
 
 /**
  * Provides methods to validate installation data
  */
-class Install extends ComponentValidator
+class Install extends Component
 {
 
     /**

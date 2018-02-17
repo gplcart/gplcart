@@ -9,13 +9,13 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\Component;
 use gplcart\core\models\Currency as CurrencyModel;
 
 /**
  * Provides methods to validate various currency related data
  */
-class Currency extends ComponentValidator
+class Currency extends Component
 {
 
     /**

@@ -9,7 +9,7 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\Component;
 use gplcart\core\models\Category as CategoryModel;
 use gplcart\core\models\Convertor as ConvertorModel;
 use gplcart\core\models\Currency as CurrencyModel;
@@ -20,7 +20,7 @@ use gplcart\core\models\Sku as SkuModel;
 /**
  * Provides methods to validate a product data
  */
-class Product extends ComponentValidator
+class Product extends Component
 {
 
     /**

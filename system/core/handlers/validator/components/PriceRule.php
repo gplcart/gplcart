@@ -10,7 +10,7 @@
 namespace gplcart\core\handlers\validator\components;
 
 use Exception;
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\Component;
 use gplcart\core\models\Currency as CurrencyModel;
 use gplcart\core\models\Price as PriceModel;
 use gplcart\core\models\PriceRule as PriceRuleModel;
@@ -19,7 +19,7 @@ use gplcart\core\models\Trigger as TriggerModel;
 /**
  * Provides methods to validate price rule data
  */
-class PriceRule extends ComponentValidator
+class PriceRule extends Component
 {
 
     /**

@@ -10,7 +10,7 @@
 namespace gplcart\core\handlers\validator\components;
 
 use Exception;
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\Component;
 use gplcart\core\models\Collection as CollectionModel;
 use gplcart\core\models\CollectionItem as CollectionItemModel;
 use gplcart\core\models\Page as PageModel;
@@ -19,7 +19,7 @@ use gplcart\core\models\Product as ProductModel;
 /**
  * Provides methods to validate collection item data
  */
-class CollectionItem extends ComponentValidator
+class CollectionItem extends Component
 {
 
     /**

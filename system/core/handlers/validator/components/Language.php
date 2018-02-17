@@ -9,13 +9,13 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\Component;
 use gplcart\core\models\Language as LanguageModel;
 
 /**
  * Provides methods to validate languages
  */
-class Language extends ComponentValidator
+class Language extends Component
 {
 
     /**

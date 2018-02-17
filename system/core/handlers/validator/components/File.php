@@ -9,12 +9,12 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\Component;
 
 /**
  * Provides methods to validate files to be stored in the database
  */
-class File extends ComponentValidator
+class File extends Component
 {
     /**
      * Performs full file data validation

@@ -9,7 +9,7 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\Component;
 use gplcart\core\models\Country as CountryModel;
 use gplcart\core\models\State as StateModel;
 use gplcart\core\models\Zone as ZoneModel;
@@ -17,7 +17,7 @@ use gplcart\core\models\Zone as ZoneModel;
 /**
  * Provides methods to validate country states data
  */
-class State extends ComponentValidator
+class State extends Component
 {
 
     /**

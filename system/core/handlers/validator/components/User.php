@@ -9,13 +9,13 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\Component;
 use gplcart\core\models\UserRole as UserRoleModel;
 
 /**
  * Provides methods to validate various user related data
  */
-class User extends ComponentValidator
+class User extends Component
 {
 
     /**

@@ -9,7 +9,7 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\Component;
 use gplcart\core\models\Address as AddressModel;
 use gplcart\core\models\Currency as CurrencyModel;
 use gplcart\core\models\Order as OrderModel;
@@ -20,7 +20,7 @@ use gplcart\core\models\Transaction as TransactionModel;
 /**
  * Provides methods to validate orders to be stored in the database
  */
-class Order extends ComponentValidator
+class Order extends Component
 {
 
     /**

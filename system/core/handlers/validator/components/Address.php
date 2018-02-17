@@ -11,9 +11,9 @@ namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\handlers\validator\Component;
 use gplcart\core\models\Address as AddressModel;
-use gplcart\core\models\City;
-use gplcart\core\models\Country;
-use gplcart\core\models\State;
+use gplcart\core\models\City as CityModel;
+use gplcart\core\models\Country as CountryModel;
+use gplcart\core\models\State as StateModel;
 
 /**
  * Provides methods to validate address data
@@ -46,12 +46,12 @@ class Address extends Component
     protected $address;
 
     /**
-     * @param Country $country
-     * @param State $state
-     * @param City $city
+     * @param CountryModel $country
+     * @param StateModel $state
+     * @param CityModel $city
      * @param AddressModel $address
      */
-    public function __construct(Country $country, State $state, City $city, AddressModel $address)
+    public function __construct(CountryModel $country, StateModel $state, CityModel $city, AddressModel $address)
     {
         parent::__construct();
 

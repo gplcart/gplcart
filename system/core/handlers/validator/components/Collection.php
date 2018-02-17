@@ -9,13 +9,13 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\Component;
 use gplcart\core\models\Collection as CollectionModel;
 
 /**
  * Provides methods to validate collection data
  */
-class Collection extends ComponentValidator
+class Collection extends Component
 {
 
     /**
