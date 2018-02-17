@@ -71,6 +71,7 @@ class Module
     public function setSettings($module_id, array $settings)
     {
         $result = false;
+
         if ($this->isInstalled($module_id)) {
             $this->update($module_id, array('settings' => $settings));
             $result = true;
@@ -80,7 +81,6 @@ class Module
             $result = true;
         }
 
-        $this->clearCache();
         return $result;
     }
 
@@ -162,22 +162,14 @@ class Module
 
     /**
      * Returns an array of all available modules
-     * @param bool $get_cached
      * @return array
      */
-    public function getList($get_cached = true)
+    public function getList()
     {
         $modules = &gplcart_static('module.list');
 
         if (isset($modules)) {
             return $modules;
-        }
-
-        if ($get_cached) {
-            $cache = gplcart_config_get(GC_FILE_CONFIG_COMPILED_MODULE);
-            if (!empty($cache)) {
-                return $modules = (array) $cache;
-            }
         }
 
         $installed = $this->getInstalled();
@@ -188,10 +180,6 @@ class Module
         }
 
         gplcart_array_sort($modules);
-
-        if ($get_cached) {
-            gplcart_config_set(GC_FILE_CONFIG_COMPILED_MODULE, $modules);
-        }
 
         return $modules;
     }
@@ -271,16 +259,6 @@ class Module
         }
 
         return $info;
-    }
-
-    /**
-     * Delete cached module data
-     * @return boolean
-     */
-    public function clearCache()
-    {
-        gplcart_static_clear();
-        return gplcart_config_delete(GC_FILE_CONFIG_COMPILED_MODULE);
     }
 
     /**

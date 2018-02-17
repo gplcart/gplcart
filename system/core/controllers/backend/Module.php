@@ -64,7 +64,6 @@ class Module extends Controller
     public function listModule()
     {
         $this->actionListModule();
-        $this->clearCacheModule();
 
         $this->setTitleListModule();
         $this->setBreadcrumbListModule();
@@ -74,21 +73,8 @@ class Module extends Controller
         $this->setData('types', $this->getTypesModule());
         $this->setData('modules', (array) $this->getListModule());
         $this->setData('available_modules', $this->module->getList());
-        $this->setData('cached', is_file(GC_FILE_CONFIG_COMPILED_MODULE));
 
         $this->outputListModule();
-    }
-
-    /**
-     * Clear module cache
-     */
-    protected function clearCacheModule()
-    {
-        $this->controlToken('refresh');
-
-        if ($this->isQuery('refresh') && $this->module->clearCache()) {
-            $this->redirect('', $this->text('Cache has been deleted'), 'success');
-        }
     }
 
     /**

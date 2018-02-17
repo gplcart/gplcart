@@ -49,6 +49,12 @@ define('GC_BASE', str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])));
 define('GC_DIR', str_replace('\\', '/', realpath(__DIR__ . '/../')));
 
 /**
+ * Path to CLI executable file
+ * @var string
+ */
+define('GC_FILE_CLI', GC_DIR . '/gplcart');
+
+/**
  * Path to directory containing system files
  * @var string
  */
@@ -305,12 +311,6 @@ define('GC_FILE_CONFIG_COMPILED', GC_DIR_CONFIG_COMPILED . '/common.php');
  * @var string
  */
 define('GC_FILE_CONFIG_COMPILED_LIBRARY', GC_DIR_CONFIG_COMPILED . '/library.php');
-
-/**
- * File containing compiled modules configuration
- * @var string
- */
-define('GC_FILE_CONFIG_COMPILED_MODULE', GC_DIR_CONFIG_COMPILED . '/module.php');
 
 /**
  * File containing compiled class override configuration

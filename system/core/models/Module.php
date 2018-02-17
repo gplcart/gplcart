@@ -76,7 +76,6 @@ class Module
         }
 
         $this->module->update($module_id, array('status' => 1));
-        $this->module->clearCache();
         $this->setOverrideConfig();
 
         $this->hook->attach("module.enable.after|$module_id", $result, $this);
@@ -108,7 +107,6 @@ class Module
             $this->module->add(array('status' => false, 'module_id' => $module_id));
         }
 
-        $this->module->clearCache();
         $this->setOverrideConfig();
 
         $this->hook->attach("module.disable.after|$module_id", $result, $this);
@@ -139,7 +137,6 @@ class Module
         }
 
         $this->module->add(array('module_id' => $module_id, 'status' => $status));
-        $this->module->clearCache();
         $this->setOverrideConfig();
 
         $this->hook->attach("module.install.after|$module_id", $result, $this);
@@ -166,7 +163,6 @@ class Module
         }
 
         $this->module->delete($module_id);
-        $this->module->clearCache();
         $this->setOverrideConfig();
 
         $this->hook->attach("module.uninstall.after|$module_id", $result, $this);
@@ -443,7 +439,7 @@ class Module
      */
     protected function checkDependenciesModule($module_id)
     {
-        $modules = $this->module->getList(false); // Get non-cached modules
+        $modules = $this->module->getList();
         $validated = $this->validateDependencies($modules, true);
 
         if (empty($validated[$module_id]['errors'])) {
