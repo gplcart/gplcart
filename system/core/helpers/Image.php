@@ -10,6 +10,7 @@
 namespace gplcart\core\helpers;
 
 use BadFunctionCallException;
+use RuntimeException;
 use UnexpectedValueException;
 
 /**
@@ -97,6 +98,7 @@ class Image
     public function getSupportedFormats()
     {
         $formats = array();
+
         foreach (gd_info() as $name => $status) {
             if (strpos($name, 'Support') !== false && $status) {
                 $formats[] = strtolower(strtok($name, ' '));
@@ -112,7 +114,7 @@ class Image
      * @param string $format
      * @param array $arguments
      * @return mixed
-     * @throws UnexpectedValueException
+     * @throws RuntimeException
      * @throws BadFunctionCallException
      */
     protected function callFunction($prefix, $format, array $arguments)
@@ -120,7 +122,7 @@ class Image
         $function = "$prefix$format";
 
         if (!in_array($format, $this->getSupportedFormats())) {
-            throw new UnexpectedValueException("Image format $format does not match with a set of supported formats");
+            throw new RuntimeException("Image format $format does not match with a set of supported formats");
         }
 
         if (!function_exists($function)) {

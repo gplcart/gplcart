@@ -60,6 +60,7 @@ class Compressor
         }
 
         $data = '';
+
         foreach ($files as $file) {
             $contents = file_get_contents($file);
             $contents .= ";\n";

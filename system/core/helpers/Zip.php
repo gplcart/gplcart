@@ -9,6 +9,7 @@
 
 namespace gplcart\core\helpers;
 
+use LogicException;
 use RuntimeException;
 
 /**
@@ -24,13 +25,12 @@ class Zip
     protected $zip;
 
     /**
-     * Constructor
-     * @throws RuntimeException
+     * @throws LogicException
      */
     public function __construct()
     {
         if (!class_exists('ZipArchive')) {
-            throw new RuntimeException('Class ZipArchive does not exist');
+            throw new LogicException('Class ZipArchive does not exist');
         }
 
         $this->zip = new \ZipArchive;
@@ -153,6 +153,7 @@ class Zip
     public function getList()
     {
         $items = array();
+
         for ($i = 0; $i < $this->zip->numFiles; $i++) {
             $items[] = $this->zip->getNameIndex($i);
         }

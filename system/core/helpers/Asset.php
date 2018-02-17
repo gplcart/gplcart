@@ -9,8 +9,6 @@
 
 namespace gplcart\core\helpers;
 
-use gplcart\core\helpers\Compressor as CompressorHelper;
-
 /**
  * Helpers to work with CSS/JS files
  */
@@ -30,9 +28,9 @@ class Asset
     protected $assets = array();
 
     /**
-     * @param CompressorHelper $compressor
+     * @param Compressor $compressor
      */
-    public function __construct(CompressorHelper $compressor)
+    public function __construct(Compressor $compressor)
     {
         $this->compressor = $compressor;
     }

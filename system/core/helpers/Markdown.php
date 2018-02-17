@@ -121,6 +121,7 @@ class Markdown
     {
         $line = $matches[1];
         $trimmed = trim($line);
+
         if (preg_match('/^<\/?(ul|ol|li|h|p|bl)/', $trimmed)) {
             return "\n$line\n";
         }
