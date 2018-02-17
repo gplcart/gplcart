@@ -10,9 +10,9 @@
 namespace gplcart\core;
 
 use Exception;
-use gplcart\core\exceptions\Database as DatabaseException;
 use OutOfBoundsException;
 use PDO;
+use RuntimeException;
 
 /**
  * Provides methods to work with the database
@@ -42,7 +42,7 @@ class Database
     /**
      * Set up database connection
      * @param mixed $config
-     * @throws DatabaseException
+     * @throws RuntimeException
      * @return $this
      */
     public function init($config)
@@ -67,7 +67,7 @@ class Database
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (Exception $ex) {
             $this->pdo = null;
-            throw new DatabaseException('Cannot connect to database: ' . $ex->getMessage());
+            throw new RuntimeException('Cannot connect to database: ' . $ex->getMessage());
         }
 
         return $this;
@@ -451,20 +451,20 @@ class Database
     /**
      * Creates tables using an array of scheme data
      * @param array $tables
-     * @throws DatabaseException
+     * @throws RuntimeException
      */
     public function import(array $tables)
     {
         foreach ($tables as $table => $data) {
 
             if (!$this->query($this->getSqlCreateTable($table, $data))) {
-                throw new DatabaseException("Failed to import database table $table");
+                throw new RuntimeException("Failed to import database table $table");
             }
 
             $alter = $this->getSqlAlterTable($table, $data);
 
             if (!empty($alter) && !$this->query($alter)) {
-                throw new DatabaseException("Failed to alter table $table");
+                throw new RuntimeException("Failed to alter table $table");
             }
         }
     }
@@ -473,19 +473,19 @@ class Database
      * Install a database table using the scheme
      * @param string $table
      * @param array $scheme
-     * @throws DatabaseException
+     * @throws RuntimeException
      */
     public function importScheme($table, array $scheme)
     {
         if ($this->tableExists($table)) {
-            throw new DatabaseException('Table already exists');
+            throw new RuntimeException('Table already exists');
         }
 
         try {
             $this->import($scheme);
         } catch (Exception $ex) {
             $this->deleteTable($table);
-            throw new DatabaseException("Failed to import database table $table: " . $ex->getMessage());
+            throw new RuntimeException("Failed to import database table $table: " . $ex->getMessage());
         }
     }
 

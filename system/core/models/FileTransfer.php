@@ -11,14 +11,13 @@ namespace gplcart\core\models;
 
 use Exception;
 use gplcart\core\Config;
-use gplcart\core\exceptions\Validation as ValidationException;
 use gplcart\core\Hook;
 use gplcart\core\models\File as FileModel;
 use gplcart\core\models\Http as HttpModel;
 use gplcart\core\models\Language as LanguageModel;
 use gplcart\core\models\Translation as TranslationModel;
 use gplcart\core\models\Validator as ValidatorModel;
-use OutOfBoundsException;
+use RuntimeException;
 use UnexpectedValueException;
 
 /**
@@ -356,28 +355,28 @@ class FileTransfer
      * @param string $file
      * @param string|null $extension
      * @return bool
-     * @throws OutOfBoundsException
-     * @throws ValidationException
+     * @throws UnexpectedValueException
+     * @throws RuntimeException
      */
     protected function validateHandler($file, $extension = null)
     {
         if (empty($this->handler['validator'])) {
-            throw new OutOfBoundsException($this->translation->text('Unknown handler'));
+            throw new UnexpectedValueException($this->translation->text('Unknown handler'));
         }
 
         if (!empty($this->handler['extensions']) && isset($extension) && !in_array($extension, $this->handler['extensions'])) {
-            throw new ValidationException($this->translation->text('Unsupported file extension'));
+            throw new RuntimeException($this->translation->text('Unsupported file extension'));
         }
 
         if (isset($this->handler['filesize']) && filesize($file) > $this->handler['filesize']) {
-            throw new ValidationException($this->translation->text('File size exceeds %num bytes', array(
+            throw new RuntimeException($this->translation->text('File size exceeds %num bytes', array(
                 '%num' => $this->handler['filesize'])));
         }
 
         $result = $this->validator->run($this->handler['validator'], $file, $this->handler);
 
         if ($result !== true) {
-            throw new ValidationException($result);
+            throw new UnexpectedValueException($result);
         }
 
         return true;
@@ -406,12 +405,12 @@ class FileTransfer
      * Find and set handler by a file extension
      * @param string $extension
      * @return array
-     * @throws ValidationException
+     * @throws RuntimeException
      */
     protected function setHandlerByExtension($extension)
     {
         if (!in_array($extension, $this->file->supportedExtensions())) {
-            throw new ValidationException($this->translation->text('Unsupported file extension'));
+            throw new RuntimeException($this->translation->text('Unsupported file extension'));
         }
 
         return $this->handler = $this->file->getHandler(".$extension");
