@@ -129,7 +129,7 @@ class Controller extends BaseController
     }
 
     /**
-     * Returns a number of cart items for the current user
+     * Returns the number of cart items for the current user
      * @param array $options
      * @return array|int
      */

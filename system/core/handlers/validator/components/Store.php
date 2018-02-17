@@ -170,6 +170,7 @@ class Store extends ComponentValidator
 
     /**
      * Validate "data" field
+     * @return null|bool
      */
     protected function validateDataStore()
     {
@@ -206,6 +207,8 @@ class Store extends ComponentValidator
         $this->validateDataMetaDescriptionStore();
         $this->validateDataTranslationStore();
         $this->validateDataThemeStore();
+
+        return !$this->isError();
     }
 
     /**

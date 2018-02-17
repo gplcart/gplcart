@@ -309,7 +309,6 @@ class Address extends ComponentValidator
 
     /**
      * Validates address fields
-     * @return boolean|null
      */
     protected function validateFieldsAddress()
     {
