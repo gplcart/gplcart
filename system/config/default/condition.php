@@ -99,48 +99,48 @@ return array(
         'title' => 'Order shipping country code', // @text
         'description' => 'Parameters: list of country codes, separated by comma', // @text
         'handlers' => array(
-            'process' => array('gplcart\\core\\handlers\\condition\\Shipping', 'countryCode'),
-            'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Shipping', 'countryCode'),
+            'process' => array('gplcart\\core\\handlers\\condition\\ShippingAddress', 'countryCode'),
+            'validate' => array('gplcart\\core\\handlers\\validator\\condition\\ShippingAddress', 'countryCode'),
         ),
     ),
     'shipping_state_id' => array(
         'title' => 'Order shipping country state ID', // @text
         'description' => 'Parameters: list of ID, separated by comma', // @text
         'handlers' => array(
-            'process' => array('gplcart\\core\\handlers\\condition\\Shipping', 'stateId'),
-            'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Shipping', 'stateId'),
+            'process' => array('gplcart\\core\\handlers\\condition\\ShippingAddress', 'stateId'),
+            'validate' => array('gplcart\\core\\handlers\\validator\\condition\\ShippingAddress', 'stateId'),
         ),
     ),
     'shipping_zone_id' => array(
         'title' => 'Order shipping address zone ID', // @text
         'description' => 'Parameters: list of ID, separated by comma', // @text
         'handlers' => array(
-            'process' => array('gplcart\\core\\handlers\\condition\\Shipping', 'zoneId'),
-            'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Shipping', 'zoneId'),
+            'process' => array('gplcart\\core\\handlers\\condition\\ShippingAddress', 'zoneId'),
+            'validate' => array('gplcart\\core\\handlers\\validator\\condition\\ShippingAddress', 'zoneId'),
         ),
     ),
     'payment_country_code' => array(
         'title' => 'Order payment country code', // @text
         'description' => 'Parameters: list of country codes, separated by comma', // @text
         'handlers' => array(
-            'process' => array('gplcart\\core\\handlers\\condition\\Payment', 'countryCode'),
-            'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Payment', 'countryCode'),
+            'process' => array('gplcart\\core\\handlers\\condition\\PaymentAddress', 'countryCode'),
+            'validate' => array('gplcart\\core\\handlers\\validator\\condition\\PaymentAddress', 'countryCode'),
         ),
     ),
     'payment_state_id' => array(
         'title' => 'Order payment country state ID', // @text
         'description' => 'Parameters: list of ID, separated by comma', // @text
         'handlers' => array(
-            'process' => array('gplcart\\core\\handlers\\condition\\Payment', 'stateId'),
-            'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Payment', 'stateId'),
+            'process' => array('gplcart\\core\\handlers\\condition\\PaymentAddress', 'stateId'),
+            'validate' => array('gplcart\\core\\handlers\\validator\\condition\\PaymentAddress', 'stateId'),
         ),
     ),
     'payment_zone_id' => array(
         'title' => 'Order payment address zone ID', // @text
         'description' => 'Parameters: list of ID, separated by comma', // @text
         'handlers' => array(
-            'process' => array('gplcart\\core\\handlers\\condition\\Payment', 'zoneId'),
-            'validate' => array('gplcart\\core\\handlers\\validator\\condition\\Payment', 'zoneId'),
+            'process' => array('gplcart\\core\\handlers\\condition\\PaymentAddress', 'zoneId'),
+            'validate' => array('gplcart\\core\\handlers\\validator\\condition\\PaymentAddress', 'zoneId'),
         ),
     ),
     'cart_total' => array(

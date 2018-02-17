@@ -11,19 +11,19 @@ namespace gplcart\core\handlers\dashboard;
 
 use gplcart\core\Config;
 use gplcart\core\Handler;
-use gplcart\core\models\Cart as CartModel;
-use gplcart\core\models\Order as OrderModel;
-use gplcart\core\models\OrderHistory as OrderHistoryModel;
-use gplcart\core\models\Price as PriceModel;
-use gplcart\core\models\PriceRule as PriceRuleModel;
-use gplcart\core\models\Product as ProductModel;
-use gplcart\core\models\Report as ReportModel;
-use gplcart\core\models\Review as ReviewModel;
-use gplcart\core\models\Transaction as TransactionModel;
-use gplcart\core\models\Translation as TranslationModel;
-use gplcart\core\models\User as UserModel;
-use gplcart\core\traits\ItemOrder as ItemOrderTrait;
-use gplcart\core\traits\ItemPrice as ItemPriceTrait;
+use gplcart\core\models\Cart;
+use gplcart\core\models\Order;
+use gplcart\core\models\OrderHistory;
+use gplcart\core\models\Price;
+use gplcart\core\models\PriceRule;
+use gplcart\core\models\Product;
+use gplcart\core\models\Report;
+use gplcart\core\models\Review;
+use gplcart\core\models\Transaction;
+use gplcart\core\models\Translation;
+use gplcart\core\models\User;
+use gplcart\core\traits\ItemOrder;
+use gplcart\core\traits\ItemPrice;
 
 /**
  * Dashboard handlers
@@ -31,7 +31,7 @@ use gplcart\core\traits\ItemPrice as ItemPriceTrait;
 class Dashboard extends Handler
 {
 
-    use ItemPriceTrait, ItemOrderTrait;
+    use ItemPrice, ItemOrder;
 
     /**
      * Config class instance
@@ -107,22 +107,22 @@ class Dashboard extends Handler
 
     /**
      * @param Config $config
-     * @param CartModel $cart
-     * @param UserModel $user
-     * @param ProductModel $product
-     * @param TranslationModel $translation
-     * @param PriceModel $price
-     * @param OrderModel $order
-     * @param OrderHistoryModel $order_history
-     * @param ReportModel $report
-     * @param ReviewModel $review
-     * @param TransactionModel $transaction
-     * @param PriceRuleModel $pricerule
+     * @param Cart $cart
+     * @param User $user
+     * @param Product $product
+     * @param Translation $translation
+     * @param Price $price
+     * @param Order $order
+     * @param OrderHistory $order_history
+     * @param Report $report
+     * @param Review $review
+     * @param Transaction $transaction
+     * @param PriceRule $pricerule
      */
-    public function __construct(Config $config, CartModel $cart, UserModel $user,
-                                ProductModel $product, TranslationModel $translation, PriceModel $price,
-                                OrderModel $order, OrderHistoryModel $order_history, ReportModel $report,
-                                ReviewModel $review, TransactionModel $transaction, PriceRuleModel $pricerule)
+    public function __construct(Config $config, Cart $cart, User $user,
+                                Product $product, Translation $translation, Price $price,
+                                Order $order, OrderHistory $order_history, Report $report,
+                                Review $review, Transaction $transaction, PriceRule $pricerule)
     {
         $this->cart = $cart;
         $this->user = $user;

@@ -9,7 +9,7 @@
 
 namespace gplcart\core\handlers\validator\condition;
 
-use gplcart\core\models\Translation as TranslationModel;
+use gplcart\core\models\Translation;
 
 /**
  * Base condition validator handler
@@ -24,9 +24,9 @@ class Base
     protected $translation;
 
     /**
-     * @param TranslationModel $translation
+     * @param Translation $translation
      */
-    public function __construct(TranslationModel $translation)
+    public function __construct(Translation $translation)
     {
         $this->translation = $translation;
     }

@@ -9,16 +9,16 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\Component;
 use gplcart\core\models\Cart as CartModel;
-use gplcart\core\models\Order as OrderModel;
-use gplcart\core\models\Product as ProductModel;
-use gplcart\core\models\Sku as SkuModel;
+use gplcart\core\models\Order;
+use gplcart\core\models\Product;
+use gplcart\core\models\Sku;
 
 /**
  * Provides methods to validate cart data
  */
-class Cart extends ComponentValidator
+class Cart extends Component
 {
 
     /**
@@ -47,11 +47,11 @@ class Cart extends ComponentValidator
 
     /**
      * @param CartModel $cart
-     * @param ProductModel $product
-     * @param SkuModel $sku
-     * @param OrderModel $order
+     * @param Product $product
+     * @param Sku $sku
+     * @param Order $order
      */
-    public function __construct(CartModel $cart, ProductModel $product, SkuModel $sku, OrderModel $order)
+    public function __construct(CartModel $cart, Product $product, Sku $sku, Order $order)
     {
         parent::__construct();
 

@@ -9,14 +9,14 @@
 
 namespace gplcart\core\handlers\validator\components;
 
-use gplcart\core\handlers\validator\Component as ComponentValidator;
+use gplcart\core\handlers\validator\Component;
 use gplcart\core\models\Category as CategoryModel;
-use gplcart\core\models\CategoryGroup as CategoryGroupModel;
+use gplcart\core\models\CategoryGroup;
 
 /**
  * Provides methods to validate various data related to categories
  */
-class Category extends ComponentValidator
+class Category extends Component
 {
 
     /**
@@ -33,9 +33,9 @@ class Category extends ComponentValidator
 
     /**
      * @param CategoryModel $category
-     * @param CategoryGroupModel $category_group
+     * @param CategoryGroup $category_group
      */
-    public function __construct(CategoryModel $category, CategoryGroupModel $category_group)
+    public function __construct(CategoryModel $category, CategoryGroup $category_group)
     {
         parent::__construct();
 

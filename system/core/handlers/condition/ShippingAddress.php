@@ -9,12 +9,10 @@
 
 namespace gplcart\core\handlers\condition;
 
-use gplcart\core\handlers\condition\Address as AddressBaseHandler;
-
 /**
  * Provides methods to check shipping address conditions
  */
-class Shipping extends AddressBaseHandler
+class ShippingAddress extends Address
 {
 
     /**

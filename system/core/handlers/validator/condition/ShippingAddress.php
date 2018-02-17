@@ -9,15 +9,15 @@
 
 namespace gplcart\core\handlers\validator\condition;
 
-use gplcart\core\models\Country as CountryModel;
-use gplcart\core\models\State as StateModel;
-use gplcart\core\models\Translation as TranslationModel;
-use gplcart\core\models\Zone as ZoneModel;
+use gplcart\core\models\Country;
+use gplcart\core\models\State;
+use gplcart\core\models\Translation;
+use gplcart\core\models\Zone;
 
 /**
  * Contains methods to validate shipping address conditions
  */
-class Shipping
+class ShippingAddress
 {
 
     /**
@@ -45,13 +45,12 @@ class Shipping
     protected $zone;
 
     /**
-     * @param CountryModel $country
-     * @param StateModel $state
-     * @param ZoneModel $zone
-     * @param TranslationModel $translation
+     * @param Country $country
+     * @param State $state
+     * @param Zone $zone
+     * @param Translation $translation
      */
-    public function __construct(CountryModel $country, StateModel $state, ZoneModel $zone,
-                                TranslationModel $translation)
+    public function __construct(Country $country, State $state, Zone $zone, Translation $translation)
     {
         $this->zone = $zone;
         $this->state = $state;

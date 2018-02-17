@@ -9,12 +9,10 @@
 
 namespace gplcart\core\handlers\condition;
 
-use gplcart\core\handlers\condition\Base as BaseHandler;
-
 /**
  * Provides methods to check trigger scope conditions
  */
-class Scope extends BaseHandler
+class Scope extends Base
 {
 
     /**

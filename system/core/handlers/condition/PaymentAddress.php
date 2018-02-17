@@ -9,12 +9,10 @@
 
 namespace gplcart\core\handlers\condition;
 
-use gplcart\core\handlers\condition\Address as AddressBaseHandler;
-
 /**
  * Provides methods to check payment address conditions
  */
-class Payment extends AddressBaseHandler
+class PaymentAddress extends Address
 {
 
     /**

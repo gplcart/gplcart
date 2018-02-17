@@ -9,7 +9,7 @@
 
 namespace gplcart\core\handlers\validator\condition;
 
-use gplcart\core\models\Translation as TranslationModel;
+use gplcart\core\models\Translation;
 use gplcart\core\Route;
 
 /**
@@ -32,9 +32,9 @@ class Url
 
     /**
      * @param Route $route
-     * @param TranslationModel $translation
+     * @param Translation $translation
      */
-    public function __construct(Route $route, TranslationModel $translation)
+    public function __construct(Route $route, Translation $translation)
     {
         $this->route = $route;
         $this->translation = $translation;

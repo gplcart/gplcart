@@ -9,12 +9,10 @@
 
 namespace gplcart\core\handlers\condition;
 
-use gplcart\core\handlers\condition\Base as BaseHandler;
-
 /**
  * Provides methods to check order conditions
  */
-class Order extends BaseHandler
+class Order extends Base
 {
 
     /**

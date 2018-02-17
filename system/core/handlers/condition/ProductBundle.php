@@ -9,12 +9,10 @@
 
 namespace gplcart\core\handlers\condition;
 
-use gplcart\core\handlers\condition\Base as BaseHandler;
-
 /**
  * Provides methods to check product bundle conditions
  */
-class ProductBundle extends BaseHandler
+class ProductBundle extends Base
 {
 
     /**

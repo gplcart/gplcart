@@ -10,12 +10,11 @@
 namespace gplcart\core\handlers\install;
 
 use Exception;
-use gplcart\core\handlers\install\Base as BaseInstall;
 
 /**
  * Default installer
  */
-class DefaultProfile extends BaseInstall
+class DefaultProfile extends Base
 {
     /**
      * Performs full system installation

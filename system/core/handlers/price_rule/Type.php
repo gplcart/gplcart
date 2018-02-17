@@ -9,8 +9,8 @@
 
 namespace gplcart\core\handlers\price_rule;
 
-use gplcart\core\models\Currency as CurrencyModel;
-use gplcart\core\models\Price as PriceModel;
+use gplcart\core\models\Currency;
+use gplcart\core\models\Price;
 
 /**
  * Contains callback methods to modify prices depending on the price rule type
@@ -31,10 +31,10 @@ class Type
     protected $currency;
 
     /**
-     * @param PriceModel $price
-     * @param CurrencyModel $currency
+     * @param Price $price
+     * @param Currency $currency
      */
-    public function __construct(PriceModel $price, CurrencyModel $currency)
+    public function __construct(Price $price, Currency $currency)
     {
         $this->price = $price;
         $this->currency = $currency;

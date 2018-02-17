@@ -9,12 +9,10 @@
 
 namespace gplcart\core\handlers\condition;
 
-use gplcart\core\handlers\condition\Base as BaseHandler;
-
 /**
  * Provides methods to check date/time conditions
  */
-class Date extends BaseHandler
+class Date extends Base
 {
 
     /**

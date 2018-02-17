@@ -9,12 +9,10 @@
 
 namespace gplcart\core\handlers\mail;
 
-use gplcart\core\handlers\mail\Base as BaseHandler;
-
 /**
  * Mail handlers related to user accounts
  */
-class Account extends BaseHandler
+class Account extends Base
 {
     /**
      * Sent to an admin when a user has been registered

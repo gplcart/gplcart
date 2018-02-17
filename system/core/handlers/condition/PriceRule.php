@@ -9,12 +9,10 @@
 
 namespace gplcart\core\handlers\condition;
 
-use gplcart\core\handlers\condition\Base as BaseHandler;
-
 /**
  * Provides methods to check price rule conditions
  */
-class PriceRule extends BaseHandler
+class PriceRule extends Base
 {
 
     /**

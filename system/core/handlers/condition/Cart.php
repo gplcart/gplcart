@@ -9,14 +9,13 @@
 
 namespace gplcart\core\handlers\condition;
 
-use gplcart\core\handlers\condition\Base as BaseHandler;
-use gplcart\core\models\Currency as CurrencyModel;
-use gplcart\core\models\Price as PriceModel;
+use gplcart\core\models\Currency;
+use gplcart\core\models\Price;
 
 /**
  * Provides methods to check cart conditions
  */
-class Cart extends BaseHandler
+class Cart extends Base
 {
 
     /**
@@ -32,10 +31,10 @@ class Cart extends BaseHandler
     protected $currency;
 
     /**
-     * @param PriceModel $price
-     * @param CurrencyModel $currency
+     * @param Price $price
+     * @param Currency $currency
      */
-    public function __construct(PriceModel $price, CurrencyModel $currency)
+    public function __construct(Price $price, Currency $currency)
     {
         $this->price = $price;
         $this->currency = $currency;

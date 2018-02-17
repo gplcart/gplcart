@@ -9,9 +9,9 @@
 
 namespace gplcart\core\handlers\validator\condition;
 
-use gplcart\core\models\Payment as PaymentModel;
-use gplcart\core\models\Shipping as ShippingModel;
-use gplcart\core\models\Translation as TranslationModel;
+use gplcart\core\models\Payment;
+use gplcart\core\models\Shipping;
+use gplcart\core\models\Translation;
 
 /**
  * Contains methods to validate various order conditions
@@ -38,11 +38,11 @@ class Order
     protected $shipping;
 
     /**
-     * @param PaymentModel $payment
-     * @param ShippingModel $shipping
-     * @param TranslationModel $translation
+     * @param Payment $payment
+     * @param Shipping $shipping
+     * @param Translation $translation
      */
-    public function __construct(PaymentModel $payment, ShippingModel $shipping, TranslationModel $translation)
+    public function __construct(Payment $payment, Shipping $shipping, Translation $translation)
     {
         $this->payment = $payment;
         $this->shipping = $shipping;

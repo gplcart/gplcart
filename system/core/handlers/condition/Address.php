@@ -10,12 +10,11 @@
 namespace gplcart\core\handlers\condition;
 
 use gplcart\core\Container;
-use gplcart\core\handlers\condition\Base as BaseHandler;
 
 /**
  * Provides methods to check address conditions
  */
-class Address extends BaseHandler
+class Address extends Base
 {
 
     /**

@@ -9,14 +9,13 @@
 
 namespace gplcart\core\handlers\mail;
 
-use gplcart\core\handlers\mail\Base as BaseHandler;
 use gplcart\core\models\Order as OrderModel;
-use gplcart\core\models\Price as PriceModel;
+use gplcart\core\models\Price;
 
 /**
  * Mail handlers related to orders
  */
-class Order extends BaseHandler
+class Order extends Base
 {
 
     /**
@@ -33,9 +32,9 @@ class Order extends BaseHandler
 
     /**
      * @param OrderModel $order
-     * @param PriceModel $price
+     * @param Price $price
      */
-    public function __construct(OrderModel $order, PriceModel $price)
+    public function __construct(OrderModel $order, Price $price)
     {
         parent::__construct();
 

@@ -9,8 +9,8 @@
 
 namespace gplcart\core\handlers\validator\condition;
 
-use gplcart\core\models\Currency as CurrencyModel;
-use gplcart\core\models\Translation as TranslationModel;
+use gplcart\core\models\Currency;
+use gplcart\core\models\Translation;
 
 /**
  * Contains methods to validate price conditions
@@ -31,10 +31,10 @@ class Price
     protected $currency;
 
     /**
-     * @param CurrencyModel $currency
-     * @param TranslationModel $translation
+     * @param Currency $currency
+     * @param Translation $translation
      */
-    public function __construct(CurrencyModel $currency, TranslationModel $translation)
+    public function __construct(Currency $currency, Translation $translation)
     {
         $this->currency = $currency;
         $this->translation = $translation;

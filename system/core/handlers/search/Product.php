@@ -11,7 +11,7 @@ namespace gplcart\core\handlers\search;
 
 use gplcart\core\Config;
 use gplcart\core\models\Product as ProductModel;
-use gplcart\core\models\Search as SearchModel;
+use gplcart\core\models\Search;
 
 class Product
 {
@@ -36,10 +36,10 @@ class Product
 
     /**
      * @param Config $config
-     * @param SearchModel $search
+     * @param Search $search
      * @param ProductModel $product
      */
-    public function __construct(Config $config, SearchModel $search, ProductModel $product)
+    public function __construct(Config $config, Search $search, ProductModel $product)
     {
         $this->search = $search;
         $this->config = $config;
@@ -145,6 +145,7 @@ class Product
         }
 
         $indexed = 0;
+
         foreach ($product['translation'] as $language => $translation) {
             $translation += $product;
             $snippet = $this->search->getSnippet($translation, $language);

@@ -10,7 +10,7 @@
 namespace gplcart\core\handlers\image;
 
 use Exception;
-use gplcart\core\helpers\Image as ImageHelper;
+use gplcart\core\helpers\Image;
 
 /**
  * Methods to process images
@@ -25,9 +25,9 @@ class Action
     protected $image;
 
     /**
-     * @param ImageHelper $image
+     * @param Image $image
      */
-    public function __construct(ImageHelper $image)
+    public function __construct(Image $image)
     {
         $this->image = $image;
     }

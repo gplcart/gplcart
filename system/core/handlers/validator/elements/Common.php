@@ -9,21 +9,13 @@
 
 namespace gplcart\core\handlers\validator\elements;
 
-use gplcart\core\handlers\validator\Element as BaseElementValidator;
+use gplcart\core\handlers\validator\Element;
 
 /**
  * Methods to validate single elements
  */
-class Common extends BaseElementValidator
+class Common extends Element
 {
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
 
     /**
      * Validates the field/value is not empty

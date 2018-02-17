@@ -9,9 +9,9 @@
 
 namespace gplcart\core\handlers\validator\condition;
 
-use gplcart\core\models\Translation as TranslationModel;
+use gplcart\core\models\Translation;
 use gplcart\core\models\User as UserModel;
-use gplcart\core\models\UserRole as UserRoleModel;
+use gplcart\core\models\UserRole;
 
 class User
 {
@@ -36,10 +36,10 @@ class User
 
     /**
      * @param UserModel $user
-     * @param UserRoleModel $role
-     * @param TranslationModel $translation
+     * @param UserRole $role
+     * @param Translation $translation
      */
-    public function __construct(UserModel $user, UserRoleModel $role, TranslationModel $translation)
+    public function __construct(UserModel $user, UserRole $role, Translation $translation)
     {
         $this->user = $user;
         $this->role = $role;

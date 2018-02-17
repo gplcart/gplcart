@@ -9,13 +9,12 @@
 
 namespace gplcart\core\handlers\condition;
 
-use gplcart\core\handlers\condition\Base as BaseHandler;
 use gplcart\core\models\User as UserModel;
 
 /**
  * Provides methods to check user conditions
  */
-class User extends BaseHandler
+class User extends Base
 {
 
     /**

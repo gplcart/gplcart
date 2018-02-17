@@ -9,10 +9,10 @@
 
 namespace gplcart\core\handlers\validator\condition;
 
-use gplcart\core\models\Category as CategoryModel;
+use gplcart\core\models\Category;
 use gplcart\core\models\Product as ProductModel;
-use gplcart\core\models\Sku as SkuModel;
-use gplcart\core\models\Translation as TranslationModel;
+use gplcart\core\models\Sku;
+use gplcart\core\models\Translation;
 
 /**
  * Contains methods to validate product conditions
@@ -46,12 +46,11 @@ class Product
 
     /**
      * @param ProductModel $product
-     * @param CategoryModel $category
-     * @param TranslationModel $translation
-     * @param SkuModel $sku
+     * @param Category $category
+     * @param Translation $translation
+     * @param Sku $sku
      */
-    public function __construct(ProductModel $product, CategoryModel $category,
-                                TranslationModel $translation, SkuModel $sku)
+    public function __construct(ProductModel $product, Category $category, Translation $translation, Sku $sku)
     {
         $this->sku = $sku;
         $this->product = $product;
