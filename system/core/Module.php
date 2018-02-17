@@ -10,7 +10,6 @@
 namespace gplcart\core;
 
 use Exception;
-use RuntimeException;
 
 /**
  * Parent class for modules
@@ -175,6 +174,7 @@ class Module
         $installed = $this->getInstalled();
 
         $modules = array();
+
         foreach ($this->scan() as $module_id => $info) {
             $modules[$module_id] = $this->prepareInfo($module_id, $info, $installed);
         }
@@ -327,15 +327,10 @@ class Module
      * Returns the module class instance
      * @param string $module_id
      * @return object
-     * @throws RuntimeException
      */
     public function getInstance($module_id)
     {
-        try {
-            return Container::get($this->getClass($module_id));
-        } catch (Exception $exc) {
-            throw new RuntimeException("Failed to instantiate module $module_id: " . $exc->getMessage());
-        }
+        return Container::get($this->getClass($module_id));
     }
 
     /**
