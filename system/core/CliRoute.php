@@ -76,10 +76,16 @@ class CliRoute
 
     /**
      * Returns the current CLI route
+     * @param null|string $command
      * @return array
      */
-    public function get()
+    public function get($command = null)
     {
+        if (isset($command)) {
+            $routes = $this->getList();
+            return isset($routes[$command]) ? $routes[$command] : array();
+        }
+
         return $this->route;
     }
 
@@ -193,6 +199,10 @@ class CliRoute
 
             if (empty($routes[$command])) {
                 throw new OutOfBoundsException('Unknown command');
+            }
+
+            if (isset($routes[$command]['status']) && empty($routes[$command]['status'])) {
+                throw new OutOfBoundsException('Disabled command');
             }
 
             $route = $routes[$command];
