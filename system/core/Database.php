@@ -220,6 +220,7 @@ class Database
     protected function prepareResults(array &$results, array $options)
     {
         $reindexed = array();
+
         foreach ($results as &$result) {
             $this->prepareResult($result, $options);
             if (!empty($options['index'])) {
