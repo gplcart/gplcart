@@ -54,13 +54,13 @@ class ImageStyle extends Controller
     public function listImageStyle()
     {
         $this->clearCacheImageStyle();
-
         $this->setTitleListImageStyle();
         $this->setBreadcrumbListImageStyle();
         $this->setFilterListImageStyle();
         $this->setPagerListImageStyle();
 
         $this->setData('image_styles', (array) $this->getListImageStyle());
+
         $this->outputListImageStyle();
     }
 
@@ -103,8 +103,8 @@ class ImageStyle extends Controller
     protected function getListImageStyle($count = false)
     {
         $list = $this->image_style->getList();
-
         $allowed = $this->getAllowedFiltersImageStyle();
+
         $this->filterList($list, $allowed, $this->query_filter);
         $this->sortList($list, $allowed, $this->query_filter, array('name' => 'desc'));
 
@@ -114,6 +114,7 @@ class ImageStyle extends Controller
 
         $this->limitList($list, $this->data_limit);
         $this->prepareListImageStyle($list);
+
         return $list;
     }
 

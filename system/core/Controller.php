@@ -341,7 +341,6 @@ abstract class Controller
     public function __construct()
     {
         $this->setInstanceProperties();
-
         $this->setToken();
         $this->setRouteProperties();
         $this->setLanguageProperties();

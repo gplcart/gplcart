@@ -46,7 +46,6 @@ class Address extends Controller
     public function listAddress()
     {
         $this->actionListAddress();
-
         $this->setTitleListAddress();
         $this->setBreadcrumbListAddress();
         $this->setFilterListAddress();
