@@ -73,7 +73,7 @@ class Image
         $info = getimagesize($this->filename);
 
         if (empty($info)) {
-            throw new UnexpectedValueException("Failed to get image dimensions for {$this->filename}");
+            throw new UnexpectedValueException('Failed to get image dimensions');
         }
 
         $this->width = $info[0];
@@ -82,7 +82,7 @@ class Image
         $this->image = $this->callFunction('imagecreatefrom', $this->format, array($this->filename));
 
         if (!is_resource($this->image)) {
-            throw new UnexpectedValueException("File handle is not a valid resource. Image: {$this->filename}");
+            throw new UnexpectedValueException('Image file handle is not a valid resource');
         }
 
         imagesavealpha($this->image, true);
@@ -122,7 +122,7 @@ class Image
         $function = "$prefix$format";
 
         if (!in_array($format, $this->getSupportedFormats())) {
-            throw new RuntimeException("Image format $format does not match with a set of supported formats");
+            throw new RuntimeException("Unsupported image format $format");
         }
 
         if (!function_exists($function)) {
@@ -185,6 +185,7 @@ class Image
      * @param int $x2
      * @param int $y2
      * @return $this
+     * @throws UnexpectedValueException
      */
     public function crop($x1, $y1, $x2, $y2)
     {
@@ -199,9 +200,17 @@ class Image
         $crop_height = $y2 - $y1;
 
         $new = imagecreatetruecolor($crop_width, $crop_height);
+
+        if (empty($new)) {
+            throw new UnexpectedValueException('Failed to create an image identifier');
+        }
+
         imagealphablending($new, false);
         imagesavealpha($new, true);
-        imagecopyresampled($new, $this->image, 0, 0, $x1, $y1, $crop_width, $crop_height, $crop_width, $crop_height);
+
+        if (!imagecopyresampled($new, $this->image, 0, 0, $x1, $y1, $crop_width, $crop_height, $crop_width, $crop_height)) {
+            throw new UnexpectedValueException('Failed to copy and resize part of an image with resampling');
+        }
 
         $this->image = $new;
         $this->width = $crop_width;
@@ -215,10 +224,15 @@ class Image
      * @param int $width
      * @param int $height
      * @return $this
+     * @throws UnexpectedValueException
      */
     public function resize($width, $height)
     {
         $new = imagecreatetruecolor($width, $height);
+
+        if (empty($new)) {
+            throw new UnexpectedValueException('Failed to create an image identifier');
+        }
 
         if ($this->format === 'gif') {
 
@@ -236,7 +250,9 @@ class Image
             imagesavealpha($new, true);
         }
 
-        imagecopyresampled($new, $this->image, 0, 0, 0, 0, $width, $height, $this->width, $this->height);
+        if (!imagecopyresampled($new, $this->image, 0, 0, 0, 0, $width, $height, $this->width, $this->height)) {
+            throw new UnexpectedValueException('Failed to copy and resize part of an image with resampling');
+        }
 
         $this->image = $new;
         $this->width = $width;
@@ -250,8 +266,7 @@ class Image
      * @param string $filename
      * @param int|null $quality
      * @param string $format
-     * @return $this
-     * @throws UnexpectedValueException
+     * @return bool
      */
     public function save($filename = '', $quality = 100, $format = '')
     {
@@ -273,13 +288,7 @@ class Image
             $arguments = array($this->image, $filename, round(9 * $quality / 100));
         }
 
-        $result = $this->callFunction('image', $format, $arguments);
-
-        if (empty($result)) {
-            throw new UnexpectedValueException("Failed to save image $filename");
-        }
-
-        return $this;
+        return $this->callFunction('image', $format, $arguments);
     }
 
 }
