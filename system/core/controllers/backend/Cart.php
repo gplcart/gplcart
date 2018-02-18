@@ -22,20 +22,11 @@ class Cart extends Controller
     protected $data_limit;
 
     /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Displays the shopping cart overview page
      */
     public function listCart()
     {
         $this->actionListCart();
-
         $this->setTitleListCart();
         $this->setBreadcrumbListCart();
         $this->setFilterListCart();

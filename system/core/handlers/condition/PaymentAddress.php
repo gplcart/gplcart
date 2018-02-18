@@ -16,14 +16,6 @@ class PaymentAddress extends Address
 {
 
     /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Whether the payment zone ID condition is met
      * @param array $condition
      * @param array $data
