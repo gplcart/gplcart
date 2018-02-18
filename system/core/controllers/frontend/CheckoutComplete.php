@@ -9,9 +9,9 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\Order as OrderModel;
-use gplcart\core\models\Payment as PaymentModel;
-use gplcart\core\models\Shipping as ShippingModel;
+use gplcart\core\models\Order;
+use gplcart\core\models\Payment;
+use gplcart\core\models\Shipping;
 use gplcart\core\traits\Checkout as CheckoutTrait;
 
 /**
@@ -47,11 +47,12 @@ class CheckoutComplete extends Controller
     protected $data_order = array();
 
     /**
-     * @param OrderModel $order
-     * @param PaymentModel $payment
-     * @param ShippingModel $shipping
+     * CheckoutComplete constructor.
+     * @param Order $order
+     * @param Payment $payment
+     * @param Shipping $shipping
      */
-    public function __construct(OrderModel $order, PaymentModel $payment, ShippingModel $shipping)
+    public function __construct(Order $order, Payment $payment, Shipping $shipping)
     {
         parent::__construct();
 

@@ -9,13 +9,12 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\Controller as BaseController;
 use gplcart\core\models\Install as InstallModel;
 
 /**
  * Handles incoming requests and outputs data related to installation process
  */
-class Install extends BaseController
+class Install extends Controller
 {
 
     /**

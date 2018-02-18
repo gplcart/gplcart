@@ -9,8 +9,8 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\ProductClass as ProductClassModel;
-use gplcart\core\models\ProductField as ProductFieldModel;
+use gplcart\core\models\ProductClass;
+use gplcart\core\models\ProductField;
 
 /**
  * Handles incoming requests and outputs data related to product comparison
@@ -37,10 +37,11 @@ class Compare extends Controller
     protected $data_products = array();
 
     /**
-     * @param ProductClassModel $product_class
-     * @param ProductFieldModel $product_field
+     * Compare constructor.
+     * @param ProductClass $product_class
+     * @param ProductField $product_field
      */
-    public function __construct(ProductClassModel $product_class, ProductFieldModel $product_field)
+    public function __construct(ProductClass $product_class, ProductField $product_field)
     {
         parent::__construct();
 

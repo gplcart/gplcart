@@ -16,14 +16,6 @@ class Wishlist extends Controller
 {
 
     /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Displays the wishlist page
      */
     public function indexWishlist()

@@ -9,7 +9,7 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\UserAction as UserActionModel;
+use gplcart\core\models\UserAction;
 
 /**
  * Handles incoming requests and outputs data related to user account creation
@@ -24,9 +24,9 @@ class UserRegister extends Controller
     protected $user_action;
 
     /**
-     * @param UserActionModel $user_action
+     * @param UserAction $user_action
      */
-    public function __construct(UserActionModel $user_action)
+    public function __construct(UserAction $user_action)
     {
         parent::__construct();
 

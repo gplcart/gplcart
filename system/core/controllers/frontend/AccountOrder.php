@@ -9,12 +9,12 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\Address as AddressModel;
-use gplcart\core\models\Order as OrderModel;
-use gplcart\core\models\Payment as PaymentModel;
-use gplcart\core\models\PriceRule as PriceRuleModel;
-use gplcart\core\models\Shipping as ShippingModel;
-use gplcart\core\traits\ItemOrder as ItemOrderTrait;
+use gplcart\core\models\Address;
+use gplcart\core\models\Order;
+use gplcart\core\models\Payment;
+use gplcart\core\models\PriceRule;
+use gplcart\core\models\Shipping;
+use gplcart\core\traits\ItemOrder;
 
 /**
  * Handles incoming requests and outputs data related to customer orders
@@ -22,7 +22,7 @@ use gplcart\core\traits\ItemOrder as ItemOrderTrait;
 class AccountOrder extends Controller
 {
 
-    use ItemOrderTrait;
+    use ItemOrder;
 
     /**
      * Address model instance
@@ -67,14 +67,14 @@ class AccountOrder extends Controller
     protected $data_order = array();
 
     /**
-     * @param AddressModel $address
-     * @param OrderModel $order
-     * @param PriceRuleModel $price_rule
-     * @param PaymentModel $payment
-     * @param ShippingModel $shipping
+     * AccountOrder constructor.
+     * @param Address $address
+     * @param Order $order
+     * @param PriceRule $price_rule
+     * @param Payment $payment
+     * @param Shipping $shipping
      */
-    public function __construct(AddressModel $address, OrderModel $order,
-                                PriceRuleModel $price_rule, PaymentModel $payment, ShippingModel $shipping)
+    public function __construct(Address $address, Order $order, PriceRule $price_rule, Payment $payment, Shipping $shipping)
     {
         parent::__construct();
 

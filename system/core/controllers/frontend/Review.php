@@ -9,7 +9,7 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\Rating as RatingModel;
+use gplcart\core\models\Rating;
 use gplcart\core\models\Review as ReviewModel;
 
 /**
@@ -44,9 +44,9 @@ class Review extends Controller
 
     /**
      * @param ReviewModel $review
-     * @param RatingModel $rating
+     * @param Rating $rating
      */
-    public function __construct(ReviewModel $review, RatingModel $rating)
+    public function __construct(ReviewModel $review, Rating $rating)
     {
         parent::__construct();
 

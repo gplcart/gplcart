@@ -9,7 +9,7 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\Address as AddressModel;
+use gplcart\core\models\Address;
 
 /**
  * Handles incoming requests and outputs data related to customer addresses
@@ -30,9 +30,9 @@ class AccountAddress extends Controller
     protected $data_user = array();
 
     /**
-     * @param AddressModel $address
+     * @param Address $address
      */
-    public function __construct(AddressModel $address)
+    public function __construct(Address $address)
     {
         parent::__construct();
 

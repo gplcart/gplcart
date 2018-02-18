@@ -9,7 +9,7 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\Page as PageModel;
+use gplcart\core\models\Page;
 
 /**
  * Handles incoming requests and outputs data related to blogs
@@ -36,9 +36,10 @@ class Blog extends Controller
     protected $data_total;
 
     /**
-     * @param PageModel $page
+     * Blog constructor.
+     * @param Page $page
      */
-    public function __construct(PageModel $page)
+    public function __construct(Page $page)
     {
         parent::__construct();
 

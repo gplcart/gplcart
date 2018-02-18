@@ -46,14 +46,6 @@ class Category extends Controller
     protected $data_children = array();
 
     /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Page callback
      * Displays the catalog page
      */

@@ -9,7 +9,7 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\UserAction as UserActionModel;
+use gplcart\core\models\UserAction;
 
 /**
  * Handles incoming requests and outputs data related to resetting user passwords
@@ -30,9 +30,9 @@ class UserForgot extends Controller
     protected $data_user = array();
 
     /**
-     * @param UserActionModel $user_action
+     * @param UserAction $user_action
      */
-    public function __construct(UserActionModel $user_action)
+    public function __construct(UserAction $user_action)
     {
         parent::__construct();
 

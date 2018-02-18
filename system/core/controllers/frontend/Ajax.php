@@ -9,11 +9,11 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\CategoryGroup as CategoryGroupModel;
-use gplcart\core\models\City as CityModel;
-use gplcart\core\models\Collection as CollectionModel;
-use gplcart\core\models\CollectionItem as CollectionItemModel;
-use gplcart\core\models\Sku as SkuModel;
+use gplcart\core\models\CategoryGroup;
+use gplcart\core\models\City;
+use gplcart\core\models\Collection;
+use gplcart\core\models\CollectionItem;
+use gplcart\core\models\Sku;
 use gplcart\core\traits\Category as CategoryTrait;
 
 /**
@@ -55,14 +55,15 @@ class Ajax extends Controller
     protected $collection_item;
 
     /**
-     * @param SkuModel $sku
-     * @param CityModel $city
-     * @param CollectionModel $collection
-     * @param CollectionItemModel $collection_item
-     * @param CategoryGroupModel $category_group
+     * Ajax constructor.
+     * @param Sku $sku
+     * @param City $city
+     * @param Collection $collection
+     * @param CollectionItem $collection_item
+     * @param CategoryGroup $category_group
      */
-    public function __construct(SkuModel $sku, CityModel $city, CollectionModel $collection,
-                                CollectionItemModel $collection_item, CategoryGroupModel $category_group)
+    public function __construct(Sku $sku, City $city, Collection $collection,
+                                CollectionItem $collection_item, CategoryGroup $category_group)
     {
         parent::__construct();
 

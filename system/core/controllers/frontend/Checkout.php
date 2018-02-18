@@ -9,17 +9,17 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\Address as AddressModel;
-use gplcart\core\models\CartAction as CartActionModel;
-use gplcart\core\models\Country as CountryModel;
-use gplcart\core\models\Order as OrderModel;
-use gplcart\core\models\OrderAction as OrderActionModel;
-use gplcart\core\models\OrderDimension as OrderDimensionModel;
-use gplcart\core\models\OrderHistory as OrderHistoryModel;
-use gplcart\core\models\Payment as PaymentModel;
-use gplcart\core\models\Shipping as ShippingModel;
-use gplcart\core\models\State as StateModel;
-use gplcart\core\models\UserAction as UserActionModel;
+use gplcart\core\models\Address;
+use gplcart\core\models\CartAction;
+use gplcart\core\models\Country;
+use gplcart\core\models\Order;
+use gplcart\core\models\OrderAction;
+use gplcart\core\models\OrderDimension;
+use gplcart\core\models\OrderHistory;
+use gplcart\core\models\Payment;
+use gplcart\core\models\Shipping;
+use gplcart\core\models\State;
+use gplcart\core\models\UserAction;
 use gplcart\core\traits\Checkout as CheckoutTrait;
 
 /**
@@ -175,22 +175,23 @@ class Checkout extends Controller
     protected $order_store_id;
 
     /**
-     * @param CountryModel $country
-     * @param StateModel $state
-     * @param AddressModel $address
-     * @param OrderModel $order
-     * @param OrderActionModel $order_action
-     * @param OrderHistoryModel $order_history
-     * @param UserActionModel $user_action
-     * @param OrderDimensionModel $order_dimension
-     * @param ShippingModel $shipping
-     * @param PaymentModel $payment
-     * @param CartActionModel $cart_action
+     * Checkout constructor.
+     * @param Country $country
+     * @param State $state
+     * @param Address $address
+     * @param Order $order
+     * @param OrderAction $order_action
+     * @param OrderHistory $order_history
+     * @param UserAction $user_action
+     * @param OrderDimension $order_dimension
+     * @param Shipping $shipping
+     * @param Payment $payment
+     * @param CartAction $cart_action
      */
-    public function __construct(CountryModel $country, StateModel $state, AddressModel $address,
-                                OrderModel $order, OrderActionModel $order_action, OrderHistoryModel $order_history,
-                                UserActionModel $user_action, OrderDimensionModel $order_dimension,
-                                ShippingModel $shipping, PaymentModel $payment, CartActionModel $cart_action)
+    public function __construct(Country $country, State $state, Address $address,
+                                Order $order, OrderAction $order_action, OrderHistory $order_history,
+                                UserAction $user_action, OrderDimension $order_dimension,
+                                Shipping $shipping, Payment $payment, CartAction $cart_action)
     {
         parent::__construct();
 

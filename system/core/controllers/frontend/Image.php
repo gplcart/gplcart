@@ -10,7 +10,7 @@
 namespace gplcart\core\controllers\frontend;
 
 use Exception;
-use gplcart\core\models\ImageStyle as ImageStyleModel;
+use gplcart\core\models\ImageStyle;
 use OutOfRangeException;
 use RuntimeException;
 
@@ -57,9 +57,9 @@ class Image extends Controller
     protected $data_imagestyle_directory;
 
     /**
-     * @param ImageStyleModel $image_style
+     * @param ImageStyle $image_style
      */
-    public function __construct(ImageStyleModel $image_style)
+    public function __construct(ImageStyle $image_style)
     {
         parent::__construct();
 

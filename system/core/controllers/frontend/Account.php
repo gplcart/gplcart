@@ -9,11 +9,11 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\Address as AddressModel;
-use gplcart\core\models\Order as OrderModel;
-use gplcart\core\models\Payment as PaymentModel;
-use gplcart\core\models\Shipping as ShippingModel;
-use gplcart\core\traits\ItemOrder as ItemOrderTrait;
+use gplcart\core\models\Address;
+use gplcart\core\models\Order;
+use gplcart\core\models\Payment;
+use gplcart\core\models\Shipping;
+use gplcart\core\traits\ItemOrder;
 
 /**
  * Handles incoming requests and outputs data related to user accounts
@@ -21,7 +21,7 @@ use gplcart\core\traits\ItemOrder as ItemOrderTrait;
 class Account extends Controller
 {
 
-    use ItemOrderTrait;
+    use ItemOrder;
 
     /**
      * Address model instance
@@ -60,13 +60,13 @@ class Account extends Controller
     protected $data_user = array();
 
     /**
-     * @param AddressModel $address
-     * @param OrderModel $order
-     * @param PaymentModel $payment
-     * @param ShippingModel $shipping
+     * Account constructor.
+     * @param Address $address
+     * @param Order $order
+     * @param Payment $payment
+     * @param Shipping $shipping
      */
-    public function __construct(AddressModel $address, OrderModel $order, PaymentModel $payment,
-                                ShippingModel $shipping)
+    public function __construct(Address $address, Order $order, Payment $payment, Shipping $shipping)
     {
         parent::__construct();
 

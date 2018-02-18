@@ -9,7 +9,7 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\CollectionItem as CollectionItemModel;
+use gplcart\core\models\CollectionItem;
 use gplcart\core\traits\Collection as CollectionTrait;
 
 /**
@@ -27,9 +27,9 @@ class Front extends Controller
     protected $collection_item;
 
     /**
-     * @param CollectionItemModel $collection_item
+     * @param CollectionItem $collection_item
      */
-    public function __construct(CollectionItemModel $collection_item)
+    public function __construct(CollectionItem $collection_item)
     {
         parent::__construct();
 
