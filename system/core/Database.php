@@ -55,7 +55,7 @@ class Database
             $dns = "{$config['type']}:host={$config['host']};port={$config['port']};dbname={$config['name']}";
         } else if (is_string($config)) {
             $dns = $config;
-        } else if ($config instanceof \PDO) {
+        } else if ($config instanceof PDO) {
             $this->pdo = $config;
             return $this;
         }
