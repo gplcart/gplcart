@@ -69,10 +69,10 @@
      */
     var htmlProductCombinationRow = function () {
 
-        var mod, html = '', index = $('#option-form-wrapper tbody tr').length + 1;
+        var mod, html = '', index = $('div#option-form-wrapper tbody tr').length + 1;
 
         html += '<tr>';
-        $('#option-form-wrapper tfoot select').each(function () {
+        $('div#option-form-wrapper tfoot select').each(function () {
             html += '<td class="field-title">';
             html += '<select data-live-search="true" class="form-control" name="product[combination][' + index + '][fields][' + $(this).attr('data-field-id') + ']">';
             html += $(this).html();
@@ -121,10 +121,10 @@
     var htmlProductImageModal = function () {
 
         var src,
-                mod,
-                path,
-                html = '',
-                images = $(image_container).find('.thumb');
+            mod,
+            path,
+            html = '',
+            images = $(image_container).find('.thumb');
 
         if (images.length === 0) {
             return '';
@@ -168,9 +168,9 @@
     var htmlProductPicker = function (item, el) {
 
         var mod,
-                html = '',
-                name = el.data('name'),
-                val = item.data[el.data('key')];
+            html = '',
+            name = el.data('name'),
+            val = item.data[el.data('key')];
 
         html += '<div class="selected-item">';
 
@@ -199,12 +199,14 @@
 
         if (Gplcart.hook('modal.set.before', content, id, header, footer) === undefined) {
 
-            $('.modal').remove();
-            $('.modal-backdrop').remove();
-            $('body').removeClass('modal-open').removeAttr('style');
+            var modal = $('.modal'), body = $('body');
 
-            $('.modal').remove();
-            $('body').append(htmlModal(content, id, header, footer));
+            modal.remove();
+            $('.modal-backdrop').remove();
+            body.removeClass('modal-open').removeAttr('style');
+
+            modal.remove();
+            body.append(htmlModal(content, id, header, footer));
             $('#' + id).modal('show');
 
             Gplcart.hook('modal.set.after', content, id, header, footer);
@@ -239,8 +241,8 @@
             dataType: 'html',
             url: Gplcart.settings.url + '?product_class_id=' + id,
             success: function (response) {
-                $('#attribute-form-wrapper').html($(response).find('div#attribute-form').html());
-                $('#option-form-wrapper').html($(response).find('#option-form').html());
+                $('div#attribute-form-wrapper').html($(response).find('div#attribute-form').html());
+                $('div#option-form-wrapper').html($(response).find('div#option-form').html());
             },
             complete: function (response) {
                 Gplcart.hook('product.field.load.ajax.complete', id, response);
@@ -255,7 +257,7 @@
     var markSelectedCombinationImage = function (modal) {
         modal.find('img').each(function () {
             var path = $(this).attr('data-file-path');
-            if ($('#option-form-wrapper tbody input[name$="[path]"][value="' + path + '"]').length) {
+            if ($('div#option-form-wrapper tbody input[name$="[path]"][value="' + path + '"]').length) {
                 $(this).css('opacity', 0.5);
             }
         });
@@ -302,9 +304,9 @@
      * @returns {undefined}
      */
     Gplcart.onload.addProductCombination = function () {
-        $(document).on('click', '#option-form-wrapper .add-option-combination', function (e) {
+        $(document).on('click', 'div#option-form-wrapper .add-option-combination', function (e) {
             if (Gplcart.hook('product.combination.add.before', e) === undefined) {
-                $('#option-form-wrapper table tbody').append(htmlProductCombinationRow());
+                $('div#option-form-wrapper table tbody').append(htmlProductCombinationRow());
                 Gplcart.hook('product.combination.add.after', e);
                 return false;
             }
@@ -334,7 +336,7 @@
      * @returns {undefined}
      */
     Gplcart.onload.deleteProductCombination = function () {
-        $(document).on('click', '#option-form-wrapper .remove-option-combination', function (e) {
+        $(document).on('click', 'div#option-form-wrapper .remove-option-combination', function (e) {
             if (Gplcart.hook('product.combination.delete.before', e) === undefined) {
                 $(this).closest('tr').remove();
                 Gplcart.hook('product.combination.delete.after', e);
@@ -348,7 +350,7 @@
      * @returns {undefined}
      */
     Gplcart.onload.markProductCombinationStatus = function () {
-        $(document).on('change', '#option-form-wrapper input[name$="[status]"]', function () {
+        $(document).on('change', 'div#option-form-wrapper input[name$="[status]"]', function () {
             if ($(this).not(':checked')) {
                 $(this).closest('tr').toggleClass('bg-danger');
             }
@@ -360,7 +362,7 @@
      * @returns {undefined}
      */
     Gplcart.onload.selectProductCombinationImage = function () {
-        $(document).on('click', '#option-form-wrapper .select-image', function () {
+        $(document).on('click', 'div#option-form-wrapper .select-image', function () {
 
             if (toggleCombinationImageButton($(this))) {
                 return false;
@@ -370,7 +372,7 @@
 
             if (html.length) {
                 setModal(html, 'select-image-modal');
-                var modal = $('#select-image-modal').attr('data-active-row', $(this).closest('tr').index());
+                var modal = $('div#select-image-modal').attr('data-active-row', $(this).closest('tr').index());
                 markSelectedCombinationImage(modal);
             }
 
@@ -390,13 +392,13 @@
 
             src = $(this).attr('src');
             path = $(this).attr('data-file-path');
-            pos = $(this).closest('#select-image-modal').attr('data-active-row');
-            e = $('#option-form-wrapper tbody tr').eq(pos).find('.select-image');
+            pos = $(this).closest('div#select-image-modal').attr('data-active-row');
+            e = $('div#option-form-wrapper tbody tr').eq(pos).find('.select-image');
 
             e.html(htmlProductCombinationImage(src));
             e.siblings('input[name$="[path]"]').val(path);
             e.siblings('input[name$="[thumb]"]').val(src);
-            $('#select-image-modal').modal('hide');
+            $('div#select-image-modal').modal('hide');
         });
     };
 
@@ -495,8 +497,8 @@
     Gplcart.onload.setAutocompleteCollectionItem = function () {
 
         var params = {},
-                input = $('form#edit-collection-item input[name$="[title]"]'),
-                value = $('form#edit-collection-item input[name$="[value]"]');
+            input = $('form#edit-collection-item input[name$="[title]"]'),
+            entity_id = $('form#edit-collection-item input[name$="[entity_id]"]');
 
         if (input.length && Gplcart.settings.collection) {
             input.autocomplete({
@@ -521,11 +523,11 @@
                 },
                 select: function (event, ui) {
                     input.val(ui.item.label);
-                    value.val(ui.item.value);
+                    entity_id.val(ui.item.value);
                     return false;
                 },
                 search: function () {
-                    value.val('');
+                    entity_id.val('');
                 }
             }).autocomplete("instance")._renderItem = function (ul, item) {
                 return $("<li>").append("<a>" + item.label + "</a>").appendTo(ul);
@@ -623,7 +625,7 @@
     Gplcart.onload.setSortableTableWeigthInput = function () {
 
         var selector = $('table[data-sortable-input-weight="true"] tbody'),
-                text = Gplcart.text('Changes will not be saved until the form is submitted');
+            text = Gplcart.text('Changes will not be saved until the form is submitted');
 
         if (selector.length) {
             selector.sortable({
@@ -658,8 +660,8 @@
     Gplcart.onload.updateStoreCategories = function () {
 
         var i, g, cats, options,
-                store = $('select[name$="[store_id]"]'),
-                category = $('select[name$="[category_id]"]');
+            store = $('select[name$="[store_id]"]'),
+            category = $('select[name$="[category_id]"]');
 
         store.change(function (e) {
 
@@ -708,8 +710,8 @@
     Gplcart.onload.setDatepicker = function () {
 
         var el = $('[data-datepicker="true"]'),
-                settings = {dateFormat: 'dd.mm.yy'},
-                inline = el.data('datepicker-settings') || {};
+            settings = {dateFormat: 'dd.mm.yy'},
+            inline = el.data('datepicker-settings') || {};
 
         if (typeof inline === 'object') {
             settings = $.extend(settings, inline);
