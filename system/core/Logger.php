@@ -337,7 +337,7 @@ class Logger
         }
 
         $output .= '</table>';
-        return GC_CLI ? strip_tags($output) : $output;
+        return GC_CLI ? preg_replace("/(\n| )+/", "$1", trim(strip_tags($output))) : $output;
     }
 
     /**
