@@ -9,11 +9,11 @@
 
 namespace gplcart\core\controllers\frontend;
 
-use gplcart\core\models\ProductClass;
-use gplcart\core\models\ProductView;
-use gplcart\core\models\Rating;
-use gplcart\core\models\Review;
-use gplcart\core\models\Sku;
+use gplcart\core\models\ProductClass as ProductClassModel;
+use gplcart\core\models\ProductView as ProductViewModel;
+use gplcart\core\models\Rating as RatingModel;
+use gplcart\core\models\Review as ReviewModel;
+use gplcart\core\models\Sku as SkuModel;
 
 /**
  * Handles incoming requests and outputs data related to products
@@ -59,14 +59,14 @@ class Product extends Controller
 
     /**
      * Product constructor.
-     * @param ProductClass $product_class
-     * @param ProductView $product_view
-     * @param Sku $sku
-     * @param Review $review
-     * @param Rating $rating
+     * @param ProductClassModel $product_class
+     * @param ProductViewModel $product_view
+     * @param SkuModel $sku
+     * @param ReviewModel $review
+     * @param RatingModel $rating
      */
-    public function __construct(ProductClass $product_class, ProductView $product_view,
-                                Sku $sku, Review $review, Rating $rating)
+    public function __construct(ProductClassModel $product_class, ProductViewModel $product_view,
+                                SkuModel $sku, ReviewModel $review, RatingModel $rating)
     {
         parent::__construct();
 

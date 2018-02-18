@@ -10,12 +10,12 @@
 namespace gplcart\core\controllers\frontend;
 
 use gplcart\core\Controller as Base;
-use gplcart\core\traits\Cart;
-use gplcart\core\traits\Item;
-use gplcart\core\traits\ItemPrice;
-use gplcart\core\traits\ProductCompare;
-use gplcart\core\traits\Widget;
-use gplcart\core\traits\Wishlist;
+use gplcart\core\traits\Cart as CartTrait;
+use gplcart\core\traits\Item as ItemTrait;
+use gplcart\core\traits\ItemPrice as ItemPriceTrait;
+use gplcart\core\traits\ProductCompare as ProductCompareTrait;
+use gplcart\core\traits\Widget as WidgetTrait;
+use gplcart\core\traits\Wishlist as WishlistTrait;
 
 /**
  * Parent controller that contents front-end specific methods
@@ -23,7 +23,7 @@ use gplcart\core\traits\Wishlist;
 class Controller extends Base
 {
 
-    use Item, Cart, Widget, Wishlist, ItemPrice, ProductCompare;
+    use ItemTrait, CartTrait, WidgetTrait, WishlistTrait, ItemPriceTrait, ProductCompareTrait;
 
     /**
      * Trigger model instance

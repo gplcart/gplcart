@@ -18,6 +18,14 @@ class Help extends CliController
 {
 
     /**
+     * Help constructor.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    /**
      * Callback for "help" command
      * Shows help for a certain command or a list of all available commands
      */
