@@ -248,7 +248,7 @@ class ImageStyle
      * @param string $target
      * @param array $handler
      * @param array $action
-     * @return boolean
+     * @return boolean|string
      */
     public function applyAction(&$source, &$target, $handler, &$action)
     {
@@ -256,18 +256,18 @@ class ImageStyle
         $this->hook->attach('image.style.apply.before', $source, $target, $handler, $action, $result);
 
         if (isset($result)) {
-            return (bool) $result;
+            return $result;
         }
 
         try {
             $callback = Handler::get($handler, null, 'process');
             $result = call_user_func_array($callback, array(&$source, &$target, &$action));
         } catch (Exception $ex) {
-            $result = false;
+            $result = $ex->getMessage();
         }
 
         $this->hook->attach('image.style.apply.after', $source, $target, $handler, $action, $result);
-        return (bool) $result;
+        return $result;
     }
 
     /**
@@ -284,8 +284,14 @@ class ImageStyle
 
             $handler = $this->getActionHandler($action_id);
 
-            if (!empty($handler)) {
-                $applied += (int) $this->applyAction($source, $target, $handler, $data);
+            if (empty($handler)) {
+                continue;
+            }
+
+            $result = $this->applyAction($source, $target, $handler, $data);
+
+            if ($result === true) {
+                $applied++;
             }
         }
 
