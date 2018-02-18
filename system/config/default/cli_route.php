@@ -20,6 +20,7 @@ return array(
             '-h' => 'Show command help' // @text
         ),
         'handlers' => array(
+            /** @uses \gplcart\core\controllers\cli\Help::help() */
             'controller' => array('gplcart\\core\\controllers\\cli\\Help', 'help')
         )
     ),
@@ -50,6 +51,7 @@ return array(
             '-h' => 'Show command help', // @text
         ),
         'handlers' => array(
+            /** @uses \gplcart\core\controllers\cli\Install::install() */
             'controller' => array('gplcart\\core\\controllers\\cli\\Install', 'install')
         )
     )
