@@ -336,10 +336,26 @@ abstract class Controller
     protected $module;
 
     /**
+     * Whether controllers are set up
+     * @var bool
+     */
+    private $initialized = false;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
+        $this->init();
+    }
+
+    /**
+     * Set up all required stuff
+     */
+    private function init()
+    {
+        $this->initialized = true;
+
         $this->setInstanceProperties();
         $this->setToken();
         $this->setRouteProperties();
@@ -353,6 +369,15 @@ abstract class Controller
         $this->controlMaintenanceMode();
 
         $this->hook->attach('construct.controller', $this);
+    }
+
+    /**
+     * Whether controllers are set up
+     * @return bool
+     */
+    public function isInitialized()
+    {
+        return $this->initialized;
     }
 
     /**

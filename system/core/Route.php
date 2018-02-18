@@ -283,6 +283,10 @@ class Route
             throw new UnexpectedValueException('Controller must be instance of \gplcart\core\Controller');
         }
 
+        if(!$callback[0]->isInitialized()){
+            throw new LogicException('Controller is not initialized');
+        }
+
         call_user_func_array($callback, $route['arguments']);
 
         // We should never get here as the page callback must abort the script execution
