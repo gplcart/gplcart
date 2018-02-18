@@ -172,7 +172,6 @@ class CliRoute
     {
         $this->set($route);
         $this->callController();
-        throw new LogicException('The command was completed incorrectly');
     }
 
     /**
@@ -217,6 +216,7 @@ class CliRoute
     /**
      * Call a route controller
      * @param null|array
+     * @throws LogicException
      * @throws UnexpectedValueException
      */
     public function callController($route = null)
@@ -231,7 +231,13 @@ class CliRoute
             throw new UnexpectedValueException('Controller must be instance of \gplcart\core\CliController');
         }
 
+        if (!$callback[0]->isInitialized()) {
+            throw new LogicException('Controller is not initialized');
+        }
+
         call_user_func($callback);
+
+        throw new LogicException('The command was completed incorrectly');
     }
 
 }
