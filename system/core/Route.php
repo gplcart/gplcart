@@ -15,7 +15,6 @@ use gplcart\core\helpers\Response;
 use gplcart\core\helpers\Url;
 use LogicException;
 use OutOfBoundsException;
-use UnexpectedValueException;
 
 /**
  * Routes incoming requests
@@ -272,7 +271,6 @@ class Route
      * @param string|array $route
      * @param array $arguments
      * @throws LogicException
-     * @throws UnexpectedValueException
      */
     public function callController($route, array $arguments = array())
     {
@@ -280,10 +278,10 @@ class Route
         $callback = Handler::get($route, null, 'controller');
 
         if (!$callback[0] instanceof Controller) {
-            throw new UnexpectedValueException('Controller must be instance of \gplcart\core\Controller');
+            throw new LogicException('Controller must be instance of \gplcart\core\Controller');
         }
 
-        if(!$callback[0]->isInitialized()){
+        if (!$callback[0]->isInitialized()) {
             throw new LogicException('Controller is not initialized');
         }
 
