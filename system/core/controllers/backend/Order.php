@@ -136,7 +136,6 @@ class Order extends Controller
     {
         $this->setOrder($order_id);
         $this->submitIndexOrder();
-
         $this->setTitleIndexOrder();
         $this->setBreadcrumbIndexOrder();
 

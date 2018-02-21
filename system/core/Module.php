@@ -465,7 +465,7 @@ class Module
             'gplcart',
             'module',
             // Hooks in 3-d party modules usually defined as "module.MODULEID.something"
-            // To prevent possible conflicts with core hooks in the same name space also reserve these names:
+            // To prevent possible conflicts with core hooks in the same hook name space also reserve these names:
             'enable',
             'disable',
             'install',
