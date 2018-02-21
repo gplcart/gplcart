@@ -14,7 +14,6 @@ use gplcart\core\helpers\Server;
 use LogicException;
 use OutOfBoundsException;
 use OverflowException;
-use UnexpectedValueException;
 
 /**
  * Routes CLI commands
@@ -217,7 +216,6 @@ class CliRoute
      * Call a route controller
      * @param null|array
      * @throws LogicException
-     * @throws UnexpectedValueException
      */
     public function callController($route = null)
     {
@@ -228,7 +226,7 @@ class CliRoute
         $callback = Handler::get($route, null, 'controller');
 
         if (!$callback[0] instanceof CliController) {
-            throw new UnexpectedValueException('Controller must be instance of \gplcart\core\CliController');
+            throw new LogicException('Controller must be instance of \gplcart\core\CliController');
         }
 
         if (!$callback[0]->isInitialized()) {
