@@ -124,14 +124,6 @@ class CliController
      */
     public function __construct()
     {
-        $this->init();
-    }
-
-    /**
-     * Set up all required stuff
-     */
-    private function init()
-    {
         $this->initialized = true;
 
         $this->setInstanceProperties();
@@ -151,7 +143,7 @@ class CliController
      * Whether the controller is initialized
      * @return bool
      */
-    public function isInitialized()
+    final public function isInitialized()
     {
         return $this->initialized;
     }

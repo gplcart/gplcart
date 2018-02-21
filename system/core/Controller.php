@@ -336,7 +336,7 @@ abstract class Controller
     protected $module;
 
     /**
-     * Whether controllers are set up
+     * Whether controllers (parent and children) are set up
      * @var bool
      */
     private $initialized = false;
@@ -345,14 +345,6 @@ abstract class Controller
      * Constructor
      */
     public function __construct()
-    {
-        $this->init();
-    }
-
-    /**
-     * Set up all required stuff
-     */
-    private function init()
     {
         $this->initialized = true;
 
@@ -372,10 +364,10 @@ abstract class Controller
     }
 
     /**
-     * Whether controllers are set up
+     * Whether controllers (parent and children) are set up
      * @return bool
      */
-    public function isInitialized()
+    final public function isInitialized()
     {
         return $this->initialized;
     }
