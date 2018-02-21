@@ -287,14 +287,13 @@ class Checkout extends Controller
         $this->setCartContentCheckout();
         $this->setTitleEditCheckout();
         $this->setBreadcrumbEditCheckout();
-
         $this->controlAccessCheckout();
-        $this->setFormDataBeforeCheckout();
 
+        $this->setFormDataBeforeCheckout();
         $this->submitEditCheckout();
         $this->setFormDataAfterCheckout();
-        $this->setDataFormCheckout();
 
+        $this->setDataFormCheckout();
         $this->outputEditCheckout();
     }
 
@@ -394,21 +393,36 @@ class Checkout extends Controller
         $default_order = $this->getDefaultOrder();
         $order = gplcart_array_merge($default_order, $this->data_order);
 
+        $payment_methods = $this->getPaymentMethodsCheckout();
+        $shipping_methods = $this->getShippingMethodsCheckout();
+
+        if (count($payment_methods) == 1) {
+            reset($payment_methods);
+            $order['payment'] = key($payment_methods);
+        }
+
+        if (count($shipping_methods)) {
+            reset($shipping_methods);
+            $order['shipping'] = key($shipping_methods);
+        }
+
         $this->data_form['order'] = $order;
         $this->data_form['messages'] = array();
         $this->data_form['admin'] = $this->admin;
         $this->data_form['user'] = $this->data_user;
 
         $this->data_form['statuses'] = $this->order->getStatuses();
-        $this->data_form['payment_methods'] = $this->getPaymentMethodsCheckout();
-        $this->data_form['shipping_methods'] = $this->getShippingMethodsCheckout();
+        $this->data_form['payment_methods'] = $payment_methods;
+        $this->data_form['shipping_methods'] = $shipping_methods;
 
-        $this->data_form['has_dynamic_payment_methods'] = $this->hasDynamicMethods($this->data_form['payment_methods']);
-        $this->data_form['has_dynamic_shipping_methods'] = $this->hasDynamicMethods($this->data_form['shipping_methods']);
+        $this->data_form['has_dynamic_payment_methods'] = $this->hasDynamicMethods($payment_methods);
+        $this->data_form['has_dynamic_shipping_methods'] = $this->hasDynamicMethods($shipping_methods);
 
         // Price rule calculator requires this data
         $this->data_form['store_id'] = $this->order_store_id;
         $this->data_form['currency'] = $this->data_cart['currency'];
+
+        $this->setFormDataDimensionsCheckout();
     }
 
     /**
@@ -427,7 +441,8 @@ class Checkout extends Controller
             'currency' => $this->data_cart['currency'],
             'status' => $this->order->getStatusInitial(),
             'size_unit' => $this->config('order_size_unit', 'mm'),
-            'weight_unit' => $this->config('order_weight_unit', 'g')
+            'weight_unit' => $this->config('order_weight_unit', 'g'),
+            'data' => array()
         );
     }
 
@@ -502,7 +517,6 @@ class Checkout extends Controller
             'shipping' => $this->getShippingMethodTemplate('context', $submitted['order'], $this->shipping),
         );
 
-        $this->setFormDataDimensionsCheckout();
         $this->data_form = gplcart_array_merge($this->data_form, $submitted);
 
         $this->setFormDataRequestServicesCheckout('payment');
@@ -572,12 +586,14 @@ class Checkout extends Controller
      */
     protected function setFormDataDimensionsCheckout()
     {
-        $cart = $this->data_form['cart'];
-        $order = $this->data_form['order'];
+        if (!empty($this->data_cart)) {
 
-        $this->data_form['order']['volume'] = $this->order_dimension->getVolume($order, $cart);
-        $this->data_form['order']['weight'] = $this->order_dimension->getWeight($order, $cart);
-        $this->data_form['order']['data']['packages'] = $this->order_dimension->getPackages($order, $cart);
+            $order = $this->data_form['order'];
+
+            // Cart data passed by reference to convert product dimensions and measurement units
+            $this->data_form['order']['volume'] = $this->order_dimension->getVolume($order, $this->data_cart);
+            $this->data_form['order']['weight'] = $this->order_dimension->getWeight($order, $this->data_cart);
+        }
     }
 
     /**
