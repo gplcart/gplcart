@@ -47,22 +47,23 @@ class OrderDimension
      * @param array $cart
      * @return float|null
      */
-    public function getVolume(array $order, array $cart)
+    public function getVolume(array $order, array &$cart)
     {
         $result = null;
-        $this->hook->attach('order.get.volume.before', $order, $cart, $result, $this);
+        $this->hook->attach('order.volume.get.before', $order, $cart, $result, $this);
 
         if (isset($result)) {
             return (float) $result;
         }
 
         $total = 0.0;
-        foreach ($cart['items'] as $item) {
+
+        foreach ($cart['items'] as &$item) {
             $this->sumTotalVolume($total, $item, $order);
         }
 
         $result = round($total, 2);
-        $this->hook->attach('order.get.volume.after', $order, $cart, $result, $this);
+        $this->hook->attach('order.volume.get.after', $order, $cart, $result, $this);
         return (float) $result;
     }
 
@@ -72,43 +73,23 @@ class OrderDimension
      * @param array $cart
      * @return float|null
      */
-    public function getWeight(array $order, array $cart)
+    public function getWeight(array $order, array &$cart)
     {
         $result = null;
-        $this->hook->attach('order.get.weight.before', $order, $cart, $result, $this);
+        $this->hook->attach('order.weight.get.before', $order, $cart, $result, $this);
 
         if (isset($result)) {
             return (float) $result;
         }
 
         $total = 0.0;
-        foreach ($cart['items'] as $item) {
+        foreach ($cart['items'] as &$item) {
             $this->sumTotalWeight($total, $item, $order);
         }
 
         $result = round($total, 2);
-        $this->hook->attach('order.get.weight.after', $order, $cart, $result, $this);
+        $this->hook->attach('order.weight.get.after', $order, $cart, $result, $this);
         return (float) $result;
-    }
-
-    /**
-     * Returns an array of packages for the order
-     * @param array $order
-     * @param array $cart
-     * @return array
-     */
-    public function getPackages(array $order, array $cart)
-    {
-        $result = null;
-        $this->hook->attach('order.get.packages.before', $order, $cart, $result, $this);
-
-        if (isset($result)) {
-            return (array) $result;
-        }
-
-        $result = array();
-        $this->hook->attach('order.get.packages.after', $order, $cart, $result, $this);
-        return (array) $result;
     }
 
     /**
@@ -118,31 +99,30 @@ class OrderDimension
      * @param array $order
      * @return null
      */
-    protected function sumTotalVolume(&$total, array $item, array $order)
+    protected function sumTotalVolume(&$total, array &$item, array $order)
     {
-        $product = $item['product'];
+        $product = &$item['product'];
 
         if (empty($product['width']) || empty($product['height']) || empty($product['length'])) {
             return null;
         }
 
+        if ($product['size_unit'] !== $order['size_unit']) {
+
+            try {
+                $product['width'] = $this->convertor->convert($product['width'], $product['size_unit'], $order['size_unit']);
+                $product['height'] = $this->convertor->convert($product['height'], $product['size_unit'], $order['size_unit']);
+                $product['length'] = $this->convertor->convert($product['length'], $product['size_unit'], $order['size_unit']);
+
+            } catch (Exception $ex) {
+                return null;
+            }
+
+            $product['size_unit'] = $order['size_unit'];
+        }
+
         $volume = (float) ($product['width'] * $product['height'] * $product['length']);
-
-        if (empty($product['size_unit']) || $product['size_unit'] == $order['size_unit']) {
-            $total += (float) ($volume * $item['quantity']);
-            return null;
-        }
-
-        $order_cubic = $order['size_unit'] . '3';
-        $product_cubic = $product['size_unit'] . '3';
-
-        try {
-            $converted = $this->convertor->convert($volume, $product_cubic, $order_cubic);
-            $total += (float) ($converted * $item['quantity']);
-        } catch (Exception $ex) {
-            return null;
-        }
-
+        $total += (float) ($volume * $item['quantity']);
         return null;
     }
 
@@ -153,22 +133,22 @@ class OrderDimension
      * @param array $order
      * @return null
      */
-    protected function sumTotalWeight(&$total, array $item, array $order)
+    protected function sumTotalWeight(&$total, array &$item, array $order)
     {
-        $product = $item['product'];
+        $product = &$item['product'];
 
-        if (empty($product['weight_unit']) || $product['weight_unit'] == $order['weight_unit']) {
-            $total += (float) ($product['weight'] * $item['quantity']);
-            return null;
+        if ($product['weight_unit'] !== $order['weight_unit']) {
+
+            try {
+                $product['weight'] = $this->convertor->convert($product['weight'], $product['weight_unit'], $order['weight_unit']);
+            } catch (Exception $ex) {
+                return null;
+            }
+
+            $product['weight_unit'] = $order['weight_unit'];
         }
 
-        try {
-            $converted = $this->convertor->convert($product['weight'], $product['weight_unit'], $order['weight_unit']);
-            $total += (float) ($converted * $item['quantity']);
-        } catch (Exception $ex) {
-            return null;
-        }
-
+        $total += (float) ($product['weight'] * $item['quantity']);
         return null;
     }
 
