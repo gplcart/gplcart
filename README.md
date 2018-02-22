@@ -74,3 +74,7 @@ In one line: `composer create-project gplcart/gplcart test --stability dev --no-
 - Installation profiles
 
 ...and much more!
+
+## Extensions ##
+
+[There are](https://github.com/topics/gplcart-module) a number of official modules already written to extend core functionality.
