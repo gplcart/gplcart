@@ -229,10 +229,6 @@ class CliRoute
             throw new LogicException('Controller must be instance of \gplcart\core\CliController');
         }
 
-        if (!$callback[0]->isInitialized()) {
-            throw new LogicException('Controller is not initialized');
-        }
-
         call_user_func($callback);
 
         throw new LogicException('The command was completed incorrectly');

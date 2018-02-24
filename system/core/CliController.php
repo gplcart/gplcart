@@ -114,18 +114,10 @@ class CliController
     protected $uid = null;
 
     /**
-     * Whether the controller is initialized
-     * @var bool
-     */
-    private $initialized = false;
-
-    /**
      * Constructor
      */
     public function __construct()
     {
-        $this->initialized = true;
-
         $this->setInstanceProperties();
         $this->setRouteProperties();
         $this->setLanguage();
@@ -137,15 +129,6 @@ class CliController
 
         $this->hook->attach('construct.cli.controller', $this);
         $this->outputHelp();
-    }
-
-    /**
-     * Whether the controller is initialized
-     * @return bool
-     */
-    final public function isInitialized()
-    {
-        return $this->initialized;
     }
 
     /**
