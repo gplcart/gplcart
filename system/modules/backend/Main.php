@@ -9,6 +9,8 @@
 
 namespace gplcart\modules\backend;
 
+use gplcart\core\Controller;
+
 /**
  * Main backend theme class
  */
@@ -19,19 +21,19 @@ class Main
      * Implements hook "theme"
      * @param \gplcart\core\Controller $controller
      */
-    public function hookTheme($controller)
+    public function hookTheme(Controller $controller)
     {
         if ($controller->isCurrentTheme('backend') && !$controller->isInternalRoute()) {
-            $this->setThemeAssets($controller);
-            $this->setThemeMetaTags($controller);
+            $this->setAssets($controller);
+            $this->setMetaTags($controller);
         }
     }
 
     /**
-     * Sets theme specific assets
-     * @param \gplcart\core\Controller $controller
+     * Adds theme specific assets
+     * @param Controller $controller
      */
-    protected function setThemeAssets($controller)
+    protected function setAssets(Controller $controller)
     {
         $controller->addAssetLibrary('jquery_ui');
         $controller->addAssetLibrary('bootstrap');
@@ -44,10 +46,10 @@ class Main
     }
 
     /**
-     * Sets meta tags
-     * @param \gplcart\core\Controller $controller
+     * Adds meta tags
+     * @param Controller $controller
      */
-    protected function setThemeMetaTags($controller)
+    protected function setMetaTags(Controller $controller)
     {
         $controller->setMeta(array('charset' => 'utf-8'));
         $controller->setMeta(array('http-equiv' => 'X-UA-Compatible', 'content' => 'IE=edge'));

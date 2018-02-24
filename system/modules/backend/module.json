@@ -1,15 +1,14 @@
 {
-    "name": "Backend theme",
-    "description": "Backend theme",
-    "author": "Iurii Makukh",
-    "core": "1.x",
-    "type": "theme",
-    "status": true,
-    "lock": true,
-    "framework": "bootstrap 3",
-    "version": "1.0.0",
-    "dependencies": {
-        "bootstrap": "1.x",
-        "fa": "1.x"
-    }
+  "name": "Backend theme",
+  "description": "Backend theme",
+  "author": "Iurii Makukh",
+  "core": "1.x",
+  "type": "theme",
+  "status": true,
+  "lock": true,
+  "version": "1.0.0",
+  "dependencies": {
+    "bootstrap": "1.x",
+    "fa": "1.x"
+  }
 }
