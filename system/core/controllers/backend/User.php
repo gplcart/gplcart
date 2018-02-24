@@ -195,7 +195,6 @@ class User extends Controller
         $this->setUser($user_id);
         $this->setTitleEditUser();
         $this->setBreadcrumbEditUser();
-
         $this->controlAccessEditUser($user_id);
 
         $this->setData('user', $this->data_user);

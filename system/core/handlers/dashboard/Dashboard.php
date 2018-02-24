@@ -10,7 +10,6 @@
 namespace gplcart\core\handlers\dashboard;
 
 use gplcart\core\Config;
-use gplcart\core\Handler;
 use gplcart\core\models\Cart;
 use gplcart\core\models\Order;
 use gplcart\core\models\OrderHistory;
@@ -28,7 +27,7 @@ use gplcart\core\traits\ItemPrice;
 /**
  * Dashboard handlers
  */
-class Dashboard extends Handler
+class Dashboard
 {
 
     use ItemPrice, ItemOrder;

@@ -78,7 +78,6 @@ class PriceRule extends Controller
     public function listPriceRule()
     {
         $this->actionListPriceRule();
-
         $this->setTitleListPriceRule();
         $this->setBreadcrumbListPriceRule();
         $this->setFilterListPriceRule();

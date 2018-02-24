@@ -293,6 +293,7 @@ class UserRole extends Controller
 
         $list = (array) $this->role->getList($conditions);
         $this->prepareListUserRole($list);
+
         return $list;
     }
 

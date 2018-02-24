@@ -32,14 +32,6 @@ class Language extends Controller
     protected $data_language = array();
 
     /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Displays the language edit form
      * @param string|null $code
      */
@@ -209,7 +201,6 @@ class Language extends Controller
     public function listLanguage()
     {
         $this->refreshLanguage();
-
         $this->setTitleListLanguage();
         $this->setBreadcrumbListLanguage();
         $this->setFilterListLanguage();

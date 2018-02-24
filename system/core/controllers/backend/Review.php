@@ -69,7 +69,6 @@ class Review extends Controller
     public function listReview()
     {
         $this->actionListReview();
-
         $this->setTitleListReview();
         $this->setBreadcrumbListReview();
         $this->setFilterListReview();

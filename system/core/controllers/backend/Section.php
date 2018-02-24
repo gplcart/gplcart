@@ -16,21 +16,12 @@ class Section extends Controller
 {
 
     /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Displays the admin section page
      * @param string $parent
      */
     public function listSection($parent)
     {
         $this->controlAccess('admin');
-
         $this->setTitleListSection($parent);
         $this->setBreadcrumbListSection();
 

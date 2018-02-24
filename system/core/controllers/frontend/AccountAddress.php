@@ -47,7 +47,6 @@ class AccountAddress extends Controller
     {
         $this->setUserAccountAddress($user_id);
         $this->actionAccountAddress();
-
         $this->setTitleListAccountAddress();
         $this->setBreadcrumbListAccountAddress();
 
@@ -92,6 +91,7 @@ class AccountAddress extends Controller
     protected function prepareListAccountAddress(array $addresses)
     {
         $prepared = array();
+
         foreach ($addresses as $address_id => $items) {
             $prepared[$address_id]['items'] = $items;
             $prepared[$address_id]['locked'] = !$this->address->canDelete($address_id);

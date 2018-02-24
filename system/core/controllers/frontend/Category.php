@@ -184,9 +184,7 @@ class Category extends Controller
      */
     protected function setDataImagesIndexCategory()
     {
-        $options = array(
-            'imagestyle' => $this->configTheme('image_style_category', 3)
-        );
+        $options = array('imagestyle' => $this->configTheme('image_style_category', 3));
 
         $this->setItemThumb($this->data_category, $this->image, $options);
         $this->setData('images', $this->render('category/images', array('category' => $this->data_category)));

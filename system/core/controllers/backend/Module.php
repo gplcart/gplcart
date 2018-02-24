@@ -64,7 +64,6 @@ class Module extends Controller
     public function listModule()
     {
         $this->actionListModule();
-
         $this->setTitleListModule();
         $this->setBreadcrumbListModule();
         $this->setFilterListModule();

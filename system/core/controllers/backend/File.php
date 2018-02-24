@@ -61,7 +61,6 @@ class File extends Controller
     {
         $this->downloadFile();
         $this->actionListFile();
-
         $this->setTitleListFile();
         $this->setBreadcrumbListFile();
         $this->setFilterListFile();
@@ -115,8 +114,13 @@ class File extends Controller
         }
 
         if ($deleted_disk > 0 || $deleted_database > 0) {
-            $vars = array('%db' => $deleted_database, '%disk' => $deleted_disk);
-            $message = $this->text('Deleted from database: %db, disk: %disk', $vars);
+
+            $message = $this->text('Deleted from database: %db, disk: %disk', array(
+                    '%db' => $deleted_database,
+                    '%disk' => $deleted_disk
+                )
+            );
+
             $this->setMessage($message, 'success');
         }
     }
@@ -149,6 +153,7 @@ class File extends Controller
 
         $list = (array) $this->file->getList($conditions);
         $this->prepareListFile($list);
+
         return $list;
     }
 
@@ -203,11 +208,9 @@ class File extends Controller
     public function editFile($file_id = null)
     {
         $this->downloadFile();
-
         $this->setFile($file_id);
         $this->setTitleEditFile();
         $this->setBreadcrumbEditFile();
-
         $this->controlAccessEditFile();
 
         $this->setData('file', $this->data_file);

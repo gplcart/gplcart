@@ -26,20 +26,11 @@ class ReportLibrary extends Controller
     protected $data_limit;
 
     /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Displays the library overview page
      */
     public function listReportLibrary()
     {
         $this->clearCacheReportLibrary();
-
         $this->setTitleListReportLibrary();
         $this->setBreadcrumbListReportLibrary();
         $this->setFilterListReportLibrary();
@@ -124,6 +115,7 @@ class ReportLibrary extends Controller
     protected function getTypesLibrary()
     {
         $types = array();
+
         foreach (array_keys($this->library->getTypes()) as $id) {
             $types[$id] = $this->text(ucfirst($id));
         }

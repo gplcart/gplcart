@@ -77,7 +77,6 @@ class State extends Controller
     {
         $this->setCountry($code);
         $this->actionListState();
-
         $this->setTitleListState();
         $this->setBreadcrumbListState();
         $this->setFilterListState();

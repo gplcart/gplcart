@@ -100,8 +100,7 @@ class UserForgot extends Controller
                 $this->outputHttpStatus(403);
             }
 
-            if (empty($user['data']['reset_password']['expires'])
-                || $user['data']['reset_password']['expires'] < GC_TIME) {
+            if (empty($user['data']['reset_password']['expires']) || $user['data']['reset_password']['expires'] < GC_TIME) {
                 $this->redirect('forgot');
             }
         }

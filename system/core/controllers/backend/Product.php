@@ -129,7 +129,6 @@ class Product extends Controller
     public function listProduct()
     {
         $this->actionListProduct();
-
         $this->setTitleListProduct();
         $this->setBreadcrumbListProduct();
         $this->setFilterListProduct();
@@ -211,6 +210,7 @@ class Product extends Controller
 
         $list = (array) $this->product->getList($conditions);
         $this->prepareListProduct($list);
+
         return $list;
     }
 
@@ -535,6 +535,7 @@ class Product extends Controller
         $product_ids = $this->getData('product.related');
 
         $products = array();
+
         if (!empty($product_ids)) {
             $products = (array) $this->product->getList(array('product_id' => $product_ids));
         }

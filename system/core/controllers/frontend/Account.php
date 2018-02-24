@@ -204,7 +204,6 @@ class Account extends Controller
     {
         $this->setUserAccount($user_id);
         $this->controlAccessEditAccount();
-
         $this->setTitleEditAccount();
         $this->setBreadcrumbEditAccount();
         $this->setData('user', $this->data_user);

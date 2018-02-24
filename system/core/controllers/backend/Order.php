@@ -525,7 +525,6 @@ class Order extends Controller
     public function listOrder()
     {
         $this->actionListOrder();
-
         $this->setTitleListOrder();
         $this->setBreadcrumbListOrder();
         $this->setData('statuses', $this->order->getStatuses());
@@ -578,11 +577,14 @@ class Order extends Controller
         foreach ($selected as $id) {
 
             if ($action === 'status' && $this->access('order_edit')) {
+
                 $updated = (bool) $this->order->update($id, array('status' => $value));
+
                 if ($updated && $this->setNotificationUpdateOrder($id) == static::NOTIFICATION_ERROR) {
                     $failed_notifications[] = $this->text('<a href="@url">@text</a>', array(
                         '@url' => $this->url("admin/sale/order/$id"), '@text' => $id));
                 }
+
                 $updated++;
             }
 
@@ -648,6 +650,7 @@ class Order extends Controller
 
         $list = (array) $this->order->getList($conditions);
         $this->prepareListOrder($list);
+
         return $list;
     }
 

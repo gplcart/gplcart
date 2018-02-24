@@ -92,7 +92,6 @@ class Page extends Controller
     public function listPage()
     {
         $this->actionPage();
-
         $this->setTitleListPage();
         $this->setBreadcrumbListPage();
         $this->setFilterListPage();

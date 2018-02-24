@@ -42,8 +42,7 @@ class ProductClassField extends Component
      * @param ProductClassFieldModel $product_class_field
      * @param FieldModel $field
      */
-    public function __construct(ProductClassModel $product_class,
-                                ProductClassFieldModel $product_class_field, FieldModel $field)
+    public function __construct(ProductClassModel $product_class, ProductClassFieldModel $product_class_field, FieldModel $field)
     {
         parent::__construct();
 

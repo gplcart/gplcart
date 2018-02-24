@@ -16,14 +16,6 @@ class Settings extends Controller
 {
 
     /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Displays the edit settings page
      */
     public function editSettings()

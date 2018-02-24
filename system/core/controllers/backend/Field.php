@@ -60,7 +60,6 @@ class Field extends Controller
     public function listField()
     {
         $this->actionListField();
-
         $this->setTitleListField();
         $this->setBreadcrumbListField();
         $this->setFilterListField();
