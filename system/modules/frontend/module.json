@@ -1,40 +1,40 @@
 {
-    "name": "Frontend theme",
-    "description": "Frontend theme",
-    "author": "IURII MAKUKH",
-    "core": "1.x",
-    "type": "theme",
-    "status": true,
-    "lock": true,
-    "version": "1.0.0",
-    "framework": "bootstrap 3",
-    "configure": "admin/module/settings/frontend",
-    "settings": {
-        "catalog_limit": 20,
-        "catalog_sort": "price",
-        "catalog_order": "asc",
-        "catalog_view": "grid",
-        "image_style_page": 6,
-        "image_style_category": 3,
-        "image_style_category_child": 3,
-        "image_style_product": 6,
-        "image_style_product_grid": 3,
-        "image_style_product_list": 3,
-        "image_style_cart": 3,
-        "image_style_option": 3,
-        "image_style_collection_file": 7,
-        "image_style_collection_page": 3,
-        "image_style_collection_product": 3
-    },
-    "data": {
-        "templates": {
-            "region_left": "layout/region_left",
-            "region_right": "layout/region_right",
-            "region_top": "layout/region_top"
-        }
-    },
-    "dependencies": {
-        "bootstrap": "1.x",
-        "fa": "1.x"
+  "name": "Frontend theme",
+  "description": "Frontend theme",
+  "author": "IURII MAKUKH",
+  "core": "1.x",
+  "type": "theme",
+  "status": true,
+  "lock": true,
+  "version": "1.0.0",
+  "framework": "bootstrap 3",
+  "configure": "admin/module/settings/frontend",
+  "settings": {
+    "catalog_limit": 20,
+    "catalog_sort": "price",
+    "catalog_order": "asc",
+    "catalog_view": "grid",
+    "image_style_page": 6,
+    "image_style_category": 3,
+    "image_style_category_child": 3,
+    "image_style_product": 6,
+    "image_style_product_grid": 3,
+    "image_style_product_list": 3,
+    "image_style_cart": 3,
+    "image_style_option": 3,
+    "image_style_collection_file": 7,
+    "image_style_collection_page": 3,
+    "image_style_collection_product": 3
+  },
+  "data": {
+    "templates": {
+      "region_left": "layout/region_left",
+      "region_right": "layout/region_right",
+      "region_top": "layout/region_top"
     }
+  },
+  "dependencies": {
+    "bootstrap": "1.x",
+    "fa": "1.x"
+  }
 }

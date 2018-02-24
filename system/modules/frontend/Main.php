@@ -9,6 +9,8 @@
 
 namespace gplcart\modules\frontend;
 
+use gplcart\core\Controller;
+
 /**
  * Main class for Frontend theme
  */
@@ -31,21 +33,21 @@ class Main
 
     /**
      * Implements hook "theme"
-     * @param \gplcart\core\Controller $controller
+     * @param Controller $controller
      */
-    public function hookTheme($controller)
+    public function hookTheme(Controller $controller)
     {
         if ($controller->isCurrentTheme('frontend') && !$controller->isInternalRoute()) {
-            $this->setThemeAssets($controller);
-            $this->setThemeMetaTags($controller);
+            $this->setAssets($controller);
+            $this->setMetaTags($controller);
         }
     }
 
     /**
      * Sets theme specific assets
-     * @param \gplcart\core\Controller $controller
+     * @param Controller $controller
      */
-    protected function setThemeAssets($controller)
+    protected function setAssets(Controller $controller)
     {
         $controller->addAssetLibrary('html5shiv', array('aggregate' => false, 'condition' => 'if lt IE 9'));
         $controller->addAssetLibrary('respond', array('aggregate' => false, 'condition' => 'if lt IE 9'));
@@ -62,9 +64,9 @@ class Main
 
     /**
      * Sets meta tags
-     * @param \gplcart\core\Controller $controller
+     * @param Controller $controller
      */
-    protected function setThemeMetaTags($controller)
+    protected function setMetaTags(Controller $controller)
     {
         $controller->setMeta(array('charset' => 'utf-8'));
         $controller->setMeta(array('http-equiv' => 'X-UA-Compatible', 'content' => 'IE=edge'));

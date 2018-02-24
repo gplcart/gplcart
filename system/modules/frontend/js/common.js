@@ -335,9 +335,9 @@
     var setCityAutocomplete = function () {
 
         var params,
-                city = $('[name="address[city_id]"]'),
-                country = $('[name="address[country]"]'),
-                state_id = $('[name="address[state_id]"]');
+            city = $('[name="address[city_id]"]'),
+            country = $('[name="address[country]"]'),
+            state_id = $('[name="address[state_id]"]');
 
         if (city.length === 0 || country.length === 0 || state_id.length === 0) {
             return;

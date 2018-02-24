@@ -14,8 +14,8 @@ h1 {
 }
 
 .required > td > .name:before {
-    content:"* ";
-    color:red;
+    content: "* ";
+    color: red;
 }
 
 td {

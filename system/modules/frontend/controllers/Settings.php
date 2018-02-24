@@ -9,13 +9,13 @@
 
 namespace gplcart\modules\frontend\controllers;
 
-use gplcart\core\models\ImageStyle as ImageStyleModel;
-use gplcart\core\controllers\backend\Controller as BackendController;
+use gplcart\core\controllers\backend\Controller;
+use gplcart\core\models\ImageStyle;
 
 /**
  * Handles incoming requests and outputs data related to Frontend module settings
  */
-class Settings extends BackendController
+class Settings extends Controller
 {
 
     /**
@@ -25,9 +25,10 @@ class Settings extends BackendController
     protected $image_style;
 
     /**
-     * @param ImageStyleModel $image_style
+     * Settings constructor.
+     * @param ImageStyle $image_style
      */
-    public function __construct(ImageStyleModel $image_style)
+    public function __construct(ImageStyle $image_style)
     {
         parent::__construct();
 
@@ -90,9 +91,7 @@ class Settings extends BackendController
     {
         $this->controlAccess('module_edit');
         $this->module->setSettings('frontend', array());
-
-        $message = $this->text('Settings have been reset to default values');
-        $this->redirect('', $message, 'success');
+        $this->redirect('', $this->text('Settings have been reset to default values'), 'success');
     }
 
     /**
@@ -102,9 +101,7 @@ class Settings extends BackendController
     {
         $this->controlAccess('module_edit');
         $this->module->setSettings('frontend', array_filter($this->getSubmitted()));
-
-        $message = $this->text('Settings have been updated');
-        $this->redirect('admin/module/list', $message, 'success');
+        $this->redirect('admin/module/list', $this->text('Settings have been updated'), 'success');
     }
 
     /**
@@ -152,8 +149,7 @@ class Settings extends BackendController
      */
     protected function setTitleEditSettings()
     {
-        $vars = array('%name' => $this->text('Frontend'));
-        $this->setTitle($this->text('Edit %name settings', $vars));
+        $this->setTitle($this->text('Edit %name settings', array('%name' => $this->text('Frontend'))));
     }
 
 }

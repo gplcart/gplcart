@@ -51,7 +51,7 @@
 }
 
 .badge:empty + .fa {
-    display:none;
+    display: none;
 }
 
 .navbar {
@@ -137,8 +137,8 @@
 }
 
 .form-group.required .control-label:before, span.required:before {
-    content:"* ";
-    color:red;
+    content: "* ";
+    color: red;
 }
 
 .table-borderless tr,
@@ -166,8 +166,8 @@ table.compare-products .thumbnail {
 }
 
 .table.price-components td {
-    max-width:100%;
-    white-space:nowrap;
+    max-width: 100%;
+    white-space: nowrap;
     vertical-align: middle;
 }
 
@@ -195,17 +195,17 @@ td.middle {
     line-height: 1em;
 }
 
-.star-rating{
+.star-rating {
     font-size: 0;
     display: inline-table;
 }
 
-.star-rating-wrap{
+.star-rating-wrap {
     display: inline-block;
     font-size: 1.5rem;
 }
 
-.star-rating-wrap:after{
+.star-rating-wrap:after {
     content: "";
     display: table;
     clear: both;
@@ -221,18 +221,17 @@ td.middle {
     cursor: pointer;
 }
 
-.star-rating-ico:last-child{
+.star-rating-ico:last-child {
     padding-left: 0;
 }
 
-.star-rating-input{
+.star-rating-input {
     display: none;
 }
 
 .star-rating.dinamic .star-rating-ico:not(.unvote):hover:before,
 .star-rating.dinamic .star-rating-ico:not(.unvote):hover ~ .star-rating-ico:before,
-.star-rating.dinamic .star-rating-input:not(.unvote):checked ~ .star-rating-ico:before
-{
+.star-rating.dinamic .star-rating-input:not(.unvote):checked ~ .star-rating-ico:before {
     content: "\f005";
 }
 
@@ -249,7 +248,7 @@ td.middle {
     height: 34px;
 }
 
-.option-combination > input:checked  + .btn {
+.option-combination > input:checked + .btn {
     border: 2px solid #fff;
     outline: 1px solid #000;
 }
@@ -321,7 +320,7 @@ a.disabled {
     padding-bottom: 20px;
 }
 
-@media only screen and (min-width : 320px) {
+@media only screen and (min-width: 320px) {
 
     .navbar-form {
         border: none;
@@ -340,7 +339,7 @@ a.disabled {
     }
 }
 
-@media only screen and (min-width : 768px) {
+@media only screen and (min-width: 768px) {
 
     .navbar-center {
         position: absolute;
@@ -357,13 +356,13 @@ a.disabled {
     }
 }
 
-@media only screen and (min-width : 992px) {
+@media only screen and (min-width: 992px) {
     .navbar.second .search .input-group {
         width: 400px;
     }
 }
 
-@media only screen and (min-width : 1200px) {
+@media only screen and (min-width: 1200px) {
     .navbar.second .search .input-group {
         width: 600px;
     }
