@@ -47,6 +47,7 @@ class Asset
         }
 
         $weights = array();
+
         foreach ($this->assets[$type][$pos] as $asset) {
             $weights[] = $asset['weight'];
         }
@@ -131,8 +132,7 @@ class Asset
             'type' => $type,
             'text' => false,
             'condition' => '',
-            'position' => 'top',
-            'aggregate' => ($type !== 'external')
+            'position' => 'top'
         );
 
         if (!isset($data['weight'])) {
@@ -148,9 +148,11 @@ class Asset
         }
 
         if ($data['text']) {
+
             if (!isset($data['key'])) {
                 $data['key'] = 'text.' . md5(json_encode($data['asset']));
             }
+
             return $data;
         }
 
@@ -162,9 +164,11 @@ class Asset
         }
 
         if (!empty($data['file'])) {
+
             if (!file_exists($data['file'])) {
                 return array();
             }
+
             $data['version'] = filemtime($data['file']);
         }
 

@@ -37,8 +37,8 @@ class Main
     {
         $controller->addAssetLibrary('jquery_ui');
         $controller->addAssetLibrary('bootstrap');
-        $controller->addAssetLibrary('html5shiv', array('aggregate' => false, 'condition' => 'if lt IE 9'));
-        $controller->addAssetLibrary('respond', array('aggregate' => false, 'condition' => 'if lt IE 9'));
+        $controller->addAssetLibrary('html5shiv', array('condition' => 'if lt IE 9'));
+        $controller->addAssetLibrary('respond', array('condition' => 'if lt IE 9'));
         $controller->addAssetLibrary('font_awesome');
 
         $controller->setJs(__DIR__ . '/js/common.js');

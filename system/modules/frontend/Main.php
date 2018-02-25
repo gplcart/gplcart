@@ -49,8 +49,8 @@ class Main
      */
     protected function setAssets(Controller $controller)
     {
-        $controller->addAssetLibrary('html5shiv', array('aggregate' => false, 'condition' => 'if lt IE 9'));
-        $controller->addAssetLibrary('respond', array('aggregate' => false, 'condition' => 'if lt IE 9'));
+        $controller->addAssetLibrary('html5shiv', array('condition' => 'if lt IE 9'));
+        $controller->addAssetLibrary('respond', array('condition' => 'if lt IE 9'));
         $controller->addAssetLibrary('font_awesome');
         $controller->addAssetLibrary('bootstrap');
 

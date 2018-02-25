@@ -526,9 +526,9 @@ abstract class Controller
     protected function setDefaultAssets()
     {
         if (!$this->isInternalRoute()) {
-            $this->addAssetLibrary('jquery', array('aggregate' => false));
-            $this->setJs('files/assets/system/js/common.js', array('aggregate' => false));
-            $this->setCss('files/assets/system/css/common.css', array('aggregate' => false));
+            $this->addAssetLibrary('jquery');
+            $this->setJs('files/assets/system/js/common.js');
+            $this->setCss('files/assets/system/css/common.css');
         }
     }
 
@@ -902,6 +902,7 @@ abstract class Controller
     public function teaser($text, $enable_filter = true, $filter_id = null)
     {
         $summary = '';
+
         if ($text !== '') {
             $parts = $this->explodeText($text);
             $summary = reset($parts);
@@ -1156,8 +1157,8 @@ abstract class Controller
         }
 
         $this->theme_settings = (array) $this->getModuleSettings($this->theme, null, array());
-
         $this->templates = $this->getDefaultTemplates();
+
         if (!empty($this->current_theme['data']['templates'])) {
             $this->templates = array_merge($this->templates, $this->current_theme['data']['templates']);
         }
@@ -1541,15 +1542,17 @@ abstract class Controller
      */
     protected function controlMaintenanceMode()
     {
-        $allowed_path = $this->is_install || $this->is_backend//
+        $allowed_path = $this->is_install || $this->is_backend
             || in_array($this->path, array('login', 'logout', 'forgot'));
 
         $this->is_maintenance = empty($this->current_store['status']) && !$allowed_path;
 
         if ($this->is_maintenance && !$this->access('maintenance')) {
+
             if (!$this->isFront()) {
                 $this->redirect('/');
             }
+
             $this->outputMaintenance();
         }
     }
@@ -1861,7 +1864,6 @@ abstract class Controller
         $asset = array(
             'type' => 'js',
             'weight' => $weight,
-            'aggregate' => false,
             'key' => 'js_settings',
             'merge' => 'js_settings',
             'asset' => array($key => $data)
@@ -1955,38 +1957,38 @@ abstract class Controller
     /**
      * Adds a JS on the page
      * @param string $script
-     * @param array $data
+     * @param array $options
      * @return bool|array
      */
-    public function setJs($script, array $data = array())
+    public function setJs($script, array $options = array())
     {
-        $data['type'] = 'js';
-        $data['asset'] = $script;
+        $options['type'] = 'js';
+        $options['asset'] = $script;
 
-        return $this->asset->set($data);
+        return $this->asset->set($options);
     }
 
     /**
      * Adds a CSS on the page
      * @param string $css
-     * @param array $data
+     * @param array $options
      * @return bool|array
      */
-    public function setCss($css, array $data = array())
+    public function setCss($css, array $options = array())
     {
-        $data['asset'] = $css;
-        $data['type'] = 'css';
+        $options['asset'] = $css;
+        $options['type'] = 'css';
 
-        return $this->asset->set($data);
+        return $this->asset->set($options);
     }
 
     /**
      * Adds single or multiple asset libraries
      * @param string|array $library_id
-     * @param array $data
+     * @param array $options
      * @return array
      */
-    public function addAssetLibrary($library_id, array $data = array())
+    public function addAssetLibrary($library_id, array $options = array())
     {
         $added = array();
         foreach ($this->library->getFiles($library_id) as $file) {
@@ -1994,9 +1996,9 @@ abstract class Controller
             $extension = pathinfo($file, PATHINFO_EXTENSION);
 
             if ($extension === 'js') {
-                $result = $this->setJs($file, $data);
+                $result = $this->setJs($file, $options);
             } else if ($extension === 'css') {
-                $result = $this->setCss($file, $data);
+                $result = $this->setCss($file, $options);
             }
 
             if (!empty($result)) {

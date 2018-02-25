@@ -165,7 +165,7 @@ class Controller extends Base
     protected function setFrontendJs()
     {
         if (!empty($this->current_store['data']['js'])) {
-            $this->setJs($this->current_store['data']['js'], array('position' => 'bottom', 'aggregate' => false));
+            $this->setJs($this->current_store['data']['js'], array('position' => 'bottom'));
         }
     }
 
