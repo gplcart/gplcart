@@ -725,19 +725,19 @@ return array(
     'admin/settings/states/(\w+)' => array(
         'access' => 'state',
         'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\backend\\State', 'listState')
+            'controller' => array('gplcart\\core\\controllers\\backend\\CountryState', 'listState')
         )
     ),
     'admin/settings/state/add/(\w+)' => array(
         'access' => 'state_add',
         'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\backend\\State', 'editState')
+            'controller' => array('gplcart\\core\\controllers\\backend\\CountryState', 'editState')
         )
     ),
     'admin/settings/state/edit/(\w+)/(\d+)' => array(
         'access' => 'state_edit',
         'handlers' => array(
-            'controller' => array('gplcart\\core\\controllers\\backend\\State', 'editState')
+            'controller' => array('gplcart\\core\\controllers\\backend\\CountryState', 'editState')
         )
     ),
     'admin/settings/trigger' => array(

@@ -16,7 +16,7 @@ use gplcart\core\models\Zone as ZoneModel;
 /**
  * Handles incoming requests and outputs data related to country states
  */
-class State extends Controller
+class CountryState extends Controller
 {
 
     /**
