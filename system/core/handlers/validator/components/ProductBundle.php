@@ -116,7 +116,7 @@ class ProductBundle extends Component
             $loaded[$product_id] = $product;
 
             if (empty($product['status'])) {
-                $this->setError($field, $this->translation->text('Some of bundled products are either disabled or non-existing'));
+                $this->setError($field, $this->translation->text('Some of bundled products are unavailable'));
                 return false;
             }
 

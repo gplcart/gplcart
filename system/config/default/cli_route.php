@@ -47,7 +47,7 @@ return array(
             '--basepath' => 'Installation subfolder name', // @text
             '--timezone' => 'Store timezone', // @text
             '--host' => 'Domain name', // @text
-            '--installer' => 'ID of installer module that manages the installation', // @text
+            '--installer' => 'ID of the module that manages the installation process', // @text
             '-h' => 'Show command help', // @text
         ),
         'handlers' => array(

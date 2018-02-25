@@ -99,7 +99,7 @@ class Base
         $config = file_get_contents(GC_FILE_CONFIG);
 
         if (empty($config)) {
-            $error = $this->translation->text('Failed to read the source config @path', array('@path' => GC_FILE_CONFIG));
+            $error = $this->translation->text('Failed to read file @path', array('@path' => GC_FILE_CONFIG));
             throw new UnexpectedValueException($error);
         }
 

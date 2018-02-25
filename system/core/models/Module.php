@@ -186,7 +186,7 @@ class Module
         }
 
         if ($this->module->isInstaller($module_id)) {
-            $error = $this->translation->text('Modules that are installers cannot be installed/enabled when system is set up');
+            $error = $this->translation->text('Modules with "installer" type cannot be installed/enabled when system is already set up');
             throw new UnexpectedValueException($error);
         }
 
@@ -211,7 +211,7 @@ class Module
         }
 
         if ($this->module->isInstaller($module_id)) {
-            $error = $this->translation->text('Modules that are installers cannot be installed/enabled when system is set up');
+            $error = $this->translation->text('Modules with "installer" type cannot be installed/enabled when system is already set up');
             throw new UnexpectedValueException($error);
         }
 
@@ -238,7 +238,7 @@ class Module
     public function canUninstall($module_id)
     {
         if ($this->module->isActiveTheme($module_id)) {
-            $error = $this->translation->text('Modules that are active themes cannot be disabled/uninstalled');
+            $error = $this->translation->text('Modules with "theme" type and active status cannot be disabled/uninstalled');
             throw new UnexpectedValueException($error);
         }
 
@@ -263,7 +263,7 @@ class Module
         $this->checkPhpVersion($module);
 
         if ($this->module->isInstaller($module_id)) {
-            $error = $this->translation->text('Modules that are installers cannot be installed/enabled when system is set up');
+            $error = $this->translation->text('Modules with "installer" type cannot be installed/enabled when system is already set up');
             throw new UnexpectedValueException($error);
         }
 
