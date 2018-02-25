@@ -10,7 +10,7 @@
 namespace gplcart\core\handlers\validator\condition;
 
 use gplcart\core\models\Country;
-use gplcart\core\models\State;
+use gplcart\core\models\CountryState;
 use gplcart\core\models\Translation;
 use gplcart\core\models\Zone;
 
@@ -34,7 +34,7 @@ class ShippingAddress
 
     /**
      * State model instance
-     * @var \gplcart\core\models\State $state
+     * @var \gplcart\core\models\CountryState $state
      */
     protected $state;
 
@@ -46,11 +46,11 @@ class ShippingAddress
 
     /**
      * @param Country $country
-     * @param State $state
+     * @param CountryState $state
      * @param Zone $zone
      * @param Translation $translation
      */
-    public function __construct(Country $country, State $state, Zone $zone, Translation $translation)
+    public function __construct(Country $country, CountryState $state, Zone $zone, Translation $translation)
     {
         $this->zone = $zone;
         $this->state = $state;

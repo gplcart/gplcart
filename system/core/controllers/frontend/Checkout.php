@@ -18,7 +18,7 @@ use gplcart\core\models\OrderDimension;
 use gplcart\core\models\OrderHistory;
 use gplcart\core\models\Payment;
 use gplcart\core\models\Shipping;
-use gplcart\core\models\State;
+use gplcart\core\models\CountryState;
 use gplcart\core\models\UserAction;
 use gplcart\core\traits\Checkout as CheckoutTrait;
 
@@ -74,7 +74,7 @@ class Checkout extends Controller
 
     /**
      * State model instance
-     * @var \gplcart\core\models\State $state
+     * @var \gplcart\core\models\CountryState $state
      */
     protected $state;
 
@@ -177,7 +177,7 @@ class Checkout extends Controller
     /**
      * Checkout constructor.
      * @param Country $country
-     * @param State $state
+     * @param CountryState $state
      * @param Address $address
      * @param Order $order
      * @param OrderAction $order_action
@@ -188,7 +188,7 @@ class Checkout extends Controller
      * @param Payment $payment
      * @param CartAction $cart_action
      */
-    public function __construct(Country $country, State $state, Address $address,
+    public function __construct(Country $country, CountryState $state, Address $address,
                                 Order $order, OrderAction $order_action, OrderHistory $order_history,
                                 UserAction $user_action, OrderDimension $order_dimension,
                                 Shipping $shipping, Payment $payment, CartAction $cart_action)

@@ -16,7 +16,7 @@ use gplcart\core\interfaces\Crud as CrudInterface;
 /**
  * Manages basic behaviors and data related to country states
  */
-class State implements CrudInterface
+class CountryState implements CrudInterface
 {
 
     /**

@@ -11,7 +11,7 @@ namespace gplcart\core\handlers\validator\components;
 
 use gplcart\core\handlers\validator\Component;
 use gplcart\core\models\Country as CountryModel;
-use gplcart\core\models\State as StateModel;
+use gplcart\core\models\CountryState as CountryStateModel;
 use gplcart\core\models\Zone as ZoneModel;
 
 /**
@@ -34,16 +34,16 @@ class Country extends Component
 
     /**
      * State model instance
-     * @var \gplcart\core\models\State $state
+     * @var \gplcart\core\models\CountryState $state
      */
     protected $state;
 
     /**
      * @param CountryModel $country
-     * @param StateModel $state
+     * @param CountryStateModel $state
      * @param ZoneModel $zone
      */
-    public function __construct(CountryModel $country, StateModel $state, ZoneModel $zone)
+    public function __construct(CountryModel $country, CountryStateModel $state, ZoneModel $zone)
     {
         parent::__construct();
 

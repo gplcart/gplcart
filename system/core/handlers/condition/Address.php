@@ -31,7 +31,7 @@ class Address extends Base
 
     /**
      * State model instance
-     * @var \gplcart\core\models\State $state
+     * @var \gplcart\core\models\CountryState $state
      */
     protected $state;
 
@@ -47,7 +47,7 @@ class Address extends Base
     public function __construct()
     {
         $this->city = Container::get('gplcart\\core\\models\\City');
-        $this->state = Container::get('gplcart\\core\\models\\State');
+        $this->state = Container::get('gplcart\\core\\models\\CountryState');
         $this->country = Container::get('gplcart\\core\\models\\Country');
         $this->address = Container::get('gplcart\\core\\models\\Address');
     }

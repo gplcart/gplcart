@@ -13,7 +13,7 @@ use gplcart\core\handlers\validator\Component;
 use gplcart\core\models\Address as AddressModel;
 use gplcart\core\models\City as CityModel;
 use gplcart\core\models\Country as CountryModel;
-use gplcart\core\models\State as StateModel;
+use gplcart\core\models\CountryState as CountryStateModel;
 
 /**
  * Provides methods to validate address data
@@ -35,7 +35,7 @@ class Address extends Component
 
     /**
      * State model instance
-     * @var \gplcart\core\models\State $state
+     * @var \gplcart\core\models\CountryState $state
      */
     protected $state;
 
@@ -47,11 +47,11 @@ class Address extends Component
 
     /**
      * @param CountryModel $country
-     * @param StateModel $state
+     * @param CountryStateModel $state
      * @param CityModel $city
      * @param AddressModel $address
      */
-    public function __construct(CountryModel $country, StateModel $state, CityModel $city, AddressModel $address)
+    public function __construct(CountryModel $country, CountryStateModel $state, CityModel $city, AddressModel $address)
     {
         parent::__construct();
 
