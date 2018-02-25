@@ -44,6 +44,7 @@ $config = array();
 # $config['error_to_exception']                   = 0; // Whether to convert all PHP errors to exceptions
 # $config['error_log_backtrace']                  = 1; // Whether to log PHP error backtrace
 # $config['error_print_backtrace']                = 0; // Whether to print PHP error backtrace
+# $config['temp_dir']                             = ''; // File temporary directory
 # $config['file_upload_translit']                 = 1; // Whether to transliterate names of uploaded files
 # $config['history_lifespan']                     = 30*24*60*60; // Max number of seconds to keep records in "history" table
 # $config['language']                             = ''; // Default store language
