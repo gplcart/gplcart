@@ -256,25 +256,6 @@ function gplcart_file_sanitize($name, $replace = '')
 }
 
 /**
- * Returns temporary file directory
- * @return string
- */
-function gplcart_file_tempdir()
-{
-    return ini_get('upload_tmp_dir') ?: sys_get_temp_dir();
-}
-
-/**
- * Create file with unique file name in the temporary directory
- * @param string $prefix
- * @return string
- */
-function gplcart_file_tempname($prefix = 'GC')
-{
-    return tempnam(gplcart_file_tempdir(), $prefix);
-}
-
-/**
  * Reorder the $_FILES array when uploading multiple files
  * @param array $files
  * @return boolean
