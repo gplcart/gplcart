@@ -225,6 +225,7 @@ class CliController
         }
 
         $submitted = $this->getOptions();
+
         if (!empty($submitted) && !array_intersect_key($submitted, $allowed)) {
             $this->errorAndExit($this->text('Unsupported command options'));
         }
@@ -611,7 +612,6 @@ class CliController
 
         if (!$this->isValidInput($input, $field, $validator)) {
             $this->errors();
-            // Prompt until correct input
             $this->validatePrompt($field, $label, $validator, $default);
         }
     }
@@ -630,7 +630,6 @@ class CliController
 
         if (!$this->isValidInput($input, $field, $validator)) {
             $this->errors();
-            // Show menu until correct choose
             $this->validateMenu($field, $label, $validator, $options, $default);
         }
     }
@@ -680,16 +679,20 @@ class CliController
         }
 
         if (!empty($command['usage'])) {
+
             $shown = true;
             $this->line()->line($this->text('Usage:'));
+
             foreach ($command['usage'] as $usage) {
                 $this->line($usage);
             }
         }
 
         if (!empty($command['options'])) {
+
             $shown = true;
             $this->line()->line($this->text('Options:'));
+
             foreach ($command['options'] as $name => $description) {
                 $vars = array('@option' => $name, '@description' => $this->text($description));
                 $this->line($this->text('  @option  @description', $vars));

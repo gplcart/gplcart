@@ -42,6 +42,10 @@ class FileType
      */
     public function zip($file)
     {
+        if (!function_exists('zip_open')) {
+            return false;
+        }
+
         $zip = zip_open($file);
 
         if (is_resource($zip)) {

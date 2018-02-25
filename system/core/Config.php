@@ -141,11 +141,14 @@ class Config
     public function setKey($key = null)
     {
         if (empty($key)) {
+
             $key = $this->get('private_key');
+
             if (empty($key)) {
                 $key = gplcart_string_random();
                 $this->set('private_key', $key);
             }
+
         } else {
             $this->set('private_key', $key);
         }
@@ -197,6 +200,7 @@ class Config
         $this->reset($key);
 
         $serialized = 0;
+
         if (is_array($value)) {
             $value = serialize($value);
             $serialized = 1;
@@ -235,10 +239,13 @@ class Config
         }
 
         $settings = array();
+
         foreach ($this->db->fetchAll($sql, $conditions) as $result) {
+
             if (!empty($result['serialized'])) {
                 $result['value'] = unserialize($result['value']);
             }
+
             $settings[$result['id']] = $result['value'];
         }
 

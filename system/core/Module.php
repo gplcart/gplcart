@@ -396,6 +396,7 @@ class Module
     public function getHooks($class)
     {
         $hooks = array();
+
         foreach (get_class_methods($class) as $method) {
             if (strpos($method, 'hook') === 0) {
                 $hooks[] = $method;

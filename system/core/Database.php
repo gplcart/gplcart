@@ -61,10 +61,12 @@ class Database
         }
 
         try {
+
             // Use pipe for merging fields - sqlite compatibility
             $options = array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET sql_mode='PIPES_AS_CONCAT'");
             $this->pdo = new PDO($dns, $config['user'], $config['password'], $options);
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
         } catch (Exception $ex) {
             $this->pdo = null;
             throw new RuntimeException('Cannot connect to database: ' . $ex->getMessage());
