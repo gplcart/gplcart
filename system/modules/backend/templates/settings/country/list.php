@@ -122,7 +122,7 @@
               <?php if ($this->access('state')) { ?>
               <li>
                 <a href="<?php echo $this->url("admin/settings/states/$code"); ?>">
-                  <?php echo $this->lower($this->text('States')); ?>
+                  <?php echo $this->lower($this->text('Country states')); ?>
                 </a>
               </li>
               <?php } ?>

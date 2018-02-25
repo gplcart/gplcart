@@ -194,7 +194,7 @@ class State extends Controller
      */
     protected function setTitleListState()
     {
-        $text = $this->text('States of %name', array('%name' => $this->data_country['name']));
+        $text = $this->text('Country states of %name', array('%name' => $this->data_country['name']));
         $this->setTitle($text);
     }
 
@@ -377,7 +377,7 @@ class State extends Controller
 
         $breadcrumbs[] = array(
             'url' => $this->url("admin/settings/states/{$this->data_country['code']}"),
-            'text' => $this->text('States of %name', array('%name' => $this->data_country['code']))
+            'text' => $this->text('Country states of %name', array('%name' => $this->data_country['code']))
         );
 
         $this->setBreadcrumbs($breadcrumbs);

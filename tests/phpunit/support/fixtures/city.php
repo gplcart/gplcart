@@ -10,7 +10,7 @@ return array(
     array(
         'city_id' => 1,
         'name' => 'City 1',
-        'state_id' => 'State 1',
+        'state_id' => 'Country state 1',
         'country' => 'US',
         'status' => 1,
         'zone_id' => 1
@@ -18,7 +18,7 @@ return array(
     array(
         'city_id' => 2,
         'name' => 'City 2',
-        'state_id' => 'State 2',
+        'state_id' => 'Country state 2',
         'country' => 'UK',
         'status' => 0,
         'zone_id' => 2

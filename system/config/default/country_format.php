@@ -14,7 +14,7 @@ return array(
         'status' => 1
     ),
     'state_id' => array(
-        'name' => 'State', // @text
+        'name' => 'Country state', // @text
         'required' => 0,
         'weight' => 1,
         'status' => 1

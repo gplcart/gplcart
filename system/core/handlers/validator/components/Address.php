@@ -189,7 +189,7 @@ class Address extends Component
             return null;
         }
 
-        $label = $this->translation->text('State');
+        $label = $this->translation->text('Country state');
         $format = $this->getCountryFormatAddress();
 
         if (empty($value) && !empty($format['state_id']['required'])) {

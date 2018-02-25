@@ -90,7 +90,7 @@ class State extends Component
         $data = $this->state->get($id);
 
         if (empty($data)) {
-            $this->setErrorUnavailable('update', $this->translation->text('State'));
+            $this->setErrorUnavailable('update', $this->translation->text('Country state'));
             return false;
         }
 

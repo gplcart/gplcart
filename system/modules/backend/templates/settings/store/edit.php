@@ -185,7 +185,7 @@
           </div>
         </div>
         <div class="form-group<?php echo $this->error('data.state', ' has-error'); ?>">
-          <label class="col-md-4 control-label"><?php echo $this->text('State'); ?></label>
+          <label class="col-md-4 control-label"><?php echo $this->text('Country state'); ?></label>
           <div class="col-md-8">
             <input name="store[data][state]" class="form-control" value="<?php echo $this->e($store['data']['state']); ?>">
             <div class="help-block">

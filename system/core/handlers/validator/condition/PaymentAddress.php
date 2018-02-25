@@ -100,7 +100,7 @@ class PaymentAddress
 
         if ($count != count($existing)) {
             return $this->translation->text('@name is unavailable', array(
-                '@name' => $this->translation->text('State')));
+                '@name' => $this->translation->text('Country state')));
         }
 
         return true;
