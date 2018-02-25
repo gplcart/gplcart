@@ -31,6 +31,12 @@ class File implements CrudInterface
     protected $db;
 
     /**
+     * Config class instance
+     * @var \gplcart\core\Config $config
+     */
+    protected $config;
+
+    /**
      * Hook class instance
      * @var \gplcart\core\Hook $hook
      */
@@ -58,7 +64,8 @@ class File implements CrudInterface
                                 TranslationEntityModel $translation_entity)
     {
         $this->hook = $hook;
-        $this->db = $config->getDb();
+        $this->config = $config;
+        $this->db = $this->config->getDb();
         $this->translation = $translation;
         $this->translation_entity = $translation_entity;
     }
@@ -428,6 +435,25 @@ class File implements CrudInterface
     public function getEntities()
     {
         return $this->db->fetchColumnAll('SELECT entity FROM file GROUP BY entity');
+    }
+
+    /**
+     * Returns temporary file directory
+     * @return mixed
+     */
+    public function getTempDir()
+    {
+        return $this->config->get('temp_dir', ini_get('upload_tmp_dir') ?: sys_get_temp_dir());
+    }
+
+    /**
+     * Create file with unique file name in the temporary directory
+     * @param string $prefix
+     * @return bool|string
+     */
+    public function getTempFile($prefix = 'GC')
+    {
+        return tempnam($this->getTempDir(), $prefix);
     }
 
     /**
