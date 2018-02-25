@@ -72,43 +72,8 @@
     </div>
   </div>
   <div class="form-group">
-    <label class="col-md-2 control-label"><?php echo $this->text('Compress JS'); ?></label>
-    <div class="col-md-4">
-      <div class="btn-group" data-toggle="buttons">
-        <label class="btn btn-default<?php echo empty($settings['compress_js']) ? '' : ' active'; ?>">
-          <input name="settings[compress_js]" type="radio" autocomplete="off" value="1"<?php echo empty($settings['compress_js']) ? '' : ' checked'; ?>><?php echo $this->text('Enabled'); ?>
-        </label>
-        <label class="btn btn-default<?php echo empty($settings['compress_js']) ? ' active' : ''; ?>">
-          <input name="settings[compress_js]" type="radio" autocomplete="off" value="0"<?php echo empty($settings['compress_js']) ? ' checked' : ''; ?>><?php echo $this->text('Disabled'); ?>
-        </label>
-      </div>
-      <div class="help-block">
-        <?php echo $this->text('If enabled, then JS files will be merged into several big files. It reduces number of HTTP queries and improves site loading speed'); ?>
-      </div>
-    </div>
-  </div>
-  <div class="form-group">
-    <label class="col-md-2 control-label"><?php echo $this->text('Compress CSS'); ?></label>
-    <div class="col-md-4">
-      <div class="btn-group" data-toggle="buttons">
-        <label class="btn btn-default<?php echo empty($settings['compress_css']) ? '' : ' active'; ?>">
-          <input name="settings[compress_css]" type="radio" autocomplete="off" value="1"<?php echo empty($settings['compress_css']) ? '' : ' checked'; ?>><?php echo $this->text('Enabled'); ?>
-        </label>
-        <label class="btn btn-default<?php echo empty($settings['compress_css']) ? ' active' : ''; ?>">
-          <input name="settings[compress_css]" type="radio" autocomplete="off" value="0"<?php echo empty($settings['compress_css']) ? ' checked' : ''; ?>><?php echo $this->text('Disabled'); ?>
-        </label>
-      </div>
-      <div class="help-block">
-        <?php echo $this->text('If enabled, then CSS files will be minified and merged into one big file. It reduces number of HTTP queries and improves site loading speed'); ?>
-      </div>
-    </div>
-  </div>
-  <div class="form-group">
     <div class="col-md-6 col-md-offset-2">
       <div class="btn-toolbar">
-        <button class="btn btn-default" name="delete_cached_assets" value="1" onclick="return confirm('<?php echo $this->text('Are you sure?'); ?>');">
-          <?php echo $this->text('Delete cached JS and CSS files'); ?>
-        </button>
         <button class="btn btn-default" name="save" value="1">
           <?php echo $this->text('Save'); ?>
         </button>

@@ -97,12 +97,6 @@ define('GC_DIR_ASSET', GC_DIR_FILE . '/assets');
 define('GC_DIR_ASSET_VENDOR', GC_DIR_ASSET . '/vendor');
 
 /**
- * Path to directory containing compiled JS and CSS files
- * @var string
- */
-define('GC_DIR_ASSET_COMPILED', GC_DIR_ASSET . '/compiled');
-
-/**
  * Path to directory containing default configuration files
  * @var string
  */

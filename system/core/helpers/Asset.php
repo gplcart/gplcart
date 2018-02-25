@@ -16,72 +16,10 @@ class Asset
 {
 
     /**
-     * Compressor helper class instance
-     * @var \gplcart\core\helpers\Compressor $compressor
-     */
-    protected $compressor;
-
-    /**
      * An array of assets
      * @var array
      */
     protected $assets = array();
-
-    /**
-     * @param Compressor $compressor
-     */
-    public function __construct(Compressor $compressor)
-    {
-        $this->compressor = $compressor;
-    }
-
-    /**
-     * Compress and aggregate an array of assets
-     * @param array $assets
-     * @param string $type
-     * @param string $directory
-     * @return array
-     */
-    public function compress(array $assets, $type, $directory)
-    {
-        $group = 0;
-        $groups = $results = array();
-        foreach ($assets as $key => $asset) {
-
-            $exclude = isset($asset['aggregate']) && empty($asset['aggregate']);
-
-            if (!empty($asset['text']) || $exclude) {
-                $groups["__$group"] = $asset;
-                $group++;
-                continue;
-            }
-
-            if (!empty($asset['asset'])) {
-                $groups[$group][$key] = $asset['asset'];
-            }
-        }
-
-        foreach ($groups as $group => $contents) {
-
-            if (strpos($group, '__') === 0) {
-                $results[$group] = $contents;
-                continue;
-            }
-
-            if ($type === 'js') {
-                $aggregated = $this->compressor->compressJs($contents, $directory);
-            } else if ($type === 'css') {
-                $aggregated = $this->compressor->compressCss($contents, $directory);
-            }
-
-            if (!empty($aggregated)) {
-                $asset = $this->build(array('asset' => $aggregated, 'version' => false));
-                $results[$asset['key']] = $asset;
-            }
-        }
-
-        return $results;
-    }
 
     /**
      * Returns a weight for the next asset
@@ -175,7 +113,7 @@ class Asset
      * @param array $data
      * @return array
      */
-    protected function build(array $data)
+    public function build(array $data)
     {
         if (is_array($data['asset'])) {
             $type = 'js';

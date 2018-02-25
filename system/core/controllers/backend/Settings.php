@@ -40,8 +40,6 @@ class Settings extends Controller
             'cron_key' => '',
             'error_level' => 2,
             'cli_status' => 1,
-            'compress_css' => 0,
-            'compress_js' => 0,
             'timezone' => 'Europe/London'
         );
     }
@@ -63,9 +61,7 @@ class Settings extends Controller
      */
     protected function submitEditSettings()
     {
-        if ($this->isPosted('delete_cached_assets')) {
-            $this->clearCacheAssetsSettings();
-        } else if ($this->isPosted('save') && $this->validateEditSettings()) {
+        if ($this->isPosted('save') && $this->validateEditSettings()) {
             $this->updateSettings();
         }
     }
@@ -83,17 +79,6 @@ class Settings extends Controller
         }
 
         return !$this->hasErrors();
-    }
-
-    /**
-     * Deletes all aggregated assets
-     */
-    protected function clearCacheAssetsSettings()
-    {
-        gplcart_file_delete_recursive(GC_DIR_ASSET_COMPILED . "/js");
-        gplcart_file_delete_recursive(GC_DIR_ASSET_COMPILED . "/css");
-
-        $this->redirect('', $this->text('Cache has been deleted'), 'success');
     }
 
     /**

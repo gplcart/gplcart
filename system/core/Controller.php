@@ -468,7 +468,9 @@ abstract class Controller
     protected function setLanguageProperties()
     {
         if (!$this->isInternalRoute()) {
+
             $langcode = $this->route->getLangcode();
+
             if ($langcode) {
                 $this->langcode = $langcode;
                 $this->translation->set($langcode, $this->current_route['simple_pattern']);
@@ -612,6 +614,7 @@ abstract class Controller
     public function jstext($strings, $print = true)
     {
         $code = '';
+
         foreach ((array) $strings as $string) {
             $key = gplcart_json_encode($string);
             $text = $this->translation->text($string);
@@ -1657,12 +1660,6 @@ abstract class Controller
         gplcart_array_sort($this->data['_css']);
         gplcart_array_sort($this->data['_js_top']);
         gplcart_array_sort($this->data['_js_bottom']);
-
-        $this->data['_css'] = $this->compressAssets($this->data['_css'], 'css');
-
-        foreach (array('top', 'bottom') as $position) {
-            $this->data["_js_$position"] = $this->compressAssets($this->data["_js_$position"], 'js');
-        }
     }
 
     /**
@@ -1686,6 +1683,7 @@ abstract class Controller
             unset($templates['layout']);
 
             $body = $data = $this->data;
+
             foreach ($templates as $id => $template) {
                 if (strpos($id, 'region_') === 0) {
                     $body[$id] = $this->renderRegion($id, $template);
@@ -1725,6 +1723,7 @@ abstract class Controller
         gplcart_array_sort($this->data[$region]);
 
         $items = array();
+
         foreach ($this->data[$region] as $item) {
             $items[] = isset($item['rendered']) ? (string) $item['rendered'] : (string) $item;
         }
@@ -1795,10 +1794,13 @@ abstract class Controller
         }
 
         if ($content !== '' && isset($this->templates["region_$region"])) {
+
             $weight = 1;
+
             if (isset($this->data["region_$region"])) {
                 $weight = count($this->data["region_$region"]) + 1;
             }
+
             $this->data["region_$region"][] = array('rendered' => $content, 'weight' => $weight);
         }
     }
@@ -1813,24 +1815,9 @@ abstract class Controller
             'head' => 'layout/head',
             'body' => 'layout/body',
             'layout' => 'layout/layout',
-            'region_content' => 'layout/region_content',
-            'region_bottom' => 'layout/region_bottom'
+            'region_bottom' => 'layout/region_bottom',
+            'region_content' => 'layout/region_content'
         );
-    }
-
-    /**
-     * Compresses and aggregates assets
-     * @param array $assets
-     * @param string $type
-     * @return array
-     */
-    protected function compressAssets(array $assets, $type)
-    {
-        if ($this->config("compress_$type", 0)) {
-            return $this->asset->compress($assets, $type, GC_DIR_ASSET_COMPILED . "/$type");
-        }
-
-        return $assets;
     }
 
     /**
@@ -1952,6 +1939,7 @@ abstract class Controller
     protected function setClasses()
     {
         $classes = array();
+
         if (isset($this->current_route['pattern'])) {
             $pattern = $this->current_route['pattern'] ? $this->current_route['pattern'] : 'front';
             foreach (explode('/', $pattern) as $part) {
