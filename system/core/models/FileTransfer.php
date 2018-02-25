@@ -200,7 +200,7 @@ class FileTransfer
         $this->setDestination($path);
 
         try {
-            $temp = $this->writeTempFile($url);
+            $temp = $this->downloadTempFile($url);
         } catch (Exception $ex) {
             return $ex->getMessage();
         }
@@ -228,9 +228,9 @@ class FileTransfer
      * @return string
      * @throws UnexpectedValueException
      */
-    protected function writeTempFile($url)
+    protected function downloadTempFile($url)
     {
-        $temp = gplcart_file_tempname();
+        $temp = $this->file->getTempFile();
 
         $fh = fopen($temp, "w");
 
