@@ -26,7 +26,7 @@ class CountryState extends Controller
     protected $zone;
 
     /**
-     * State model instance
+     * Country state model instance
      * @var \gplcart\core\models\CountryState $state
      */
     protected $state;
@@ -73,25 +73,25 @@ class CountryState extends Controller
      * Displays the country state overview page
      * @param string $code
      */
-    public function listState($code)
+    public function listCountryState($code)
     {
         $this->setCountry($code);
-        $this->actionListState();
-        $this->setTitleListState();
-        $this->setBreadcrumbListState();
-        $this->setFilterListState();
-        $this->setPagerListState();
+        $this->actionListCountryState();
+        $this->setTitleListCountryState();
+        $this->setBreadcrumbListCountryState();
+        $this->setFilterListCountryState();
+        $this->setPagerListCountryState();
 
         $this->setData('country', $this->data_country);
-        $this->setData('states', $this->getListState());
+        $this->setData('states', $this->getListCountryState());
 
-        $this->outputListState();
+        $this->outputListCountryState();
     }
 
     /**
      * Set filter on the country state overview page
      */
-    protected function setFilterListState()
+    protected function setFilterListCountryState()
     {
         $this->setFilter(array('name', 'code', 'status', 'state_id'));
     }
@@ -113,7 +113,7 @@ class CountryState extends Controller
      * Sets a country state data
      * @param integer $state_id
      */
-    protected function setState($state_id)
+    protected function setCountryState($state_id)
     {
         $this->data_state = array();
 
@@ -130,7 +130,7 @@ class CountryState extends Controller
     /**
      * Applies an action to the selected country states
      */
-    protected function actionListState()
+    protected function actionListCountryState()
     {
         list($selected, $action, $value) = $this->getPostedAction();
 
@@ -162,7 +162,7 @@ class CountryState extends Controller
      * Set pager
      * @return array
      */
-    protected function setPagerListState()
+    protected function setPagerListCountryState()
     {
         $conditions = $this->query_filter;
         $conditions['count'] = true;
@@ -180,7 +180,7 @@ class CountryState extends Controller
      * Returns an array of country states for the country and filter conditions
      * @return array
      */
-    protected function getListState()
+    protected function getListCountryState()
     {
         $conditions = $this->query_filter;
         $conditions['limit'] = $this->data_limit;
@@ -192,7 +192,7 @@ class CountryState extends Controller
     /**
      * Sets titles on the country state overview page
      */
-    protected function setTitleListState()
+    protected function setTitleListCountryState()
     {
         $text = $this->text('Country states of %name', array('%name' => $this->data_country['name']));
         $this->setTitle($text);
@@ -201,7 +201,7 @@ class CountryState extends Controller
     /**
      * Sets breadcrumbs on the country state overview page
      */
-    protected function setBreadcrumbListState()
+    protected function setBreadcrumbListCountryState()
     {
         $breadcrumbs = array();
 
@@ -221,7 +221,7 @@ class CountryState extends Controller
     /**
      * Render and output the country state overview page
      */
-    protected function outputListState()
+    protected function outputListCountryState()
     {
         $this->output('settings/state/list');
     }
@@ -231,27 +231,27 @@ class CountryState extends Controller
      * @param string $country_code
      * @param integer|null $state_id
      */
-    public function editState($country_code, $state_id = null)
+    public function editCountryState($country_code, $state_id = null)
     {
-        $this->setState($state_id);
+        $this->setCountryState($state_id);
         $this->setCountry($country_code);
-        $this->setTitleEditState();
-        $this->setBreadcrumbEditState();
+        $this->setTitleEditCountryState();
+        $this->setBreadcrumbEditCountryState();
 
         $this->setData('state', $this->data_state);
         $this->setData('country', $this->data_country);
-        $this->setData('zones', $this->getZonesState());
-        $this->setData('can_delete', $this->canDeleteState());
+        $this->setData('zones', $this->getZonesCountryState());
+        $this->setData('can_delete', $this->canDeleteCountryState());
 
-        $this->submitEditState();
-        $this->outputEditState();
+        $this->submitEditCountryState();
+        $this->outputEditCountryState();
     }
 
     /**
      * Returns an array of active zones
      * @return array
      */
-    protected function getZonesState()
+    protected function getZonesCountryState()
     {
         return (array) $this->zone->getList(array('status' => 1));
     }
@@ -260,7 +260,7 @@ class CountryState extends Controller
      * Whether the country state can be deleted
      * @return boolean
      */
-    protected function canDeleteState()
+    protected function canDeleteCountryState()
     {
         return isset($this->data_state['state_id'])
             && $this->state->canDelete($this->data_state['state_id'])
@@ -270,15 +270,15 @@ class CountryState extends Controller
     /**
      * Handles a submitted country state data
      */
-    protected function submitEditState()
+    protected function submitEditCountryState()
     {
         if ($this->isPosted('delete')) {
-            $this->deleteState();
-        } else if ($this->isPosted('save') && $this->validateEditState()) {
+            $this->deleteCountryState();
+        } else if ($this->isPosted('save') && $this->validateEditCountryState()) {
             if (isset($this->data_state['state_id'])) {
-                $this->updateState();
+                $this->updateCountryState();
             } else {
-                $this->addState();
+                $this->addCountryState();
             }
         }
     }
@@ -287,14 +287,14 @@ class CountryState extends Controller
      * Validates a submitted country state data
      * @return boolean
      */
-    protected function validateEditState()
+    protected function validateEditCountryState()
     {
         $this->setSubmitted('state');
         $this->setSubmittedBool('status');
         $this->setSubmitted('update', $this->data_state);
         $this->setSubmitted('country', $this->data_country['code']);
 
-        $this->validateComponent('state');
+        $this->validateComponent('country_state');
 
         return !$this->hasErrors();
     }
@@ -302,7 +302,7 @@ class CountryState extends Controller
     /**
      * Deletes a country state
      */
-    protected function deleteState()
+    protected function deleteCountryState()
     {
         $this->controlAccess('state_delete');
 
@@ -317,7 +317,7 @@ class CountryState extends Controller
     /**
      * Updates a country state
      */
-    protected function updateState()
+    protected function updateCountryState()
     {
         $this->controlAccess('state_edit');
 
@@ -332,7 +332,7 @@ class CountryState extends Controller
     /**
      * Adds a new country state
      */
-    protected function addState()
+    protected function addCountryState()
     {
         $this->controlAccess('state_add');
 
@@ -347,7 +347,7 @@ class CountryState extends Controller
     /**
      * Sets titles on the edit country state page
      */
-    protected function setTitleEditState()
+    protected function setTitleEditCountryState()
     {
         if (isset($this->data_state['state_id'])) {
             $title = $this->text('Edit %name', array('%name' => $this->data_state['name']));
@@ -361,7 +361,7 @@ class CountryState extends Controller
     /**
      * Set breadcrumbs on the edit country state page
      */
-    protected function setBreadcrumbEditState()
+    protected function setBreadcrumbEditCountryState()
     {
         $breadcrumbs = array();
 
@@ -386,7 +386,7 @@ class CountryState extends Controller
     /**
      * Render and output the edit country state page
      */
-    protected function outputEditState()
+    protected function outputEditCountryState()
     {
         $this->output('settings/state/edit');
     }

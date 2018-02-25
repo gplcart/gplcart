@@ -149,9 +149,9 @@ return array(
             'validate' => array('gplcart\\core\\handlers\\validator\\components\\Review', 'review')
         )
     ),
-    'state' => array(
+    'country_state' => array(
         'handlers' => array(
-            'validate' => array('gplcart\\core\\handlers\\validator\\components\\State', 'state')
+            'validate' => array('gplcart\\core\\handlers\\validator\\components\\CountryState', 'countryState')
         )
     ),
     'store' => array(

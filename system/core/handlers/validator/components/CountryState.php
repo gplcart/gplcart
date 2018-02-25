@@ -17,11 +17,11 @@ use gplcart\core\models\Zone as ZoneModel;
 /**
  * Provides methods to validate country states data
  */
-class State extends Component
+class CountryState extends Component
 {
 
     /**
-     * State model instance
+     * Country state model instance
      * @var \gplcart\core\models\CountryState $state
      */
     protected $state;
@@ -58,17 +58,17 @@ class State extends Component
      * @param array $options
      * @return array|boolean
      */
-    public function state(array $submitted, array $options = array())
+    public function countryState(array $submitted, array $options = array())
     {
         $this->options = $options;
         $this->submitted = &$submitted;
 
-        $this->validateState();
-        $this->validateBool('status');
-        $this->validateCodeState();
-        $this->validateName();
         $this->validateCountryState();
-        $this->validateZoneState();
+        $this->validateBool('status');
+        $this->validateCodeCountryState();
+        $this->validateName();
+        $this->validateCountryCountryState();
+        $this->validateZoneCountryState();
 
         $this->unsetSubmitted('update');
 
@@ -79,7 +79,7 @@ class State extends Component
      * Validates a state to be updated
      * @return boolean|null
      */
-    protected function validateState()
+    protected function validateCountryState()
     {
         $id = $this->getUpdatingId();
 
@@ -102,7 +102,7 @@ class State extends Component
      * Validates country code
      * @return boolean|null
      */
-    protected function validateCountryState()
+    protected function validateCountryCountryState()
     {
         $field = 'country';
 
@@ -138,7 +138,7 @@ class State extends Component
      * Validates a state code
      * @return boolean
      */
-    public function validateCodeState()
+    public function validateCodeCountryState()
     {
         $field = 'code';
 
@@ -180,7 +180,7 @@ class State extends Component
      * Validates a zone ID
      * @return boolean|null
      */
-    protected function validateZoneState()
+    protected function validateZoneCountryState()
     {
         $field = 'zone_id';
         $value = $this->getSubmitted($field);
