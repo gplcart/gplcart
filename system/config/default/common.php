@@ -32,9 +32,6 @@ $config = array();
 # $config['category_image_dirname']               = 'category'; // Default folder for uploaded category images
 # $config['cron_interval']                        = 24*60*60; // Interval between cron executions, in seconds
 # $config['cron_key']                             = ''; // Cron secret key
-# $config['csv_delimiter']                        = ","; // CSV field delimiter
-# $config['csv_delimiter_multiple']               = "|"; // Character to separate multiple values in CSV
-# $config['csv_delimiter_key_value']              = ":"; // Character to separate key => value items in CSV
 # $config['currency']                             = 'USD'; // Default store currency
 # $config['currency_cookie_lifespan']             = 365*24*60*60; // Lifetime of cookie that keeps the current currency, in seconds
 # $config['date_short_format']                    = 'd.m.Y'; // Short time format
@@ -106,8 +103,6 @@ $config = array();
 # $config['cli_langcode']                         = ''; // Language code in CLI mode
 # $config['cli_help_option']                      = 'h'; // CLI options used to output a command help, e.g -h
 # $config['field_value_image_dirname']            = 'field_value'; // Default folder for uploaded field value images
-# $config['compress_js']                          = 0; // Whether to aggregate JS files
-# $config['compress_css']                         = 0; // Whether to aggregate and compress CSS files
 # $config['filter_allowed_tags']                  = array('a', 'i', 'b', 'em', 'span', 'strong', 'ul', 'ol', 'li'); // Array of allowed tags for default filter
 # $config['filter_allowed_protocols']             = array('http', 'ftp', 'mailto'); // Array of allowed protocols for default filter
 
