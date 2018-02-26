@@ -233,7 +233,7 @@ class Translation
      */
     public function text($string, array $arguments = array())
     {
-        if (!isset($this->context) || !$this->prepared) {
+        if (!$this->prepared) {
             return $this->formatString($string, $arguments);
         }
 
