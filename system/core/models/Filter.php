@@ -9,8 +9,6 @@
 
 namespace gplcart\core\models;
 
-use gplcart\core\Config;
-use gplcart\core\helpers\Filter as FilterHelper;
 use gplcart\core\Hook;
 
 /**
@@ -26,27 +24,11 @@ class Filter
     protected $hook;
 
     /**
-     * Config class instance
-     * @var \gplcart\core\Config $config
-     */
-    protected $config;
-
-    /**
-     * Filter helper instance
-     * @var \gplcart\core\helpers\Filter $filter
-     */
-    protected $filter;
-
-    /**
      * @param Hook $hook
-     * @param Config $config
-     * @param FilterHelper $filter
      */
-    public function __construct(Hook $hook, Config $config, FilterHelper $filter)
+    public function __construct(Hook $hook)
     {
         $this->hook = $hook;
-        $this->config = $config;
-        $this->filter = $filter;
     }
 
     /**
@@ -61,47 +43,24 @@ class Filter
             $filter = $this->get($filter);
         }
 
-        $result = null;
-        $this->hook->attach('filter', $text, $filter, $result, $this);
+        $filtered = null;
+        $this->hook->attach('filter', $text, $filter, $filtered, $this);
 
-        if (isset($result)) {
-            return (string) $result;
+        if (isset($filtered)) {
+            return (string) $filtered;
         }
 
         return $this->filter($text);
     }
 
     /**
-     * Filter out dangerous characters from a string considering the whitelisted tags and protocols
+     * Default and the most secure XSS filter
      * @param string $text
      * @return string
      */
-    public function filter($text)
+    protected function filter($text)
     {
-        $this->filter->setTags($this->getAllowedtags());
-        $this->filter->setProtocols($this->getAllowedProtocols());
-
-        return $this->filter->filter($text);
-    }
-
-    /**
-     * Returns an array of allowed HTML tags
-     * @return array
-     */
-    public function getAllowedtags()
-    {
-        $default = array('a', 'i', 'b', 'em', 'span', 'strong', 'ul', 'ol', 'li');
-        return $this->config->get('filter_allowed_tags', $default);
-    }
-
-    /**
-     * Returns an array of allowed protocols
-     * @return array
-     */
-    public function getAllowedProtocols()
-    {
-        $default = array('http', 'ftp', 'mailto');
-        return $this->config->get('filter_allowed_protocols', $default);
+        return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
     }
 
     /**
@@ -148,6 +107,11 @@ class Filter
 
         foreach ($filters as $id => &$filter) {
             $filter['filter_id'] = $id;
+            $filter += array(
+                'role_id' => array(),
+                'status' => true,
+                'module' => null
+            );
         }
 
         return $filters;

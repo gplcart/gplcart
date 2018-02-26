@@ -103,8 +103,6 @@ $config = array();
 # $config['cli_langcode']                         = ''; // Language code in CLI mode
 # $config['cli_help_option']                      = 'h'; // CLI options used to output a command help, e.g -h
 # $config['field_value_image_dirname']            = 'field_value'; // Default folder for uploaded field value images
-# $config['filter_allowed_tags']                  = array('a', 'i', 'b', 'em', 'span', 'strong', 'ul', 'ol', 'li'); // Array of allowed tags for default filter
-# $config['filter_allowed_protocols']             = array('http', 'ftp', 'mailto'); // Array of allowed protocols for default filter
 
 /**
  * End of configurable settings
