@@ -34,9 +34,11 @@
         <label class="btn btn-default<?php echo empty($language['status']) ? '' : ' active'; ?>">
           <input name="language[status]" type="radio" autocomplete="off" value="1"<?php echo empty($language['status']) ? '' : ' checked'; ?>><?php echo $this->text('Enabled'); ?>
         </label>
+          <?php if(empty($language['default'])) { ?>
         <label class="btn btn-default<?php echo empty($language['status']) ? ' active' : ''; ?>">
           <input name="language[status]" type="radio" autocomplete="off" value="0"<?php echo empty($language['status']) ? ' checked' : ''; ?>><?php echo $this->text('Disabled'); ?>
         </label>
+          <?php } ?>
       </div>
       <div class="help-block">
         <?php echo $this->error('status'); ?>
