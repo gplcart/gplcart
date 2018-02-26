@@ -105,10 +105,6 @@ class Language implements CrudInterface
                 $language['native_name'] = $language['name'];
             }
 
-            if ($code === 'en') {
-                $language['status'] = true;
-            }
-
             if ($options['enabled'] && empty($language['status'])) {
                 unset($languages[$code]);
                 continue;
