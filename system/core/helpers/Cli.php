@@ -99,7 +99,7 @@ class Cli
     }
 
     /**
-     * Output a single line with prepended new line
+     * Output a single line with prepended "new line" character
      * @param string $text
      * @return $this
      */
@@ -178,6 +178,7 @@ class Cli
 
         $i = 1;
         $keys = array();
+
         foreach ($items as $key => $item) {
             $keys[$i] = $key;
             $this->line(sprintf('  %d. %s', $i, $item));
@@ -266,6 +267,7 @@ class Cli
     public function table(array $data)
     {
         $columns = array();
+
         foreach ($data as $rkey => $row) {
             foreach ($row as $ckey => $cell) {
                 $length = strlen($cell);
@@ -276,6 +278,7 @@ class Cli
         }
 
         $table = '';
+
         foreach ($data as $rkey => $row) {
             foreach ($row as $ckey => $cell) {
                 $table .= str_pad($cell, $columns[$ckey]) . '   ';
