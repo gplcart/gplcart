@@ -148,6 +148,7 @@ function gplcart_string_format($string, array $arguments = array())
 function gplcart_string_replace($pattern, array $placeholders, array $data)
 {
     $pairs = array();
+
     foreach ($placeholders as $placeholder => $key) {
         if (isset($data[$key]) && !is_array($data[$key])) {
             $pairs[$placeholder] = $data[$key];

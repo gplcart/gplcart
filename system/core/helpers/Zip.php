@@ -113,6 +113,7 @@ class Zip
         $this->set($destination, true);
 
         $added = 0;
+
         foreach ($source as $file) {
             $added += (int) $this->zip->addFile($file, basename($file));
         }

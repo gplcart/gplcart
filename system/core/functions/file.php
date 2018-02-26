@@ -21,6 +21,7 @@ function gplcart_file_empty($directory, $pattern, $lifespan = 0)
     }
 
     $deleted = 0;
+
     foreach (gplcart_file_scan($directory, $pattern) as $file) {
         if ((filemtime($file) < GC_TIME - $lifespan) && unlink($file)) {
             $deleted++;
@@ -92,7 +93,9 @@ function gplcart_file_delete_recursive($file, &$errors = 0, &$success = 0)
 function gplcart_file_scan_recursive($directory, &$results = array())
 {
     foreach (scandir($directory) as $file) {
+
         $path = "$directory/$file";
+
         if (!is_dir($path)) {
             $results[] = $path;
         } else if ($file != "." && $file != "..") {
@@ -223,6 +226,7 @@ function gplcart_file_size($size, $precision = 2)
 
     $i = 0;
     $step = 1024;
+
     while (($size / $step) > 0.9) {
         $size = $size / $step;
         $i++;
@@ -267,6 +271,7 @@ function gplcart_file_multi_upload(&$files)
     }
 
     $converted = array();
+
     foreach ($files as $key => $all) {
         foreach ($all as $i => $val) {
             $converted[$i][$key] = $val;

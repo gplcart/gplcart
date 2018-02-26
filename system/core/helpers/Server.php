@@ -60,7 +60,9 @@ class Server
         if (is_array($this->server[$name])) {
             gplcart_array_trim($this->server[$name], $sanitize);
         } else {
+
             $this->server[$name] = trim($this->server[$name]);
+
             if ($sanitize) {
                 $this->server[$name] = filter_var($this->server[$name], FILTER_SANITIZE_STRING);
             }

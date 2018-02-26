@@ -97,6 +97,7 @@ trait Job
         }
 
         $rendered = '';
+
         if (!empty($job['status'])) {
             $job += array('widget' => 'common/job');
             $rendered = $this->render($job['widget'], array('job' => $job));

@@ -142,6 +142,7 @@ class Address extends Base
         $fields = array('country_zone_id', 'state_zone_id', 'city_zone_id');
 
         $ids = array();
+
         foreach ($fields as $field) {
             $ids[] = $address[$field];
         }
@@ -173,6 +174,7 @@ class Address extends Base
     protected function getAddressZoneId(array $address)
     {
         $result = array();
+
         foreach (array('state_id', 'city_id', 'country') as $field) {
 
             if (empty($address[$field])) {

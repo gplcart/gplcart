@@ -78,6 +78,7 @@ class Cart extends Base
         }
 
         $ids = array();
+
         foreach ($data['cart']['items'] as $item) {
             $ids[] = $item['product_id'];
         }

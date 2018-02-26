@@ -189,6 +189,7 @@ function &gplcart_static($name, $default_value = null, $reset = false)
     }
 
     if (isset($name)) {
+
         if ($reset) {
             return $data;
         }
@@ -288,6 +289,7 @@ function gplcart_backtrace($print = false)
     $root = str_replace('/', DIRECTORY_SEPARATOR, GC_DIR) . DIRECTORY_SEPARATOR;
 
     $result = array();
+
     for ($i = 0; $i < $length; $i++) {
         $result[] = str_replace($root, '', substr($trace[$i], strpos($trace[$i], ' ')));
     }

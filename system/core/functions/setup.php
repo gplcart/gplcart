@@ -79,14 +79,15 @@ function gplcart_setup_autoload()
 
         if (file_exists($file)) {
             require_once $file;
-            return null;
-        }
+        } else {
 
-        $lowerfile = strtolower($file);
-        foreach (glob(dirname($file) . '/*') as $file) {
-            if (strtolower($file) == $lowerfile) {
-                require_once $file;
-                break;
+            $lowerfile = strtolower($file);
+
+            foreach (glob(dirname($file) . '/*') as $file) {
+                if (strtolower($file) == $lowerfile) {
+                    require_once $file;
+                    break;
+                }
             }
         }
     });

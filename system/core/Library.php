@@ -192,6 +192,7 @@ class Library
         }
 
         $readable = $count = 0;
+
         foreach ($library['files'] as $path) {
             $count++;
             $file = $library['basepath'] . "/$path";
@@ -223,7 +224,6 @@ class Library
             return null;
         }
 
-        // First check if there's a .json file, e.g bower.json
         $version = $this->getVersionJson($file);
 
         if (isset($version)) {
@@ -250,7 +250,9 @@ class Library
         $handle = fopen($file, 'r');
 
         while ($library['version_source']['lines'] && $line = fgets($handle, $library['version_source']['cols'])) {
+
             $version = array();
+
             if (preg_match($library['version_source']['pattern'], $line, $version)) {
                 if (count($version) == 2 && isset($version[1])) {
                     fclose($handle);

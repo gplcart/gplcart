@@ -93,10 +93,13 @@ class Session
         }
 
         if (!isset($key)) {
+
             session_unset();
+
             if (!session_destroy()) {
                 throw new RuntimeException('Failed to delete the session');
             }
+
             return true;
         }
 
@@ -113,7 +116,9 @@ class Session
     public function setMessage($message, $type = 'info', $key = 'messages')
     {
         if ($message !== '') {
+
             $messages = (array) $this->get("$key.$type", array());
+
             if (!in_array($message, $messages)) {
                 $messages[] = $message;
                 $this->set("$key.$type", $messages);

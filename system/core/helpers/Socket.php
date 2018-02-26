@@ -300,7 +300,6 @@ class Socket
     public function exec()
     {
         $this->response = '';
-
         $errno = $errstr = null;
 
         if (isset($this->context)) {

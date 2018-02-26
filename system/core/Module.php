@@ -299,6 +299,7 @@ class Module
         $file = $this->getModuleInfoFile($module_id);
 
         $decoded = null;
+
         if (is_file($file)) {
             $decoded = json_decode(file_get_contents($file), true);
         }

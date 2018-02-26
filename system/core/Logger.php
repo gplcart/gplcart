@@ -119,6 +119,7 @@ class Logger
     public function log($type, $data, $severity = 'info', $translatable = true)
     {
         $message = '';
+
         if (is_string($data)) {
             $message = $data;
         } elseif (isset($data['message'])) {
@@ -186,6 +187,7 @@ class Logger
         }
 
         $list = array();
+
         foreach ($results as $result) {
             $list[] = $result['data'];
         }
@@ -352,6 +354,7 @@ class Logger
         }
 
         $formatted = array();
+
         foreach ($this->errors as $error) {
             $formatted[] = $this->getFormattedError($error);
         }

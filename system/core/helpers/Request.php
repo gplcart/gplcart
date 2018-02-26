@@ -203,10 +203,12 @@ class Request
     public function deleteCookie($name = null)
     {
         if (isset($name)) {
+
             if (isset($this->request['cookie'][$name])) {
                 unset($this->request['cookie'][$name]);
                 return setcookie($name, '', GC_TIME - 3600, '/');
             }
+
             return false;
         }
 

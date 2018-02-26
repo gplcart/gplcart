@@ -41,7 +41,9 @@ function gplcart_array_sort(array &$array, $key = 'weight', $asc = true)
 function gplcart_array_trim(array &$array, $filter = false)
 {
     array_walk_recursive($array, function (&$value) use ($filter) {
+
         $value = trim($value);
+
         if ($filter) {
             $value = filter_var($value, FILTER_SANITIZE_STRING);
         }
@@ -111,6 +113,7 @@ function gplcart_array_set(&$array, $parents, $value, $glue = '.')
     $ref = &$array;
 
     foreach ((array) $parents as $parent) {
+
         if (isset($ref) && !is_array($ref)) {
             $ref = array();
         }
@@ -150,6 +153,7 @@ function gplcart_array_unset(&$array, $parents, $glue = '.')
 function gplcart_array_flatten(array $array)
 {
     $return = array();
+
     array_walk_recursive($array, function ($a) use (&$return) {
         $return[] = $a;
     });
