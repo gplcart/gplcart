@@ -364,7 +364,7 @@ abstract class Controller
     }
 
     /**
-     * Returns a property
+     * Returns a property value
      * @param string $name
      * @return mixed
      * @throws InvalidArgumentException
@@ -471,7 +471,7 @@ abstract class Controller
 
             $langcode = $this->route->getLangcode();
 
-            if ($langcode) {
+            if (!empty($langcode)) {
                 $this->langcode = $langcode;
                 $this->translation->set($langcode, $this->current_route['simple_pattern']);
                 $this->current_language = $this->language->get($this->langcode);
@@ -874,6 +874,7 @@ abstract class Controller
         $delimiter = $this->config('teaser_delimiter', '<!--teaser-->');
         $text = str_replace(htmlspecialchars($delimiter), $delimiter, $text);
         $parts = array_filter(array_map('trim', explode($delimiter, $text, 2)));
+
         return array_pad($parts, 2, '');
     }
 
@@ -1542,7 +1543,8 @@ abstract class Controller
      */
     protected function controlMaintenanceMode()
     {
-        $allowed_path = $this->is_install || $this->is_backend
+        $allowed_path = $this->is_install
+            || $this->is_backend
             || in_array($this->path, array('login', 'logout', 'forgot'));
 
         $this->is_maintenance = empty($this->current_store['status']) && !$allowed_path;
@@ -1920,7 +1922,18 @@ abstract class Controller
         $this->data['_store'] = $this->current_store;
         $this->data['_language'] = $this->current_language;
         $this->data['_messages'] = $this->session->getMessage();
-        $this->data['_languages'] = $this->language->getList(array('enabled' => true));
+
+        foreach($this->language->getList() as $code => $language){
+
+            if(!empty($language['status'])){
+                $this->data['_languages'][$code] = $language;
+            }
+
+            if(!empty($language['status']) || $code === 'en'){
+                $this->data['_language_switcher'][$code] = $language;
+            }
+        }
+
         $this->data['_store_title'] = $this->store->getTranslation('title', $this->langcode);
 
         if (!empty($this->current_store['data']['logo'])) {
@@ -1991,6 +2004,7 @@ abstract class Controller
     public function addAssetLibrary($library_id, array $options = array())
     {
         $added = array();
+
         foreach ($this->library->getFiles($library_id) as $file) {
 
             $extension = pathinfo($file, PATHINFO_EXTENSION);
