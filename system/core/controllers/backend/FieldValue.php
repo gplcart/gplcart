@@ -302,7 +302,12 @@ class FieldValue extends Controller
 
         if (is_numeric($field_value_id)) {
 
-            $this->data_field_value = $this->field_value->get($field_value_id);
+            $conditions = array(
+                'language' => 'und',
+                'field_value_id' => $field_value_id
+            );
+
+            $this->data_field_value = $this->field_value->get($conditions);
 
             if (empty($this->data_field_value)) {
                 $this->outputHttpStatus(404);

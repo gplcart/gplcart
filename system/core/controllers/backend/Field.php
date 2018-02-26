@@ -230,7 +230,12 @@ class Field extends Controller
 
         if (is_numeric($field_id)) {
 
-            $this->data_field = $this->field->get($field_id);
+            $conditions = array(
+                'language' => 'und',
+                'field_id' => $field_id
+            );
+
+            $this->data_field = $this->field->get($conditions);
 
             if (empty($this->data_field)) {
                 $this->outputHttpStatus(404);

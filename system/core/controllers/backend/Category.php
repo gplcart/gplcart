@@ -296,7 +296,14 @@ class Category extends Controller
 
         if (is_numeric($category_id)) {
 
-            $this->data_category = $this->category->get($category_id);
+            //Set unexisting language code to get original titles.
+            //Otherwise it will be translated to the current language
+            $conditions = array(
+                'language' => 'und',
+                'category_id' => $category_id
+            );
+
+            $this->data_category = $this->category->get($conditions);
 
             if (empty($this->data_category)) {
                 $this->outputHttpStatus(404);

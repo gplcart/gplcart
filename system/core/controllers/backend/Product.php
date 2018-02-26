@@ -319,7 +319,12 @@ class Product extends Controller
 
         if (is_numeric($product_id)) {
 
-            $this->data_product = $this->product->get($product_id);
+            $conditions = array(
+                'language' => 'und',
+                'product_id' => $product_id
+            );
+
+            $this->data_product = $this->product->get($conditions);
 
             if (empty($this->data_product)) {
                 $this->outputHttpStatus(404);

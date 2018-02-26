@@ -244,7 +244,12 @@ class Page extends Controller
 
         if (is_numeric($page_id)) {
 
-            $this->data_page = $this->page->get($page_id);
+            $conditions = array(
+                'language' => 'und',
+                'page_id' => $page_id
+            );
+
+            $this->data_page = $this->page->get($conditions);
 
             if (empty($this->data_page)) {
                 $this->outputHttpStatus(404);

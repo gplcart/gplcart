@@ -177,7 +177,12 @@ class CategoryGroup extends Controller
 
         if (is_numeric($category_group_id)) {
 
-            $this->data_category_group = $this->category_group->get($category_group_id);
+            $conditions = array(
+                'language' => 'und',
+                'category_group_id' => $category_group_id
+            );
+
+            $this->data_category_group = $this->category_group->get($conditions);
 
             if (empty($this->data_category_group)) {
                 $this->outputHttpStatus(404);

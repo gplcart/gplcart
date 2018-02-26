@@ -240,7 +240,12 @@ class Collection extends Controller
 
         if (is_numeric($collection_id)) {
 
-            $this->data_collection = $this->collection->get($collection_id);
+            $conditions = array(
+                'language' => 'und',
+                'collection_id' => $collection_id
+            );
+
+            $this->data_collection = $this->collection->get($conditions);
 
             if (empty($this->data_collection)) {
                 $this->outputHttpStatus(404);

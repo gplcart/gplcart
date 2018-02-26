@@ -164,8 +164,10 @@ class File extends Controller
     protected function prepareListFile(array &$list)
     {
         foreach ($list as &$item) {
+
             $path = strval(str_replace("\0", "", $item['path']));
             $item['url'] = '';
+
             if ($path && file_exists(GC_DIR_FILE . '/' . $path)) {
                 $item['url'] = $this->url->file($item['path']);
             }
@@ -254,7 +256,12 @@ class File extends Controller
 
         if (is_numeric($file_id)) {
 
-            $this->data_file = $this->file->get($file_id);
+            $conditions = array(
+                'language' => 'und',
+                'file_id' => $file_id
+            );
+
+            $this->data_file = $this->file->get($conditions);
 
             if (empty($this->data_file)) {
                 $this->outputHttpStatus(404);
