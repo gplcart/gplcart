@@ -74,18 +74,18 @@ $region_content_class = 'col-md-8';
                 <?php } else if(count($_currencies) > 1) { ?>
                 <li><?php echo $this->e($_currency['name']); ?></li>
                 <?php } ?>
-                <?php if (count($_languages) > 1) { ?>
+                <?php if (count($_language_switcher) > 1) { ?>
                 <li class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                    <?php if (empty($_languages[$_langcode]['status'])) { ?>
+                    <?php if (empty($_language_switcher[$_langcode])) { ?>
                     <?php echo $this->text('Select language'); ?>
                     <?php } else { ?>
-                    <?php echo $this->e($_languages[$_langcode]['native_name']); ?>
+                    <?php echo $this->e($_language_switcher[$_langcode]['native_name']); ?>
                     <?php } ?>
                     <span class="caret"></span>
                   </a>
                   <ul class="dropdown-menu">
-                    <?php foreach ($_languages as $language) { ?>
+                    <?php foreach ($_language_switcher as $language) { ?>
                     <?php if ($language['code'] !== $_langcode) { ?>
                     <li>
                       <a href="<?php echo $this->lurl($language['code'], '', $_query); ?>"><?php echo $this->e($language['native_name']); ?></a>
@@ -216,13 +216,13 @@ $region_content_class = 'col-md-8';
           <ol class="breadcrumb">
             <?php foreach ($_breadcrumbs as $item) { ?>
             <?php if (empty($item['url'])) { ?>
-            <li><?php echo $this->filter($item['text']); ?></li>
+            <li><?php echo $item['text']; ?></li>
             <?php } else { ?>
-            <li><a href="<?php echo $this->e($item['url']); ?>"><?php echo $this->filter($item['text']); ?></a></li>
+            <li><a href="<?php echo $this->e($item['url']); ?>"><?php echo $item['text']; ?></a></li>
             <?php } ?>
             <?php } ?>
             <?php if (!empty($_page_title)) { ?>
-            <li><h1><?php echo $this->filter($_page_title); ?></h1></li>
+            <li><h1><?php echo $_page_title; ?></h1></li>
             <?php } ?>
           </ol>
          <?php } ?>
@@ -252,7 +252,7 @@ $region_content_class = 'col-md-8';
                 <div class="alert alert-<?php echo $this->e($type); ?> alert-dismissible fade in">
                   <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">×</span></button>
                   <?php foreach ($strings as $string) { ?>
-                  <?php echo $this->filter($string); ?><br>
+                  <?php echo $string; ?><br>
                   <?php } ?>
                 </div>
                 <?php } ?>

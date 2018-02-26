@@ -88,17 +88,17 @@
               </li>
             </ul>
           </li>
-          <?php if(count($_languages) > 1) { ?>
+          <?php if(count($_language_switcher) > 1) { ?>
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <?php if (empty($_languages[$_langcode]['status'])) { ?>
+              <?php if (empty($_language_switcher[$_langcode])) { ?>
               <?php echo $this->text('Select language'); ?>
               <?php } else { ?>
-              <?php echo $this->e($_languages[$_langcode]['native_name']); ?>
+              <?php echo $this->e($_language_switcher[$_langcode]['native_name']); ?>
               <?php } ?>
             </a>
             <ul class="dropdown-menu">
-              <?php foreach ($_languages as $language) { ?>
+              <?php foreach ($_language_switcher as $language) { ?>
               <?php if ($language['code'] !== $_langcode) { ?>
               <li>
                 <a href="<?php echo $this->lurl($language['code'], '', $_query); ?>"><?php echo $this->e($language['native_name']); ?></a>
@@ -123,9 +123,9 @@
               <?php if(!empty($_breadcrumbs)) { ?>
               <?php foreach ($_breadcrumbs as $item) { ?>
               <?php if(empty($item['url'])) { ?>
-              <li><?php echo $this->filter($item['text']); ?></li>
+              <li><?php echo $item['text']; ?></li>
               <?php } else { ?>
-              <li><a href="<?php echo $this->e($item['url']); ?>"><?php echo $this->filter($item['text']); ?></a></li>
+              <li><a href="<?php echo $this->e($item['url']); ?>"><?php echo $item['text']; ?></a></li>
               <?php } ?>
               <?php } ?>
               <?php } ?>
@@ -136,7 +136,7 @@
       <?php } ?>
       <?php if(!empty($_page_title)) { ?>
       <h1 class="h3">
-        <?php echo $this->filter($_page_title); ?>
+        <?php echo $_page_title; ?>
         <?php if(!empty($_help['path'])) { ?>
           <a class="small" href="<?php echo $this->url($_help['path']); ?>"><i class="fa fa-question-circle"></i></a>
         <?php } ?>
@@ -155,7 +155,7 @@
             <span>×</span>
           </button>
           <?php foreach ($strings as $string) { ?>
-          <?php echo $this->filter($string); ?><br>
+          <?php echo $string; ?><br>
           <?php } ?>
         </div>
         <?php } ?>
