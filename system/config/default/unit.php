@@ -29,7 +29,7 @@ return array(
         'base' => 'm',
         'conversion' => 0.001,
         'type' => 'size',
-        'name' => 'Milimeter' // @text
+        'name' => 'Millimeter' // @text
     ),
     'in' => array(
         'base' => 'm',
@@ -53,7 +53,7 @@ return array(
         'base' => 'm2',
         'conversion' => 0.000001,
         'type' => 'volume',
-        'name' => 'Milimeter square' // @text
+        'name' => 'Millimeter square' // @text
     ),
     'l' => array(
         'base' => 'l',
@@ -65,7 +65,7 @@ return array(
         'base' => 'l',
         'conversion' => 0.001,
         'type' => 'volume',
-        'name' => 'Mililitre' // @text
+        'name' => 'Milliliter' // @text
     ),
     'm3' => array(
         'base' => 'l',
@@ -83,7 +83,7 @@ return array(
         'base' => 'm3',
         'conversion' => 0.000000001,
         'type' => 'volume',
-        'name' => 'Milimeter cubed' // @text
+        'name' => 'Millimeter cubed' // @text
     ),
     'in3' => array(
         'base' => 'm3',
@@ -119,7 +119,7 @@ return array(
         'base' => 'kg',
         'conversion' => 0.000001,
         'type' => 'weight',
-        'name' => 'Miligram' // @text
+        'name' => 'Milligram' // @text
     ),
     'lb' => array(
         'base' => 'kg',

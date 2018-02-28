@@ -88,7 +88,7 @@
       </select>
       <div class="help-block">
         <?php echo $this->error('store_id'); ?>
-        <div class="text-muted"><?php echo $this->text('Associate the collection with a certain store'); ?></div>
+        <div class="text-muted"><?php echo $this->text('Select a store associated with this collection'); ?></div>
       </div>
     </div>
   </div>

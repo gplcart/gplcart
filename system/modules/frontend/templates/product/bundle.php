@@ -11,7 +11,7 @@
 <?php if (!empty($product['bundled_products'])) { ?>
 <div class="panel panel-default bundled-items">
   <div class="panel-heading clearfix">
-    <h4 class="panel-title"><?php echo $this->text('Bundled items'); ?></h4>
+    <h4 class="panel-title"><?php echo $this->text('Bundled products'); ?></h4>
   </div>
   <div class="panel-body">
     <div class="bundled-items">
