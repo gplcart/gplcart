@@ -134,7 +134,6 @@ class Language implements CrudInterface
         }
 
         if (!empty($data['default'])) {
-            $data['status'] = true;
             $this->setDefault($data['code']);
         }
 
@@ -181,12 +180,7 @@ class Language implements CrudInterface
         unset($data['code']);
 
         if (!empty($data['default'])) {
-            $data['status'] = true;
             $this->setDefault($code);
-        }
-
-        if ($this->isDefault($code)) {
-            $data['status'] = true;
         }
 
         $saved = $this->config->select('languages', array());
