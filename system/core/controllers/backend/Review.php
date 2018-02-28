@@ -329,7 +329,8 @@ class Review extends Controller
         $widget = array(
             'multiple' => false,
             'products' => $products,
-            'name' => 'review[product_id]'
+            'name' => 'review[product_id]',
+            'error' => $this->error('product_id')
         );
 
         $this->setData('product_picker', $this->getWidgetProductPicker($widget));

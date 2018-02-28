@@ -8,7 +8,7 @@
  * To see available variables <?php print_r(get_defined_vars()); ?>
  */
 ?>
-<div class="form-group<?php echo $this->error($name, ' has-error'); ?>">
+<div class="form-group<?php echo empty($error) ? '' : ' has-error'; ?>">
   <div class="col-md-12">
     <div class="product-picker-results">
       <?php if (!empty($products)) { ?>
@@ -30,7 +30,7 @@
            data-multiple="<?php echo $multiple; ?>"
            data-store-id="<?php echo $store_id; ?>"
            data-key="<?php echo $key; ?>">
-    <div class="help-block"><?php echo $this->error($name); ?></div>
+    <div class="help-block"><?php echo empty($error) ? '' : $this->e($error); ?></div>
   </div>
 </div>
 

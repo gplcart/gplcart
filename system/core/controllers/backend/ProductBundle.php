@@ -133,6 +133,7 @@ class ProductBundle extends Controller
             'multiple' => true,
             'name' => 'product[bundle]',
             'products' => $products,
+            'error' => $this->error('bundle'),
             'store_id' => $this->data_product['store_id']
         );
 

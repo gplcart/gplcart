@@ -148,7 +148,8 @@ trait Widget
             'key' => 'product_id',
             'store_id' => null,
             'multiple' => false,
-            'products' => array()
+            'products' => array(),
+            'error' => null
         );
 
         return $this->render('content/product/picker', $options);
