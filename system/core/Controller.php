@@ -517,6 +517,7 @@ abstract class Controller
 
         if (isset($this->current_store['store_id'])) {
             $this->store_id = $this->current_store['store_id'];
+            $this->is_maintenance = empty($this->current_store['status']) && !$this->access('maintenance');
         }
     }
 
@@ -1223,7 +1224,6 @@ abstract class Controller
     public function setData($key, $value)
     {
         gplcart_array_set($this->data, $key, $value);
-
         return $this->data;
     }
 
@@ -1235,7 +1235,6 @@ abstract class Controller
     public function unsetData($key)
     {
         gplcart_array_unset($this->data, $key);
-
         return $this->data;
     }
 
@@ -1547,9 +1546,7 @@ abstract class Controller
             || $this->is_backend
             || in_array($this->path, array('login', 'logout', 'forgot'));
 
-        $this->is_maintenance = empty($this->current_store['status']) && !$allowed_path;
-
-        if ($this->is_maintenance && !$this->access('maintenance')) {
+        if ($this->is_maintenance && !$allowed_path) {
 
             if (!$this->isFront()) {
                 $this->redirect('/');
@@ -1921,16 +1918,14 @@ abstract class Controller
         $this->data['_user'] = $this->current_user;
         $this->data['_store'] = $this->current_store;
         $this->data['_language'] = $this->current_language;
+        $this->data['_maintenance'] = $this->is_maintenance;
         $this->data['_messages'] = $this->session->getMessage();
 
-        foreach($this->language->getList() as $code => $language){
+        $default_langcode = $this->language->getDefault();
 
-            if(!empty($language['status'])){
+        foreach ($this->language->getList() as $code => $language) {
+            if (!empty($language['status']) || $code === $default_langcode) {
                 $this->data['_languages'][$code] = $language;
-            }
-
-            if(!empty($language['status']) || $code === 'en'){
-                $this->data['_language_switcher'][$code] = $language;
             }
         }
 
@@ -1962,6 +1957,10 @@ abstract class Controller
                     $classes[] = "gc-$part";
                 }
             }
+        }
+
+        if ($this->is_maintenance) {
+            $classes[] = "gc-maintenance";
         }
 
         $this->data['_classes'] = $classes;
