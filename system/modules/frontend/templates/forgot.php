@@ -47,7 +47,9 @@
         <div class="col-md-10 col-md-offset-2">
           <ul class="list-inline">
             <li><a href="<?php echo $this->url('login'); ?>"><?php echo $this->text('Login'); ?></a></li>
+              <?php if(empty($_maintenance)) { ?>
             <li><a href="<?php echo $this->url('register'); ?>"><?php echo $this->text('Register'); ?></a></li>
+          <?php } ?>
           </ul>
         </div>
       </div>

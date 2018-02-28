@@ -40,7 +40,9 @@
       <div class="form-group">
         <div class="col-md-10 col-md-offset-2">
           <ul class="list-inline">
+              <?php if(empty($_maintenance)) { ?>
             <li><a href="<?php echo $this->url('register'); ?>"><?php echo $this->text('Register'); ?></a></li>
+          <?php } ?>
             <li><a href="<?php echo $this->url('forgot'); ?>"><?php echo $this->text('Forgot password'); ?></a></li>
           </ul>
         </div>

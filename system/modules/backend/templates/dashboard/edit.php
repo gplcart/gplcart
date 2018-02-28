@@ -32,7 +32,7 @@
     <tbody>
       <?php foreach ($dashboard['data'] as $id => $handler) { ?>
       <tr>
-        <td class="middle"><?php echo $this->e($handler['title']); ?></td>
+        <td class="middle"><?php echo $this->text($handler['title']); ?></td>
         <td class="middle">
           <input type="checkbox" name="dashboard[<?php echo $id; ?>][status]" value="1"<?php echo empty($handler['status']) ? '' : ' checked'; ?>>
         </td>

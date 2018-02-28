@@ -28,6 +28,13 @@ $region_content_class = 'col-md-8';
 ?>
 <body<?php echo $this->attributes(array('class' => $_classes)); ?>>
   <div class="container-fluid">
+    <?php if(!empty($_maintenance)) { ?>
+    <?php if (!empty($region_content)) { ?>
+    <div class="container-fluid">
+      <div class="region content"><?php echo $region_content; ?></div>
+    </div>
+    <?php } ?>
+    <?php } else { ?>
     <div class="content-wrapper">
       <div class="row">
         <nav class="navbar navbar-default navbar-static-top first">
@@ -74,18 +81,18 @@ $region_content_class = 'col-md-8';
                 <?php } else if(count($_currencies) > 1) { ?>
                 <li><?php echo $this->e($_currency['name']); ?></li>
                 <?php } ?>
-                <?php if (count($_language_switcher) > 1) { ?>
+                <?php if (count($_languages) > 1) { ?>
                 <li class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                    <?php if (empty($_language_switcher[$_langcode])) { ?>
+                    <?php if (empty($_languages[$_langcode])) { ?>
                     <?php echo $this->text('Select language'); ?>
                     <?php } else { ?>
-                    <?php echo $this->e($_language_switcher[$_langcode]['native_name']); ?>
+                    <?php echo $this->e($_languages[$_langcode]['native_name']); ?>
                     <?php } ?>
                     <span class="caret"></span>
                   </a>
                   <ul class="dropdown-menu">
-                    <?php foreach ($_language_switcher as $language) { ?>
+                    <?php foreach ($_languages as $language) { ?>
                     <?php if ($language['code'] !== $_langcode) { ?>
                     <li>
                       <a href="<?php echo $this->lurl($language['code'], '', $_query); ?>"><?php echo $this->e($language['native_name']); ?></a>
@@ -325,5 +332,6 @@ $region_content_class = 'col-md-8';
         </div>
       </div>
     </div>
+    <?php } ?>
   </div>
 </body>

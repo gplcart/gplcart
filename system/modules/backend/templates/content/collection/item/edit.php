@@ -39,7 +39,7 @@
         <?php echo $this->error('entity_id'); ?>
         <div class="text-muted">
           <?php echo $this->text('Start to type in the field an entity title to get suggestions or enter a numeric entity ID'); ?>
-          <?php if($this->access('file_add') && $this->access('file_upload')) { ?>
+          <?php if($collection['type'] === 'file' && $this->access('file_add') && $this->access('file_upload')) { ?>
           <p><a href="<?php echo $this->url('admin/content/file/add'); ?>"><?php echo $this->text('Upload new file'); ?></a></p>
           <?php } ?>
       </div>

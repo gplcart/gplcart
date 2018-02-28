@@ -88,17 +88,17 @@
               </li>
             </ul>
           </li>
-          <?php if(count($_language_switcher) > 1) { ?>
+          <?php if(count($_languages) > 1) { ?>
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <?php if (empty($_language_switcher[$_langcode])) { ?>
+              <?php if (empty($_languages[$_langcode])) { ?>
               <?php echo $this->text('Select language'); ?>
               <?php } else { ?>
-              <?php echo $this->e($_language_switcher[$_langcode]['native_name']); ?>
+              <?php echo $this->e($_languages[$_langcode]['native_name']); ?>
               <?php } ?>
             </a>
             <ul class="dropdown-menu">
-              <?php foreach ($_language_switcher as $language) { ?>
+              <?php foreach ($_languages as $language) { ?>
               <?php if ($language['code'] !== $_langcode) { ?>
               <li>
                 <a href="<?php echo $this->lurl($language['code'], '', $_query); ?>"><?php echo $this->e($language['native_name']); ?></a>
