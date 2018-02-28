@@ -4,6 +4,10 @@
     width: auto;
 }
 
+body.gc-maintenance .region.content {
+    margin-top: 100px;
+}
+
 .navbar-unstyled {
     background: transparent;
     box-shadow: none;
