@@ -173,7 +173,7 @@ class Field extends Controller
         $this->setData('types', $this->field->getTypes());
         $this->setData('can_delete', $this->canDeleteField());
         $this->setData('widget_types', $this->field->getWidgetTypes());
-        $this->setData('languages', $this->language->getList(array('in_database' => true)));
+        $this->setData('languages', $this->language->getList(array('enabled' => true)));
 
         $this->submitEditField();
         $this->outputEditField();

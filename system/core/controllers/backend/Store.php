@@ -187,7 +187,7 @@ class Store extends Controller
         $this->setData('can_delete', $this->canDeleteStore());
         $this->setData('countries', $this->getCountriesStore());
         $this->setData('collections', $this->getListCollectionStore());
-        $this->setData('languages', $this->language->getList(array('in_database' => true)));
+        $this->setData('languages', $this->language->getList(array('enabled' => true)));
 
         $this->submitEditStore();
         $this->setDataEditStore();

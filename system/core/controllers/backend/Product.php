@@ -271,7 +271,7 @@ class Product extends Controller
         $this->setData('default_currency', $this->currency->getDefault());
         $this->setData('subtract_default', $this->config->get('product_subtract', 0));
         $this->setData('classes', $this->product_class->getList(array('status' => 1)));
-        $this->setData('languages', $this->language->getList(array('in_database' => true)));
+        $this->setData('languages', $this->language->getList(array('enabled' => true)));
 
         $this->submitEditProduct();
 
@@ -560,7 +560,8 @@ class Product extends Controller
         $widget = array(
             'multiple' => true,
             'name' => 'product[related]',
-            'products' => $products
+            'products' => $products,
+            'error' => $this->error('related')
         );
 
         $this->setData('product_picker', $this->getWidgetProductPicker($widget));

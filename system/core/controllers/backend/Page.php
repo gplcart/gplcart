@@ -225,7 +225,7 @@ class Page extends Controller
         $this->setBreadcrumbEditPage();
 
         $this->setData('page', $this->data_page);
-        $this->setData('languages', $this->language->getList(array('in_database' => true)));
+        $this->setData('languages', $this->language->getList(array('enabled' => true)));
 
         $this->submitEditPage();
 

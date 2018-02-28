@@ -182,7 +182,7 @@ class Collection extends Controller
         $this->setData('types', $this->collection->getTypes());
         $this->setData('collection', $this->data_collection);
         $this->setData('can_delete', $this->canDeleteCollection());
-        $this->setData('languages', $this->language->getList(array('in_database' => true)));
+        $this->setData('languages', $this->language->getList(array('enabled' => true)));
 
         $this->submitEditCollection();
         $this->outputEditCollection();

@@ -237,7 +237,7 @@ class FieldValue extends Controller
         $this->setData('field', $this->data_field);
         $this->setData('field_value', $this->data_field_value);
         $this->setData('widget_types', $this->field->getWidgetTypes());
-        $this->setData('languages', $this->language->getList(array('in_database' => true)));
+        $this->setData('languages', $this->language->getList(array('enabled' => true)));
 
         $this->submitEditFieldValue();
         $this->setDataImagesEditFieldValue();

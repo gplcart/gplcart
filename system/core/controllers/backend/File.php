@@ -219,7 +219,7 @@ class File extends Controller
         $this->setData('can_delete', $this->canDeleteFile());
 
         $this->setData('extensions', $this->file->supportedExtensions(true));
-        $this->setData('languages', $this->language->getList(array('in_database' => true)));
+        $this->setData('languages', $this->language->getList(array('enabled' => true)));
 
         $this->submitEditFile();
         $this->outputEditFile();
