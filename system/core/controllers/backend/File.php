@@ -9,6 +9,7 @@
 
 namespace gplcart\core\controllers\backend;
 
+use Exception;
 use gplcart\core\models\File as FileModel;
 use gplcart\core\models\TranslationEntity as TranslationEntityModel;
 
@@ -103,25 +104,34 @@ class File extends Controller
     {
         list($selected, $action) = $this->getPostedAction();
 
-        $deleted_disk = $deleted_database = 0;
+        $disk = $db = 0;
+        $class = $this->file;
 
         foreach ($selected as $file_id) {
             if ($action === 'delete' && $this->access('file_delete')) {
-                $result = $this->file->deleteAll($file_id);
-                $deleted_disk += $result['disk'];
-                $deleted_database += $result['database'];
+
+                $disk++;
+                $db++;
+
+                try {
+                    $this->file->deleteAll($file_id);
+                } catch (Exception $ex) {
+                    if ($ex->getCode() === $class::ERROR_DELETE_DB) {
+                        $db--;
+                    } else if ($ex->getCode() === $class::ERROR_DELETE_DISK) {
+                        $disk--;
+                    } else {
+                        $disk--;
+                        $db--;
+                    }
+                }
             }
         }
 
-        if ($deleted_disk > 0 || $deleted_database > 0) {
-
-            $message = $this->text('Deleted from database: %db, disk: %disk', array(
-                    '%db' => $deleted_database,
-                    '%disk' => $deleted_disk
-                )
-            );
-
-            $this->setMessage($message, 'success');
+        if (!empty($selected)) {
+            $severity = $disk && $disk == $db ? 'success' : 'warning';
+            $message = $this->text('Deleted from database: %db, disk: %disk', array('%db' => $db, '%disk' => $disk));
+            $this->setMessage($message, $severity);
         }
     }
 
@@ -303,13 +313,14 @@ class File extends Controller
     {
         $this->controlAccess('file_delete');
 
-        $result = $this->file->deleteAll($this->data_file['file_id']);
-
-        if (array_sum($result) == 2) {
-            $this->redirect('admin/content/file', $this->text('File has been deleted from database and disk'), 'success');
+        try {
+            $this->file->deleteAll($this->data_file['file_id']);
+        } catch (Exception $ex) {
+            // Redirect in any case as file can be already deleted from the database
+            $this->redirect('admin/content/file', $ex->getMessage(), 'warning');
         }
 
-        $this->redirect('', $this->text('File has not been deleted'), 'warning');
+        $this->redirect('admin/content/file', $this->text('File has been deleted from database and disk'), 'success');
     }
 
     /**

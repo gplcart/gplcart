@@ -9,6 +9,7 @@
 
 namespace gplcart\core\controllers\backend;
 
+use Exception;
 use gplcart\core\models\Field as FieldModel;
 use gplcart\core\models\FieldValue as FieldValueModel;
 use gplcart\core\models\File as FileModel;
@@ -358,8 +359,15 @@ class FieldValue extends Controller
         $file_ids = $this->getPosted('delete_images', array(), true, 'array');
 
         if (!empty($file_ids) && isset($this->data_field_value['field_value_id'])) {
+
             $file_id = reset($file_ids);
-            $this->file->deleteAll($file_id, false);
+
+            try {
+                $this->file->deleteAll($file_id, false);
+            } catch (Exception $ex) {
+                $this->setMessage($ex->getMessage(), 'warning', true);
+            }
+
             $this->field_value->update($this->data_field_value['field_value_id'], array('file_id' => 0));
         }
     }
