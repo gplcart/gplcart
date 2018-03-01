@@ -343,6 +343,10 @@ class FileTransfer
             }
         }
 
+        if (!isset($this->destination) && isset($this->handler['path'])) {
+            $this->destination = $this->handler['path'];
+        }
+
         try {
             return $this->validateHandler($path, $pathinfo['extension']);
         } catch (Exception $ex) {
