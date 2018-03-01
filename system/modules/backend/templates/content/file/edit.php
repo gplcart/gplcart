@@ -69,9 +69,7 @@
         <div class="text-muted"><?php echo $this->text('Supported extensions: %list', array('%list' => implode(',', $extensions))); ?></div>
       </div>
       <?php } else { ?>
-      <div class="form-control">
         <a href="<?php echo $this->url('', array('download' => $file['file_id'])); ?>"><?php echo $this->truncate($this->e($file['path'])); ?></a>
-      </div>
       <?php } ?>
     </div>
   </div>
