@@ -26,6 +26,12 @@
         <option value="status|0" data-confirm="<?php echo $this->text('Are you sure?'); ?>">
           <?php echo $this->text('Status'); ?>: <?php echo $this->text('Disabled'); ?>
         </option>
+          <option value="blog_post|0" data-confirm="<?php echo $this->text('Are you sure?'); ?>">
+              <?php echo $this->text('Blog post'); ?>: <?php echo $this->text('Disabled'); ?>
+          </option>
+          <option value="blog_post|1" data-confirm="<?php echo $this->text('Are you sure?'); ?>">
+              <?php echo $this->text('Blog post'); ?>: <?php echo $this->text('Enabled'); ?>
+          </option>
         <?php } ?>
         <?php if ($this->access('page_delete')) { ?>
         <option value="delete" data-confirm="<?php echo $this->text('Are you sure? It cannot be undone!'); ?>">
@@ -167,7 +173,7 @@
             <span class="text-danger"><?php echo $this->text('Unknown'); ?></span>
             <?php } else { ?>
             <?php echo $this->e($page['email']); ?>
-            <?php } ?> 
+            <?php } ?>
           </td>
           <td class="middle">
             <?php if (empty($page['status'])) { ?>

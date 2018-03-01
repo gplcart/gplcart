@@ -123,23 +123,25 @@ class Page extends Controller
 
         foreach ($selected as $page_id) {
 
-            if ($action == 'status' && $this->access('page_edit')) {
-                $updated += (int) $this->page->update($page_id, array('status' => $value));
+            if ($this->access('page_edit')) {
+                if ($action === 'status') {
+                    $updated += (int) $this->page->update($page_id, array('status' => $value));
+                } else if ($action === 'blog_post') {
+                    $updated += (int) $this->page->update($page_id, array('blog_post' => $value));
+                }
             }
 
-            if ($action == 'delete' && $this->access('page_delete')) {
+            if ($action === 'delete' && $this->access('page_delete')) {
                 $deleted += (int) $this->page->delete($page_id);
             }
         }
 
         if ($updated > 0) {
-            $message = $this->text('Updated %num item(s)', array('%num' => $updated));
-            $this->setMessage($message, 'success');
+            $this->setMessage($this->text('Updated %num item(s)', array('%num' => $updated)), 'success');
         }
 
         if ($deleted > 0) {
-            $message = $this->text('Deleted %num item(s)', array('%num' => $deleted));
-            $this->setMessage($message, 'success');
+            $this->setMessage($this->text('Deleted %num item(s)', array('%num' => $deleted)), 'success');
         }
     }
 
@@ -228,7 +230,6 @@ class Page extends Controller
         $this->setData('languages', $this->language->getList(array('enabled' => true)));
 
         $this->submitEditPage();
-
         $this->setDataImagesEditPage();
         $this->setDataCategoriesEditPage();
         $this->outputEditPage();
