@@ -128,7 +128,7 @@ class File extends Component
             return null;
         }
 
-        $result = $this->file_transfer->upload($file, null, 'image/upload/common');
+        $result = $this->file_transfer->upload($file, null);
 
         if ($result !== true) {
             $this->setError('path', (string) $result);
