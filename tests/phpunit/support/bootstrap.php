@@ -13,8 +13,8 @@ ini_set('display_startup_errors', '1');
 
 require_once __DIR__ . '/../../../system/bootstrap.php';
 
-if (is_file(GC_DIR . '/composer.lock') && is_file(GC_DIR . '/vendor/autoload.php')) {
-    require_once GC_DIR . '/vendor/autoload.php';
+if (is_file(GC_FILE_AUTOLOAD)) {
+    require_once GC_FILE_AUTOLOAD;
 }
 
 if (!class_exists('PHPUnit_Extensions_Database_TestCase')) {

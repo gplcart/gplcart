@@ -49,6 +49,18 @@ define('GC_BASE', str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])));
 define('GC_DIR', str_replace('\\', '/', realpath(__DIR__ . '/../')));
 
 /**
+ * Composer's vendor directory
+ * @var string
+ */
+define('GC_DIR_VENDOR', GC_DIR . '/vendor');
+
+/**
+ * Composer's autoload file
+ * @var string
+ */
+define('GC_FILE_AUTOLOAD', GC_DIR_VENDOR . '/autoload.php');
+
+/**
  * Path to CLI executable file
  * @var string
  */
