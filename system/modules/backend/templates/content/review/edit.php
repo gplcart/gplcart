@@ -46,7 +46,7 @@
       </div>
     </div>
   </div>
-  <div class="form-group required<?php echo $this->error('product_id', ' has-error'); ?>">
+  <div class="form-group <?php echo isset($review['review_id']) ? '' : 'required'; ?><?php echo $this->error('product_id', ' has-error'); ?>">
     <label class="col-md-2 control-label"><?php echo $this->text('Product'); ?></label>
     <div class="col-md-4">
       <?php echo $product_picker; ?>
