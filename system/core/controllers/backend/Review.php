@@ -192,7 +192,6 @@ class Review extends Controller
         $this->setData('review', $this->data_review);
 
         $this->submitEditReview();
-
         $this->setDataUserEditReview();
         $this->setDataProductEditReview();
         $this->outputEditReview();
