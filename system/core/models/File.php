@@ -15,8 +15,6 @@ use gplcart\core\interfaces\Crud as CrudInterface;
 use gplcart\core\models\Translation as TranslationModel;
 use gplcart\core\models\TranslationEntity as TranslationEntityModel;
 use gplcart\core\traits\Translation as TranslationTrait;
-use OutOfBoundsException;
-use RuntimeException;
 
 /**
  * Manages basic behaviors and data related to files
@@ -25,16 +23,6 @@ class File implements CrudInterface
 {
 
     use TranslationTrait;
-
-    /**
-     * Error exception code when failed to delete from database
-     */
-    const ERROR_DELETE_DB = 1;
-
-    /**
-     * Error exception code when failed to delete from disk
-     */
-    const ERROR_DELETE_DISK = 2;
 
     /**
      * Database class instance
@@ -349,29 +337,32 @@ class File implements CrudInterface
     /**
      * Deletes a file both from database and disk
      * @param int|array $file
+     * @param int $db
+     * @param int $disk
      * @param bool $check
      * @return bool
-     * @throws RuntimeException
-     * @throws OutOfBoundsException
      */
-    public function deleteAll($file, $check = true)
+    public function deleteAll($file, &$db = 0, &$disk = 0, $check = true)
     {
         if (!is_array($file)) {
             $file = $this->get($file);
         }
 
         if (!isset($file['file_id'])) {
-            throw new OutOfBoundsException($this->translation->text('An error occurred'));
+            return false;
         }
 
         if (!$this->delete($file['file_id'], $check)) {
-            throw new RuntimeException($this->translation->text('Failed to delete file from database'), self::ERROR_DELETE_DB);
+            return false;
         }
+
+        $db++;
 
         if (!$this->deleteFromDisk($file)) {
-            throw new RuntimeException($this->translation->text('Failed to delete file from disk'), self::ERROR_DELETE_DISK);
+            return false;
         }
 
+        $disk++;
         return true;
     }
 

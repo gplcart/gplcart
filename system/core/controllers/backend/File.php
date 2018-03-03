@@ -9,7 +9,6 @@
 
 namespace gplcart\core\controllers\backend;
 
-use Exception;
 use gplcart\core\models\File as FileModel;
 use gplcart\core\models\TranslationEntity as TranslationEntityModel;
 
@@ -105,26 +104,10 @@ class File extends Controller
         list($selected, $action) = $this->getPostedAction();
 
         $disk = $db = 0;
-        $class = $this->file;
 
         foreach ($selected as $file_id) {
             if ($action === 'delete' && $this->access('file_delete')) {
-
-                $disk++;
-                $db++;
-
-                try {
-                    $this->file->deleteAll($file_id);
-                } catch (Exception $ex) {
-                    if ($ex->getCode() === $class::ERROR_DELETE_DB) {
-                        $db--;
-                    } else if ($ex->getCode() === $class::ERROR_DELETE_DISK) {
-                        $disk--;
-                    } else {
-                        $disk--;
-                        $db--;
-                    }
-                }
+                $this->file->deleteAll($file_id, $db, $disk);
             }
         }
 
@@ -313,14 +296,12 @@ class File extends Controller
     {
         $this->controlAccess('file_delete');
 
-        try {
-            $this->file->deleteAll($this->data_file['file_id']);
-        } catch (Exception $ex) {
-            // Redirect in any case as file can be already deleted from the database
-            $this->redirect('admin/content/file', $ex->getMessage(), 'warning');
+        if ($this->file->deleteAll($this->data_file['file_id'])) {
+            $this->redirect('admin/content/file', $this->text('File has been deleted from database and disk'), 'success');
         }
 
-        $this->redirect('admin/content/file', $this->text('File has been deleted from database and disk'), 'success');
+        // Redirect in any case as file can be already deleted from the database
+        $this->redirect('admin/content/file', $this->text('An error occurred'), 'warning');
     }
 
     /**
