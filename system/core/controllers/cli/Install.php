@@ -64,6 +64,7 @@ class Install extends CliController
         $this->validatePrompt('store.title', $this->text('Store title'), 'install', 'GPLCart');
         $this->validatePrompt('user.email', $this->text('E-mail'), 'install');
         $this->validatePrompt('user.password', $this->text('Password'), 'install');
+        $this->validatePrompt('store.host', $this->text('Host'), 'install', 'localhost');
         $this->validatePrompt('store.basepath', $this->text('Installation subdirectory'), 'install', '');
 
         $this->validateInputDbInstall();
@@ -121,7 +122,7 @@ class Install extends CliController
         $data['database']['password'] = '';
         $data['store']['basepath'] = '';
         $data['store']['title'] = 'GPL Cart';
-        $data['store']['host'] = $this->getHostInstall();
+        $data['store']['host'] = 'localhost';
         $data['store']['timezone'] = date_default_timezone_get();
 
         return $data;
@@ -162,7 +163,6 @@ class Install extends CliController
     protected function validateInputInstall()
     {
         $this->setSubmitted('store.language', $this->langcode);
-        $this->setSubmitted('store.host', $this->getHostInstall());
         $this->setSubmitted('store.timezone', date_default_timezone_get());
 
         $this->validateComponent('install');
@@ -173,15 +173,6 @@ class Install extends CliController
         }
 
         $this->errors(true);
-    }
-
-    /**
-     * Returns the current host
-     * @return string
-     */
-    protected function getHostInstall()
-    {
-        return GC_WIN ? gethostbyname(gethostname()) : gethostname();
     }
 
     /**
