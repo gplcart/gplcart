@@ -94,19 +94,6 @@ function gplcart_setup_autoload()
 }
 
 /**
- * Include optional vendor files
- */
-function gplcart_setup_vendor()
-{
-    $lock = GC_DIR . '/composer.lock';
-    $autoload = GC_DIR . "/vendor/autoload.php";
-
-    if (is_file($lock) && is_file($autoload)) {
-        include_once $autoload;
-    }
-}
-
-/**
  * Setup internal encoding
  */
 function gplcart_setup_encoding()

@@ -13,7 +13,10 @@ ini_set('display_startup_errors', '1');
 
 require_once __DIR__ . '/../../../system/bootstrap.php';
 
-if (!class_exists('PHPUnit_Extensions_Database_TestCase')) {
-    throw new \Exception('Looks like DBUnit extension not installed. See https://github.com/sebastianbergmann/dbunit');
+if (is_file(GC_DIR . '/composer.lock') && is_file(GC_DIR . '/vendor/autoload.php')) {
+    require_once GC_DIR . '/vendor/autoload.php';
 }
 
+if (!class_exists('PHPUnit_Extensions_Database_TestCase')) {
+    throw new \LogicException('Looks like DBUnit extension not installed. See https://github.com/sebastianbergmann/dbunit');
+}
