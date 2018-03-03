@@ -27,8 +27,7 @@
     "ext-pdo": "*",
     "ext-fileinfo": "*",
     "ext-openssl": "*",
-    "ext-spl": "*",
-    "gplcart/composer-module-installer": "*"
+    "ext-spl": "*"
   },
   "require-dev": {
     "phpunit/phpunit": "^5.7",
