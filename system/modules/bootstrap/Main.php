@@ -44,12 +44,9 @@ class Main
             'module' => 'bootstrap',
             'url' => 'https://github.com/aFarkas/html5shiv',
             'download' => 'https://github.com/aFarkas/html5shiv/archive/3.7.3.zip',
-            'version_source' => array(
-                'file' => 'vendor/html5shiv/dist/html5shiv.min.js',
-                'pattern' => '/(\\d+\\.+\\d+\\.+\\d+)/',
-            ),
+            'version' => '3.7.3',
             'files' => array(
-                'vendor/html5shiv/dist/html5shiv.min.js',
+                'dist/html5shiv.min.js',
             )
         );
         $libraries['respond'] = array(
@@ -59,12 +56,9 @@ class Main
             'module' => 'bootstrap',
             'url' => 'https://github.com/scottjehl/Respond',
             'download' => 'https://github.com/scottjehl/Respond/archive/1.4.2.zip',
-            'version_source' => array(
-                'file' => 'vendor/respond/dest/respond.min.js',
-                'pattern' => '/v(\\d+\\.+\\d+\\.+\\d+)/',
-            ),
+            'version' => '1.4.2',
             'files' => array(
-                'vendor/respond/dest/respond.min.js',
+                'dest/respond.min.js',
             )
         );
 
@@ -75,13 +69,10 @@ class Main
             'module' => 'bootstrap',
             'url' => 'https://github.com/twbs/bootstrap',
             'download' => 'https://github.com/twbs/bootstrap/archive/v3.3.7.zip',
-            'version_source' => array(
-                'file' => 'vendor/bootstrap/dist/css/bootstrap.min.css',
-                'pattern' => '/v(\\d+\\.+\\d+\\.+\\d+)/',
-            ),
+            'version' => '3.3.7',
             'files' => array(
-                'vendor/bootstrap/dist/js/bootstrap.min.js',
-                'vendor/bootstrap/dist/css/bootstrap.min.css',
+                'dist/js/bootstrap.min.js',
+                'dist/css/bootstrap.min.css',
             ),
             'dependencies' => array(
                 'jquery' => '>= 1.9.1',

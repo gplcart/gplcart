@@ -44,12 +44,9 @@ class Main
             'module' => 'fa',
             'url' => 'https://github.com/FortAwesome/Font-Awesome',
             'download' => 'https://github.com/FortAwesome/Font-Awesome/archive/v4.7.0.zip',
-            'version_source' => array(
-                'file' => 'vendor/font_awesome/css/font-awesome.min.css',
-                'pattern' => '/(\\d+\\.+\\d+\\.+\\d+)/',
-            ),
+            'version' => '4.7.0',
             'files' => array(
-                'vendor/font_awesome/css/font-awesome.min.css',
+                'css/font-awesome.min.css',
             )
         );
     }
