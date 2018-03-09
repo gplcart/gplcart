@@ -3,7 +3,9 @@ nbproject
 *sublime*
 .git
 composer.lock
-/vendor
+
+vendor/*
+!vendor/assets*
 
 system/modules/*
 !system/modules/fa
