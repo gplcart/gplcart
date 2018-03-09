@@ -27,11 +27,26 @@
     "ext-pdo": "*",
     "ext-fileinfo": "*",
     "ext-openssl": "*",
-    "ext-spl": "*"
+    "ext-spl": "*",
+    "assets/jquery": "2.2.4",
+    "assets/jquery_ui": "1.12.1",
+    "assets/html5shiv": "3.7.3",
+    "assets/respond": "1.4.2",
+    "assets/bootstrap": "3.3.7",
+    "assets/font_awesome": "4.7.0",
+    "wikimedia/composer-merge-plugin": "^1"
   },
   "require-dev": {
     "phpunit/phpunit": "^5.7",
     "phpunit/dbunit": "^2.0"
+  },
+  "extra": {
+    "merge-plugin": {
+      "include": "system/modules/*/composer.json",
+      "recurse": true,
+      "replace": false,
+      "merge-extra": false
+    }
   },
   "autoload": {
     "psr-4": {
@@ -39,6 +54,83 @@
       "gplcart\\tests\\unit\\": "tests/unit/"
     }
   },
+  "config": {
+    "secure-http": false
+  },
   "minimum-stability": "dev",
-  "prefer-stable": true
+  "prefer-stable": true,
+  "repositories": [
+    {
+      "type": "package",
+      "packagist.org": false,
+      "package": {
+        "name": "assets/jquery",
+        "version": "2.2.4",
+        "dist": {
+          "type": "file",
+          "url": "https://code.jquery.com/jquery-2.2.4.min.js"
+        }
+      }
+    },
+    {
+      "type": "package",
+      "packagist.org": false,
+      "package": {
+        "name": "assets/jquery_ui",
+        "version": "1.12.1",
+        "dist": {
+          "type": "zip",
+          "url": "https://jqueryui.com/resources/download/jquery-ui-1.12.1.zip"
+        }
+      }
+    },
+    {
+      "type": "package",
+      "packagist.org": false,
+      "package": {
+        "name": "assets/html5shiv",
+        "version": "3.7.3",
+        "dist": {
+          "type": "zip",
+          "url": "https://github.com/aFarkas/html5shiv/archive/3.7.3.zip"
+        }
+      }
+    },
+    {
+      "type": "package",
+      "packagist.org": false,
+      "package": {
+        "name": "assets/respond",
+        "version": "1.4.2",
+        "dist": {
+          "type": "zip",
+          "url": "https://github.com/scottjehl/Respond/archive/1.4.2.zip"
+        }
+      }
+    },
+    {
+      "type": "package",
+      "packagist.org": false,
+      "package": {
+        "name": "assets/bootstrap",
+        "version": "3.3.7",
+        "dist": {
+          "type": "zip",
+          "url": "https://github.com/twbs/bootstrap/archive/v3.3.7.zip"
+        }
+      }
+    },
+    {
+      "type": "package",
+      "packagist.org": false,
+      "package": {
+        "name": "assets/font_awesome",
+        "version": "4.7.0",
+        "dist": {
+          "type": "zip",
+          "url": "https://github.com/FortAwesome/Font-Awesome/archive/v4.7.0.zip"
+        }
+      }
+    }
+  ]
 }
