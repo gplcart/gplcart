@@ -55,6 +55,12 @@ define('GC_DIR', str_replace('\\', '/', realpath(__DIR__ . '/../')));
 define('GC_DIR_VENDOR', GC_DIR . '/vendor');
 
 /**
+ * Composer's vendor assets directory
+ * @var string
+ */
+define('GC_DIR_VENDOR_ASSET', GC_DIR_VENDOR . '/assets');
+
+/**
  * Composer's autoload file
  * @var string
  */
@@ -101,12 +107,6 @@ define('GC_DIR_FILE', GC_DIR . '/files');
  * @var string
  */
 define('GC_DIR_ASSET', GC_DIR_FILE . '/assets');
-
-/**
- * Path to directory containing 3-d party asset libraries
- * @var string
- */
-define('GC_DIR_ASSET_VENDOR', GC_DIR_ASSET . '/vendor');
 
 /**
  * Path to directory containing default configuration files
