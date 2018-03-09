@@ -13,10 +13,7 @@ return array(
         'type' => 'asset',
         'url' => 'https://github.com/jquery/jquery',
         'download' => 'https://code.jquery.com/jquery-2.2.4.min.js',
-        'version_source' => array(
-            'file' => 'jquery-2.2.4.min.js',
-            'pattern' => '/v(\\d+\\.+\\d+\\.+\\d+)/',
-        ),
+        'version' => '2.2.4',
         'files' => array(
             'jquery-2.2.4.min.js',
         )
@@ -27,10 +24,7 @@ return array(
         'type' => 'asset',
         'url' => 'https://jqueryui.com',
         'download' => 'https://jqueryui.com/resources/download/jquery-ui-1.12.1.zip',
-        'version_source' => array(
-            'file' => 'jquery-ui.min.js',
-            'pattern' => '/v(\\d+\\.+\\d+\\.+\\d+)/',
-        ),
+        'version' => '1.12.1',
         'files' => array(
             'jquery-ui.min.js',
             'jquery-ui.min.css',
