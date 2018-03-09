@@ -152,21 +152,20 @@ class Library
 
         $library['id'] = $library_id;
 
-        if (!empty($library['module']) && empty($library['basepath'])) {
-            $library['basepath'] = GC_DIR_MODULE . "/{$library['module']}";
+        if (!isset($library['basepath'])) {
+            if (isset($library['vendor'])) {
+                $library['vendor'] = strtolower($library['vendor']);
+                $library['basepath'] = GC_DIR_VENDOR . "/{$library['vendor']}";
+            } else if (isset($types[$library['type']]['basepath'])) {
+                $library['basepath'] = "{$types[$library['type']]['basepath']}/$library_id";
+            } else {
+                unset($libraries[$library_id]);
+                return null;
+            }
         }
 
-        if (!isset($library['basepath']) && isset($types[$library['type']]['basepath'])) {
-            $library['basepath'] = "{$types[$library['type']]['basepath']}/$library_id";
-        }
-
-        if (empty($library['basepath'])) {
-            unset($libraries[$library_id]);
-            return null;
-        }
-
-        if (!isset($library['version'])) {
-            $library['version'] = $this->getVersion($library);
+        if ($library['type'] === 'php' && empty($library['files']) && !empty($library['vendor'])) {
+            $library['files'] = array(GC_FILE_AUTOLOAD);
         }
 
         if (!isset($library['version'])) {
@@ -185,7 +184,7 @@ class Library
      * @param array $library
      * @return bool
      */
-    protected function validateFiles(array $library)
+    protected function validateFiles(array &$library)
     {
         if (empty($library['files'])) {
             return true; // Assume files will be loaded on dynamically
@@ -193,115 +192,18 @@ class Library
 
         $readable = $count = 0;
 
-        foreach ($library['files'] as $path) {
+        foreach ($library['files'] as &$file) {
+
             $count++;
-            $file = $library['basepath'] . "/$path";
+
+            if (!gplcart_path_is_absolute($file)) {
+                $file = $library['basepath'] . "/$file";
+            }
+
             $readable += (int) (is_file($file) && is_readable($file));
         }
 
         return $count == $readable;
-    }
-
-    /**
-     * Parses either .json file or source code
-     * and returns a version number for the library
-     * @param array $library
-     * @return null|string
-     */
-    public function getVersion(array $library)
-    {
-        if (isset($library['version'])) {
-            return $library['version'];
-        }
-
-        if (empty($library['version_source']['file'])) {
-            return null;
-        }
-
-        $file = "{$library['basepath']}/{$library['version_source']['file']}";
-
-        if (!is_readable($file)) {
-            return null;
-        }
-
-        $version = $this->getVersionJson($file);
-
-        if (isset($version)) {
-            return $version;
-        }
-
-        return $this->getVersionSource($file, $library);
-    }
-
-    /**
-     * Search for version string in the source code using a regexp pattern
-     * @param string $file
-     * @param array $library
-     * @return null|string
-     */
-    protected function getVersionSource($file, array $library)
-    {
-        $library['version_source'] += array(
-            'pattern' => '',
-            'lines' => 100,
-            'cols' => 200,
-        );
-
-        $handle = fopen($file, 'r');
-
-        while ($library['version_source']['lines'] && $line = fgets($handle, $library['version_source']['cols'])) {
-
-            $version = array();
-
-            if (preg_match($library['version_source']['pattern'], $line, $version)) {
-                if (count($version) == 2 && isset($version[1])) {
-                    fclose($handle);
-                    return preg_replace('/^[\D\\s]+/', '', $version[1]);
-                }
-            }
-
-            $library['version_source']['lines']--;
-        }
-
-        fclose($handle);
-        return null;
-    }
-
-    /**
-     * Extracts a version string from .json files
-     * @param string $file
-     * @return null|string
-     */
-    public function getVersionJson($file)
-    {
-        if (pathinfo($file, PATHINFO_EXTENSION) !== 'json') {
-            return null;
-        }
-
-        $data = $this->getJsonData($file);
-
-        if (!isset($data['version'])) {
-            return null;
-        }
-
-        return preg_replace('/^[\D\\s]+/', '', $data['version']);
-    }
-
-    /**
-     * Extracts an array of data from a .json file
-     * @param string $file
-     * @return array
-     */
-    protected function getJsonData($file)
-    {
-        $json = file_get_contents($file);
-
-        if ($json === false) {
-            return array();
-        }
-
-        $data = json_decode(trim($json), true);
-        return empty($data) ? array() : (array) $data;
     }
 
     /**
@@ -393,12 +295,8 @@ class Library
     public function getTypes()
     {
         return array(
-            'php' => array(
-                'load' => true
-            ),
-            'asset' => array(
-                'basepath' => GC_DIR_ASSET_VENDOR
-            )
+            'php' => array('load' => true),
+            'asset' => array('basepath' => GC_DIR_VENDOR_ASSET)
         );
     }
 
@@ -411,19 +309,11 @@ class Library
     protected function prepareFiles(array $ids, array $libraries)
     {
         $prepared = array();
+
         foreach ($ids as $id) {
-
-            $library = $libraries[$id];
-
-            if (empty($library['files'])) {
-                continue;
+            if (!empty($libraries[$id]['files'])) {
+                $prepared = array_merge($prepared, $libraries[$id]['files']);
             }
-
-            array_walk($library['files'], function (&$file) use ($library) {
-                $file = "{$library['basepath']}/$file";
-            });
-
-            $prepared = array_merge($prepared, $library['files']);
         }
 
         return $prepared;
