@@ -4,17 +4,24 @@ nbproject
 .git
 composer.lock
 
-vendor/*
-!vendor/assets*
+/vendor/*
+!/vendor/assets
+/vendor/assets/*
+!/vendor/assets/html5shiv
+!/vendor/assets/respond
+!/vendor/assets/bootstrap
+!/vendor/assets/font_awesome
+!/vendor/assets/jquery
+!/vendor/assets/jquery_ui
 
-system/modules/*
-!system/modules/fa
-!system/modules/backend
-!system/modules/frontend
-!system/modules/bootstrap
+/system/modules/*
+!/system/modules/fa
+!/system/modules/backend
+!/system/modules/frontend
+!/system/modules/bootstrap
 
-files/private/*
-!files/private/.htaccess
-!files/private/stopwords
-!files/private/temp
-!files/private/modules
+/files/private/*
+!/files/private/.htaccess
+!/files/private/stopwords
+!/files/private/temp
+!/files/private/modules
