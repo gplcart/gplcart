@@ -44,11 +44,11 @@ FileETag None
     RewriteRule \.php$ - [F]
 
     # Prevent direct access to system files, except module asset folders
-    RewriteRule ^system/\w+/\w+/(js|css|image|vendor)/ - [L]
+    RewriteRule ^system/modules/\w+/(js|css|image)/ - [L]
     RewriteRule ^system/ - [F]
 
     # Prevent direct access to vendor files, except asset folders
-    RewriteRule ^vendor/\w+/\w+/asset/ - [L]
+    RewriteRule ^vendor/assets/ - [L]
     RewriteRule ^vendor/ - [F]
 
     # Prevent access to private directories
