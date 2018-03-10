@@ -60,17 +60,6 @@ class Library
     }
 
     /**
-     * Whether the given library exists
-     * @param string $library_id
-     * @return bool
-     */
-    public function exists($library_id)
-    {
-        $library = $this->get($library_id);
-        return isset($library['id']);
-    }
-
-    /**
      * Returns an array of libraries
      * @return array
      */
@@ -82,33 +71,11 @@ class Library
             return (array) $libraries;
         }
 
-        $config = gplcart_config_get(GC_FILE_CONFIG_COMPILED_LIBRARY);
-
-        if (isset($config)) {
-            return $libraries = (array) $config;
-        }
-
         $libraries = (array) gplcart_config_get(GC_FILE_CONFIG_LIBRARY);
         $this->hook->attach('library.list', $libraries, $this);
+        $libraries = (array) $this->prepareList($libraries);
 
-        $libraries = $this->prepareList($libraries);
-        gplcart_config_set(GC_FILE_CONFIG_COMPILED_LIBRARY, $libraries);
-
-        return (array) $libraries;
-    }
-
-    /**
-     * Removes cached libraries
-     * @return boolean
-     */
-    public function clearCache()
-    {
-        if (gplcart_config_delete(GC_FILE_CONFIG_COMPILED_LIBRARY)) {
-            gplcart_static_clear();
-            return true;
-        }
-
-        return false;
+        return $libraries;
     }
 
     /**

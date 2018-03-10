@@ -30,7 +30,6 @@ class ReportLibrary extends Controller
      */
     public function listReportLibrary()
     {
-        $this->clearCacheReportLibrary();
         $this->setTitleListReportLibrary();
         $this->setBreadcrumbListReportLibrary();
         $this->setFilterListReportLibrary();
@@ -121,18 +120,6 @@ class ReportLibrary extends Controller
         }
 
         return $types;
-    }
-
-    /**
-     * Clear cached libraries
-     */
-    protected function clearCacheReportLibrary()
-    {
-        $this->controlToken('refresh');
-
-        if ($this->isQuery('refresh') && $this->library->clearCache()) {
-            $this->redirect('', $this->text('Cache has been deleted'), 'success');
-        }
     }
 
     /**

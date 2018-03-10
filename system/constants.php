@@ -313,12 +313,6 @@ define('GC_FILE_CONFIG_FILE', GC_DIR_CONFIG . '/file.php');
 define('GC_FILE_CONFIG_COMPILED', GC_DIR_CONFIG_COMPILED . '/common.php');
 
 /**
- * File containing compiled library configuration
- * @var string
- */
-define('GC_FILE_CONFIG_COMPILED_LIBRARY', GC_DIR_CONFIG_COMPILED . '/library.php');
-
-/**
  * File containing compiled class override configuration
  * @var string
  */

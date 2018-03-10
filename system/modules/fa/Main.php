@@ -9,27 +9,11 @@
 
 namespace gplcart\modules\fa;
 
-use gplcart\core\Library;
-
 /**
  * Main class for Font Awesome module
  */
 class Main
 {
-
-    /**
-     * Library class instance
-     * @var \gplcart\core\Library $library
-     */
-    protected $library;
-
-    /**
-     * @param Library $library
-     */
-    public function __construct(Library $library)
-    {
-        $this->library = $library;
-    }
 
     /**
      * Implements hook "library.list"
@@ -49,38 +33,6 @@ class Main
                 'css/font-awesome.min.css',
             )
         );
-    }
-
-    /**
-     * Implements hook "module.enable.after"
-     */
-    public function hookModuleEnableAfter()
-    {
-        $this->library->clearCache();
-    }
-
-    /**
-     * Implements hook "module.disable.after"
-     */
-    public function hookModuleDisableAfter()
-    {
-        $this->library->clearCache();
-    }
-
-    /**
-     * Implements hook "module.install.after"
-     */
-    public function hookModuleInstallAfter()
-    {
-        $this->library->clearCache();
-    }
-
-    /**
-     * Implements hook "module.uninstall.after"
-     */
-    public function hookModuleUninstallAfter()
-    {
-        $this->library->clearCache();
     }
 
 }

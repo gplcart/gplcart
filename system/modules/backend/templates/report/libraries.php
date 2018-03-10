@@ -9,11 +9,6 @@
  */
 ?>
 <?php if (!empty($libraries) || $_filtering) { ?>
-<div class="btn-toolbar actions">
-  <a class="btn btn-default" href="<?php echo $this->url('', array('refresh' => 1, 'token' => $_token)); ?>" class="refresh">
-    <?php echo $this->text('Clear cache'); ?>
-  </a>
-</div>
 <div class="table-responsive">
   <table class="table libraries">
     <thead>
