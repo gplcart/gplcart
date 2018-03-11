@@ -1,18 +1,10 @@
-.idea
-nbproject
 *sublime*
-.git
 composer.lock
 
-/vendor/*
-!/vendor/assets
-/vendor/assets/*
-!/vendor/assets/html5shiv
-!/vendor/assets/respond
-!/vendor/assets/bootstrap
-!/vendor/assets/font_awesome
-!/vendor/assets/jquery
-!/vendor/assets/jquery_ui
+/.idea/
+/nbproject/
+/.git/
+/vendor/
 
 /system/modules/*
 !/system/modules/fa
