@@ -23,18 +23,15 @@ Also you'll need the following extension enabled:
 
 ## Installation ##
 
-**Old school:**
+GPLCart has some default dependencies (Jquery etc) which should be downloaded separatelly using [Composer](https://getcomposer.org). If you have downloaded GPLCart manually, make sure that all 3-d party libraries are in place by running `composer update`
 
-1. Download and extract to your hosting directory all files inside "gplcart" directory
-2. Go to `http://yourdomain.com` and follow the instructions
+*The recommended installation process:*
 
-**Composer:**
-
-Clone to `test` directory
+Download files (including dependencies) into `test` directory
 
     composer create-project gplcart/gplcart test --stability dev --no-interaction
 
-then you can perform full installation:
+then perform full installation:
 
 1. `cd test`
 2. `php gplcart install`
