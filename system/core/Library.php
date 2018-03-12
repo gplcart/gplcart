@@ -154,7 +154,7 @@ class Library
     protected function validateFiles(array &$library)
     {
         if (empty($library['files'])) {
-            return true; // Assume files will be loaded on dynamically
+            return true; // Assume files will be loaded dynamically
         }
 
         $readable = $count = 0;
