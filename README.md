@@ -2,8 +2,6 @@
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/gplcart/gplcart/badges/quality-score.png?b=dev)](https://scrutinizer-ci.com/g/gplcart/gplcart/?branch=dev)
 [![Build Status](https://travis-ci.org/gplcart/gplcart.svg?branch=dev)](https://travis-ci.org/gplcart/gplcart)
 
-## WARNING. Dev branch in not for production. Please wait until the release of 1.X ##
-
 ## About ##
 GPLCart is an open source e-commerce platform based on the classical LAMP stack (Linux+ Apache+Mysql+PHP). It's free, simple and extensible solution that allows you to build online shops fast and easy. GplCart is not a fork of an existing software. It's completely unique, made "with blood, sweat and tears" from the scratch.
 
