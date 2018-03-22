@@ -10,7 +10,7 @@
  * Core version
  * @var string
  */
-define('GC_VERSION', '1.0.0');
+define('GC_VERSION', '1.0.0-alpha');
 
 /**
  * Script start time
