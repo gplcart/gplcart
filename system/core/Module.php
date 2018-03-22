@@ -238,9 +238,9 @@ class Module
         }
 
         if (!empty($info['dependencies'])) {
-            foreach ($info['dependencies'] as $dependency_module_id => &$dependency_version) {
+            foreach ((array) $info['dependencies'] as $dependency_module_id => $dependency_version) {
                 if ($dependency_version === 'core') {
-                    $dependency_version = GC_VERSION;
+                    $info['dependencies'][$dependency_module_id] = GC_VERSION;
                 }
             }
         }
