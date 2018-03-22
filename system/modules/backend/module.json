@@ -6,9 +6,9 @@
   "type": "theme",
   "status": true,
   "lock": true,
-  "version": "1.0.0",
+  "version": "core",
   "dependencies": {
-    "bootstrap": "1.x",
-    "fa": "1.x"
+    "bootstrap": "core",
+    "fa": "core"
   }
 }
