@@ -81,6 +81,7 @@ class Cache
         $this->file = GC_DIR_CACHE . "/$cid.cache";
 
         $result = false;
+
         if (file_put_contents($this->file, serialize((array) $data)) !== false) {
             chmod($this->file, 0600);
             $result = true;
@@ -119,7 +120,9 @@ class Cache
         $result = $options['default'];
 
         if (is_file($this->file)) {
+
             $this->filemtime = filemtime($this->file);
+
             if (empty($options['lifespan']) || ((GC_TIME - $this->filemtime) < $options['lifespan'])) {
                 $result = unserialize(file_get_contents($this->file));
             }

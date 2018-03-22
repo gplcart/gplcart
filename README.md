@@ -21,11 +21,11 @@ Also you'll need the following extension enabled:
 
 ## Installation ##
 
-GPLCart has some default dependencies (Jquery etc) which should be downloaded separatelly using [Composer](https://getcomposer.org). If you have downloaded GPLCart manually, make sure that all 3-d party libraries are in place by running `composer update`
+GPLCart has some default dependencies (Jquery etc) which should be downloaded separately using [Composer](https://getcomposer.org). If you have downloaded GPLCart manually, make sure that all 3-d party libraries are in place by running `composer update`
 
 *The recommended installation process:*
 
-Download files (including dependencies) into `test` directory
+Download the files (including dependencies) into `test` directory
 
     composer create-project gplcart/gplcart test --stability dev --no-interaction
 
@@ -48,7 +48,6 @@ In one line: `composer create-project gplcart/gplcart test --stability dev --no-
 - Ability to rewrite almost any core method from a module (no monkey patching, "VQ mods")
 - Supports any template engine, including [TWIG](https://github.com/gplcart/twig)
 - Supports versioned dependencies for modules and 3-d party libraries
-
 - Really simple UI
 - Multistore `anotherstore.com, anotherstore.domain.com`
 - International, [easy translatable](https://github.com/gplcart/extractor)
