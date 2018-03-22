@@ -192,6 +192,7 @@ class Module
     public function scan($directory = GC_DIR_MODULE)
     {
         $modules = array();
+
         foreach (scandir($directory) as $module_id) {
 
             if (!$this->isValidId($module_id)) {
@@ -200,7 +201,7 @@ class Module
 
             $info = $this->getInfo($module_id);
 
-            if (empty($info['core'])) {
+            if (!isset($info['core'])) {
                 continue;
             }
 
@@ -223,12 +224,25 @@ class Module
 
         $info += array(
             'type' => 'module',
-            'name' => $module_id
+            'name' => $module_id,
+            'version' => null
         );
 
         // Do not override status set in module.json for locked modules
         if (isset($info['status']) && !empty($info['lock'])) {
             unset($installed[$module_id]['status']);
+        }
+
+        if ($info['version'] === 'core') {
+            $info['version'] = GC_VERSION;
+        }
+
+        if (!empty($info['dependencies'])) {
+            foreach ($info['dependencies'] as $dependency_module_id => &$dependency_version) {
+                if ($dependency_version === 'core') {
+                    $dependency_version = GC_VERSION;
+                }
+            }
         }
 
         // Do not override weight set in module.json for locked modules

@@ -6,7 +6,7 @@
   "type": "theme",
   "status": true,
   "lock": true,
-  "version": "1.0.0",
+  "version": "core",
   "framework": "bootstrap 3",
   "configure": "admin/module/settings/frontend",
   "settings": {
@@ -34,7 +34,7 @@
     }
   },
   "dependencies": {
-    "bootstrap": "1.x",
-    "fa": "1.x"
+    "bootstrap": "core",
+    "fa": "core"
   }
 }
