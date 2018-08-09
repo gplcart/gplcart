@@ -561,7 +561,9 @@ class Product extends Controller
             'multiple' => true,
             'name' => 'product[related]',
             'products' => $products,
-            'error' => $this->error('related')
+            'error' => $this->error('related'),
+            'label' => $this->text('Related products'),
+            'description' => $this->text('Select one or several related products to be shown on the product page')
         );
 
         $this->setData('product_picker', $this->getWidgetProductPicker($widget));

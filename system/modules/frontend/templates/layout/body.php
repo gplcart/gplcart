@@ -67,7 +67,7 @@ $region_content_class = 'col-md-8';
               <ul class="nav navbar-nav">
                 <?php if ($show_currency_selector) { ?>
                 <li class="dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $this->e($_currency['code']); ?> <span class="caret"></span></a>
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $this->e($_currency['code']); ?> <span class="dropdown-toggle"></span></a>
                   <ul class="dropdown-menu">
                     <?php foreach ($_currencies as $currency) { ?>
                     <?php if ($_currency['code'] !== $currency['code']) { ?>
@@ -89,7 +89,7 @@ $region_content_class = 'col-md-8';
                     <?php } else { ?>
                     <?php echo $this->e($_languages[$_langcode]['native_name']); ?>
                     <?php } ?>
-                    <span class="caret"></span>
+                    <span class="dropdown-toggle"></span>
                   </a>
                   <ul class="dropdown-menu">
                     <?php foreach ($_languages as $language) { ?>
@@ -104,7 +104,7 @@ $region_content_class = 'col-md-8';
                 <?php } ?>
               </ul>
               <?php if (!empty($_store['data']['phone'][0])) { ?>
-              <p class="navbar-text navbar-center hidden-xs">
+              <p class="navbar-text navbar-center d-none d-sm-block">
                 <?php echo $this->text('Call'); ?>: <?php echo $this->e($_store['data']['phone'][0]); ?>
               </p>
               <?php } ?>
@@ -136,11 +136,11 @@ $region_content_class = 'col-md-8';
         <nav class="navbar navbar-unstyled navbar-static-top second">
           <div class="container">
             <?php if (empty($_store_logo)) { ?>
-            <a class="navbar-brand hidden-xs" href="<?php echo $this->e($_base); ?>">
+            <a class="navbar-brand d-none d-sm-block" href="<?php echo $this->e($_base); ?>">
               <?php echo $this->e($_store_title); ?>
             </a>
             <?php } else { ?>
-            <a class="navbar-logo hidden-xs" href="<?php echo $this->e($_base); ?>">
+            <a class="navbar-logo d-none d-sm-block" href="<?php echo $this->e($_base); ?>">
               <img class="logo" alt="<?php echo $this->e($_store_title); ?>" title="<?php echo $this->e($_store_title); ?>" src="<?php echo $this->e($_store_logo); ?>">
             </a>
             <?php } ?>
@@ -184,7 +184,7 @@ $region_content_class = 'col-md-8';
               <div class="input-group">
                 <input type="search" class="form-control" autocomplete="off" name="q" value="<?php echo isset($_query['q']) && $_query['q'] !== '' ? $_query['q'] : ''; ?>" placeholder="<?php echo $this->text('Search'); ?>">
                 <span class="input-group-btn">
-                  <button class="btn btn-default" data-block-if-empty="q">
+                  <button class="btn" data-block-if-empty="q">
                     <i class="fa fa-search"></i>
                   </button>
                 </span>

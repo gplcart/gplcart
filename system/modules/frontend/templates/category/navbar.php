@@ -26,16 +26,16 @@
       </option>
     </select>
     <div class="btn-group" data-toggle="buttons">
-      <label class="btn btn-default<?php echo $view === 'list' ? ' active' : ''; ?>">
+      <label class="btn<?php echo $view === 'list' ? ' active' : ''; ?>">
         <input type="radio" name="view" autocomplete="off" value="list"<?php echo $view === 'list' ? ' checked' : ''; ?>>
         <i class="fa fa-th-list"></i>
       </label>
-      <label class="btn btn-default<?php echo $view === 'grid' ? ' active' : ''; ?>">
+      <label class="btn<?php echo $view === 'grid' ? ' active' : ''; ?>">
         <input type="radio" name="view" autocomplete="off" value="grid"<?php echo $view === 'grid' ? ' checked' : ''; ?>>
         <i class="fa fa-th-large"></i>
       </label>
     </div>
-    <button class="btn btn-default hidden-js"><?php echo $this->text('Go'); ?></button>
+    <button class="btn hidden-js"><?php echo $this->text('Go'); ?></button>
     <?php // Add hidden fields to retain additional GET parameters from the current URL (if any)  ?>
     <?php foreach ($_query as $key => $value) { ?>
     <?php if (!in_array($key, array('sort', 'view'))) { ?>

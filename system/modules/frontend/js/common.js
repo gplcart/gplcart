@@ -24,11 +24,11 @@
                     <div class="modal-dialog">\n\
                     <div class="modal-content">\n\
                     <div class="modal-header clearfix">\n\
-                    <a href="#" class="pull-right" data-dismiss="modal">\n\
+                    <a href="#" class="float-right" data-dismiss="modal">\n\
                     <i class="fa fa-times"></i></a>';
 
         if (typeof header !== 'undefined') {
-            html += '<h4 class="modal-title pull-left">@header</h4>';
+            html += '<h4 class="modal-title float-left">@header</h4>';
         }
 
         html += '</div>\n\
@@ -56,11 +56,11 @@
                     <div class="modal-dialog">\n\
                     <div class="modal-content">\n\
                     <div class="modal-header clearfix">\n\
-                    <a href="#" class="pull-right" data-dismiss="modal">\n\
+                    <a href="#" class="float-right" data-dismiss="modal">\n\
                     <i class="fa fa-times"></i></a>\n\
                     </div>\n\
                     <div class="modal-body text-center">\n\
-                    <img class="img-responsive" src="@src">\n\
+                    <img class="img-fluid" src="@src">\n\
                     </div>\n\
                     </div>\n\
                     </div>\n\
@@ -82,7 +82,7 @@
             '@title': Gplcart.text('Already in comparison')
         };
 
-        var html = '<a title="@title" href="@href" class="btn btn-default active">\n\
+        var html = '<a title="@title" href="@href" class="btn active">\n\
                       <i class="fa fa-balance-scale"></i>\n\
                     </a>';
 
@@ -102,7 +102,7 @@
             '@title': Gplcart.text('Already in wishlist')
         };
 
-        var html = '<a title="@title" href="@href" class="btn btn-default active">\n\
+        var html = '<a title="@title" href="@href" class="btn active">\n\
                     <i class="fa fa-heart"></i>\n\
                     </a>';
 
@@ -125,7 +125,7 @@
             '@title': Gplcart.text('Remove')
         };
 
-        var html = '<span title="@title" data-reset-field-id="@fid" class="btn btn-default btn-xs">\n\
+        var html = '<span title="@title" data-reset-field-id="@fid" class="btn btn-xs">\n\
                     @label<span class="fa fa-times"></span>\n\
                     </span>';
 
@@ -783,7 +783,7 @@
     Gplcart.onload.addPagerHash = function () {
 
         var links, id, href;
-        $('.panel').each(function () {
+        $('.card').each(function () {
             id = $(this).attr('id');
             if (id) {
                 links = $(this).find('[class^=pagination] a');

@@ -11,18 +11,18 @@
 <div class="row account">
   <div class="col-md-3">
     <div class="list-group">
-      <a class="list-group-item active disabled">
-        <h4 class="list-group-item-heading h5"><b><?php echo $this->e($this->truncate($user['name'], 20)); ?></b></h4>
-        <p class="list-group-item-text"><?php echo $this->e($user['email']); ?></p>
+      <a class="list-group-item list-group-item-action active disabled">
+        <h4 class="h5"><b><?php echo $this->e($this->truncate($user['name'], 20)); ?></b></h4>
+        <p><?php echo $this->e($user['email']); ?></p>
       </a>
-      <a href="<?php echo $this->url("account/{$user['user_id']}/address"); ?>" class="list-group-item">
-        <h4 class="list-group-item-heading h5"><?php echo $this->text('Addresses'); ?></h4>
-        <p class="list-group-item-text"><?php echo $this->text('View and manage addressbook'); ?></p>
+      <a class="list-group-item list-group-item-action" href="<?php echo $this->url("account/{$user['user_id']}/address"); ?>">
+        <h4 class="h5"><?php echo $this->text('Addresses'); ?></h4>
+        <p><?php echo $this->text('View and manage addressbook'); ?></p>
       </a>
       <?php if ($_uid == $user['user_id'] || $this->access('user_edit')) { ?>
-      <a class="list-group-item" href="<?php echo $this->url("account/{$user['user_id']}/edit"); ?>">
-        <h4 class="list-group-item-heading h5"><?php echo $this->text('Settings'); ?></h4>
-        <p class="list-group-item-text"><?php echo $this->text('Edit account details'); ?></p>
+      <a class="list-group-item list-group-item-action" href="<?php echo $this->url("account/{$user['user_id']}/edit"); ?>">
+        <h4 class="h5"><?php echo $this->text('Settings'); ?></h4>
+        <p><?php echo $this->text('Edit account details'); ?></p>
       </a>
       <?php } ?>
     </div>

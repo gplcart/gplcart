@@ -8,8 +8,11 @@
  * To see available variables <?php print_r(get_defined_vars()); ?>
  */
 ?>
-<div class="form-group<?php echo empty($error) ? '' : ' has-error'; ?>">
+<div class="form-group row<?php echo empty($error) ? '' : ' has-error'; ?>">
   <div class="col-md-12">
+    <?php if(!empty($label)) { ?>
+    <label><?php echo $this->e($label); ?></label>
+    <?php } ?>
     <div class="product-picker-results">
       <?php if (!empty($products)) { ?>
       <?php foreach ($products as $product) { ?>
@@ -30,7 +33,14 @@
            data-multiple="<?php echo $multiple; ?>"
            data-store-id="<?php echo $store_id; ?>"
            data-key="<?php echo $key; ?>">
-    <div class="help-block"><?php echo empty($error) ? '' : $this->e($error); ?></div>
+    <?php if(!empty($error) || !empty($description)) { ?>
+    <div class="form-text">
+        <?php echo empty($error) ? '' : $this->e($error); ?>
+        <?php if(!empty($description)) { ?>
+          <div class="description"><?php echo $this->e($description); ?></div>
+        <?php } ?>
+    </div>
+    <?php } ?>
   </div>
 </div>
 

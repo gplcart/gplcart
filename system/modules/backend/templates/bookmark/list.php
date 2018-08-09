@@ -11,7 +11,7 @@
 <?php if(!empty($bookmarks)) { ?>
 <div class="table-responsive">
   <table class="table bookmarks">
-    <thead>
+    <thead class="thead-light">
       <tr>
         <th><a href="<?php echo $sort_title; ?>"><?php echo $this->text('Path'); ?> <i class="fa fa-sort"></i></a></th>
         <th><a href="<?php echo $sort_created; ?>"><?php echo $this->text('Created'); ?> <i class="fa fa-sort"></i></a></th>

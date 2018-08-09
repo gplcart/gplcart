@@ -9,11 +9,11 @@
  */
 ?>
 <?php if($this->access('report')) { ?>
-<div class="panel panel-default">
-  <div class="panel-heading">
+<div class="card">
+  <div class="card-header">
     <?php echo $this->text($content['title']); ?>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <ul class="list-unstyled">
       <li>
         <?php echo $this->text('Orders'); ?>:

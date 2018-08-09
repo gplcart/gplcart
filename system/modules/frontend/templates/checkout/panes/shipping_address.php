@@ -8,14 +8,14 @@
  * To see available variables <?php print_r(get_defined_vars()); ?>
  */
 ?>
-<div class="panel panel-checkout shipping-address panel-default">
-  <div class="panel-heading clearfix">
+<div class="card panel-checkout shipping-address">
+  <div class="card-header clearfix">
     <?php echo $this->text('Shipping address'); ?>
     <noscript>
-    <button title="<?php echo $this->text('Update'); ?>" class="btn btn-default btn-xs pull-right" name="update" value="1"><i class="fa fa-refresh"></i></button>
+    <button title="<?php echo $this->text('Update'); ?>" class="btn btn-xs float-right" name="update" value="1"><i class="fa fa-refresh"></i></button>
     </noscript>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <?php if ($this->error('shipping_address', true)) { ?>
     <div class="alert alert-danger alert-dismissible">
       <button type="button" class="close" data-dismiss="alert">
@@ -44,14 +44,14 @@
     <?php if ($can_add_address) { ?>
     <div class="form-group">
       <div class="col-md-12">
-        <button class="btn btn-default" name="add_address" value="shipping"><?php echo $this->text('Add address'); ?></button>
+        <button class="btn" name="add_address" value="shipping"><?php echo $this->text('Add address'); ?></button>
       </div>
     </div>
     <?php } ?>
     <?php } else if ($can_add_address) { ?>
     <div class="form-group">
       <div class="col-md-12">
-        <table class="table table-borderless table-striped table-condensed shipping-address">
+        <table class="table table-borderless table-striped table-sm shipping-address">
           <?php if (!empty($countries)) { ?>
           <tr>
             <td class="middle"><?php echo $this->text('Country'); ?></td>
@@ -72,7 +72,7 @@
                 </div>
                 <noscript>
                 <div class="btn-group">
-                  <button class="btn btn-default" name="get_states" value="shipping"><?php echo $this->text('Get states'); ?></button>
+                  <button class="btn" name="get_states" value="shipping"><?php echo $this->text('Get states'); ?></button>
                 </div>
                 </noscript>
               </div>
@@ -111,12 +111,12 @@
     </div>
     <div class="btn-toolbar">
       <?php if (!empty($addresses)) { ?>
-      <button class="btn btn-default" name="cancel_address_form" value="shipping">
+      <button class="btn" name="cancel_address_form" value="shipping">
         <?php echo $this->text('Cancel'); ?>
       </button>
       <?php } ?>
       <?php if ($can_save_address && (empty($countries) || !empty($address['shipping']['country']))) { ?>
-      <button class="btn btn-default" name="save_address" value="shipping">
+      <button class="btn" name="save_address" value="shipping">
         <?php echo $this->text('Save'); ?>
       </button>
       <?php } ?>

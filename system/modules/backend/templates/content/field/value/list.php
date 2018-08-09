@@ -23,13 +23,11 @@
           <?php echo $this->text('Delete'); ?>
         </option>
       </select>
-      <span class="input-group-btn hidden-js">
-        <button class="btn btn-default" name="action[submit]" value="1"><?php echo $this->text('OK'); ?></button>
-      </span>
+        <button class="btn btn-secondary hidden-js" name="action[submit]" value="1"><?php echo $this->text('OK'); ?></button>
     </div>
     <?php } ?>
     <?php if ($this->access('field_value_add')) { ?>
-    <a class="btn btn-default add" href="<?php echo $this->url("admin/content/field/value/{$field['field_id']}/add"); ?>">
+    <a class="btn btn-primary add" href="<?php echo $this->url("admin/content/field/value/{$field['field_id']}/add"); ?>">
       <?php echo $this->text('Add'); ?>
     </a>
     <?php } ?>
@@ -37,7 +35,7 @@
   <?php } ?>
   <div class="table-responsive">
     <table class="table field-values">
-      <thead>
+      <thead class="thead-light">
         <tr>
           <th><input type="checkbox" onchange="Gplcart.selectAll(this);"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
           <th><a href="<?php echo $sort_field_value_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a></th>
@@ -94,7 +92,7 @@
 <?php } else { ?>
 <?php echo $this->text('There are no items yet'); ?>&nbsp;
 <?php if ($this->access('field_value_add')) { ?>
-<a class="btn btn-default" href="<?php echo $this->url("admin/content/field/value/{$field['field_id']}/add"); ?>">
+<a class="btn btn-primary add" href="<?php echo $this->url("admin/content/field/value/{$field['field_id']}/add"); ?>">
   <?php echo $this->text('Add'); ?>
 </a>
 <?php } ?>

@@ -50,10 +50,10 @@
         <th></th>
         <th></th>
         <th>
-          <a href="<?php echo $this->url($_path); ?>" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
-            <i class="fa fa-refresh"></i>
+          <a href="<?php echo $this->url($_path); ?>" class="btn clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
+            <i class="fa fa-sync"></i>
           </a>
-          <button class="btn btn-default filter" title="<?php echo $this->text('Filter'); ?>">
+          <button class="btn filter" title="<?php echo $this->text('Filter'); ?>">
             <i class="fa fa-search"></i>
           </button>
         </th>
@@ -115,7 +115,7 @@
             <?php if (isset($info['status'])) { ?>
             <?php if ($info['status']) { ?>
             <?php if ($this->access('module_disable') && empty($info['lock']) && empty($info['required_by'])) { ?>
-            <li>
+            <li class="list-inline-item">
               <a href="<?php echo $this->url(false, array('action' => 'disable', 'module_id' => $module_id, 'token' => $_token)); ?>">
                 <span class="text-danger"><?php echo $this->lower($this->text('Disable')); ?></span>
               </a>
@@ -123,14 +123,14 @@
             <?php } ?>
             <?php } else { ?>
             <?php if ($this->access('module_enable') && empty($info['lock'])) { ?>
-            <li>
+            <li class="list-inline-item">
               <a href="<?php echo $this->url(false, array('action' => 'enable', 'module_id' => $module_id, 'token' => $_token)); ?>">
                   <?php echo $this->lower($this->text('Enable')); ?>
               </a>
             </li>
             <?php } ?>
             <?php if ($this->access('module_uninstall') && empty($info['lock'])) { ?>
-            <li>
+            <li class="list-inline-item">
               <a onclick="return confirm('<?php echo $this->text('Are you sure? This action may permanently delete some data managed by this module'); ?>');" href="<?php echo $this->url(false, array('action' => 'uninstall', 'module_id' => $module_id, 'token' => $_token)); ?>">
                 <?php echo $this->lower($this->text('Uninstall')); ?>
               </a>
@@ -139,7 +139,7 @@
             <?php } ?>
             <?php } else { ?>
             <?php if ($this->access('module_install')) { ?>
-            <li>
+            <li class="list-inline-item">
               <a href="<?php echo $this->url(false, array('action' => 'install', 'module_id' => $module_id, 'token' => $_token)); ?>">
                 <?php echo $this->lower($this->text('Install and enable')); ?>
               </a>
@@ -147,7 +147,7 @@
             <?php } ?>
             <?php } ?>
             <?php if ($this->access('module_edit') && !empty($info['status']) && !empty($info['configure'])) { ?>
-            <li>
+            <li class="list-inline-item">
               <a href="<?php echo $this->url($info['configure']); ?>">
                 <?php echo $this->lower($this->text('Configure')); ?>
               </a>

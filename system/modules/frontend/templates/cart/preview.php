@@ -16,14 +16,14 @@
   <?php } else { ?>
   <div class="items">
     <?php foreach ($cart['items'] as $item) { ?>
-    <form method="post" class="form-horizontal">
+    <form method="post">
       <input type="hidden" name="token" value="<?php echo $_token; ?>">
       <input type="hidden" name="cart[cart_id]" value="<?php echo $this->e($item['cart_id']); ?>">
       <div class="media cart-item">
         <div class="media-left image col-md-2">
           <div class="thumbnail">
-            <img class="media-object img-responsive" src="<?php echo $this->e($item['thumb']); ?>">
-            <button title="<?php echo $this->text('Remove'); ?>" class="btn btn-default btn-xs btn-block" data-ajax="true" name="remove_from_cart" value="1">
+            <img class="media-object img-fluid" src="<?php echo $this->e($item['thumb']); ?>">
+            <button title="<?php echo $this->text('Remove'); ?>" class="btn btn-xs btn-block" data-ajax="true" name="remove_from_cart" value="1">
               <i class="fa fa-trash"></i>
             </button>
           </div>
@@ -59,7 +59,7 @@
   <div class="row subtotal">
     <div class="col-md-12">
       <b><?php echo $this->text('Subtotal'); ?></b> : <span id="cart-preview-subtotal"><?php echo $this->e($cart['total_formatted']); ?></span>
-      <div class="help-block"><?php echo $this->text('Final price will be shown on checkout page'); ?></div>
+      <div class="form-text"><?php echo $this->text('Final price will be shown on checkout page'); ?></div>
     </div>
   </div>
   <div class="row buttons">

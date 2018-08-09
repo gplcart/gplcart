@@ -8,31 +8,31 @@
  * To see available variables <?php print_r(get_defined_vars()); ?>
  */
 ?>
-<form method="post" class="form-horizontal">
+<form method="post">
   <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <div class="row">
     <div class="col-md-6">
       <div class="form-group">
-        <label class="col-md-2 control-label"><?php echo $this->text('Status'); ?></label>
+        <label class="col-md-2 col-form-label"><?php echo $this->text('Status'); ?></label>
         <div class="col-md-10">
           <div class="btn-group" data-toggle="buttons">
-            <label class="btn btn-default<?php echo empty($imagestyle['status']) ? '' : ' active'; ?>">
+            <label class="btn<?php echo empty($imagestyle['status']) ? '' : ' active'; ?>">
               <input name="imagestyle[status]" type="radio" autocomplete="off" value="1"<?php echo empty($imagestyle['status']) ? '' : ' checked'; ?>><?php echo $this->text('Enabled'); ?>
             </label>
-            <label class="btn btn-default<?php echo empty($imagestyle['status']) ? ' active' : ''; ?>">
+            <label class="btn<?php echo empty($imagestyle['status']) ? ' active' : ''; ?>">
               <input name="imagestyle[status]" type="radio" autocomplete="off" value="0"<?php echo empty($imagestyle['status']) ? ' checked' : ''; ?>><?php echo $this->text('Disabled'); ?>
             </label>
           </div>
-          <div class="help-block">
+          <div class="form-text">
             <?php echo $this->text('Disabled image styles will not process images'); ?>
           </div>
         </div>
       </div>
       <div class="form-group required<?php echo $this->error('name', ' has-error'); ?>">
-        <label class="col-md-2 control-label"><?php echo $this->text('Name'); ?></label>
+        <label class="col-md-2 col-form-label"><?php echo $this->text('Name'); ?></label>
         <div class="col-md-10">
           <input name="imagestyle[name]" class="form-control" maxlength="32" value="<?php echo isset($imagestyle['name']) ? $this->e($imagestyle['name']) : ''; ?>">
-          <div class="help-block">
+          <div class="form-text">
             <?php echo $this->error('name'); ?>
             <div class="text-muted">
               <?php echo $this->text('Descriptive name of the image style for administrators'); ?>
@@ -41,10 +41,10 @@
         </div>
       </div>
       <div class="form-group required<?php echo $this->error('actions', ' has-error'); ?>">
-        <label class="col-md-2 control-label"><?php echo $this->text('Actions'); ?></label>
+        <label class="col-md-2 col-form-label"><?php echo $this->text('Actions'); ?></label>
         <div class="col-md-10">
           <textarea name="imagestyle[actions]" rows="6" class="form-control"><?php echo $this->e($imagestyle['actions']); ?></textarea>
-          <div class="help-block">
+          <div class="form-text">
             <?php echo $this->error('actions'); ?>
             <div class="text-muted">
               <?php echo $this->text('List of image style actions in format <code>[action ID][whitespace][parameters]</code>. One action per line. Actions will be applied from the top to bottom. For example to make thumbnail 50X50 enter the following code: <code>thumbnail 50,50</code>'); ?>
@@ -53,18 +53,18 @@
         </div>
       </div>
       <div class="form-group">
-        <div class="col-md-10 col-md-offset-2">
+        <div class="col-md-10 offset-md-2">
           <div class="btn-toolbar">
             <?php if ($can_delete) { ?>
             <button class="btn btn-danger delete" name="delete" value="1" onclick="return confirm('<?php echo $this->text('Are you sure?'); ?>');">
               <?php echo $this->text('Delete'); ?>
             </button>
             <?php } ?>
-            <a class="btn btn-default cancel" href="<?php echo $this->url('admin/settings/imagestyle'); ?>">
+            <a class="btn cancel" href="<?php echo $this->url('admin/settings/imagestyle'); ?>">
               <?php echo $this->text('Cancel'); ?>
             </a>
             <?php if ($this->access('image_style_edit') || $this->access('image_style_add')) { ?>
-            <button class="btn btn-default save" name="save" value="1">
+            <button class="btn save" name="save" value="1">
               <?php echo $this->text('Save'); ?>
             </button>
             <?php } ?>
@@ -73,10 +73,10 @@
       </div>
     </div>
     <div class="col-md-6">
-      <div class="panel panel-default">
-        <div class="panel-heading"><?php echo $this->text('Legend'); ?></div>
-        <div class="panel-body">
-          <table class="table table-striped table-condensed">
+      <div class="card">
+        <div class="card-header"><?php echo $this->text('Legend'); ?></div>
+        <div class="card-body">
+          <table class="table table-striped table-sm">
             <thead>
               <tr>
                 <td><?php echo $this->text('Key'); ?></td>

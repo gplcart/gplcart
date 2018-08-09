@@ -22,15 +22,13 @@
           <?php echo $this->text('Delete'); ?>
         </option>
       </select>
-      <span class="input-group-btn hidden-js">
-        <button class="btn btn-default" name="action[submit]" value="1"><?php echo $this->text('OK'); ?></button>
-      </span>
+        <button class="btn btn-secondary hidden-js" name="action[submit]" value="1"><?php echo $this->text('OK'); ?></button>
     </div>
   </div>
   <?php } ?>
   <div class="table-responsive">
     <table class="table carts">
-      <thead>
+      <thead class="thead-light">
         <tr>
           <th><input type="checkbox" onchange="Gplcart.selectAll(this);"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
           <th>
@@ -93,10 +91,10 @@
           <th></th>
           <th></th>
           <th>
-            <a href="<?php echo $this->url($_path); ?>" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
-              <i class="fa fa-refresh"></i>
+            <a href="<?php echo $this->url($_path); ?>" class="btn clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
+              <i class="fa fa-sync"></i>
             </a>
-            <button class="btn btn-default filter" title="<?php echo $this->text('Filter'); ?>">
+            <button class="btn btn-secondary filter" title="<?php echo $this->text('Filter'); ?>">
               <i class="fa fa-search"></i>
             </button>
           </th>

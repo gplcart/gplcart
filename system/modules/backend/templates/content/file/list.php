@@ -23,13 +23,11 @@
           <?php echo $this->text('Delete from database and disk'); ?>
         </option>
       </select>
-      <span class="input-group-btn hidden-js">
-        <button class="btn btn-default" name="action[submit]" value="1"><?php echo $this->text('OK'); ?></button>
-      </span>
+        <button class="btn btn-secondary hidden-js" name="action[submit]" value="1"><?php echo $this->text('OK'); ?></button>
     </div>
     <?php } ?>
     <?php if ($this->access('file_add') && $this->access('file_upload')) { ?>
-    <a class="btn btn-default" href="<?php echo $this->url('admin/content/file/add'); ?>">
+    <a class="btn btn-primary add" href="<?php echo $this->url('admin/content/file/add'); ?>">
       <?php echo $this->text('Add'); ?>
     </a>
     <?php } ?>
@@ -37,7 +35,7 @@
   <?php } ?>
   <div class="table-responsive">
     <table class="table files">
-      <thead>
+      <thead class="thead-light">
         <tr>
           <th><input type="checkbox" onchange="Gplcart.selectAll(this);"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
           <th>
@@ -110,10 +108,10 @@
           <th><input class="form-control" name="entity_id" value="<?php echo $filter_entity_id; ?>" placeholder="<?php echo $this->text('Any'); ?>"></th>
           <th></th>
           <th>
-            <a href="<?php echo $this->url($_path); ?>" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
-              <i class="fa fa-refresh"></i>
+            <a class="btn btn-outline-secondary clear-filter" href="<?php echo $this->url($_path); ?>" title="<?php echo $this->text('Reset filter'); ?>">
+              <i class="fa fa-sync"></i>
             </a>
-            <button class="btn btn-default filter" title="<?php echo $this->text('Filter'); ?>">
+            <button class="btn btn-secondary filter" title="<?php echo $this->text('Filter'); ?>">
               <i class="fa fa-search"></i>
             </button>
           </th>
@@ -148,14 +146,14 @@
           <td class="middle">
             <ul class="list-inline">
               <?php if (!empty($file['url'])) { ?>
-              <li>
+              <li class="list-inline-item">
                 <a href="<?php echo $this->url('', array('download' => $id)); ?>">
                   <?php echo $this->lower($this->text('Download')); ?>
                 </a>
               </li>
               <?php } ?>
               <?php if ($this->access('file_edit')) { ?>
-              <li>
+              <li class="list-inline-item">
                 <a href="<?php echo $this->url("admin/content/file/edit/$id"); ?>">
                   <?php echo $this->lower($this->text('Edit')); ?>
                 </a>
@@ -176,7 +174,7 @@
 <?php } else { ?>
 <?php echo $this->text('There are no items yet'); ?>
 <?php if ($this->access('file_add') && $this->access('file_upload')) { ?>&nbsp;
-<a class="btn btn-default" href="<?php echo $this->url('admin/content/file/add'); ?>">
+<a class="btn btn-primary add" href="<?php echo $this->url('admin/content/file/add'); ?>">
   <?php echo $this->text('Add'); ?>
 </a>
 <?php } ?>

@@ -11,7 +11,7 @@
 <?php if (!empty($currencies) || $_filtering) { ?>
 <?php if ($this->access('currency_add')) { ?>
 <div class="btn-toolbar actions">
-  <a href="<?php echo $this->url('admin/settings/currency/add'); ?>" class="btn btn-default">
+  <a href="<?php echo $this->url('admin/settings/currency/add'); ?>" class="btn">
     <?php echo $this->text('Add'); ?>
   </a>
 </div>
@@ -70,10 +70,10 @@
         </th>
         <th></th>
         <th>
-          <a href="<?php echo $this->url($_path); ?>" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
-            <i class="fa fa-refresh"></i>
+          <a href="<?php echo $this->url($_path); ?>" class="btn clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
+            <i class="fa fa-sync"></i>
           </a>
-          <button class="btn btn-default filter" title="<?php echo $this->text('Filter'); ?>">
+          <button class="btn filter" title="<?php echo $this->text('Filter'); ?>">
             <i class="fa fa-search"></i>
           </button>
         </th>
@@ -96,23 +96,23 @@
         <td class="middle"><?php echo $this->e($currency['conversion_rate']); ?></td>
         <td class="middle">
           <?php if (empty($currency['status'])) { ?>
-          <i class="fa fa-square-o"></i>
+          <i class="fa fa-square"></i>
           <?php } else { ?>
-          <i class="fa fa-check-square-o"></i>
+          <i class="fa fa-check-square"></i>
           <?php } ?>
         </td>
         <td class="middle">
           <?php if ($default_currency == $code) { ?>
-          <i class="fa fa-check-square-o"></i>
+          <i class="fa fa-check-square"></i>
           <?php } else { ?>
-          <i class="fa fa-square-o"></i>
+          <i class="fa fa-square"></i>
           <?php } ?>
         </td>
         <td class="middle">
           <?php if (empty($currency['in_database'])) { ?>
-          <i class="fa fa-square-o"></i>
+          <i class="fa fa-square"></i>
           <?php } else { ?>
-          <i class="fa fa-check-square-o"></i>
+          <i class="fa fa-check-square"></i>
           <?php } ?>
         </td>
         <td class="middle"><?php echo empty($currency['modified']) ? '--' : $this->date($currency['modified']); ?></td>
@@ -134,7 +134,7 @@
 <?php } else { ?>
 <?php echo $this->text('There are no items yet'); ?>
 <?php if ($this->access('currency_add')) { ?>
-<a class="btn btn-default add" href="<?php echo $this->url('admin/settings/currency/add'); ?>">
+<a class="btn add" href="<?php echo $this->url('admin/settings/currency/add'); ?>">
   <?php echo $this->text('Add'); ?>
 </a>
 <?php } ?>

@@ -14,7 +14,7 @@
   <div class="col-md-2">
     <a href="<?php echo $this->e($child['url']); ?>">
       <?php if (!empty($child['thumb'])) { ?>
-      <img class="img-responsive thumbnail" src="<?php echo $this->e($child['thumb']); ?>" alt="<?php echo $this->e($child['title']); ?>" title="<?php echo $this->e($child['title']); ?>">
+      <img class="img-fluid thumbnail" src="<?php echo $this->e($child['thumb']); ?>" alt="<?php echo $this->e($child['title']); ?>" title="<?php echo $this->e($child['title']); ?>">
       <?php } ?>
       <div class="clearfix"><?php echo $this->e($child['title']); ?></div>
     </a>

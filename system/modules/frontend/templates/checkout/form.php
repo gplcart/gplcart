@@ -19,7 +19,7 @@
   </div>
 </div>
 <?php } else { ?>
-<form method="post" class="form-horizontal" id="checkout">
+<form method="post" id="checkout">
   <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <noscript>
   <div class="alert alert-warning">
@@ -32,9 +32,9 @@
       <?php echo $pane_login; ?>
       <?php } else if (!$_is_logged_in) { ?>
       <div class="form-group">
-        <label class="col-md-2 control-label"><?php echo $this->text('Already registered?'); ?></label>
+        <label class="col-md-2 col-form-label"><?php echo $this->text('Already registered?'); ?></label>
         <div class="col-md-4">
-          <button class="btn btn-default form-control" name="checkout_login" value="1">
+          <button class="btn form-control" name="checkout_login" value="1">
             <?php echo $this->text('Click to login'); ?>
           </button>
         </div>

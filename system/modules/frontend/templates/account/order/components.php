@@ -9,10 +9,10 @@
  * To see available variables <?php print_r(get_defined_vars()); ?>
  */
 ?>
-<div class="panel panel-default order-components">
-  <div class="panel-heading clearfix"><?php echo $this->text('Components'); ?></div>
-  <div class="panel-body">
-    <table class="table table-condensed">
+<div class="card order-components">
+  <div class="card-header clearfix"><?php echo $this->text('Components'); ?></div>
+  <div class="card-body">
+    <table class="table table-sm">
       <tbody>
         <?php foreach($components as $component) { ?>
         <?php echo $component['rendered']; ?>

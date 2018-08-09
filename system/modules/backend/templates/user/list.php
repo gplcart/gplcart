@@ -32,13 +32,11 @@
         </option>
         <?php } ?>
       </select>
-      <span class="input-group-btn hidden-js">
-        <button class="btn btn-default" name="action[submit]" value="1"><?php echo $this->text('OK'); ?></button>
-      </span>
+        <button class="btn btn-secondary hidden-js" name="action[submit]" value="1"><?php echo $this->text('OK'); ?></button>
     </div>
     <?php } ?>
     <?php if ($this->access('user_add')) { ?>
-    <a class="btn btn-default" href="<?php echo $this->url('admin/user/add'); ?>">
+    <a class="btn btn-primary add" href="<?php echo $this->url('admin/user/add'); ?>">
       <?php echo $this->text('Add'); ?>
     </a>
     <?php } ?>
@@ -46,7 +44,7 @@
   <?php } ?>
   <div class="table-responsive">
     <table class="table users">
-      <thead>
+      <thead class="thead-light">
         <tr>
           <th><input type="checkbox" onchange="Gplcart.selectAll(this);"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
           <th>
@@ -114,10 +112,10 @@
           </th>
           <th></th>
           <th>
-            <a href="<?php echo $this->url($_path); ?>" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
-              <i class="fa fa-refresh"></i>
+            <a href="<?php echo $this->url($_path); ?>" class="btn btn-outline-secondary clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
+              <i class="fa fa-sync"></i>
             </a>
-            <button class="btn btn-default filter" title="<?php echo $this->text('Filter'); ?>">
+            <button class="btn btn-secondary filter" title="<?php echo $this->text('Filter'); ?>">
               <i class="fa fa-search"></i>
             </button>
           </th>
@@ -167,28 +165,28 @@
           </td>
           <td class="middle">
             <?php if (empty($user['status'])) { ?>
-            <i class="fa fa-square-o"></i>
+            <i class="fa fa-square"></i>
             <?php } else { ?>
-            <i class="fa fa-check-square-o"></i>
+            <i class="fa fa-check-square"></i>
             <?php } ?>
           </td>
           <td class="middle"><?php echo $this->date($user['created']); ?></td>
           <td class="middle">
             <ul class="list-inline">
-              <li>
+              <li class="list-inline-item">
                 <a href="<?php echo $this->e($user['url']); ?>">
                   <?php echo $this->lower($this->text('View')); ?>
                 </a>
               </li>
               <?php if ($this->access('user_edit')) { ?>
-              <li>
+              <li class="list-inline-item">
                 <a href="<?php echo $this->url("admin/user/edit/$id"); ?>">
                   <?php echo $this->lower($this->text('Edit')); ?>
                 </a>
               </li>
               <?php } ?>
               <?php if ($this->access('order_add') && !empty($user['status'])) { ?>
-              <li>
+              <li class="list-inline-item">
                 <a href="<?php echo $this->url("checkout/add/$id"); ?>">
                   <?php echo $this->lower($this->text('Add order')); ?>
                 </a>

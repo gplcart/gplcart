@@ -10,7 +10,7 @@
 ?>
 <?php if (!empty($pages)) { ?>
 <?php foreach ($pages as $page_id => $page) { ?>
-<div class="panel post" id="post-<?php echo $this->e($page_id); ?>">
+<div class="card post" id="post-<?php echo $this->e($page_id); ?>">
   <p><?php echo $this->date($page['created']); ?></p>
   <h3 class="h4"><?php echo $this->e($page['title']); ?></h3>
   <?php if (isset($page['teaser'])) { ?>

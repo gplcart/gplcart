@@ -8,13 +8,13 @@
  * To see available variables <?php print_r(get_defined_vars()); ?>
  */
 ?>
-<form method="post" class="form-horizontal">
+<form method="post">
   <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <?php $access_actions = false; ?>
   <?php if ($this->access('country_format_edit')) { ?>
   <?php $access_actions = true; ?>
   <div class="btn-toolbar actions">
-    <button class="btn btn-default save" name="save" value="1">
+    <button class="btn save" name="save" value="1">
       <?php echo $this->text('Save'); ?>
     </button>
   </div>

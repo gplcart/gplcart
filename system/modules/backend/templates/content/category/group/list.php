@@ -12,14 +12,14 @@
 <form>
   <?php if ($this->access('category_group_add')) { ?>
   <div class="btn-toolbar actions">
-    <a class="btn btn-default" href="<?php echo $this->url('admin/content/category-group/add'); ?>">
+    <a class="btn btn-primary" href="<?php echo $this->url('admin/content/category-group/add'); ?>">
       <?php echo $this->text('Add'); ?>
     </a>
   </div>
   <?php } ?>
   <div class="table-responsive">
     <table class="table category-group">
-      <thead>
+      <thead class="thead-light">
         <tr>
           <th><a href="<?php echo $sort_category_group_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a></th>
           <th><a href="<?php echo $sort_title; ?>"><?php echo $this->text('Title'); ?> <i class="fa fa-sort"></i></a></th>
@@ -49,10 +49,10 @@
             </select>
           </th>
           <th>
-            <a href="<?php echo $this->url($_path); ?>" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
-              <i class="fa fa-refresh"></i>
+            <a href="<?php echo $this->url($_path); ?>" class="btn btn-outline-secondary clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
+              <i class="fa fa-sync"></i>
             </a>
-            <button class="btn btn-default filter" title="<?php echo $this->text('Filter'); ?>">
+            <button class="btn btn-secondary filter" title="<?php echo $this->text('Filter'); ?>">
               <i class="fa fa-search"></i>
             </button>
           </th>
@@ -84,14 +84,14 @@
           <td class="middle">
             <ul class="list-inline">
               <?php if ($this->access('category_group_edit')) { ?>
-              <li>
+              <li class="list-inline-item">
                 <a href="<?php echo $this->url("admin/content/category-group/edit/$category_group_id"); ?>">
                   <?php echo $this->lower($this->text('Edit')); ?>
                 </a>
               </li>
               <?php } ?>
               <?php if ($this->access('category')) { ?>
-              <li>
+              <li class="list-inline-item">
                 <a href="<?php echo $this->url("admin/content/category/$category_group_id"); ?>">
                   <?php echo $this->lower($this->text('Categories')); ?>
                 </a>
@@ -112,7 +112,7 @@
 <?php } else { ?>
 <?php echo $this->text('There are no items yet'); ?>&nbsp;
 <?php if ($this->access('category_group_add')) { ?>
-<a class="btn btn-default" href="<?php echo $this->url('admin/content/category-group/add'); ?>">
+<a class="btn btn-outline-primary" href="<?php echo $this->url('admin/content/category-group/add'); ?>">
   <?php echo $this->text('Add'); ?>
 </a>
 <?php } ?>

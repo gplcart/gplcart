@@ -18,21 +18,21 @@
 </div>
 <?php } ?>
 <div class="form-group<?php echo $this->error('order.user.email', ' has-error'); ?>">
-  <label class="col-md-2 control-label"><?php echo $this->text('E-mail'); ?></label>
+  <label class="col-md-2 col-form-label"><?php echo $this->text('E-mail'); ?></label>
   <div class="col-md-4">
     <input class="form-control" name="order[user][email]" data-ajax="false" value="<?php echo isset($order['user']['email']) ? $this->e($order['user']['email']) : ''; ?>" autofocus>
-    <div class="help-block"><?php echo $this->error('order.user.email'); ?></div>
+    <div class="form-text"><?php echo $this->error('order.user.email'); ?></div>
   </div>
 </div>
 <div class="form-group">
-  <label class="col-md-2 control-label"><?php echo $this->text('Password'); ?></label>
+  <label class="col-md-2 col-form-label"><?php echo $this->text('Password'); ?></label>
   <div class="col-md-4">
     <input type="password" class="form-control" data-ajax="false" name="order[user][password]" value="">
   </div>
 </div>
 <div class="form-group">
-  <div class="col-md-offset-2 col-md-4">
-    <button class="btn btn-default" name="login" data-ajax="false" value="1"><?php echo $this->text('Log in'); ?></button>
-    <button class="btn btn-default" name="checkout_anonymous" value="1"><?php echo $this->text('Continue as guest'); ?></button>
+  <div class="offset-md-2 col-md-4">
+    <button class="btn" name="login" data-ajax="false" value="1"><?php echo $this->text('Log in'); ?></button>
+    <button class="btn" name="checkout_anonymous" value="1"><?php echo $this->text('Continue as guest'); ?></button>
   </div>
 </div>

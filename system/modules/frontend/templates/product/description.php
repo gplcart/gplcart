@@ -10,9 +10,9 @@
  */
 ?>
 <?php if (!empty($description)) { ?>
-<div class="panel panel-default panel-borderless description">
-  <div class="panel-heading"><h4 class="panel-title"><?php echo $this->text('Description'); ?></h4></div>
-  <div class="panel-body">
+<div class="card borderless description">
+  <div class="card-header"><h4 class="card-title"><?php echo $this->text('Description'); ?></h4></div>
+  <div class="card-body">
     <?php echo $this->filter($description); ?>
   </div>
 </div>

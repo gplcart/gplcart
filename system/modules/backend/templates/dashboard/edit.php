@@ -8,19 +8,19 @@
  * To see available variables <?php print_r(get_defined_vars()); ?>
  */
 ?>
-<form method="post" class="form-horizontal">
+<form method="post">
   <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <div class="btn-toolbar actions">
     <?php if (isset($dashboard['dashboard_id'])) { ?>
-    <button class="btn btn-default delete" name="delete" value="1">
+    <button class="btn delete" name="delete" value="1">
       <?php echo $this->text('Reset'); ?>
     </button>
     <?php } ?>
-    <button class="btn btn-default save" name="save" value="1">
+    <button class="btn save" name="save" value="1">
       <?php echo $this->text('Save'); ?>
     </button>
   </div>
-  <table class="table table-condensed" data-sortable-input-weight="true">
+  <table class="table table-sm" data-sortable-input-weight="true">
     <thead>
       <tr>
         <th><?php echo $this->text('Panel'); ?></th>

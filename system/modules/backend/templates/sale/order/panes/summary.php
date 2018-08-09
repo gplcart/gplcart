@@ -8,10 +8,10 @@
  * To see available variables <?php print_r(get_defined_vars()); ?>
  */
 ?>
-<div class="panel panel-default">
-  <div class="panel-heading clearfix"><?php echo $this->text('Summary'); ?></div>
-  <div class="panel-body">
-    <table class="table table-condensed">
+<div class="card">
+  <div class="card-header clearfix"><?php echo $this->text('Summary'); ?></div>
+  <div class="card-body">
+    <table class="table table-sm">
       <tr>
         <td class="col-md-3"><?php echo $this->text('Order ID'); ?></td>
         <td class="col-md-9"><?php echo $this->e($order['order_id']); ?></td>
@@ -20,7 +20,7 @@
         <td class="middle"><?php echo $this->text('Status'); ?></td>
         <td>
           <?php if ($this->access('order_edit')) { ?>
-          <div class="input-group hidden-print">
+          <div class="input-group">
             <select class="form-control" name="order[status]">
               <?php foreach ($statuses as $code => $name) { ?>
               <option value="<?php echo $code; ?>"<?php echo $order['status'] == $code ? ' selected' : ''; ?>>
@@ -28,11 +28,9 @@
               </option>
               <?php } ?>
             </select>
-            <span class="input-group-btn">
-              <button class="btn btn-default hidden-js" name="status" value="1"><?php echo $this->text('Update status'); ?></button>
-            </span>
+              <button class="btn btn-secondary hidden-js" name="status" value="1"><?php echo $this->text('Update status'); ?></button>
           </div>
-          <span class="visible-print"><?php echo $this->e($order['status_name']); ?></span>
+          <span><?php echo $this->e($order['status_name']); ?></span>
           <?php } else { ?>
           <?php echo $this->e($order['status_name']); ?>
           <?php } ?>

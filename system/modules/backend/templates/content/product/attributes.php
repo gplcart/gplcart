@@ -38,16 +38,16 @@
                     <?php } ?>
                     <?php } ?>
                   </select>
-                  <div class="help-block">
+                  <div class="form-text">
                     <?php echo $this->error("attribute.$field_id"); ?>
                   </div>
                 </div>
               </td>
               <td>
                 <?php if ($this->access('field_add')) { ?>
-                <a target="_blank" href="<?php echo $this->url("admin/content/field/value/$field_id"); ?>" class="btn btn-default"><i class="fa fa-plus"></i></a>
+                <a target="_blank" href="<?php echo $this->url("admin/content/field/value/$field_id"); ?>" class="btn btn-outline-success"><i class="fa fa-plus"></i></a>
                 <?php } ?>
-                <a href="#" class="btn btn-default refresh-fields" data-field-type="attribute"><i class="fa fa-refresh"></i></a>
+                <a href="#" class="btn btn-outline-secondary refresh-fields" data-field-type="attribute"><i class="fa fa-sync"></i></a>
               </td>
             </tr>
             <?php } ?>

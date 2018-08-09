@@ -9,15 +9,15 @@
  */
 ?>
 <?php if (!empty($order['payment_address']) && $order['payment_address'] != $order['shipping_address']) { ?>
-<div class="panel panel-default payment-address">
-  <div class="panel-heading"><?php echo $this->text('Payment address'); ?></div>
-  <div class="panel-body">
+<div class="card payment-address">
+  <div class="card-header"><?php echo $this->text('Payment address'); ?></div>
+  <div class="card-body">
   <?php if (empty($order['address_translated']['payment'])) { ?>
   <?php echo $this->text('Unknown'); ?>
   <?php } else { ?>
     <div class="row">
       <div class="col-md-12">
-        <table class="table table-condensed">
+        <table class="table table-sm">
           <?php foreach ($order['address_translated']['payment'] as $key => $value) { ?>
           <tr>
             <td><?php echo $this->e($key); ?></td>

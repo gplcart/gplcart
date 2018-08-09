@@ -16,11 +16,11 @@
   <?php } ?>
 </div>
 <?php if (count($items) > 1) { ?>
-<a href="<?php echo $this->url('compare/' . implode(',', array_keys($items))); ?>" class="btn btn-default">
+<a href="<?php echo $this->url('compare/' . implode(',', array_keys($items))); ?>" class="btn">
   <?php echo $this->text('Compare'); ?>
 </a>
 <?php } else { ?>
-<a class="btn btn-default disabled">
+<a class="btn disabled">
   <?php echo $this->text('Compare'); ?>
 </a>
 <?php } ?>

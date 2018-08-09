@@ -9,16 +9,16 @@
  */
 ?>
 <?php if (!empty($reviews)) { ?>
-<div id="reviews" class="panel panel-default panel-borderless reviews">
-  <div class="panel-heading clearfix">
-    <h4 class="panel-title pull-left"><?php echo $this->text('Reviews'); ?></h4>
+<div id="reviews" class="card borderless reviews">
+  <div class="card-header clearfix">
+    <h4 class="card-title float-left"><?php echo $this->text('Reviews'); ?></h4>
     <?php if(!empty($pager)) { ?>
-    <div class="pull-right">
+    <div class="float-right">
       <?php echo $pager; ?>
     </div>
     <?php } ?>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <div class="row">
       <?php foreach ($reviews as $review) { ?>
       <div class="col-md-12">

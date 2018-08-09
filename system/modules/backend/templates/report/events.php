@@ -19,17 +19,15 @@
           <?php echo $this->text('Delete'); ?>
         </option>
       </select>
-      <span class="input-group-btn hidden-js">
-        <button class="btn btn-default" name="action[submit]" value="1"><?php echo $this->text('OK'); ?></button>
-      </span>
+        <button class="btn btn-secondary hidden-js" name="action[submit]" value="1"><?php echo $this->text('OK'); ?></button>
     </div>
-    <a class="btn btn-default" href="<?php echo $this->url('', array('clear' => true, 'token' => $_token)); ?>">
+    <a class="btn btn-primary clear" href="<?php echo $this->url('', array('clear' => true, 'token' => $_token)); ?>">
       <?php echo $this->text('Clear all'); ?>
     </a>
   </div>
   <div class="table-responsive">
     <table class="table report-events">
-      <thead>
+      <thead class="thead-light">
         <tr>
           <th class="middle"><input type="checkbox" onchange="Gplcart.selectAll(this);"></th>
           <th><a href="<?php echo $sort_text; ?>"><?php echo $this->text('Message'); ?> <i class="fa fa-sort"></i></a></th>
@@ -65,10 +63,10 @@
           </th>
           <th></th>
           <th>
-            <a href="<?php echo $this->url($_path); ?>" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
-              <i class="fa fa-refresh"></i>
+            <a href="<?php echo $this->url($_path); ?>" class="btn clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
+              <i class="fa fa-sync"></i>
             </a>
-            <button class="btn btn-default filter" title="<?php echo $this->text('Filter'); ?>">
+            <button class="btn btn-secondary filter" title="<?php echo $this->text('Filter'); ?>">
               <i class="fa fa-search"></i>
             </button>
           </th>

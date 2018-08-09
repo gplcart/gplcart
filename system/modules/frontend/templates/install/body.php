@@ -17,7 +17,7 @@
       <div class="col-md-6 text-right">
         <?php if (!empty($languages) && count($languages) > 1) { ?>
         <div class="btn-group">
-          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+          <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
             <?php if ($language && isset($languages[$language]['native_name'])) { ?>
             <?php echo $this->e($languages[$language]['native_name']); ?>
             <?php unset($languages[$language]); ?>
@@ -25,7 +25,7 @@
             <?php echo $this->e($languages['en']['native_name']); ?>
             <?php unset($languages['en']); ?>
             <?php } ?>
-            <span class="caret"></span>
+            <span class="dropdown-toggle"></span>
           </button>
           <ul class="dropdown-menu">
             <?php foreach ($languages as $code => $data) { ?>
@@ -105,7 +105,7 @@
                   <?php echo $this->e($handler['title']); ?>
                 </label>
                 <?php if(!empty($handler['description'])) { ?>
-                <div class="help-block"><?php echo $this->filter($handler['description']); ?></div>
+                <div class="form-text"><?php echo $this->filter($handler['description']); ?></div>
                 <?php } ?>
               </div>
               <?php } ?>
@@ -203,7 +203,7 @@
           </tr>
         </tbody>
       </table>
-      <p><a href="#advanced-db" data-toggle="collapse"><?php echo $this->text('Advanced database settings'); ?> <span class="caret"></span></a></p>
+      <p><a href="#advanced-db" data-toggle="collapse"><?php echo $this->text('Advanced database settings'); ?> <span class="dropdown-toggle"></span></a></p>
       <div id="advanced-db" class="<?php echo $this->error(null, '', 'collapse'); ?>">
         <table class="table advanced-db table-striped">
           <tbody>
@@ -244,7 +244,7 @@
         </table>
       </div>
       <div class="actions">
-        <button class="btn btn-default" name="install" value="1"><?php echo $this->text('Install'); ?></button>
+        <button class="btn" name="install" value="1"><?php echo $this->text('Install'); ?></button>
       </div>
       <?php } ?>
     </form>

@@ -60,10 +60,10 @@
           </select>
         </th>
         <th>
-          <a href="<?php echo $this->url($_path); ?>" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
-            <i class="fa fa-refresh"></i>
+          <a href="<?php echo $this->url($_path); ?>" class="btn clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
+            <i class="fa fa-sync"></i>
           </a>
-          <button class="btn btn-default filter" title="<?php echo $this->text('Filter'); ?>">
+          <button class="btn filter" title="<?php echo $this->text('Filter'); ?>">
             <i class="fa fa-search"></i>
           </button>
         </th>
@@ -111,12 +111,12 @@
         <td>
           <ul class="list-inline">
             <?php if (!empty($library['url'])) { ?>
-            <li><a target="_blank" href="<?php echo $this->e($library['url']); ?>">
+            <li class="list-inline-item"><a target="_blank" href="<?php echo $this->e($library['url']); ?>">
               <?php echo $this->text('URL'); ?></a>
             </li>
             <?php } ?>
             <?php if (!empty($library['download'])) { ?>
-            <li><a href="<?php echo $this->e($library['download']); ?>">
+            <li class="list-inline-item"><a href="<?php echo $this->e($library['download']); ?>">
               <?php echo $this->text('Download'); ?></a>
             </li>
             <?php } ?>

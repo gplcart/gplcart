@@ -9,9 +9,9 @@
  */
 ?>
 <?php if (!empty($items)) { ?>
-<div class="panel panel-borderless panel-default collection collection-product">
-  <h4 class="panel-title"><?php echo $this->e($title); ?></h4>
-  <div class="panel-body">
+<div class="card borderless collection collection-product">
+  <h4 class="card-title"><?php echo $this->e($title); ?></h4>
+  <div class="card-body">
     <div class="row row-no-padding">
       <?php foreach ($items as $item) { ?>
       <?php echo $item['rendered']; ?>

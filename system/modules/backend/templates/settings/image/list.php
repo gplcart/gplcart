@@ -11,7 +11,7 @@
 <?php if (!empty($image_styles) || $_filtering) { ?>
 <?php if ($this->access('image_style_add')) { ?>
 <div class="btn-toolbar actions">
-  <a class="btn btn-default add" href="<?php echo $this->url('admin/settings/imagestyle/add'); ?>">
+  <a class="btn btn-outline-primary add" href="<?php echo $this->url('admin/settings/imagestyle/add'); ?>">
     <?php echo $this->text('Add'); ?>
   </a>
 </div>
@@ -64,10 +64,10 @@
           </select>
         </th>
         <th>
-          <a href="<?php echo $this->url($_path); ?>" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
-            <i class="fa fa-refresh"></i>
+          <a href="<?php echo $this->url($_path); ?>" class="btn clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
+            <i class="fa fa-sync"></i>
           </a>
-          <button class="btn btn-default filter" title="<?php echo $this->text('Filter'); ?>">
+          <button class="btn filter" title="<?php echo $this->text('Filter'); ?>">
             <i class="fa fa-search"></i>
           </button>
         </th>
@@ -88,36 +88,36 @@
         <td class="middle"><?php echo $this->e($image_style['name']); ?></td>
         <td class="middle">
           <?php if (empty($image_style['default'])) { ?>
-          <i class="fa fa-square-o"></i>
+          <i class="fa fa-square"></i>
           <?php } else { ?>
-          <i class="fa fa-check-square-o"></i>
+          <i class="fa fa-check-square"></i>
           <?php } ?>
         </td>
         <td class="middle">
           <?php if (empty($image_style['in_database'])) { ?>
-          <i class="fa fa-square-o"></i>
+          <i class="fa fa-square"></i>
           <?php } else { ?>
-          <i class="fa fa-check-square-o"></i>
+          <i class="fa fa-check-square"></i>
           <?php } ?>
         </td>
         <td class="middle">
           <?php if (empty($image_style['status'])) { ?>
-          <i class="fa fa-square-o"></i>
+          <i class="fa fa-square"></i>
           <?php } else { ?>
-          <i class="fa fa-check-square-o"></i>
+          <i class="fa fa-check-square"></i>
           <?php } ?>
         </td>
         <td class="col-md-2 middle">
           <ul class="list-inline">
             <?php if ($this->access('image_style_edit')) { ?>
-            <li>
+            <li class="list-inline-item">
               <a href="<?php echo $this->url("admin/settings/imagestyle/edit/$id"); ?>" class="edit">
                 <?php echo $this->lower($this->text('Edit')); ?>
               </a>
             </li>
             <?php } ?>
             <?php if(!empty($image_style['directory_exists'])) { ?>
-            <li>
+            <li class="list-inline-item">
               <a href="<?php echo $this->url('', array('clear' => $id, 'token' => $_token)); ?>" class="clear">
                 <?php echo $this->lower($this->text('Clear cache')); ?>
               </a>
@@ -136,7 +136,7 @@
 <?php } else { ?>
 <?php echo $this->text('There are no items yet'); ?>&nbsp;
 <?php if ($this->access('image_style_add')) { ?>
-<a class="btn btn-default add" href="<?php echo $this->url('admin/settings/imagestyle/add'); ?>">
+<a class="btn btn-outline-primary add" href="<?php echo $this->url('admin/settings/imagestyle/add'); ?>">
   <?php echo $this->text('Add'); ?>
 </a>
 <?php } ?>

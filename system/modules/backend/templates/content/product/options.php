@@ -31,13 +31,13 @@
             <?php foreach ($fields['option'] as $field_id => $option) { ?>
             <th class="field-title">
               <span<?php echo $option['required'] ? ' class="required"' : ''; ?>><?php echo $option['title']; ?></span>
-              <div class="btn-group btn-group-sm pull-right">
+              <div class="btn-group btn-group-sm float-right">
                 <?php if ($this->access('field_add')) { ?>
-                <a target="_blank" href="<?php echo $this->url("admin/content/field/value/$field_id"); ?>" class="btn btn-default">
+                <a target="_blank" href="<?php echo $this->url("admin/content/field/value/$field_id"); ?>" class="btn btn-outline-success">
                   <i class="fa fa-plus"></i>
                 </a>
                 <?php } ?>
-                <a href="#" class="btn btn-default refresh-fields" data-field-type="option"><i class="fa fa-refresh"></i></a>
+                <a href="#" class="btn btn-outline-secondary refresh-fields" data-field-type="option"><i class="fa fa-sync"></i></a>
               </div>
             </th>
             <?php } ?>
@@ -84,10 +84,10 @@
             </td>
             <td>
               <?php if (!empty($combination['thumb'])) { ?>
-              <a href="#" class="btn btn-default select-image"><img style="height:20px;width:20px;" src="<?php echo $this->e($combination['thumb']); ?>"></a>
+              <a href="#" class="btn select-image"><img style="height:20px;width:20px;" src="<?php echo $this->e($combination['thumb']); ?>"></a>
               <input type="hidden" name="product[combination][<?php echo $row; ?>][thumb]" value="<?php echo $this->e($combination['thumb']); ?>">
               <?php } else { ?>
-              <a href="#" class="btn btn-default select-image"><i class="fa fa-image"></i></a>
+              <a href="#" class="btn select-image"><i class="fa fa-image"></i></a>
               <input type="hidden" name="product[combination][<?php echo $row; ?>][thumb]" value="">
               <?php } ?>
               <input type="hidden" name="product[combination][<?php echo $row; ?>][file_id]" value="<?php echo $combination['file_id']; ?>">
@@ -103,7 +103,7 @@
                 <input type="checkbox" class="form-control" name="product[combination][<?php echo $row; ?>][status]" value="1"<?php echo empty($combination['status']) ? '' : ' checked'; ?>>
               </div>
             </td>
-            <td><a href="#" class="btn btn-default remove-option-combination"><i class="fa fa-trash"></i></a></td>
+            <td><a href="#" class="btn remove-option-combination"><i class="fa fa-trash"></i></a></td>
           </tr>
           <?php $row++; ?>
           <?php } ?>
@@ -125,10 +125,10 @@
             <td><input class="form-control" value=""></td>
             <td><input class="form-control" value=""></td>
             <td><input class="form-control" value=""></td>
-            <td><a href="#" class="btn btn-default select-image"><i class="fa fa-image"></i></a></td>
+            <td><a href="#" class="btn select-image"><i class="fa fa-image"></i></a></td>
             <td></td>
             <td></td>
-            <td><a href="#" class="btn btn-default add-option-combination"><i class="fa fa-plus"></i></a></td>
+            <td><a href="#" class="btn add-option-combination"><i class="fa fa-plus"></i></a></td>
           </tr>
         </tfoot>
       </table>

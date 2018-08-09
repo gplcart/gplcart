@@ -30,10 +30,9 @@
     "ext-spl": "*",
     "assets/jquery": "2.2.4",
     "assets/jquery_ui": "1.12.1",
-    "assets/html5shiv": "3.7.3",
-    "assets/respond": "1.4.2",
-    "assets/bootstrap": "3.3.7",
-    "assets/font_awesome": "4.7.0",
+    "assets/popper": "1.14.3",
+    "assets/bootstrap": "4.1.3",
+    "assets/font_awesome": "5.2.0",
     "wikimedia/composer-merge-plugin": "^1"
   },
   "require-dev": {
@@ -88,23 +87,11 @@
       "type": "package",
       "packagist.org": false,
       "package": {
-        "name": "assets/html5shiv",
-        "version": "3.7.3",
+        "name": "assets/popper",
+        "version": "1.14.3",
         "dist": {
           "type": "zip",
-          "url": "https://github.com/aFarkas/html5shiv/archive/3.7.3.zip"
-        }
-      }
-    },
-    {
-      "type": "package",
-      "packagist.org": false,
-      "package": {
-        "name": "assets/respond",
-        "version": "1.4.2",
-        "dist": {
-          "type": "zip",
-          "url": "https://github.com/scottjehl/Respond/archive/1.4.2.zip"
+          "url": "https://github.com/FezVrasta/popper.js/archive/v1.14.3.zip"
         }
       }
     },
@@ -113,10 +100,10 @@
       "packagist.org": false,
       "package": {
         "name": "assets/bootstrap",
-        "version": "3.3.7",
+        "version": "4.1.3",
         "dist": {
           "type": "zip",
-          "url": "https://github.com/twbs/bootstrap/archive/v3.3.7.zip"
+          "url": "https://github.com/twbs/bootstrap/archive/v4.1.3.zip"
         }
       }
     },
@@ -125,10 +112,10 @@
       "packagist.org": false,
       "package": {
         "name": "assets/font_awesome",
-        "version": "4.7.0",
+        "version": "5.2.0",
         "dist": {
           "type": "zip",
-          "url": "https://github.com/FortAwesome/Font-Awesome/archive/v4.7.0.zip"
+          "url": "https://github.com/FortAwesome/Font-Awesome/archive/5.2.0.zip"
         }
       }
     }

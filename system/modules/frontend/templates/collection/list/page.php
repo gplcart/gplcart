@@ -10,9 +10,9 @@
  */
 ?>
 <?php if (!empty($items)) { ?>
-<div class="panel panel-borderless panel-default collection collection-page">
-  <h4 class="panel-title"><?php echo $this->e($title); ?></h4>
-  <div class="panel-body">
+<div class="card borderless collection collection-page">
+  <h4 class="card-title"><?php echo $this->e($title); ?></h4>
+  <div class="card-body">
     <div class="row">
       <ul class="list-unstyled">
         <?php foreach ($items as $item) { ?>

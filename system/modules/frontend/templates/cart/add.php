@@ -22,11 +22,11 @@
     <label class="option-combination field-widget-button" title="<?php echo $this->e($field['values'][$field_value_id]['title']); ?>">
       <input class="option" data-field-id="<?php echo $this->e($field_id); ?>" data-field-title="<?php echo $this->e($field['values'][$field_value_id]['title']); ?>" data-field-value-id="<?php echo $this->e($field_value_id); ?>" type="checkbox" name="product[options][<?php echo $this->e($field_id); ?>]" value="<?php echo $this->e($field_value_id); ?>"<?php echo in_array($field_value_id, $product['default_field_values']) ? ' checked' : ''; ?>>
       <?php if (!empty($field['values'][$field_value_id]['thumb'])) { ?>
-      <span class="btn btn-default image has-value" title="<?php echo $this->e($field['values'][$field_value_id]['title']); ?>" style="background-image: url(<?php echo $this->e($field['values'][$field_value_id]['thumb']); ?>);"></span>
+      <span class="btn image has-value" title="<?php echo $this->e($field['values'][$field_value_id]['title']); ?>" style="background-image: url(<?php echo $this->e($field['values'][$field_value_id]['thumb']); ?>);"></span>
       <?php } else if (!empty($field['values'][$field_value_id]['color'])) { ?>
-      <span class="btn btn-default has-value" title="<?php echo $this->e($field['values'][$field_value_id]['title']); ?>" style="background-color:<?php echo $this->e($field['values'][$field_value_id]['color']); ?>;"></span>
+      <span class="btn has-value" title="<?php echo $this->e($field['values'][$field_value_id]['title']); ?>" style="background-color:<?php echo $this->e($field['values'][$field_value_id]['color']); ?>;"></span>
       <?php } else { ?>
-      <span class="btn btn-default"><?php echo $this->e($field['values'][$field_value_id]['title']); ?></span>
+      <span class="btn"><?php echo $this->e($field['values'][$field_value_id]['title']); ?></span>
       <?php } ?>
     </label>
     <?php } ?>
@@ -69,20 +69,20 @@
     <?php echo $this->text('Add to cart'); ?>
   </button>
   <?php if (empty($product['in_wishlist'])) { ?>
-  <button title="<?php echo $this->text('Add to wishlist'); ?>" class="btn btn-default" data-ajax="true" name="add_to_wishlist" value="1">
+  <button title="<?php echo $this->text('Add to wishlist'); ?>" class="btn" data-ajax="true" name="add_to_wishlist" value="1">
     <i class="fa fa-heart"></i>
   </button>
   <?php } else { ?>
-  <a rel="nofollow" title="<?php echo $this->text('Already in wishlist'); ?>" href="<?php echo $this->url('wishlist'); ?>" class="btn btn-default active">
+  <a rel="nofollow" title="<?php echo $this->text('Already in wishlist'); ?>" href="<?php echo $this->url('wishlist'); ?>" class="btn active">
     <i class="fa fa-heart"></i>
   </a>
   <?php } ?>
   <?php if (empty($product['in_comparison'])) { ?>
-  <button title="<?php echo $this->text('Compare'); ?>" class="btn btn-default" data-ajax="true" name="add_to_compare" value="1">
+  <button title="<?php echo $this->text('Compare'); ?>" class="btn" data-ajax="true" name="add_to_compare" value="1">
     <i class="fa fa-balance-scale"></i>
   </button>
   <?php } else { ?>
-  <a rel="nofollow" title="<?php echo $this->text('Already in comparison'); ?>" href="<?php echo $this->url('compare'); ?>" class="btn btn-default active">
+  <a rel="nofollow" title="<?php echo $this->text('Already in comparison'); ?>" href="<?php echo $this->url('compare'); ?>" class="btn active">
     <i class="fa fa-balance-scale"></i>
   </a>
   <?php } ?>

@@ -49,10 +49,9 @@ class Main
      */
     protected function setAssets(Controller $controller)
     {
-        $controller->addAssetLibrary('html5shiv', array('condition' => 'if lt IE 9'));
-        $controller->addAssetLibrary('respond', array('condition' => 'if lt IE 9'));
-        $controller->addAssetLibrary('font_awesome');
+        $controller->addAssetLibrary('popper');
         $controller->addAssetLibrary('bootstrap');
+        $controller->addAssetLibrary('font_awesome');
 
         if ($controller->isInstall()) {
             $controller->setCss(__DIR__ . '/css/install.css');

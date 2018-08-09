@@ -8,9 +8,9 @@
  * To see available variables <?php print_r(get_defined_vars()); ?>
  */
 ?>
-<div class="panel panel-checkout panel-default review">
-  <div class="panel-heading"><?php echo $this->text('Review'); ?></div>
-  <div class="panel-body">
+<div class="card panel-checkout review">
+  <div class="card-header"><?php echo $this->text('Review'); ?></div>
+  <div class="card-body">
     <?php if (!empty($messages['cart'])) { ?>
     <?php foreach ($messages['cart'] as $severity => $text) { ?>
     <div class="alert alert-<?php echo $this->e($severity); ?> alert-dismissible">
@@ -26,7 +26,7 @@
     <div class="form-group<?php echo $this->error("cart.items.$sku", ' has-error'); ?>">
       <div class="col-md-2">
         <a target="_blank" href="<?php echo $this->url("product/{$item['product']['product_id']}"); ?>">
-          <img class="img-responsive thumbnail" src="<?php echo $this->e($item['thumb']); ?>">
+          <img class="img-fluid thumbnail" src="<?php echo $this->e($item['thumb']); ?>">
         </a>
       </div>
       <div class="col-md-6">
@@ -53,18 +53,18 @@
         <div>
           <div class="input-group input-group-sm">
             <span class="input-group-btn">
-              <button type="button" class="btn btn-default hidden-no-js" data-spinner="-">
+              <button type="button" class="btn hidden-no-js" data-spinner="-">
                 <span class="fa fa-minus"></span>
               </button>
             </span>
             <input data-min="1" data-max="99" class="form-control text-center quantity" name="order[cart][items][<?php echo $this->e($sku); ?>][quantity]" value="<?php echo $this->e($item['quantity']); ?>">
             <span class="input-group-btn">
-              <button type="button" class="btn btn-default hidden-no-js" data-spinner="+">
+              <button type="button" class="btn hidden-no-js" data-spinner="+">
                 <span class="fa fa-plus"></span>
               </button>
             </span>
             <span class="input-group-btn hidden-js">
-              <button title="<?php echo $this->text('Update'); ?>" class="btn btn-default" name="update" value="1">
+              <button title="<?php echo $this->text('Update'); ?>" class="btn" name="update" value="1">
                 <i class="fa fa-refresh"></i>
               </button>
             </span>
@@ -74,7 +74,7 @@
       </div>
       <div class="col-md-3">
         <div class="btn-toolbar">
-          <button title="<?php echo $this->text('Delete'); ?>" class="btn btn-default btn-sm" name="order[cart][action][delete]" value="<?php echo $this->e($item['cart_id']); ?>">
+          <button title="<?php echo $this->text('Delete'); ?>" class="btn btn-sm" name="order[cart][action][delete]" value="<?php echo $this->e($item['cart_id']); ?>">
             <i class="fa fa-trash"></i>
           </button>
         </div>
@@ -100,7 +100,7 @@
                 <div class="input-group">
                   <input class="form-control col-md-2" name="order[data][pricerule_code]" placeholder="<?php echo $this->text('Enter code'); ?>" value="<?php echo isset($order['data']['pricerule_code']) ? $this->e($order['data']['pricerule_code']) : ''; ?>">
                   <span class="input-group-btn">
-                    <button class="btn btn-default" data-block-if-empty="order[data][pricerule_code]" name="check_pricerule" value="<?php echo $this->e($id); ?>"><?php echo $this->text('Apply'); ?></button>
+                    <button class="btn" data-block-if-empty="order[data][pricerule_code]" name="check_pricerule" value="<?php echo $this->e($id); ?>"><?php echo $this->text('Apply'); ?></button>
                   </span>
                 </div>
                 <?php if ($price_component['price'] != 0) { ?>

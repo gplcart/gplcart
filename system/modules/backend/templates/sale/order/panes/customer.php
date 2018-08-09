@@ -9,12 +9,12 @@
  */
 ?>
 <?php if (isset($order['user']['user_id'])) { ?>
-<div class="panel panel-default">
-  <div class="panel-heading"><?php echo $this->text('Customer'); ?></div>
-  <div class="panel-body">
+<div class="card">
+  <div class="card-header"><?php echo $this->text('Customer'); ?></div>
+  <div class="card-body">
     <div class="row">
       <div class="col-md-12">
-        <table class="table table-condensed">
+        <table class="table table-sm">
           <tr>
             <td><?php echo $this->text('ID'); ?></td>
             <td>

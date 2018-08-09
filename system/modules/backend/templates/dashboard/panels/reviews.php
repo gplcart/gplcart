@@ -9,13 +9,13 @@
  */
 ?>
 <?php if($this->access('review')) { ?>
-<div class="panel panel-default">
-  <div class="panel-heading">
+<div class="card">
+  <div class="card-header">
     <?php echo $this->text($content['title']); ?>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <?php if (!empty($content['data'])) { ?>
-    <table class="table table-condensed">
+    <table class="table table-sm">
       <tbody>
         <?php foreach ($content['data'] as $item) { ?>
         <tr>

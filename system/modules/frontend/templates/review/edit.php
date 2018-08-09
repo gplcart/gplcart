@@ -12,7 +12,7 @@
   <?php if (!empty($product['images'])) { ?>
   <div class="col-md-3">
     <?php $first = reset($product['images']); ?>
-    <img class="img-responsive" src="<?php echo $this->e($first['thumb']); ?>" alt="<?php echo $this->e($first['title']); ?>" title="<?php echo $this->e($first['title']); ?>">
+    <img class="img-fluid" src="<?php echo $this->e($first['thumb']); ?>" alt="<?php echo $this->e($first['title']); ?>" title="<?php echo $this->e($first['title']); ?>">
   </div>
   <?php } ?>
   <div class="<?php echo empty($product['images']) ? 'col-md-12' : 'col-md-9'; ?>">
@@ -39,15 +39,15 @@
       <div class="form-group required<?php echo $this->error('text', ' has-error'); ?>">
         <lable><?php echo $this->text('Your review'); ?></lable>
         <textarea class="form-control" rows="4" name="review[text]"><?php echo isset($review['text']) ? $this->e($review['text']) : ''; ?></textarea>
-        <div class="help-block"><?php echo $this->error('text'); ?></div>
+        <div class="form-text"><?php echo $this->error('text'); ?></div>
       </div>
       <?php echo $_captcha; ?>
       <div class="btn-toolbar">
         <?php if ($can_delete) { ?>
         <button class="btn btn-danger" name="delete" value="1" onclick="return confirm('<?php echo $this->text('Are you sure?'); ?>');"><?php echo $this->text('Delete'); ?></button>
         <?php } ?>
-        <a class="btn btn-default" href="<?php echo $this->url('product/' . $product['product_id']); ?>"><?php echo $this->text('Cancel'); ?></a>
-        <button class="btn btn-default" name="save" value="1"><?php echo $this->text('Save'); ?></button>
+        <a class="btn" href="<?php echo $this->url('product/' . $product['product_id']); ?>"><?php echo $this->text('Cancel'); ?></a>
+        <button class="btn" name="save" value="1"><?php echo $this->text('Save'); ?></button>
       </div>
     </form>
   </div>

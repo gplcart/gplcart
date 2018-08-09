@@ -9,9 +9,9 @@
  */
 ?>
 <?php if (!empty($items) || !empty($order['log'])) { ?>
-<div id="panel-order-logs" class="panel panel-default hidden-print">
-  <div class="panel-heading"><?php echo $this->text('Log'); ?></div>
-  <div class="panel-body">
+<div id="panel-order-logs" class="card hidden-print">
+  <div class="card-header"><?php echo $this->text('Log'); ?></div>
+  <div class="card-body">
     <?php if (!empty($order['log'])) { ?>
     <b><?php echo $this->text('Message'); ?>:</b>
     <p><?php echo $this->e($order['log']['text']); ?></p>
@@ -27,7 +27,7 @@
     <b><?php echo $this->text('Created'); ?>:</b>
     <?php echo $this->date($order['log']['created']); ?>
     <?php } else if (!empty($items)) { ?>
-    <table class="table table-condensed">
+    <table class="table table-sm">
       <?php foreach ($items as $id => $item) { ?>
       <tr>
         <td>

@@ -134,7 +134,9 @@ class ProductBundle extends Controller
             'name' => 'product[bundle]',
             'products' => $products,
             'error' => $this->error('bundle'),
-            'store_id' => $this->data_product['store_id']
+            'store_id' => $this->data_product['store_id'],
+            'label' => $this->text('Bundled products'),
+            'description' => $this->text('Select one or several related products to be offered for sale as one combined product')
         );
 
         $this->setData('product_picker', $this->getWidgetProductPicker($widget));

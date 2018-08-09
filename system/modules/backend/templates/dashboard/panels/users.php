@@ -10,10 +10,10 @@
 ?>
 
 <?php if($this->access('user')) { ?>
-<div class="panel panel-default">
-  <div class="panel-heading"><?php echo $this->text($content['title']); ?></div>
-  <div class="panel-body">
-    <table class="table table-condensed">
+<div class="card">
+  <div class="card-header"><?php echo $this->text($content['title']); ?></div>
+  <div class="card-body">
+    <table class="table table-sm">
       <?php foreach ($content['data'] as $item) { ?>
       <?php if(!$this->isSuperadmin($item['user_id']) || $this->isSuperadmin()) { ?>
       <tr>

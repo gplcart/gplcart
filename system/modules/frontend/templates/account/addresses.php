@@ -11,18 +11,18 @@
 <div class="row">
   <div class="col-md-3">
     <div class="list-group">
-      <a href="<?php echo $this->url("account/{$user['user_id']}"); ?>" class="list-group-item">
-        <h4 class="list-group-item-heading h5"><b><?php echo $this->e($this->truncate($user['name'], 20)); ?></b></h4>
-        <p class="list-group-item-text"><?php echo $this->e($user['email']); ?></p>
+      <a class="list-group-item list-group-item-action" href="<?php echo $this->url("account/{$user['user_id']}"); ?>">
+        <h4 class="h5"><b><?php echo $this->e($this->truncate($user['name'], 20)); ?></b></h4>
+        <p><?php echo $this->e($user['email']); ?></p>
       </a>
-      <a href="<?php echo $this->url("account/{$user['user_id']}/address"); ?>" class="list-group-item active disabled">
-        <h4 class="list-group-item-heading h5"><?php echo $this->text('Addresses'); ?></h4>
-        <p class="list-group-item-text"><?php echo $this->text('View and manage addressbook'); ?></p>
+      <a class="list-group-item list-group-item-action active disabled" href="<?php echo $this->url("account/{$user['user_id']}/address"); ?>">
+        <h4 class="h5"><?php echo $this->text('Addresses'); ?></h4>
+        <p><?php echo $this->text('View and manage addressbook'); ?></p>
       </a>
       <?php if ($_uid == $user['user_id'] || $this->access('user_edit')) { ?>
-      <a class="list-group-item" href="<?php echo $this->url("account/{$user['user_id']}/edit"); ?>">
-        <h4 class="list-group-item-heading h5"><?php echo $this->text('Settings'); ?></h4>
-        <p class="list-group-item-text"><?php echo $this->text('Edit account details'); ?></p>
+      <a class="list-group-item list-group-item-action" href="<?php echo $this->url("account/{$user['user_id']}/edit"); ?>">
+        <h4 class="h5"><?php echo $this->text('Settings'); ?></h4>
+        <p><?php echo $this->text('Edit account details'); ?></p>
       </a>
       <?php } ?>
     </div>
@@ -32,18 +32,18 @@
     <div class="row addresses">
       <?php foreach ($addresses as $address_id => $address) { ?>
       <div class="col-md-4">
-        <div class="panel panel-default address">
-          <div class="panel-heading clearfix">
+        <div class="card address">
+          <div class="card-header clearfix">
             <?php if (($_uid == $user['user_id'] || $this->access('user_edit')) && empty($address['locked'])) { ?>
-            <a class="btn btn-default btn-sm pull-right" onclick="return confirm('<?php echo $this->text('Delete?'); ?>');" title="<?php echo $this->text('Delete'); ?>" href="<?php echo $this->url('', array('delete' => $address_id, 'token' => $_token)); ?>">
+            <a class="btn btn-sm float-right" onclick="return confirm('<?php echo $this->text('Delete?'); ?>');" title="<?php echo $this->text('Delete'); ?>" href="<?php echo $this->url('', array('delete' => $address_id, 'token' => $_token)); ?>">
               <i class="fa fa-trash"></i>
             </a>
             <?php } else { ?>
-            <span class="disabled btn btn-default btn-sm pull-right"><i class="fa fa-trash"></i></span>
+            <span class="disabled btn btn-sm float-right"><i class="fa fa-trash"></i></span>
             <?php } ?>
           </div>
-          <div class="panel-body">
-            <table class="table table-condensed address">
+          <div class="card-body">
+            <table class="table table-sm address">
               <?php foreach ($address['items'] as $label => $value) { ?>
               <tr>
                 <td><?php echo $this->e($label); ?></td>

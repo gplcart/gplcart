@@ -36,9 +36,8 @@ class Main
     protected function setAssets(Controller $controller)
     {
         $controller->addAssetLibrary('jquery_ui');
+        $controller->addAssetLibrary('popper');
         $controller->addAssetLibrary('bootstrap');
-        $controller->addAssetLibrary('html5shiv', array('condition' => 'if lt IE 9'));
-        $controller->addAssetLibrary('respond', array('condition' => 'if lt IE 9'));
         $controller->addAssetLibrary('font_awesome');
 
         $controller->setJs(__DIR__ . '/js/common.js');

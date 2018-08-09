@@ -8,29 +8,29 @@
  * To see available variables <?php print_r(get_defined_vars()); ?>
  */
 ?>
-<form method="post" class="form-horizontal">
+<form method="post">
   <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <div class="form-group">
-    <label class="col-md-2 control-label"><?php echo $this->text('Status'); ?></label>
+    <label class="col-md-2 col-form-label"><?php echo $this->text('Status'); ?></label>
     <div class="col-md-4">
       <div class="btn-group" data-toggle="buttons">
-        <label class="btn btn-default<?php echo empty($state['status']) ? '' : ' active'; ?>">
+        <label class="btn<?php echo empty($state['status']) ? '' : ' active'; ?>">
           <input name="state[status]" type="radio" autocomplete="off" value="1"<?php echo empty($state['status']) ? '' : ' checked'; ?>><?php echo $this->text('Enabled'); ?>
         </label>
-        <label class="btn btn-default<?php echo empty($state['status']) ? ' active' : ''; ?>">
+        <label class="btn<?php echo empty($state['status']) ? ' active' : ''; ?>">
           <input name="state[status]" type="radio" autocomplete="off" value="0"<?php echo empty($state['status']) ? ' checked' : ''; ?>><?php echo $this->text('Disabled'); ?>
         </label>
       </div>
-      <div class="help-block">
+      <div class="form-text">
         <?php echo $this->text('Disabled country states will not be displayed to customers'); ?>
       </div>
     </div>
   </div>
   <div class="form-group required<?php echo $this->error('name', ' has-error'); ?>">
-    <label class="col-md-2 control-label"><?php echo $this->text('Name'); ?></label>
+    <label class="col-md-2 col-form-label"><?php echo $this->text('Name'); ?></label>
     <div class="col-md-4">
       <input type="text" name="state[name]" maxlength="255" class="form-control" value="<?php echo isset($state['name']) ? $this->e($state['name']) : ''; ?>">
-      <div class="help-block">
+      <div class="form-text">
         <?php echo $this->error('name'); ?>
         <div class="text-muted">
           <?php echo $this->text('Official name of the country state'); ?>
@@ -39,10 +39,10 @@
     </div>
   </div>
   <div class="form-group required<?php echo $this->error('code', ' has-error'); ?>">
-    <label class="col-md-2 control-label"><?php echo $this->text('Code'); ?></label>
+    <label class="col-md-2 col-form-label"><?php echo $this->text('Code'); ?></label>
     <div class="col-md-4">
       <input type="text" name="state[code]" maxlength="255" class="form-control" value="<?php echo isset($state['code']) ? $this->e($state['code']) : ''; ?>">
-      <div class="help-block">
+      <div class="form-text">
         <?php echo $this->error('code'); ?>
         <div class="text-muted">
           <?php echo $this->text('Code or abbreviation used to represent the state/province in the country, e.g NY for New York'); ?>
@@ -51,7 +51,7 @@
     </div>
   </div>
   <div class="form-group<?php echo $this->error('zone_id', ' has-error'); ?>">
-    <label class="col-md-2 control-label"><?php echo $this->text('Zone'); ?></label>
+    <label class="col-md-2 col-form-label"><?php echo $this->text('Zone'); ?></label>
     <div class="col-md-4">
       <select name="state[zone_id]" class="form-control">
         <option value=""><?php echo $this->text('None'); ?></option>
@@ -63,7 +63,7 @@
         <?php } ?>
         <?php } ?>
       </select>
-      <div class="help-block">
+      <div class="form-text">
         <?php echo $this->error('zone_id'); ?>
         <div class="text-muted">
           <?php echo $this->text('Zones are geographic regions that you ship goods to. Each zone provides shipping rates that apply to customers whose addresses are within that zone.'); ?>
@@ -72,16 +72,16 @@
     </div>
   </div>
   <div class="form-group">
-    <div class="col-md-10 col-md-offset-2">
+    <div class="col-md-10 offset-md-2">
       <div class="btn-toolbar">
         <?php if ($can_delete) { ?>
         <button class="btn btn-danger delete" name="delete" value="1" onclick="return confirm('<?php echo $this->text('Are you sure? It cannot be undone!'); ?>');">
           <?php echo $this->text('Delete'); ?>
         </button>
         <?php } ?>
-        <a class="btn btn-default cancel" href="<?php echo $this->url("admin/settings/states/{$country['code']}"); ?>"><?php echo $this->text('Cancel'); ?></a>
+        <a class="btn cancel" href="<?php echo $this->url("admin/settings/states/{$country['code']}"); ?>"><?php echo $this->text('Cancel'); ?></a>
         <?php if ($this->access('state_edit') || $this->access('state_add')) { ?>
-        <button class="btn btn-default save" name="save" value="1">
+        <button class="btn save" name="save" value="1">
           <?php echo $this->text('Save'); ?>
         </button>
         <?php } ?>

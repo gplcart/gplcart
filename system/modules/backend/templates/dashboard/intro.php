@@ -20,6 +20,6 @@
   <a href="<?php echo $this->url('admin/settings/store/edit/1'); ?>"><?php echo $this->text('Settings'); ?></a>
 </h4>
 <p><?php echo $this->text('Add company info, change logo, theme'); ?></p>
-<a class="btn btn-default" href="<?php echo $this->url('', array('skip_intro' => 1)); ?>">
+<a class="btn" href="<?php echo $this->url('', array('skip_intro' => 1)); ?>">
   <?php echo $this->text('Skip'); ?>
 </a>

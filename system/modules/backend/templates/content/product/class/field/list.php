@@ -10,19 +10,19 @@
 ?>
 <?php if (!empty($fields)) { ?>
 <?php $draggable = count($fields) > 1 ;?>
-<form method="post" class="form-horizontal">
+<form method="post">
   <input type="hidden" name="token" value="<?php echo $_token; ?>">
   <div class="btn-toolbar actions">
-    <button class="btn btn-default save" name="save" value="1" onclick="return confirm('<?php echo $this->text('Are you sure?'); ?>');">
+    <button class="btn btn-success save mr-1" name="save" value="1" onclick="return confirm('<?php echo $this->text('Are you sure?'); ?>');">
       <?php echo $this->text('Save'); ?>
     </button>
-    <a class="btn btn-default add" href="<?php echo $this->url("admin/content/product-class/field/{$product_class['product_class_id']}/add"); ?>">
+    <a class="btn btn-primary add" href="<?php echo $this->url("admin/content/product-class/field/{$product_class['product_class_id']}/add"); ?>">
       <?php echo $this->text('Add'); ?>
     </a>
   </div>
   <div class="table-responsive">
     <table class="table fields" data-sortable-input-weight="true">
-      <thead>
+      <thead class="thead-light">
         <tr>
           <th>
             <a href="<?php echo $sort_product_class_field_id; ?>">
@@ -97,21 +97,21 @@
           <td class="middle">
             <ul class="list-inline">
               <?php if ($this->access('field_edit')) { ?>
-              <li>
+              <li class="list-inline-item">
                 <a href="<?php echo $this->url("admin/content/field/edit/{$field['field_id']}", array('target' => $this->path())); ?>">
                   <?php echo $this->lower($this->text('Edit')); ?>
                 </a>
               </li>
               <?php } ?>
               <?php if ($this->access('field_value')) { ?>
-              <li>
+              <li class="list-inline-item">
                 <a href="<?php echo $this->url("admin/content/field/value/{$field['field_id']}"); ?>">
                   <?php echo $this->lower($this->text('Values')); ?>
                 </a>
               </li>
               <?php } ?>
               <?php if ($this->access('field_value_add')) { ?>
-              <li>
+              <li class="list-inline-item">
                 <a href="<?php echo $this->url("admin/content/field/value/{$field['field_id']}/add", array('target' => $this->path())); ?>">
                   <?php echo $this->lower($this->text('Add value')); ?>
                 </a>
@@ -127,7 +127,7 @@
 </form>
 <?php } else { ?>
 <?php echo $this->text('There are no items yet'); ?>&nbsp;
-<a class="btn btn-default" href="<?php echo $this->url("admin/content/product-class/field/{$product_class['product_class_id']}/add"); ?>">
+<a class="btn btn-primary add" href="<?php echo $this->url("admin/content/product-class/field/{$product_class['product_class_id']}/add"); ?>">
   <?php echo $this->text('Add'); ?>
 </a>
 <?php } ?>

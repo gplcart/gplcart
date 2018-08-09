@@ -9,9 +9,9 @@
  */
 ?>
 <?php if (!empty($order['comment'])) { ?>
-<div class="panel panel-default">
-  <div class="panel-heading"><?php echo $this->text('Order comments'); ?></div>
-  <div class="panel-body">
+<div class="card">
+  <div class="card-header"><?php echo $this->text('Order comments'); ?></div>
+  <div class="card-body">
     <?php echo $this->e($order['comment']); ?>
   </div>
 </div>

@@ -16,7 +16,6 @@
     <?php $access_actions = false; ?>
     <?php if ($this->access('product_edit') || $this->access('product_delete')) { ?>
     <?php $access_actions = true; ?>
-    <div class="input-group">
       <select name="action[name]" class="form-control" onchange="Gplcart.action(this);">
         <option value=""><?php echo $this->text('With selected'); ?></option>
         <?php if ($this->access('product_edit')) { ?>
@@ -33,13 +32,10 @@
         </option>
         <?php } ?>
       </select>
-      <span class="input-group-btn hidden-js">
-        <button class="btn btn-default" name="action[submit]" value="1"><?php echo $this->text('OK'); ?></button>
-      </span>
-    </div>
+        <button class="btn btn-secondary hidden-js ml-1" name="action[submit]" value="1"><?php echo $this->text('OK'); ?></button>
     <?php } ?>
     <?php if ($this->access('product_add')) { ?>
-    <a class="btn btn-default" href="<?php echo $this->url('admin/content/product/add'); ?>">
+    <a class="btn btn-primary add ml-1" href="<?php echo $this->url('admin/content/product/add'); ?>">
       <?php echo $this->text('Add'); ?>
     </a>
     <?php } ?>
@@ -47,7 +43,7 @@
   <?php } ?>
   <div class="table-responsive">
     <table class="table products">
-      <thead>
+      <thead class="thead-light">
         <tr>
           <th class="middle"><input type="checkbox" onchange="Gplcart.selectAll(this);"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
           <th class="middle">
@@ -135,10 +131,10 @@
             </select>
           </th>
           <th class="middle">
-            <a href="<?php echo $this->url($_path); ?>" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
-              <i class="fa fa-refresh"></i>
+            <a class="btn btn-outline-secondary clear-filter" href="<?php echo $this->url($_path); ?>" title="<?php echo $this->text('Reset filter'); ?>">
+              <i class="fa fa-sync"></i>
             </a>
-            <button class="btn btn-default filter" title="<?php echo $this->text('Filter'); ?>">
+            <button class="btn btn-secondary filter" title="<?php echo $this->text('Filter'); ?>">
               <i class="fa fa-search"></i>
             </button>
           </th>
@@ -185,22 +181,22 @@
           </td>
           <td class="middle text-center">
             <?php if (empty($product['status'])) { ?>
-            <i class="fa fa-square-o"></i>
+            <i class="fa fa-square"></i>
             <?php } else { ?>
-            <i class="fa fa-check-square-o"></i>
+            <i class="fa fa-check-square"></i>
             <?php } ?>
           </td>
           <td class="middle">
             <ul class="list-inline">
               <?php if ($this->access('product_edit')) { ?>
-              <li>
+              <li class="list-inline-item">
                 <a href="<?php echo $this->url("admin/content/product/edit/$id"); ?>">
                   <?php echo $this->lower($this->text('Edit')); ?>
                 </a>
               </li>
               <?php } ?>
               <?php if ($this->access('product_bundle_edit')) { ?>
-              <li>
+              <li class="list-inline-item">
                 <a href="<?php echo $this->url("admin/content/product/bundle/$id"); ?>">
                   <?php echo $this->lower($this->text('Bundle')); ?>
                 </a>
@@ -221,7 +217,7 @@
 <?php } else { ?>
 <?php echo $this->text('There are no items yet'); ?>&nbsp;
 <?php if ($this->access('product_add')) { ?>
-<a class="btn btn-default" href="<?php echo $this->url('admin/content/product/add'); ?>">
+<a class="btn btn-primary add" href="<?php echo $this->url('admin/content/product/add'); ?>">
 <?php echo $this->text('Add'); ?>
 </a>
 <?php } ?>

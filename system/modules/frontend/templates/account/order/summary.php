@@ -9,10 +9,10 @@
  * To see available variables <?php print_r(get_defined_vars()); ?>
  */
 ?>
-<div class="panel panel-default order-summary">
-  <div class="panel-heading clearfix"><?php echo $this->text('Summary'); ?></div>
-  <div class="panel-body">
-    <table class="table table-condensed">
+<div class="card order-summary">
+  <div class="card-header clearfix"><?php echo $this->text('Summary'); ?></div>
+  <div class="card-body">
+    <table class="table table-sm">
       <tr>
         <td class="col-md-3"><?php echo $this->text('Order ID'); ?></td>
         <td class="col-md-9"><?php echo $this->e($order['order_id']); ?></td>

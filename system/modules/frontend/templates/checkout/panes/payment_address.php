@@ -8,16 +8,16 @@
  * To see available variables <?php print_r(get_defined_vars()); ?>
  */
 ?>
-<div class="panel panel-checkout payment-address panel-default">
-  <div class="panel-heading clearfix">
+<div class="card panel-checkout payment-address">
+  <div class="card-header clearfix">
     <input type="hidden" name="same_payment_address" value="0">
     <input type="checkbox" name="same_payment_address" value="1"<?php echo $same_payment_address ? ' checked' : ''; ?>> <?php echo $this->text('My shipping and payment addresses are the same'); ?>
     <noscript>
-      <button title="<?php echo $this->text('Update'); ?>" class="btn btn-default btn-xs pull-right" name="update" value="1"><i class="fa fa-refresh"></i></button>
+      <button title="<?php echo $this->text('Update'); ?>" class="btn btn-xs float-right" name="update" value="1"><i class="fa fa-refresh"></i></button>
     </noscript>
   </div>
   <?php if (!$same_payment_address) { ?>
-  <div class="panel-body">
+  <div class="card-body">
     <?php if ($this->error('payment_address', true)) { ?>
     <div class="alert alert-danger alert-dismissible">
       <button type="button" class="close" data-dismiss="alert">
@@ -46,14 +46,14 @@
     <?php if ($can_add_address) { ?>
     <div class="form-group">
       <div class="col-md-12">
-        <button class="btn btn-default" name="add_address" value="payment"><?php echo $this->text('Add address'); ?></button>
+        <button class="btn" name="add_address" value="payment"><?php echo $this->text('Add address'); ?></button>
       </div>
     </div>
     <?php } ?>
     <?php } else if ($can_add_address) { ?>
     <div class="form-group">
       <div class="col-md-12">
-        <table class="table table-borderless table-condensed table-striped payment-address">
+        <table class="table table-borderless table-sm table-striped payment-address">
           <?php if (!empty($countries)) { ?>
           <tr>
             <td class="middle"><?php echo $this->text('Country'); ?></td>
@@ -74,7 +74,7 @@
                 </div>
                 <noscript>
                 <div class="btn-group">
-                  <button class="btn btn-default" name="get_states" value="payment"><?php echo $this->text('Get states'); ?></button>
+                  <button class="btn" name="get_states" value="payment"><?php echo $this->text('Get states'); ?></button>
                 </div>
                 </noscript>
               </div>
@@ -113,12 +113,12 @@
     </div>
     <div class="btn-toolbar">
       <?php if (!empty($addresses)) { ?>
-      <button class="btn btn-default" name="cancel_address_form" value="payment">
+      <button class="btn" name="cancel_address_form" value="payment">
         <?php echo $this->text('Cancel'); ?>
       </button>
       <?php } ?>
       <?php if ($can_save_address && (empty($countries) || !empty($address['payment']['country']))) { ?>
-      <button class="btn btn-default" name="save_address" value="payment">
+      <button class="btn" name="save_address" value="payment">
         <?php echo $this->text('Save'); ?>
       </button>
       <?php } ?>

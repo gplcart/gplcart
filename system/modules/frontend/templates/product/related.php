@@ -9,16 +9,16 @@
  */
 ?>
 <?php if(!empty($products)) { ?>
-<div id="panel-related-products" class="panel panel-default panel-borderless related-products<?php echo empty($pager) ? '' : ' has-pager'; ?>">
-  <div class="panel-heading clearfix">
-    <h4 class="panel-title pull-left"><?php echo $this->text('Related'); ?></h4>
+<div id="panel-related-products" class="card borderless related-products<?php echo empty($pager) ? '' : ' has-pager'; ?>">
+  <div class="card-header clearfix">
+    <h4 class="card-title float-left"><?php echo $this->text('Related'); ?></h4>
     <?php if(!empty($pager)) { ?>
-    <div class="pull-right">
+    <div class="float-right">
       <?php echo $pager; ?>
     </div>
     <?php } ?>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <div class="row products row-no-padding">
       <?php foreach($products as $product) { ?>
       <?php echo $product['rendered']; ?>

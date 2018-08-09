@@ -11,7 +11,7 @@
 <?php if (!empty($languages) || $_filtering) { ?>
 <?php if ($this->access('language_add')) { ?>
 <div class="btn-toolbar actions">
-  <a class="btn btn-default" href="<?php echo $this->url("admin/settings/language/add"); ?>">
+  <a class="btn btn-outline-primary" href="<?php echo $this->url("admin/settings/language/add"); ?>">
     <?php echo $this->text('Add'); ?>
   </a>
 </div>
@@ -78,10 +78,10 @@
           </select>
         </th>
         <th>
-          <a href="<?php echo $this->url($_path); ?>" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
-            <i class="fa fa-refresh"></i>
+          <a href="<?php echo $this->url($_path); ?>" class="btn clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
+            <i class="fa fa-sync"></i>
           </a>
-          <button class="btn btn-default filter" title="<?php echo $this->text('Filter'); ?>">
+          <button class="btn filter" title="<?php echo $this->text('Filter'); ?>">
             <i class="fa fa-search"></i>
           </button>
         </th>
@@ -103,42 +103,42 @@
         <td class="middle"><?php echo $this->e($language['native_name']); ?></td>
         <td class="middle">
           <?php if (empty($language['rtl'])) { ?>
-          <i class="fa fa-square-o"></i>
+          <i class="fa fa-square"></i>
           <?php } else { ?>
-          <i class="fa fa-check-square-o"></i>
+          <i class="fa fa-check-square"></i>
           <?php } ?>
         </td>
         <td class="middle">
           <?php if (empty($language['default'])) { ?>
-          <i class="fa fa-square-o"></i>
+          <i class="fa fa-square"></i>
           <?php } else { ?>
-          <i class="fa fa-check-square-o"></i>
+          <i class="fa fa-check-square"></i>
           <?php } ?>
         </td>
         <td class="middle">
           <?php if (empty($language['in_database'])) { ?>
-          <i class="fa fa-square-o"></i>
+          <i class="fa fa-square"></i>
           <?php } else { ?>
-          <i class="fa fa-check-square-o"></i>
+          <i class="fa fa-check-square"></i>
           <?php } ?>
         </td>
         <td class="middle">
           <?php if (empty($language['status'])) { ?>
-          <i class="fa fa-square-o"></i>
+          <i class="fa fa-square"></i>
           <?php } else { ?>
-          <i class="fa fa-check-square-o"></i>
+          <i class="fa fa-check-square"></i>
           <?php } ?>
         </td>
         <td class="middle">
           <ul class="list-inline">
             <?php if ($this->access('language_edit')) { ?>
-            <li>
+            <li class="list-inline-item">
               <a href="<?php echo $this->url("admin/settings/language/edit/$code"); ?>">
                 <?php echo $this->lower($this->text('Edit')); ?>
               </a>
             </li>
             <?php if(!empty($language['file_exists'])) { ?>
-            <li>
+            <li class="list-inline-item">
               <a href="<?php echo $this->url('', array('refresh' => $code, 'token' => $_token)); ?>" onclick="return confirm('<?php echo $this->text('Are you sure? All compiled translations for this language will be re-created, their existing translations will be lost!'); ?>');">
                 <?php echo $this->lower($this->text('Refresh')); ?>
               </a>
@@ -158,7 +158,7 @@
 <?php } else { ?>
 <?php echo $this->text('There are no items yet'); ?>&nbsp;
 <?php if ($this->access('language_add')) { ?>
-<a class="btn btn-default add" href="<?php echo $this->url('admin/settings/language/add'); ?>">
+<a class="btn btn-outline-primary add" href="<?php echo $this->url('admin/settings/language/add'); ?>">
   <?php echo $this->text('Add'); ?>
 </a>
 <?php } ?>

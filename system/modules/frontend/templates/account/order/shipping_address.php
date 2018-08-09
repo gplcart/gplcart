@@ -9,13 +9,13 @@
  * To see available variables <?php print_r(get_defined_vars()); ?>
  */
 ?>
-<div class="panel panel-default order-shipping-address">
-  <div class="panel-heading clearfix"><?php echo $this->text('Shipping address'); ?></div>
-  <div class="panel-body">
+<div class="card order-shipping-address">
+  <div class="card-header clearfix"><?php echo $this->text('Shipping address'); ?></div>
+  <div class="card-body">
     <?php if(empty($order['address_translated']['shipping'])) { ?>
     <?php echo $this->text('Unknown'); ?>
     <?php } else { ?>
-    <table class="table table-condensed">
+    <table class="table table-sm">
       <tbody>
         <?php foreach($order['address_translated']['shipping'] as $name => $value) { ?>
         <tr>

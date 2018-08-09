@@ -33,13 +33,11 @@
         </option>
         <?php } ?>
       </select>
-      <span class="input-group-btn hidden-js">
-        <button class="btn btn-default" name="action[submit]" value="1"><?php echo $this->text('OK'); ?></button>
-      </span>
+        <button class="btn btn-secondary hidden-js" name="action[submit]" value="1"><?php echo $this->text('OK'); ?></button>
     </div>
     <?php } ?>
     <?php if ($this->access('collection_item_add')) { ?>
-    <a href="<?php echo $this->url("admin/content/collection-item/{$collection['collection_id']}/add"); ?>" class="btn btn-default add">
+    <a class="btn btn-primary add" href="<?php echo $this->url("admin/content/collection-item/{$collection['collection_id']}/add"); ?>" >
       <?php echo $this->text('Add'); ?>
     </a>
     <?php } ?>
@@ -47,7 +45,7 @@
   <?php } ?>
   <div class="table-responsive">
     <table class="table collection-items">
-      <thead>
+      <thead class="thead-light">
         <tr>
           <th><input type="checkbox" onchange="Gplcart.selectAll(this);"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
           <th><?php echo $this->text('ID'); ?></th>
@@ -67,18 +65,18 @@
           <td class="middle"><?php echo $this->truncate($this->e($item['title'])); ?></td>
           <td class="middle">
             <?php if (empty($item['collection_item']['status'])) { ?>
-            <i class="fa fa-square-o"></i>
+            <i class="fa fa-square"></i>
             <?php } else { ?>
-            <i class="fa fa-check-square-o"></i>
+            <i class="fa fa-check-square"></i>
             <?php } ?>
           </td>
           <td class="middle">
             <?php if (!isset($item['status'])) { ?>
             <?php echo $this->text('Unknown'); ?>
             <?php } else if (empty($item['status'])) { ?>
-            <i class="fa fa-square-o"></i>
+            <i class="fa fa-square"></i>
             <?php } else { ?>
-            <i class="fa fa-check-square-o"></i>
+            <i class="fa fa-check-square"></i>
             <?php } ?>
           </td>
           <td class="middle">
@@ -106,7 +104,7 @@
 <?php } else { ?>
 <?php echo $this->text('There are no items yet'); ?>&nbsp;
 <?php if ($this->access('collection_item_add')) { ?>
-<a class="btn btn-default" href="<?php echo $this->url("admin/content/collection-item/{$collection['collection_id']}/add"); ?>">
+<a class="btn btn-primary add" href="<?php echo $this->url("admin/content/collection-item/{$collection['collection_id']}/add"); ?>">
   <?php echo $this->text('Add'); ?>
 </a>
 <?php } ?>

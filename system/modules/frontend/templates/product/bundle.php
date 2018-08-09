@@ -9,11 +9,11 @@
  */
 ?>
 <?php if (!empty($product['bundled_products'])) { ?>
-<div class="panel panel-default bundled-items">
-  <div class="panel-heading clearfix">
-    <h4 class="panel-title"><?php echo $this->text('Bundled products'); ?></h4>
+<div class="card bundled-items">
+  <div class="card-header clearfix">
+    <h4 class="card-title"><?php echo $this->text('Bundled products'); ?></h4>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <div class="bundled-items">
       <?php foreach ($product['bundled_products'] as $product) { ?>
       <?php echo $product['rendered']; ?>

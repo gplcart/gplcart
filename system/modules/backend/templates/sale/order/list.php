@@ -32,21 +32,19 @@
         </option>
         <?php } ?>
       </select>
-      <span class="input-group-btn hidden-js">
-        <button class="btn btn-default" name="action[submit]" value="1"><?php echo $this->text('OK'); ?></button>
-      </span>
+        <button class="btn btn-secondary hidden-js" name="action[submit]" value="1"><?php echo $this->text('OK'); ?></button>
     </div>
     <?php } ?>
     <?php if ($this->access('order_add')) { ?>
-    <a class="btn btn-default" href="<?php echo $this->url('admin/user/list'); ?>">
+    <a class="btn btn-primary add" href="<?php echo $this->url('admin/user/list'); ?>">
       <?php echo $this->text('Add'); ?>
     </a>
     <?php } ?>
   </div>
   <?php } ?>
-  <div class="table-condensed">
+  <div class="table-sm">
     <table class="table orders">
-      <thead>
+      <thead class="thead-light">
         <tr>
           <th>
             <input type="checkbox" onchange="Gplcart.selectAll(this);">
@@ -116,10 +114,10 @@
           <th><input class="form-control" maxlength="255" name="total" value="<?php echo $filter_total; ?>"></th>
           <th></th>
           <th>
-            <a href="<?php echo $this->url($_path); ?>" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
-              <i class="fa fa-refresh"></i>
+            <a href="<?php echo $this->url($_path); ?>" class="btn clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
+              <i class="fa fa-sync"></i>
             </a>
-            <button class="btn btn-default filter" title="<?php echo $this->text('Filter'); ?>">
+            <button class="btn btn-secondary filter" title="<?php echo $this->text('Filter'); ?>">
               <i class="fa fa-search"></i>
             </button>
           </th>
@@ -183,7 +181,7 @@
           </td>
           <td>
             <ul class="list-inline">
-              <li>
+              <li class="list-inline-item">
                 <a href="<?php echo $this->url("admin/sale/order/$id"); ?>">
                   <?php echo $this->lower($this->text('View')); ?>
                 </a>

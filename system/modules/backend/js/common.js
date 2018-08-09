@@ -21,11 +21,11 @@
         html += '<div class="modal-dialog">';
         html += '<div class="modal-content">';
         html += '<div class="modal-header clearfix">';
-        html += '<button type="button" class="btn btn-default pull-right" data-dismiss="modal">';
+        html += '<button type="button" class="btn float-right" data-dismiss="modal">';
         html += '<i class="fa fa-times"></i></button>';
 
         if (typeof header !== 'undefined') {
-            html += '<h3 class="modal-title pull-left">' + header + '</h3>';
+            html += '<h3 class="modal-title float-left">' + header + '</h3>';
         }
 
         html += '</div>';
@@ -90,7 +90,7 @@
         html += '<input class="form-control" name="product[combination][' + index + '][stock]" value="">';
         html += '</td>';
         html += '<td>';
-        html += '<a href="#" onclick="return false;" class="btn btn-default select-image"><i class="fa fa-image"></i></a>';
+        html += '<a href="#" onclick="return false;" class="btn select-image"><i class="fa fa-image"></i></a>';
         html += '<input type="hidden" name="product[combination][' + index + '][file_id]" value="">';
         html += '<input type="hidden" name="product[combination][' + index + '][path]" value="">';
         html += '<input type="hidden" name="product[combination][' + index + '][thumb]" value="">';
@@ -106,7 +106,7 @@
         html += '</div>';
         html += '</td>';
         html += '<td>';
-        html += '<a href="#" onclick="return false;" class="btn btn-default remove-option-combination"><i class="fa fa-trash"></i></a>';
+        html += '<a href="#" onclick="return false;" class="btn remove-option-combination"><i class="fa fa-trash"></i></a>';
         html += '</td>';
         html += '</tr>';
 
@@ -139,7 +139,7 @@
 
             html += '<div class="col-md-3">';
             html += '<div class="thumbnail">';
-            html += '<img data-file-path="' + path + '" src="' + src + '" class="img-responsive combination-image">';
+            html += '<img data-file-path="' + path + '" src="' + src + '" class="img-fluid combination-image">';
             html += '</div>';
             html += '</div>';
         });
@@ -156,7 +156,7 @@
      * @returns {String}
      */
     var htmlProductCombinationImage = function (src) {
-        return '<img style="height:20px; width:20px;" src="' + src + '" class="img-responsive combination-image">';
+        return '<img style="height:20px; width:20px;" src="' + src + '" class="img-fluid combination-image">';
     };
 
     /**
@@ -420,7 +420,7 @@
 
         var links, id, href;
 
-        $('.panel').each(function () {
+        $('.card').each(function () {
             id = $(this).attr('id');
             if (id) {
                 links = $(this).find('.pagination a');

@@ -33,13 +33,11 @@
         </option>
         <?php } ?>
       </select>
-      <span class="input-group-btn hidden-js">
-        <button class="btn btn-default" name="action[submit]" value="1"><?php echo $this->text('OK'); ?></button>
-      </span>
+        <button class="btn btn-secondary hidden-js" name="action[submit]" value="1"><?php echo $this->text('OK'); ?></button>
     </div>
     <?php } ?>
     <?php if ($this->access('user_role_add')) { ?>
-    <a class="btn btn-default add" href="<?php echo $this->url('admin/user/role/add'); ?>">
+    <a class="btn btn-primary add" href="<?php echo $this->url('admin/user/role/add'); ?>">
       <?php echo $this->text('Add'); ?>
     </a>
     <?php } ?>
@@ -47,7 +45,7 @@
   <?php } ?>
   <div class="table-responsive">
     <table class="table roles">
-      <thead>
+      <thead class="thead-light">
         <tr>
           <th><input type="checkbox" onchange="Gplcart.selectAll(this);"<?php echo $access_actions ? '' : ' disabled'; ?>></th>
           <th><a href="<?php echo $sort_role_id; ?>"><?php echo $this->text('ID'); ?> <i class="fa fa-sort"></i></a></th>
@@ -77,10 +75,10 @@
             </select>
           </th>
           <th>
-            <a href="<?php echo $this->url($_path); ?>" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
-              <i class="fa fa-refresh"></i>
+            <a href="<?php echo $this->url($_path); ?>" class="btn btn-outline-secondary clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
+              <i class="fa fa-sync"></i>
             </a>
-            <button class="btn btn-default filter" title="<?php echo $this->text('Filter'); ?>">
+            <button class="btn btn-secondary filter" title="<?php echo $this->text('Filter'); ?>">
               <i class="fa fa-search"></i>
             </button>
           </th>
@@ -109,9 +107,9 @@
           </td>
           <td class="middle">
             <?php if (empty($user_role['status'])) { ?>
-            <i class="fa fa-square-o"></i>
+            <i class="fa fa-square"></i>
             <?php } else { ?>
-            <i class="fa fa-check-square-o"></i>
+            <i class="fa fa-check-square"></i>
             <?php } ?>
           </td>
           <td>
@@ -133,7 +131,7 @@
 <?php } else { ?>
 <?php echo $this->text('There are no items yet'); ?>&nbsp;
 <?php if ($this->access('user_role_add')) { ?>
-<a class="btn btn-default" href="<?php echo $this->url('admin/user/role/add'); ?>">
+<a class="btn btn-primary add" href="<?php echo $this->url('admin/user/role/add'); ?>">
   <?php echo $this->text('Add'); ?>
 </a>
 <?php } ?>

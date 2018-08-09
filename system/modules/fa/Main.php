@@ -27,10 +27,10 @@ class Main
             'type' => 'asset',
             'module' => 'fa',
             'url' => 'https://github.com/FortAwesome/Font-Awesome',
-            'download' => 'https://github.com/FortAwesome/Font-Awesome/archive/v4.7.0.zip',
-            'version' => '4.7.0',
+            'download' => 'https://github.com/FortAwesome/Font-Awesome/archive/5.2.0.zip',
+            'version' => '5.2.0',
             'files' => array(
-                'css/font-awesome.min.css',
+                'web-fonts-with-css/css/fontawesome-all.min.css',
             )
         );
     }

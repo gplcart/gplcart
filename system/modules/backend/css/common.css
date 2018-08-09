@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css?family=Open+Sans');
-
 html {
     position: relative;
     min-height: 100%;
@@ -7,40 +5,35 @@ html {
 
 body {
     margin-bottom: 80px;
-    font-family: 'Open Sans', sans-serif;
-}
-
-.breadcrumbs {
-    padding-top: 20px;
-    padding-bottom: 10px;
 }
 
 .content {
-    padding-top: 30px;
+    padding-top: 2rem;
 }
 
-.header h1 {
-    margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 24px;
+.header {
+    margin-top: 5rem;
 }
 
 .actions {
-    margin-bottom: 20px;
+    margin-bottom: 2rem;
 }
 
-.tab-content {
-    padding-top: 20px;
+.form-text {
+    color: #6c757d;
 }
 
-.navbar {
-    margin: 0;
-    border: none !important;
-    position: static; /* Fix overlapping dropdowns */
+.form-group .description {
+    font-size: 80%;
+    color: #6c757d !important;
 }
 
-.navbar-inverse .navbar-nav > li > a {
-    color: #fff;
+.form-group.has-error .form-text {
+    color: #dc3545;
+}
+
+.form-group.has-error .form-control {
+    border-color: #dc3545;
 }
 
 pre {
@@ -56,7 +49,7 @@ fieldset legend {
     margin-bottom: 0;
 }
 
-fieldset + fieldset legend:before {
+fieldset legend:before {
     content: "";
     display: block;
     height: 15px;
@@ -64,9 +57,9 @@ fieldset + fieldset legend:before {
     margin-bottom: 10px;
     margin-right: -15px;
     margin-left: -15px;
-    -webkit-box-shadow: inset 0 3px 3px -3px rgba(0,0,0,0.7);
-    -moz-box-shadow: inset 0 3px 3px -3px rgba(0,0,0,0.7);
-    box-shadow: inset 0 3px 3px -3px rgba(0,0,0,0.7);
+    -webkit-box-shadow: inset 0 3px 3px -3px rgba(0, 0, 0, 0.7);
+    -moz-box-shadow: inset 0 3px 3px -3px rgba(0, 0, 0, 0.7);
+    box-shadow: inset 0 3px 3px -3px rgba(0, 0, 0, 0.7);
 }
 
 fieldset:last-of-type {
@@ -80,11 +73,7 @@ fieldset:last-of-type {
 ol.breadcrumb {
     background-color: transparent;
     margin: 0 !important;
-    padding:0 !important;
-}
-
-label {
-    font-weight: normal;
+    padding: 0 !important;
 }
 
 .footer {
@@ -95,7 +84,7 @@ label {
     border-top: 1px solid #ddd;
 }
 
-.footer p:first-of-type{
+.footer p:first-of-type {
     padding-top: 20px;
 }
 
@@ -110,7 +99,7 @@ label {
     border: none !important;
 }
 
-.no-color{
+.no-color {
     background: repeating-linear-gradient(-45deg, #ccc, #ccc 1px, #fff 1px, #fff 4px);
 }
 
@@ -120,7 +109,7 @@ label {
 
 .scroll {
     max-height: 20em;
-    overflow-y:auto;
+    overflow-y: auto;
 }
 
 .list-inline .active a {
@@ -129,28 +118,16 @@ label {
     cursor: default;
 }
 
-.panel {
-    box-shadow: none;
+.card {
+    margin-bottom: 1rem;
 }
 
-.panel-heading {
-    background-color: transparent !important;
-    margin-left: 15px;
-    margin-right: 15px;
-    padding-left: 0;
-    padding-right: 0;
-}
-
-.panel-heading li a {
-    font-size: 90%;
-}
-
-.panel-body table tr:first-child td {
+.card-body table tr:first-child td {
     border: none !important;
 }
 
 .modal.loading .progress {
-    margin:0;
+    margin: 0;
 }
 
 .modal.loading .progress-bar {
@@ -187,7 +164,7 @@ label {
 }
 
 .middle {
-    vertical-align:middle !important;
+    vertical-align: middle !important;
 }
 
 .field-title {
@@ -209,42 +186,41 @@ td .list-inline {
 }
 
 td div.view img {
-    height:30px;
-    width:30px;
+    height: 30px;
+    width: 30px;
 }
 
 td div.view div {
-    height:30px;
-    width:30px;
+    height: 30px;
+    width: 30px;
 }
 
 .table th {
     white-space: nowrap;
-    font-weight: normal;
 }
 
 .ui-sortable-handle {
     cursor: n-resize;
 }
 
-body.admin .panel tr:first-child td {
+body.admin .card tr:first-child td {
     padding-top: 0 !important;
     border-top: 0 !important;
 }
 
 #option-form-wrapper tfoot td {
-    visibility:hidden !important;
+    visibility: hidden !important;
 }
 
 #option-form-wrapper tfoot td:last-child {
-    visibility:visible !important;
+    visibility: visible !important;
 }
 
-.form-group.required label:before,
-span.required:before,
-td.required:before {
-    content:"* ";
-    color:red;
+.form-group.required label:after,
+span.required:after,
+td.required:after {
+    content: " *";
+    color: red;
 }
 
 .ui-autocomplete .ui-menu-item:hover {
@@ -293,149 +269,20 @@ td.required:before {
     border-radius: 5px;
 }
 
-.address-book:not(.active) .panel-body {
-    opacity:0.3;
+.address-book:not(.active) .card-body {
+    opacity: 0.3;
     pointer-events: none;
 }
 
-.address-book:not(.active):not(.filled) .panel-body td * {
+.address-book:not(.active):not(.filled) .card-body td * {
     visibility: hidden;
 }
 
-.address-book.filled:not(.active) .panel-body td input,
-.address-book.filled:not(.active) .panel-body td select {
+.address-book.filled:not(.active) .card-body td input,
+.address-book.filled:not(.active) .card-body td select {
     border: transparent;
-    -moz-appearance:none;
-    -webkit-appearance:none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
 }
 
-/* Fix dropdown overflow in responsive tables */
-@media (max-width: 767px) {
-    .table-responsive .dropdown-menu {
-        position: static !important;
-    }
-}
 
-@media (max-width: 991px) {
-
-    .navbar-header {
-        float: none;
-    }
-
-    .navbar-toggle {
-        display: block;
-    }
-
-    .navbar-collapse {
-        border-top: 1px solid transparent;
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
-    }
-
-    .navbar-collapse.collapse {
-        display: none!important;
-    }
-
-    .navbar-nav {
-        float: none!important;
-        margin: 8px -15px;
-    }
-
-    .navbar-nav>li {
-        float: none;
-    }
-
-    .navbar-nav>li>a {
-        padding-top: 15px;
-        padding-bottom: 10px;
-    }
-
-    .navbar-text {
-        float: none;
-        margin: 15px 0;
-    }
-
-    /* since 3.1.0 */
-    .navbar-collapse.collapse.in {
-        display: block !important;
-    }
-
-    .collapsing {
-        overflow: hidden !important;
-    }
-
-    .navbar-collapse.in {
-        overflow-y: auto !important;
-        overflow-x: hidden !important;
-    }
-
-    .navbar-nav .open .dropdown-menu {
-        position: static;
-        float: none;
-        width: auto;
-        margin-top: 0;
-        background-color: transparent;
-        border: 0;
-        -webkit-box-shadow: none;
-        box-shadow: none;
-    }
-
-    .navbar-nav .open .dropdown-menu > li > a,
-    .navbar-nav .open .dropdown-menu .dropdown-header {
-        padding: 5px 15px 5px 25px;
-    }
-
-    .navbar-nav .open .dropdown-menu > li > a {
-        line-height: 20px;
-    }
-
-    .navbar-nav .open .dropdown-menu > li > a:hover,
-    .navbar-nav .open .dropdown-menu > li > a:focus {
-        background-image: none;
-    }
-
-    .navbar-inverse .navbar-nav .open .dropdown-menu > .dropdown-header {
-        border-color: #080808;
-    }
-
-    .navbar-inverse .navbar-nav .open .dropdown-menu .divider {
-        background-color: #080808;
-    }
-
-    .navbar-inverse .navbar-nav .open .dropdown-menu > li > a {
-        color: #9d9d9d;
-    }
-
-    .navbar-inverse .navbar-nav .open .dropdown-menu > li > a:hover,
-    .navbar-inverse .navbar-nav .open .dropdown-menu > li > a:focus {
-        color: #fff;
-        background-color: transparent;
-    }
-
-    .navbar-inverse .navbar-nav .open .dropdown-menu > .active > a,
-    .navbar-inverse .navbar-nav .open .dropdown-menu > .active > a:hover,
-    .navbar-inverse .navbar-nav .open .dropdown-menu > .active > a:focus {
-        color: #fff;
-        background-color: #080808;
-    }
-
-    .navbar-inverse .navbar-nav .open .dropdown-menu > .disabled > a,
-    .navbar-inverse .navbar-nav .open .dropdown-menu > .disabled > a:hover,
-    .navbar-inverse .navbar-nav .open .dropdown-menu > .disabled > a:focus {
-        color: #444;
-        background-color: transparent;
-    }
-}
-
-@media all and (max-width: 1325px) {
-
-    .navbar-nav.right-links {
-        display:none;
-    }
-}
-
-@media all and (max-width: 1180px) {
-
-    #search-form {
-        display: none;
-    }
-}

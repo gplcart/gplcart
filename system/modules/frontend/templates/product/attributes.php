@@ -9,9 +9,9 @@
  */
 ?>
 <?php if (!empty($product['field_value_labels']['attribute'])) { ?>
-<div class="panel panel-default panel-borderless field-attributes">
-  <div class="panel-heading"><h4 class="panel-title"><?php echo $this->text('Specs'); ?></h4></div>
-  <div class="panel-body">
+<div class="card borderless field-attributes">
+  <div class="card-header"><h4 class="card-title"><?php echo $this->text('Specs'); ?></h4></div>
+  <div class="card-body">
     <table class="table">
       <tbody>
         <?php foreach ($product['field_value_labels']['attribute'] as $field_id => $labels) { ?>

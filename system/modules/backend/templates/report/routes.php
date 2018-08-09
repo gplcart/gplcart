@@ -53,10 +53,10 @@
           </select>
         </th>
         <th>
-          <a href="<?php echo $this->url($_path); ?>" class="btn btn-default clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
-            <i class="fa fa-refresh"></i>
+          <a href="<?php echo $this->url($_path); ?>" class="btn clear-filter" title="<?php echo $this->text('Reset filter'); ?>">
+            <i class="fa fa-sync"></i>
           </a>
-          <button class="btn btn-default filter" title="<?php echo $this->text('Filter'); ?>">
+          <button class="btn filter" title="<?php echo $this->text('Filter'); ?>">
             <i class="fa fa-search"></i>
           </button>
         </th>
@@ -77,16 +77,16 @@
         <td><?php echo $this->e($route['access_name']); ?></td>
         <td class="middle">
           <?php if (empty($route['internal'])) { ?>
-          <i class="fa fa-square-o"></i>
+          <i class="fa fa-square"></i>
           <?php } else { ?>
-          <i class="fa fa-check-square-o"></i>
+          <i class="fa fa-check-square"></i>
           <?php } ?>
         </td>
         <td class="middle">
           <?php if (empty($route['status'])) { ?>
-          <i class="fa fa-square-o"></i>
+          <i class="fa fa-square"></i>
           <?php } else { ?>
-          <i class="fa fa-check-square-o"></i>
+          <i class="fa fa-check-square"></i>
           <?php } ?>
         </td>
         <td></td>
